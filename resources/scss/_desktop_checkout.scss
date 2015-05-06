@@ -1,0 +1,120 @@
+#checkout {
+  margin: 56px;
+}
+
+div.cart-container, div.checkout-container {
+  width: 916px;
+  margin-bottom: 35px;
+
+  a.cart-continue {
+    display: none;
+  }
+}
+
+.checkout-container {
+  &.delivery, &.payment {
+    width: 50%;
+    margin: 0;
+  }
+}
+
+div.line-item-detail {
+  .quantity {
+    top: 35px;
+    left: auto;
+    right: 0;
+    width: 105px;
+
+    .quantity-selector {
+      width: 100%;
+    }
+  }
+
+  h4 {
+    margin-bottom: 9px;
+  }
+
+  .line-item-attr {
+    font-size: 16px;
+  }
+
+  &.interactive {
+    padding-bottom: 0;
+  }
+
+  a.delete {
+    bottom: 7px;
+  }
+}
+
+.cart-items {
+  @include display(flex);
+  @include flex-wrap(wrap);
+}
+
+.cart-line-items {
+  width: 100%;
+
+  .quantity {
+    width: 174px;
+  }
+}
+
+.coupon-cart {
+  margin-right: 70px;
+}
+
+.coupon-cart, .order-summary-cart {
+  width: 423px;
+}
+
+.edit_order {
+  @include display(flex);
+  @include flex-wrap(wrap);
+}
+
+.billing-address-wrapper, .shipping-address-wrapper {
+  width: 50%;
+}
+
+div.feature-notice-header {
+  margin-top: 32px;
+}
+
+.progress-step-index {
+  display: inline;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+li.progress-step {
+  height: auto;
+}
+
+.checkout-container .field {
+  margin-bottom: 0;
+}
+
+.pay-for-order, .save-and-continue {
+  margin-left: 50%;
+  width: 50%;
+}
+
+ol.progress-steps {
+  margin-bottom: 3rem;
+}
+
+.checkout-form-wrapper {
+  .form-buttons {
+    margin-top: 3.5rem;
+  }
+}
+
+.button.continue.empty-cart {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.inside-cart-form {
+  width: 100%;
+}

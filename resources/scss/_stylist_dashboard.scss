@@ -1,0 +1,157 @@
+@import 'spree/frontend/mayvenn/stylist_referrals';
+@import 'spree/frontend/mayvenn/stylist_store_credits';
+@import 'spree/frontend/mayvenn/stylist_edit';
+@import 'spree/frontend/mayvenn/stylist_commissions';
+
+.header-bar-heading {
+  font-family: $secondary_font;
+  font-style: italic;
+  color: $dark_gold_text;
+  line-height: 2.0;
+  text-align: center;
+  letter-spacing: 0.1em;
+  font-weight: 100;
+}
+
+.dashboard-content {
+  padding: 1em;
+}
+
+#money-rules {
+  overflow: hidden;
+  position: relative;
+  background-color: #777;
+}
+
+.gold-money-box {
+  width: 4.8rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-image: image-url('dollar_sign.png');
+  background-size: 65%;
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+}
+
+.money-rule-details {
+  margin-left: 4.8rem;
+  min-height: 4.36em;
+  color: white;
+  font-family: $primary_font_regular;
+  font-size: 1.1em;
+  padding: 0.5em;
+  line-height: 1.1em;
+  @include display(flex);
+  @include align-items(center);
+}
+
+.dashboard-details-header {
+  margin-top: 2.5em;
+  text-transform: uppercase;
+  color: $darker_text;
+  font-family: $primary_font_regular;
+
+  &.no-top-space {
+    margin-top: 0;
+  }
+}
+
+.solid-line-divider {
+  border-bottom: 0.1em solid $lighter_grey;
+  margin: 0.6em 0;
+}
+
+.emphasized-banner {
+  height: 3em;
+  font-size: 1.2em;
+  background-color: #bbb;
+  padding: 1em;
+  color: white;
+  font-family: $primary_font_regular;
+  margin-bottom: 0.5em;
+
+  &.available-bonus {
+    margin-bottom: 0;
+  }
+
+  &.extra-emphasis {
+    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+  }
+}
+
+.emphasized-banner-header {
+  text-transform: uppercase;
+  float: left;
+
+  &:after {
+    content: ':';
+  }
+}
+
+.emphasized-banner-value {
+  float: right;
+}
+
+.loose-table-header {
+  overflow: hidden;
+  color: $medium_text;
+  margin-bottom: 0.4em;
+
+  .left-header {
+    float: left;
+  }
+
+  .right-header {
+    float: right;
+  }
+}
+
+.loose-table-row {
+  color: $dark_text;
+  font-family: $primary_font_regular;
+  padding: 0.8em;
+  border-width: 0.1em 0 0 0;
+  border-style: solid;
+  border-color: #ccc;
+  background-color: #f6f5f5;
+  overflow: auto;
+  @include display(flex);
+  @include align-items(center);
+  @include justify-content(space-between);
+
+  &:last-child {
+    border-width: 0.1em 0 0.1em 0;
+  }
+
+  .right-content {
+    margin-left: 1em;
+    overflow: hidden;
+  }
+
+  .top-pad {
+    margin-top: 0.7em;
+  }
+
+  &.short-row {
+    height: 3.5em;
+  }
+}
+
+.chop-content {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.dashboard-summary {
+  background-color: #555;
+  color: white;
+  font-family: $primary_font_regular;
+  font-size: 1.3333em;
+}
+
+.stylist-dashboard-nav {
+  display: none;
+}

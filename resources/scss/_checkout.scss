@@ -1,0 +1,280 @@
+.feature-notice-header {
+  width: (640rem / $default-font-size);
+  height: (88rem / $default-font-size);
+  margin: 0 auto;
+  line-height: (88rem / $default-font-size);
+  font-size: (22rem / $default-font-size);
+  border-top: solid $medium_blue_grey 1px;
+  text-align: center;
+  background-image: url('/images/gold-thanks-bg.png');
+  @include stretch-bg;
+  color: white;
+  text-transform: uppercase;
+  margin-bottom: 1.5em;
+}
+
+.progress-steps {
+  background-color: $lightest_blue_grey;
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  border-top: 1px solid #b2b3b3;
+  border-bottom: 1px solid #b2b3b3;
+  @include clearfix;
+}
+
+.progress-step {
+  display: block;
+  width: 25%;
+  float: left;
+  height: 4.2rem;
+  padding: 0.7rem;
+  border-right: 1px solid #b2b3b3;
+  text-align: center;
+  color: $medium_text;
+  text-transform: uppercase;
+  font-family: $primary_font_regular;
+  line-height: 1.4;
+
+  &.last {
+    border-right: none;
+  }
+
+  &.current {
+    color: #fff;
+    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+  }
+
+  a {
+    &:link,
+    &:visited {
+      color: $medium_text;
+    }
+
+    &:hover,
+    &:active {
+      color: $dark_teal;
+    }
+  }
+}
+
+.checkout-container {
+  width: (600rem / $default-font-size);
+  margin: 0 auto;
+
+  p {
+    color: $dark-text;
+    font-size: (22rem / $default-font-size);
+    line-height: 1.4em;
+    margin-bottom: 2em;
+
+  }
+
+  .store-credit-instructions {
+    color: $primary_color_text;
+  }
+}
+
+.checkout-header {
+  border-bottom: solid #b2b3b3 1px;
+  font-size: (22rem / $default-font-size);
+  color: $dark-text;
+  padding-bottom: 0.25rem;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.shipping-methods {
+  padding: 0;
+}
+
+.checkbox-container {
+  float: left;
+  height: (94rem / $default-font-size);
+  width: (94rem / $default-font-size);
+  position: relative;
+  background-color: $default_grey;
+}
+
+.shipping-method {
+  position: relative;
+  height: (100rem / $default-font-size);
+  border: solid $default_grey (4rem / $default-font-size);
+  list-style: none;
+  margin-bottom: (30rem / $default-font-size);
+  color: $light-text;
+
+  &.selected  {
+    border: solid $primary_color (4rem / $default-font-size);
+    color: $primary_color_text;
+
+    .checkbox-container {
+      background-color: $primary_color;
+
+      .large-checkbox {
+        position: absolute;
+        top: 1rem;
+        left: (22rem / $default-font-size);
+        width: (48rem / $default-font-size);
+        height: (44rem / $default-font-size);
+        background-image: url('/images/delivery_checkmark.png');
+        @include stretch-bg;
+      }
+    }
+  }
+}
+
+.shipping-method-container {
+  position: relative;
+  height: (92rem / $default-font-size);
+  width: 100%;
+  padding-left: (92rem / $default-font-size);
+  top: 0;
+}
+
+.ship-method-radio {
+  display: none;
+}
+
+.rate-name, .rate-timeframe {
+  position: absolute;
+  left: (112rem / $default-font-size);
+  font-family: $secondary_font;
+  font-style: italic;
+}
+
+.rate-name {
+  top: (8rem / $default-font-size);
+}
+
+.rate-timeframe {
+  bottom: (8rem / $default-font-size);
+}
+
+.rate-cost {
+  position: absolute;
+  top: 0;
+  right: 1em;
+  height: (92rem / $default-font-size);
+  line-height: (92rem / $default-font-size);
+  font-weight: bold;
+}
+
+.store-credit-options {
+  padding: 0;
+}
+
+.store-credit-option {
+  position: relative;
+  height: (100rem / $default-font-size);
+  border: solid $default_grey (4rem / $default-font-size);
+  list-style: none;
+  margin-bottom: (30rem / $default-font-size);
+  color: $light-text;
+
+  &.selected  {
+    border: solid $primary_color (4rem / $default-font-size);
+    color: $primary_color_text;
+
+    .checkbox-container {
+      background-color: $primary_color;
+
+      .large-checkbox {
+        position: absolute;
+        top: 1rem;
+        left: (22rem / $default-font-size);
+        width: (48rem / $default-font-size);
+        height: (44rem / $default-font-size);
+        background-image: url('/images/delivery_checkmark.png');
+        @include stretch-bg;
+      }
+    }
+  }
+}
+
+.store-credit-container {
+  position: relative;
+  height: (92rem / $default-font-size);
+  width: 100%;
+  padding-left: (92rem / $default-font-size);
+  top: 0;
+}
+
+.store-credit-radio {
+  display: none;
+}
+
+.use-store-credit-option {
+  position: absolute;
+  left: (112rem / $default-font-size);
+  font-family: $secondary_font;
+  font-style: italic;
+  top: (8rem / $default-font-size);
+}
+
+.credit-card-container {
+  .field {
+    color: $dark-text;
+
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-family: $secondary_font;
+      font-style: italic;
+
+      a#cvv_link {
+        color: $primary_color_text;
+      }
+    }
+
+    input {
+      border: solid $default_grey 1px;
+      width: 100%;
+      margin-bottom: 0.75rem;
+      height: (62rem / $default-font-size);
+      padding: 0 0.5rem;
+      font-size: 1.5rem;
+
+      &.cardNumber, &.cardExpiry, &.cardCode {
+        font-family: monospace;
+      }
+    }
+  }
+
+  .review-message {
+    color: $primary_color_text;
+    line-height: 1.5em;
+  }
+}
+
+#scountry, #bcountry {
+  display: none;
+}
+
+.order-thank-you {
+  height: (122rem / $default-font-size);
+  margin: 1rem 0;
+  position: relative;
+
+  .shopping-bag {
+    width: (91rem / $default-font-size);
+    height: (122rem / $default-font-size);
+    background-image: url('/images/shopping-bag.png');
+    @include stretch-bg;
+  }
+
+  .message {
+    font-size: 1.25rem;
+    position: absolute;
+    left: (130rem / $default-font-size);
+    bottom: 0;
+    margin: 0;
+    color: $gold;
+    font-family: $secondary_font;
+    font-style: italic;
+  }
+}
+
+.order-thanks-detail {
+  margin-top: 2rem;
+}

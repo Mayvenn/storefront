@@ -1,0 +1,96 @@
+#home-content {
+  width: (640rem / $default-font-size);
+  margin: 0 auto;
+}
+
+.home-large-image {
+  height: 18em;
+  background-image: url("/images/home_image.jpg");
+  @include stretch-bg;
+}
+
+.home-free-shipping {
+  width: 100%;
+}
+
+.squashed-hair-categories {
+  margin: 2em 0;
+  width: 100%;
+
+  .hair-category-link {
+    float: left;
+  }
+}
+
+.home-sessions-container {
+  margin: 2.0em (27rem / $default-font-size);
+
+  .session-button {
+    float: left;
+    display: block;
+    color: white;
+    background-color: $light_teal;
+    text-align: center;
+    padding: 1.2em 0.3em;
+    width: 48%;
+    margin: 1%;
+  }
+}
+
+.home-sessions-description {
+  color: $dark_grey;
+  font-family: $secondary_font;
+  font-style: italic;
+  text-align: left;
+  font-size: 120%;
+  margin-bottom: 2rem;
+
+  a {
+    color: $green;
+  }
+}
+
+.featured-product-content {
+  position: relative;
+  width: 100%;
+  height: (440rem / $default-font-size);
+}
+
+.featured-product-banner {
+  position: absolute;
+  width: 100%;
+  @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+  height: (55rem / $default-font-size);
+  line-height: (55rem / $default-font-size);
+  bottom: 0;
+  left: 0;
+  color: white;
+  font-family: $secondary_font;
+  font-style: italic;
+  text-align: center;
+}
+
+.featured-new {
+  position: absolute;
+  top: (35rem / $default-font-size);
+  right: (30rem / $default-font-size);
+  width: (120rem / $default-font-size);
+  height: (120rem / $default-font-size);
+  background-image: url('/images/desktop_assets/new-sticker.png');
+  @include stretch-bg;
+}
+
+.featured-product-image {
+  width: (640rem / $default-font-size);
+  height: (425rem / $default-font-size);
+  background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
+  @include stretch-bg;
+}
+
+.guarantee, .free-shipping, .shop-now {
+  display: none;
+}
+
+.home-actions-top {
+  height: (145rem / $default-font-size);
+}
