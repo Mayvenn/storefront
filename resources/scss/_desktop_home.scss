@@ -1,0 +1,182 @@
+.home-large-image {
+  width: 100%;
+  height: 432px;
+  background-color: #fff;
+  margin-bottom: 33px;
+  @include stretch-bg;
+  background-image: url('/images/desktop_assets/desktop-home-banner-flip.jpg');
+}
+
+.header-bar {
+  display: none;
+}
+
+.home-actions-top {
+  @include display(flex);
+  width: 100%;
+}
+
+.guarantee, .free-shipping-action, .shop-now, .bundle-deal, .keep-shopping {
+  width: 33.334%;
+  height: 76px;
+  border: solid #bd9424 1px;
+  border-left: none;
+  @include stretch-bg;
+
+  &:last-child {
+    border-right: 0;
+  }
+}
+
+.guarantee {
+  background-image: url('/images/desktop_assets/guarantee.png');
+
+  &:hover {
+    background-image: url('/images/desktop_assets/guarantee-hover.png');
+  }
+}
+
+.free-shipping-action {
+  background-image: url('/images/desktop_assets/shipping.png');
+
+  &:hover {
+    background-image: url('/images/desktop_assets/shipping-hover.png');
+  }
+}
+
+.shop-now {
+  border-right: none;
+  background-image: url('/images/desktop_assets/shop-now.png');
+
+  &:hover {
+    background-image: url('/images/desktop_assets/shop-now-hover.png')
+  }
+}
+
+.keep-shopping {
+  border-right: none;
+  background-image: url('/images/desktop_assets/keep-shopping.png');
+
+  &:hover {
+    background-image: url('/images/desktop_assets/keep-shopping-hover.png')
+  }
+}
+
+.bundle-deal-image {
+  background-image: url('/images/desktop_assets/bundle-5percent.png');
+  margin-top: -10px;
+  height: 95px;
+  @include stretch-bg;
+}
+
+.home-free-shipping {
+  display: none;
+}
+
+.featured-product-content {
+  position: relative;
+  float: left;
+  width: 498px;
+  height: 340px;
+  margin: 32px 0 45px 3px;
+}
+
+.featured-product-banner {
+  position: absolute;
+  width: 100%;
+  @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+  height: 43px;
+  line-height: 43px;
+  bottom: 0;
+  left: 0;
+  color: white;
+  font-family: $secondary_font;
+  font-style: italic;
+  text-align: center;
+}
+
+.featured-new {
+  position: absolute;
+  top: 26px;
+  right: 31px;
+  width: 90px;
+  height: 90px;
+  background-image: url('/images/desktop_assets/new-sticker.png');
+  @include stretch-bg;
+}
+
+.featured-product-image {
+  width: 100%;
+  height: 320px;
+  background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
+  @include stretch-bg;
+}
+
+.home-sessions-container {
+  @include display(flex);
+  @include flex-wrap(wrap);
+  clear: both;
+
+  .session-button {
+    display: inline-block;
+    width: 138px;
+    height: 42px;
+    line-height: 42px;
+    background-color: $green;
+    color: white;
+    text-align: center;
+    margin: 0 8px;
+  }
+}
+
+.home-sessions-description {
+  color: $dark_grey;
+  margin: 0 69px 0 44px;
+  font-family: $secondary_font;
+  font-style: italic;
+  font-size: 14px;
+  text-align: center;
+  height: 44px;
+  line-height: 44px;
+
+  a {
+    color: $green;
+  }
+}
+
+div.squashed-hair-categories {
+  float: left;
+
+  @include display(flex);
+  @include flex-wrap(wrap);
+
+  width: 171px * 3;
+  margin-top: 30px;
+  margin-left: 4px;
+}
+
+div#home-content {
+  .hair-container {
+    position: relative;
+    width: 167px;
+    height: 168px;
+
+    .hair-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 167px;
+      height: 168px;
+    }
+  }
+
+  a.hair-category-link {
+    width: 167px;
+    margin: 2px;
+  }
+
+  .hair-taxon {
+    width: 135px;
+    height: 25px;
+  }
+}

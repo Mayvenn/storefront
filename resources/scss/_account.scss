@@ -1,0 +1,140 @@
+.new_spree_user {
+  width: (600rem / $default-font-size);
+  margin: 0 auto;
+
+  label {
+    font-family: $secondary_font;
+    font-style: italic;
+    color: $dark-text;
+  }
+
+  input {
+    width: 100%;
+    border: solid $darkest_blue_grey 1px;
+
+    &[type="checkbox"] {
+      width: auto;
+    }
+  }
+}
+
+a.forgot-password {
+  color: $primary_color_text;
+  font-family: $primary_font_regular;
+}
+
+.login-links {
+  width: (600rem / $default-font-size);
+  margin: 0 auto;
+  @include clearfix;
+}
+
+.toggle-on, .toggle-off {
+  float: left;
+  display: block;
+  height: (55rem / $default-font-size);
+  // Uses percentages to avoid rounding issues
+  width: 47%;
+  margin: 1.5%;
+  line-height: (55rem / $default-font-size);
+  text-align: center;
+}
+
+.toggle-off {
+  color: $dark_text;
+  background-color: $lightest_blue_grey;
+}
+
+.toggle-on {
+  color: white;
+  background-color: $primary_color;
+}
+
+.account-orders-header {
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  color: $darker_text;
+  font-family: $primary_font_regular;
+}
+
+.account-my-orders {
+  padding: 1em;
+}
+
+.order-money {
+  text-align: right;
+}
+
+.order-label {
+  color: white;
+  text-transform: uppercase;
+  height: 2.2em;
+  line-height: 2.2em;
+  text-align: center;
+  width: 6.5em;
+
+  &.pending-label {
+    background-color: $gold;
+  }
+
+  &.shipped-label {
+    background-color: $light_teal;
+  }
+
+  &.refunded-label {
+    background-color: #bbb;
+  }
+}
+
+.order-link {
+  &:link,
+  &:visited {
+    color: $primary_color_text;
+  }
+}
+
+#edit-account {
+  width: (600rem / $default-font-size);
+  margin: 0 auto;
+  margin-top: (32rem / $default-font-size);
+
+  h1 {
+    margin-bottom: 1em;
+  }
+
+  input {
+    width: 100%;
+    line-height: 2.67rem;
+    height: 2.67rem;
+    padding-left: 0.5em;
+    border: solid $lighter_blue_grey 1px;
+    margin-bottom: 1em;
+  }
+
+  .user-password-instructions {
+    color: $primary_color_text;
+  }
+}
+
+.store-credit-balance-wrapper {
+  margin: 1em;
+  padding: 1rem (20rem / $default-font-size);
+  background-color: #777;
+  color: white;
+
+  &.no-credit {
+    background-color: #ccc;
+  }
+
+  .store-credit-balance {
+    margin-top: -0.5rem;
+    float: right;
+    display: block;
+    background-color: #e6e3e3;
+    font-weight: bold;
+    padding: 0.5rem 0.25rem;
+    color: gray;
+    height: auto;
+  }
+}

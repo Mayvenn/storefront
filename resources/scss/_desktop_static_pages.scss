@@ -1,0 +1,65 @@
+div.guarantee-header {
+  h2 {
+    font-family: $secondary_font;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 24px;
+  }
+}
+
+img.guarantee-header-image {
+  margin: 60px 0;
+  width: 250px;
+}
+
+div.guarantee-content {
+  @include display(flex);
+  margin: 0 18px;
+  max-width: 100%;
+
+  .guarantee-item {
+    width: 425px;
+    margin: 0 28px;
+  }
+}
+
+.spaced-help {
+  margin-left: 140px;
+  line-height: 22px;
+}
+
+div.hours-icon-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 140px;
+  width: 140px;
+  @include linear-gradient(to bottom left, $main_gradient_dark, $main_gradient_light);
+}
+
+.hours-icon {
+  height: 100%;
+  width: 100%;
+  background-image: image_url('desktop_assets/hours-icon.png');
+  background-size: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.header-bar-heading.left {
+  text-align: left;
+}
+
+div#help-content {
+  padding: 0;
+}
+
+div#help-summary {
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
+
+.padded-container {
+  padding: 24px 56px;
+}

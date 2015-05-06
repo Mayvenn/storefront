@@ -1,0 +1,298 @@
+.hair-categories {
+  width: 600rem/$default_font_size;
+  margin: 0 auto;
+
+  .hair-details {
+    .hair-taxon {
+      height: 1.313rem;
+
+      .hair-taxon-name {
+        margin: 0;
+        font-family: $primary_font_medium;
+        height: 100%;
+        line-height: 1.313rem;
+        font-size: 0.875rem;
+      }
+
+    }
+  }
+
+  .hair-category-link {
+    width: 100%;
+  }
+
+  .hair-container {
+    border: none;
+
+    &:hover .hair-shop-image {
+      background-image: url('/images/desktop_assets/shop-hover.png');
+    }
+  }
+
+  .hair-image {
+    position: absolute;
+    width: 50%;
+    height: 68%;
+    top: 0;
+    right: 0;
+    background-size: cover;
+
+    &.straight {
+      background-image: url("/images/desktop_assets/categories_tile_straight.jpg");
+    }
+
+    &.loose-wave {
+      background-image: url("/images/desktop_assets/categories_tile_loose_wave.jpg");
+    }
+
+    &.curly {
+      background-image: url("/images/desktop_assets/categories_tile_curly.jpg");
+    }
+
+    &.deep-wave {
+      background-image: url("/images/desktop_assets/categories_tile_deep_wave.jpg");
+    }
+
+    &.body-wave {
+      background-image: url("/images/desktop_assets/categories_tile_body_wave.jpg");
+    }
+
+    &.blonde {
+      background-image: url("/images/desktop_assets/categories_tile_blonde.jpg");
+    }
+  }
+
+  .hair-model-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    @include stretch-bg;
+
+    &.straight {
+      background-image: url('/images/desktop_assets/categories_model_straight.jpg');
+    }
+
+    &.blonde {
+      background-image: url('/images/desktop_assets/categories_model_blonde.jpg');
+    }
+
+    &.curly {
+      background-image: url('/images/desktop_assets/categories_model_curly.jpg');
+    }
+
+    &.deep-wave {
+      background-image: url('/images/desktop_assets/categories_model_deep-wave.jpg');
+    }
+
+    &.loose-wave {
+      background-image: url('/images/desktop_assets/categories_model_loose-wave.jpg');
+    }
+
+    &.body-wave {
+      background-image: url('/images/desktop_assets/categories_model_body-wave.jpg');
+    }
+  }
+
+  .hair-shop-image {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50%;
+    height: 32%;
+    background-image: url('/images/desktop_assets/shop.png');
+    background-color: #f7f7f7;
+    background-size: 66.67%;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+.hair-container {
+  margin-top: 1.0em;
+
+  &.not-decorated {
+    border: none;
+  }
+
+   &.no-margin {
+     margin-top: 0;
+   }
+}
+
+.hair-details {
+  background-color: #bbb;
+
+  .hair-taxon {
+    width: 100%;
+
+    .hair-taxon-name {
+      font-weight: normal;
+      color: white;
+      text-align: center;
+    }
+  }
+}
+
+.hair-category-link {
+  display: block;
+  width: 100%;
+}
+
+.hair-taxon {
+  text-transform: uppercase;
+  color: $gold;
+  font-family: $super_bold_font;
+  letter-spacing: 0.04em;
+
+  .hair-taxon-name {
+    margin: 0.3em 0.2em 0.3em 0.5em;
+    color: $gold;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &.small-width {
+    width: (600rem/$default_font_size) / 3;
+    margin: 0;
+    text-align: center;
+    line-height: 1.4em;
+  }
+
+  &.decorated {
+    border-top: 0.1em solid $gold;
+    border-right: 0.1em solid $gold;
+  }
+
+  &.selected {
+    background-color: $gold;
+
+    .hair-taxon-name {
+      color: white;
+    }
+  }
+}
+
+.hair-image {
+  height: 6.4em;
+  @include stretch-bg;
+
+  &.image-cover {
+    background-size: cover;
+  }
+
+  &.straight {
+    background-image: url("/images/straight.jpg");
+  }
+
+  &.loose-wave {
+    background-image: url("/images/loose_wave.jpg");
+  }
+
+  &.curly {
+    background-image: url("/images/curly.jpg");
+  }
+
+  &.deep-wave {
+    background-image: url("/images/deep_wave.jpg");
+  }
+
+  &.body-wave {
+    background-image: url("/images/body_wave.jpg");
+  }
+
+  &.blonde {
+    background-image: url("/images/blonde.jpg");
+  }
+}
+
+.hair-image-container {
+  position: relative;
+  height: (298rem / $default-font-size);
+}
+
+#home-content {
+  .hair-container {
+    position: relative;
+    width: (211rem / $default-font-size);
+    height: (211rem / $default-font-size);
+
+    .hair-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: (211rem / $default-font-size);
+      height: (211rem / $default-font-size);
+    }
+  }
+
+  .hair-taxon {
+    display: inline;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    top: 50%;
+    @include transform(translate(-50%,-50%));
+    width: (175rem / $default-font-size);
+    height: (32rem / $default-font-size);
+    @include stretch-bg;
+
+    &.blonde {
+      background-image: url('/images/desktop_assets/knockout/blonde-knockout.png');
+    }
+
+    &.curly {
+      background-image: url('/images/desktop_assets/knockout/curly-knockout.png');
+    }
+
+    &.straight {
+      background-image: url('/images/desktop_assets/knockout/straight-knockout.png');
+    }
+
+    &.loose-wave {
+      background-image: url('/images/desktop_assets/knockout/loose-wave-knockout.png');
+    }
+
+    &.body-wave {
+      background-image: url('/images/desktop_assets/knockout/body-wave-knockout.png');
+    }
+
+    &.deep-wave {
+      background-image: url('/images/desktop_assets/knockout/deep-wave-knockout.png');
+    }
+
+    p.hair-taxon-name {
+      display: none;
+    }
+  }
+}
+
+$hair-cat-link-margin: (4rem / $default-font-size);
+
+.hair-category-link {
+  width: (211rem / $default-font-size);
+  margin-left: $hair-cat-link-margin;
+  margin-bottom: $hair-cat-link-margin;
+}
+
+.squashed-hair-categories {
+  width: (645rem / $default-font-size);
+  margin: 0;
+  margin-left: (0 - $hair-cat-link-margin);
+}
+
+.free-shipping.taxon-lower-banner {
+  display: block;
+  margin: 2rem auto;
+  width: (640rem / $default-font-size);
+  height: (305rem / $default-font-size);
+  background-image: url('/images/bundle-trio-5percent.png');
+  @include stretch-bg;
+
+  figure {
+    display: none;
+  }
+}

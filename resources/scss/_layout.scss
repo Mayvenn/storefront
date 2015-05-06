@@ -1,0 +1,234 @@
+$body_width: 100%;
+$default-font-size: 24;
+
+// Convert 2x (retina) pixel sizes to rems.
+@function to-rem($number) {
+  @return ($number / $default-font-size) + 0em;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  min-width: 320px;
+  width: $body-width;
+  margin: 0 auto;
+  font-family: $primary_font_regular;
+  overflow-x: hidden;
+
+  .container {
+    width: 100%;
+  }
+
+  &.slideout-nav-open {
+    position: fixed;
+
+    main {
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.page-wrap {
+  min-height: 100%;
+  background-color: white;
+}
+
+.page-wrap:after {
+  content: "";
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: $dark_green;
+}
+
+figure, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.errorExplanation {
+  margin: 1em;
+  padding: 1em;
+  color: white;
+  background-color: $error_color;
+}
+
+.big-button {
+  display: block;
+  text-align: center;
+  font-size: 1.3333em;
+  line-height: 2.75em;
+  height: 2.75em;
+  color: white;
+  width: 100%;
+  margin-top: 2em;
+  border: none;
+  @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+}
+
+.button, .large {
+  width: 100%;
+  font-size: 1.3333em;
+  height: 2.75em;
+  line-height: 2.75em;
+  color: white;
+  background-color: $default_grey;
+  border: none;
+  margin: (26em / 32) 0;
+  text-align: center;
+
+  &.half {
+    display: inline-block;
+    width: (290rem / $default-font-size);
+    margin: 0 (10rem / $default-font-size);
+
+    &.first {
+      margin-left: 0;
+    }
+
+    &.last {
+      margin-right: 0;
+    }
+  }
+
+  &.primary {
+    @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+  }
+}
+
+.full-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.centered-content {
+  width: 100%;
+
+  h1 {
+    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+
+    margin: 4rem 0 1.5rem 0;
+    padding: 0.75rem;
+    color: white;
+    font-size: 1rem;
+    text-transform: uppercase;
+  }
+
+  p {
+    color: $dark_grey;
+  }
+
+  .center {
+    text-align: center;
+  }
+}
+
+@mixin all-layout-css($scale) {
+  html {
+    font-size: 12px * $scale;
+  }
+}
+
+// Desktop Layout
+@media screen and (min-width: 1024px) {
+  .container {
+    padding-bottom: 2em;
+  }
+
+  .centered-content {
+    width: 25rem;
+    margin: 0 auto;
+  }
+
+  .free-shipping {
+    background-image: none !important;
+  }
+
+  .centered-content {
+    width: 25rem;
+    margin: 0 auto;
+
+    h1 {
+      @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+
+      margin: 4rem 0 1.5rem 0;
+      padding: 0.75rem;
+      color: white;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    p {
+      color: $dark_grey;
+    }
+
+    .center {
+      text-align: center;
+    }
+  }
+
+  .left-half {
+    width: 47%;
+  }
+
+  .page-wrap {
+    margin-bottom: -104px;
+  }
+
+  .page-wrap:after {
+    height: 104px;
+  }
+
+  @import 'desktop_nav';
+  @import 'desktop_footer';
+  @import 'desktop_home';
+  @import 'desktop_taxons';
+  @import 'desktop_product_show';
+  @import 'desktop_checkout';
+  @import 'desktop_static_pages';
+  @import 'desktop_account';
+  @import 'desktop_banners';
+}
+
+// Mobile Layout
+@media screen and (max-width: 1023px) {
+  .line-item-attr.item-form.price {
+    display: none;
+  }
+
+  .page-wrap {
+    margin-bottom: (-249rem / $default-font-size);
+  }
+
+  .page-wrap:after {
+    height: (249rem / $default-font-size);
+  }
+
+  @import 'slideout_nav';
+  @import 'footer';
+  @import 'home';
+}
+
+@media screen and (min-width: 640px) and (max-width: 1023px) {
+  @include all-layout-css(2);
+}
+
+@media screen and (min-width: 480px) and (max-width: 639px) {
+  @include all-layout-css(1.5);
+}
+
+@media screen and (max-width: 479px) {
+  @include all-layout-css(1);
+}

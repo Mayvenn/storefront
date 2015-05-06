@@ -1,0 +1,310 @@
+// FIXME - Override Spree style
+#product-images {
+  position: relative;
+  margin: 0 auto;
+  height: (290em / 12);
+  width: (320em / 12);
+
+  #main-image {
+    border: none;
+    height: 100%;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.product-title {
+  color: $dark_text;
+  text-align: center;
+  font-family: $secondary_font;
+  font-style: italic;
+  font-weight: normal;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  opacity: 0.95;
+  text-align: center;
+  font-size: (15em / 12);
+  padding: 0.56em 0;
+}
+
+.guarantee-banner {
+  width: 100%;
+  background-image: url('/images/30_day_banner_bg.png');
+  background-size: 100% 100%;
+  height: (57em / 12);
+}
+
+.guarantee-banner-image {
+  background-image: url('/images/30_day_banner.png');
+  @include stretch-bg;
+  margin: 0 auto;
+  height: 100%;
+  width: (320em / 12);
+}
+
+.sub-header {
+  color: $gold_text;
+  font-family: $secondary_font;
+  font-style: italic;
+  font-weight: normal;;
+  padding-top: 0.5em;
+  margin: 1em 0;
+  background-image: url('/images/gold_band_divider.png');
+  background-repeat: no-repeat;
+  font-size: (15em / 12);
+  line-height: 1em;
+  background-size: (300em / 15) (2.5em / 15);
+}
+
+.product-description, .cart-form-container, #after-add {
+  margin: 0 auto;
+  width: (300em / 12);
+}
+
+.product-description-text {
+  color: $dark_text;
+  line-height: (17em / 12);
+}
+
+h6.ui-descriptor {
+  color: $light_text;
+  text-align: center;
+  text-transform: none;
+  margin-top: 1.3846em;
+  margin-bottom: 0.6153em;
+  font-size: (13em / 12);
+  line-height: 1em;
+}
+
+.keypad {
+  margin: 0;
+  padding: 0;
+}
+
+.keypad-item {
+  list-style: none;
+  float: left;
+  padding: 0;
+  height: (41em / 12);
+  width: (98em / 12);
+  margin: (1em / 12);
+}
+
+.keypad-input {
+  display: none;
+}
+
+.keypad-label {
+  display: block;
+  background-color: $lightest_blue_grey;
+  width: 100%;
+  height: 100%;
+}
+
+.keypad-input:checked + .keypad-label {
+  @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+
+  .variant-description {
+    color: white;
+
+    &.out-of-stock {
+      background-color: $darkest_blue_grey;
+    }
+  }
+}
+
+.variant-description {
+  font-family: $secondary_font;
+  text-align: center;
+  color: $light_text;
+  font-size: (16em / 12);
+  line-height: (31em / 16);
+  padding: (5em / 12);
+
+  &.out-of-stock {
+    font-style: italic;
+    background-color: $darkest_blue_grey;
+    font-size: (13em / 12);
+    line-height: (15.5em / 13);
+  }
+}
+
+// FIXME - Override Spree Styles
+#product-variants ul li {
+  padding: 0;
+}
+
+.quantity-label {
+  color: $medium_text;
+  text-align: center;
+  margin-bottom: (5em / 12);
+  font-size: 1em;
+  line-height: 1em;
+}
+
+.quantity-selector {
+  position: relative;
+  height: (44em / 12);
+}
+
+input.quantity-selector-input {
+  position: absolute;
+  top: 0;
+  text-align: center;
+  color: $medium_text;
+  font-family: $secondary_font;
+  font-size: (16em / 12);
+  left: (44em / 16);
+  height: (44em / 16);
+  width: (56.1em / 16);
+  box-sizing: border-box;
+  border: solid $medium_blue_grey 1px;
+}
+
+.minus {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.plus {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.minus, .plus {
+  background-color: $medium_blue_grey;
+  text-align: center;
+  font-size: (22em / 12);
+  line-height: 2em;
+  height: 2em;
+  width: 2em;
+}
+
+a.pm-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: white;
+}
+
+.quantity {
+  float: left;
+  width: 12em;
+}
+
+.product-price {
+  float: left;
+  text-align: center;
+  padding-top: (19em / 12);
+  width: 13em;
+}
+
+.price-label {
+  margin-right: 1.5em;
+}
+
+.price-label, span.price.selling {
+  font-weight: normal;
+  line-height: 3.3846em;
+  text-transform: uppercase;
+  color: $dark_text;
+  font-size: (13em / 12);
+  font-family: $primary_font_medium;
+}
+
+.price-container {
+  margin-top: 1.5em;
+}
+
+.image-pagination {
+  display: none; // FIXME - Disabled until pagination is ready
+  height: (22em / 12);
+}
+
+.go-to-checkout {
+  width: (284em / 16);
+  margin: 0 auto;
+  height: (44em / 16);
+  font-size: (32em / 24);
+  color: white;
+  background-color: $primary_color;
+  position: relative;
+  margin-bottom: 3em;
+}
+
+.checkout-cart {
+  position: absolute;
+  background-image: url('/images/cart_go_to.png');
+  @include stretch-bg;
+  top: (22rem / $default-font-size);
+  right: (194em / 32);
+  width: (50rem / $default-font-size);
+  height: (44rem / $default-font-size);
+}
+
+.checkout-guarantee {
+  position: absolute;
+  top: (-61em / 64);
+  right: (22em / 32);
+  height: (149em / 32);
+  width: (149em / 32);
+  border-radius: 50%;
+  background-image: url('/images/30_day_seal.png');
+  @include stretch-bg;
+
+  .cart-button {
+    border-radius: 50%;
+  }
+}
+
+.added-to-bag-container {
+  margin-bottom: 3em;
+}
+
+a.cart-button {
+  color: white;
+  width: 100%;
+  display: block;
+  padding-left: 1em;
+  padding-top: (26rem / $default-font-size);
+  padding-bottom: (26rem / $default-font-size);
+}
+
+.item-added {
+  line-height: (34em / 22);
+  background-color: $lightest_blue_grey;
+  font-size: (22em / 24);
+  color: $dark_text;
+  text-align: center;
+  margin-bottom: 0.5em;
+
+  strong {
+    text-transform: uppercase;
+  }
+}
+
+#after-add {
+  display: none;
+}
+
+#breadcrumbs {
+  width: 100%;
+
+  li {
+    display: inline;
+    color: $light_grey;
+    text-transform: uppercase;
+    font-size: 12px;
+
+    a {
+      color: $light_grey;;
+    }
+  }
+}

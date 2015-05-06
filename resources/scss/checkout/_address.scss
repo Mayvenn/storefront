@@ -1,0 +1,55 @@
+.billing-fieldset,
+.shipping-fieldset {
+  border: none;
+
+  legend {
+    font-family: $primary_font_medium;
+    font-size: 0.917rem;
+    color: $dark_grey;
+    display: block;
+    width: 100%;
+    text-align: left;
+    text-transform: uppercase;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0.417rem 0;
+  }
+
+  input[type=tel],
+  input[type=text] {
+    border: 1px solid $lighter_blue_grey;
+    width: 100%;
+    padding-left: 0.5rem;
+  }
+
+  select,
+  input[type=tel],
+  input[type=text] {
+    line-height: 2.67rem;
+    height: 2.67rem;
+    margin: 0.2rem 0 0.75rem 0;
+  }
+
+  label {
+    font-size: 1.08rem;
+    font-family: $secondary_font;
+    font-style: italic;
+    color: $dark_grey;
+  }
+}
+
+.checkout-use-billing-address label,
+.checkout-save-address label,
+.checkout-save-address,
+.checkout-use-billing-address,
+.checkout-address-warning {
+  font-family: $primary_font_regular;
+  font-size: 1rem;
+  font-style: normal;
+  color: $dark_green;
+  line-height: 1.54;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.checkout.form-buttons {
+  padding: 0.35em 0.625em 0.75em;
+}

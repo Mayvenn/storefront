@@ -12,3 +12,5 @@ pom.xml.asc
 
 *.log
 resources/public/js/out/*
+resources/public/css
+node_modules/

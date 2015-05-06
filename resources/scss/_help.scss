@@ -1,0 +1,84 @@
+#help-content {
+  padding: 0.8em;
+}
+
+#help-summary {
+  position: relative;
+  color: white;
+  background-color: #c1ccd1;
+  margin-bottom: 2rem;
+}
+
+.spaced-help {
+  padding: 1.5rem
+}
+
+.hours {
+  background-color: #555;
+}
+
+.shipment-schedule {
+  background-color: #777;
+}
+
+.hours-icon-container {
+  display: none;
+}
+
+.help-link {
+  display: block;
+  margin-top: 0.25em;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.help-method-row {
+  @include display(flex);
+  @include justify-content(space-between);
+}
+
+.help-method-icon {
+  width: 6.0rem;
+  height: 5.75rem;
+  background-color: $light_teal;
+  background-position: 50% 50%;
+  background-size: 85%;
+  background-repeat: no-repeat;
+
+  &.call {
+    background-image: url("/images/customer_service_call.png");
+  }
+
+  &.sms {
+    background-image: url("/images/customer_service_sms.png");
+  }
+
+  &.email {
+    background-image: url("/images/customer_service_email.png");
+  }
+}
+
+.help-method-details-container {
+  padding: 0 0.2em 0 1.1em;
+  @include flex-grow-better(1);
+  @include display(flex);
+  @include justify-content(space-between);
+  @include align-items(center);
+  font-weight: bold;
+}
+
+.help-method-details {
+  @include flex-grow-better(1);
+}
+
+.help-method {
+  text-transform: uppercase;
+  color: $medium_grey;
+}
+
+.help-method-means {
+  margin-top: 0.4em;
+  color: $dark_grey;
+}
