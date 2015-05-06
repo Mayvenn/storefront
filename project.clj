@@ -12,7 +12,8 @@
                  [secretary "1.2.3"]]
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-figwheel "0.3.1"]]
-  :figwheel {:nrepl-port 4000}
+  :figwheel {:nrepl-port 4000
+             :css-dirs ["resources/public/css"]}
   :cljsbuild
   {:builds
    {:dev
