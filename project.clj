@@ -9,7 +9,7 @@
                  [sablono "0.3.4"]
                  [cljs-ajax "0.3.11"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [secretary "1.2.3"]]
+                 [bidi "1.18.10"]]
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-figwheel "0.3.1"]]
   :figwheel {:nrepl-port 4000

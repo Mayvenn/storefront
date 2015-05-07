@@ -3,18 +3,19 @@
             [sablono.core :refer-macros [html]]
             [storefront.state :as state]
             [storefront.events :as events]
+            [storefront.routes :as routes]
             [cljs.core.async :refer [put!]]))
 
-(defn enqueue-control-event [event-ch event & [args]]
+(defn enqueue-navigate [app-state navigation-event & [args]]
   (fn [e]
     (.preventDefault e)
-    (put! event-ch [event args])))
+    (apply routes/enqueue-navigate @app-state navigation-event (or args []))))
 
 (defn top-level-component [data owner]
   (om/component
    (html
     [:div
-     [:a {:on-click (enqueue-control-event (get-in data state/event-ch-path) events/navigate-another) :href "#"} "hello there"]
-     (condp = (get-in data state/navigation-point-path)
-       :home [:h1 "h1"]
-       :another [:h2 "h2"])])))
+     [:a {:on-click (enqueue-navigate data events/navigate-another) :href "#"} "hello there"]
+     (condp = (get-in data state/navigation-event-path)
+       events/navigate-home [:h1 "h1"]
+       events/navigate-another [:h2 "h2"])])))
