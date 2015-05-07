@@ -48,9 +48,12 @@
         event-ch (get-in app-state state/event-ch-path)]
     (put! event-ch [(bidi->edn nav-event) params])))
 
+(defn path-for [app-state navigation-event & [args]]
+  (apply bidi/path-for
+         (get-in app-state state/routes-path)
+         (edn->bidi navigation-event)
+         (or args [])))
+
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (.setToken (get-in app-state state/history-path)
-             (apply bidi/path-for
-                    (get-in app-state state/routes-path)
-                    (edn->bidi navigation-event)
-                    (or args []))))
+             (path-for app-state navigation-event args)))
