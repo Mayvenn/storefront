@@ -49,25 +49,63 @@
   margin-bottom: 1rem;
 }
 
-.taxon-product-title-container {
-  width: 100%;
-  position: absolute;
+.taxon-product-info-container {
+  background-color: #737373;
   bottom: 0;
-  background-color: #a0a0a0;
+  color: #ffffff;
+  opacity: 0.90;
   left: 0;
-  padding: 0.8em;
-  @include display(flex);
-  @include align-items(center);
-}
-
-.taxon-product-title {
-  color: white;
-  font-weight: normal;
-  font-family: $secondary_font;
-  font-style: italic;
-  font-size: 1.3em;
-  text-align: center;
+  position: absolute;
   width: 100%;
+  @include display(flex);
+  @include flex-direction(row);
+  @include align-items(center);
+  @include justify-content(space-between);
+  font-size: 1.56rem;
+  line-height: 1.7rem;
+  padding: 0;
+  
+  .taxon-product-description-container {
+    font-family: $primary_font_regular;
+    flex: flex-grow;
+    padding: 0.389rem 1.11rem;
+
+    .taxon-product-collection {
+      font-size: 1rem;
+      font-family: $secondary_font;
+      font-style: italic;
+      padding: 0;
+      text-transform: capitalize;
+      letter-spacing: 0.1rem;
+
+      img {
+        width: 1.4rem;
+        height: 1.4rem;
+        margin-top: -0.3rem;
+        vertical-align: middle;
+      }
+    }
+    .taxon-product-title {
+      font-size: 1rem;
+      text-align: left;
+      width: 100%;
+    }
+  }
+  
+  .taxon-from-price {
+    flex: none;
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 0.3rem 0.833rem;
+    width: 5rem;
+    line-height: 1.6rem;
+    text-transform: uppercase;
+    border-left: 1px solid #a0a0a0;
+
+    span {
+      font-size: 0.9rem;
+    }
+  }
 }
 
 .taxon-product-image-container {
@@ -76,6 +114,8 @@
   background-blend-mode: multiply;
   height: 22.2rem;
   @include stretch-bg;
+
+  @include collection-ribbon;
 
   img {
     display: none;

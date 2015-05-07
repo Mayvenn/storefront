@@ -6,7 +6,7 @@ $default-font-size: 24;
   @return ($number / $default-font-size) + 0em;
 }
 
-* { box-sizing: border-box; }
+* { @include box-sizing(border-box); }
 
 html {
   height: 100%;
@@ -197,6 +197,7 @@ p {
   @import 'desktop_taxons';
   @import 'desktop_product_show';
   @import 'desktop_checkout';
+  @import 'desktop_stylist_dashboard';
   @import 'desktop_static_pages';
   @import 'desktop_account';
   @import 'desktop_banners';
@@ -220,6 +221,7 @@ p {
   @import 'footer';
   @import 'home';
 }
+
 
 @media screen and (min-width: 640px) and (max-width: 1023px) {
   @include all-layout-css(2);

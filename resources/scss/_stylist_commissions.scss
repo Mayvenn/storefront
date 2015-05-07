@@ -1,0 +1,69 @@
+#next-commission-summary {
+  padding: 1em;
+  @include display(flex);
+  @include align-items(center);
+  @include justify-content(space-between);
+}
+
+.next-commissions-amount {
+  font-size: 2em;
+  margin-top: 0.3em;
+}
+
+.next-payout-description {
+  margin-right: 0.8em;
+  font-size: 0.9em;
+}
+
+.next-payout-date-container {
+  width: 11em;
+  color: white;
+  text-align: center;
+  border: 0.1em solid white;
+  @include display(flex);
+  @include flex-direction(column);
+  @include align-items(center);
+  padding: 0.5em 0.3em;
+
+  .accented-next-pay {
+    font-size: 2.5em;
+  }
+
+  .small-payout-description {
+    font-size: 0.6em;
+  }
+}
+
+.commission-explanation {
+  color: $darker_text;
+  margin-top: 0.4em;
+}
+
+.commission-money {
+  text-align: right;
+}
+
+.commission-label {
+  color: white;
+  text-transform: uppercase;
+  height: 2.2em;
+  line-height: 2.2em;
+  text-align: center;
+  width: 6.5em;
+
+  &.pending-label {
+    background-color: $gold;
+  }
+
+  &.shipped-label {
+    background-color: $light_teal;
+  }
+
+  &.refunded-label {
+    background-color: #bbb;
+  }
+}
+
+.payout-amount {
+  color: $light_teal;
+}

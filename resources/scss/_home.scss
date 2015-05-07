@@ -71,6 +71,7 @@
 }
 
 .featured-new {
+  display: none;
   position: absolute;
   top: (35rem / $default-font-size);
   right: (30rem / $default-font-size);
@@ -83,7 +84,7 @@
 .featured-product-image {
   width: (640rem / $default-font-size);
   height: (425rem / $default-font-size);
-  background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
+  background-image: url('/images/desktop_assets/home_new-product-hairtypes.jpg');
   @include stretch-bg;
 }
 
