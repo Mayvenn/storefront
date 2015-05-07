@@ -4,6 +4,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.controllers.core :refer [perform-effects]]
             [storefront.transitions.core :refer [transition-state]]
+            [storefront.routes :as routes]
             [cljs.core.async :refer [put!]]
             [om.core :as om]))
 
@@ -21,11 +22,14 @@
       ([_] nil))))
 
 (defn main [app-state]
+  (routes/install-routes app-state)
   (om/root
    top-level-component
    app-state
    {:target (.getElementById js/document "content")})
-  (start-event-loop app-state))
+
+  (start-event-loop app-state)
+  (routes/set-current-page @app-state))
 
 (defonce app-state (atom (state/initial-state)))
 
