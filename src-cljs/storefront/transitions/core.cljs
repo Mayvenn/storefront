@@ -10,6 +10,3 @@
 
 (defmethod transition-state events/navigate-home [event args app-state]
   (assoc-in app-state state/navigation-event-path events/navigate-home))
-
-(defmethod transition-state events/navigate-another [event args app-state]
-  (assoc-in app-state state/navigation-event-path events/navigate-another))
