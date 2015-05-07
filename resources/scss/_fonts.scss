@@ -12,10 +12,10 @@
 
 @font-face {
   font-family: 'Graphik-Regular';
-  src: font-url('Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
-       font-url('Graphik-Regular-Web.woff') format('woff'),
-       font-url('Graphik-Regular-Web.ttf')  format('truetype'),
-       font-url('Graphik-Regular-Web.svg#svgFontName') format('svg');
+  src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Regular-Web.woff') format('woff'),
+       url('/fonts/Graphik-Regular-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Regular-Web.svg#svgFontName') format('svg');
   font-weight:  400;
   font-style:   normal;
   font-stretch: normal;
@@ -23,10 +23,10 @@
 
 @font-face {
   font-family: 'Graphik-Medium';
-  src: font-url('Graphik-Medium-Web.eot?#iefix') format('embedded-opentype'),
-       font-url('Graphik-Medium-Web.woff') format('woff'),
-       font-url('Graphik-Medium-Web.ttf')  format('truetype'),
-       font-url('Graphik-Medium-Web.svg#svgFontName') format('svg');
+  src: url('/fonts/Graphik-Medium-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Medium-Web.woff') format('woff'),
+       url('/fonts/Graphik-Medium-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Medium-Web.svg#svgFontName') format('svg');
   font-weight:  500;
   font-style:   normal;
   font-stretch: normal;
@@ -34,39 +34,39 @@
 
 @font-face {
   font-family: 'Ministry-Medium';
-  src: font-url('2C6012_0_0.eot?#iefix') format('embedded-opentype'),
-       font-url('2C6012_0_0.woff') format('woff'),
-       font-url('2C6012_0_0.ttf')  format('truetype'),
-       font-url('2C6012_0_0.svg#svgFontName') format('svg');
+  src: url('/fonts/2C6012_0_0.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/2C6012_0_0.woff') format('woff'),
+       url('/fonts/2C6012_0_0.ttf')  format('truetype'),
+       url('/fonts/2C6012_0_0.svg#svgFontName') format('svg');
 }
 
 @font-face {
   font-family: 'Fortescue';
   font-style: normal;
-  src: font-url('fortescue-regular.eot?#iefix') format('embedded-opentype'),
-       font-url('fortescue-regular.woff') format('woff'),
-       font-url('fortescue-regular.ttf')  format('truetype'),
-       font-url('fortescue-regular.svg#svgFontName') format('svg');
+  src: url('/fonts/fortescue-regular.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/fortescue-regular.woff') format('woff'),
+       url('/fonts/fortescue-regular.ttf')  format('truetype'),
+       url('/fonts/fortescue-regular.svg#svgFontName') format('svg');
 }
 
 @font-face {
   font-family: 'Fortescue';
   font-style: italic;
-  src: font-url('fortescue-regular-italic.eot?#iefix') format('embedded-opentype'),
-       font-url('fortescue-regular-italic.woff') format('woff'),
-       font-url('fortescue-regular-italic.ttf')  format('truetype'),
-       font-url('fortescue-regular-italic.svg#svgFontName') format('svg');
+  src: url('/fonts/fortescue-regular-italic.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/fortescue-regular-italic.woff') format('woff'),
+       url('/fonts/fortescue-regular-italic.ttf')  format('truetype'),
+       url('/fonts/fortescue-regular-italic.svg#svgFontName') format('svg');
 }
 
 // Copyright (C) 2013 Schwartzco Inc.
 // License: 1411-EBHGER
 @font-face {
   font-family: 'Graphik Web';
-  src: font-url('Graphik-Bold-Web.eot');
-  src: font-url('Graphik-Bold-Web.eot?#iefix') format('embedded-opentype'),
-     font-url('Graphik-Bold-Web.woff') format('woff'),
-     font-url('Graphik-Bold-Web.ttf') format('truetype'),
-     font-url('Graphik-Bold-Web.svg#Graphik-Bold') format('svg');
+  src: url('/fonts/Graphik-Bold-Web.eot');
+  src: url('/fonts/Graphik-Bold-Web.eot?#iefix') format('embedded-opentype'),
+     url('/fonts/Graphik-Bold-Web.woff') format('woff'),
+     url('/fonts/Graphik-Bold-Web.ttf') format('truetype'),
+     url('/fonts/Graphik-Bold-Web.svg#Graphik-Bold') format('svg');
   font-weight:  700;
   font-style:   normal;
   font-stretch: normal;

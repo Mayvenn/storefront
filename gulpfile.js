@@ -19,8 +19,10 @@ gulp.task('watch', function () {
 
 gulp.task('default', ['sass']);
 
-
 gulp.task('copy-assets', function () {
+  gulp.src('../diva/app/assets/fonts/**/*')
+    .pipe(gulp.dest('resources/public/fonts'));
+
   gulp.src('../diva/app/assets/images/**/*.{png,jpg}')
     .pipe(gulp.dest('./resources/public/images'));
   var pipe1 = gulp.src('../diva/vendor/assets/stylesheets/spree/frontend/mayvenn/**/*.scss')
@@ -31,6 +33,7 @@ gulp.task('copy-assets', function () {
       .pipe(gulp.dest('./resources/scss/_free_shipping_banner.scss'));
 
   gulpMerge(pipe1, pipe2, pipe3)
+    .pipe(replace("font-url\('", "url('/fonts/"))
     .pipe(replace('image-url\("', 'url("/images/'))
     .pipe(replace("image-url\('", "url('/images/"))
     .pipe(replace("image-url\('", "url('/images/"))
