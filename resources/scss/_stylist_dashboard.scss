@@ -1,7 +1,7 @@
-@import 'spree/frontend/mayvenn/stylist_referrals';
-@import 'spree/frontend/mayvenn/stylist_store_credits';
-@import 'spree/frontend/mayvenn/stylist_edit';
-@import 'spree/frontend/mayvenn/stylist_commissions';
+@import 'stylist_referrals';
+@import 'stylist_store_credits';
+@import 'stylist_edit';
+@import 'stylist_commissions';
 
 .header-bar-heading {
   font-family: $secondary_font;
@@ -29,7 +29,7 @@
   top: 0;
   left: 0;
   height: 100%;
-  background-image: image-url('dollar_sign.png');
+  background-image: url('/images/dollar_sign.png');
   background-size: 65%;
   background-repeat: no-repeat;
   background-position: 50% 50%;

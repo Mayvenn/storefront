@@ -2,34 +2,62 @@
 #product-images {
   position: relative;
   margin: 0 auto;
-  height: (290em / 12);
+  height: (370em / 12);
   width: (320em / 12);
 
   #main-image {
     border: none;
-    height: 100%;
+    height: (290em / 12);
     img {
       width: 100%;
       height: 100%;
     }
   }
-}
 
-.product-title {
-  color: $dark_text;
-  text-align: center;
-  font-family: $secondary_font;
-  font-style: italic;
-  font-weight: normal;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  opacity: 0.95;
-  text-align: center;
-  font-size: (15em / 12);
-  padding: 0.56em 0;
+  .product-info {
+      background-color: #737373;
+      color: white;
+      font-family: $primary_font_regular;
+      padding: 0;
+      text-align: left;
+      @include display(flex);
+      @include flex-direction(row);
+      vertical-align: middle;
+
+      .product-collection {
+          @include order(2);
+          font-family: $secondary_font;
+          font-size: 1rem;
+          font-style: italic;
+          text-transform: capitalize;
+          width: 12rem;
+          padding: 1rem;
+          border-left: 1px solid #a0a0a0;
+
+          * {
+              display: inline-block;
+              vertical-align: middle;
+          }
+
+          img {
+              height: 1.4rem;
+              width: 1.4rem;
+          }
+      }
+      
+      .product-title {
+          line-height: 2rem;
+          @include order(1);
+          font-family: $primary_font_regular;
+          font-size: (12em / 12);
+          font-style: none;
+          font-weight: normal;
+          opacity: 0.90;
+          padding: 1rem;
+          text-align: left;
+          width: 100%;
+      }
+  }
 }
 
 .guarantee-banner {
@@ -51,25 +79,69 @@
   color: $gold_text;
   font-family: $secondary_font;
   font-style: italic;
-  font-weight: normal;;
+  font-weight: normal;
   padding-top: 0.5em;
   margin: 1em 0;
-  background-image: url('/images/gold_band_divider.png');
-  background-repeat: no-repeat;
   font-size: (15em / 12);
   line-height: 1em;
   background-size: (300em / 15) (2.5em / 15);
 }
 
-.product-description, .cart-form-container, #after-add {
+.product-description, .product-collection-description, .cart-form-container, #after-add {
   margin: 0 auto;
   width: (300em / 12);
 }
 
-.product-description-text {
+.product-description-text, .product-collection-text {
   color: $dark_text;
   line-height: (17em / 12);
 }
+
+div.product-collection-description {
+    margin-top:2rem;
+    clear: both;
+    
+    .bar {
+        z-index: 0;
+        position: relative;
+        top: 2.6rem;
+        margin: auto;
+        background-color: #cccccc;
+        height: 0.2rem;
+        width: 75%;
+    }
+    
+    .product-collection-circles {
+        z-index: 1;
+        margin: auto;
+        width: 75%;
+        @include display(flex);
+        @include flex-direction(row); 
+        @include justify-content(space-between);
+
+        img {
+            z-index: 1;
+            height: 5rem;
+            width: 5rem;
+        }
+    }
+
+    .product-collection-text {
+        margin-top: 2rem;
+        
+        .sub-header {
+            font-family: $primary_font_medium;
+            background-image: none;
+            color: #43b4d1;
+            text-transform: uppercase;
+            font-style: normal;
+            display: inline;
+            font-size: 1.1em;
+        }
+    }
+
+}
+
 
 h6.ui-descriptor {
   color: $light_text;
