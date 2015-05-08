@@ -3,7 +3,18 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.state :as state]))
+            [storefront.state :as state]
+            [storefront.routes :as routes]
+            [cljs.core.async :refer [put!]]))
+
+(defn close-and-route [app-state event]
+  {:href
+   (routes/path-for @app-state event)
+   :on-click
+   (fn [e]
+     (.preventDefault e)
+     (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
+     (routes/enqueue-navigate @app-state event))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
@@ -67,8 +78,8 @@
               "Shop "
               [:figure.down-arrow]]
              [:a {:href "FIXME: link to shop"} "Shop"])]
-          [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
-          [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]
+          [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
+          [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]
          (when false ;; FIXME: if current user is stylist
            [:ul.ship-menu-expanded.closed
             [:li [:a {:href "FIXME: path to shop hair extensions"} "Hair Extensions"]]
@@ -168,14 +179,14 @@
           [:h3.slideout-nav-section-header "Help"]
           (slideout-nav-link
            data
-           (merge (utils/route-to data events/navigate-help)
+           (merge (close-and-route data events/navigate-help)
                   {:icon-class "customer-service"
                    :image "/images/slideout_nav/customer_service.png"
                    :label "Customer Service"
                    :full-width? false}))
           (slideout-nav-link
            data
-           (merge (utils/route-to data events/navigate-guarantee)
+           (merge (close-and-route data events/navigate-guarantee)
                   {:icon-class "30-day-guarantee"
                    :image "/images/slideout_nav/30_day_guarantee.png"
                    :label "30 Day Guarantee"
