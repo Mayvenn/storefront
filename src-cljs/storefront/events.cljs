@@ -4,6 +4,11 @@
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
 
+(def control [:control])
+(def control-menu (conj control :menu))
+(def control-menu-expand (conj control-menu :expand))
+(def control-menu-collapse (conj control-menu :collapse))
+
 (def api [:api])
 (def api-success (conj api :success))
 

@@ -14,3 +14,9 @@
 (defmethod perform-effects events/navigate-category [_ event args app-state]
   (api/get-products (get-in app-state state/event-ch-path)
                     (:id (get-in app-state state/browse-taxon-path))))
+
+(defmethod perform-effects events/control-menu-expand [_ event args app-state]
+  (set! (.. js/document -body -style -overflow) "hidden"))
+
+(defmethod perform-effects events/control-menu-collapse [_ event args app-state]
+  (set! (.. js/document -body -style -overflow) "auto"))
