@@ -7,29 +7,28 @@
             [storefront.events :as events]
             [storefront.state :as state]))
 
-(defn display-taxon [taxon]
-  [:div.hair-taxon.decorated.small-width {:class (taxon-path-for taxon)}
-   [:a.taxon-link
-    [:p.hair-taxon-name (:name taxon)]]])
+(defn display-taxon [data selected-taxon taxon]
+  (let [taxon-path (taxon-path-for taxon)
+        selected-class (if (= selected-taxon taxon) "selected" nil)
+        taxon-classes (string/join " " (conj [taxon-path] selected-class))]
+    [:div.hair-taxon.decorated.small-width {:class taxon-classes}
+     [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
+      [:p.hair-taxon-name (:name taxon)]]]))
 
 (defn display-product [product]
   (let [collection-name (product :collection_name)]
     [:a {:href "#FIXME: product#show"}
      [:div.taxon-product-container
-      (js/console.log (->> product
-                                  :variants
-                                  (map :images)
-
-                                  (clj->js)))
       (when-let [first-image (->> product
-                                  :variants
-                                  (map :images)
-                                  (filter (comp not empty?))
-                                  ffirst)]
+                                  :master
+                                  :images
+                                  first
+                                  :product_url)]
         [:div.taxon-product-image-container
-         [:div.corner-ribbon {:class collection-name}
-          collection-name]
-         [:img (:product_url first-image)]])
+         (when-not (= collection-name "premier")
+           [:div.corner-ribbon {:class collection-name}
+            collection-name])
+         [:img {:src first-image}]])
       [:div.taxon-product-info-container
        [:div.taxon-product-description-container
         [:div.taxon-product-collection
@@ -52,10 +51,11 @@
          [:div.taxon-products-banner {:class taxon-permalink-class}]
          [:div.taxon-products-container
           (when (:stylist_only? taxon)
-            [:h2.header-bar-heading "Stylist Products"]
-            [:div.taxon-nav
-             (map display-taxon (get-in data state/taxons-path))
-             [:div {:style {:clear "both"}}]])
+            [:h2.header-bar-heading "Stylist Products"])
+          [:div.taxon-nav
+           (map (partial display-taxon data taxon)
+                (get-in data state/taxons-path))
+           [:div {:style {:clear "both"}}]]
 
           [:div.taxon-products-list-container
            (map display-product
