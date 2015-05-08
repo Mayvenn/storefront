@@ -15,14 +15,16 @@
   (om/component
    (html
     [:div
-     [:div.page-wrap
-      (om/build slideout-nav-component data)
-      (om/build header-component data)
-      [:main {:role "main"}
-       [:div.container
-        (om/build
-         (condp = (get-in data state/navigation-event-path)
-           events/navigate-home home-component
-           events/navigate-category category-component)
-         data)]]]
-     (om/build footer-component data)])))
+     (om/build slideout-nav-component data)
+     [:div {:on-click (when (get-in data state/menu-expanded-path)
+                        (utils/enqueue-event data events/control-menu-collapse))}
+      [:div.page-wrap
+       (om/build header-component data)
+       [:main {:role "main"}
+        [:div.container
+         (om/build
+          (condp = (get-in data state/navigation-event-path)
+            events/navigate-home home-component
+            events/navigate-category category-component)
+          data)]]]
+      (om/build footer-component data)]])))

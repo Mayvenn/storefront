@@ -11,7 +11,7 @@
     (let [store (get-in data state/store-path)]
       [:header#header.header (when-not (store :profile_picture_url)
                                {:class "no-picture"})
-       [:a.header-menu {:href "#"} "Menu"]
+       [:a.header-menu {:href "#" :on-click (utils/enqueue-event data events/control-menu-expand)} "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
        [:a.cart {:href "#"}]
        (when (= (get-in data state/navigation-event-path) events/navigate-home)

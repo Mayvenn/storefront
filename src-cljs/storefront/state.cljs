@@ -19,7 +19,8 @@
    :products-for-taxons {}
 
    :ui {:navigation-event events/navigate-home
-        :browse-taxon nil}})
+        :browse-taxon nil
+        :menu-expanded false}})
 
 (def event-ch-path [:event-ch])
 (def stop-ch-path [:stop-ch])
@@ -36,3 +37,4 @@
 (def ui-path [:ui])
 (def navigation-event-path (conj ui-path :navigation-event))
 (def browse-taxon-path (conj ui-path :browse-taxon))
+(def menu-expanded-path (conj ui-path :menu-expanded))

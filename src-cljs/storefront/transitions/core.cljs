@@ -16,6 +16,12 @@
         taxon (first (filter #(= (taxon-path-for %) taxon-path) taxons))]
     (assoc-in app-state state/browse-taxon-path taxon)))
 
+(defmethod transition-state events/control-menu-expand [_ event args app-state]
+  (assoc-in app-state state/menu-expanded-path true))
+
+(defmethod transition-state events/control-menu-collapse [_ event args app-state]
+  (assoc-in app-state state/menu-expanded-path false))
+
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state state/taxons-path (:taxons args)))
 
