@@ -1,8 +1,22 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
+            [storefront.state :as state]
+            [storefront.taxons :refer [taxon-path-for]]
             [om.core :as om]
+            [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
+
+(defn category [data taxon]
+  (let [taxon-name (taxon :name)
+        taxon-path (taxon-path-for taxon)]
+    [:a.hair-category-link (utils/route-to data
+                                           events/navigate-category
+                                           {:taxon-path taxon-path})
+     [:div.hair-container.not-decorated.no-margin
+      [:div.hair-taxon {:class taxon-path}
+       [:p.hair-taxon-name (string/capitalize taxon-name)]]
+      [:div.hair-image.image-cover {:class taxon-path}]]]))
 
 (defn home-component [data owner]
   (om/component
@@ -16,11 +30,7 @@
        [:a {:href "#FIXME"}]]
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
      [:div.squashed-hair-categories
-      [:a.hair-category-link {:href "#FIXME"}
-       [:div.hair-container.not-decorated.no-margin
-        [:div.hair-taxon
-         [:p.hair-taxon-name "Straight#FIXME"]]
-        [:div.hair-image.image-cover {:class "#FIXME"}]]]
+      (map category (repeatedly (constantly data)) (get-in data state/taxons-path))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       [:figure.featured-new]

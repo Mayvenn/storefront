@@ -33,6 +33,9 @@
 
 (defonce app-state (atom (state/initial-state)))
 
+(defn debug-app-state []
+  (js/console.log (clj->js @app-state)))
+
 (defn on-jsload []
   (put! (get-in @app-state state/stop-ch-path) "STOP")
   (main app-state))
