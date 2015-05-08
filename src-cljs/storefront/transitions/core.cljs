@@ -9,7 +9,9 @@
   app-state)
 
 (defmethod transition-state events/navigate [_ event args app-state]
-  (assoc-in app-state state/navigation-event-path event))
+  (-> app-state
+      (assoc-in state/navigation-event-path event)
+      (assoc-in state/menu-expanded-path false)))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (let [taxons (get-in app-state state/taxons-path)
