@@ -8,14 +8,20 @@
             [cljs.core.async :refer [put!]]
             [om.core :as om]))
 
+(defn transition [app-state [event args]]
+  (reduce #(transition-state %2 event args %1) app-state (rest (reductions conj [] event))))
+
+(defn effects [app-state [event args]]
+  (reduce #(perform-effects %2 event args %1) app-state (rest (reductions conj [] event))))
+
 (defn start-event-loop [app-state]
   (go-loop []
     (alt!
 
       (get-in @app-state state/event-ch-path)
       ([event-and-args]
-       (swap! app-state #(apply transition-state (conj event-and-args %)))
-       (apply perform-effects (conj event-and-args @app-state))
+       (swap! app-state transition event-and-args)
+       (effects @app-state event-and-args)
        (recur))
 
       (get-in @app-state state/stop-ch-path)
