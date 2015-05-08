@@ -13,8 +13,6 @@
   (assoc-in app-state state/navigation-event-path events/navigate-home))
 
 (defmethod transition-state events/navigate-category [event {:keys [taxon-path]} app-state]
-  (js/console.log (vec (map taxon-path-for
-                            (get-in app-state state/taxons-path))))
   (let [taxons (get-in app-state state/taxons-path)
         taxon (first (filter #(= (taxon-path-for %) taxon-path) taxons))]
     (-> app-state
