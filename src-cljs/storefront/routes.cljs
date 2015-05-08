@@ -29,7 +29,7 @@
 
 (defn routes []
   ["" {"/" (edn->bidi events/navigate-home)
-       "/another" (edn->bidi events/navigate-another)}])
+       ["/categories/hair/" :taxon-path] (edn->bidi events/navigate-category)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)
@@ -52,7 +52,7 @@
   (apply bidi/path-for
          (get-in app-state state/routes-path)
          (edn->bidi navigation-event)
-         (or args [])))
+         (flatten (seq args))))
 
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (.setToken (get-in app-state state/history-path)

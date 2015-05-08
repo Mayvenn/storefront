@@ -7,4 +7,4 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (apply routes/enqueue-navigate @app-state navigation-event (or args [])))})
+     (apply routes/enqueue-navigate @app-state navigation-event args))})
