@@ -12,7 +12,8 @@
   (reduce #(transition-state %2 event args %1) app-state (rest (reductions conj [] event))))
 
 (defn effects [app-state [event args]]
-  (reduce #(perform-effects %2 event args %1) app-state (rest (reductions conj [] event))))
+  (doseq [event-fragment (rest (reductions conj [] event))]
+    (perform-effects event-fragment event args app-state)))
 
 (defn start-event-loop [app-state]
   (go-loop []
