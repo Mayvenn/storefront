@@ -9,6 +9,7 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
+.repl
 
 *.log
 resources/public/js/out/*
