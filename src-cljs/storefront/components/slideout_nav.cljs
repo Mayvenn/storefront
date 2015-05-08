@@ -68,7 +68,7 @@
               [:figure.down-arrow]]
              [:a {:href "FIXME: link to shop"} "Shop"])]
           [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
-          [:li [:a {:href "FIXME: link to customer service"} "Customer Service"]]]
+          [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]
          (when false ;; FIXME: if current user is stylist
            [:ul.ship-menu-expanded.closed
             [:li [:a {:href "FIXME: path to shop hair extensions"} "Hair Extensions"]]

@@ -1,0 +1,43 @@
+(ns storefront.components.help
+  (:require [om.core :as om]
+            [sablono.core :refer-macros [html]]))
+
+(defn help-component [data owner]
+  (om/component
+   (html
+    [:div.padded-container
+     [:h2.header-bar-heading.left "Customer Service"]
+     [:div#help-content
+      [:div#help-summary
+       [:div.hours-icon-container [:figure.hours-icon]]
+       [:p.spaced-help.hours "HOURS: Monday - Saturday, 9-5 PST"]
+       [:p.spaced-help.shipment-schedule
+        "Orders placed before 11am PST ship that day"]]
+      [:h4.dashboard-details-header.no-top-space "Contact Info"]
+      [:div.solid-line-divider]
+      [:div#help-methods
+       [:a.help-link {:href "tel://+18885627952"}]
+       [:div.help-method-row
+        [:div.help-method-icon.call]
+        [:div.help-method-details-container
+         [:div.help-method-details
+          [:p.help-method "Call"]
+          [:p.help-method-means "1-888-562-7952"]]]]
+       [:div.solid-line-divider]
+       [:a.help-link.send-sonar-dynamic-number.send-sonar-dynamic-number-link]
+       [:div.help-method-row
+        [:div.help-method-icon.sms]
+        [:div.help-method-details-container
+         [:div.help-method-details
+          [:p.help-method "Text"]
+          [:p.help-method-means.send-sonar-dynamic-number-display
+           "Loading..."]]]]
+       [:div.solid-line-divider]
+       [:a.help-link {:href "mailto:help@mayvenn.com"}]
+       [:div.help-method-row
+        [:div.help-method-icon.email]
+        [:div.help-method-details-container
+         [:div.help-method-details
+          [:p.help-method "Email"]
+          [:p.help-method-means "help@mayvenn.com"]]]]
+       [:div.solid-line-divider]]]])))
