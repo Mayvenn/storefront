@@ -30,7 +30,8 @@
 (defn routes []
   ["" {"/" (edn->bidi events/navigate-home)
        ["/categories/hair/" :taxon-path] (edn->bidi events/navigate-category)
-       "/guarantee" (edn->bidi events/navigate-guarantee)}])
+       "/guarantee" (edn->bidi events/navigate-guarantee)
+       "/help" (edn->bidi events/navigate-help)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)

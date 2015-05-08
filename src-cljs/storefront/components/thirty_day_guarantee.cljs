@@ -1,7 +1,5 @@
 (ns storefront.components.thirty-day-guarantee
-  (:require [storefront.components.utils :as utils]
-            [storefront.state :as state]
-            [om.core :as om]
+  (:require [om.core :as om]
             [sablono.core :refer-macros [html]]))
 
 (defn thirty-day-guarantee-component [owner data]
