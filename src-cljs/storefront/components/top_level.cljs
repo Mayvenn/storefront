@@ -4,6 +4,7 @@
             [storefront.state :as state]
             [storefront.events :as events]
             [storefront.components.utils :as utils]
+            [storefront.components.slideout-nav :refer [slideout-nav-component]]
             [storefront.components.header :refer [header-component]]
             [storefront.components.footer :refer [footer-component]]
             [storefront.components.home :refer [home-component]]
@@ -15,6 +16,7 @@
    (html
     [:div
      [:div.page-wrap
+      (om/build slideout-nav-component data)
       (om/build header-component data)
       [:main {:role "main"}
        [:div.container
