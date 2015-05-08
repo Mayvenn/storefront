@@ -14,12 +14,13 @@
   (om/component
    (html
     [:div
-     (om/build header-component data)
-     [:main {:role "main"}
-      [:div.container
-       (om/build
-        (condp = (get-in data state/navigation-event-path)
-          events/navigate-home home-component
-          events/navigate-category category-component)
-        data)]]
+     [:div.page-wrap
+      (om/build header-component data)
+      [:main {:role "main"}
+       [:div.container
+        (om/build
+         (condp = (get-in data state/navigation-event-path)
+           events/navigate-home home-component
+           events/navigate-category category-component)
+         data)]]]
      (om/build footer-component data)])))
