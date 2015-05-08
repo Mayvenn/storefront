@@ -3,6 +3,7 @@
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
+(def navigate-guarantee (conj navigate :guarantee))
 
 (def control [:control])
 (def control-menu (conj control :menu))

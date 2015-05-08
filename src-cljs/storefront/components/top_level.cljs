@@ -9,6 +9,7 @@
             [storefront.components.footer :refer [footer-component]]
             [storefront.components.home :refer [home-component]]
             [storefront.components.category :refer [category-component]]
+            [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -25,6 +26,7 @@
          (om/build
           (condp = (get-in data state/navigation-event-path)
             events/navigate-home home-component
-            events/navigate-category category-component)
+            events/navigate-category category-component
+            events/navigate-guarantee thirty-day-guarantee-component)
           data)]]]
       (om/build footer-component data)]])))
