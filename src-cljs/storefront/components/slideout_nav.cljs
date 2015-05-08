@@ -5,9 +5,9 @@
             [storefront.events :as events]
             [storefront.state :as state]))
 
-(defn slideout-nav-link [data {:keys [path icon-class image label full-width?]}]
+(defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
-   {:href "FIXME: slideout-nav-links" :class (if full-width? "full-width" "half-width")}
+   {:href href :on-click on-click :class (if full-width? "full-width" "half-width")}
    [:div.slideout-nav-link-inner
     [:img.slideout-nav-link-icon {:class (str "icon-" icon-class) :src image}]
     label]])
@@ -79,28 +79,28 @@
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
             (slideout-nav-link
              data
-             {:path "FIXME path"
+             {:href "FIXME path"
               :icon-class "commissions-and-payouts"
               :image "/images/slideout_nav/commissions_and_payouts.png"
               :label "Commissions & Payouts"
               :full-width? false})
             (slideout-nav-link
              data
-             {:path "FIXME path"
+             {:href "FIXME path"
               :icon-class "sales-bonuses"
               :image "/images/slideout_nav/sales_bonuses.png"
               :label "Stylist Bonuses"
               :full-width? false})
             (slideout-nav-link
              data
-             {:path "FIXME path"
+             {:href "FIXME path"
               :icon-class "stylist-referrals"
               :image "/images/slideout_nav/stylist_referrals.png"
               :label "Stylist Referrals"
               :full-width? false})
             (slideout-nav-link
              data
-             {:path "FIXME path"
+             {:href "FIXME path"
               :icon-class "edit-profile"
               :image "/images/slideout_nav/edit_profile.png"
               :label "Edit Profile"
@@ -110,7 +110,7 @@
           [:h3.slideout-nav-section-header "Shop"]
           (slideout-nav-link
            data
-           {:path "FIXME path"
+           {:href "FIXME path"
             :icon-class "hair-extensions"
             :image "/images/slideout_nav/hair_extensions.png"
             :label "Hair Extensions"
@@ -118,7 +118,7 @@
           (when false ;; FIXME is own store
             (slideout-nav-link
              data
-             {:path "FIXME path"
+             {:href "FIXME path"
               :icon-class "stylist-products"
               :image "/images/slideout_nav/stylist-products.png"
               :label "Stylist Products"
@@ -129,21 +129,21 @@
             [:div
              (slideout-nav-link
               data
-              {:path "FIXME path"
+              {:href "FIXME path"
                :icon-class "my-orders"
                :image "/images/slideout_nav/my_orders.png"
                :label "My Orders"
                :full-width? true})
              (slideout-nav-link
               data
-              {:path "FIXME path"
+              {:href "FIXME path"
                :icon-class "manage-account"
                :image "/images/slideout_nav/manage-account.png"
                :label "Manage Account"
                :full-width? false})
              (slideout-nav-link
               data
-              {:path "FIXME path"
+              {:href "FIXME path"
                :icon-class "logout"
                :image "/images/slideout_nav/logout.png"
                :label "Logout"
@@ -151,14 +151,14 @@
             [:div
              (slideout-nav-link
               data
-              {:path "FIXME path"
+              {:href "FIXME path"
                :icon-class "sign-in"
                :image "/images/slideout_nav/sign_in.png"
                :label "Sign In"
                :full-width? false})
              (slideout-nav-link
               data
-              {:path "FIXME path"
+              {:href "FIXME path"
                :icon-class "join"
                :image "/images/slideout_nav/join.png"
                :label "Join"
@@ -168,15 +168,15 @@
           [:h3.slideout-nav-section-header "Help"]
           (slideout-nav-link
            data
-           {:path "FIXME path"
-            :icon-class "customer-service"
-            :image "/images/slideout_nav/customer_service.png"
-            :label "Customer Service"
-            :full-width? false})
+           (merge (utils/route-to data events/navigate-help)
+                  {:icon-class "customer-service"
+                   :image "/images/slideout_nav/customer_service.png"
+                   :label "Customer Service"
+                   :full-width? false}))
           (slideout-nav-link
            data
-           {:path "FIXME path"
-            :icon-class "30-day-guarantee"
-            :image "/images/slideout_nav/30_day_guarantee.png"
-            :label "30 Day Guarantee"
-            :full-width? false})]]])])))
+           (merge (utils/route-to data events/navigate-guarantee)
+                  {:icon-class "30-day-guarantee"
+                   :image "/images/slideout_nav/30_day_guarantee.png"
+                   :label "30 Day Guarantee"
+                   :full-width? false}))]]])])))
