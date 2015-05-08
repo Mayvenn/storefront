@@ -1,11 +1,8 @@
 (ns storefront.components.thirty-day-guarantee
   (:require [storefront.components.utils :as utils]
             [storefront.state :as state]
-            [storefront.taxons :refer [taxon-path-for]]
             [om.core :as om]
-            [clojure.string :as string]
-            [sablono.core :refer-macros [html]]
-            [storefront.events :as events]))
+            [sablono.core :refer-macros [html]]))
 
 (defn thirty-day-guarantee-component [owner data]
   (om/component
@@ -14,18 +11,17 @@
      [:div.guarantee-header
       [:img.guarantee-header-image {:src "images/30_day_header.png"}]]
      [:div.guarantee-info-banner
-      "\n  Buy "
+      "Buy "
       [:em "risk free"]
       " with easy returns and exchanges.\n"]
      [:div.guarantee-content
       [:div.guarantee-item
        [:h3 "Exchanges"]
        [:p
-        "\n      Wear it, dye it, even flat iron it.  If you do not love your Mayvenn hair we will exchange it within 30 days of purchase.  Just call us: "
+        "Wear it, dye it, even flat iron it.  If you do not love your Mayvenn hair we will exchange it within 30 days of purchase.  Just call us: "
         [:a {:href "tel:1-888-562-7952"} "1-888-562-7952"]]]
       [:div.guarantee-item
        [:h3 "Returns"]
        [:p
-        "\n      If you are not completely happy with your Mayvenn hair before it is installed, we will refund your purchase if the bundle is unopened and the hair is in its original condition.  Just call us: "
-        [:a {:href "tel:1-888-562-7952"} "1-888-562-7952"]]]]]
-)))
+        "If you are not completely happy with your Mayvenn hair before it is installed, we will refund your purchase if the bundle is unopened and the hair is in its original condition.  Just call us: "
+        [:a {:href "tel:1-888-562-7952"} "1-888-562-7952"]]]]])))
