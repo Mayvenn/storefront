@@ -30,7 +30,8 @@
        [:a {:href "#FIXME"}]]
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
      [:div.squashed-hair-categories
-      (map category (repeatedly (constantly data)) (get-in data state/taxons-path))
+      (map (partial category data)
+           (get-in data state/taxons-path))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       [:figure.featured-new]
