@@ -4,8 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
 
+                 [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.2.2"]
                  [environ "1.0.0"]
                  [clj-honeybadger "0.3.0"]
