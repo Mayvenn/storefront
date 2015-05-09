@@ -55,8 +55,8 @@
   (->
    (routes
     (GET "/healthcheck" [] "cool beans")
-    (GET "/" [] (slurp (io/resource "public/index.html")))
-    (route/resources "/"))
+    (route/resources "/")
+    (GET "*" [] (slurp (io/resource "public/index.html"))))
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
    (wrap-defaults site-defaults)))
