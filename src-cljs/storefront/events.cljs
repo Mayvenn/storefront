@@ -5,6 +5,8 @@
 (def navigate-category (conj navigate :category))
 (def navigate-guarantee (conj navigate :guarantee))
 (def navigate-help (conj navigate :help))
+(def navigate-privacy (conj navigate :privacy))
+(def navigate-tos (conj navigate :tos))
 
 (def control [:control])
 (def control-menu (conj control :menu))

@@ -31,7 +31,9 @@
   ["" {"/" (edn->bidi events/navigate-home)
        ["/categories/hair/" :taxon-path] (edn->bidi events/navigate-category)
        "/guarantee" (edn->bidi events/navigate-guarantee)
-       "/help" (edn->bidi events/navigate-help)}])
+       "/help" (edn->bidi events/navigate-help)
+       "/policy/privacy" (edn->bidi events/navigate-privacy)
+       "/policy/tos" (edn->bidi events/navigate-tos)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)

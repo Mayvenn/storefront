@@ -11,7 +11,9 @@
             [storefront.components.category :refer [category-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
- [cljs.core.async :refer [put!]]))
+            [storefront.components.privacy :refer [privacy-component]]
+            [storefront.components.tos :refer [tos-component]]
+            [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
   (om/component
@@ -29,6 +31,8 @@
             events/navigate-home home-component
             events/navigate-category category-component
             events/navigate-guarantee thirty-day-guarantee-component
-            events/navigate-help help-component)
+            events/navigate-help help-component
+            events/navigate-privacy privacy-component
+            events/navigate-tos tos-component)
           data)]]]
       (om/build footer-component data)]])))
