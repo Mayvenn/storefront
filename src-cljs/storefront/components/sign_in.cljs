@@ -2,7 +2,8 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.state :as state]))
 
 (defn sign-in-component [data owner]
   (om/component
@@ -13,16 +14,22 @@
       [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]
      [:div#existing-customer
       [:form.new_spree_user.simple_form
+       {:on-submit (utils/enqueue-event data events/control-sign-in-submit)}
        [:div#password-credentials
         [:div.input.email
          [:label.email "Email"]
-         [:input.string.email {:autofocus "autofocus" :type "email"}]]
+         [:input.string.email
+          (merge (utils/update-text data events/control-sign-in-change :email)
+                 {:autofocus "autofocus"
+                  :type "email"
+                  :value (get-in data state/sign-in-email-path)})]]
         [:div.input.password
          [:label.password "Password"]
-         [:input.string.password {:type "password"}]]]
-       [:p
-        [:input {:checked "checked" :type "checkbox"}]
-        [:label "Remember me"]]
+         [:input.string.password
+          (merge (utils/update-text data events/control-sign-in-change :password)
+                 {:type "password"
+                  :value (get-in data state/sign-in-password-path)})]]]
        [:a.forgot-password {:href "FIXME: forgot password"} "Forgot Password?"]
        [:p
-        [:input.button.primary {:type="submit" :value "Login"}]]]]])))
+        [:input.button.primary {:type "submit"
+                                :value "Login"}]]]]])))

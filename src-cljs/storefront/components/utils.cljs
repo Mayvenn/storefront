@@ -3,6 +3,11 @@
             [storefront.state :as state]
             [cljs.core.async :refer [put!]]))
 
+(defn enqueue-event [app-state event & [args]]
+  (fn [e]
+    (.preventDefault e)
+    (put! (get-in @app-state state/event-ch-path) [event args])))
+
 (defn route-to [app-state navigation-event & [args]]
   {:href
    (routes/path-for @app-state navigation-event args)
@@ -11,7 +16,9 @@
      (.preventDefault e)
      (apply routes/enqueue-navigate @app-state navigation-event args))})
 
-(defn enqueue-event [app-state event & [args]]
-  (fn [e]
-    (.preventDefault e)
-    (put! (get-in @app-state state/event-ch-path) [event args])))
+(defn update-text [app-state control-event arg-name]
+  {:on-change
+   (fn [e]
+     (.preventDefault e)
+     (put! (get-in @app-state state/event-ch-path)
+           [control-event {arg-name (.. e -target -value)}]))})
