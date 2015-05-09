@@ -14,6 +14,9 @@
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse (conj control-menu :collapse))
+(def control-sign-in (conj control :sign-in))
+(def control-sign-in-change (conj control-sign-in :change))
+(def control-sign-in-submit (conj control-sign-in :submit))
 
 (def api [:api])
 (def api-success (conj api :success))
@@ -22,3 +25,4 @@
 (def api-success-store (conj api-success :store))
 (def api-success-category (conj api-success :category))
 (def api-success-products (conj api-success :products))
+(def api-success-sign-in (conj api-success :sign-in))
