@@ -2,7 +2,8 @@
   (:require [storefront.components.utils :as utils]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.components.utils :as utils]))
 
 (defn footer-component [data owner]
   (om/component
@@ -39,5 +40,5 @@
          [:a.full-link {:href "https://twitter.com/MayvennHair"}]]]]]
      [:div.legal
       [:div.copyright {:dangerouslySetInnerHTML {:__html (str "&copy; Mayvenn " (.getFullYear (js/Date.)))}}]
-      [:a.terms {:href "#FIXME"} "Terms of Use"]
-      [:a.privacy {:href "#FIXME"} "Privacy Policy"]]])))
+      [:a.terms (utils/route-to data events/navigate-tos) "Terms of Use"]
+      [:a.privacy (utils/route-to data events/navigate-privacy) "Privacy Policy"]]])))
