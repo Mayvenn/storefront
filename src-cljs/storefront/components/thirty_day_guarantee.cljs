@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]))
 
-(defn thirty-day-guarantee-component [owner data]
+(defn thirty-day-guarantee-component [data owner]
   (om/component
    (html
     [:div
