@@ -39,10 +39,10 @@
       [:p.featured-product-banner "Introducing DELUXE and ULTRA hair"]]
      [:div.home-sessions-container
       [:p.home-sessions-description
-       [:a {:href "#FIXME"} "Sign In"]
+       [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
        " or "
-       [:a {:href "#FIXME"} "sign up"]
+       [:a (utils/route-to data events/navigate-sign-up) "sign up"]
        " for an account for exclusive promotions, order tracking, and big hair love."]
-      [:a.session-button {:href "#FIXME"} "Sign In"]
-      [:a.session-button {:href "#FIXME"} "Sign Up"]
+      [:a.session-button (utils/route-to data events/navigate-sign-in) "Sign In"]
+      [:a.session-button (utils/route-to data events/navigate-sign-up) "Sign Up"]
       [:div {:style {:clear "both"}}]]])))

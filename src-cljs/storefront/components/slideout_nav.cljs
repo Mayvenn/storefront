@@ -45,9 +45,9 @@
               "FIXME: current user email"]
              [:figure.down-arrow]]
             [:span
-             [:a {:href "FIXME: login path"} "Sign In"]
+             [:a (close-and-route data events/navigate-sign-in) "Sign In"]
              " | "
-             [:a {:href "FIXME: sign in path"} "Sign Up"]])]
+             [:a (close-and-route data events/navigate-sign-up) "Sign Up"]])]
          (when false ;; FIXME: current_user
            [:ul.account-detail-expanded.closed
             (when false ;; FIXME: is own store
@@ -162,18 +162,18 @@
             [:div
              (slideout-nav-link
               data
-              {:href "FIXME path"
-               :icon-class "sign-in"
-               :image "/images/slideout_nav/sign_in.png"
-               :label "Sign In"
-               :full-width? false})
+              (merge (close-and-route data events/navigate-sign-in)
+                     {:icon-class "sign-in"
+                      :image "/images/slideout_nav/sign_in.png"
+                      :label "Sign In"
+                      :full-width? false}))
              (slideout-nav-link
               data
-              {:href "FIXME path"
-               :icon-class "join"
-               :image "/images/slideout_nav/join.png"
-               :label "Join"
-               :full-width? false})]
+              (merge (close-and-route data events/navigate-sign-up)
+                     {:icon-class "join"
+                      :image "/images/slideout_nav/join.png"
+                      :label "Join"
+                      :full-width? false}))]
             )]
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Help"]

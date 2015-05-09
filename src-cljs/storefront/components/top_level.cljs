@@ -13,6 +13,8 @@
             [storefront.components.help :refer [help-component]]
             [storefront.components.privacy :refer [privacy-component]]
             [storefront.components.tos :refer [tos-component]]
+            [storefront.components.sign-in :refer [sign-in-component]]
+            [storefront.components.sign-up :refer [sign-up-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -33,6 +35,8 @@
             events/navigate-guarantee thirty-day-guarantee-component
             events/navigate-help help-component
             events/navigate-privacy privacy-component
-            events/navigate-tos tos-component)
+            events/navigate-tos tos-component
+            events/navigate-sign-in sign-in-component
+            events/navigate-sign-up sign-up-component)
           data)]]]
       (om/build footer-component data)]])))
