@@ -33,7 +33,9 @@
        "/guarantee" (edn->bidi events/navigate-guarantee)
        "/help" (edn->bidi events/navigate-help)
        "/policy/privacy" (edn->bidi events/navigate-privacy)
-       "/policy/tos" (edn->bidi events/navigate-tos)}])
+       "/policy/tos" (edn->bidi events/navigate-tos)
+       "/login" (edn->bidi events/navigate-sign-in)
+       "/signup" (edn->bidi events/navigate-sign-up)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)
