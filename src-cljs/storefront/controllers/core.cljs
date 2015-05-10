@@ -2,7 +2,8 @@
   (:require [storefront.events :as events]
             [storefront.state :as state]
             [storefront.api :as api]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.cookie-jar :as cookie-jar]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -31,4 +32,6 @@
                (get-in app-state state/sign-in-password-path)))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
+  (cookie-jar/set-login (get-in app-state state/cookie-path)
+                        (get-in app-state state/user-path))
   (routes/enqueue-navigate app-state events/navigate-home))
