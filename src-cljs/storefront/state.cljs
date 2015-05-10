@@ -1,37 +1,38 @@
 (ns storefront.state
   (:require [cljs.core.async :refer [chan]]
             [storefront.events :as events]
-            [clojure.string :as string])
-  (:import [goog.history Html5History]))
+            [clojure.string :as string]
+            [storefront.cookie-jar :as cookie-jar]))
 
 (defn get-store-subdomain []
   (first (string/split (.-hostname js/location) #"\.")))
 
 (defn initial-state []
-  {:event-ch (chan)
-   :stop-ch (chan)
+  (let [cookie (cookie-jar/make-cookie)]
+    {:event-ch (chan)
+     :stop-ch (chan)
 
-   :history nil
-   :routes []
+     :history nil
+     :cookie cookie
+     :routes []
 
-   :user {:email nil
-          :token nil
-          :store-slug nil}
+     :user (cookie-jar/retrieve-login cookie)
 
-   :store {:store_slug (get-store-subdomain)}
-   :taxons []
-   :products-for-taxons {}
+     :store {:store_slug (get-store-subdomain)}
+     :taxons []
+     :products-for-taxons {}
 
-   :ui {:navigation-event events/navigate-home
-        :browse-taxon nil
-        :menu-expanded false
-        :sign-in {:email ""
-                  :password ""}}})
+     :ui {:navigation-event events/navigate-home
+          :browse-taxon nil
+          :menu-expanded false
+          :sign-in {:email ""
+                    :password ""}}}))
 
 (def event-ch-path [:event-ch])
 (def stop-ch-path [:stop-ch])
 
 (def history-path [:history])
+(def cookie-path [:cookie])
 (def routes-path [:routes])
 
 (def user-path [:user])
