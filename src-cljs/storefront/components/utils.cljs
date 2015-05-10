@@ -6,7 +6,8 @@
 (defn enqueue-event [app-state event & [args]]
   (fn [e]
     (.preventDefault e)
-    (put! (get-in @app-state state/event-ch-path) [event args])))
+    (put! (get-in @app-state state/event-ch-path) [event args])
+    nil))
 
 (defn route-to [app-state navigation-event & [args]]
   {:href
