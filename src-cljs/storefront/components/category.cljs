@@ -50,8 +50,6 @@
         [:div
          [:div.taxon-products-banner {:class taxon-permalink-class}]
          [:div.taxon-products-container
-          (when (:stylist_only? taxon)
-            [:h2.header-bar-heading "Stylist Products"])
           [:div.taxon-nav
            (map (partial display-taxon data taxon)
                 (get-in data state/taxons-path))
