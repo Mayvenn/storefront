@@ -26,6 +26,7 @@
   (update-in app-state state/sign-in-path merge args))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
+  ;; FIXME clear other user specific pieces of state
   (assoc-in app-state state/user-path {}))
 
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
