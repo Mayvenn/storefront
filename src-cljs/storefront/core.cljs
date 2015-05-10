@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop alt!]])
   (:require [storefront.state :as state]
             [storefront.components.top-level :refer [top-level-component]]
-            [storefront.controllers.core :refer [perform-effects]]
+            [storefront.controllers :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [storefront.routes :as routes]
             [cljs.core.async :refer [put!]]
