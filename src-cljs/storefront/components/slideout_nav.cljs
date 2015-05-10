@@ -23,6 +23,13 @@
     [:img.slideout-nav-link-icon {:class (str "icon-" icon-class) :src image}]
     label]])
 
+(defn logged-in? [data]
+  (boolean (get-in data state/user-email-path)))
+
+(defn own-store? [data]
+  (= (get-in data state/user-store-slug-path)
+     (get-in data state/store-slug-path)))
+
 (defn slideout-nav-component [data owner]
   (om/component
    (html
@@ -31,26 +38,26 @@
      (let [store (get-in data state/store-path)]
        [:nav.slideout-nav (when-not (store :profile_picture_url)
                             {:class "no-picture"})
-        [:div.slideout-nav-header
+         [:div.slideout-nav-header
          [:div.slideout-nav-img-container
           [:img.slideout-nav-portrait {:src (store :profile_picture_url)}]]
          [:h2.slideout-nav-title (store :store_name)]]
         [:div.horizontal-nav-list
          [:div.account-detail
-          (if false ;; FIXME: current_user
+          (if (logged-in? data)
             [:a.account-menu-link {:href "FIXME: account menu link"}
              [:span.account-detail-name
-              (when false ;; FIXME: is own store
+              (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
-              "FIXME: current user email"]
+              (get-in data state/user-email-path)]
              [:figure.down-arrow]]
             [:span
              [:a (close-and-route data events/navigate-sign-in) "Sign In"]
              " | "
              [:a (close-and-route data events/navigate-sign-up) "Sign Up"]])]
-         (when false ;; FIXME: current_user
+         (when (logged-in? data)
            [:ul.account-detail-expanded.closed
-            (when false ;; FIXME: is own store
+            (when (own-store? data)
               [:li
                [:a {:href "FIXME: orders & commissions"} "Orders & Commissions"]]
               [:li
@@ -73,26 +80,18 @@
            ]]
          [:ul.horizontal-nav-menu
           [:li
-           (if false ;; FIXME: is own store
-             [:a {:href "FIXME: link to shop dropdown"}
-              "Shop "
-              [:figure.down-arrow]]
-             [:a {:href "FIXME: link to shop"} "Shop"])]
+           [:a {:href "FIXME: link to shop"} "Shop"]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
-          [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]
-         (when false ;; FIXME: if current user is stylist
-           [:ul.ship-menu-expanded.closed
-            [:li [:a {:href "FIXME: path to shop hair extensions"} "Hair Extensions"]]
-            [:li [:a {:href "FIXME: path to stylist only products"} "Stylist Only Products"]]])]
+          [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
         [:ul.slideout-nav-list
-         (when false ;; FIXME: own store
+         (when (own-store? data)
            [:li.slideout-nav-section.stylist
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
             (slideout-nav-link
              data
              {:href "FIXME path"
               :icon-class "commissions-and-payouts"
-              :image "/images/slideout_nav/commissions_and_payouts.png"
+              :image "/images/slideout_nav/comissions_and_payouts.png"
               :label "Commissions & Payouts"
               :full-width? false})
             (slideout-nav-link
@@ -125,18 +124,10 @@
             :icon-class "hair-extensions"
             :image "/images/slideout_nav/hair_extensions.png"
             :label "Hair Extensions"
-            :full-width? true})
-          (when false ;; FIXME is own store
-            (slideout-nav-link
-             data
-             {:href "FIXME path"
-              :icon-class "stylist-products"
-              :image "/images/slideout_nav/stylist-products.png"
-              :label "Stylist Products"
-              :full-width? true}))]
+            :full-width? true})]
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "My Account"]
-          (if false ;; FIXME logged in user
+          (if (logged-in? data)
             [:div
              (slideout-nav-link
               data
