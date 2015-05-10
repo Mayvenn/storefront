@@ -31,6 +31,9 @@
                (get-in app-state state/sign-in-email-path)
                (get-in app-state state/sign-in-password-path)))
 
+(defmethod perform-effects events/control-sign-out [_ event args app-state]
+  (cookie-jar/clear-login (get-in app-state state/cookie-path)))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path))

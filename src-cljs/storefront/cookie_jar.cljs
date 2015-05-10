@@ -14,3 +14,9 @@
     (.set :email email)
     (.set :token token)
     (.set :store-slug store-slug)))
+
+(defn clear-login [cookie]
+  (doto cookie
+    (.remove :email)
+    (.remove :token)
+    (.remove :store-slug)))
