@@ -1,4 +1,4 @@
-(ns storefront.transitions.core
+(ns storefront.transitions
   (:require [storefront.events :as events]
             [storefront.state :as state]
             [storefront.routes :as routes]
