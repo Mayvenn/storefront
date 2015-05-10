@@ -1,4 +1,4 @@
-(ns storefront.controllers.core
+(ns storefront.controllers
   (:require [storefront.events :as events]
             [storefront.state :as state]
             [storefront.api :as api]
