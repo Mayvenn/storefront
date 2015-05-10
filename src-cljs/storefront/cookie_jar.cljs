@@ -4,19 +4,16 @@
 (defn make-cookie []
   (Cookies. js/document))
 
-(defn retrieve-login [cookie]
-  {:email (.get cookie :email)
-   :token (.get cookie :token)
-   :store-slug (.get cookie :store-slug)})
+(def cookie-attrs [:email :token :store-slug])
 
-(defn set-login [cookie {:keys [email token store-slug]}]
-  (doto cookie
-    (.set :email email)
-    (.set :token token)
-    (.set :store-slug store-slug)))
+(defn retrieve-login [cookie]
+  (zipmap cookie-attrs
+          (map #(.get cookie %) cookie-attrs)))
+
+(defn set-login [cookie attrs]
+  (doseq [attr cookie-attrs]
+    (.set cookie attr (attr attrs))))
 
 (defn clear-login [cookie]
-  (doto cookie
-    (.remove :email)
-    (.remove :token)
-    (.remove :store-slug)))
+  (doseq [attr cookie-attrs]
+    (.remove cookie attr)))
