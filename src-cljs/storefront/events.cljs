@@ -17,6 +17,7 @@
 (def control-sign-in (conj control :sign-in))
 (def control-sign-in-change (conj control-sign-in :change))
 (def control-sign-in-submit (conj control-sign-in :submit))
+(def control-sign-out (conj control :sign-out))
 
 (def api [:api])
 (def api-success (conj api :success))

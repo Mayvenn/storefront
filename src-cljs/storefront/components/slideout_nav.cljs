@@ -16,6 +16,14 @@
      (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
      (routes/enqueue-navigate @app-state event))})
 
+(defn close-and-enqueue [app-state event]
+  {:href "#"
+   :on-click
+   (fn [e]
+     (.preventDefault e)
+     (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
+     (put! (get-in @app-state state/event-ch-path) [events/control-sign-out]))})
+
 (defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
    {:href href :on-click on-click :class (if full-width? "full-width" "half-width")}
@@ -69,7 +77,8 @@
             [:li
              [:a {:href "FIXME: manage account depending on stylist or not"} "Manage Account"]]
             [:li
-             [:a {:href "FIXME: logout path"} "Logout"]]
+             [:a (close-and-enqueue data events/control-sign-out)
+              "Logout"]]
             ])
          [:h2.horizontal-nav-title
           (store :store_name)
@@ -145,11 +154,11 @@
                :full-width? false})
              (slideout-nav-link
               data
-              {:href "FIXME path"
-               :icon-class "logout"
-               :image "/images/slideout_nav/logout.png"
-               :label "Logout"
-               :full-width? false})]
+              (merge (close-and-enqueue data events/control-sign-out)
+                     {:icon-class "logout"
+                      :image "/images/slideout_nav/logout.png"
+                      :label "Logout"
+                      :full-width? false}))]
             [:div
              (slideout-nav-link
               data
