@@ -32,10 +32,22 @@
                (get-in app-state state/sign-in-email-path)
                (get-in app-state state/sign-in-password-path)))
 
+(defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
+  (api/sign-up (get-in app-state state/event-ch-path)
+               (get-in app-state state/sign-up-email-path)
+               (get-in app-state state/sign-up-password-path)
+               (get-in app-state state/sign-up-password-confirmation-path)))
+
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear-login (get-in app-state state/cookie-path)))
 
-(defmethod perform-effects events/api-success-sign-in [_ event args app-state]
+(defn store-auth-and-redirect [app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path))
   (routes/enqueue-navigate app-state events/navigate-home))
+
+(defmethod perform-effects events/api-success-sign-in [_ event args app-state]
+  (store-auth-and-redirect app-state))
+
+(defmethod perform-effects events/api-success-sign-up [_ event args app-state]
+  (store-auth-and-redirect app-state))

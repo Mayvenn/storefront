@@ -43,3 +43,12 @@
    {:email email
     :password password}
    #(put! events-ch [events/api-success-sign-in (select-keys % [:email :token :store_slug])])))
+
+(defn sign-up [events-ch email password password-confirmation]
+  (api-req
+   POST
+   "/signup"
+   {:email email
+    :password password
+    :password_confirmation password-confirmation}
+   #(put! events-ch [events/api-success-sign-up (select-keys % [:email :token :store_slug])])))
