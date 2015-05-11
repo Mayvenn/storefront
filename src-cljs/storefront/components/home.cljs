@@ -1,7 +1,7 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
             [storefront.state :as state]
-            [storefront.taxons :refer [taxon-path-for]]
+            [storefront.taxons :refer [taxon-path-for default-taxon-path]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -27,7 +27,9 @@
       [:div.guarantee]
       [:div.free-shipping-action]
       [:div.shop-now
-       [:a {:href "#FIXME"}]]
+       (when-let [path (default-taxon-path data)]
+         [:a.full-link (utils/route-to data events/navigate-category
+                                       {:taxon-path path})])]
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
      [:div.squashed-hair-categories
       (map (partial category data)
