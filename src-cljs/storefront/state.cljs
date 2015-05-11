@@ -26,7 +26,10 @@
           :browse-taxon nil
           :menu-expanded false
           :sign-in {:email ""
-                    :password ""}}}))
+                    :password ""}
+          :sign-up {:email ""
+                    :password ""
+                    :password-confirmation ""}}}))
 
 (def event-ch-path [:event-ch])
 (def stop-ch-path [:stop-ch])
@@ -50,6 +53,12 @@
 (def navigation-event-path (conj ui-path :navigation-event))
 (def browse-taxon-path (conj ui-path :browse-taxon))
 (def menu-expanded-path (conj ui-path :menu-expanded))
+
 (def sign-in-path (conj ui-path :sign-in))
 (def sign-in-email-path (conj sign-in-path :email))
 (def sign-in-password-path (conj sign-in-path :password))
+
+(def sign-up-path (conj ui-path :sign-up))
+(def sign-up-email-path (conj sign-up-path :email))
+(def sign-up-password-path (conj sign-up-path :password))
+(def sign-up-password-confirmation-path (conj sign-up-path :password-confirmation))

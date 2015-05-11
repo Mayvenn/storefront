@@ -18,6 +18,9 @@
 (def control-sign-in-change (conj control-sign-in :change))
 (def control-sign-in-submit (conj control-sign-in :submit))
 (def control-sign-out (conj control :sign-out))
+(def control-sign-up (conj control :sign-up))
+(def control-sign-up-change (conj control-sign-up :change))
+(def control-sign-up-submit (conj control-sign-up :submit))
 
 (def api [:api])
 (def api-success (conj api :success))
@@ -27,3 +30,4 @@
 (def api-success-category (conj api-success :category))
 (def api-success-products (conj api-success :products))
 (def api-success-sign-in (conj api-success :sign-in))
+(def api-success-sign-up (conj api-success :sign-up))
