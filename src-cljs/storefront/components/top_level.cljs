@@ -9,6 +9,7 @@
             [storefront.components.footer :refer [footer-component]]
             [storefront.components.home :refer [home-component]]
             [storefront.components.category :refer [category-component]]
+            [storefront.components.product :refer [product-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
             [storefront.components.privacy :refer [privacy-component]]
@@ -38,6 +39,7 @@
           (condp = (get-in data state/navigation-event-path)
             events/navigate-home home-component
             events/navigate-category category-component
+            events/navigate-product product-component
             events/navigate-guarantee thirty-day-guarantee-component
             events/navigate-help help-component
             events/navigate-privacy privacy-component

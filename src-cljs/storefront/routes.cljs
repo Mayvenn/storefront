@@ -8,6 +8,28 @@
             [goog.history.EventType :as EventType])
   (:import [goog.history Html5History]))
 
+(extend-protocol bidi.bidi/Pattern
+  cljs.core.PersistentHashMap
+  (match-pattern [this env]
+    (when (every? (fn [[k v]]
+                    (cond
+                     (or (fn? v) (set? v)) (v (get env k))
+                     :otherwise (= v (get env k))))
+                  (seq this))
+      env))
+  (unmatch-pattern [_ _] ""))
+
+(extend-protocol bidi.bidi/Matched
+  cljs.core.PersistentHashMap
+  (resolve-handler [this m] (some #(bidi.bidi/match-pair % m) this))
+  (unresolve-handler [this m] (some #(bidi.bidi/unmatch-pair % m) this)))
+
+(defn edn->bidi [value]
+  (keyword (prn-str value)))
+
+(defn bidi->edn [value]
+  (read-string (name value)))
+
 (defn set-current-page [app-state]
   (let [{nav-event :handler
          params :route-params}
@@ -18,7 +40,7 @@
 
 (defn history-callback [app-state]
   (fn [e]
-    (set-current-page @app-state (.-token e))))
+    (set-current-page @app-state)))
 
 (defn make-history [callback]
   (doto (Html5History.)
@@ -27,15 +49,10 @@
     (.setEnabled true)
     (goog.events/listen EventType/NAVIGATE callback)))
 
-(defn edn->bidi [value]
-  (keyword (prn-str value)))
-
-(defn bidi->edn [value]
-  (read-string (name value)))
-
 (defn routes []
   ["" {"/" (edn->bidi events/navigate-home)
        ["/categories/hair/" :taxon-path] (edn->bidi events/navigate-category)
+       ["/products/" :product-path] (edn->bidi events/navigate-product)
        "/guarantee" (edn->bidi events/navigate-guarantee)
        "/help" (edn->bidi events/navigate-help)
        "/policy/privacy" (edn->bidi events/navigate-privacy)
