@@ -25,7 +25,7 @@
                  [sablono "0.3.4"]
                  [cljs-ajax "0.3.11"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [bidi "1.18.10"]]
+                 [bidi "1.18.11"]]
   
                              
                              
