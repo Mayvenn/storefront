@@ -11,3 +11,6 @@
 (defn default-taxon-path [app-state]
   (when-let [default-taxon (first (get-in app-state state/taxons-path))]
     (taxon-path-for default-taxon)))
+
+(defn taxon-class-name [taxon]
+  (string/replace (:permalink taxon) #"/" "-"))

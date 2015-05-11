@@ -15,9 +15,9 @@
      [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
       [:p.hair-taxon-name (:name taxon)]]]))
 
-(defn display-product [product]
+(defn display-product [data product]
   (let [collection-name (product :collection_name)]
-    [:a {:href "#FIXME: product#show"}
+    [:a (utils/route-to data events/navigate-product {:product-path (:slug product)})
      [:div.taxon-product-container
       (when-let [first-image (->> product
                                   :master
@@ -59,7 +59,7 @@
              [:div {:style {:clear "both"}}]]
 
             [:div.taxon-products-list-container
-             (map display-product
+             (map (partial display-product data)
                   (get-in data (conj state/products-for-taxons-path (taxon-path-for taxon))))]]
 
            [:div.gold-features

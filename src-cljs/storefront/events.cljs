@@ -3,6 +3,7 @@
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
+(def navigate-product (conj navigate :product))
 (def navigate-guarantee (conj navigate :guarantee))
 (def navigate-help (conj navigate :help))
 (def navigate-privacy (conj navigate :privacy))
@@ -25,6 +26,12 @@
 (def control-sign-up (conj control :sign-up))
 (def control-sign-up-change (conj control-sign-up :change))
 (def control-sign-up-submit (conj control-sign-up :submit))
+
+(def control-variant (conj control :variant))
+(def control-variant-select (conj control-variant :select))
+(def control-variant-inc-quantity (conj control :inc-quantity))
+(def control-variant-dec-quantity (conj control :dec-quantity))
+(def control-variant-set-quantity (conj control :set-quantity))
 
 (def api [:api])
 (def api-success (conj api :success))
