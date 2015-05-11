@@ -79,15 +79,13 @@
              [:a {:href "FIXME: manage account depending on stylist or not"} "Manage Account"]]
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
-              "Logout"]]
-            ])
+              "Logout"]]])
          [:h2.horizontal-nav-title
           (store :store_name)
           [:ul.header-social-icons
            (when-let [instagram-account (store :instagram_account)]
              [:li.instagram-icon
-              [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]])
-           ]]
+              [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]])]]
          [:ul.horizontal-nav-menu
           [:li
            [:a
