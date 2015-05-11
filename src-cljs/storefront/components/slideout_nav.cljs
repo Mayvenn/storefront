@@ -23,7 +23,7 @@
    (fn [e]
      (.preventDefault e)
      (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
-     (put! (get-in @app-state state/event-ch-path) [events/control-sign-out]))})
+     (put! (get-in @app-state state/event-ch-path) [event]))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
@@ -56,6 +56,8 @@
           (if (logged-in? data)
             [:a.account-menu-link {:href "FIXME: account menu link"}
              [:span.account-detail-name
+              {:on-click
+               (utils/enqueue-event data events/control-account-menu-expand)}
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
               (get-in data state/user-email-path)]
@@ -65,7 +67,11 @@
              " | "
              [:a (close-and-route data events/navigate-sign-up) "Sign Up"]])]
          (when (logged-in? data)
-           [:ul.account-detail-expanded.closed
+           [:ul.account-detail-expanded
+            {:class
+             (if (get-in data state/account-menu-expanded-path)
+               "open"
+               "closed")}
             (when (own-store? data)
               [:li
                [:a {:href "FIXME: orders & commissions"} "Orders & Commissions"]]

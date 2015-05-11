@@ -25,6 +25,7 @@
      :ui {:navigation-event events/navigate-home
           :browse-taxon nil
           :menu-expanded false
+          :account-menu-expanded false
           :sign-in {:email ""
                     :password ""}
           :sign-up {:email ""
@@ -53,6 +54,7 @@
 (def navigation-event-path (conj ui-path :navigation-event))
 (def browse-taxon-path (conj ui-path :browse-taxon))
 (def menu-expanded-path (conj ui-path :menu-expanded))
+(def account-menu-expanded-path (conj ui-path :account-menu-expanded))
 
 (def sign-in-path (conj ui-path :sign-in))
 (def sign-in-email-path (conj sign-in-path :email))
