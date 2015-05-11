@@ -64,8 +64,7 @@
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler storeback-config]}]
-   (-> (routes
-               (site-routes logger storeback-config)
+   (-> (routes (site-routes logger storeback-config)
                (route/not-found "Not found"))
        (#(if (config/development?)
            (wrap-exceptions %)
