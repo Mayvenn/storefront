@@ -5,16 +5,17 @@
             [storefront.events :as events]
             [storefront.state :as state]
             [storefront.routes :as routes]
+            [storefront.taxons :refer [taxon-path-for default-taxon-path]]
             [cljs.core.async :refer [put!]]))
 
-(defn close-and-route [app-state event]
+(defn close-and-route [app-state event & [args]]
   {:href
-   (routes/path-for @app-state event)
+   (routes/path-for @app-state event args)
    :on-click
    (fn [e]
      (.preventDefault e)
      (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
-     (routes/enqueue-navigate @app-state event))})
+     (routes/enqueue-navigate @app-state event args))})
 
 (defn close-and-enqueue [app-state event]
   {:href "#"
@@ -89,7 +90,11 @@
            ]]
          [:ul.horizontal-nav-menu
           [:li
-           [:a {:href "FIXME: link to shop"} "Shop"]]
+           [:a
+            (when-let [path (default-taxon-path data)]
+              (close-and-route data events/navigate-category
+                               {:taxon-path path}))
+            "Shop"]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
           [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
         [:ul.slideout-nav-list
@@ -129,11 +134,15 @@
           [:h3.slideout-nav-section-header "Shop"]
           (slideout-nav-link
            data
-           {:href "FIXME path"
-            :icon-class "hair-extensions"
-            :image "/images/slideout_nav/hair_extensions.png"
-            :label "Hair Extensions"
-            :full-width? true})]
+           (merge
+            (if-let [path (default-taxon-path data)]
+              (close-and-route data events/navigate-category
+                               {:taxon-path path})
+              {})
+            {:icon-class "hair-extensions"
+             :image "/images/slideout_nav/hair_extensions.png"
+             :label "Hair Extensions"
+             :full-width? true}))]
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)
