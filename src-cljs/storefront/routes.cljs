@@ -8,7 +8,13 @@
             [goog.history.EventType :as EventType])
   (:import [goog.history Html5History]))
 
-(declare set-current-page)
+(defn set-current-page [app-state]
+  (let [{nav-event :handler
+         params :route-params}
+        (bidi/match-route (get-in app-state state/routes-path)
+                          (.getToken (get-in app-state state/history-path)))
+        event-ch (get-in app-state state/event-ch-path)]
+    (put! event-ch [(bidi->edn nav-event) params])))
 
 (defn history-callback [app-state]
   (fn [e]
@@ -43,16 +49,7 @@
     (swap! app-state
            merge
            {:routes (routes)
-            :history history})
-    (set-current-page @app-state)))
-
-(defn set-current-page [app-state]
-  (let [{nav-event :handler
-         params :route-params}
-        (bidi/match-route (get-in app-state state/routes-path)
-                          (.getToken (get-in app-state state/history-path)))
-        event-ch (get-in app-state state/event-ch-path)]
-    (put! event-ch [(bidi->edn nav-event) params])))
+            :history history})))
 
 (defn path-for [app-state navigation-event & [args]]
   (apply bidi/path-for
