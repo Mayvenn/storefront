@@ -9,11 +9,11 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/navigate [_ event args app-state]
+  (api/get-store (get-in app-state state/event-ch-path)
+                 (get-in app-state state/store-slug-path))
   (set! (.. js/document -body -scrollTop) 0))
 
 (defmethod perform-effects events/navigate-home [_ event args app-state]
-  (api/get-store (get-in app-state state/event-ch-path)
-                 (get-in app-state state/store-slug-path))
   (api/get-taxons (get-in app-state state/event-ch-path)))
 
 (defmethod perform-effects events/navigate-category [_ event args app-state]
