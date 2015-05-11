@@ -55,7 +55,7 @@ div.hair-categories {
   height: 252px;
 }
 
-div.free-shipping.taxon-lower-banner {
+div.gold-features {
   @include display(flex);
   border-top: solid #bd9424 1px;
   border-bottom: solid #bd9424 1px;
@@ -63,7 +63,7 @@ div.free-shipping.taxon-lower-banner {
   width: 100%;
   height: 80px;
 
-  .guarantee-feature, .fs-feature {
+  figure {
     display: block;
     width: 50%;
     height: 100%;
@@ -72,13 +72,26 @@ div.free-shipping.taxon-lower-banner {
   }
 
   .guarantee-feature {
+    @include stretch-bg;
     border-right: solid #bd9424 1px;
     background-image: url('/images/desktop_assets/guarantee.png');
   }
 
-  .fs-feature {
+  .free-shipping-feature {
+    @include stretch-bg;
+    border-right: solid #bd9424 1px;
     background-image: url('/images/desktop_assets/shipping.png');
   }
+  
+  .triple-bundle-feature {
+    @include stretch-bg;
+    background-image: url('/images/desktop_assets/bundle-5percent.png');
+    margin-top: -10px;
+    height: 95px;
+  }
+
+
+  
 }
 
 .taxon-products-container {
