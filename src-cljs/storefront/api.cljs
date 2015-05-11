@@ -1,7 +1,8 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST json-response-format]]
             [cljs.core.async :refer [put!]]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.taxons :refer [taxon-name-from]]))
 
 (def base-url "http://localhost:3005")
 
@@ -27,13 +28,13 @@
    {:store_slug store-slug}
    #(put! events-ch [events/api-success-store %])))
 
-(defn get-products [events-ch taxon-id]
+(defn get-products [events-ch taxon-path]
   (api-req
    GET
    "/products"
-   {:taxon_id taxon-id}
+   {:taxon_name (taxon-name-from taxon-path)}
    #(put! events-ch [events/api-success-products (merge (select-keys % [:products])
-                                                        {:taxon-id taxon-id})])))
+                                                        {:taxon-path taxon-path})])))
 
 (defn sign-in [events-ch email password]
   (api-req

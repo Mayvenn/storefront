@@ -45,20 +45,23 @@
 (defn category-component [data owner]
   (om/component
    (html
-    (if-let [taxon (get-in data state/browse-taxon-path)]
-      (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
-        [:div
-         [:div.taxon-products-banner {:class taxon-permalink-class}]
-         [:div.taxon-products-container
-          [:div.taxon-nav
-           (map (partial display-taxon data taxon)
-                (get-in data state/taxons-path))
-           [:div {:style {:clear "both"}}]]
+    (let [taxon-path (get-in data state/browse-taxon-path)]
+      (if-let [taxon (->> (get-in data state/taxons-path)
+                          (filter #(= taxon-path (taxon-path-for %)))
+                          first)]
+        (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
+          [:div
+           [:div.taxon-products-banner {:class taxon-permalink-class}]
+           [:div.taxon-products-container
+            [:div.taxon-nav
+             (map (partial display-taxon data taxon)
+                  (get-in data state/taxons-path))
+             [:div {:style {:clear "both"}}]]
 
-          [:div.taxon-products-list-container
-           (map display-product
-                (get-in data (conj state/products-for-taxons-path (:id taxon))))]]
+            [:div.taxon-products-list-container
+             (map display-product
+                  (get-in data (conj state/products-for-taxons-path (taxon-path-for taxon))))]]
 
-         [:div.free-shipping.taxon-lower-banner
-          [:figure.guarantee-feature]
-          [:feature.fs-feature]]])))))
+           [:div.free-shipping.taxon-lower-banner
+            [:figure.guarantee-feature]
+            [:feature.fs-feature]]]))))))
