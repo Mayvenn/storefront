@@ -14,59 +14,59 @@
 .home-actions-top {
   @include display(flex);
   width: 100%;
-}
 
-.guarantee, .free-shipping-action, .shop-now, .bundle-deal, .keep-shopping {
-  width: 33.334%;
-  height: 76px;
-  border: solid #bd9424 1px;
-  border-left: none;
-  @include stretch-bg;
-
-  &:last-child {
-    border-right: 0;
+  .guarantee, .free-shipping-action, .shop-now, .bundle-deal, .keep-shopping {
+    width: 33.334%;
+    height: 76px;
+    border: solid #bd9424 1px;
+    border-left: none;
+    @include stretch-bg;
+  
+    &:last-child {
+      border-right: 0;
+    }
   }
-}
-
-.guarantee {
-  background-image: url('/images/desktop_assets/guarantee.png');
-
-  &:hover {
-    background-image: url('/images/desktop_assets/guarantee-hover.png');
+  
+  .guarantee {
+    background-image: url('/images/desktop_assets/guarantee.png');
+  
+    &:hover {
+      background-image: url('/images/desktop_assets/guarantee-hover.png');
+    }
   }
-}
-
-.free-shipping-action {
-  background-image: url('/images/desktop_assets/shipping.png');
-
-  &:hover {
-    background-image: url('/images/desktop_assets/shipping-hover.png');
+  
+  .free-shipping-action {
+    background-image: url('/images/desktop_assets/shipping.png');
+  
+    &:hover {
+      background-image: url('/images/desktop_assets/shipping-hover.png');
+    }
   }
-}
-
-.shop-now {
-  border-right: none;
-  background-image: url('/images/desktop_assets/shop-now.png');
-
-  &:hover {
-    background-image: url('/images/desktop_assets/shop-now-hover.png')
+  
+  .shop-now {
+    border-right: none;
+    background-image: url('/images/desktop_assets/shop-now.png');
+  
+    &:hover {
+      background-image: url('/images/desktop_assets/shop-now-hover.png')
+    }
   }
-}
-
-.keep-shopping {
-  border-right: none;
-  background-image: url('/images/desktop_assets/keep-shopping.png');
-
-  &:hover {
-    background-image: url('/images/desktop_assets/keep-shopping-hover.png')
+  
+  .keep-shopping {
+    border-right: none;
+    background-image: url('/images/desktop_assets/keep-shopping.png');
+  
+    &:hover {
+      background-image: url('/images/desktop_assets/keep-shopping-hover.png')
+    }
   }
-}
-
-.bundle-deal-image {
-  background-image: url('/images/desktop_assets/bundle-5percent.png');
-  margin-top: -10px;
-  height: 95px;
-  @include stretch-bg;
+  
+  .bundle-deal-image {
+    background-image: url('/images/desktop_assets/bundle-5percent.png');
+    margin-top: -10px;
+    height: 95px;
+    @include stretch-bg;
+  }
 }
 
 .home-free-shipping {

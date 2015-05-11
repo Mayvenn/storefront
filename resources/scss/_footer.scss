@@ -75,14 +75,6 @@ footer#footer {
   width: (320em / 12);
 }
 
-.fs-feature {
-  background-image: url('/images/free_shipping.png');
-  @include stretch-bg;
-  width: (640rem / $default-font-size);
-  height: (123rem / $default-font-size);
-  margin: 0 auto;
-}
-
 .contact-us {
   height: (100rem / $default-font-size);
   border-top: solid white 1px;

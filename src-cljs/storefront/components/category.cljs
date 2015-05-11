@@ -62,6 +62,8 @@
              (map display-product
                   (get-in data (conj state/products-for-taxons-path (taxon-path-for taxon))))]]
 
-           [:div.free-shipping.taxon-lower-banner
+           [:div.gold-features
             [:figure.guarantee-feature]
+            [:figure.free-shipping-feature]
+            [:figure.triple-bundle-feature]
             [:feature.fs-feature]]]))))))
