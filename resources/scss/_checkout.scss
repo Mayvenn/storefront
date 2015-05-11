@@ -210,6 +210,9 @@
   font-family: $secondary_font;
   font-style: italic;
   top: (8rem / $default-font-size);
+  span {
+    font-size:0.8rem;
+  }
 }
 
 .credit-card-container {
