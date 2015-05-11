@@ -12,9 +12,7 @@
   (assoc-in app-state state/navigation-event-path event))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (let [taxons (get-in app-state state/taxons-path)
-        taxon (first (filter #(= (taxon-path-for %) taxon-path) taxons))]
-    (assoc-in app-state state/browse-taxon-path taxon)))
+  (assoc-in app-state state/browse-taxon-path taxon-path))
 
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state state/menu-expanded-path true))
@@ -35,8 +33,8 @@
 (defmethod transition-state events/api-success-store [_ event args app-state]
   (assoc-in app-state state/store-path args))
 
-(defmethod transition-state events/api-success-products [_ event {:keys [taxon-id products]} app-state]
-  (update-in app-state state/products-for-taxons-path assoc taxon-id products))
+(defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
+  (update-in app-state state/products-for-taxons-path assoc taxon-path products))
 
 (defmethod transition-state events/api-success-sign-in [_ event {:keys [email token store_slug]} app-state]
   (-> app-state
