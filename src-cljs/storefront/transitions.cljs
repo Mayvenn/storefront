@@ -20,6 +20,12 @@
 (defmethod transition-state events/control-menu-collapse [_ event args app-state]
   (assoc-in app-state state/menu-expanded-path false))
 
+(defmethod transition-state events/control-account-menu-expand [_ event args app-state]
+  (assoc-in app-state state/account-menu-expanded-path true))
+
+(defmethod transition-state events/control-account-menu-collapse [_ event args app-state]
+  (assoc-in app-state state/account-menu-expanded-path false))
+
 (defmethod transition-state events/control-sign-in-change [_ event args app-state]
   (update-in app-state state/sign-in-path merge args))
 

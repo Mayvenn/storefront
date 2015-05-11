@@ -22,8 +22,14 @@
    (html
     [:div
      (om/build slideout-nav-component data)
-     [:div {:on-click (when (get-in data state/menu-expanded-path)
-                        (utils/enqueue-event data events/control-menu-collapse))}
+     [:div (cond
+             (get-in data state/menu-expanded-path)
+             {:on-click (utils/enqueue-event data events/control-menu-collapse)}
+
+             (get-in data state/account-menu-expanded-path)
+             {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
+
+             :else {})
       [:div.page-wrap
        (om/build header-component data)
        [:main {:role "main"}

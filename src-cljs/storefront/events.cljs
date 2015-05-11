@@ -14,6 +14,10 @@
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse (conj control-menu :collapse))
+(def control-account-menu (conj control :account-menu))
+(def control-account-menu-expand (conj control-account-menu :expand))
+(def control-account-menu-collapse (conj control-account-menu :collapse))
+
 (def control-sign-in (conj control :sign-in))
 (def control-sign-in-change (conj control-sign-in :change))
 (def control-sign-in-submit (conj control-sign-in :submit))
