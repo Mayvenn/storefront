@@ -10,9 +10,10 @@
   (zipmap cookie-attrs
           (map #(.get cookie %) cookie-attrs)))
 
-(defn set-login [cookie attrs]
-  (doseq [attr cookie-attrs]
-    (.set cookie attr (attr attrs))))
+(defn set-login [cookie attrs {:keys [remember?]}]
+  (let [age (if remember? (* 60 60 24 7 4)  -1)]
+    (doseq [attr cookie-attrs]
+      (.set cookie attr (attr attrs) age))))
 
 (defn clear-login [cookie]
   (doseq [attr cookie-attrs]

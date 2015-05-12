@@ -30,7 +30,8 @@
           :menu-expanded false
           :account-menu-expanded false
           :sign-in {:email ""
-                    :password ""}
+                    :password ""
+                    :remember-me true}
           :sign-up {:email ""
                     :password ""
                     :password-confirmation ""}}}))
@@ -65,6 +66,7 @@
 (def sign-in-path (conj ui-path :sign-in))
 (def sign-in-email-path (conj sign-in-path :email))
 (def sign-in-password-path (conj sign-in-path :password))
+(def sign-in-remember-path (conj sign-in-path :remember-me))
 
 (def sign-up-path (conj ui-path :sign-up))
 (def sign-up-email-path (conj sign-up-path :email))
