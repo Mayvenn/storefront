@@ -63,7 +63,8 @@
        "/policy/privacy" (edn->bidi events/navigate-privacy)
        "/policy/tos" (edn->bidi events/navigate-tos)
        "/login" (edn->bidi events/navigate-sign-in)
-       "/signup" (edn->bidi events/navigate-sign-up)}])
+       "/signup" (edn->bidi events/navigate-sign-up)
+       "/password/recover" (edn->bidi events/navigate-forgot-password)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)

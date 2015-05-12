@@ -16,6 +16,7 @@
             [storefront.components.tos :refer [tos-component]]
             [storefront.components.sign-in :refer [sign-in-component]]
             [storefront.components.sign-up :refer [sign-up-component]]
+            [storefront.components.forgot-password :refer [forgot-password-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -45,6 +46,7 @@
             events/navigate-privacy privacy-component
             events/navigate-tos tos-component
             events/navigate-sign-in sign-in-component
-            events/navigate-sign-up sign-up-component)
+            events/navigate-sign-up sign-up-component
+            events/navigate-forgot-password forgot-password-component)
           data)]]]
       (om/build footer-component data)]])))
