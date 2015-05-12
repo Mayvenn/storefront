@@ -29,6 +29,13 @@
           (merge (utils/update-text data events/control-sign-in-change :password)
                  {:type "password"
                   :value (get-in data state/sign-in-password-path)})]]]
+       [:p
+        [:input#remember-me
+         (merge (utils/update-checkbox data (get-in data state/sign-in-remember-path)
+                                       events/control-sign-in-change :remember-me)
+                {:type "checkbox"
+                 :name "remember-me"})]
+        [:label {:for "remember-me"} "Remember me"]]
        [:a.forgot-password {:href "FIXME: forgot password"} "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"

@@ -39,13 +39,14 @@
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear-login (get-in app-state state/cookie-path)))
 
-(defn store-auth-and-redirect [app-state]
+(defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
-                        (get-in app-state state/user-path))
+                        (get-in app-state state/user-path)
+                        {:remember? (get-in app-state state/sign-in-remember-path)})
   (routes/enqueue-navigate app-state events/navigate-home))
 
-(defmethod perform-effects events/api-success-sign-in [_ event args app-state]
-  (store-auth-and-redirect app-state))
-
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (store-auth-and-redirect app-state))
+  (cookie-jar/set-login (get-in app-state state/cookie-path)
+                        (get-in app-state state/user-path)
+                        {:remember? true})
+  (routes/enqueue-navigate app-state events/navigate-home))

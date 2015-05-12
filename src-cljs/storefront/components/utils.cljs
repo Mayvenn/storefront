@@ -27,6 +27,16 @@
      (put! (get-in @app-state state/event-ch-path)
            [control-event {arg-name (.. e -target -value)}]))})
 
+(defn update-checkbox [app-state checked? control-event arg-name]
+  (let [checked-str (when checked? "checked")]
+    {:checked checked-str
+     :value checked-str
+     :on-change
+     (fn [e]
+       (.preventDefault e)
+       (put! (get-in @app-state state/event-ch-path)
+             [control-event {arg-name (.. e -target -checked)}]))}))
+
 (defn breadcrumb-link [title url last-element?]
   [:li {:item-scope "itemscope"
         :item-type "http://data-vocabulary.org/Breadcumb"}
