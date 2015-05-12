@@ -6,7 +6,7 @@
 
 (defmulti transition-state identity)
 (defmethod transition-state [] [dispatch event args app-state]
-  ;; (js/console.log (clj->js event) (clj->js args)) ;; enable to see all events
+  (js/console.log (clj->js event) (clj->js args)) ;; enable to see all events
   app-state)
 (defmethod transition-state :default [dispatch event args app-state]
   app-state)
@@ -15,15 +15,14 @@
   (assoc-in app-state state/navigation-event-path event))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (assoc-in app-state state/browse-taxon-path taxon-path))
+  (assoc-in app-state state/browse-taxon-query-path {taxon-path-for taxon-path}))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
-  (let [taxon-id (:taxon_id query-params)]
+  (let [taxon-id (js/parseInt (:taxon_id query-params))]
     (-> app-state
-        (update-in state/browse-taxon-path
-                   (if taxon-id identity (constantly taxon-id)))
-        (assoc-in state/browse-product-slug-path product-path)
-        (assoc-in state/browse-variant-path nil)
+        (assoc-in state/browse-taxon-query-path {:id taxon-id})
+        (assoc-in state/browse-product-query-path {:slug product-path})
+        (assoc-in state/browse-variant-query-path nil)
         (assoc-in state/browse-variant-quantity-path 1))))
 
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
@@ -49,7 +48,7 @@
   (assoc-in app-state state/user-path {}))
 
 (defmethod transition-state events/control-variant-select [_ event {:keys [variant]} app-state]
-  (assoc-in app-state state/browse-variant-path (variant :id)))
+  (assoc-in app-state state/browse-variant-query-path {:id (variant :id)}))
 
 (defmethod transition-state events/control-variant-inc-quantity [_ event args app-state]
   (update-in app-state state/browse-variant-quantity-path inc))
@@ -70,16 +69,12 @@
   (assoc-in app-state state/store-path args))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
-  (update-in app-state state/products-for-taxons-path assoc taxon-path products))
+  (assoc-in app-state state/products-path products))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
   (-> app-state
-      (assoc-in state/browse-product-slug-path product-path)
-      (update-in state/products-for-taxons-path
-                 merge
-                 (apply hash-map (mapcat vector
-                                         (:taxon_ids product)
-                                         (repeatedly (constantly [product])))))))
+      (assoc-in state/browse-product-query-path {:slug product-path})
+      (assoc-in state/products-path [product])))
 
 (defn sign-in-user [{:keys [email token store_slug]} app-state]
   (-> app-state

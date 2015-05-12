@@ -2,6 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.state :as state]
             [storefront.events :as events]
+            [storefront.query :as query]
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [om.core :as om]
             [clojure.string :as string]
@@ -9,11 +10,8 @@
             [storefront.events :as events]))
 
 (defn display-price [app-state product]
-  (let [variant-id (get-in app-state state/browse-variant-path)
-        variant (or (->> product
-                         :variants
-                         (filter #(= (% :id) variant-id))
-                         first)
+  (let [variant-query (get-in app-state state/browse-variant-query-path)
+        variant (or (->> product :variants (query/get variant-query))
                     (-> product :variants first))]
     (str "$" (.toFixed (js/parseFloat (variant :price))))))
 
@@ -37,29 +35,19 @@
         "sold out"])]]])
 
 (defn find-product-from-taxon-path [app-state taxon-path product-path]
-  (->> (get-in app-state (conj state/products-for-taxons-path taxon-path))
-       (filter #(= product-path (:slug %)))
-       first))
+  (query/get {:slug product-path} (get-in app-state state/products-path)))
 
 (defn find-product-from-product-path [app-state product-path]
-  (->> (get-in app-state state/products-for-taxons-path)
-       (mapcat second)
-       (mapcat (fn [product] [(:id product) product]))
-       (apply hash-map)
-       vals
-       (filter #(= (:slug %) product-path))
-       first))
+  (query/get {:slug product-path} (get-in app-state state/products-path)))
 
 (defn product-component [data owner]
   (om/component
    (html
-    (let [taxon-path (get-in data state/browse-taxon-path)
-          taxon (->> (get-in data state/taxons-path)
-                     (filter #(= taxon-path (taxon-path-for %)))
-                     first)
-          product-path (get-in data state/browse-product-slug-path)
-          product (or (find-product-from-taxon-path data taxon-path product-path)
-                      (find-product-from-product-path data product-path))
+    (let [taxon (query/get (get-in data state/browse-taxon-query-path)
+                           (get-in data state/taxons-path))
+          taxon-path (if taxon (taxon-path-for taxon))
+          product (query/get (get-in data state/browse-product-query-path)
+                             (get-in data state/products-path))
           images (->> product :master :images)
           collection-name (:collection_name product)
           variants (:variants product)]
@@ -105,8 +93,8 @@
                         (fn [index variant]
                           (display-variant data
                                            variant
-                                           (if-let [variant-id (get-in data state/browse-variant-path)]
-                                             (= (variant :id) variant-id)
+                                           (if-let [variant-query (get-in data state/browse-variant-query-path)]
+                                             (query/matches? variant-query variant)
                                              (= index 0))))))
                   [:div {:style {:clear "both"}}]]]
                 [:input {:type "hidden"

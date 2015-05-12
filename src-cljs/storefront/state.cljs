@@ -19,12 +19,12 @@
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
-     :products-for-taxons {}
+     :products []
 
      :ui {:navigation-event events/navigate-home
-          :browse-taxon nil
-          :browse-product-slug nil
-          :browse-variant-id nil
+          :browse-taxon-query nil
+          :browse-product-query nil
+          :browse-variant-query nil
           :browse-variant-quantity 1
           :menu-expanded false
           :account-menu-expanded false
@@ -50,13 +50,13 @@
 (def store-slug-path (conj store-path :store_slug))
 
 (def taxons-path [:taxons])
-(def products-for-taxons-path [:products-for-taxons])
+(def products-path [:products])
 
 (def ui-path [:ui])
 (def navigation-event-path (conj ui-path :navigation-event))
-(def browse-taxon-path (conj ui-path :browse-taxon))
-(def browse-product-slug-path (conj ui-path :browse-product-id))
-(def browse-variant-path (conj ui-path :browse-variant-id))
+(def browse-taxon-query-path (conj ui-path :browse-taxon-query))
+(def browse-product-query-path (conj ui-path :browse-product-query))
+(def browse-variant-query-path (conj ui-path :browse-variant-query))
 (def browse-variant-quantity-path (conj ui-path :browse-variant-quantity))
 (def menu-expanded-path (conj ui-path :menu-expanded))
 (def account-menu-expanded-path (conj ui-path :account-menu-expanded))
