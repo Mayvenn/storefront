@@ -5,7 +5,7 @@
             [storefront.controllers :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [storefront.routes :as routes]
-            [cljs.core.async :refer [put!]]
+            [cljs.core.async :refer [<! chan close!]]
             [om.core :as om]))
 
 (enable-console-print!)
@@ -18,17 +18,13 @@
     (perform-effects event-fragment event args app-state)))
 
 (defn start-event-loop [app-state]
-  (go-loop []
-    (alt!
-
-      (get-in @app-state state/event-ch-path)
-      ([event-and-args]
-       (swap! app-state transition event-and-args)
-       (effects @app-state event-and-args)
-       (recur))
-
-      (get-in @app-state state/stop-ch-path)
-      ([_] nil))))
+  (let [event-ch (get-in @app-state state/event-ch-path)]
+    (go-loop []
+      (when-let [event-and-args (<! event-ch)]
+        (do
+          (swap! app-state transition event-and-args)
+          (effects @app-state event-and-args)
+          (recur))))))
 
 (defn main [app-state]
   (routes/install-routes app-state)
@@ -46,7 +42,8 @@
   (js/console.log (clj->js @app-state)))
 
 (defn on-jsload []
-  (put! (get-in @app-state state/stop-ch-path) "STOP")
+  (close! (get-in @app-state state/event-ch-path))
+  (swap! app-state assoc-in state/event-ch-path (chan))
   (main app-state))
 
 (main app-state)
