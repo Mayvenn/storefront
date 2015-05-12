@@ -14,10 +14,13 @@
                  (get-in app-state state/store-slug-path))
   (set! (.. js/document -body -scrollTop) 0))
 
-
 (defmethod perform-effects events/navigate-category [_ event args app-state]
   (api/get-products (get-in app-state state/event-ch-path)
                     (get-in app-state state/browse-taxon-path)))
+
+(defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
+  (api/get-product (get-in app-state state/event-ch-path)
+                   product-path))
 
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))

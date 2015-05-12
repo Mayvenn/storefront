@@ -36,6 +36,14 @@
    #(put! events-ch [events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path})])))
 
+(defn get-product [events-ch product-path]
+  (api-req
+   GET
+   (str "/products")
+   {:slug product-path}
+   #(put! events-ch [events/api-success-product {:product-path product-path
+                                                 :product %}])))
+
 (defn sign-in [events-ch email password]
   (api-req
    POST

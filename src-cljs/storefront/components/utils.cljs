@@ -18,7 +18,7 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (apply routes/enqueue-navigate @app-state navigation-event args))})
+     (routes/enqueue-navigate @app-state navigation-event args))})
 
 (defn update-text [app-state control-event arg-name]
   {:on-change
