@@ -76,12 +76,13 @@
                "open"
                "closed")}
             (when (own-store? data)
-              [:li
-               [:a {:href "FIXME: orders & commissions"} "Orders & Commissions"]]
-              [:li
-               [:a {:href "FIXME: bonus credit"} "Bonus Credit"]]
-              [:li
-               [:a {:href "FIXME: referrals"} "Referrals"]])
+              [:div
+               [:li
+                [:a {:href "FIXME: orders & commissions"} "Orders & Commissions"]]
+               [:li
+                [:a {:href "FIXME: bonus credit"} "Bonus Credit"]]
+               [:li
+                [:a {:href "FIXME: referrals"} "Referrals"]]])
             [:li
              [:a {:href "FIXME: my orders"} "My Orders"]]
             [:li
