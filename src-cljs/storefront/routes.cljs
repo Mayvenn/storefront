@@ -5,7 +5,8 @@
             [cljs.core.async :refer [put!]]
             [cljs.reader :refer [read-string]]
             [goog.events]
-            [goog.history.EventType :as EventType])
+            [goog.history.EventType :as EventType]
+            [cemerick.url :refer [map->query url]])
   (:import [goog.history Html5History]))
 
 (extend-protocol bidi.bidi/Pattern
@@ -31,12 +32,16 @@
   (read-string (name value)))
 
 (defn set-current-page [app-state]
-  (let [{nav-event :handler
-         params :route-params}
-        (bidi/match-route (get-in app-state state/routes-path)
-                          (.getToken (get-in app-state state/history-path)))
+  (let [uri (.getToken (get-in app-state state/history-path))
+
+        {nav-event :handler params :route-params}
+        (bidi/match-route (get-in app-state state/routes-path) uri)
+
+        query-params (:query (url js/location.href))
         event-ch (get-in app-state state/event-ch-path)]
-    (put! event-ch [(bidi->edn nav-event) params])))
+    (put! event-ch
+          [(bidi->edn nav-event)
+           (assoc params :query-params query-params)])))
 
 (defn history-callback [app-state]
   (fn [e]
@@ -68,12 +73,23 @@
            {:routes (routes)
             :history history})))
 
+(defn append-query-string [s query-params]
+  (if (seq query-params)
+    (str s "?" (map->query query-params))
+    s))
+
 (defn path-for [app-state navigation-event & [args]]
-  (apply bidi/path-for
-         (get-in app-state state/routes-path)
-         (edn->bidi navigation-event)
-         (flatten (seq args))))
+  (let [query-params (:query-params args)
+        args (dissoc args :query-params)]
+    (-> (apply bidi/path-for
+               (get-in app-state state/routes-path)
+               (edn->bidi navigation-event)
+               (apply concat (seq args)))
+        (append-query-string query-params))))
 
 (defn enqueue-navigate [app-state navigation-event & [args]]
-  (.setToken (get-in app-state state/history-path)
-             (path-for app-state navigation-event args)))
+  (let [query-params (:query-params args)
+        args (dissoc args :query-params)]
+    (.setToken (get-in app-state state/history-path)
+               (-> (path-for app-state navigation-event args)
+                   (append-query-string query-params)))))

@@ -40,5 +40,6 @@
 (def api-success-store (conj api-success :store))
 (def api-success-category (conj api-success :category))
 (def api-success-products (conj api-success :products))
+(def api-success-product (conj api-success :product))
 (def api-success-sign-in (conj api-success :sign-in))
 (def api-success-sign-up (conj api-success :sign-up))

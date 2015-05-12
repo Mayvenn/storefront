@@ -24,8 +24,8 @@
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon nil
-          :browse-product nil
-          :browse-variant nil
+          :browse-product-slug nil
+          :browse-variant-id nil
           :browse-variant-quantity 1
           :menu-expanded false
           :account-menu-expanded false
@@ -57,8 +57,8 @@
 (def ui-path [:ui])
 (def navigation-event-path (conj ui-path :navigation-event))
 (def browse-taxon-path (conj ui-path :browse-taxon))
-(def browse-product-path (conj ui-path :browse-product))
-(def browse-variant-path (conj ui-path :browse-variant))
+(def browse-product-slug-path (conj ui-path :browse-product-id))
+(def browse-variant-path (conj ui-path :browse-variant-id))
 (def browse-variant-quantity-path (conj ui-path :browse-variant-quantity))
 (def menu-expanded-path (conj ui-path :menu-expanded))
 (def account-menu-expanded-path (conj ui-path :account-menu-expanded))

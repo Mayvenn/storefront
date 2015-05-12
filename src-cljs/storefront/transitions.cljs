@@ -14,11 +14,14 @@
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (assoc-in app-state state/browse-taxon-path taxon-path))
 
-(defmethod transition-state events/navigate-product [_ event {:keys [product-path]} app-state]
-  (-> app-state
-      (assoc-in state/browse-product-path product-path)
-      (assoc-in state/browse-variant-path nil)
-      (assoc-in state/browse-variant-quantity-path 1)))
+(defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
+  (let [taxon-id (:taxon_id query-params)]
+    (-> app-state
+        (update-in state/browse-taxon-path
+                   (if taxon-id identity (constantly taxon-id)))
+        (assoc-in state/browse-product-slug-path product-path)
+        (assoc-in state/browse-variant-path nil)
+        (assoc-in state/browse-variant-quantity-path 1))))
 
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state state/menu-expanded-path true))
@@ -65,6 +68,15 @@
 
 (defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
   (update-in app-state state/products-for-taxons-path assoc taxon-path products))
+
+(defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
+  (-> app-state
+      (assoc-in state/browse-product-slug-path product-path)
+      (update-in state/products-for-taxons-path
+                 merge
+                 (apply hash-map (mapcat vector
+                                         (:taxon_ids product)
+                                         (repeatedly (constantly [product])))))))
 
 (defn sign-in-user [{:keys [email token store_slug]} app-state]
   (-> app-state
