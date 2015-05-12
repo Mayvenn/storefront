@@ -62,7 +62,7 @@
           [:div.taxon-products-list-container
            (map (partial display-product data (:id taxon))
                 (filter #(contains? (set (:taxon_ids %)) (:id taxon))
-                        (get-in data state/products-path)))]]
+                        (vals (get-in data state/products-path))))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]
