@@ -27,6 +27,9 @@
 (def control-sign-up (conj control :sign-up))
 (def control-sign-up-change (conj control-sign-up :change))
 (def control-sign-up-submit (conj control-sign-up :submit))
+(def control-forgot-password (conj control :forgot-password))
+(def control-forgot-password-change (conj control-forgot-password :change))
+(def control-forgot-password-submit (conj control-forgot-password :submit))
 
 (def control-variant (conj control :variant))
 (def control-variant-select (conj control-variant :select))
@@ -44,3 +47,4 @@
 (def api-success-product (conj api-success :product))
 (def api-success-sign-in (conj api-success :sign-in))
 (def api-success-sign-up (conj api-success :sign-up))
+(def api-success-forgot-password (conj api-success :forgot-password))

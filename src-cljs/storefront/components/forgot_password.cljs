@@ -12,8 +12,13 @@
      [:h2.header-bar-heading "Reset Your Forgotten Password"]
      [:div#forgot-password
       [:form.new_spree_user
+       {:on-submit (utils/enqueue-event data events/control-forgot-password-submit)}
        [:label {:for "spree_user_email"} "Enter your email:"]
        [:br]
-       [:input {:type "email"}]
+       [:input
+        (merge
+         (utils/update-text data events/control-forgot-password-change :email)
+         {:type "email"
+          :value (get-in data state/forgot-password-email-path)})]
        [:p
         [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))

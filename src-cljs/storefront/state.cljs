@@ -33,7 +33,8 @@
                     :remember-me true}
           :sign-up {:email ""
                     :password ""
-                    :password-confirmation ""}}}))
+                    :password-confirmation ""}
+          :forgot-password {:email ""}}}))
 
 (def event-ch-path [:event-ch])
 
@@ -70,3 +71,6 @@
 (def sign-up-email-path (conj sign-up-path :email))
 (def sign-up-password-path (conj sign-up-path :password))
 (def sign-up-password-confirmation-path (conj sign-up-path :password-confirmation))
+
+(def forgot-password-path (conj ui-path :forgot-password))
+(def forgot-password-email-path (conj forgot-password-path :email))
