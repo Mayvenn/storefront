@@ -3,7 +3,8 @@
             [storefront.state :as state]
             [storefront.api :as api]
             [storefront.routes :as routes]
-            [storefront.cookie-jar :as cookie-jar]))
+            [storefront.cookie-jar :as cookie-jar]
+            [storefront.taxons :refer [taxon-name-from]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -14,9 +15,9 @@
                  (get-in app-state state/store-slug-path))
   (set! (.. js/document -body -scrollTop) 0))
 
-(defmethod perform-effects events/navigate-category [_ event args app-state]
+(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state state/event-ch-path)
-                    (get-in app-state state/browse-taxon-path)))
+                    (taxon-name-from taxon-path)))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state state/event-ch-path)

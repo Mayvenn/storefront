@@ -4,6 +4,7 @@
             [storefront.events :as events]
             [cljs.core.async :refer [put!]]
             [cljs.reader :refer [read-string]]
+            [clojure.walk :refer [keywordize-keys]]
             [goog.events]
             [goog.history.EventType :as EventType]
             [cemerick.url :refer [map->query url]])
@@ -41,7 +42,9 @@
         event-ch (get-in app-state state/event-ch-path)]
     (put! event-ch
           [(bidi->edn nav-event)
-           (assoc params :query-params query-params)])))
+           (-> params
+               (assoc :query-params query-params)
+               keywordize-keys)])))
 
 (defn history-callback [app-state]
   (fn [e]

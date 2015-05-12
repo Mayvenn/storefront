@@ -5,7 +5,8 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.state :as state]))
+            [storefront.state :as state]
+            [storefront.query :as query]))
 
 (defn display-taxon [data selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)
@@ -47,25 +48,24 @@
 (defn category-component [data owner]
   (om/component
    (html
-    (let [taxon-path (get-in data state/browse-taxon-path)]
-      (if-let [taxon (->> (get-in data state/taxons-path)
-                          (filter #(= taxon-path (taxon-path-for %)))
-                          first)]
-        (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
-          [:div
-           [:div.taxon-products-banner {:class taxon-permalink-class}]
-           [:div.taxon-products-container
-            [:div.taxon-nav
-             (map (partial display-taxon data taxon)
-                  (get-in data state/taxons-path))
-             [:div {:style {:clear "both"}}]]
+    (if-let [taxon (query/get (get-in data state/browse-taxon-query-path)
+                              (get-in data state/taxons-path))]
+      (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
+        [:div
+         [:div.taxon-products-banner {:class taxon-permalink-class}]
+         [:div.taxon-products-container
+          [:div.taxon-nav
+           (map (partial display-taxon data taxon)
+                (get-in data state/taxons-path))
+           [:div {:style {:clear "both"}}]]
 
-            [:div.taxon-products-list-container
-             (map (partial display-product data (:id taxon))
-                  (get-in data (conj state/products-for-taxons-path (taxon-path-for taxon))))]]
+          [:div.taxon-products-list-container
+           (map (partial display-product data (:id taxon))
+                (filter #(contains? (set (:taxon_ids %)) (:id taxon))
+                        (get-in data state/products-path)))]]
 
-           [:div.gold-features
-            [:figure.guarantee-feature]
-            [:figure.free-shipping-feature]
-            [:figure.triple-bundle-feature]
-            [:feature.fs-feature]]]))))))
+         [:div.gold-features
+          [:figure.guarantee-feature]
+          [:figure.free-shipping-feature]
+          [:figure.triple-bundle-feature]
+          [:feature.fs-feature]]])))))
