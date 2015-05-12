@@ -86,8 +86,11 @@
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)
       (assoc-in state/user-store-slug-path store_slug)
-      (update-in state/sign-in-path merge {:email "" :password ""})
-      (update-in state/sign-up-path merge {:email "" :password "" :password-confirmation ""})))
+      (assoc-in state/sign-in-email-path "")
+      (assoc-in state/sign-in-password-path "")
+      (assoc-in state/sign-up-email-path "")
+      (assoc-in state/sign-up-password-path "")
+      (assoc-in state/sign-up-password-confirmation-path "")))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]
   (sign-in-user args app-state))
