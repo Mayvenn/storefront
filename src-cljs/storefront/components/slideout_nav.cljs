@@ -54,10 +54,13 @@
         [:div.horizontal-nav-list
          [:div.account-detail
           (if (logged-in? data)
-            [:a.account-menu-link {:href "FIXME: account menu link"}
+            [:a.account-menu-link
+             {:href "#"
+              :on-click
+              (if (get-in data state/account-menu-expanded-path)
+                (utils/enqueue-event data events/control-account-menu-collapse)
+                (utils/enqueue-event data events/control-account-menu-expand))}
              [:span.account-detail-name
-              {:on-click
-               (utils/enqueue-event data events/control-account-menu-expand)}
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
               (get-in data state/user-email-path)]
