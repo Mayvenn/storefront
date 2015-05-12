@@ -72,12 +72,16 @@
   (assoc-in app-state state/store-path args))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
-  (assoc-in app-state state/products-path products))
+  (update-in app-state state/products-path
+             merge
+             (->> products
+                  (mapcat (fn [p] [(:id p) p]))
+                  (apply hash-map))))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
   (-> app-state
       (assoc-in state/browse-product-query-path {:slug product-path})
-      (assoc-in state/products-path [product])))
+      (assoc-in (conj state/products-path (:id product)) product)))
 
 (defn sign-in-user [{:keys [email token store_slug]} app-state]
   (-> app-state

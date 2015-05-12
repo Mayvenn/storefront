@@ -34,12 +34,6 @@
         [:br]
         "sold out"])]]])
 
-(defn find-product-from-taxon-path [app-state taxon-path product-path]
-  (query/get {:slug product-path} (get-in app-state state/products-path)))
-
-(defn find-product-from-product-path [app-state product-path]
-  (query/get {:slug product-path} (get-in app-state state/products-path)))
-
 (defn product-component [data owner]
   (om/component
    (html
@@ -47,7 +41,7 @@
                            (get-in data state/taxons-path))
           taxon-path (if taxon (taxon-path-for taxon))
           product (query/get (get-in data state/browse-product-query-path)
-                             (get-in data state/products-path))
+                             (vals (get-in data state/products-path)))
           images (->> product :master :images)
           collection-name (:collection_name product)
           variants (:variants product)]

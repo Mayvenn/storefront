@@ -19,7 +19,7 @@
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
-     :products []
+     :products {}
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
