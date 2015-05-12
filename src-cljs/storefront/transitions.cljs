@@ -6,7 +6,7 @@
 
 (defmulti transition-state identity)
 (defmethod transition-state [] [dispatch event args app-state]
-  (js/console.log (clj->js event) (clj->js args)) ;; enable to see all events
+  ;; (js/console.log (clj->js event) (clj->js args)) ;; enable to see all events
   app-state)
 (defmethod transition-state :default [dispatch event args app-state]
   app-state)
