@@ -62,6 +62,9 @@
                 (Math/abs)
                 (max 1))))
 
+(defmethod transition-state events/control-forgot-password-change [_ event args app-state]
+  (update-in app-state state/forgot-password-path merge args))
+
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state state/taxons-path (:taxons args)))
 
@@ -92,3 +95,6 @@
 
 (defmethod transition-state events/api-success-sign-up [_ event args app-state]
   (sign-in-user args app-state))
+
+(defmethod transition-state events/api-success-forgot-password [_ event args app-state]
+  (assoc-in app-state state/forgot-password-email-path ""))

@@ -60,3 +60,10 @@
     :password password
     :password_confirmation password-confirmation}
    #(put! events-ch [events/api-success-sign-up (select-keys % [:email :token :store_slug])])))
+
+(defn forgot-password [events-ch email]
+  (api-req
+   POST
+   "/forgot_password"
+   {:email email}
+   #(put! events-ch [events/api-success-forgot-password])))
