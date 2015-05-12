@@ -8,6 +8,8 @@
             [cljs.core.async :refer [put!]]
             [om.core :as om]))
 
+(enable-console-print!)
+
 (defn transition [app-state [event args]]
   (reduce #(transition-state %2 event args %1) app-state (rest (reductions conj [] event))))
 
