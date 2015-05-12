@@ -8,4 +8,12 @@
 (defn forgot-password-component [data owner]
   (om/component
    (html
-    [:div "hello"])))
+    [:div
+     [:h2.header-bar-heading "Reset Your Forgotten Password"]
+     [:div#forgot-password
+      [:form.new_spree_user
+       [:label {:for "spree_user_email"} "Enter your email:"]
+       [:br]
+       [:input {:type "email"}]
+       [:p
+        [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))
