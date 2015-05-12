@@ -10,7 +10,6 @@
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:event-ch (chan)
-     :stop-ch (chan)
 
      :history nil
      :cookie cookie
@@ -37,7 +36,6 @@
                     :password-confirmation ""}}}))
 
 (def event-ch-path [:event-ch])
-(def stop-ch-path [:stop-ch])
 
 (def history-path [:history])
 (def cookie-path [:cookie])
