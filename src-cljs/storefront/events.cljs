@@ -10,6 +10,7 @@
 (def navigate-tos (conj navigate :tos))
 (def navigate-sign-in (conj navigate :sign-in))
 (def navigate-sign-up (conj navigate :sign-up))
+(def navigate-forgot-password (conj navigate :forgot-password))
 
 (def control [:control])
 (def control-menu (conj control :menu))

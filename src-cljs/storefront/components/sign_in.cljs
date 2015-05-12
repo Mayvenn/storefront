@@ -36,7 +36,7 @@
                 {:type "checkbox"
                  :name "remember-me"})]
         [:label {:for "remember-me"} "Remember me"]]
-       [:a.forgot-password {:href "FIXME: forgot password"} "Forgot Password?"]
+       [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]])))
