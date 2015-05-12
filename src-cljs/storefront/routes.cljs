@@ -8,7 +8,8 @@
             [goog.events]
             [goog.history.EventType :as EventType]
             [cemerick.url :refer [map->query url]])
-  (:import [goog.history Html5History]))
+  (:import [goog.history Html5History]
+           [goog Uri]))
 
 (extend-protocol bidi.bidi/Pattern
   cljs.core.PersistentHashMap
@@ -50,8 +51,19 @@
   (fn [e]
     (set-current-page @app-state)))
 
+;; Html5History transformer defaults to always appending location.search
+;; to any token we give it.
+;;
+;; This allows us to override it to never append location.search
+(def non-search-preserving-history-transformer
+  #js
+  {:createUrl (fn [pathPrefix location]
+                (str pathPrefix))
+   :retrieveToken (fn [pathPrefix location]
+                    (.-pathname location))})
+
 (defn make-history [callback]
-  (doto (Html5History.)
+  (doto (Html5History. nil non-search-preserving-history-transformer)
     (.setUseFragment false)
     (.setPathPrefix "")
     (.setEnabled true)
@@ -77,9 +89,11 @@
            {:routes (routes)
             :history history})))
 
-(defn append-query-string [s query-params]
+(defn set-query-string [s query-params]
   (if (seq query-params)
-    (str s "?" (map->query query-params))
+    (-> (Uri.parse s)
+        (.setQueryData (map->query query-params))
+        .toString)
     s))
 
 (defn path-for [app-state navigation-event & [args]]
@@ -89,11 +103,11 @@
                (get-in app-state state/routes-path)
                (edn->bidi navigation-event)
                (apply concat (seq args)))
-        (append-query-string query-params))))
+        (set-query-string query-params))))
 
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
     (.setToken (get-in app-state state/history-path)
                (-> (path-for app-state navigation-event args)
-                   (append-query-string query-params)))))
+                   (set-query-string query-params)))))
