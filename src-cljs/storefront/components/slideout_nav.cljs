@@ -79,7 +79,7 @@
             (when (own-store? data)
               [:div
                [:li
-                [:a {:href "FIXME: orders & commissions"} "Orders & Commissions"]]
+                [:a (close-and-route data events/navigate-stylist-commissions) "Orders & Commissions"]]
                [:li
                 [:a {:href "FIXME: bonus credit"} "Bonus Credit"]]
                [:li

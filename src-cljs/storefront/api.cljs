@@ -79,3 +79,10 @@
     :password_confirmation password-confirmation
     :reset_password_token reset-token}
    #(put! events-ch [events/api-success-reset-password (select-sign-in-keys %)])))
+
+(defn get-stylist-commissions [events-ch user-token]
+  (api-req
+   GET
+   "/stylist/commissions"
+   {:user-token user-token}
+   #(put! events-ch [events/api-success-stylist-commissions %])))

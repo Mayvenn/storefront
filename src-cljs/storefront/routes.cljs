@@ -80,7 +80,8 @@
        "/login" (edn->bidi events/navigate-sign-in)
        "/signup" (edn->bidi events/navigate-sign-up)
        "/password/recover" (edn->bidi events/navigate-forgot-password)
-       ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)}])
+       ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
+       "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)

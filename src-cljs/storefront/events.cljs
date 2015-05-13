@@ -13,6 +13,9 @@
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))
 
+(def navigate-stylist (conj navigate :stylist))
+(def navigate-stylist-commissions (conj navigate-stylist :commissions))
+
 (def control [:control])
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
@@ -53,3 +56,4 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
+(def api-success-stylist-commissions (conj api-success :stylist-commissions))
