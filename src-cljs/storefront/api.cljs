@@ -44,13 +44,16 @@
    #(put! events-ch [events/api-success-product {:product-path product-path
                                                  :product %}])))
 
+(defn select-sign-in-keys [args]
+  (select-keys args [:email :token :store_slug]))
+
 (defn sign-in [events-ch email password]
   (api-req
    POST
    "/login"
    {:email email
     :password password}
-   #(put! events-ch [events/api-success-sign-in (select-keys % [:email :token :store_slug])])))
+   #(put! events-ch [events/api-success-sign-in (select-sign-in-keys %)])))
 
 (defn sign-up [events-ch email password password-confirmation]
   (api-req
@@ -59,7 +62,7 @@
    {:email email
     :password password
     :password_confirmation password-confirmation}
-   #(put! events-ch [events/api-success-sign-up (select-keys % [:email :token :store_slug])])))
+   #(put! events-ch [events/api-success-sign-up (select-sign-in-keys %)])))
 
 (defn forgot-password [events-ch email]
   (api-req
@@ -67,3 +70,12 @@
    "/forgot_password"
    {:email email}
    #(put! events-ch [events/api-success-forgot-password])))
+
+(defn reset-password [events-ch password password-confirmation reset-token]
+  (api-req
+   POST
+   "/reset_password"
+   {:password password
+    :password_confirmation password-confirmation
+    :reset_password_token reset-token}
+   #(put! events-ch [events/api-success-reset-password (select-sign-in-keys %)])))

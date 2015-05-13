@@ -11,6 +11,7 @@
 (def navigate-sign-in (conj navigate :sign-in))
 (def navigate-sign-up (conj navigate :sign-up))
 (def navigate-forgot-password (conj navigate :forgot-password))
+(def navigate-reset-password (conj navigate :reset-password))
 
 (def control [:control])
 (def control-menu (conj control :menu))
@@ -30,6 +31,9 @@
 (def control-forgot-password (conj control :forgot-password))
 (def control-forgot-password-change (conj control-forgot-password :change))
 (def control-forgot-password-submit (conj control-forgot-password :submit))
+(def control-reset-password (conj control :reset-password))
+(def control-reset-password-change (conj control-reset-password :change))
+(def control-reset-password-submit (conj control-reset-password :submit))
 
 (def control-browse-variant (conj control :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))
@@ -48,3 +52,4 @@
 (def api-success-sign-in (conj api-success :sign-in))
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
+(def api-success-reset-password (conj api-success :reset-password))

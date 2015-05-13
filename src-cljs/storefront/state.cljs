@@ -34,7 +34,10 @@
           :sign-up {:email ""
                     :password ""
                     :password-confirmation ""}
-          :forgot-password {:email ""}}}))
+          :forgot-password {:email ""}
+          :reset-password {:password ""
+                           :password-confirmation ""
+                           :token ""}}}))
 
 (def event-ch-path [:event-ch])
 
@@ -74,3 +77,8 @@
 
 (def forgot-password-path (conj ui-path :forgot-password))
 (def forgot-password-email-path (conj forgot-password-path :email))
+
+(def reset-password-path (conj ui-path :reset-password))
+(def reset-password-password-path (conj reset-password-path :password))
+(def reset-password-password-confirmation-path (conj reset-password-path :password-confirmation))
+(def reset-password-token-path (conj reset-password-path :token))
