@@ -47,7 +47,7 @@
                                                  :product %}])))
 
 (defn select-sign-in-keys [args]
-  (select-keys args [:email :token :store_slug]))
+  (select-keys args [:email :token :store_slug :id]))
 
 (defn sign-in [events-ch email password]
   (api-req

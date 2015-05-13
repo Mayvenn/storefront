@@ -96,8 +96,9 @@
   (-> app-state
       (assoc-in state/stylist-commissions-new-orders-path new-orders)))
 
-(defn sign-in-user [app-state {:keys [email token store_slug]}]
+(defn sign-in-user [app-state {:keys [email token store_slug id]}]
   (-> app-state
+      (assoc-in state/user-id-path id)
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)
       (assoc-in state/user-store-slug-path store_slug)))

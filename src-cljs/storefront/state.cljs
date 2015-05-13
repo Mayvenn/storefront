@@ -54,6 +54,7 @@
 (def user-email-path (conj user-path :email))
 (def user-token-path (conj user-path :token))
 (def user-store-slug-path (conj user-path :store-slug))
+(def user-id-path (conj user-path :id))
 
 (def store-path [:store])
 (def store-slug-path (conj store-path :store_slug))

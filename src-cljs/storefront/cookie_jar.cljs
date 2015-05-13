@@ -4,7 +4,7 @@
 (defn make-cookie []
   (Cookies. js/document))
 
-(def cookie-attrs [:email :token :store-slug])
+(def cookie-attrs [:email :token :store-slug :id])
 
 (defn retrieve-login [cookie]
   (zipmap cookie-attrs
