@@ -1,5 +1,5 @@
 (ns storefront.api
-  (:require [ajax.core :refer [GET POST json-response-format]]
+  (:require [ajax.core :refer [GET POST PUT json-response-format]]
             [cljs.core.async :refer [put!]]
             [storefront.events :as events]
             [storefront.taxons :refer [taxon-name-from]]))
@@ -81,6 +81,17 @@
     :password_confirmation password-confirmation
     :reset_password_token reset-token}
    #(put! events-ch [events/api-success-reset-password (select-sign-in-keys %)])))
+
+(defn update-account [events-ch id email password password-confirmation token]
+  (api-req
+   PUT
+   "/users"
+   {:id id
+    :email email
+    :password password
+    :password_confirmation password-confirmation
+    :token token}
+   #(put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])))
 
 (defn get-stylist-commissions [events-ch user-token]
   (api-req

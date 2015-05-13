@@ -38,6 +38,9 @@
 (def control-reset-password (conj control :reset-password))
 (def control-reset-password-change (conj control-reset-password :change))
 (def control-reset-password-submit (conj control-reset-password :submit))
+(def control-manage-account (conj control :manage-account))
+(def control-manage-account-change (conj control-manage-account :change))
+(def control-manage-account-submit (conj control-manage-account :submit))
 
 (def control-browse-variant (conj control :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))
@@ -57,6 +60,7 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
+(def api-success-manage-account (conj api-success :manage-account))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-sms-number (conj api-success :sms-number))
 
