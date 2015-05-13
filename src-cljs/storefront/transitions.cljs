@@ -92,9 +92,9 @@
       (assoc-in state/browse-product-query-path {:slug product-path})
       (assoc-in (conj state/products-path (:id product)) product)))
 
-(defmethod transition-state events/api-success-stylist-commissions [_ event args app-state]
+(defmethod transition-state events/api-success-stylist-commissions [_ event {:keys [new-orders]} app-state]
   (-> app-state
-      (assoc-in state/store-path [])))
+      (assoc-in state/stylist-commissions-new-orders-path new-orders)))
 
 (defn sign-in-user [app-state {:keys [email token store_slug]}]
   (-> app-state

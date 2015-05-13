@@ -21,6 +21,8 @@
      :taxons []
      :products {}
      :sms-number nil
+     :stylist {:commissions {:new-orders []
+                             :pay-outs []}}
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
@@ -91,3 +93,8 @@
 (def flash-success-path (conj flash-path :success))
 (def flash-success-message-path (conj flash-success-path :message))
 (def flash-success-nav-path (conj flash-success-path :navigation))
+
+(def stylist-path [:stylist])
+(def stylist-commissions-path (conj stylist-path :commissions))
+(def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
+(def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))

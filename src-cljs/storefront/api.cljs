@@ -87,7 +87,8 @@
    GET
    "/stylist/commissions"
    {:user-token user-token}
-   #(put! events-ch [events/api-success-stylist-commissions %])))
+   #(put! events-ch [events/api-success-stylist-commissions
+                     {:new-orders (% :new_orders)}])))
 
 (defn get-sms-number [events-ch]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
