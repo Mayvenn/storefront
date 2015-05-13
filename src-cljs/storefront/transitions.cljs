@@ -125,6 +125,9 @@
                     state/reset-password-password-confirmation-path
                     state/reset-password-token-path)))
 
+(defmethod transition-state events/api-success-sms-number [_ event args app-state]
+  (assoc-in app-state state/sms-number-path (:number args)))
+
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (assoc-in app-state state/flash-success-path (select-keys args [:message :navigation])))
 
