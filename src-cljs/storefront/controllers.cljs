@@ -5,6 +5,7 @@
             [storefront.routes :as routes]
             [storefront.cookie-jar :as cookie-jar]
             [storefront.taxons :refer [taxon-name-from]]
+            [storefront.query :as query]
             [cljs.core.async :refer [put!]]))
 
 (defmulti perform-effects identity)
@@ -51,7 +52,18 @@
                (get-in app-state state/sign-up-password-confirmation-path)))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
-  (cookie-jar/clear-login (get-in app-state state/cookie-path)))
+  (cookie-jar/clear (get-in app-state state/cookie-path)))
+
+(defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
+  (let [product (query/get (get-in app-state state/browse-product-query-path)
+                           (vals (get-in app-state state/products-path)))
+        variant (query/get (get-in app-state state/browse-variant-query-path)
+                           (:variants product))]
+    (api/add-to-bag (get-in app-state state/event-ch-path)
+                    (variant :id)
+                    (get-in app-state state/browse-variant-quantity-path)
+                    (get-in app-state state/user-order-token-path)
+                    (get-in app-state state/user-order-id-path))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state state/event-ch-path)
@@ -63,29 +75,45 @@
                       (get-in app-state state/reset-password-password-confirmation-path)
                       (get-in app-state state/reset-password-token-path)))
 
+(defn save-cookie [app-state]
+  (cookie-jar/save (get-in app-state state/cookie-path)
+                   (get-in app-state state/user-path)
+                   {:remember? (get-in app-state state/sign-in-remember-path)}))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
-  (cookie-jar/set-login (get-in app-state state/cookie-path)
-                        (get-in app-state state/user-path)
-                        {:remember? (get-in app-state state/sign-in-remember-path)})
+  (save-cookie app-state)
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Logged in successfully"
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (cookie-jar/set-login (get-in app-state state/cookie-path)
-                        (get-in app-state state/user-path)
-                        {:remember? true})
+  (save-cookie app-state)
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Welcome! You have signed up successfully."
-                                    :navigation [events/navigate-home {}]}]))
+                                    :navigation [events/navigate-home {}]}])))
+
+(defmethod perform-effects events/api-success-sign-up [_ event args app-state]
+  (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
+
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
-                                    :navigation [events/navigate-home {}]}]))
+                                    :navigation [events/navigate-home {}]}])))
+
+(defmethod perform-effects events/api-success-create-order [_ event args app-state]
+  (save-cookie app-state)
+  (api/current-order (get-in app-state state/event-ch-path)
+                     (get-in app-state state/user-order-id-path)
+                     (get-in app-state state/user-order-token-path)))
+
+(defmethod perform-effects events/api-success-add-to-bag [_ event args app-state]
+  (api/current-order (get-in app-state state/event-ch-path)
+                     (get-in app-state state/user-order-id-path)
+                     (get-in app-state state/user-order-token-path)))

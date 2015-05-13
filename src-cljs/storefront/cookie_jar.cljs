@@ -4,17 +4,18 @@
 (defn make-cookie []
   (Cookies. js/document))
 
-(def cookie-attrs [:email :token :store-slug])
+(def user-attrs [:email :token :store-slug :order-token :order-id])
+(def remember-me-age (* 60 60 24 7 4))
 
 (defn retrieve-login [cookie]
-  (zipmap cookie-attrs
-          (map #(.get cookie %) cookie-attrs)))
+  (zipmap user-attrs
+          (map #(.get cookie %) user-attrs)))
 
-(defn set-login [cookie attrs {:keys [remember?]}]
-  (let [age (if remember? (* 60 60 24 7 4)  -1)]
-    (doseq [attr cookie-attrs]
+(defn save [cookie attrs {:keys [remember?]}]
+  (let [age (if remember? remember-me-age -1)]
+    (doseq [attr user-attrs]
       (.set cookie attr (attr attrs) age))))
 
-(defn clear-login [cookie]
-  (doseq [attr cookie-attrs]
+(defn clear [cookie]
+  (doseq [attr user-attrs]
     (.remove cookie attr)))

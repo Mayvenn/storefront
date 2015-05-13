@@ -68,6 +68,9 @@
                 (Math/abs)
                 (max 1))))
 
+(defmethod transition-state events/control-browse-add-to-bag [_ event args app-state]
+  app-state)
+
 (defmethod transition-state events/control-forgot-password-change [_ event args app-state]
   (update-in app-state state/forgot-password-path merge args))
 
@@ -123,7 +126,17 @@
       (sign-in-user args)
       (clear-fields state/reset-password-password-path
                     state/reset-password-password-confirmation-path
-                    state/reset-password-token-path)))
+                    state/reset-password-token-path)
+      (assoc-in state/sign-in-remember-path true)))
+
+(defmethod transition-state events/api-success-create-order [_ event {:keys [number token]} app-state]
+  (-> app-state
+      (assoc-in state/user-order-token-path token)
+      (assoc-in state/user-order-id-path number)))
+
+(defmethod transition-state events/api-success-fetch-order [_ event order app-state]
+  (-> app-state
+      (assoc-in state/order-path order)))
 
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (assoc-in app-state state/flash-success-path (select-keys args [:message :navigation])))
