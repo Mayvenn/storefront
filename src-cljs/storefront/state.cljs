@@ -27,6 +27,7 @@
           :browse-product-query nil
           :browse-variant-query nil
           :browse-variant-quantity 1
+          :browse-recently-added-variants []
           :menu-expanded false
           :account-menu-expanded false
           :sign-in {:email ""
@@ -69,6 +70,7 @@
 (def browse-product-query-path (conj ui-path :browse-product-query))
 (def browse-variant-query-path (conj ui-path :browse-variant-query))
 (def browse-variant-quantity-path (conj ui-path :browse-variant-quantity))
+(def browse-recently-added-variants-path (conj ui-path :browse-recently-added-variants))
 (def menu-expanded-path (conj ui-path :menu-expanded))
 (def account-menu-expanded-path (conj ui-path :account-menu-expanded))
 

@@ -63,7 +63,8 @@
                     (variant :id)
                     (get-in app-state state/browse-variant-quantity-path)
                     (get-in app-state state/user-order-token-path)
-                    (get-in app-state state/user-order-id-path))))
+                    (get-in app-state state/user-order-id-path)
+                    (get-in app-state state/user-token-path))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state state/event-ch-path)
@@ -92,7 +93,7 @@
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Welcome! You have signed up successfully."
-                                    :navigation [events/navigate-home {}]}])))
+                                    :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
@@ -105,15 +106,4 @@
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
-                                    :navigation [events/navigate-home {}]}])))
-
-(defmethod perform-effects events/api-success-create-order [_ event args app-state]
-  (save-cookie app-state)
-  (api/current-order (get-in app-state state/event-ch-path)
-                     (get-in app-state state/user-order-id-path)
-                     (get-in app-state state/user-order-token-path)))
-
-(defmethod perform-effects events/api-success-add-to-bag [_ event args app-state]
-  (api/current-order (get-in app-state state/event-ch-path)
-                     (get-in app-state state/user-order-id-path)
-                     (get-in app-state state/user-order-token-path)))
+                                    :navigation [events/navigate-home {}]}]))

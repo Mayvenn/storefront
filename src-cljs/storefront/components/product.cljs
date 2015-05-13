@@ -19,6 +19,28 @@
 (defn display-product-image [image]
   [:img {:src (:product_url image)}])
 
+(defn number->words [n]
+  (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
+    (get mapping n (str "(x " n ")"))))
+
+(defn display-bagged-variant [app-state {:keys [id quantity]}]
+  (let [variant (query/get {:id id}
+                           (->> (get-in app-state state/products-path)
+                                vals
+                                (mapcat :variants)))
+        product (first (filter #(contains? (set (:variants %)) variant)
+                               (-> (get-in app-state state/products-path)
+                                   vals)))]
+    [:div.item-added
+     [:strong "Added to Bag: "]
+     (str (number->words quantity)
+          " "
+          (-> (:options_text variant)
+              (string/replace #"Length: " "")
+              (string/replace #"''" " inch"))
+          " "
+          (:name product))]))
+
 (defn display-variant [app-state variant checked?]
   [:li.keypad-item
    [:input#variant_id.keypad-input {:type "radio"
@@ -130,25 +152,16 @@
                  {:type "submit"
                   :value "Add to Bag"
                   :on-click (utils/enqueue-event data events/control-browse-add-to-bag)}]]]]]
-            [:div#after-add
-             [:div.added-to-bag-container]
-             [:div.go-to-checkout
-              [:a.cart-button {:href "TODO: cart_path"}
-               "Go to Checkout >>"]
-              [:figure.checkout-cart]
-              [:figure.checkout-guarantee]]]]
 
-           #_(when added-product ;; TODO: add this when item is added to bag
-             [:div#after-add {:style {:display "block"}}
-              [:div.added-to-bag-container
-               [:div.item-added
-                [:strong "Added to Bag:"]
-                "TODO: <quantity> <variant> <product name>"]
+            (when-let [bagged-variants (seq (get-in data state/browse-recently-added-variants-path))]
+              [:div#after-add {:style {:display "block"}}
+               [:div.added-to-bag-container
+                (map (partial display-bagged-variant data) bagged-variants)]
                [:div.go-to-checkout
                 [:a.cart-button {:href "TODO: /cart"}
                  "Go to Checkout >>"
                  [:figure.checkout-cart]
-                 [:figure.checkout-guarantee]]]]])]
+                 [:figure.checkout-guarantee]]]])]]
 
           [:div#product-collection-description.product-collection-description
            [:div.bar]

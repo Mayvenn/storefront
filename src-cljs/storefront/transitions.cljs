@@ -27,7 +27,8 @@
         (assoc-in state/browse-taxon-query-path {:id taxon-id})
         (assoc-in state/browse-product-query-path {:slug product-path})
         (assoc-in state/browse-variant-query-path nil)
-        (assoc-in state/browse-variant-quantity-path 1))))
+        (assoc-in state/browse-variant-quantity-path 1)
+        (assoc-in state/browse-recently-added-variants-path []))))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state state/reset-password-token-path reset-token))
@@ -134,6 +135,13 @@
   (-> app-state
       (assoc-in state/user-order-token-path token)
       (assoc-in state/user-order-id-path number)))
+
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant-id variant-quantity]} app-state]
+  (-> app-state
+      (update-in state/browse-recently-added-variants-path
+                 conj
+                 {:id variant-id
+                  :quantity variant-quantity})))
 
 (defmethod transition-state events/api-success-fetch-order [_ event order app-state]
   (-> app-state
