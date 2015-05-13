@@ -3,7 +3,7 @@
   (:require [storefront.state :as state]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
-            [storefront.controllers :refer [perform-effects]]
+            [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [storefront.routes :as routes]
             [cljs.core.async :refer [<! chan close! put!]]
