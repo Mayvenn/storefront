@@ -4,6 +4,7 @@
             [storefront.events :as events]
             [storefront.query :as query]
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
+            [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -52,7 +53,7 @@
             [:div.taxon-products-banner
              {:class (if taxon-path (taxon-class-name taxon) "unknown")}]
 
-            (utils/breadcrumbs
+            (breadcrumbs
              ["Categories" (:href (utils/route-to data events/navigate-category {:taxon-path taxon-path}))]
              [(:name taxon) (:href (utils/route-to data events/navigate-category {:taxon-path taxon-path}))])])
 
