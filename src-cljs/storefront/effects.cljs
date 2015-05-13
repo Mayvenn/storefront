@@ -78,10 +78,10 @@
                       (get-in app-state state/reset-password-token-path)))
 
 
-(defn save-cookie [app-state]
+(defn save-cookie [app-state remember?]
   (cookie-jar/save (get-in app-state state/cookie-path)
                    (get-in app-state state/user-path)
-                   {:remember? (get-in app-state state/sign-in-remember-path)}))
+                   {:remember? remember?}))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
   (api/update-account (get-in app-state state/event-ch-path)
@@ -92,14 +92,14 @@
                       (get-in app-state state/user-token-path)))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
-  (save-cookie app-state)
+  (save-cookie app-state (get-in app-state state/sign-in-remember-path))
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Logged in successfully"
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (save-cookie app-state)
+  (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Welcome! You have signed up successfully."
@@ -119,7 +119,7 @@
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
-  (save-cookie app-state)
+  (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Account updated"
