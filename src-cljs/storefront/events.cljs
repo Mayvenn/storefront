@@ -57,3 +57,9 @@
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
+
+(def flash [:flash])
+(def flash-show [:show])
+(def flash-dismiss [:dismiss])
+(def flash-show-success (conj flash-show :success))
+(def flash-dismiss-success (conj flash-dismiss :success))

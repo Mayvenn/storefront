@@ -34,6 +34,8 @@
              {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
 
              :else {})
+      (when-let [msg (get-in data state/flash-success-message-path)]
+        [:div.flash.success msg])
       [:div.page-wrap
        (om/build header-component data)
        [:main {:role "main"}

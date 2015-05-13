@@ -37,7 +37,9 @@
           :forgot-password {:email ""}
           :reset-password {:password ""
                            :password-confirmation ""
-                           :token ""}}}))
+                           :token ""}
+          :flash {:success {:message nil
+                            :navigation []}}}}))
 
 (def event-ch-path [:event-ch])
 
@@ -82,3 +84,8 @@
 (def reset-password-password-path (conj reset-password-path :password))
 (def reset-password-password-confirmation-path (conj reset-password-path :password-confirmation))
 (def reset-password-token-path (conj reset-password-path :token))
+
+(def flash-path (conj ui-path :flash))
+(def flash-success-path (conj flash-path :success))
+(def flash-success-message-path (conj flash-success-path :message))
+(def flash-success-nav-path (conj flash-success-path :navigation))

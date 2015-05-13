@@ -124,3 +124,9 @@
       (clear-fields state/reset-password-password-path
                     state/reset-password-password-confirmation-path
                     state/reset-password-token-path)))
+
+(defmethod transition-state events/flash-show-success [_ event args app-state]
+  (assoc-in app-state state/flash-success-path (select-keys args [:message :navigation])))
+
+(defmethod transition-state events/flash-dismiss-success [_ event args app-state]
+  (assoc-in app-state state/flash-success-path nil))
