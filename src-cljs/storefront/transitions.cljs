@@ -12,6 +12,7 @@
   ;; (js/console.log (clj->js event) (clj->js args)) ;; enable to see all events
   app-state)
 (defmethod transition-state :default [dispatch event args app-state]
+  ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
 (defmethod transition-state events/navigate [_ event args app-state]
