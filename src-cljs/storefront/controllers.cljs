@@ -4,7 +4,8 @@
             [storefront.api :as api]
             [storefront.routes :as routes]
             [storefront.cookie-jar :as cookie-jar]
-            [storefront.taxons :refer [taxon-name-from]]))
+            [storefront.taxons :refer [taxon-name-from]]
+            [cljs.core.async :refer [put!]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -13,7 +14,12 @@
   (api/get-taxons (get-in app-state state/event-ch-path))
   (api/get-store (get-in app-state state/event-ch-path)
                  (get-in app-state state/store-slug-path))
-  (set! (.. js/document -body -scrollTop) 0))
+  (set! (.. js/document -body -scrollTop) 0)
+  (when-not (or
+             (empty? (get-in app-state state/flash-success-nav-path))
+             (= [event args] (get-in app-state state/flash-success-nav-path)))
+    (put! (get-in app-state state/event-ch-path)
+          [events/flash-dismiss-success])))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state state/event-ch-path)
@@ -61,7 +67,10 @@
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path)
                         {:remember? (get-in app-state state/sign-in-remember-path)})
-  (routes/enqueue-navigate app-state events/navigate-home))
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "Logged in successfully"
+                                    :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
