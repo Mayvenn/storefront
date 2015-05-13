@@ -76,10 +76,16 @@
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path)
                         {:remember? true})
-  (routes/enqueue-navigate app-state events/navigate-home))
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "Welcome! You have signed up successfully."
+                                    :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
-  (routes/enqueue-navigate app-state events/navigate-home))
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
+                                    :navigation [events/navigate-home {}]}]))
