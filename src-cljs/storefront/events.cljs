@@ -12,6 +12,7 @@
 (def navigate-sign-up (conj navigate :sign-up))
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))
+(def navigate-manage-account (conj navigate :manage-account))
 
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))

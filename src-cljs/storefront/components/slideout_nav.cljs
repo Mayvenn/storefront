@@ -87,7 +87,9 @@
             [:li
              [:a {:href "FIXME: my orders"} "My Orders"]]
             [:li
-             [:a {:href "FIXME: manage account depending on stylist or not"} "Manage Account"]]
+             [:a ;; FIXME stylist manage should go directly to their own profile edit
+              (close-and-route data events/navigate-manage-account)
+              "Manage Account"]]
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
               "Logout"]]])
@@ -165,11 +167,12 @@
                :full-width? true})
              (slideout-nav-link
               data
-              {:href "FIXME path"
-               :icon-class "manage-account"
-               :image "/images/slideout_nav/manage-account.png"
-               :label "Manage Account"
-               :full-width? false})
+              ;; "FIXME path depending on stylist or not?? Current site seems to always go to this manage account"
+              (merge (close-and-route data events/navigate-manage-account)
+                     {:icon-class "manage-account"
+                      :image "/images/slideout_nav/manage-account.png"
+                      :label "Manage Account"
+                      :full-width? false}))
              (slideout-nav-link
               data
               (merge (close-and-enqueue data events/control-sign-out)
