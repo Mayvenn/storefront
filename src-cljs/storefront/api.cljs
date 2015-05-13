@@ -1,6 +1,6 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST json-response-format]]
-            [cljs.core.async :refer [put!]]
+            [cljs.core.async :refer [put! take! chan]]
             [storefront.events :as events]
             [storefront.taxons :refer [taxon-name-from]]))
 
@@ -86,3 +86,48 @@
    "/stylist/commissions"
    {:user-token user-token}
    #(put! events-ch [events/api-success-stylist-commissions %])))
+
+(defn create-order [events-ch user-token]
+  (api-req
+   POST
+   "/orders"
+   (if user-token {:token user-token} {})
+   #(put! events-ch [events/api-success-create-order (select-keys % [:number :token])])))
+
+(defn react [src-ch dest-ch f]
+  (let [response-ch (chan)]
+    (take! src-ch
+           #(do
+              (when (first %) (put! dest-ch %))
+              (put! response-ch %)
+              (f %)))
+    response-ch))
+
+(defn create-order-if-necessary [order-id order-token user-token]
+  (let [create-order-ch (chan)]
+    (if (and order-token order-id)
+      (put! create-order-ch [nil {:number order-id :token order-token}])
+      (create-order create-order-ch user-token))
+    create-order-ch))
+
+(defn add-to-bag [events-ch variant-id variant-quantity order-token order-id]
+  (-> (create-order-if-necessary order-id order-token nil)
+      (react events-ch
+             (fn [[_ {order-number :number order-token :token}]]
+               (println _)
+               (api-req
+                POST
+                "/line-items"
+                {:token order-token
+                 :order_number order-number
+                 :variant_id variant-id
+                 :variant_quantity variant-quantity}
+                #(put! events-ch [events/api-success-add-to-bag %]))))
+      (react events-ch
+             (fn [[_ {order-number :number order-token :token}]]
+               (api-req
+                GET
+                "/orders"
+                {:id order-number
+                 :token order-token}
+                #(put! events-ch [events/api-success-fetch-order %]))))))

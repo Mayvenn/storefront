@@ -126,15 +126,29 @@
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]
 
                [:div.add-to-cart {:style {:clear "both"}}
-                [:input.large.primary#add-to-cart-button {:type "submit"
-                                                          :value "Add to Bag"}]]]]]
+                [:input.large.primary#add-to-cart-button
+                 {:type "submit"
+                  :value "Add to Bag"
+                  :on-click (utils/enqueue-event data events/control-browse-add-to-bag)}]]]]]
             [:div#after-add
              [:div.added-to-bag-container]
              [:div.go-to-checkout
               [:a.cart-button {:href "TODO: cart_path"}
                "Go to Checkout >>"]
               [:figure.checkout-cart]
-              [:figure.checkout-guarantee]]]]]
+              [:figure.checkout-guarantee]]]]
+
+           #_(when added-product ;; TODO: add this when item is added to bag
+             [:div#after-add {:style {:display "block"}}
+              [:div.added-to-bag-container
+               [:div.item-added
+                [:strong "Added to Bag:"]
+                "TODO: <quantity> <variant> <product name>"]
+               [:div.go-to-checkout
+                [:a.cart-button {:href "TODO: /cart"}
+                 "Go to Checkout >>"
+                 [:figure.checkout-cart]
+                 [:figure.checkout-guarantee]]]]])]
 
           [:div#product-collection-description.product-collection-description
            [:div.bar]

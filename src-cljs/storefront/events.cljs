@@ -38,11 +38,13 @@
 (def control-reset-password-change (conj control-reset-password :change))
 (def control-reset-password-submit (conj control-reset-password :submit))
 
-(def control-browse-variant (conj control :variant))
+(def control-browse (conj control :browse))
+(def control-browse-variant (conj control-browse :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))
 (def control-browse-variant-inc-quantity (conj control-browse-variant :inc-quantity))
 (def control-browse-variant-dec-quantity (conj control-browse-variant :dec-quantity))
 (def control-browse-variant-set-quantity (conj control-browse-variant :set-quantity))
+(def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
 (def api [:api])
 (def api-success (conj api :success))
@@ -57,6 +59,9 @@
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
+(def api-success-create-order (conj api-success :create-order))
+(def api-success-add-to-bag (conj api-success :add-to-bag))
+(def api-success-fetch-order (conj api-success :fetch-order))
 
 (def flash [:flash])
 (def flash-show [:show])
