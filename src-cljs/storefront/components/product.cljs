@@ -138,9 +138,12 @@
           [:div#product-collection-description.product-collection-description
            [:div.bar]
            [:div.product-collection-circles
-            [:img {:src (str "/images/products/hairtype-circle-premier" (if (= collection-name "premier") "" "-disabled") "@2x.png")}]
-            [:img {:src (str "/images/products/hairtype-circle-deluxe" (if (= collection-name "deluxe") "" "-disabled") "@2x.png")}]
-            [:img {:src (str "/images/products/hairtype-circle-ultra" (if (= collection-name "ultra") "" "-disabled") "@2x.png")}]]
+            [:img {:src (str "/images/products/hairtype-circle-premier"
+                             (if (= collection-name "premier") "" "-disabled") "@2x.png")}]
+            [:img {:src (str "/images/products/hairtype-circle-deluxe"
+                             (if (= collection-name "deluxe") "" "-disabled") "@2x.png")}]
+            [:img {:src (str "/images/products/hairtype-circle-ultra"
+                             (if (= collection-name "ultra") "" "-disabled") "@2x.png")}]]
            [:div.product-collection-text
             [:h3.sub-header (str collection-name ":")]
             (product :collection_description)]]
