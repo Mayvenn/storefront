@@ -24,7 +24,7 @@
                                     :checked checked?}
     [:label.keypad-label {:id (str "variant_id_" (:id variant))
                           :on-click (utils/enqueue-event app-state
-                                                         events/control-variant-select
+                                                         events/control-browse-variant-select
                                                          {:variant variant})}
      (if (variant :can_supply?)
        [:div.variant-description
@@ -100,18 +100,18 @@
                 [:div.quantity-selector
                  [:div.minus [:a.pm-link
                               {:href "#"
-                               :on-click (utils/enqueue-event data events/control-variant-dec-quantity)}
+                               :on-click (utils/enqueue-event data events/control-browse-variant-dec-quantity)}
                               "-"]]
                  [:input#quantity.quantity-selector-input
                   {:min 1
                    :name "quantity"
                    :type "text"
                    :value (str (get-in data state/browse-variant-quantity-path))
-                   :on-change #(utils/put-event data events/control-variant-set-quantity
+                   :on-change #(utils/put-event data events/control-browse-variant-set-quantity
                                                 {:value-str (.. % -target -value)})}]
                  [:div.plus [:a.pm-link
                              {:href "#"
-                              :on-click (utils/enqueue-event data events/control-variant-inc-quantity)}
+                              :on-click (utils/enqueue-event data events/control-browse-variant-inc-quantity)}
                              "+"]]]]
                [:div#product-price.product-price
                 [:span.price-label "Price:"]

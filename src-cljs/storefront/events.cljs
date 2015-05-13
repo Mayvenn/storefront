@@ -31,11 +31,11 @@
 (def control-forgot-password-change (conj control-forgot-password :change))
 (def control-forgot-password-submit (conj control-forgot-password :submit))
 
-(def control-variant (conj control :variant))
-(def control-variant-select (conj control-variant :select))
-(def control-variant-inc-quantity (conj control :inc-quantity))
-(def control-variant-dec-quantity (conj control :dec-quantity))
-(def control-variant-set-quantity (conj control :set-quantity))
+(def control-browse-variant (conj control :variant))
+(def control-browse-variant-select (conj control-browse-variant :select))
+(def control-browse-variant-inc-quantity (conj control-browse-variant :inc-quantity))
+(def control-browse-variant-dec-quantity (conj control-browse-variant :dec-quantity))
+(def control-browse-variant-set-quantity (conj control-browse-variant :set-quantity))
 
 (def api [:api])
 (def api-success (conj api :success))
