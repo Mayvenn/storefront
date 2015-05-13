@@ -47,16 +47,16 @@
   ;; FIXME clear other user specific pieces of state
   (assoc-in app-state state/user-path {}))
 
-(defmethod transition-state events/control-variant-select [_ event {:keys [variant]} app-state]
+(defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state state/browse-variant-query-path {:id (variant :id)}))
 
-(defmethod transition-state events/control-variant-inc-quantity [_ event args app-state]
+(defmethod transition-state events/control-browse-variant-inc-quantity [_ event args app-state]
   (update-in app-state state/browse-variant-quantity-path inc))
 
-(defmethod transition-state events/control-variant-dec-quantity [_ event args app-state]
+(defmethod transition-state events/control-browse-variant-dec-quantity [_ event args app-state]
   (update-in app-state state/browse-variant-quantity-path (comp (partial max 1) dec)))
 
-(defmethod transition-state events/control-variant-set-quantity [_ event {:keys [value-str]} app-state]
+(defmethod transition-state events/control-browse-variant-set-quantity [_ event {:keys [value-str]} app-state]
   (assoc-in app-state state/browse-variant-quantity-path
             (-> (js/parseInt value-str 10)
                 (Math/abs)
