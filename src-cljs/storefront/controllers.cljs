@@ -23,6 +23,10 @@
   (api/get-product (get-in app-state state/event-ch-path)
                    product-path))
 
+(defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
+  (api/get-stylist-commissions (get-in app-state state/event-ch-path)
+                               (get-in app-state state/user-token-path)))
+
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))
 

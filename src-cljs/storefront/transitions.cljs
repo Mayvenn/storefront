@@ -93,6 +93,11 @@
       (assoc-in (conj state/products-path (:id product)) product)))
 
 (defn sign-in-user [app-state {:keys [email token store_slug]}]
+(defmethod transition-state events/api-success-stylist-commissions [_ event args app-state]
+  (-> app-state
+      (assoc-in state/store-path [])))
+
+(defn sign-in-user [{:keys [email token store_slug]} app-state]
   (-> app-state
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)

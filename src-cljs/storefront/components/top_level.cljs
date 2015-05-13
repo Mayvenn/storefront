@@ -18,6 +18,7 @@
             [storefront.components.sign-up :refer [sign-up-component]]
             [storefront.components.forgot-password :refer [forgot-password-component]]
             [storefront.components.reset-password :refer [reset-password-component]]
+            [storefront.components.stylist.commissions :refer [stylist-commissions-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -49,6 +50,7 @@
             events/navigate-sign-in sign-in-component
             events/navigate-sign-up sign-up-component
             events/navigate-forgot-password forgot-password-component
-            events/navigate-reset-password reset-password-component)
+            events/navigate-reset-password reset-password-component
+            events/navigate-stylist-commissions stylist-commissions-component)
           data)]]]
       (om/build footer-component data)]])))
