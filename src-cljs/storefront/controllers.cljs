@@ -64,6 +64,14 @@
                       (get-in app-state state/reset-password-password-confirmation-path)
                       (get-in app-state state/reset-password-token-path)))
 
+(defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
+  (api/update-account (get-in app-state state/event-ch-path)
+                      (get-in app-state state/user-id-path)
+                      (get-in app-state state/manage-account-email-path)
+                      (get-in app-state state/manage-account-password-path)
+                      (get-in app-state state/manage-account-password-confirmation-path)
+                      (get-in app-state state/user-token-path)))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path)
@@ -74,7 +82,7 @@
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (cookie-jar/set-login (get-in app-state state/cookie-path)
+    (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path)
                         {:remember? true})
   (routes/enqueue-navigate app-state events/navigate-home)
@@ -89,4 +97,13 @@
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
+                                    :navigation [events/navigate-home {}]}]))
+
+(defmethod perform-effects events/api-success-manage-account [_ event args app-state]
+  (cookie-jar/set-login (get-in app-state state/cookie-path)
+                        (get-in app-state state/user-path)
+                        {:remember? true})
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "Account updated"
                                     :navigation [events/navigate-home {}]}]))

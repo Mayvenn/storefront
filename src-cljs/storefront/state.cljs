@@ -41,6 +41,9 @@
           :reset-password {:password ""
                            :password-confirmation ""
                            :token ""}
+          :manage-account {:email ""
+                           :password ""
+                           :password-confirmation ""}
           :flash {:success {:message nil
                             :navigation []}}}}))
 
@@ -89,6 +92,11 @@
 (def reset-password-password-path (conj reset-password-path :password))
 (def reset-password-password-confirmation-path (conj reset-password-path :password-confirmation))
 (def reset-password-token-path (conj reset-password-path :token))
+
+(def manage-account-path (conj ui-path :manage-account))
+(def manage-account-email-path (conj manage-account-path :email))
+(def manage-account-password-path (conj manage-account-path :password))
+(def manage-account-password-confirmation-path (conj manage-account-path :password-confirmation))
 
 (def flash-path (conj ui-path :flash))
 (def flash-success-path (conj flash-path :success))
