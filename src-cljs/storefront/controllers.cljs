@@ -47,6 +47,12 @@
   (api/forgot-password (get-in app-state state/event-ch-path)
                        (get-in app-state state/forgot-password-email-path)))
 
+(defmethod perform-effects events/control-reset-password-submit [_ event args app-state]
+  (api/reset-password (get-in app-state state/event-ch-path)
+                      (get-in app-state state/reset-password-password-path)
+                      (get-in app-state state/reset-password-password-confirmation-path)
+                      (get-in app-state state/reset-password-token-path)))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (cookie-jar/set-login (get-in app-state state/cookie-path)
                         (get-in app-state state/user-path)
@@ -60,4 +66,7 @@
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
+  (routes/enqueue-navigate app-state events/navigate-home))
+
+(defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
