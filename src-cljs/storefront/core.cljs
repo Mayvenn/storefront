@@ -39,7 +39,7 @@
 (defonce app-state (atom (state/initial-state)))
 
 (defn debug-app-state []
-  (js/console.log (clj->js @app-state)))
+  (clj->js @app-state))
 
 (defn on-jsload []
   (close! (get-in @app-state state/event-ch-path))
