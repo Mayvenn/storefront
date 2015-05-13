@@ -112,6 +112,7 @@
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
+  (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
