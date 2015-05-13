@@ -15,6 +15,7 @@
   (api/get-taxons (get-in app-state state/event-ch-path))
   (api/get-store (get-in app-state state/event-ch-path)
                  (get-in app-state state/store-slug-path))
+  (api/get-sms-number (get-in app-state state/event-ch-path))
   (set! (.. js/document -body -scrollTop) 0)
   (when-not (or
              (empty? (get-in app-state state/flash-success-nav-path))
@@ -76,10 +77,19 @@
                       (get-in app-state state/reset-password-password-confirmation-path)
                       (get-in app-state state/reset-password-token-path)))
 
+
 (defn save-cookie [app-state]
   (cookie-jar/save (get-in app-state state/cookie-path)
                    (get-in app-state state/user-path)
                    {:remember? (get-in app-state state/sign-in-remember-path)}))
+
+(defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
+  (api/update-account (get-in app-state state/event-ch-path)
+                      (get-in app-state state/user-id-path)
+                      (get-in app-state state/manage-account-email-path)
+                      (get-in app-state state/manage-account-password-path)
+                      (get-in app-state state/manage-account-password-confirmation-path)
+                      (get-in app-state state/user-token-path)))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state)
@@ -106,4 +116,11 @@
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
+                                    :navigation [events/navigate-home {}]}]))
+
+(defmethod perform-effects events/api-success-manage-account [_ event args app-state]
+  (save-cookie app-state)
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "Account updated"
                                     :navigation [events/navigate-home {}]}]))

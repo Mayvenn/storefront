@@ -21,6 +21,9 @@
      :store {:store_slug (get-store-subdomain)}
      :taxons []
      :products {}
+     :sms-number nil
+     :stylist {:commissions {:new-orders []
+                             :pay-outs []}}
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
@@ -40,6 +43,9 @@
           :reset-password {:password ""
                            :password-confirmation ""
                            :token ""}
+          :manage-account {:email ""
+                           :password ""
+                           :password-confirmation ""}
           :flash {:success {:message nil
                             :navigation []}}}}))
 
@@ -53,6 +59,7 @@
 (def user-email-path (conj user-path :email))
 (def user-token-path (conj user-path :token))
 (def user-store-slug-path (conj user-path :store-slug))
+(def user-id-path (conj user-path :id))
 (def user-order-token-path (conj user-path :order-token))
 (def user-order-id-path (conj user-path :order-id))
 
@@ -63,6 +70,7 @@
 
 (def taxons-path [:taxons])
 (def products-path [:products])
+(def sms-number-path [:sms-number])
 
 (def ui-path [:ui])
 (def navigation-event-path (conj ui-path :navigation-event))
@@ -92,7 +100,17 @@
 (def reset-password-password-confirmation-path (conj reset-password-path :password-confirmation))
 (def reset-password-token-path (conj reset-password-path :token))
 
+(def manage-account-path (conj ui-path :manage-account))
+(def manage-account-email-path (conj manage-account-path :email))
+(def manage-account-password-path (conj manage-account-path :password))
+(def manage-account-password-confirmation-path (conj manage-account-path :password-confirmation))
+
 (def flash-path (conj ui-path :flash))
 (def flash-success-path (conj flash-path :success))
 (def flash-success-message-path (conj flash-success-path :message))
 (def flash-success-nav-path (conj flash-success-path :navigation))
+
+(def stylist-path [:stylist])
+(def stylist-commissions-path (conj stylist-path :commissions))
+(def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
+(def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))

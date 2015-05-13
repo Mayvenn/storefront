@@ -12,6 +12,7 @@
 (def navigate-sign-up (conj navigate :sign-up))
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))
+(def navigate-manage-account (conj navigate :manage-account))
 
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
@@ -37,6 +38,9 @@
 (def control-reset-password (conj control :reset-password))
 (def control-reset-password-change (conj control-reset-password :change))
 (def control-reset-password-submit (conj control-reset-password :submit))
+(def control-manage-account (conj control :manage-account))
+(def control-manage-account-change (conj control-manage-account :change))
+(def control-manage-account-submit (conj control-manage-account :submit))
 
 (def control-browse (conj control :browse))
 (def control-browse-variant (conj control-browse :variant))
@@ -58,10 +62,12 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
+(def api-success-manage-account (conj api-success :manage-account))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-fetch-order (conj api-success :fetch-order))
+(def api-success-sms-number (conj api-success :sms-number))
 
 (def flash [:flash])
 (def flash-show [:show])
