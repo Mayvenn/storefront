@@ -81,6 +81,7 @@
        "/signup" (edn->bidi events/navigate-sign-up)
        "/password/recover" (edn->bidi events/navigate-forgot-password)
        ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
+       "/account/edit" (edn->bidi events/navigate-manage-account)
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)}])
 
 (defn install-routes [app-state]
