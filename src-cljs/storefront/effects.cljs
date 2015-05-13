@@ -109,7 +109,10 @@
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
-  (routes/enqueue-navigate app-state events/navigate-home))
+  (routes/enqueue-navigate app-state events/navigate-home)
+  (put! (get-in app-state state/event-ch-path)
+        [events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."
+                                    :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (save-cookie app-state true)
