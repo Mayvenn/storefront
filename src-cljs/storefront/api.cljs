@@ -5,6 +5,8 @@
             [storefront.taxons :refer [taxon-name-from]]))
 
 (def base-url "http://localhost:3005")
+(def send-sonar-base-url "https://www.sendsonar.com/api/v1")
+(def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")
 
 (defn api-req [method path params success-handler]
   (method (str base-url path)
@@ -86,3 +88,19 @@
    "/stylist/commissions"
    {:user-token user-token}
    #(put! events-ch [events/api-success-stylist-commissions %])))
+
+(defn get-sms-number [events-ch]
+  (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
+            (apply str (if (= "+" (first x))
+                         (drop 3 x)
+                         x)))
+          (callback [resp]
+            (put! events-ch
+                  [events/api-success-sms-number
+                   {:number (-> resp :available_number normalize-number)}]))]
+    (GET (str send-sonar-base-url "/phone_numbers/available")
+        {:handler callback
+         :headers {"Accepts" "application/json"
+                   "X-Publishable-Key" send-sonar-publishable-key}
+         :format :json
+         :response-format (json-response-format {:keywords? true})})))

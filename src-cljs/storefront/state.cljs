@@ -20,6 +20,7 @@
      :store {:store_slug (get-store-subdomain)}
      :taxons []
      :products {}
+     :sms-number nil
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
@@ -57,6 +58,7 @@
 
 (def taxons-path [:taxons])
 (def products-path [:products])
+(def sms-number-path [:sms-number])
 
 (def ui-path [:ui])
 (def navigation-event-path (conj ui-path :navigation-event))

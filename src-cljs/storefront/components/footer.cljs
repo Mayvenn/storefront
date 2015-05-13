@@ -3,7 +3,8 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.components.utils :as utils]))
+            [storefront.components.utils :as utils]
+            [storefront.state :as state]))
 
 (defn footer-component [data owner]
   (om/component
@@ -15,6 +16,8 @@
        [:ul.contact-us-menu
         [:li.cu-item
          [:a.cu-link.send-sonar-dynamic-number-link
+          (when-let [number (get-in data state/sms-number-path)]
+            {:href (str "sms://+1" number)})
           [:i.icon-chat]
           "text"]]
         [:li.cu-item
