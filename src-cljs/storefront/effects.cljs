@@ -111,7 +111,6 @@
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
 
-
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
   (put! (get-in app-state state/event-ch-path)
