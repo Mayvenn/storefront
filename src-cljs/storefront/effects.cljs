@@ -1,4 +1,4 @@
-(ns storefront.controllers
+(ns storefront.effects
   (:require [storefront.events :as events]
             [storefront.state :as state]
             [storefront.api :as api]
