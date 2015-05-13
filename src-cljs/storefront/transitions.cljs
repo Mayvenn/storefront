@@ -96,7 +96,7 @@
   (-> app-state
       (assoc-in state/store-path [])))
 
-(defn sign-in-user [{:keys [email token store_slug]} app-state]
+(defn sign-in-user [app-state {:keys [email token store_slug]}]
   (-> app-state
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)
