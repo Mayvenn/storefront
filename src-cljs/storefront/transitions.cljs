@@ -33,6 +33,11 @@
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state state/reset-password-token-path reset-token))
 
+(defmethod transition-state events/navigate-manage-account [_ event args app-state]
+  (assoc-in app-state
+            state/manage-account-email-path
+            (get-in app-state state/user-email-path)))
+
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state state/menu-expanded-path true))
 
@@ -54,6 +59,9 @@
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   ;; FIXME clear other user specific pieces of state
   (assoc-in app-state state/user-path {}))
+
+(defmethod transition-state events/control-manage-account-change [_ event args app-state]
+  (update-in app-state state/manage-account-path merge args))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state state/browse-variant-query-path {:id (variant :id)}))
@@ -97,12 +105,13 @@
       (assoc-in state/browse-product-query-path {:slug product-path})
       (assoc-in (conj state/products-path (:id product)) product)))
 
-(defmethod transition-state events/api-success-stylist-commissions [_ event args app-state]
+(defmethod transition-state events/api-success-stylist-commissions [_ event {:keys [new-orders]} app-state]
   (-> app-state
-      (assoc-in state/store-path [])))
+      (assoc-in state/stylist-commissions-new-orders-path new-orders)))
 
-(defn sign-in-user [app-state {:keys [email token store_slug]}]
+(defn sign-in-user [app-state {:keys [email token store_slug id]}]
   (-> app-state
+      (assoc-in state/user-id-path id)
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)
       (assoc-in state/user-store-slug-path store_slug)))
@@ -146,6 +155,16 @@
 (defmethod transition-state events/api-success-fetch-order [_ event order app-state]
   (-> app-state
       (assoc-in state/order-path order)))
+
+(defmethod transition-state events/api-success-manage-account [_ event args app-state]
+  (-> app-state
+      (sign-in-user args)
+      (clear-fields state/manage-account-email-path
+                    state/manage-account-password-path
+                    state/manage-account-password-confirmation-path)))
+
+(defmethod transition-state events/api-success-sms-number [_ event args app-state]
+  (assoc-in app-state state/sms-number-path (:number args)))
 
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (assoc-in app-state state/flash-success-path (select-keys args [:message :navigation])))

@@ -1,6 +1,14 @@
 (ns storefront.components.help
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer-macros [html]]
+            [storefront.state :as state]
+            [clojure.string :as string]))
+
+(defn display-sms [number]
+  (->> number
+       (re-find #"(\d{3})(\d{3})(\d{4})")
+       rest
+       (string/join "-")))
 
 (defn help-component [data owner]
   (om/component
@@ -16,28 +24,31 @@
       [:h4.dashboard-details-header.no-top-space "Contact Info"]
       [:div.solid-line-divider]
       [:div#help-methods
-       [:a.help-link {:href "tel://+18885627952"}]
-       [:div.help-method-row
-        [:div.help-method-icon.call]
-        [:div.help-method-details-container
-         [:div.help-method-details
-          [:p.help-method "Call"]
-          [:p.help-method-means "1-888-562-7952"]]]]
+       [:a.help-link {:href "tel://+18885627952"}
+        [:div.help-method-row
+         [:div.help-method-icon.call]
+         [:div.help-method-details-container
+          [:div.help-method-details
+           [:p.help-method "Call"]
+           [:p.help-method-means "1-888-562-7952"]]]]]
        [:div.solid-line-divider]
-       [:a.help-link.send-sonar-dynamic-number.send-sonar-dynamic-number-link]
-       [:div.help-method-row
-        [:div.help-method-icon.sms]
-        [:div.help-method-details-container
-         [:div.help-method-details
-          [:p.help-method "Text"]
-          [:p.help-method-means.send-sonar-dynamic-number-display
-           "Loading..."]]]]
+       (let [number (get-in data state/sms-number-path)]
+         [:a.help-link (when number {:href (str "sms://+1" number)})
+          [:div.help-method-row
+           [:div.help-method-icon.sms]
+           [:div.help-method-details-container
+            [:div.help-method-details
+             [:p.help-method "Text"]
+             [:p.help-method-means
+              (if number
+                (display-sms number)
+                "Loading...")]]]]])
        [:div.solid-line-divider]
-       [:a.help-link {:href "mailto:help@mayvenn.com"}]
-       [:div.help-method-row
-        [:div.help-method-icon.email]
-        [:div.help-method-details-container
-         [:div.help-method-details
-          [:p.help-method "Email"]
-          [:p.help-method-means "help@mayvenn.com"]]]]
+       [:a.help-link {:href "mailto:help@mayvenn.com"}
+        [:div.help-method-row
+         [:div.help-method-icon.email]
+         [:div.help-method-details-container
+          [:div.help-method-details
+           [:p.help-method "Email"]
+           [:p.help-method-means "help@mayvenn.com"]]]]]
        [:div.solid-line-divider]]]])))
