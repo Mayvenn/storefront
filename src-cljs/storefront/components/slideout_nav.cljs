@@ -15,6 +15,7 @@
    (fn [e]
      (.preventDefault e)
      (put! (get-in @app-state state/event-ch-path) [events/control-menu-collapse])
+     (put! (get-in @app-state state/event-ch-path) [events/control-account-menu-collapse])
      (routes/enqueue-navigate @app-state event args))})
 
 (defn close-and-enqueue [app-state event]
