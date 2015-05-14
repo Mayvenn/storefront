@@ -83,7 +83,7 @@
                [:li
                 [:a {:href "FIXME: bonus credit"} "Bonus Credit"]]
                [:li
-                [:a {:href "FIXME: referrals"} "Referrals"]]])
+                [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]])
             [:li
              [:a {:href "FIXME: my orders"} "My Orders"]]
             [:li

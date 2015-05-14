@@ -19,6 +19,7 @@
             [storefront.components.forgot-password :refer [forgot-password-component]]
             [storefront.components.reset-password :refer [reset-password-component]]
             [storefront.components.stylist.commissions :refer [stylist-commissions-component]]
+            [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
             [cljs.core.async :refer [put!]]))
 
@@ -55,6 +56,7 @@
             events/navigate-forgot-password forgot-password-component
             events/navigate-reset-password reset-password-component
             events/navigate-stylist-commissions stylist-commissions-component
+            events/navigate-stylist-referrals stylist-referrals-component
             events/navigate-manage-account manage-account-component)
           data)]]]
       (om/build footer-component data)]])))
