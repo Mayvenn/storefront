@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.commissions
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
             [storefront.state :as state]))
 
@@ -58,10 +59,9 @@
     [:main {:role "main"}
      [:div.container
       [:h2.header-bar-heading.commissions "Commissions"]
-      [:nav.stylist-dashboard-nav
-       [:a.selected {:href "/stylist/commissions"} "Commissions"]
-       [:a {:href "/stylist/store_credits"} "Bonus Credit"]
-       [:a {:href "/stylist/referrals"} "Referrals"]]
+
+      (om/build stylist-dashboard-nav-component data)
+
       [:div.dashboard-content
        [:div#next-commission-summary.dashboard-summary
 
