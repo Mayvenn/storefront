@@ -22,18 +22,21 @@
           (merge (utils/update-text data events/control-sign-up-change :email)
                  {:autofocus "autofocus"
                   :type "email"
+                  :name "email"
                   :value (get-in data state/sign-up-email-path)})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-up-change :password)
                  {:type "password"
+                  :name "password"
                   :value (get-in data state/sign-up-password-path)})]]
         [:div.input.password
          [:label.password "Password Confirmation"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-up-change :password-confirmation)
                  {:type "password"
+                  :name "password-confirmation"
                   :value (get-in data state/sign-up-password-confirmation-path)})]]]
        [:p
         [:input.btn.button.primary {:type "submit"

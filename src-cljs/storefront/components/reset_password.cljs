@@ -20,6 +20,7 @@
          (merge
           (utils/update-text data events/control-reset-password-change :password)
           {:type "password"
+           :name "password"
            :value (get-in data state/reset-password-password-path)})]]
        [:p
         [:label {:for "spree_user_email"} "Password Confirmation"]
@@ -28,6 +29,7 @@
          (merge
           (utils/update-text data events/control-reset-password-change :password-confirmation)
           {:type "password"
+           :name "password-confirmation"
            :value (get-in data state/reset-password-password-confirmation-path)})]]
        [:p
         [:input.button.primary {:type "submit" :value "Update"}]]]]])))

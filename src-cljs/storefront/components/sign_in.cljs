@@ -22,12 +22,14 @@
           (merge (utils/update-text data events/control-sign-in-change :email)
                  {:autofocus "autofocus"
                   :type "email"
+                  :name "email"
                   :value (get-in data state/sign-in-email-path)})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-in-change :password)
                  {:type "password"
+                  :name "password"
                   :value (get-in data state/sign-in-password-path)})]]]
        [:p
         [:input#remember-me
