@@ -1,20 +1,21 @@
 (ns storefront.components.stylist.commissions
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.components.formatters :as f]
             [storefront.state :as state]))
 
-(defn display-new-order [data new-order]
+(defn display-new-order [new-order]
   [:div.loose-table-row
    [:div.left-content
     [:p (new-order :fullname)]
-    [:p.top-pad (new-order :completed_at)] ;;"05/08/2015"]
+    [:p.top-pad (f/locale-date (new-order :completed_at))]
     [:p.top-pad [:a {:href (str "/orders/" (new-order :number))} (new-order :number)]]]
    [:div.right-content
     (cond
       (and (= "complete" (new-order :state))
            (= "shipped" (new-order :shipment_state)))
       (html
-       [:p.commission-money (str "$" (new-order :commissionable_amount))]
+       [:p.commission-money (f/float-as-money (new-order :commissionable_amount))]
        [:p.commission-label.shipped-label.top-pad "Shipped"])
 
       (= "complete" (new-order :state))
@@ -25,7 +26,7 @@
       :else
        [:p.commission-label.refunded-label "Refunded"])]])
 
-(defn display-new-orders [data new-orders]
+(defn display-new-orders [new-orders]
   (html
    [:div.new-order-commissions
     [:h4.dashboard-details-header "New Orders"]
@@ -34,19 +35,23 @@
     [:div.loose-table-header
      [:div.left-header "Sale"]
      [:div.right-header "Commission"]]
-    (map (partial display-new-order data) new-orders)]))
+    (map display-new-order new-orders)]))
 
-(defn display-pay-outs [data pay-outs]
+(defn display-pay-out [pay-out]
+  [:div.loose-table-row.short-row
+    [:div.left-content [:span (pay-out :paid_at)]]
+    [:div.right-content
+     [:span.payout-amount (pay-out :amount)]]])
+
+(defn display-pay-outs [paid-total pay-outs]
+  (js/console.log "paid-total: " paid-total )
   [:div.commission-payment-history
    [:h4.dashboard-details-header "Commission Payment History"]
    [:div.solid-line-diveder]
    [:div.emphasized-banner
     [:span.emphasized-banner-header "Commissions Paid"]
-    [:span.emphasized-banner-value "$255.87"]]
-   [:div.loose-table-row.short-row
-    [:div.left-content [:span "12/16/2014"]]
-    [:div.right-content
-     [:span.payout-amount "$58.18"]]]])
+    [:span.emphasized-banner-value paid-total]]
+   (map display-pay-out pay-outs)])
 
 (defn stylist-commissions-component [data owner]
   (om/component
@@ -63,7 +68,8 @@
 
         [:div.next-payout-description
          [:p "As of today, your next commission payment is:"]
-         [:p.next-commissions-amount "$203.52"]]
+         [:p.next-commissions-amount
+          "$" (get-in data state/stylist-commissions-next-amount-path)]]
 
         [:div.next-payout-date-container
          [:p.accented-next-pay "W"]
@@ -72,10 +78,11 @@
        [:div#money-rules
         [:div.gold-money-box]
         [:div.money-rule-details
-         [:p "You earn 15% commission on each new order shipped from your store excluding tax and shipping."]]]
+         [:p
+          "You earn "
+          (get-in data state/stylist-commissions-rate-path)
+          "% commission on each new order shipped from your store excluding tax and shipping."]]]
 
-       (display-new-orders data
-                           (get-in data state/stylist-commissions-new-orders-path))
-
-       (display-pay-outs data
+       (display-new-orders (get-in data state/stylist-commissions-new-orders-path))
+       (display-pay-outs (get-in data state/stylist-commissions-paid-total-path)
                          (get-in data state/stylist-commissions-pay-outs-path))]]])))
