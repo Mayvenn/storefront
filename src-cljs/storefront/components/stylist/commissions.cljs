@@ -44,7 +44,6 @@
      [:span.payout-amount (pay-out :amount)]]])
 
 (defn display-pay-outs [paid-total pay-outs]
-  (js/console.log "paid-total: " paid-total )
   [:div.commission-payment-history
    [:h4.dashboard-details-header "Commission Payment History"]
    [:div.solid-line-diveder]
