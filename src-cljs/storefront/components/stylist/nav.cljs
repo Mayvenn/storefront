@@ -10,4 +10,4 @@
     [:nav.stylist-dashboard-nav
      (utils/link-with-selected data events/navigate-stylist-commissions "Commissions")
      (utils/link-with-selected data events/navigate-stylist-commissions "Bonus Credit")
-     (utils/link-with-selected data events/navigate-stylist-commissions "Referrals")])))
+     (utils/link-with-selected data events/navigate-stylist-referrals "Referrals")])))
