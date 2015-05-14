@@ -105,9 +105,14 @@
       (assoc-in state/browse-product-query-path {:slug product-path})
       (assoc-in (conj state/products-path (:id product)) product)))
 
-(defmethod transition-state events/api-success-stylist-commissions [_ event {:keys [new-orders]} app-state]
+(defmethod transition-state events/api-success-stylist-commissions
+  [_ event {:keys [rate next-amount paid-total new-orders pay-outs]} app-state]
   (-> app-state
-      (assoc-in state/stylist-commissions-new-orders-path new-orders)))
+      (assoc-in state/stylist-commissions-rate-path rate)
+      (assoc-in state/stylist-commissions-next-amount-path next-amount)
+      (assoc-in state/stylist-commissions-paid-total-path paid-total)
+      (assoc-in state/stylist-commissions-new-orders-path new-orders)
+      (assoc-in state/stylist-commissions-pay-outs-path pay-outs)))
 
 (defn sign-in-user [app-state {:keys [email token store_slug id]}]
   (-> app-state

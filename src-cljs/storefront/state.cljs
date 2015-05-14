@@ -22,7 +22,10 @@
      :taxons []
      :products {}
      :sms-number nil
-     :stylist {:commissions {:new-orders []
+     :stylist {:commissions {:rate nil
+                             :next-amount nil
+                             :paid-total nil
+                             :new-orders []
                              :pay-outs []}}
 
      :ui {:navigation-event events/navigate-home
@@ -112,5 +115,8 @@
 
 (def stylist-path [:stylist])
 (def stylist-commissions-path (conj stylist-path :commissions))
+(def stylist-commissions-rate-path (conj stylist-commissions-path :rate))
+(def stylist-commissions-next-amount-path (conj stylist-commissions-path :next-amount))
+(def stylist-commissions-paid-total-path (conj stylist-commissions-path :paid-total))
 (def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
 (def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))
