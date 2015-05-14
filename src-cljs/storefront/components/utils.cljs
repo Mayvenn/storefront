@@ -36,3 +36,9 @@
        (.preventDefault e)
        (put! (get-in @app-state state/event-ch-path)
              [control-event {arg-name (.. e -target -checked)}]))}))
+
+(defn link-with-selected [data event label]
+  (let [navigation-state (get-in data state/navigation-event-path)
+        selected (if (= navigation-state event) {:class "selected"} {})]
+    [:a (merge selected (route-to data event)) label]))
+
