@@ -17,6 +17,7 @@
        (merge (utils/update-text data events/control-manage-account-change :email)
               {:autofocus "autofocus"
                :type "email"
+               :name "email"
                :value (if (empty? (get-in data state/manage-account-email-path))
                         (get-in data state/user-email-path)
                         (get-in data state/manage-account-email-path))})]
@@ -27,6 +28,7 @@
         [:input.title#user-password
          (merge (utils/update-text data events/control-manage-account-change :password)
                 {:type "password"
+                 :name "password"
                  :value (get-in data state/manage-account-password-path)})]]
        [:p
         [:label {:for "user-password-confirmation"} "Enter the same password"]
@@ -34,6 +36,7 @@
         [:input.title#user-password-confirmation
          (merge (utils/update-text data events/control-manage-account-change :password-confirmation)
                 {:type "password"
+                 :name "password-confirmation"
                  :value (get-in data state/manage-account-password-confirmation-path)})]]]
       [:p.user-password-instructions "Leave blank to keep the same password."]
       [:p
