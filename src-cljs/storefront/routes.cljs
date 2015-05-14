@@ -82,8 +82,9 @@
        "/password/recover" (edn->bidi events/navigate-forgot-password)
        ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
        "/account/edit" (edn->bidi events/navigate-manage-account)
-       "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)
-       "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)}])
+       "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
+       "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)
+       "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)
