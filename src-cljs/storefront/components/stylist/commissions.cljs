@@ -39,7 +39,7 @@
 
 (defn display-pay-out [pay-out]
   [:div.loose-table-row.short-row
-    [:div.left-content [:span (pay-out :paid_at)]]
+   [:div.left-content [:span (f/locale-date (pay-out :paid_at))]]
     [:div.right-content
      [:span.payout-amount (pay-out :amount)]]])
 
