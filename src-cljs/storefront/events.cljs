@@ -17,6 +17,7 @@
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
 (def navigate-stylist-referrals (conj navigate-stylist :referrals))
+(def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
 
 (def control [:control])
 (def control-menu (conj control :menu))
