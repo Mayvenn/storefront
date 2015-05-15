@@ -22,11 +22,16 @@
      :taxons []
      :products {}
      :sms-number nil
-     :stylist {:commissions {:rate nil
+     :stylist {:sales-rep-email nil
+               :commissions {:rate nil
                              :next-amount nil
                              :paid-total nil
                              :new-orders []
-                             :pay-outs []}}
+                             :pay-outs []}
+               :referral-program {:next-amount nil
+                                  :earning-amount nil
+                                  :total-amount nil
+                                  :referrals []}}
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
@@ -114,9 +119,18 @@
 (def flash-success-nav-path (conj flash-success-path :navigation))
 
 (def stylist-path [:stylist])
+
+(def stylist-sales-rep-email-path (conj stylist-path :sales-rep-email))
+
 (def stylist-commissions-path (conj stylist-path :commissions))
 (def stylist-commissions-rate-path (conj stylist-commissions-path :rate))
 (def stylist-commissions-next-amount-path (conj stylist-commissions-path :next-amount))
 (def stylist-commissions-paid-total-path (conj stylist-commissions-path :paid-total))
 (def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
 (def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))
+
+(def stylist-referral-program-path (conj stylist-path :referral-program))
+(def stylist-referral-program-bonus-amount-path (conj stylist-referral-program-path :referral-program-bonus-amount))
+(def stylist-referral-program-earning-amount-path (conj stylist-referral-program-path :referral-program-earning-amount))
+(def stylist-referral-program-total-amount-path (conj stylist-referral-program-path :referral-program-total-amount))
+(def stylist-referral-program-referrals-path (conj stylist-referral-program-path :referral-program-referrals))
