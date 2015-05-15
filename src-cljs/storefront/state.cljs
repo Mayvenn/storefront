@@ -41,6 +41,7 @@
           :browse-recently-added-variants []
           :menu-expanded false
           :account-menu-expanded false
+          :checkout-current-step "address"
           :sign-in {:email ""
                     :password ""
                     :remember-me true}
@@ -89,6 +90,8 @@
 (def browse-recently-added-variants-path (conj ui-path :browse-recently-added-variants))
 (def menu-expanded-path (conj ui-path :menu-expanded))
 (def account-menu-expanded-path (conj ui-path :account-menu-expanded))
+
+(def checkout-current-step-path (conj ui-path :checkout-current-step))
 
 (def sign-in-path (conj ui-path :sign-in))
 (def sign-in-email-path (conj sign-in-path :email))

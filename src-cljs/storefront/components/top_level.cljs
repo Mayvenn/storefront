@@ -23,6 +23,7 @@
             [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
             [storefront.components.cart :refer [cart-component]]
+            [storefront.components.checkout-address :refer [checkout-address-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -44,6 +45,7 @@
        (om/build header-component data)
        [:main {:role "main"}
         [:div.container
+
          (om/build
           (condp = (get-in data state/navigation-event-path)
             events/navigate-home home-component
@@ -61,6 +63,8 @@
             events/navigate-stylist-bonus-credit stylist-bonus-credit-component
             events/navigate-stylist-referrals stylist-referrals-component
             events/navigate-manage-account manage-account-component
-            events/navigate-cart cart-component)
+            events/navigate-cart cart-component
+            events/navigate-manage-account manage-account-component
+            events/navigate-checkout-address checkout-address-component)
           data)]]]
       (om/build footer-component data)]])))
