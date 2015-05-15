@@ -158,7 +158,8 @@
                [:div.added-to-bag-container
                 (map (partial display-bagged-variant data) bagged-variants)]
                [:div.go-to-checkout
-                [:a.cart-button {:href "TODO: /cart"}
+                [:a.cart-button
+                 (utils/route-to data events/navigate-cart)
                  "Go to Checkout >>"
                  [:figure.checkout-cart]
                  [:figure.checkout-guarantee]]]])]]
