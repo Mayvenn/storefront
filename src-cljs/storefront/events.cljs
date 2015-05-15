@@ -20,6 +20,12 @@
 (def navigate-stylist-referrals (conj navigate-stylist :referrals))
 (def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
 
+(def navigate-checkout (conj navigate :checkout))
+(def navigate-checkout-address (conj navigate-checkout :address))
+(def navigate-checkout-delivery (conj navigate-checkout :delivery))
+(def navigate-checkout-payment (conj navigate-checkout :payment))
+(def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
+
 (def control [:control])
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
