@@ -114,6 +114,16 @@
       (assoc-in state/stylist-commissions-new-orders-path new-orders)
       (assoc-in state/stylist-commissions-pay-outs-path pay-outs)))
 
+(defmethod transition-state events/api-success-stylist-referral-program
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount total-amount referrals]} app-state]
+  (js/console.log "transition state for referrals ")
+  (-> app-state
+      (assoc-in state/stylist-referral-program-bonus-amount-path bonus-amount)
+      (assoc-in state/stylist-referral-program-earning-amount-path earning-amount)
+      (assoc-in state/stylist-referral-program-total-amount-path total-amount)
+      (assoc-in state/stylist-referral-program-referrals-path referrals)
+      (assoc-in state/stylist-sales-rep-email-path sales-rep-email)))
+
 (defn sign-in-user [app-state {:keys [email token store_slug id]}]
   (-> app-state
       (assoc-in state/user-id-path id)

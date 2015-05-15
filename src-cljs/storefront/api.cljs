@@ -103,6 +103,15 @@
    #(put! events-ch [events/api-success-stylist-commissions
                      (select-keys % [:rate :next-amount :paid-total :new-orders :pay-outs])])))
 
+(defn get-stylist-referral-program [events-ch user-token]
+  (js/console.log "api for referral program hey")
+  (api-req
+   GET
+   "/stylist/referrals"
+   {:user-token user-token}
+   #(put! events-ch [events/api-success-stylist-referral-program
+                    (select-keys % [:sales-rep-email :bonus-amount :earning-amount :total-amount :referrals])])))
+
 (defn get-sms-number [events-ch]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
             (apply str (if (= "+" (first x))

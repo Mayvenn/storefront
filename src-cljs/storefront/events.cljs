@@ -67,6 +67,7 @@
 (def api-success-reset-password (conj api-success :reset-password))
 (def api-success-manage-account (conj api-success :manage-account))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
+(def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-fetch-order (conj api-success :fetch-order))
