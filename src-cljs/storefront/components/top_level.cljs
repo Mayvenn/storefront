@@ -22,6 +22,7 @@
             [storefront.components.stylist.bonus-credit :refer [stylist-bonus-credit-component]]
             [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
+            [storefront.components.cart :refer [cart-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -59,6 +60,7 @@
             events/navigate-stylist-commissions stylist-commissions-component
             events/navigate-stylist-bonus-credit stylist-bonus-credit-component
             events/navigate-stylist-referrals stylist-referrals-component
-            events/navigate-manage-account manage-account-component)
+            events/navigate-manage-account manage-account-component
+            events/navigate-cart cart-component)
           data)]]]
       (om/build footer-component data)]])))

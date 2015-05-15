@@ -13,7 +13,7 @@
                                {:class "no-picture"})
        [:a.header-menu {:href "#" :on-click (utils/enqueue-event data events/control-menu-expand)} "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
-       [:a.cart {:href "#"}]
+       [:a.cart (utils/route-to data events/navigate-cart)]
        (when (= (get-in data state/navigation-event-path) events/navigate-home)
          [:div.stylist-bar
           [:div.stylist-bar-img-container
