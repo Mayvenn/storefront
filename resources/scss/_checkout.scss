@@ -68,6 +68,9 @@
     line-height: 1.4em;
     margin-bottom: 2em;
 
+    &.warning {
+      color: $dark_green;
+    }
   }
 
   .store-credit-instructions {
@@ -280,4 +283,8 @@
 
 .order-thanks-detail {
   margin-top: 2rem;
+}
+
+.hidden {
+  display: none !important;
 }
