@@ -86,7 +86,6 @@
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
        "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)
        "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)
-       "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
        "/checkout/address" (edn->bidi events/navigate-checkout-address)}])
 
 (defn install-routes [app-state]

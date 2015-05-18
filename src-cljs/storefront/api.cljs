@@ -104,7 +104,6 @@
                      (select-keys % [:rate :next-amount :paid-total :new-orders :pay-outs])])))
 
 (defn get-stylist-referral-program [events-ch user-token]
-  (js/console.log "api for referral program hey")
   (api-req
    GET
    "/stylist/referrals"
