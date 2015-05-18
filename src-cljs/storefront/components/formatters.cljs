@@ -8,5 +8,6 @@
       (js/Date.)
       (.toLocaleDateString)))
 
-(defn float-as-money [amount]
-  (apply gstring/format "$%1.2f" [(js/parseFloat amount)]))
+(defn float-as-money [amount & {:keys [cents] :or {cents true}}]
+  (let [money-format (if cents "$%1.2f" "$%1f")]
+    (apply gstring/format money-format [(js/parseFloat amount)])))
