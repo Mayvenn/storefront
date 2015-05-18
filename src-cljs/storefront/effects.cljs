@@ -97,7 +97,8 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state state/sign-in-remember-path))
-  (routes/enqueue-navigate app-state events/navigate-home)
+  (when (= (get-in app-state state/navigation-event-path) events/navigate-sign-up)
+    (routes/enqueue-navigate app-state events/navigate-home))
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Logged in successfully"
                                     :navigation [events/navigate-home {}]}]))
