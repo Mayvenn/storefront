@@ -172,7 +172,7 @@
                  {:id variant-id
                   :quantity variant-quantity})))
 
-(defmethod transition-state events/api-success-fetch-order [_ event order app-state]
+(defmethod transition-state events/api-success-get-order [_ event order app-state]
   (-> app-state
       (assoc-in state/order-path order)))
 

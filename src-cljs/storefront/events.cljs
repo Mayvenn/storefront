@@ -79,7 +79,7 @@
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
-(def api-success-fetch-order (conj api-success :fetch-order))
+(def api-success-get-order (conj api-success :order))
 (def api-success-sms-number (conj api-success :sms-number))
 
 (def flash [:flash])

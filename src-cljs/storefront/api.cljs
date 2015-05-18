@@ -152,13 +152,13 @@
                                                     :order-number order-number
                                                     :order-token order-token}])))
 
-(defn fetch-order [events-ch order-number order-token]
+(defn get-order [events-ch order-number order-token]
   (api-req
    GET
    "/orders"
    {:id order-number
     :token order-token}
-   #(put! events-ch [events/api-success-fetch-order %])))
+   #(put! events-ch [events/api-success-get-order %])))
 
 (defn observe-events [f events-ch & args]
   (let [broadcast-ch (chan)
@@ -173,4 +173,4 @@
   (go
     (let [[_ {order-id :number order-token :token}] (<! (observe-events create-order-if-needed events-ch order-id order-token user-token))]
       (<! (observe-events add-line-item events-ch variant-id variant-quantity order-id order-token))
-      (fetch-order events-ch order-id order-token))))
+      (get-order events-ch order-id order-token))))
