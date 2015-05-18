@@ -13,7 +13,7 @@
       [:div.left-content
        [:p.chopped-content stylist-name]
        (if paid-at
-         [:p.referral-paid-time paid-at]
+         [:p.referral-paid-time (f/locale-date paid-at)]
          [:div.referral-progress
           [:div.progress-bar
            [:div.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
