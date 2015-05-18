@@ -3,61 +3,63 @@
             [sablono.core :refer-macros [html]]
             [storefront.state :as state]
             [storefront.events :as events]
+            [storefront.components.utils :as utils]
             [clojure.string :as string]))
 
-(def states
-  (map (fn [[value name]] {:name name :value value})
-       [[39 "Alabama"]
-        [50 "Alaska"]
-        [5 "Arizona"]
-        [11 "Arkansas"]
-        [32 "California"]
-        [45 "Colorado"]
-        [47 "Connecticut"]
-        [20 "Delaware"]
-        [13 "District of Columbia"]
-        [27 "Florida"]
-        [44 "Georgia"]
-        [17 "Hawaii"]
-        [14 "Idaho"]
-        [6 "Illinois"]
-        [35 "Indiana"]
-        [40 "Iowa"]
-        [9 "Kansas"]
-        [42 "Kentucky"]
-        [23 "Louisiana"]
-        [34 "Maine"]
-        [26 "Maryland"]
-        [46 "Massachusetts"]
-        [1 "Michigan"]
-        [29 "Minnesota"]
-        [41 "Mississippi"]
-        [10 "Missouri"]
-        [24 "Montana"]
-        [15 "Nebraska"]
-        [12 "Nevada"]
-        [7 "New Hampshire"]
-        [30 "New Jersey"]
-        [43 "New Mexico"]
-        [48 "New York"]
-        [8 "North Carolina"]
-        [33 "North Dakota"]
-        [31 "Ohio"]
-        [22 "Oklahoma"]
-        [37 "Oregon"]
-        [16 "Pennsylvania"]
-        [21 "Rhode Island"]
-        [49 "South Carolina"]
-        [2 "South Dakota"]
-        [25 "Tennessee"]
-        [36 "Texas"]
-        [18 "Utah"]
-        [19 "Vermont"]
-        [28 "Virginia"]
-        [3 "Washington"]
-        [51 "West Virginia"]
-        [4 "Wisconsin"]
-        [38 "Wyoming"]]))
+(def us-states
+  (vec
+   (map (fn [[value name]] {:name name :value value})
+        [[39 "Alabama"]
+         [50 "Alaska"]
+         [5 "Arizona"]
+         [11 "Arkansas"]
+         [32 "California"]
+         [45 "Colorado"]
+         [47 "Connecticut"]
+         [20 "Delaware"]
+         [13 "District of Columbia"]
+         [27 "Florida"]
+         [44 "Georgia"]
+         [17 "Hawaii"]
+         [14 "Idaho"]
+         [6 "Illinois"]
+         [35 "Indiana"]
+         [40 "Iowa"]
+         [9 "Kansas"]
+         [42 "Kentucky"]
+         [23 "Louisiana"]
+         [34 "Maine"]
+         [26 "Maryland"]
+         [46 "Massachusetts"]
+         [1 "Michigan"]
+         [29 "Minnesota"]
+         [41 "Mississippi"]
+         [10 "Missouri"]
+         [24 "Montana"]
+         [15 "Nebraska"]
+         [12 "Nevada"]
+         [7 "New Hampshire"]
+         [30 "New Jersey"]
+         [43 "New Mexico"]
+         [48 "New York"]
+         [8 "North Carolina"]
+         [33 "North Dakota"]
+         [31 "Ohio"]
+         [22 "Oklahoma"]
+         [37 "Oregon"]
+         [16 "Pennsylvania"]
+         [21 "Rhode Island"]
+         [49 "South Carolina"]
+         [2 "South Dakota"]
+         [25 "Tennessee"]
+         [36 "Texas"]
+         [18 "Utah"]
+         [19 "Vermont"]
+         [28 "Virginia"]
+         [3 "Washington"]
+         [51 "West Virginia"]
+         [4 "Wisconsin"]
+         [38 "Wyoming"]])))
 
 (def checkout-steps ["address" "delivery" "payment" "confirm"])
 
@@ -111,10 +113,11 @@
             :class (if required? "required" "")
             :value value}]])
 
-(defn selectfield [name & [:keys [id value options required?]]]
+(defn selectfield [name & [{:keys [id value options required?]}]]
   [:p.field
    [:label {:for id} name (when required? [:span.required "*"])]
    [:span
+    [:br]
     [:select {:class (if required? "required" "")
               :name id
               :id id}
@@ -123,16 +126,22 @@
             [:option {:value value} (str name)])
           options)]]])
 
+(defn checkbox [name & [{:keys [id class]}]]
+  [:p.field {:class class}
+   [:input {:type "checkbox" :id id :name id}]
+   [:label {:for id} " " name]])
+
 (defn checkout-address-component [data owner]
   (om/component
    (html
     (let [checkout-current-step (get-in data state/checkout-current-step-path)]
+      (js/console.log (clj->js us-states))
       [:div#checkout
        [:div.row
         [:div.columns.thirteen.omega (checkout-progress data checkout-current-step)]]
        [:div.row
         [:div.checkout-form-wrapper
-         [:form
+         [:form.edit_order
           {:id (str "checkout_form_" checkout-current-step)
            :action "#TODO:"
            :method "POST"}
@@ -144,17 +153,49 @@
              "Please note: If your billing address does not match your credit card your order will be delayed."]
 
             [:div.inner
+             (textfield "First Name" (merge (utils/update-text data
+                                                               events/control-checkout-address-change
+                                                               [:billing-address :firstname])
+                                            {:id :firstname
+                                             :required? true
+                                             :value (str (get-in data state/checkout-billing-address-firstname-path))}))
+             (textfield "Last Name" {:id :lastname
+                                     :required? true
+                                     :value (str (get-in data state/checkout-billing-address-lastname-path))})
+             (textfield "Street Address" {:id :address1 :value "TODO: value" :required? true})
+             (textfield "Street Address (cont'd)" {:id :address2 :value "TODO: value"})
+             (textfield "City" {:id :city :value "TODO: value" :required? true})
+             (selectfield "State" {:id :state :value "TODO: value" :required? true :options us-states})
+             (textfield "Zip" {:id :zipcode :value "TODO: value" :required? true})
+             (textfield "Mobile Phone" {:id :order_bill_address_attributes_phone
+                                        :value "TODO: value"
+                                        :required? true
+                                        :type "tel"})
+             (checkbox "Save my address" {:id "save_user_address" :class "checkout-save-address"})]]]
+
+          [:div.shipping-address-wrapper
+           [:fieldset#shipping.shipping-fieldset
+            [:legend {:align "center"} "Shipping Address"]
+            (checkbox "Use Billing Address" {:id "use_billing" :class "checkbox checkout-use-billing-address"})
+
+            [:div.inner
              (textfield "First Name" {:id :firstname :value "TODO: value" :required? true})
              (textfield "Last Name" {:id :lastname :value "TODO: value" :required? true})
              (textfield "Street Address" {:id :address1 :value "TODO: value" :required? true})
              (textfield "Street Address (cont'd)" {:id :address2 :value "TODO: value"})
              (textfield "City" {:id :city :value "TODO: value" :required? true})
-             (selectfield "State" {:id :state :value "TODO: value" :required? true :options states})
-             (textfield "Zip Code" {:id :zipcode :value "TODO: value" :required? true :type "tel"})
-             ]
-            ]]
+             (selectfield "State" {:id :state :value "TODO: value" :required? true :options us-states})
+             (textfield "Zip" {:id :zipcode :value "TODO: value" :required? true})
+             (textfield "Mobile Phone" {:id :order_bill_address_attributes_phone
+                                        :value "TODO: value"
+                                        :required? true
+                                        :type "tel"})]]]
 
-          [:div.shipping-address-wrapper
-           [:fieldset#shipping.shipping-fieldset
-            ]]
+          [:div.form-buttons.checkout.save-and-continue
+           [:input.continue.button.primary {:type "submit" :name "Commit" :value "Save and Continue"}]
+           (when true ;;TODO:current-user
+             [:span
+              "   "
+              ]
+             )]
           ]]]]))))

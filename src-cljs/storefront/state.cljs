@@ -55,6 +55,24 @@
           :manage-account {:email ""
                            :password ""
                            :password-confirmation ""}
+          :checkout {:billing-address {:firstname ""
+                                       :lastname ""
+                                       :address1 ""
+                                       :address2 ""
+                                       :city ""
+                                       :state ""
+                                       :zip ""
+                                       :phone ""
+                                       :save-my-address true}
+                     :shipping-address {:firstname ""
+                                        :lastname ""
+                                        :address1 ""
+                                        :address2 ""
+                                        :city ""
+                                        :state ""
+                                        :zip ""
+                                        :phone ""
+                                        :use-billing-address true}}
           :flash {:success {:message nil
                             :navigation []}}}}))
 
@@ -115,6 +133,28 @@
 (def manage-account-email-path (conj manage-account-path :email))
 (def manage-account-password-path (conj manage-account-path :password))
 (def manage-account-password-confirmation-path (conj manage-account-path :password-confirmation))
+
+(def checkout-path (conj ui-path :checkout))
+(def checkout-billing-address-path (conj checkout-path :billing-address))
+(def checkout-billing-address-firstname-path (conj checkout-billing-address-path :firstname))
+(def checkout-billing-address-lastname-path (conj checkout-billing-address-path :lastname))
+(def checkout-billing-address-address1-path (conj checkout-billing-address-path :address1))
+(def checkout-billing-address-address2-path (conj checkout-billing-address-path :address2))
+(def checkout-billing-address-city-path (conj checkout-billing-address-path :city))
+(def checkout-billing-address-state-path (conj checkout-billing-address-path :state))
+(def checkout-billing-address-zip-path (conj checkout-billing-address-path :zip))
+(def checkout-billing-address-phone-path (conj checkout-billing-address-path :phone))
+(def checkout-billing-address-save-my-address-path (conj checkout-billing-address-path :save-my-address))
+(def checkout-shipping-address-path (conj checkout-path :billing-shipping))
+(def checkout-shipping-address-firstname-path (conj checkout-shipping-address-path :firstname))
+(def checkout-shipping-address-lastname-path (conj checkout-shipping-address-path :lastname))
+(def checkout-shipping-address-address1-path (conj checkout-shipping-address-path :address1))
+(def checkout-shipping-address-address2-path (conj checkout-shipping-address-path :address2))
+(def checkout-shipping-address-city-path (conj checkout-shipping-address-path :city))
+(def checkout-shipping-address-state-path (conj checkout-shipping-address-path :state))
+(def checkout-shipping-address-zip-path (conj checkout-shipping-address-path :zip))
+(def checkout-shipping-address-phone-path (conj checkout-shipping-address-path :phone))
+(def checkout-shipping-address-use-billing-address-path (conj checkout-shipping-address-path :use-billing-address))
 
 (def flash-path (conj ui-path :flash))
 (def flash-success-path (conj flash-path :success))
