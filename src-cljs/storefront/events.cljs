@@ -59,6 +59,10 @@
 (def control-browse-variant-set-quantity (conj control-browse-variant :set-quantity))
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
+(def control-checkout (conj control :checkout))
+(def control-checkout-address (conj control-checkout :address))
+(def control-checkout-address-change (conj control-checkout-address :change))
+
 (def api [:api])
 (def api-success (conj api :success))
 
