@@ -16,7 +16,7 @@
          [:p.referral-paid-time paid-at]
          [:div.referral-progress
           [:div.progress-bar
-           [:div.progress-bar-progress {}]]
+           [:div.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
           [:p.progress-text
            "Sales so far: "
            (f/float-as-money commissioned-revenue)
