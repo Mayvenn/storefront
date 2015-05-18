@@ -87,6 +87,12 @@
 (defmethod transition-state events/control-reset-password-change [_ event args app-state]
   (update-in app-state state/reset-password-path merge args))
 
+(defmethod transition-state events/control-checkout-change [_ event args app-state]
+  (reduce-kv (fn [m k v]
+               (assoc-in app-state (into state/checkout-path k) v))
+             app-state
+             args))
+
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state state/taxons-path (:taxons args)))
 

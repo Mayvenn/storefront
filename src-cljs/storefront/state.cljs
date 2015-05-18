@@ -145,7 +145,7 @@
 (def checkout-billing-address-zip-path (conj checkout-billing-address-path :zip))
 (def checkout-billing-address-phone-path (conj checkout-billing-address-path :phone))
 (def checkout-billing-address-save-my-address-path (conj checkout-billing-address-path :save-my-address))
-(def checkout-shipping-address-path (conj checkout-path :billing-shipping))
+(def checkout-shipping-address-path (conj checkout-path :shipping-address))
 (def checkout-shipping-address-firstname-path (conj checkout-shipping-address-path :firstname))
 (def checkout-shipping-address-lastname-path (conj checkout-shipping-address-path :lastname))
 (def checkout-shipping-address-address1-path (conj checkout-shipping-address-path :address1))

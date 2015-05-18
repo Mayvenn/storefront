@@ -42,3 +42,8 @@
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]])))
+
+(defn requires-sign-in [app-state authorized-component]
+  (if (get-in app-state state/user-id-path)
+    authorized-component
+    sign-in-component))

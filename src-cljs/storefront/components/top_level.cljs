@@ -14,7 +14,7 @@
             [storefront.components.help :refer [help-component]]
             [storefront.components.privacy :refer [privacy-component]]
             [storefront.components.tos :refer [tos-component]]
-            [storefront.components.sign-in :refer [sign-in-component]]
+            [storefront.components.sign-in :refer [sign-in-component requires-sign-in]]
             [storefront.components.sign-up :refer [sign-up-component]]
             [storefront.components.forgot-password :refer [forgot-password-component]]
             [storefront.components.reset-password :refer [reset-password-component]]
@@ -65,6 +65,6 @@
             events/navigate-manage-account manage-account-component
             events/navigate-cart cart-component
             events/navigate-manage-account manage-account-component
-            events/navigate-checkout-address checkout-address-component)
+            events/navigate-checkout-address (requires-sign-in data checkout-address-component))
           data)]]]
       (om/build footer-component data)]])))
