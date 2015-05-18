@@ -135,7 +135,6 @@
   (om/component
    (html
     (let [checkout-current-step (get-in data state/checkout-current-step-path)]
-      (js/console.log (clj->js us-states))
       [:div#checkout
        [:div.row
         [:div.columns.thirteen.omega (checkout-progress data checkout-current-step)]]
@@ -153,25 +152,52 @@
              "Please note: If your billing address does not match your credit card your order will be delayed."]
 
             [:div.inner
-             (textfield "First Name" (merge (utils/update-text data
-                                                               events/control-checkout-address-change
-                                                               [:billing-address :firstname])
-                                            {:id :firstname
-                                             :required? true
-                                             :value (str (get-in data state/checkout-billing-address-firstname-path))}))
-             (textfield "Last Name" {:id :lastname
-                                     :required? true
-                                     :value (str (get-in data state/checkout-billing-address-lastname-path))})
-             (textfield "Street Address" {:id :address1 :value "TODO: value" :required? true})
-             (textfield "Street Address (cont'd)" {:id :address2 :value "TODO: value"})
-             (textfield "City" {:id :city :value "TODO: value" :required? true})
-             (selectfield "State" {:id :state :value "TODO: value" :required? true :options us-states})
-             (textfield "Zip" {:id :zipcode :value "TODO: value" :required? true})
-             (textfield "Mobile Phone" {:id :order_bill_address_attributes_phone
-                                        :value "TODO: value"
-                                        :required? true
-                                        :type "tel"})
-             (checkbox "Save my address" {:id "save_user_address" :class "checkout-save-address"})]]]
+             (textfield "First Name"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :firstname])
+                               {:id :firstname
+                                :required? true
+                                :value (str (get-in data state/checkout-billing-address-firstname-path))}))
+             (textfield "Last Name"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :lastname])
+                               {:id :lastname
+                                :required? true
+                                :value (str (get-in data state/checkout-billing-address-lastname-path))}))
+             (textfield "Street Address"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :address1])
+                               {:id :address1
+                                :required? true
+                                :value (str (get-in data state/checkout-billing-address-address1-path))}))
+             (textfield "Street Address (cont'd)"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :address2])
+                               {:id :address2
+                                :value (str (get-in data state/checkout-billing-address-address2-path))}))
+             (textfield "City"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :city])
+                               {:id :city
+                                :required? true
+                                :value (str (get-in data state/checkout-billing-address-city-path))}))
+             (selectfield "State"
+                          (merge (utils/update-text data events/control-checkout-change [:billing-address :state])
+                                 {:id :state
+                                  :required? true
+                                  :options us-states}))
+             (textfield "Zip"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :zip])
+                               {:id :zipcode
+                                :required? true
+                                :value (str (get-in data state/checkout-billing-address-zip-path))}))
+             (textfield "Mobile Phone"
+                        (merge (utils/update-text data events/control-checkout-change [:billing-address :phone])
+                               {:id :order_bill_address_attributes_phone
+                                :required? true
+                                :type "tel"
+                                :value (str (get-in data state/checkout-billing-address-phone-path))}))
+             (checkbox "Save my address"
+                       (merge (utils/update-checkbox data
+                                                     (get-in data state/checkout-billing-address-save-my-address-path)
+                                                     events/control-checkout-change
+                                                     [:billing-address :save-my-address])
+                              {:id "save_user_address" :class "checkout-save-address"}))]]]
 
           [:div.shipping-address-wrapper
            [:fieldset#shipping.shipping-fieldset
