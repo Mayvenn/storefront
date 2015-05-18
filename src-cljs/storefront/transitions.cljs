@@ -116,7 +116,6 @@
 
 (defmethod transition-state events/api-success-stylist-referral-program
   [_ event {:keys [sales-rep-email bonus-amount earning-amount total-amount referrals]} app-state]
-  (js/console.log "transition state for referrals ")
   (-> app-state
       (assoc-in state/stylist-referral-program-bonus-amount-path bonus-amount)
       (assoc-in state/stylist-referral-program-earning-amount-path earning-amount)

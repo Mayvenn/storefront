@@ -41,4 +41,3 @@
   (let [navigation-state (get-in data state/navigation-event-path)
         selected (if (= navigation-state event) {:class "selected"} {})]
     [:a (merge selected (route-to data event)) label]))
-
