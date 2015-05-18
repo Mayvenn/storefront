@@ -1,4 +1,4 @@
-(ns user
+(ns cljs.user
   (:require [storefront.core :as core]))
 
 (defn debug-app-state []
