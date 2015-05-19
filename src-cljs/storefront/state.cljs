@@ -67,8 +67,8 @@
                                        :address1 ""
                                        :address2 ""
                                        :city ""
-                                       :state ""
-                                       :zip ""
+                                       :state_id ""
+                                       :zipcode ""
                                        :phone ""
                                        :save-my-address true}
                      :shipping-address {:firstname ""
@@ -76,8 +76,8 @@
                                         :address1 ""
                                         :address2 ""
                                         :city ""
-                                        :state ""
-                                        :zip ""
+                                        :state_id ""
+                                        :zipcode ""
                                         :phone ""
                                         :use-billing-address true}}
           :flash {:success {:message nil
@@ -148,8 +148,8 @@
 (def checkout-billing-address-address1-path (conj checkout-billing-address-path :address1))
 (def checkout-billing-address-address2-path (conj checkout-billing-address-path :address2))
 (def checkout-billing-address-city-path (conj checkout-billing-address-path :city))
-(def checkout-billing-address-state-path (conj checkout-billing-address-path :state))
-(def checkout-billing-address-zip-path (conj checkout-billing-address-path :zip))
+(def checkout-billing-address-state-path (conj checkout-billing-address-path :state_id))
+(def checkout-billing-address-zip-path (conj checkout-billing-address-path :zipcode))
 (def checkout-billing-address-phone-path (conj checkout-billing-address-path :phone))
 (def checkout-billing-address-save-my-address-path (conj checkout-billing-address-path :save-my-address))
 (def checkout-shipping-address-path (conj checkout-path :shipping-address))
@@ -159,7 +159,7 @@
 (def checkout-shipping-address-address2-path (conj checkout-shipping-address-path :address2))
 (def checkout-shipping-address-city-path (conj checkout-shipping-address-path :city))
 (def checkout-shipping-address-state-path (conj checkout-shipping-address-path :state))
-(def checkout-shipping-address-zip-path (conj checkout-shipping-address-path :zip))
+(def checkout-shipping-address-zip-path (conj checkout-shipping-address-path :zipcode))
 (def checkout-shipping-address-phone-path (conj checkout-shipping-address-path :phone))
 (def checkout-shipping-address-use-billing-address-path (conj checkout-shipping-address-path :use-billing-address))
 

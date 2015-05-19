@@ -101,6 +101,14 @@
                       (get-in app-state state/manage-account-password-confirmation-path)
                       (get-in app-state state/user-token-path)))
 
+(defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
+  (let [new-order (-> (get-in app-state state/order-path)
+                      (assoc :bill_address (get-in app-state state/checkout-billing-address-path))
+                      (assoc :ship_address (get-in app-state state/checkout-shipping-address-path)))]
+    (api/update-order (get-in app-state state/event-ch-path)
+                      (get-in app-state state/user-token-path)
+                      new-order)))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state state/sign-in-remember-path))
   (when (= (get-in app-state state/navigation-event-path) events/navigate-sign-in)

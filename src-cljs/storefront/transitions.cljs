@@ -89,7 +89,7 @@
 
 (defmethod transition-state events/control-checkout-change [_ event args app-state]
   (reduce-kv (fn [m k v]
-               (assoc-in app-state (into state/checkout-path k) v))
+               (assoc-in app-state k v))
              app-state
              args))
 

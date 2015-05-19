@@ -39,6 +39,9 @@
 
 (defonce app-state (atom (state/initial-state)))
 
+(defn debug-force-token [token]
+  (swap! app-state assoc-in [:user :token] "f766e9e3ea1f7b8bf25f1753f395cf7bd34cef0430360b7d"))
+
 (defn debug-app-state []
   (clj->js @app-state))
 
