@@ -14,7 +14,9 @@
 (defn save [cookie attrs {:keys [remember?]}]
   (let [age (if remember? remember-me-age -1)]
     (doseq [attr user-attrs]
-      (.set cookie attr (attr attrs) age))))
+      (if-let [val (attr attrs)]
+        (.set cookie attr val age)
+        (.remove cookie attr)))))
 
 (defn clear [cookie]
   (doseq [attr user-attrs]
