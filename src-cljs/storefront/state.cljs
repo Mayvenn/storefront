@@ -27,7 +27,7 @@
                              :next-amount nil
                              :paid-total nil
                              :new-orders []
-                             :pay-outs []}
+                             :payouts []}
                :bonus-credits {:bonus-amount nil
                                :earning-amount nil
                                :commissioned-revenue nil
@@ -177,7 +177,7 @@
 (def stylist-commissions-next-amount-path (conj stylist-commissions-path :next-amount))
 (def stylist-commissions-paid-total-path (conj stylist-commissions-path :paid-total))
 (def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
-(def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))
+(def stylist-commissions-payouts-path (conj stylist-commissions-path :payouts))
 
 
 (def stylist-bonus-credit-path (conj stylist-path :bonus-credits))

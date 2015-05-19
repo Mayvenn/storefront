@@ -112,13 +112,13 @@
       (assoc-in (conj state/products-path (:id product)) product)))
 
 (defmethod transition-state events/api-success-stylist-commissions
-  [_ event {:keys [rate next-amount paid-total new-orders pay-outs]} app-state]
+  [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
   (-> app-state
       (assoc-in state/stylist-commissions-rate-path rate)
       (assoc-in state/stylist-commissions-next-amount-path next-amount)
       (assoc-in state/stylist-commissions-paid-total-path paid-total)
       (assoc-in state/stylist-commissions-new-orders-path new-orders)
-      (assoc-in state/stylist-commissions-pay-outs-path pay-outs)))
+      (assoc-in state/stylist-commissions-payouts-path payouts)))
 
 (defmethod transition-state events/api-success-stylist-bonus-credits
   [_ event {:keys [bonuses bonus-amount earning-amount commissioned-revenue total-credit available-credit]} app-state]
