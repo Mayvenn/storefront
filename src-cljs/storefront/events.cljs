@@ -61,6 +61,7 @@
 
 (def control-checkout (conj control :checkout))
 (def control-checkout-change (conj control-checkout :change))
+(def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 
 (def api [:api])
 (def api-success (conj api :success))
@@ -82,6 +83,7 @@
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-get-order (conj api-success :order))
 (def api-success-sms-number (conj api-success :sms-number))
+(def api-success-update-order (conj api-success :update-order))
 
 (def flash [:flash])
 (def flash-show [:show])
