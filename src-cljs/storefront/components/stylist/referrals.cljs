@@ -19,12 +19,12 @@
            [:div.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
           [:p.progress-text
            "Sales so far: "
-           (f/float-as-money commissioned-revenue)
+           (f/as-money commissioned-revenue)
            " of "
-           (f/float-as-money earning-amount :cents false)]])]
+           (f/as-money-without-cents earning-amount)]])]
 
       [:div.right-content
-       [:p.paid-amount (f/float-as-money bonus-due :cents false) " bonus"]
+       [:p.paid-amount (f/as-money-without-cents bonus-due) " bonus"]
        (if paid-at
          [:p.referral-label.paid-label "Paid"]
          [:p.referral-label.pending-label "Pending"])]])))
@@ -53,9 +53,9 @@
          [:div.money-rule-details
           [:p
            "Earn "
-           (f/float-as-money bonus-amount :cents false)
+           (f/as-money-without-cents bonus-amount)
            " in bonus credit when each stylist makes their first "
-           (f/float-as-money earning-amount :cents false)]]]
+           (f/as-money-without-cents earning-amount)]]]
 
         [:div.my-referrals
          [:h4.dashboard-details-header "My Referrals"]
@@ -64,7 +64,7 @@
          [:div.emphasized-banner
           [:span.emphasized-banner-header "Total Referral Bonuses"]
           [:span.emphasized-banner-value
-          (f/float-as-money total-amount :cents false)]]
+          (f/as-money-without-cents total-amount)]]
 
          (map stylist-referral-component referrals)]]]))))
 

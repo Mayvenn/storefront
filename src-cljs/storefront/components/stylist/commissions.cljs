@@ -16,7 +16,7 @@
       (and (= "complete" (new-order :state))
            (= "shipped" (new-order :shipment_state)))
       (html
-       [:p.commission-money (f/float-as-money (new-order :commissionable_amount))]
+       [:p.commission-money (f/as-money (new-order :commissionable_amount))]
        [:p.commission-label.shipped-label.top-pad "Shipped"])
 
       (= "complete" (new-order :state))

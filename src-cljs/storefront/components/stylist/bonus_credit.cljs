@@ -15,7 +15,7 @@
      [:p.extra-credit-info (f/locale-date (bonus :created-at))]]
 
     [:div.right-content
-     [:p (f/float-as-money (bonus :amount))]]]))
+     [:p (f/as-money-without-cents (bonus :amount))]]]))
 
  (defn stylist-bonus-credit-component [data]
   (om/component
@@ -38,14 +38,14 @@
         [:div.store-credit-detail
          [:div.available-bonus.emphasized-banner.extra-emphasis
           [:span.emphasized-banner-header "Available Bonus Credits"]
-          [:span.emphasized-banner-value (f/float-as-money available-credit :cents false)]]
+          [:span.emphasized-banner-value (f/as-money-without-cents available-credit)]]
 
          [:div.dashboard-summary#next-reward-tracker
           [:p
            "Sell "
-           (f/float-as-money remaining-amount)
+           (f/as-money remaining-amount)
            " more to earn your next "
-           (f/float-as-money bonus-amount :cents false)
+           (f/as-money-without-cents bonus-amount)
            " bonus credit."]]
 
          [:div#money-rules
@@ -53,25 +53,25 @@
           [:div.money-rule-details
            [:p
             "You earn "
-            (f/float-as-money bonus-amount :cents false)
+            (f/as-money-without-cents bonus-amount)
             " in bonus credit for every "
-            (f/float-as-money earning-amount :cents false)
+            (f/as-money-without-cents earning-amount)
             " in sales you make."]]]]
 
         [:div.progress-container
-         [:div.progress-bar-limit (f/float-as-money 0 :cents false)]
+         [:div.progress-bar-limit (f/as-money-without-cents 0)]
          [:div.progress-bar-container
           [:div.progress-bar
            [:div.progress-bar-progress {:style {:width (str progress-bar-width "%")}}
-            [:div.progress-marker (f/float-as-money progress-amount)]]]]
-         [:div.progress-bar-limit (f/float-as-money earning-amount :cents false)]]
+            [:div.progress-marker (f/as-money progress-amount)]]]]
+         [:div.progress-bar-limit (f/as-money-without-cents earning-amount)]]
 
         [:div.bonus-history
          [:h4.dashboard-details-header "Bonus History"]
          [:div.solid-line-divider]
          [:div.emphasized-banner
           [:span.emphasized-banner-header "Total Bonuses to Date"]
-          [:span.emphasized-banner-value (f/float-as-money total-credit)]]
+          [:span.emphasized-banner-value (f/as-money-without-cents total-credit)]]
 
          (map stylist-bonus-component bonuses)]]]))))
 
