@@ -85,7 +85,6 @@
                       (get-in app-state state/reset-password-password-confirmation-path)
                       (get-in app-state state/reset-password-token-path)))
 
-
 (defn save-cookie [app-state remember?]
   (cookie-jar/save (get-in app-state state/cookie-path)
                    (get-in app-state state/user-path)
@@ -136,3 +135,6 @@
   (put! (get-in app-state state/event-ch-path)
         [events/flash-show-success {:message "Account updated"
                                     :navigation [events/navigate-home {}]}]))
+
+(defmethod perform-effects events/api-success-get-order [_ event args app-state]
+  (save-cookie app-state true))
