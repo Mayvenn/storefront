@@ -1,5 +1,5 @@
 (ns storefront.components.order-summary
-  (:require [storefront.components.formatters :refer [float-as-money]]))
+  (:require [storefront.components.formatters :refer [as-money]]))
 
 (defn valid-payments [payments]
   (filter (comp not #{"failed" "invalid"} :state) payments))
@@ -36,7 +36,7 @@
        [:td
         [:h5 label]]
        [:td
-        [:h5 (float-as-money summed-amount)]]])))
+        [:h5 (as-money summed-amount)]]])))
 
 (defn display-adjustments [adjustments]
   (map #(apply display-adjustment-row %) (group-by :label adjustments)))
