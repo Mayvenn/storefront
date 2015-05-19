@@ -120,6 +120,16 @@
       (assoc-in state/stylist-commissions-new-orders-path new-orders)
       (assoc-in state/stylist-commissions-pay-outs-path pay-outs)))
 
+(defmethod transition-state events/api-success-stylist-bonus-credits
+  [_ event {:keys [bonuses bonus-amount earning-amount commissioned-revenue total-credit available-credit]} app-state]
+  (-> app-state
+      (assoc-in state/stylist-bonus-credit-bonuses-path bonuses)
+      (assoc-in state/stylist-bonus-credit-bonus-amount-path bonus-amount)
+      (assoc-in state/stylist-bonus-credit-earning-amount-path earning-amount)
+      (assoc-in state/stylist-bonus-credit-commissioned-revenue-path commissioned-revenue)
+      (assoc-in state/stylist-bonus-credit-total-credit-path total-credit)
+      (assoc-in state/stylist-bonus-credit-available-credit-path available-credit)))
+
 (defmethod transition-state events/api-success-stylist-referral-program
   [_ event {:keys [sales-rep-email bonus-amount earning-amount total-amount referrals]} app-state]
   (-> app-state
