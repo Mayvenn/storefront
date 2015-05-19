@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.taxons :refer [default-taxon-path]]
             [clojure.string :as string]
-            [storefront.components.formatters :refer [float-as-money]]
+            [storefront.components.order-summary :refer [display-order-summary]]
             [storefront.state :as state]))
 
 (defn display-variant-options [option-value]
@@ -15,7 +15,7 @@
 
 (defn display-line-item [line-item]
   [:div.line-item
-   [:img {:src "/assets/noimage/small.png"}]
+   [:img {:src "/assets/noimage/FIXME.png"}]
    [:div.line-item-detail.interactive
     (let [variant (:variant line-item)]
       [:div
@@ -35,51 +35,6 @@
          [:div.plus [:a.pm-link {:href "#" :FIXME "on-click"} "+"]]]]
        [:a.delete {:href "#" :FIXME "on-click"} "Remove"]])]
    [:div {:style {:clear "both"}}]])
-
-(defn eligible-adjustments [adjustments]
-  (filter :eligible adjustments))
-
-(defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (order :line_items)))
-
-(defn order-adjustments [order]
-  (concat
-    (-> order :adjustments eligible-adjustments)
-    (line-item-adjustments order)))
-
-(defn adjustment-row [label adjustments]
-  (let [summed-amount (reduce + (map (comp js/parseFloat :amount) adjustments))]
-    (when-not  (= summed-amount 0)
-      [:tr.order-summary-row.adjustment
-       [:td
-        [:h5 label]]
-       [:td
-        [:h5 (float-as-money summed-amount)]]]
-      )))
-
-(defn display-order-summary [order]
-  [:div
-   [:h4.order-summary-header "Order Summary"]
-   [:table.order-summary-total
-    (let [adjustments (order-adjustments order)
-          quantity (:total_quantity order)]
-      (when-not (empty? adjustments)
-        [:div
-         [:tr.cart-subtotal.order-summary-row
-          [:td
-           [:h5 (str "Subtotal (" quantity " Item"
-                     (when (> quantity 1) "s") ")") ]]
-          [:td
-           [:h5 (:display_item_total order)]]]
-         [:tbody#cart_adjustments
-          (let [li-adjustments (line-item-adjustments order)]
-            (when-not (empty? li-adjustments)
-
-              (map #(apply adjustment-row %) (group-by :label li-adjustments))
-              ) )
-          ]]
-        ))
-    ]])
 
 (defn cart-component [data owner]
   (om/component
