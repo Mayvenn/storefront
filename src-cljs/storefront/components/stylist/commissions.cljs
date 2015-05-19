@@ -38,20 +38,20 @@
      [:div.right-header "Commission"]]
     (map display-new-order new-orders)]))
 
-(defn display-pay-out [pay-out]
+(defn display-payout [payout]
   [:div.loose-table-row.short-row
-   [:div.left-content [:span (f/locale-date (pay-out :paid_at))]]
+   [:div.left-content [:span (f/locale-date (payout :paid_at))]]
     [:div.right-content
-     [:span.payout-amount (pay-out :amount)]]])
+     [:span.payout-amount (payout :amount)]]])
 
-(defn display-pay-outs [paid-total pay-outs]
+(defn display-payouts [paid-total payouts]
   [:div.commission-payment-history
    [:h4.dashboard-details-header "Commission Payment History"]
    [:div.solid-line-diveder]
    [:div.emphasized-banner
     [:span.emphasized-banner-header "Commissions Paid"]
     [:span.emphasized-banner-value paid-total]]
-   (map display-pay-out pay-outs)])
+   (map display-payout payouts)])
 
 (defn stylist-commissions-component [data owner]
   (om/component
@@ -83,5 +83,5 @@
           "% commission on each new order shipped from your store excluding tax and shipping."]]]
 
        (display-new-orders (get-in data state/stylist-commissions-new-orders-path))
-       (display-pay-outs (get-in data state/stylist-commissions-paid-total-path)
-                         (get-in data state/stylist-commissions-pay-outs-path))]]])))
+       (display-payouts (get-in data state/stylist-commissions-paid-total-path)
+                        (get-in data state/stylist-commissions-payouts-path))]]])))
