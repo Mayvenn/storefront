@@ -42,7 +42,7 @@
   [:div.loose-table-row.short-row
    [:div.left-content [:span (f/locale-date (payout :paid_at))]]
     [:div.right-content
-     [:span.payout-amount (payout :amount)]]])
+     [:span.payout-amount (f/as-money (payout :amount))]]])
 
 (defn display-payouts [paid-total payouts]
   [:div.commission-payment-history
@@ -50,7 +50,7 @@
    [:div.solid-line-diveder]
    [:div.emphasized-banner
     [:span.emphasized-banner-header "Commissions Paid"]
-    [:span.emphasized-banner-value paid-total]]
+    [:span.emphasized-banner-value (f/as-money paid-total)]]
    (map display-payout payouts)])
 
 (defn stylist-commissions-component [data owner]
@@ -68,7 +68,7 @@
         [:div.next-payout-description
          [:p "As of today, your next commission payment is:"]
          [:p.next-commissions-amount
-          "$" (get-in data state/stylist-commissions-next-amount-path)]]
+          (f/as-money (get-in data state/stylist-commissions-next-amount-path))]]
 
         [:div.next-payout-date-container
          [:p.accented-next-pay "W"]
