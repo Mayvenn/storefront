@@ -103,6 +103,19 @@
    #(put! events-ch [events/api-success-stylist-commissions
                      (select-keys % [:rate :next-amount :paid-total :new-orders :pay-outs])])))
 
+(defn get-stylist-bonus-credits [events-ch user-token]
+  (api-req
+   GET
+   "/stylist/bonus-credits"
+   {:user-token user-token}
+   #(put! events-ch [events/api-success-stylist-bonus-credits
+                     (select-keys % [:bonus-amount
+                                     :earning-amount
+                                     :commissioned-revenue
+                                     :total-credit
+                                     :available-credit
+                                     :bonuses])])))
+
 (defn get-stylist-referral-program [events-ch user-token]
   (api-req
    GET

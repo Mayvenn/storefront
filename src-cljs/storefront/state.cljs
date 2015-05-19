@@ -28,7 +28,14 @@
                              :paid-total nil
                              :new-orders []
                              :pay-outs []}
-               :referral-program {:next-amount nil
+               :bonus-credits {:bonus-amount nil
+                               :earning-amount nil
+                               :commissioned-revenue nil
+                               :total-credit nil
+                               :available-credit nil
+                               :bonuses []}
+               :referral-program {:bonus-amount nil
+                                  :next-amount nil
                                   :earning-amount nil
                                   :total-amount nil
                                   :referrals []}}
@@ -171,6 +178,15 @@
 (def stylist-commissions-paid-total-path (conj stylist-commissions-path :paid-total))
 (def stylist-commissions-new-orders-path (conj stylist-commissions-path :new-orders))
 (def stylist-commissions-pay-outs-path (conj stylist-commissions-path :pay-outs))
+
+
+(def stylist-bonus-credit-path (conj stylist-path :bonus-credits))
+(def stylist-bonus-credit-bonus-amount-path (conj stylist-bonus-credit-path :bonus-amount))
+(def stylist-bonus-credit-earning-amount-path (conj stylist-bonus-credit-path :earning-amount))
+(def stylist-bonus-credit-commissioned-revenue-path (conj stylist-bonus-credit-path :commissioned-revenue))
+(def stylist-bonus-credit-total-credit-path (conj stylist-bonus-credit-path :total-credit))
+(def stylist-bonus-credit-available-credit-path (conj stylist-bonus-credit-path :available-credit))
+(def stylist-bonus-credit-bonuses-path (conj stylist-bonus-credit-path :bonuses))
 
 (def stylist-referral-program-path (conj stylist-path :referral-program))
 (def stylist-referral-program-bonus-amount-path (conj stylist-referral-program-path :referral-program-bonus-amount))

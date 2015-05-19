@@ -35,6 +35,10 @@
   (api/get-stylist-commissions (get-in app-state state/event-ch-path)
                                (get-in app-state state/user-token-path)))
 
+(defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
+  (api/get-stylist-bonus-credits (get-in app-state state/event-ch-path)
+                               (get-in app-state state/user-token-path)))
+
 (defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
   (api/get-stylist-referral-program (get-in app-state state/event-ch-path)
                                     (get-in app-state state/user-token-path)))
