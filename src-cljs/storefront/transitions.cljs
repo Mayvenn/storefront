@@ -66,14 +66,17 @@
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state state/browse-variant-query-path {:id (variant :id)}))
 
-(defmethod transition-state events/control-browse-variant-inc-quantity [_ event args app-state]
-  (update-in app-state state/browse-variant-quantity-path inc))
+(defmethod transition-state events/control-browse-add-to-bag [_ event args app-state]
+  app-state)
 
-(defmethod transition-state events/control-browse-variant-dec-quantity [_ event args app-state]
-  (update-in app-state state/browse-variant-quantity-path (comp (partial max 1) dec)))
+(defmethod transition-state events/control-counter-inc [_ event args app-state]
+  (update-in app-state (:path args) inc))
 
-(defmethod transition-state events/control-browse-variant-set-quantity [_ event {:keys [value-str]} app-state]
-  (assoc-in app-state state/browse-variant-quantity-path
+(defmethod transition-state events/control-counter-dec [_ event args app-state]
+  (update-in app-state (:path args) (comp (partial max 1) dec)))
+
+(defmethod transition-state events/control-counter-set [_ event {:keys [path value-str]} app-state]
+  (assoc-in app-state path
             (-> (js/parseInt value-str 10)
                 (Math/abs)
                 (max 1))))
