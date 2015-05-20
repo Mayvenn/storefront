@@ -8,6 +8,12 @@
             [storefront.components.order-summary :refer [display-order-summary]]
             [storefront.state :as state]))
 
+(defn shopping-link-attrs [data]
+  (when-let [path (default-taxon-path data)]
+    (utils/route-to data
+                    events/navigate-category
+                    {:taxon-path path})))
+
 (defn display-variant-options [option-value]
   [:div.line-item-attr
    [:span.cart-label (str (:option_type_presentation option-value) ": ")]
@@ -55,7 +61,7 @@
          [:input.button.checkout.primary#checkout-link
           {:type "submit" :value "Checkout" :name "checkout"}]]]]]
      [:a.cart-continue.continue.button.gray
-      {:href "#" :FIXME "on-click"}
+      (shopping-link-attrs data)
       "Continue shopping"]]))
 
 (defn display-empty-cart [data]
@@ -64,19 +70,22 @@
    [:figure.empty-bag]
    [:p
     [:a.button.primary.continue.empty-cart
-     (when-let [path (default-taxon-path data)]
-       (utils/route-to data
-                       events/navigate-category
-                       {:taxon-path path}))
+     (shopping-link-attrs data)
      "Let's Fix That"]]])
 
 (defn cart-component [data owner]
   (om/component
    (html
-    [:div.cart-container
-     (if (get-in data state/user-order-id-path)
-       (when-let [cart (get-in data state/order-path)]
-         (if (> (-> cart :line_items count) 0)
-           (display-full-cart data)
-           (display-empty-cart data)))
-       (display-empty-cart data))])))
+    [:div
+     [:div.cart-container
+      (if (get-in data state/user-order-id-path)
+        (when-let [cart (get-in data state/order-path)]
+          (if (> (-> cart :line_items count) 0)
+            (display-full-cart data)
+            (display-empty-cart data)))
+        (display-empty-cart data))]
+     [:div.home-actions-top
+      [:div.guarantee]
+      [:div.free-shipping-action]
+      [:div.keep-shopping
+       [:a.full-link (shopping-link-attrs data)]]]])))
