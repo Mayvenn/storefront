@@ -95,6 +95,17 @@
     :token token}
    #(put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])))
 
+(defn update-account-address [events-ch id email billing-address shipping-address token]
+  (api-req
+   PUT
+   "/users"
+   {:id id
+    :email email
+    :billing_address billing-address
+    :shipping_address shipping-address
+    :token token}
+   #(put! events-ch [events/api-success-account-addresses (select-sign-in-keys %)])))
+
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
    GET
