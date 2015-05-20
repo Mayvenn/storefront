@@ -171,12 +171,15 @@
                                                        events/control-checkout-change
                                                        {state/checkout-billing-address-state-path
                                                         (let [elem (.-target %)]
-                                                          (.-value
-                                                           (aget (.-options elem)
-                                                                 (.-selectedIndex elem))))})}
+                                                          (js/parseInt
+                                                           (.-value
+                                                            (aget (.-options elem)
+                                                                  (.-selectedIndex elem)))
+                                                           10))})}
                          {:id :state
                           :required? true
-                          :options us-states}))
+                          :options us-states
+                          :value (get-in data state/checkout-billing-address-state-path)}))
      (textfield "Zip"
                 (merge (utils/update-text data events/control-checkout-change state/checkout-billing-address-zip-path)
                        {:id :zipcode
@@ -236,12 +239,15 @@
                                                        events/control-checkout-change
                                                        {[:shipping-address :state]
                                                         (let [elem (.-target %)]
-                                                          (.-value
-                                                           (aget (.-options elem)
-                                                                 (.-selectedIndex elem))))})}
+                                                          (js/parseInt
+                                                           (.-value
+                                                            (aget (.-options elem)
+                                                                  (.-selectedIndex elem)))
+                                                           10))})}
                          {:id :state
                           :required? true
-                          :options us-states}))
+                          :options us-states
+                          :value (get-in data state/checkout-shipping-address-state-path)}))
      (textfield "Zip"
                 (merge (utils/update-text data events/control-checkout-change state/checkout-shipping-address-zip-path)
                        {:id :zipcode
