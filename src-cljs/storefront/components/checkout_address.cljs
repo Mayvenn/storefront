@@ -122,11 +122,11 @@
     [:select {:class (if required? "required" "")
               :name id
               :id id
-              :on-change on-change}
-     [:option {:value ""} ""]
+              :on-change on-change
+              :value value}
+     [:option ""]
      (map (fn [{name :name val :value}]
-            [:option {:value val :checked (if (= value val) "checked" "")}
-             (str name)])
+            [:option {:value val} (str name)])
           options)]]])
 
 (defn checkbox [name & [{:keys [id class value on-change checked]}]]
@@ -206,7 +206,7 @@
               (merge (utils/update-checkbox data
                                             (get-in data state/checkout-shipping-address-use-billing-address-path)
                                             events/control-checkout-change
-                                            [:shipping-address :use-billing-address])
+                                            state/checkout-shipping-address-use-billing-address-path)
                      {:id "use_billing" :class "checkbox checkout-use-billing-address"}))
 
     [:div.inner {:class (if (get-in data state/checkout-shipping-address-use-billing-address-path) "hidden" "")}
@@ -237,7 +237,7 @@
      (selectfield "State"
                   (merge {:on-change #(utils/put-event data
                                                        events/control-checkout-change
-                                                       {[:shipping-address :state]
+                                                       {state/checkout-shipping-address-state-path
                                                         (let [elem (.-target %)]
                                                           (js/parseInt
                                                            (.-value
