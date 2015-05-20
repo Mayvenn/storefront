@@ -13,7 +13,7 @@
                                {:class "no-picture"})
        [:a.header-menu {:href "#" :on-click (utils/enqueue-event data events/control-menu-expand)} "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
-       (let [item-count (-> (get-in data state/order-path) :line_items count)]
+       (let [item-count (get-in data (conj state/order-path :total_quantity))]
          (if (> item-count 0)
            [:a.cart.populated
             (utils/route-to data events/navigate-cart)
