@@ -6,6 +6,7 @@
             [storefront.taxons :refer [default-taxon-path]]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary]]
+            [storefront.components.counter :refer [counter-component]]
             [storefront.state :as state]))
 
 (defn shopping-link-attrs [data]
@@ -19,7 +20,7 @@
    [:span.cart-label (str (:option_type_presentation option-value) ": ")]
    [:span.cart-value (:presentation option-value)]])
 
-(defn display-line-item [line-item]
+(defn display-line-item [data line-item]
   (let [variant (:variant line-item)]
     [:div.line-item
      [:img {:src (-> variant :images first :small_url)}]
@@ -32,12 +33,9 @@
       [:div.line-item-attr.item-form.subtotal
        [:span.cart-label "Subtotal:"]
        [:span.cart-value (:display_amount line-item)]]
-      [:div.quantity
-       [:div.quantity-selector
-        [:div.minus [:a.pm-link {:href "#" :FIXME "on-click"} "-"]]
-        [:input.quantity-selector-input.line_item_quantity
-         {:type "text" :min 1 :FIXME "state" :value (:quantity line-item)}]
-        [:div.plus [:a.pm-link {:href "#" :FIXME "on-click"} "+"]]]]
+      (om/build counter-component
+                data
+                {:opts {:path (conj state/cart-quantities-path (:id line-item))}})
       [:a.delete {:href "#" :FIXME "on-click"} "Remove"]]
      [:div {:style {:clear "both"}}]]))
 
@@ -48,7 +46,7 @@
       [:div.inside-cart-form
        [:div.cart-items
         [:div.cart-line-items
-         (map display-line-item (:line_items cart))]
+         (map (partial display-line-item data) (:line_items cart))]
         [:div.coupon-cart
          [:h4 "Have a Coupon Code?"]
          [:div.coupon-container

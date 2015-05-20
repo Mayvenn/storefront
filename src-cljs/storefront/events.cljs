@@ -55,10 +55,12 @@
 (def control-browse (conj control :browse))
 (def control-browse-variant (conj control-browse :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))
-(def control-browse-variant-inc-quantity (conj control-browse-variant :inc-quantity))
-(def control-browse-variant-dec-quantity (conj control-browse-variant :dec-quantity))
-(def control-browse-variant-set-quantity (conj control-browse-variant :set-quantity))
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
+
+(def control-counter (conj control :counter))
+(def control-counter-inc (conj control-browse-variant :inc))
+(def control-counter-dec (conj control-browse-variant :dec))
+(def control-counter-set (conj control-browse-variant :set))
 
 (def control-checkout (conj control :checkout))
 (def control-checkout-change (conj control-checkout :change))

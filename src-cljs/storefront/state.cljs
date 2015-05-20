@@ -62,6 +62,7 @@
           :manage-account {:email ""
                            :password ""
                            :password-confirmation ""}
+          :cart {:quantities {}}
           :checkout {:billing-address {:firstname ""
                                        :lastname ""
                                        :address1 ""
@@ -140,6 +141,9 @@
 (def manage-account-email-path (conj manage-account-path :email))
 (def manage-account-password-path (conj manage-account-path :password))
 (def manage-account-password-confirmation-path (conj manage-account-path :password-confirmation))
+
+(def cart-path (conj ui-path :cart))
+(def cart-quantities-path (conj cart-path :quantities))
 
 (def checkout-path (conj ui-path :checkout))
 (def checkout-billing-address-path (conj checkout-path :billing-address))

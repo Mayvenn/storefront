@@ -5,6 +5,7 @@
             [storefront.query :as query]
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
+            [storefront.components.counter :refer [counter-component]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -120,22 +121,7 @@
               [:div.price-container
                [:div.quantity
                 [:h4.quantity-label "Quantity"]
-                [:div.quantity-selector
-                 [:div.minus [:a.pm-link
-                              {:href "#"
-                               :on-click (utils/enqueue-event data events/control-browse-variant-dec-quantity)}
-                              "-"]]
-                 [:input#quantity.quantity-selector-input
-                  {:min 1
-                   :name "quantity"
-                   :type "text"
-                   :value (str (get-in data state/browse-variant-quantity-path))
-                   :on-change #(utils/put-event data events/control-browse-variant-set-quantity
-                                                {:value-str (.. % -target -value)})}]
-                 [:div.plus [:a.pm-link
-                             {:href "#"
-                              :on-click (utils/enqueue-event data events/control-browse-variant-inc-quantity)}
-                             "+"]]]]
+                (om/build counter-component data {:opts {:path state/browse-variant-quantity-path}})]
                [:div#product-price.product-price
                 [:span.price-label "Price:"]
                 [:span.price.selling {:item-prop "price"}
