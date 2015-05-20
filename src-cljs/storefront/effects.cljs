@@ -16,9 +16,10 @@
   (api/get-store (get-in app-state state/event-ch-path)
                  (get-in app-state state/store-slug-path))
   (api/get-sms-number (get-in app-state state/event-ch-path))
-  (api/get-order (get-in app-state state/event-ch-path)
-                 (get-in app-state state/user-order-id-path)
-                 (get-in app-state state/user-order-token-path))
+  (when-let [order-id (get-in app-state state/user-order-id-path)]
+      (api/get-order (get-in app-state state/event-ch-path)
+                     order-id
+                     (get-in app-state state/user-order-token-path)))
   (set! (.. js/document -body -scrollTop) 0)
   (when-not (or
              (empty? (get-in app-state state/flash-success-nav-path))
