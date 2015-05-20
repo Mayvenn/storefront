@@ -9,28 +9,6 @@
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
 (def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")
 
-(defn flatten-map
-  ([m] (flatten-map {} [] m))
-  ([result key-path value]
-   (if (map? value)
-     (reduce into (map (fn [[k v]] (flatten-map result (conj key-path k) v))
-                       (seq value)))
-     (assoc result key-path value))))
-
-(defn flatten-map->rails
-  [m]
-  (apply hash-map (mapcat (fn [[[first-key & other-keys] value]]
-                            [(apply str
-                                    (name first-key)
-                                    (map #(str "[" (name %) "]") other-keys))
-                             value])
-                          m)))
-
-(defn map->rails [m]
-  (-> m
-      flatten-map
-      flatten-map->rails))
-
 (defn api-req [method path params success-handler]
   (method (str base-url path)
           {:handler success-handler
@@ -178,9 +156,8 @@
   (api-req
    PUT
    "/orders"
-   (map->rails {:order (select-keys order [:number :bill_address :ship_address])
-                :token user-token
-                :order_token guest-token})
+   {:order (select-keys order [:number :bill_address :ship_address])
+    :order_token guest-token}
    #(put! events-ch [events/api-success-update-order %])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
