@@ -20,27 +20,26 @@
    [:span.cart-value (:presentation option-value)]])
 
 (defn display-line-item [line-item]
-  [:div.line-item
-   [:img {:src "/assets/noimage/FIXME.png"}]
-   [:div.line-item-detail.interactive
-    (let [variant (:variant line-item)]
-      [:div
-       [:h4 [:a (:name variant)]]
-       (map display-variant-options (:option_values variant))
-       [:div.line-item-attr.item-form.price
-        [:span.cart-label "Price:"]
-        [:span.cart-value (:single_display_amount line-item)]]
-       [:div.line-item-attr.item-form.subtotal
-        [:span.cart-label "Subtotal:"]
-        [:span.cart-value (:display_amount line-item)]]
-       [:div.quantity
-        [:div.quantity-selector
-         [:div.minus [:a.pm-link {:href "#" :FIXME "on-click"} "-"]]
-         [:input.quantity-selector-input.line_item_quantity
-          {:type "text" :min 1 :FIXME "state" :value (:quantity line-item)}]
-         [:div.plus [:a.pm-link {:href "#" :FIXME "on-click"} "+"]]]]
-       [:a.delete {:href "#" :FIXME "on-click"} "Remove"]])]
-   [:div {:style {:clear "both"}}]])
+  (let [variant (:variant line-item)]
+    [:div.line-item
+     [:img {:src (-> variant :images first :small_url)}]
+     [:div.line-item-detail.interactive
+      [:h4 [:a (variant :name)]]
+      (map display-variant-options (:option_values variant))
+      [:div.line-item-attr.item-form.price
+       [:span.cart-label "Price:"]
+       [:span.cart-value (:single_display_amount line-item)]]
+      [:div.line-item-attr.item-form.subtotal
+       [:span.cart-label "Subtotal:"]
+       [:span.cart-value (:display_amount line-item)]]
+      [:div.quantity
+       [:div.quantity-selector
+        [:div.minus [:a.pm-link {:href "#" :FIXME "on-click"} "-"]]
+        [:input.quantity-selector-input.line_item_quantity
+         {:type "text" :min 1 :FIXME "state" :value (:quantity line-item)}]
+        [:div.plus [:a.pm-link {:href "#" :FIXME "on-click"} "+"]]]]
+      [:a.delete {:href "#" :FIXME "on-click"} "Remove"]]
+     [:div {:style {:clear "both"}}]]))
 
 (defn display-full-cart [data]
   (let [cart (get-in data state/order-path)]
