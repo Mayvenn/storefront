@@ -21,6 +21,7 @@
      :store {:store_slug (get-store-subdomain)}
      :taxons []
      :products {}
+     :states []
      :sms-number nil
      :stylist {:sales-rep-email nil
                :commissions {:rate nil
@@ -39,6 +40,23 @@
                                   :earning-amount nil
                                   :total-amount nil
                                   :referrals []}}
+
+     :billing-address {:firstname ""
+                       :lastname ""
+                       :address1 ""
+                       :address2 ""
+                       :city ""
+                       :state_id 0
+                       :zipcode ""
+                       :phone ""}
+     :shipping-address {:firstname ""
+                        :lastname ""
+                        :address1 ""
+                        :address2 ""
+                        :city ""
+                        :state_id 0
+                        :zipcode ""
+                        :phone ""}
 
      :ui {:navigation-event events/navigate-home
           :browse-taxon-query nil
@@ -105,6 +123,7 @@
 
 (def taxons-path [:taxons])
 (def products-path [:products])
+(def states-path [:states])
 (def sms-number-path [:sms-number])
 
 (def ui-path [:ui])
@@ -171,6 +190,10 @@
 (def flash-success-path (conj flash-path :success))
 (def flash-success-message-path (conj flash-success-path :message))
 (def flash-success-nav-path (conj flash-success-path :navigation))
+
+(def billing-address-path [:billing-address])
+
+(def shipping-address-path [:shipping-address])
 
 (def stylist-path [:stylist])
 

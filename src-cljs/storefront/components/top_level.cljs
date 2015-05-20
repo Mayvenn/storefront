@@ -24,9 +24,11 @@
             [storefront.components.manage-account :refer [manage-account-component]]
             [storefront.components.cart :refer [cart-component]]
             [storefront.components.checkout-address :refer [checkout-address-component]]
+            [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
+  (println (get-in data state/navigation-event-path))
   (om/component
    (html
     [:div
@@ -65,6 +67,7 @@
             events/navigate-manage-account manage-account-component
             events/navigate-cart cart-component
             events/navigate-manage-account manage-account-component
-            events/navigate-checkout-address (requires-sign-in data checkout-address-component))
+            events/navigate-checkout-address (requires-sign-in data checkout-address-component)
+            events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component))
           data)]]]
       (om/build footer-component data)]])))

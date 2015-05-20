@@ -38,6 +38,15 @@
             state/manage-account-email-path
             (get-in app-state state/user-email-path)))
 
+(defmethod transition-state events/navigate-checkout-address [_ event args app-state]
+  (-> app-state
+      (assoc-in state/checkout-current-step-path "address")
+      (update-in state/checkout-billing-address-path merge (get-in app-state state/billing-address-path))
+      (update-in state/checkout-shipping-address-path merge (get-in app-state state/shipping-address-path))))
+
+(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
+  (assoc-in app-state state/checkout-current-step-path "delivery"))
+
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state state/menu-expanded-path true))
 
@@ -110,6 +119,9 @@
   (-> app-state
       (assoc-in state/browse-product-query-path {:slug product-path})
       (assoc-in (conj state/products-path (:id product)) product)))
+
+(defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
+  (assoc-in app-state state/states-path states))
 
 (defmethod transition-state events/api-success-stylist-commissions
   [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
@@ -194,6 +206,11 @@
       (clear-fields state/manage-account-email-path
                     state/manage-account-password-path
                     state/manage-account-password-confirmation-path)))
+
+(defmethod transition-state events/api-success-account-update-addresses [_ event {:keys [billing-address shipping-address]} app-state]
+  (merge app-state
+         {:billing-address billing-address
+          :shipping-address shipping-address}))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state state/sms-number-path (:number args)))

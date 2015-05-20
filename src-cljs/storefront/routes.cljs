@@ -86,7 +86,8 @@
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
        "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)
        "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)
-       "/checkout/address" (edn->bidi events/navigate-checkout-address)}])
+       "/checkout/address" (edn->bidi events/navigate-checkout-address)
+       "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state state/history-path)

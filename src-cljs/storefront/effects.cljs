@@ -16,6 +16,10 @@
   (api/get-store (get-in app-state state/event-ch-path)
                  (get-in app-state state/store-slug-path))
   (api/get-sms-number (get-in app-state state/event-ch-path))
+  (let [user-id (get-in app-state state/user-id-path)
+        token (get-in app-state state/user-token-path)]
+    (when (and user-id token)
+      (api/get-account (get-in app-state state/event-ch-path) user-id token)))
   (when-let [order-id (get-in app-state state/user-order-id-path)]
       (api/get-order (get-in app-state state/event-ch-path)
                      order-id
@@ -46,6 +50,9 @@
 (defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
   (api/get-stylist-referral-program (get-in app-state state/event-ch-path)
                                     (get-in app-state state/user-token-path)))
+
+(defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
+  (api/get-states (get-in app-state state/event-ch-path)))
 
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))
@@ -160,3 +167,6 @@
 
 (defmethod perform-effects events/api-success-get-order [_ event args app-state]
   (save-cookie app-state true))
+
+(defmethod perform-effects events/api-success-update-order [_ event args app-state]
+  (routes/enqueue-navigate app-state events/navigate-checkout-delivery))

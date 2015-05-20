@@ -48,6 +48,13 @@
    #(put! events-ch [events/api-success-product {:product-path product-path
                                                  :product %}])))
 
+(defn get-states [events-ch]
+  (api-req
+   GET
+   "/states"
+   {}
+   #(put! events-ch [events/api-success-states (select-keys % [:states])])))
+
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
 
@@ -84,6 +91,19 @@
     :reset_password_token reset-token}
    #(put! events-ch [events/api-success-reset-password (select-sign-in-keys %)])))
 
+(defn select-address-keys [m]
+  (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
+    {:billing-address (select-keys (:bill_address m) keys)
+     :shipping-address (select-keys (:ship_address m) keys)}))
+
+(defn get-account [events-ch id token]
+  (api-req
+   GET
+   "/users"
+   {:id id
+    :token token}
+   #(put! events-ch [events/api-success-account-update-addresses (select-address-keys %)])))
+
 (defn update-account [events-ch id email password password-confirmation token]
   (api-req
    PUT
@@ -93,7 +113,8 @@
     :password password
     :password_confirmation password-confirmation
     :token token}
-   #(put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])))
+   #(do (put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])
+        (put! events-ch [events/api-success-account-update-addresses (select-address-keys %)]))))
 
 (defn update-account-address [events-ch id email billing-address shipping-address token]
   (api-req
@@ -104,7 +125,7 @@
     :billing_address billing-address
     :shipping_address shipping-address
     :token token}
-   #(put! events-ch [events/api-success-account-addresses (select-sign-in-keys %)])))
+   #(put! events-ch [events/api-success-account-update-addresses (select-address-keys %)])))
 
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
