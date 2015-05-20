@@ -68,7 +68,7 @@
                                        :address2 ""
                                        :city ""
                                        :state_id 0
-                                       :country 49
+                                       :country_id 49
                                        :zipcode ""
                                        :phone ""
                                        :save-my-address true}
@@ -78,7 +78,7 @@
                                         :address2 ""
                                         :city ""
                                         :state_id 0
-                                        :country 49
+                                        :country_id 49
                                         :zipcode ""
                                         :phone ""
                                         :use-billing-address true}}
