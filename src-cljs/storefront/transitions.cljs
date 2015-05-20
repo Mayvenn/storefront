@@ -184,7 +184,9 @@
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (-> app-state
-      (assoc-in state/order-path order)))
+      (assoc-in state/order-path order)
+      (assoc-in state/cart-quantities-path
+                (into {} (map (juxt :id :quantity) (order :line_items))))))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
