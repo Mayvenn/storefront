@@ -78,9 +78,6 @@
                 (Math/abs)
                 (max 1))))
 
-(defmethod transition-state events/control-browse-add-to-bag [_ event args app-state]
-  app-state)
-
 (defmethod transition-state events/control-forgot-password-change [_ event args app-state]
   (update-in app-state state/forgot-password-path merge args))
 
