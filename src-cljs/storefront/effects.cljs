@@ -104,7 +104,10 @@
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [new-order (-> (get-in app-state state/order-path)
                       (assoc :bill_address (get-in app-state state/checkout-billing-address-path))
-                      (assoc :ship_address (get-in app-state state/checkout-shipping-address-path)))]
+                      (assoc :ship_address (get-in app-state
+                                                   (if (get-in app-state state/checkout-shipping-address-use-billing-address-path)
+                                                     state/checkout-billing-address-path
+                                                     state/checkout-shipping-address-path))))]
     (api/update-order (get-in app-state state/event-ch-path)
                       (get-in app-state state/user-token-path)
                       new-order)))

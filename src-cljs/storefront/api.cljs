@@ -178,7 +178,9 @@
   (api-req
    PUT
    "/orders"
-   (map->rails {:order order :token user-token :guest_token guest-token})
+   (map->rails {:order (select-keys order [:number :bill_address :ship_address])
+                :token user-token
+                :order_token guest-token})
    #(put! events-ch [events/api-success-update-order %])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
