@@ -36,39 +36,47 @@
        [:a.delete {:href "#" :FIXME "on-click"} "Remove"]])]
    [:div {:style {:clear "both"}}]])
 
+(defn display-full-cart [data]
+  (let [cart (get-in data state/order-path)]
+    [:div
+     [:form#update-cart
+      [:div.inside-cart-form
+       [:div.cart-items
+        [:div.cart-line-items
+         (map display-line-item (:line_items cart))]
+        [:div.coupon-cart
+         [:h4 "Have a Coupon Code?"]
+         [:div.coupon-container
+          [:label "Enter a coupon code:"]
+          [:input.coupon-code-input {:type "text" :name "coupon-code"}]]
+         [:input.primary.button#update-button {:type "submit" :name "update" :value "Update"}]]
+        [:div.order-summary-cart
+         (display-order-summary cart)
+         [:input.button.checkout.primary#checkout-link
+          {:type "submit" :value "Checkout" :name "checkout"}]]]]]
+     [:a.cart-continue.continue.button.gray
+      {:href "#" :FIXME "on-click"}
+      "Continue shopping"]]))
+
+(defn display-empty-cart [data]
+  [:div
+   [:p.empty-cart-message "OH NO!"]
+   [:figure.empty-bag]
+   [:p
+    [:a.button.primary.continue.empty-cart
+     (when-let [path (default-taxon-path data)]
+       (utils/route-to data
+                       events/navigate-category
+                       {:taxon-path path}))
+     "Let's Fix That"]]])
+
 (defn cart-component [data owner]
   (om/component
    (html
     [:div.cart-container
-     (let [cart (get-in data state/order-path)]
-       (if (and (get-in data state/user-order-id-path)
-                (> (-> cart :line_items count) 0))
-         [:div
-          [:form#update-cart
-           [:div.inside-cart-form
-            [:div.cart-items
-             [:div.cart-line-items
-              (map display-line-item (:line_items cart))]
-             [:div.coupon-cart
-              [:h4 "Have a Coupon Code?"]
-              [:div.coupon-container
-               [:label "Enter a coupon code:"]
-               [:input.coupon-code-input {:type "text" :name "coupon-code"}]]
-              [:input.primary.button#update-button {:type "submit" :name "update" :value "Update"}]]
-             [:div.order-summary-cart
-              (display-order-summary cart)
-              [:input.button.checkout.primary#checkout-link
-               {:type "submit" :value "Checkout" :name "checkout"}]]]]]
-          [:a.cart-continue.continue.button.gray
-           {:href "#" :FIXME "on-click"}
-           "Continue shopping"]]
-         [:div
-          [:p.empty-cart-message "OH NO!"]
-          [:figure.empty-bag]
-          [:p
-           [:a.button.primary.continue.empty-cart
-            (when-let [path (default-taxon-path data)]
-              (utils/route-to data
-                              events/navigate-category
-                              {:taxon-path path}))
-            "Let's Fix That"]]]))])))
+     (if (get-in data state/user-order-id-path)
+       (when-let [cart (get-in data state/order-path)]
+         (if (> (-> cart :line_items count) 0)
+           (display-full-cart data)
+           (display-empty-cart data)))
+       (display-empty-cart data))])))
