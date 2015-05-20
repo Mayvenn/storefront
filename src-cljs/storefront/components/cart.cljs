@@ -40,8 +40,9 @@
   (om/component
    (html
     [:div.cart-container
-     (when-let [cart (get-in data state/order-path)]
-       (if (> (-> cart :line_items count) 0)
+     (let [cart (get-in data state/order-path)]
+       (if (and (get-in data state/user-order-id-path)
+                (> (-> cart :line_items count) 0))
          [:div
           [:form#update-cart
            [:div.inside-cart-form
