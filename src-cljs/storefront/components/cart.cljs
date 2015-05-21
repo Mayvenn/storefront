@@ -23,9 +23,14 @@
 (defn display-line-item [data line-item]
   (let [variant (:variant line-item)]
     [:div.line-item
-     [:img {:src (-> variant :images first :small_url)}]
+     [:a
+      (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+      [:img {:src (-> variant :images first :small_url)}]]
      [:div.line-item-detail.interactive
-      [:h4 [:a (variant :name)]]
+      [:h4
+       [:a
+        (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+        (variant :name)]]
       (map display-variant-options (:option_values variant))
       [:div.line-item-attr.item-form.price
        [:span.cart-label "Price:"]
