@@ -10,6 +10,7 @@ pom.xml.asc
 .hgignore
 .hg/
 .repl
+.DS_Store
 
 *.log
 resources/public/js/out
