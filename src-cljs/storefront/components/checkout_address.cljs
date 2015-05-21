@@ -7,6 +7,13 @@
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [clojure.string :as string]))
 
+(defn selected-value->int [evt]
+  (let [elem (.-target evt)]
+    (-> (.-value
+         (aget (.-options elem)
+               (.-selectedIndex elem)))
+        (js/parseInt 10))))
+
 (defn textfield [name & [{:keys [id value required? type on-change] :or {type "text"}}]]
   [:p.field
    [:label {:for id} name (when required? [:span.required "*"])]
@@ -70,19 +77,13 @@
                         :required? true
                         :value (str (get-in data state/checkout-billing-address-city-path))}))
      (selectfield "State"
-                  (merge {:on-change #(utils/put-event data
-                                                       events/control-checkout-change
-                                                       {state/checkout-billing-address-state-path
-                                                        (let [elem (.-target %)]
-                                                          (js/parseInt
-                                                           (.-value
-                                                            (aget (.-options elem)
-                                                                  (.-selectedIndex elem)))
-                                                           10))})}
-                         {:id :state
-                          :required? true
-                          :options (get-in data state/states-path)
-                          :value (get-in data state/checkout-billing-address-state-path)}))
+                  {:id :state
+                   :required? true
+                   :options (get-in data state/states-path)
+                   :value (get-in data state/checkout-billing-address-state-path)
+                   :on-change #(utils/put-event data
+                                                events/control-checkout-change
+                                                {state/checkout-billing-address-state-path (selected-value->int %)})})
      (textfield "Zip"
                 (merge (utils/update-text data events/control-checkout-change state/checkout-billing-address-zip-path)
                        {:id :zipcode
@@ -102,6 +103,7 @@
                       {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data]
+  (println (get-in data state/checkout-shipping-address-state-path))
   [:div.shipping-address-wrapper
    [:fieldset#shipping.shipping-fieldset
     [:legend {:align "center"} "Shipping Address"]
@@ -138,19 +140,13 @@
                         :required? true
                         :value (str (get-in data state/checkout-shipping-address-city-path))}))
      (selectfield "State"
-                  (merge {:on-change #(utils/put-event data
-                                                       events/control-checkout-change
-                                                       {state/checkout-shipping-address-state-path
-                                                        (let [elem (.-target %)]
-                                                          (js/parseInt
-                                                           (.-value
-                                                            (aget (.-options elem)
-                                                                  (.-selectedIndex elem)))
-                                                           10))})}
-                         {:id :state
-                          :required? true
-                          :options (get-in data state/states-path)
-                          :value (get-in data state/checkout-shipping-address-state-path)}))
+                  {:id :state
+                   :required? true
+                   :options (get-in data state/states-path)
+                   :value (get-in data state/checkout-shipping-address-state-path)
+                   :on-change #(utils/put-event data
+                                                events/control-checkout-change
+                                                {state/checkout-shipping-address-state-path (selected-value->int %)})})
      (textfield "Zip"
                 (merge (utils/update-text data events/control-checkout-change state/checkout-shipping-address-zip-path)
                        {:id :zipcode
