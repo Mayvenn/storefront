@@ -28,7 +28,7 @@
 (defn get-store [events-ch store-slug]
   (api-req
    GET
-   "/stylist"
+   "/store"
    {:store_slug store-slug}
    #(put! events-ch [events/api-success-store %])))
 

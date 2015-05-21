@@ -14,7 +14,7 @@
 (defn fetch-store [storeback-config store-slug]
   (when (seq store-slug)
     (->
-     (http/get (str (:endpoint storeback-config) "/stylist")
+     (http/get (str (:endpoint storeback-config) "/store")
                {:query-params {:store_slug store-slug}
                 :throw-exceptions false
                 :socket-timeout 10000
