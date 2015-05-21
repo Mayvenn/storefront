@@ -28,7 +28,6 @@
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
-  (println (get-in data state/navigation-event-path))
   (om/component
    (html
     [:div
