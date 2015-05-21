@@ -181,7 +181,7 @@
 (def checkout-shipping-address-address1-path (conj checkout-shipping-address-path :address1))
 (def checkout-shipping-address-address2-path (conj checkout-shipping-address-path :address2))
 (def checkout-shipping-address-city-path (conj checkout-shipping-address-path :city))
-(def checkout-shipping-address-state-path (conj checkout-shipping-address-path :state))
+(def checkout-shipping-address-state-path (conj checkout-shipping-address-path :state_id))
 (def checkout-shipping-address-zip-path (conj checkout-shipping-address-path :zipcode))
 (def checkout-shipping-address-phone-path (conj checkout-shipping-address-path :phone))
 (def checkout-shipping-address-use-billing-address-path (conj checkout-shipping-address-path :use-billing-address))
