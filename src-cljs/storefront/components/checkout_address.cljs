@@ -103,7 +103,6 @@
                       {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data]
-  (println (get-in data state/checkout-shipping-address-state-path))
   [:div.shipping-address-wrapper
    [:fieldset#shipping.shipping-fieldset
     [:legend {:align "center"} "Shipping Address"]
