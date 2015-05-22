@@ -100,7 +100,8 @@
                                         :phone ""
                                         :use-billing-address true}}
           :flash {:success {:message nil
-                            :navigation []}}}}))
+                            :navigation []}}
+          :checkout-selected-shipping-method-id 0}}))
 
 (def event-ch-path [:event-ch])
 
@@ -137,6 +138,7 @@
 (def account-menu-expanded-path (conj ui-path :account-menu-expanded))
 
 (def checkout-current-step-path (conj ui-path :checkout-current-step))
+(def checkout-selected-shipping-method-id (conj ui-path :checkout-selected-shipping-method-id))
 
 (def sign-in-path (conj ui-path :sign-in))
 (def sign-in-email-path (conj sign-in-path :email))
