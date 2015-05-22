@@ -212,9 +212,11 @@
                     state/manage-account-password-confirmation-path)))
 
 (defmethod transition-state events/api-success-account-update-addresses [_ event {:keys [billing-address shipping-address]} app-state]
-  (merge app-state
-         {:billing-address billing-address
-          :shipping-address shipping-address}))
+  (-> app-state
+      (merge {:billing-address billing-address
+              :shipping-address shipping-address})
+      (update-in state/checkout-billing-address-path merge billing-address)
+      (update-in state/checkout-shipping-address-path merge shipping-address)))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state state/sms-number-path (:number args)))
