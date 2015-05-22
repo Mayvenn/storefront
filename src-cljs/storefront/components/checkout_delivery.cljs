@@ -7,28 +7,27 @@
             [storefront.components.utils :as utils]))
 
 (defn shipping-timeframe [rate-name]
-  (str
-   (condp = rate-name
-     "Priority Shipping" "3-5"
-     "Express Shipping" "1-2 (No Weekends)"
-     :else "?")))
+  (condp = rate-name
+    "Priority Shipping" "3-5 business days"
+    "Express Shipping" "1-2 business days (No Weekends)"
+    :else "?"))
 
-(defn display-shipping-method [app-state method]
+(defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
    (merge (if (= (get-in app-state state/checkout-selected-shipping-method-id)
-                 (:id method))
+                 (:id shipping-method))
             {:class "selected"})
           {:on-click (utils/enqueue-event app-state
                                           events/control-checkout-shipping-method-select
-                                          {:id (:id method)})})
+                                          {:id (:id shipping-method)})})
    [:label
     [:input.ship-method-radio {:type "radio"}]
     [:div.checkbox-container
      [:figure.large-checkbox]]
     [:div.shipping-method-container
-     [:div.rate-name (:name method)]
-     [:div.rate-timeframe "TODO: rate-timeframe"]]
-    [:div.rate-cost (:display_cost method)]]])
+     [:div.rate-name (:name shipping-method)]
+     [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
+    [:div.rate-cost (:display_cost shipping-method)]]])
 
 
 (defn checkout-delivery-component [data owner]
