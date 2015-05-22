@@ -36,17 +36,18 @@
    (html
     [:div#checkout
      (checkout-step-bar data)
-     [:form.edit_order
-      {:on-submit (utils/enqueue-event data events/control-checkout-shipping-method-submit)}
-      [:div.checkout-container.delivery
-       [:h2.checkout-header "Delivery Options"]
-       [:div#methods
-        [:p.warning "Please note: Express shipping cannot deliver to PO boxes."]
-        [:div.shipment
-         [:ul.field.radios.shipping-methods
+     [:div.checkout-form-wrapper
+      [:form.edit_order
+       {:on-submit (utils/enqueue-event data events/control-checkout-shipping-method-submit)}
+       [:div.checkout-container.delivery
+        [:h2.checkout-header "Delivery Options"]
+        [:div#methods
+         [:p.warning "Please note: Express shipping cannot deliver to PO boxes."]
+         [:div.shipment
+          [:ul.field.radios.shipping-methods
 
-          (map (partial display-shipping-method data)
-               (get-in data [:order :shipments 0 :shipping_rates]))]]]
-       [:div.form-buttons
-        [:input.continue.button.primary
-         {:type "submit" :value "Continue"}]]]]])))
+           (map (partial display-shipping-method data)
+                (get-in data [:order :shipments 0 :shipping_rates]))]]]
+        [:div.form-buttons
+         [:input.continue.button.primary
+          {:type "submit" :value "Continue"}]]]]]])))
