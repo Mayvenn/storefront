@@ -127,6 +127,15 @@
     (api/update-order event-ch token (merge (get-in app-state state/order-path)
                                             addresses))))
 
+(defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
+  (api/update-order (get-in app-state state/event-ch-path)
+                    (get-in app-state state/user-token-path)
+                    (let [order (get-in app-state state/order-path)]
+                      (merge (select-keys order [:id :number :token])
+                             {:shipments_attributes
+                              {:id (get-in order [:shipments 0 :id])
+                               :selected_shipping_rate_id (get-in app-state state/checkout-selected-shipping-method-id)}}))))
+
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state state/sign-in-remember-path))
   (when (= (get-in app-state state/navigation-event-path) events/navigate-sign-in)

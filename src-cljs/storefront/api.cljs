@@ -184,12 +184,12 @@
     (put! events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch user-token)))
 
-(defn update-order [events-ch user-token {guest-token :token :as order}]
+(defn update-order [events-ch user-token {order-token :token number :number :as order}]
   (api-req
    PUT
    "/orders"
-   {:order (select-keys order [:number :bill_address :ship_address])
-    :order_token guest-token}
+   {:order (select-keys order [:id :number :bill_address :ship_address :shipments_attributes])
+    :order_token order-token}
    #(put! events-ch [events/api-success-update-order %])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
