@@ -54,32 +54,31 @@
    [:table.order-summary-total
     (let [all-adjustments (all-order-adjustments order)
           quantity (:total_quantity order)]
-      [:div
+      [:tbody
        (when-not (empty? all-adjustments)
-         [:div
+         (list
           [:tr.cart-subtotal.order-summary-row
-           [:td
-            [:h5 (str "Subtotal (" quantity " Item"
-                      (when (> quantity 1) "s") ")")]]
-           [:td
-            [:h5 (:display_item_total order)]]]
-          [:tbody#cart_adjustments
-           (let [li-promotion-adjustments (line-item-promotion-adjustments order)
-                 tax-adjustments (tax-adjustments order)
-                 whole-order-adjustments (whole-order-adjustments order)]
-             [:div
-              (display-adjustments li-promotion-adjustments)
-              (display-adjustments tax-adjustments)
-              (map display-shipment (order :shipments))
-              (display-adjustments whole-order-adjustments)])]])
+                [:td
+                 [:h5 (str "Subtotal (" quantity " Item"
+                           (when (> quantity 1) "s") ")")]]
+                [:td
+                 [:h5 (:display_item_total order)]]]
+          (let [li-promotion-adjustments (line-item-promotion-adjustments order)
+                tax-adjustments (tax-adjustments order)
+                whole-order-adjustments (whole-order-adjustments order)]
+            (list
+             (display-adjustments li-promotion-adjustments)
+             (display-adjustments tax-adjustments)
+             (map display-shipment (order :shipments))
+             (display-adjustments whole-order-adjustments)))))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
         [:td [:h5 (:display_total order)]]]
        (when-not (empty? (storecredit-payments order))
-         [:div
+         (list
           [:tr.store-credit-used.order-summary-row.adjustment
            [:td [:h5 "Store Credit"]]
            [:td [:h5 (:display_total_applicable_store_credit order)]]]
           [:tr.balance-due.order-summary-row.cart-total
            [:td [:h5 (if (= "complete" (:state order)) "Amount charged" "Balance Due")]]
-           [:td [:h5 (:display_order_total_after_store_credit order)]]]])])]])
+           [:td [:h5 (:display_order_total_after_store_credit order)]]]))])]])

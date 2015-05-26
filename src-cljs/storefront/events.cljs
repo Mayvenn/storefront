@@ -57,6 +57,9 @@
 (def control-browse-variant-select (conj control-browse-variant :select))
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
+(def control-cart (conj control :cart))
+(def control-cart-update (conj control-cart :update))
+
 (def control-counter (conj control :counter))
 (def control-counter-inc (conj control-browse-variant :inc))
 (def control-counter-dec (conj control-browse-variant :dec))
