@@ -48,6 +48,7 @@
   (let [cart (get-in data state/order-path)]
     [:div
      [:form#update-cart
+      {:on-submit (utils/enqueue-event data events/control-cart-update)}
       [:div.inside-cart-form
        [:div.cart-items
         [:div.cart-line-items
@@ -57,7 +58,8 @@
          [:div.coupon-container
           [:label "Enter a coupon code:"]
           [:input.coupon-code-input {:type "text" :name "coupon-code"}]]
-         [:input.primary.button#update-button {:type "submit" :name "update" :value "Update"}]]
+         [:input.primary.button#update-button
+          {:type "submit" :name "update" :value "Update"}]]
         [:div.order-summary-cart
          (display-order-summary cart)
          [:input.button.checkout.primary#checkout-link

@@ -109,6 +109,22 @@
                       (get-in app-state state/manage-account-password-confirmation-path)
                       (get-in app-state state/user-token-path)))
 
+(defn updated-quantities [line-items quantities]
+  (->>
+   line-items
+   (map #(select-keys % [:id :quantity :variant_id]))
+   (map #(assoc % :quantity (-> % :id quantities)))))
+
+(defmethod perform-effects events/control-cart-update [_ event args app-state]
+  (let [order (get-in app-state state/order-path)]
+    (api/update-order
+     (get-in app-state state/event-ch-path)
+     (get-in app-state state/user-token-path)
+     (merge (select-keys order [:id :number :token])
+            {:line_items_attributes (updated-quantities
+                                     (:line_items order)
+                                     (get-in app-state state/cart-quantities-path))}))))
+
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [event-ch (get-in app-state state/event-ch-path)
         token (get-in app-state state/user-token-path)

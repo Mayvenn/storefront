@@ -93,8 +93,7 @@
 
 (defn select-address-keys [m]
   (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
-    {:billing-address (select-keys (:bill_address m) keys)
-     :shipping-address (select-keys (:ship_address m) keys)}))
+    (select-keys m keys)))
 
 (defn get-account [events-ch id token]
   (api-req
@@ -102,7 +101,7 @@
    "/users"
    {:id id
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses (select-address-keys %)])))
+   #(put! events-ch [events/api-success-account-update-addresses %])))
 
 (defn update-account [events-ch id email password password-confirmation token]
   (api-req
@@ -114,7 +113,7 @@
     :password_confirmation password-confirmation
     :token token}
    #(do (put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])
-        (put! events-ch [events/api-success-account-update-addresses (select-address-keys %)]))))
+        (put! events-ch [events/api-success-account-update-addresses %]))))
 
 (defn update-account-address [events-ch id email billing-address shipping-address token]
   (api-req
@@ -122,10 +121,10 @@
    "/users"
    {:id id
     :email email
-    :billing_address billing-address
-    :shipping_address shipping-address
+    :billing_address (select-address-keys billing-address)
+    :shipping_address (select-address-keys shipping-address)
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses (select-address-keys %)])))
+   #(put! events-ch [events/api-success-account-update-addresses %])))
 
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
@@ -188,7 +187,10 @@
   (api-req
    PUT
    "/orders"
-   {:order (select-keys order [:id :number :bill_address :ship_address :shipments_attributes])
+   {:order (-> order
+               (select-keys [:number :bill_address :ship_address :line_items_attributes :shipments_attributes])
+               (update-in [:bill_address] select-address-keys)
+               (update-in [:ship_address] select-address-keys))
     :order_token order-token}
    #(put! events-ch [events/api-success-update-order %])))
 
