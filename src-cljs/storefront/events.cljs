@@ -59,6 +59,7 @@
 
 (def control-cart (conj control :cart))
 (def control-cart-update (conj control-cart :update))
+(def control-cart-remove (conj control-cart :remove))
 
 (def control-counter (conj control :counter))
 (def control-counter-inc (conj control-browse-variant :inc))
@@ -91,6 +92,7 @@
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
+(def api-success-remove-item (conj api-success :remove-item))
 (def api-success-get-order (conj api-success :order))
 (def api-success-sms-number (conj api-success :sms-number))
 (def api-success-update-order (conj api-success :update-order))

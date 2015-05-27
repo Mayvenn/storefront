@@ -125,6 +125,21 @@
                                      (:line_items order)
                                      (get-in app-state state/cart-quantities-path))}))))
 
+(defmethod perform-effects events/control-cart-remove [_ event args app-state]
+  (let [order (get-in app-state state/order-path)]
+    (api/remove-line-item
+     (get-in app-state state/event-ch-path)
+     (:number order)
+     (:id args)
+     (:token order))))
+
+(defmethod perform-effects events/api-success-remove-item [_ event args app-state]
+  (let [order (get-in app-state state/order-path)]
+    (api/get-order
+     (get-in app-state state/event-ch-path)
+     (:number order)
+     (:token order))))
+
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [event-ch (get-in app-state state/event-ch-path)
         token (get-in app-state state/user-token-path)
