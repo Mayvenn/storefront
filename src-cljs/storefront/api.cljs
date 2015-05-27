@@ -1,6 +1,6 @@
 (ns storefront.api
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [ajax.core :refer [GET POST PUT json-response-format]]
+  (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [cljs.core.async :refer [put! take! chan <! mult tap]]
             [storefront.events :as events]
             [storefront.taxons :refer [taxon-name-from]]))
@@ -206,6 +206,15 @@
                                                     :variant-quantity variant-quantity
                                                     :order-number order-number
                                                     :order-token order-token}])))
+
+(defn remove-line-item [events-ch order-number line-item-id order-token]
+  (api-req
+   DELETE
+   "/line-items"
+   {:token order-token
+    :order_number order-number
+    :line_item_id line-item-id}
+   #(put! events-ch [events/api-success-remove-item])))
 
 (defn get-order [events-ch order-number order-token]
   (api-req
