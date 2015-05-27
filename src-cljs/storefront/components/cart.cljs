@@ -62,7 +62,14 @@
          [:h4 "Have a Coupon Code?"]
          [:div.coupon-container
           [:label "Enter a coupon code:"]
-          [:input.coupon-code-input {:type "text" :name "coupon-code"}]]
+          [:input.coupon-code-input
+           (merge
+            (utils/update-text data
+                               events/control-cart-coupon-change
+                               :coupon-code)
+            {:type "text"
+             :name "coupon-code"
+             :value (get-in data state/cart-coupon-code-path)})]]
          [:input.primary.button#update-button
           {:type "submit" :name "update" :value "Update"}]]
         [:div.order-summary-cart

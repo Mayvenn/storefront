@@ -122,7 +122,8 @@
      (get-in app-state state/event-ch-path)
      (get-in app-state state/user-token-path)
      (merge (select-keys order [:id :number :token])
-            {:line_items_attributes (updated-quantities
+            {:coupon_code (get-in app-state state/cart-coupon-code-path)
+             :line_items_attributes (updated-quantities
                                      (:line_items order)
                                      (get-in app-state state/cart-quantities-path))}))))
 

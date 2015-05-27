@@ -60,6 +60,7 @@
 (def control-cart (conj control :cart))
 (def control-cart-update (conj control-cart :update))
 (def control-cart-remove (conj control-cart :remove))
+(def control-cart-coupon-change (conj control-cart :coupon-change))
 
 (def control-counter (conj control :counter))
 (def control-counter-inc (conj control-browse-variant :inc))
