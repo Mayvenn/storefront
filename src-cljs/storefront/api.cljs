@@ -195,7 +195,7 @@
    PUT
    "/orders"
    {:order (-> order
-               (select-keys [:number :bill_address :ship_address :line_items_attributes :shipments_attributes])
+               (select-keys [:number :bill_address :ship_address :line_items_attributes :shipments_attributes :coupon_code])
                (update-in [:bill_address] select-address-keys)
                (update-in [:ship_address] select-address-keys))
     :order_token order-token}

@@ -90,6 +90,9 @@
                 (Math/abs)
                 (max 1))))
 
+(defmethod transition-state events/control-cart-coupon-change [_ event {coupon-code :coupon-code} app-state]
+  (assoc-in app-state state/cart-coupon-code-path coupon-code))
+
 (defmethod transition-state events/control-forgot-password-change [_ event args app-state]
   (update-in app-state state/forgot-password-path merge args))
 
