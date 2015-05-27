@@ -96,6 +96,7 @@
 (def api-success-get-order (conj api-success :order))
 (def api-success-sms-number (conj api-success :sms-number))
 (def api-success-update-order (conj api-success :update-order))
+(def api-success-promotions (conj api-success :promotions))
 
 (def flash [:flash])
 (def flash-show [:show])

@@ -17,6 +17,7 @@
 
      :user (cookie-jar/retrieve-login cookie)
      :order nil
+     :promotions []
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
@@ -118,6 +119,7 @@
 (def user-order-id-path (conj user-path :order-id))
 
 (def order-path [:order])
+(def promotions [:promotions])
 
 (def store-path [:store])
 (def store-slug-path (conj store-path :store_slug))

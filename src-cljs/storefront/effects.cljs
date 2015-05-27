@@ -16,6 +16,7 @@
   (api/get-store (get-in app-state state/event-ch-path)
                  (get-in app-state state/store-slug-path))
   (api/get-sms-number (get-in app-state state/event-ch-path))
+  (api/get-promotions (get-in app-state state/event-ch-path))
   (let [user-id (get-in app-state state/user-id-path)
         token (get-in app-state state/user-token-path)]
     (when (and user-id token)
