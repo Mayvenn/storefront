@@ -32,6 +32,13 @@
    {:store_slug store-slug}
    #(put! events-ch [events/api-success-store %])))
 
+(defn get-promotions [events-ch]
+  (api-req
+   GET
+   "/promotions"
+   {}
+   #(put! events-ch [events/api-success-promotions %])))
+
 (defn get-products [events-ch taxon-path]
   (api-req
    GET

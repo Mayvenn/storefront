@@ -26,6 +26,7 @@
             [storefront.components.checkout-address :refer [checkout-address-component]]
             [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [storefront.components.checkout-payment :refer [checkout-payment-component]]
+            [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [cljs.core.async :refer [put!]]))
 
 (defn top-level-component [data owner]
@@ -45,6 +46,8 @@
         [:div.flash.success msg])
       [:div.page-wrap
        (om/build header-component data)
+       (om/build promotion-banner-component data)
+
        [:main {:role "main"}
         [:div.container
 
