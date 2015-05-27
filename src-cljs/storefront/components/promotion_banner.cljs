@@ -7,7 +7,8 @@
 (def allowed-navigation-events
   #{events/navigate-home
     events/navigate-category
-    events/navigate-product})
+    events/navigate-product
+    events/navigate-cart})
 
 (defn promotion-banner-component [data owner]
   (om/component
