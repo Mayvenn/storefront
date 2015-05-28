@@ -225,7 +225,9 @@
   (assoc-in app-state state/sms-number-path (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event order app-state]
-  (assoc-in app-state state/order-path order))
+  (-> app-state
+      (assoc-in state/order-path order)
+      (assoc-in state/cart-coupon-code-path "")))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state state/promotions promotions))
