@@ -90,6 +90,10 @@
 (def checkout-shipping-address-zip (conj checkout-shipping-address :zipcode))
 (def checkout-shipping-address-phone (conj checkout-shipping-address :phone))
 (def checkout-shipping-address-use-billing-address (conj checkout-shipping-address :use-billing-address))
+(def checkout-credit-card-name (conj checkout :credit-card-name))
+(def checkout-credit-card-number (conj checkout :credit-card-number))
+(def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
+(def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))
