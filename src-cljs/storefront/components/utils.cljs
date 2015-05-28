@@ -1,6 +1,7 @@
 (ns storefront.components.utils
   (:require [storefront.routes :as routes]
             [storefront.state :as state]
+            [storefront.events :as events]
             [cljs.core.async :refer [put!]]))
 
 (defn put-event [app-state event & [args]]
@@ -26,6 +27,15 @@
      (.preventDefault e)
      (put! (get-in @app-state state/event-ch-path)
            [control-event {arg-name (.. e -target -value)}]))})
+
+(defn change-text [app-state state-path]
+  {:on-change
+   (fn [e]
+     (.preventDefault e)
+     (put! (get-in @app-state state/event-ch-path)
+           [events/control-change-state {:state-path state-path
+                                         :value (.. e -target -value)}]))
+   :value (get-in app-state state-path)})
 
 (defn update-checkbox [app-state checked? control-event arg-name]
   (let [checked-str (when checked? "checked")]
