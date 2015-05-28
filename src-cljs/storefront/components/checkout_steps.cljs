@@ -1,7 +1,7 @@
 (ns storefront.components.checkout-steps
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.utils :refer [route-to]]
             [clojure.string :as string]))
@@ -41,6 +41,6 @@
                   checkout-steps)]))
 
 (defn checkout-step-bar [data]
-  (let [checkout-current-step (get-in data state/checkout-current-step-path)]
+  (let [checkout-current-step (get-in data keypaths/checkout-current-step-path)]
     [:div.row
      [:div.columns.thirteen.omega (checkout-progress data checkout-current-step)]]))

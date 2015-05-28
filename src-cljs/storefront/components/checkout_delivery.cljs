@@ -1,7 +1,7 @@
 (ns storefront.components.checkout-delivery
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.utils :as utils]))
@@ -14,7 +14,7 @@
 
 (defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
-   (merge (if (= (get-in app-state state/checkout-selected-shipping-method-id)
+   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-id)
                  (:id shipping-method))
             {:class "selected"})
           {:on-click (utils/enqueue-event app-state

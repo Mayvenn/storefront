@@ -1,11 +1,11 @@
 (ns storefront.components.utils
   (:require [storefront.routes :as routes]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [cljs.core.async :refer [put!]]))
 
 (defn put-event [app-state event & [args]]
-  (put! (get-in @app-state state/event-ch-path) [event args]))
+  (put! (get-in @app-state keypaths/event-ch-path) [event args]))
 
 (defn enqueue-event [app-state event & [args]]
   (fn [e]
@@ -25,14 +25,14 @@
   {:on-change
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state state/event-ch-path)
+     (put! (get-in @app-state keypaths/event-ch-path)
            [control-event {arg-name (.. e -target -value)}]))})
 
 (defn change-text [app-state state-path]
   {:on-change
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state state/event-ch-path)
+     (put! (get-in @app-state keypaths/event-ch-path)
            [events/control-change-state {:state-path state-path
                                          :value (.. e -target -value)}]))
    :value (get-in app-state state-path)})
@@ -44,10 +44,10 @@
      :on-change
      (fn [e]
        (.preventDefault e)
-       (put! (get-in @app-state state/event-ch-path)
+       (put! (get-in @app-state keypaths/event-ch-path)
              [control-event {arg-name (.. e -target -checked)}]))}))
 
 (defn link-with-selected [data event label]
-  (let [navigation-state (get-in data state/navigation-event-path)
-        selected (if (= navigation-state event) {:class "selected"} {})]
+  (let [navigation-state (get-in data keypaths/navigation-event-path)
+        selected (if (= navigation-keypaths event) {:class "selected"} {})]
     [:a (merge selected (route-to data event)) label]))

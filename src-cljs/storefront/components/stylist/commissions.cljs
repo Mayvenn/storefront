@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn display-new-order [new-order]
   [:div.loose-table-row
@@ -68,7 +68,7 @@
         [:div.next-payout-description
          [:p "As of today, your next commission payment is:"]
          [:p.next-commissions-amount
-          (f/as-money (get-in data state/stylist-commissions-next-amount-path))]]
+          (f/as-money (get-in data keypaths/stylist-commissions-next-amount-path))]]
 
         [:div.next-payout-date-container
          [:p.accented-next-pay "W"]
@@ -79,9 +79,9 @@
         [:div.money-rule-details
          [:p
           "You earn "
-          (get-in data state/stylist-commissions-rate-path)
+          (get-in data keypaths/stylist-commissions-rate-path)
           "% commission on each new order shipped from your store excluding tax and shipping."]]]
 
-       (display-new-orders (get-in data state/stylist-commissions-new-orders-path))
-       (display-payouts (get-in data state/stylist-commissions-paid-total-path)
-                        (get-in data state/stylist-commissions-payouts-path))]]])))
+       (display-new-orders (get-in data keypaths/stylist-commissions-new-orders-path))
+       (display-payouts (get-in data keypaths/stylist-commissions-paid-total-path)
+                        (get-in data keypaths/stylist-commissions-payouts-path))]]])))

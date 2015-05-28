@@ -1,7 +1,7 @@
 (ns storefront.components.help
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [clojure.string :as string]))
 
 (defn display-sms [number]
@@ -32,7 +32,7 @@
            [:p.help-method "Call"]
            [:p.help-method-means "1-888-562-7952"]]]]]
        [:div.solid-line-divider]
-       (let [number (get-in data state/sms-number-path)]
+       (let [number (get-in data keypaths/sms-number-path)]
          [:a.help-link (when number {:href (str "sms://+1" number)})
           [:div.help-method-row
            [:div.help-method-icon.sms]

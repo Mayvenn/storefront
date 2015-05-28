@@ -5,7 +5,7 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.query :as query]))
 
 (defn display-taxon [data selected-taxon taxon]
@@ -48,21 +48,21 @@
 (defn category-component [data owner]
   (om/component
    (html
-    (if-let [taxon (query/get (get-in data state/browse-taxon-query-path)
-                              (get-in data state/taxons-path))]
+    (if-let [taxon (query/get (get-in data keypaths/browse-taxon-query-path)
+                              (get-in data keypaths/taxons-path))]
       (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
         [:div
          [:div.taxon-products-banner {:class taxon-permalink-class}]
          [:div.taxon-products-container
           [:div.taxon-nav
            (map (partial display-taxon data taxon)
-                (get-in data state/taxons-path))
+                (get-in data keypaths/taxons-path))
            [:div {:style {:clear "both"}}]]
 
           [:div.taxon-products-list-container
            (map (partial display-product data (:id taxon))
                 (filter #(contains? (set (:taxon_ids %)) (:id taxon))
-                        (vals (get-in data state/products-path))))]]
+                        (vals (get-in data keypaths/products-path))))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]

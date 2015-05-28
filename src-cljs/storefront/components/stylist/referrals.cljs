@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn stylist-referral-component [referral]
   (html
@@ -32,11 +32,11 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (let [sales-rep-email (str "mailto:" (get-in data state/stylist-sales-rep-email-path) "?Subject=Referral")
-          bonus-amount (get-in data state/stylist-referral-program-bonus-amount-path)
-          earning-amount (get-in data state/stylist-referral-program-earning-amount-path)
-          total-amount (get-in data state/stylist-referral-program-total-amount-path)
-          referrals (get-in data state/stylist-referral-program-referrals-path)]
+    (let [sales-rep-email (str "mailto:" (get-in data keypaths/stylist-sales-rep-email-path) "?Subject=Referral")
+          bonus-amount (get-in data keypaths/stylist-referral-program-bonus-amount-path)
+          earning-amount (get-in data keypaths/stylist-referral-program-earning-amount-path)
+          total-amount (get-in data keypaths/stylist-referral-program-total-amount-path)
+          referrals (get-in data keypaths/stylist-referral-program-referrals-path)]
       [:div
        [:h2.header-bar-heading.referrals "Referrals"]
 
@@ -67,4 +67,3 @@
           (f/as-money-without-cents total-amount)]]
 
          (map stylist-referral-component referrals)]]]))))
-
