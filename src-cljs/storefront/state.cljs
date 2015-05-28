@@ -118,8 +118,12 @@
 (def user-id-path (conj user-path :id))
 (def user-order-token-path (conj user-path :order-token))
 (def user-order-id-path (conj user-path :order-id))
+(def user-total-available-store-credit-path (conj user-path :total-available-store-credit-path))
 
 (def order-path [:order])
+(def order-covered-by-store-credit-path [:order :covered_by_store_credit])
+(def order-total-applicable-store-credit-path [:order :total_applicable_store_credit])
+
 (def promotions [:promotions])
 
 (def store-path [:store])
