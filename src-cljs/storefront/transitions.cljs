@@ -157,12 +157,13 @@
       (assoc-in state/stylist-referral-program-referrals-path referrals)
       (assoc-in state/stylist-sales-rep-email-path sales-rep-email)))
 
-(defn sign-in-user [app-state {:keys [email token store_slug id]}]
+(defn sign-in-user [app-state {:keys [email token store_slug id total_available_store_credit]}]
   (-> app-state
       (assoc-in state/user-id-path id)
       (assoc-in state/user-email-path email)
       (assoc-in state/user-token-path token)
-      (assoc-in state/user-store-slug-path store_slug)))
+      (assoc-in state/user-store-slug-path store_slug)
+      (assoc-in state/user-total-available-store-credit-path (js/parseFloat total_available_store_credit))))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]
   (-> app-state
@@ -214,8 +215,9 @@
                     state/manage-account-password-path
                     state/manage-account-password-confirmation-path)))
 
-(defmethod transition-state events/api-success-account-update-addresses [_ event {:keys [billing-address shipping-address]} app-state]
+(defmethod transition-state events/api-success-account-update-addresses [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state
+      (sign-in-user args)
       (merge {:billing-address billing-address
               :shipping-address shipping-address})
       (update-in state/checkout-billing-address-path merge billing-address)
