@@ -28,14 +28,14 @@
      (put! (get-in @app-state keypaths/event-ch)
            [control-event {arg-name (.. e -target -value)}]))})
 
-(defn change-text [app-state state-path]
+(defn change-text [app-state keypath]
   {:on-change
    (fn [e]
      (.preventDefault e)
      (put! (get-in @app-state keypaths/event-ch)
-           [events/control-change-state {:state-path state-path
+           [events/control-change-state {:keypath keypath
                                          :value (.. e -target -value)}]))
-   :value (get-in app-state state-path)})
+   :value (get-in app-state keypath)})
 
 (defn update-checkbox [app-state checked? control-event arg-name]
   (let [checked-str (when checked? "checked")]
