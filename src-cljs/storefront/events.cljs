@@ -28,6 +28,8 @@
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
 
 (def control [:control])
+(def control-change-state (conj control :change-state))
+
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse (conj control-menu :collapse))
