@@ -79,29 +79,29 @@
          (when (stylist? (get-in data keypaths/user))
            [:span "(Coupons can be used by Stylists)"])]]]]]]])
 
-(defn field [id name app-state value-key-path presenter-fn & [text-attrs]]
+(defn field [id name app-state keypath presenter-fn & [text-attrs]]
   [:p.field
    [:label {:for id} name]
    [:input (merge {:type "text"
                    :id id
                    :name id
-                   :value (presenter-fn (get-in app-state value-key-path))
+                   :value (presenter-fn (get-in app-state keypath))
                    :required true
                    :on-change (fn [e]
                                 (.preventDefault e)
-                                (put! (get-in @app-state state/event-ch-path)
-                                      [events/control-change-state {:state-path value-key-path
+                                (put! (get-in @app-state keypaths/event-ch)
+                                      [events/control-change-state {:keypath keypath
                                                                     :value (.. e -target -value)}]))}
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
   [:div.credit-card-container
-   (field "name" "Cardholder's Name" data state/checkout-credit-card-name-path identity)
-   (field "card_number" "Credit Card Number" data state/checkout-credit-card-number-path format-cc-number
+   (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
+   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number format-cc-number
           {:size 19 :maxlength 19 :autocomplete "off" :data-hook "card_number" :class "required cardNumber"})
-   (field "card_expiry" "Expiration" data state/checkout-credit-card-expiration-path format-expiration
+   (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration format-expiration
           {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"})
-   (field "card_code" "3 digit number on back of card" data state/checkout-credit-card-ccv-path identity
+   (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
           {:size 5 :autocomplete "off" :data-hook "card_number" :class "required cardCode"})
    [:p.review-message
             "You can review your order on the next page"
