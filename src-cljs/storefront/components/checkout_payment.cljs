@@ -7,40 +7,52 @@
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [clojure.string :as string]))
 
+(defn stylist? [user]
+  (seq (:store-slug user)))
+
+(defn format-currency [amount]
+  (str "$" (.toFixed amount 2)))
 
 (defn display-use-store-credit-option [data]
   [:div
    [:h2.checkout-header "Store credit can be applied for this order!"]
    [:ul.field.radios.store-credit-options
-    [:li.store-credit-option.selected.no-cc-form ;; TODO: if order covered by store credit, clear no-cc-form?
+    [:li.store-credit-option.selected
      [:label
       [:input.store-credit-radio
-       {:type "radio"
-        :name "use_store_credits"
-        :value true
-        :checked "checked" ;; TODO:params[:use_store_credits].blank? || @order.using_store_credit?
-        }
+       (merge {:type "radio"
+               :name "use_store_credits"
+               :value true}
+              (if (pos? (get-in data state/order-total-applicable-store-credit-path))
+                {:checked "checked"}
+                {}))
        [:div.checkbox-container [:figure.large-checkbox]]
        [:div.store-credit-container
         [:div#select_store_credit.use-store-credit-option
-         [:div "Use store credit: TODO:Spree::Money.new( order.user.total_available_store_credit ) available"]
+         [:div (str
+                "Use store credit: "
+                (:store_credits (get-in data state/user-path)))
+          "Use store credit: "
+          (format-currency (get-in data state/user-total-available-store-credit-path))
+          " available"]
          [:br]
-         (when true ;; TODO: order.user.stylist?
+         (when (stylist? (get-in data state/user-path))
            [:span "(Coupons will be automatically removed for Stylists)"])]]]]]
     [:li.store-credit-option
      [:label
       [:input.store-credit-radio
-       {:type "radio"
-        :name "use_store_credits"
-        :value false
-        :checked "checked" ;; TODO: params[:use_store_credits] == 'false' || !@order.using_store_credit?
-        }
+       (merge {:type "radio"
+               :name "use_store_credits"
+               :value false}
+              (if-not (pos? (get-in data state/order-total-applicable-store-credit-path))
+                {:checked "checked"}
+                {}))
        [:div.checkbox-container [:figure.large-checkbox]]
        [:div.store-credit-container
         [:div#select_store_credit.use-store-credit-option
          [:div "Do not use store credit"]
          [:br]
-         (when true ;; TODO: order.user.stylist?
+         (when (stylist? (get-in data state/user-path))
            [:span "(Coupons can be used by Stylists)"])]]]]]]])
 
 (defn field [id name value & [text-attrs]]
@@ -59,7 +71,7 @@
           {:size 5 :autocomplete "off" :data-hook "card_number" :class "required cardCode"})
    [:p.review-message
             "You can review your order on the next page"
-            (when true ;; order.covered_by_store_credit?
+    (when (get-in data state/order-covered-by-store-credit-path)
               " before we can charge your credit card")]])
 
 (defn checkout-payment-component [data owner]
@@ -74,11 +86,12 @@
          :on-submit (utils/enqueue-event data events/control-checkout-update-addresses-submit)}
 
         [:div.checkout-container.payment
-         (when true ;; TODO:order.total_applicable_store_credit > 0
+         (when (pos? (get-in data state/user-total-available-store-credit-path))
            (display-use-store-credit-option data))
          [:div#cc-form
           [:div
-           (if true ;; order.total_applicable_store_credit > 0 && !order.covered_by_store_credit?
+           (if (and (> (get-in data state/order-total-applicable-store-credit-path) 0)
+                    (not (get-in data state/order-covered-by-store-credit-path)))
              [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
              [:h2.checkout-header "Credit Card Info (Required)"])
 
