@@ -23,17 +23,17 @@
                  {:autofocus "autofocus"
                   :type "email"
                   :name "email"
-                  :value (get-in data keypaths/sign-in-email-path)})]]
+                  :value (get-in data keypaths/sign-in-email)})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-in-change :password)
                  {:type "password"
                   :name "password"
-                  :value (get-in data keypaths/sign-in-password-path)})]]]
+                  :value (get-in data keypaths/sign-in-password)})]]]
        [:p
         [:input#remember-me
-         (merge (utils/update-checkbox data (get-in data keypaths/sign-in-remember-path)
+         (merge (utils/update-checkbox data (get-in data keypaths/sign-in-remember)
                                        events/control-sign-in-change :remember-me)
                 {:type "checkbox"
                  :name "remember-me"})]
@@ -44,6 +44,6 @@
                                 :value "Login"}]]]]])))
 
 (defn requires-sign-in [app-state authorized-component]
-  (if (get-in app-state keypaths/user-id-path)
+  (if (get-in app-state keypaths/user-id)
     authorized-component
     sign-in-component))

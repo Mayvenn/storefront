@@ -35,14 +35,14 @@
     [:div
      (om/build slideout-nav-component data)
      [:div (cond
-             (get-in data keypaths/menu-expanded-path)
+             (get-in data keypaths/menu-expanded)
              {:on-click (utils/enqueue-event data events/control-menu-collapse)}
 
-             (get-in data keypaths/account-menu-expanded-path)
+             (get-in data keypaths/account-menu-expanded)
              {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
 
              :else {})
-      (when-let [msg (get-in data keypaths/flash-success-message-path)]
+      (when-let [msg (get-in data keypaths/flash-success-message)]
         [:div.flash.success msg])
       [:div.page-wrap
        (om/build header-component data)
@@ -52,7 +52,7 @@
         [:div.container
 
          (om/build
-          (condp = (get-in data keypaths/navigation-event-path)
+          (condp = (get-in data keypaths/navigation-event)
             events/navigate-home home-component
             events/navigate-category category-component
             events/navigate-product product-component

@@ -5,7 +5,7 @@
             [cljs.core.async :refer [put!]]))
 
 (defn put-event [app-state event & [args]]
-  (put! (get-in @app-state keypaths/event-ch-path) [event args]))
+  (put! (get-in @app-state keypaths/event-ch) [event args]))
 
 (defn enqueue-event [app-state event & [args]]
   (fn [e]
@@ -25,14 +25,14 @@
   {:on-change
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch-path)
+     (put! (get-in @app-state keypaths/event-ch)
            [control-event {arg-name (.. e -target -value)}]))})
 
 (defn change-text [app-state state-path]
   {:on-change
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch-path)
+     (put! (get-in @app-state keypaths/event-ch)
            [events/control-change-state {:state-path state-path
                                          :value (.. e -target -value)}]))
    :value (get-in app-state state-path)})
@@ -44,10 +44,10 @@
      :on-change
      (fn [e]
        (.preventDefault e)
-       (put! (get-in @app-state keypaths/event-ch-path)
+       (put! (get-in @app-state keypaths/event-ch)
              [control-event {arg-name (.. e -target -checked)}]))}))
 
 (defn link-with-selected [data event label]
-  (let [navigation-state (get-in data keypaths/navigation-event-path)
+  (let [navigation-state (get-in data keypaths/navigation-event)
         selected (if (= navigation-keypaths event) {:class "selected"} {})]
     [:a (merge selected (route-to data event)) label]))

@@ -18,9 +18,9 @@
               {:autofocus "autofocus"
                :type "email"
                :name "email"
-               :value (if (empty? (get-in data keypaths/manage-account-email-path))
-                        (get-in data keypaths/user-email-path)
-                        (get-in data keypaths/manage-account-email-path))})]
+               :value (if (empty? (get-in data keypaths/manage-account-email))
+                        (get-in data keypaths/user-email)
+                        (get-in data keypaths/manage-account-email))})]
       [:div#password-credentials
        [:p
         [:label {:for "user-password"} "Password"]
@@ -29,7 +29,7 @@
          (merge (utils/update-text data events/control-manage-account-change :password)
                 {:type "password"
                  :name "password"
-                 :value (get-in data keypaths/manage-account-password-path)})]]
+                 :value (get-in data keypaths/manage-account-password)})]]
        [:p
         [:label {:for "user-password-confirmation"} "Enter the same password"]
         [:br]
@@ -37,7 +37,7 @@
          (merge (utils/update-text data events/control-manage-account-change :password-confirmation)
                 {:type "password"
                  :name "password-confirmation"
-                 :value (get-in data keypaths/manage-account-password-confirmation-path)})]]]
+                 :value (get-in data keypaths/manage-account-password-confirmation)})]]]
       [:p.user-password-instructions "Leave blank to keep the same password."]
       [:p
        [:input.button.primary {:type "submit" :value "Update"}]]]])))

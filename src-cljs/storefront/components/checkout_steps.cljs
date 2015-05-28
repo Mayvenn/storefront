@@ -41,6 +41,6 @@
                   checkout-steps)]))
 
 (defn checkout-step-bar [data]
-  (let [checkout-current-step (get-in data keypaths/checkout-current-step-path)]
+  (let [checkout-current-step (get-in data keypaths/checkout-current-step)]
     [:div.row
      [:div.columns.thirteen.omega (checkout-progress data checkout-current-step)]]))

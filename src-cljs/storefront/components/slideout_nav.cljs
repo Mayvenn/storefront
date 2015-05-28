@@ -14,8 +14,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch-path) [events/control-menu-collapse])
-     (put! (get-in @app-state keypaths/event-ch-path) [events/control-account-menu-collapse])
+     (put! (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
+     (put! (get-in @app-state keypaths/event-ch) [events/control-account-menu-collapse])
      (routes/enqueue-navigate @app-state event args))})
 
 (defn close-and-enqueue [app-state event]
@@ -23,8 +23,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch-path) [events/control-menu-collapse])
-     (put! (get-in @app-state keypaths/event-ch-path) [event]))})
+     (put! (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
+     (put! (get-in @app-state keypaths/event-ch) [event]))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
@@ -34,18 +34,18 @@
     label]])
 
 (defn logged-in? [data]
-  (boolean (get-in data keypaths/user-email-path)))
+  (boolean (get-in data keypaths/user-email)))
 
 (defn own-store? [data]
-  (= (get-in data keypaths/user-store-slug-path)
-     (get-in data keypaths/store-slug-path)))
+  (= (get-in data keypaths/user-store-slug)
+     (get-in data keypaths/store-slug)))
 
 (defn slideout-nav-component [data owner]
   (om/component
    (html
-    [:div.slideout-nav-wrapper {:class (when (get-in data keypaths/menu-expanded-path)
+    [:div.slideout-nav-wrapper {:class (when (get-in data keypaths/menu-expanded)
                                          "slideout-nav-open")}
-     (let [store (get-in data keypaths/store-path)]
+     (let [store (get-in data keypaths/store)]
        [:nav.slideout-nav (when-not (store :profile_picture_url)
                             {:class "no-picture"})
          [:div.slideout-nav-header
@@ -58,13 +58,13 @@
             [:a.account-menu-link
              {:href "#"
               :on-click
-              (if (get-in data keypaths/account-menu-expanded-path)
+              (if (get-in data keypaths/account-menu-expanded)
                 (utils/enqueue-event data events/control-account-menu-collapse)
                 (utils/enqueue-event data events/control-account-menu-expand))}
              [:span.account-detail-name
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
-              (get-in data keypaths/user-email-path)]
+              (get-in data keypaths/user-email)]
              [:figure.down-arrow]]
             [:span
              [:a (close-and-route data events/navigate-sign-in) "Sign In"]
@@ -73,7 +73,7 @@
          (when (logged-in? data)
            [:ul.account-detail-expanded
             {:class
-             (if (get-in data keypaths/account-menu-expanded-path)
+             (if (get-in data keypaths/account-menu-expanded)
                "open"
                "closed")}
             (when (own-store? data)

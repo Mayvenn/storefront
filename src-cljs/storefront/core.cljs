@@ -20,7 +20,7 @@
     (perform-effects event-fragment event args app-state)))
 
 (defn start-event-loop [app-state]
-  (let [event-ch (get-in @app-state keypaths/event-ch-path)]
+  (let [event-ch (get-in @app-state keypaths/event-ch)]
     (go-loop []
       (when-let [event-and-args (<! event-ch)]
         (do
@@ -47,8 +47,8 @@
   (clj->js @app-state))
 
 (defn on-jsload []
-  (close! (get-in @app-state keypaths/event-ch-path))
-  (swap! app-state assoc-in keypaths/event-ch-path (chan))
+  (close! (get-in @app-state keypaths/event-ch))
+  (swap! app-state assoc-in keypaths/event-ch (chan))
   (main app-state))
 
 (main app-state)

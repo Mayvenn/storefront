@@ -21,7 +21,7 @@
           (utils/update-text data events/control-reset-password-change :password)
           {:type "password"
            :name "password"
-           :value (get-in data keypaths/reset-password-password-path)})]]
+           :value (get-in data keypaths/reset-password-password)})]]
        [:p
         [:label {:for "spree_user_email"} "Password Confirmation"]
         [:br]
@@ -30,6 +30,6 @@
           (utils/update-text data events/control-reset-password-change :password-confirmation)
           {:type "password"
            :name "password-confirmation"
-           :value (get-in data keypaths/reset-password-password-confirmation-path)})]]
+           :value (get-in data keypaths/reset-password-password-confirmation)})]]
        [:p
         [:input.button.primary {:type "submit" :value "Update"}]]]]])))

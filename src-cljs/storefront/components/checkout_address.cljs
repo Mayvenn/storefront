@@ -53,53 +53,53 @@
 
     [:div.inner
      (textfield "First Name"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-firstname-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-firstname)
                        {:id :firstname
                         :required? true
-                        :value (str (get-in data keypaths/checkout-billing-address-firstname-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-firstname))}))
      (textfield "Last Name"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-lastname-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-lastname)
                        {:id :lastname
                         :required? true
-                        :value (str (get-in data keypaths/checkout-billing-address-lastname-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-lastname))}))
      (textfield "Street Address"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-address1-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-address1)
                        {:id :address1
                         :required? true
-                        :value (str (get-in data keypaths/checkout-billing-address-address1-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-address1))}))
      (textfield "Street Address (cont'd)"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-address2-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-address2)
                        {:id :address2
-                        :value (str (get-in data keypaths/checkout-billing-address-address2-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-address2))}))
      (textfield "City"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-city-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-city)
                        {:id :city
                         :required? true
-                        :value (str (get-in data keypaths/checkout-billing-address-city-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-city))}))
      (selectfield "State"
                   {:id :state
                    :required? true
-                   :options (get-in data keypaths/states-path)
-                   :value (get-in data keypaths/checkout-billing-address-state-path)
+                   :options (get-in data keypaths/states)
+                   :value (get-in data keypaths/checkout-billing-address-state)
                    :on-change #(utils/put-event data
                                                 events/control-checkout-change
-                                                {keypaths/checkout-billing-address-state-path (selected-value->int %)})})
+                                                {keypaths/checkout-billing-address-state (selected-value->int %)})})
      (textfield "Zip"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-zip-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-zip)
                        {:id :zipcode
                         :required? true
-                        :value (str (get-in data keypaths/checkout-billing-address-zip-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-zip))}))
      (textfield "Mobile Phone"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-phone-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-billing-address-phone)
                        {:id :order_bill_address_attributes_phone
                         :required? true
                         :type "tel"
-                        :value (str (get-in data keypaths/checkout-billing-address-phone-path))}))
+                        :value (str (get-in data keypaths/checkout-billing-address-phone))}))
      (checkbox "Save my address"
                (merge (utils/update-checkbox data
-                                             (get-in data keypaths/checkout-billing-address-save-my-address-path)
+                                             (get-in data keypaths/checkout-billing-address-save-my-address)
                                              events/control-checkout-change
-                                             keypaths/checkout-billing-address-save-my-address-path)
+                                             keypaths/checkout-billing-address-save-my-address)
                       {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data]
@@ -108,55 +108,55 @@
     [:legend {:align "center"} "Shipping Address"]
     (checkbox "Use Billing Address"
               (merge (utils/update-checkbox data
-                                            (get-in data keypaths/checkout-shipping-address-use-billing-address-path)
+                                            (get-in data keypaths/checkout-shipping-address-use-billing-address)
                                             events/control-checkout-change
-                                            keypaths/checkout-shipping-address-use-billing-address-path)
+                                            keypaths/checkout-shipping-address-use-billing-address)
                      {:id "use_billing" :class "checkbox checkout-use-billing-address"}))
 
-    [:div.inner {:class (if (get-in data keypaths/checkout-shipping-address-use-billing-address-path) "hidden" "")}
+    [:div.inner {:class (if (get-in data keypaths/checkout-shipping-address-use-billing-address) "hidden" "")}
      (textfield "First Name"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-firstname-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-firstname)
                        {:id :firstname
                         :required? true
-                        :value (str (get-in data keypaths/checkout-shipping-address-firstname-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-firstname))}))
      (textfield "Last Name"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-lastname-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-lastname)
                        {:id :lastname
                         :required? true
-                        :value (str (get-in data keypaths/checkout-shipping-address-lastname-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-lastname))}))
      (textfield "Street Address"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-address1-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-address1)
                        {:id :address1
                         :required? true
-                        :value (str (get-in data keypaths/checkout-shipping-address-address1-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-address1))}))
      (textfield "Street Address (cont'd)"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-address2-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-address2)
                        {:id :address2
-                        :value (str (get-in data keypaths/checkout-shipping-address-address2-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-address2))}))
      (textfield "City"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-city-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-city)
                        {:id :city
                         :required? true
-                        :value (str (get-in data keypaths/checkout-shipping-address-city-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-city))}))
      (selectfield "State"
                   {:id :state
                    :required? true
-                   :options (get-in data keypaths/states-path)
-                   :value (get-in data keypaths/checkout-shipping-address-state-path)
+                   :options (get-in data keypaths/states)
+                   :value (get-in data keypaths/checkout-shipping-address-state)
                    :on-change #(utils/put-event data
                                                 events/control-checkout-change
-                                                {keypaths/checkout-shipping-address-state-path (selected-value->int %)})})
+                                                {keypaths/checkout-shipping-address-state (selected-value->int %)})})
      (textfield "Zip"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-zip-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-zip)
                        {:id :zipcode
                         :required? true
-                        :value (str (get-in data keypaths/checkout-shipping-address-zip-path))}))
+                        :value (str (get-in data keypaths/checkout-shipping-address-zip))}))
      (textfield "Mobile Phone"
-                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-phone-path)
+                (merge (utils/update-text data events/control-checkout-change keypaths/checkout-shipping-address-phone)
                        {:id :order_bill_address_attributes_phone
                         :required? true
                                 :type "tel"
-                                :value (str (get-in data keypaths/checkout-shipping-address-phone-path))}))]]])
+                                :value (str (get-in data keypaths/checkout-shipping-address-phone))}))]]])
 
 (defn checkout-address-component [data owner]
   (om/component

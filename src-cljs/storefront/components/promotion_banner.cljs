@@ -14,7 +14,7 @@
   (om/component
    (html
     (when-let [promo (first (get-in data keypaths/promotions))]
-      (when (allowed-navigation-events (get-in data keypaths/navigation-event-path))
+      (when (allowed-navigation-events (get-in data keypaths/navigation-event))
         [:div.advertised-promo
          (str
           "Save "
