@@ -67,7 +67,9 @@
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   ;; FIXME clear other user specific pieces of state
-  (assoc-in app-state state/user-path {}))
+  (-> app-state
+      (assoc-in state/user-path {})
+      (assoc-in state/order-path nil)))
 
 (defmethod transition-state events/control-manage-account-change [_ event args app-state]
   (update-in app-state state/manage-account-path merge args))
