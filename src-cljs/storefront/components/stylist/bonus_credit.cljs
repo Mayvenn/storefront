@@ -20,12 +20,12 @@
  (defn stylist-bonus-credit-component [data]
   (om/component
    (html
-    (let [bonuses (get-in data keypaths/stylist-bonus-credit-bonuses-path)
-          total-credit (get-in data keypaths/stylist-bonus-credit-total-credit-path)
-          available-credit (get-in data keypaths/stylist-bonus-credit-available-credit-path)
-          commissioned-revenue (get-in data keypaths/stylist-bonus-credit-commissioned-revenue-path)
-          bonus-amount (get-in data keypaths/stylist-bonus-credit-bonus-amount-path)
-          earning-amount (get-in data keypaths/stylist-bonus-credit-earning-amount-path)
+    (let [bonuses (get-in data keypaths/stylist-bonus-credit-bonuses)
+          total-credit (get-in data keypaths/stylist-bonus-credit-total-credit)
+          available-credit (get-in data keypaths/stylist-bonus-credit-available-credit)
+          commissioned-revenue (get-in data keypaths/stylist-bonus-credit-commissioned-revenue)
+          bonus-amount (get-in data keypaths/stylist-bonus-credit-bonus-amount)
+          earning-amount (get-in data keypaths/stylist-bonus-credit-earning-amount)
           progress-amount (mod commissioned-revenue earning-amount)
           remaining-amount (- earning-amount progress-amount)
           progress-bar-width (/ progress-amount (/ earning-amount 100.0))]

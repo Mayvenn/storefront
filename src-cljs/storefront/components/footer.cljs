@@ -16,7 +16,7 @@
        [:ul.contact-us-menu
         [:li.cu-item
          [:a.cu-link.send-sonar-dynamic-number-link
-          (when-let [number (get-in data keypaths/sms-number-path)]
+          (when-let [number (get-in data keypaths/sms-number)]
             {:href (str "sms://+1" number)})
           [:i.icon-chat]
           "text"]]

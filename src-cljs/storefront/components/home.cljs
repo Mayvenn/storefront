@@ -33,7 +33,7 @@
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
      [:div.squashed-hair-categories
       (map (partial category data)
-           (get-in data keypaths/taxons-path))
+           (get-in data keypaths/taxons))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       [:figure.featured-new]

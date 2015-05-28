@@ -40,7 +40,7 @@
        [:span.cart-value (:display_amount line-item)]]
       (om/build counter-component
                 data
-                {:opts {:path (conj keypaths/cart-quantities-path (:id line-item))}})
+                {:opts {:path (conj keypaths/cart-quantities (:id line-item))}})
       [:a.delete
        {:href "#"
         :on-click (utils/enqueue-event data
@@ -50,7 +50,7 @@
      [:div {:style {:clear "both"}}]]))
 
 (defn display-full-cart [data]
-  (let [cart (get-in data keypaths/order-path)]
+  (let [cart (get-in data keypaths/order)]
     [:div
      [:form#update-cart
       {:on-submit (utils/enqueue-event data events/control-cart-update)}
@@ -69,7 +69,7 @@
                                :coupon-code)
             {:type "text"
              :name "coupon-code"
-             :value (get-in data keypaths/cart-coupon-code-path)})]]
+             :value (get-in data keypaths/cart-coupon-code)})]]
          [:input.primary.button#update-button
           {:type "submit" :name "update" :value "Update"}]]
         [:div.order-summary-cart
@@ -94,8 +94,8 @@
    (html
     [:div
      [:div.cart-container
-      (if (get-in data keypaths/user-order-id-path)
-        (when-let [cart (get-in data keypaths/order-path)]
+      (if (get-in data keypaths/user-order-id)
+        (when-let [cart (get-in data keypaths/order)]
           (if (> (-> cart :line_items count) 0)
             (display-full-cart data)
             (display-empty-cart data)))

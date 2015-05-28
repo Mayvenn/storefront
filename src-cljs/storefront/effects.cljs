@@ -12,48 +12,48 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/navigate [_ event args app-state]
-  (api/get-taxons (get-in app-state keypaths/event-ch-path))
-  (api/get-store (get-in app-state keypaths/event-ch-path)
-                 (get-in app-state keypaths/store-slug-path))
-  (api/get-sms-number (get-in app-state keypaths/event-ch-path))
-  (api/get-promotions (get-in app-state keypaths/event-ch-path))
-  (let [user-id (get-in app-state keypaths/user-id-path)
-        token (get-in app-state keypaths/user-token-path)]
+  (api/get-taxons (get-in app-state keypaths/event-ch))
+  (api/get-store (get-in app-state keypaths/event-ch)
+                 (get-in app-state keypaths/store-slug))
+  (api/get-sms-number (get-in app-state keypaths/event-ch))
+  (api/get-promotions (get-in app-state keypaths/event-ch))
+  (let [user-id (get-in app-state keypaths/user-id)
+        token (get-in app-state keypaths/user-token)]
     (when (and user-id token)
-      (api/get-account (get-in app-state keypaths/event-ch-path) user-id token)))
-  (when-let [order-id (get-in app-state keypaths/user-order-id-path)]
-      (api/get-order (get-in app-state keypaths/event-ch-path)
+      (api/get-account (get-in app-state keypaths/event-ch) user-id token)))
+  (when-let [order-id (get-in app-state keypaths/user-order-id)]
+      (api/get-order (get-in app-state keypaths/event-ch)
                      order-id
-                     (get-in app-state keypaths/user-order-token-path)))
+                     (get-in app-state keypaths/user-order-token)))
   (set! (.. js/document -body -scrollTop) 0)
   (when-not (or
-             (empty? (get-in app-state keypaths/flash-success-nav-path))
-             (= [event args] (get-in app-state keypaths/flash-success-nav-path)))
-    (put! (get-in app-state keypaths/event-ch-path)
+             (empty? (get-in app-state keypaths/flash-success-nav))
+             (= [event args] (get-in app-state keypaths/flash-success-nav)))
+    (put! (get-in app-state keypaths/event-ch)
           [events/flash-dismiss-success])))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (api/get-products (get-in app-state keypaths/event-ch-path)
+  (api/get-products (get-in app-state keypaths/event-ch)
                     (taxon-name-from taxon-path)))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
-  (api/get-product (get-in app-state keypaths/event-ch-path)
+  (api/get-product (get-in app-state keypaths/event-ch)
                    product-path))
 
 (defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
-  (api/get-stylist-commissions (get-in app-state keypaths/event-ch-path)
-                               (get-in app-state keypaths/user-token-path)))
+  (api/get-stylist-commissions (get-in app-state keypaths/event-ch)
+                               (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
-  (api/get-stylist-bonus-credits (get-in app-state keypaths/event-ch-path)
-                               (get-in app-state keypaths/user-token-path)))
+  (api/get-stylist-bonus-credits (get-in app-state keypaths/event-ch)
+                               (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
-  (api/get-stylist-referral-program (get-in app-state keypaths/event-ch-path)
-                                    (get-in app-state keypaths/user-token-path)))
+  (api/get-stylist-referral-program (get-in app-state keypaths/event-ch)
+                                    (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (api/get-states (get-in app-state keypaths/event-ch-path)))
+  (api/get-states (get-in app-state keypaths/event-ch)))
 
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))
@@ -62,53 +62,53 @@
   (set! (.. js/document -body -style -overflow) "auto"))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
-  (api/sign-in (get-in app-state keypaths/event-ch-path)
-               (get-in app-state keypaths/sign-in-email-path)
-               (get-in app-state keypaths/sign-in-password-path)))
+  (api/sign-in (get-in app-state keypaths/event-ch)
+               (get-in app-state keypaths/sign-in-email)
+               (get-in app-state keypaths/sign-in-password)))
 
 (defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
-  (api/sign-up (get-in app-state keypaths/event-ch-path)
-               (get-in app-state keypaths/sign-up-email-path)
-               (get-in app-state keypaths/sign-up-password-path)
-               (get-in app-state keypaths/sign-up-password-confirmation-path)))
+  (api/sign-up (get-in app-state keypaths/event-ch)
+               (get-in app-state keypaths/sign-up-email)
+               (get-in app-state keypaths/sign-up-password)
+               (get-in app-state keypaths/sign-up-password-confirmation)))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
-  (cookie-jar/clear (get-in app-state keypaths/cookie-path)))
+  (cookie-jar/clear (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
-  (let [product (query/get (get-in app-state keypaths/browse-product-query-path)
-                           (vals (get-in app-state keypaths/products-path)))
-        variant (query/get (get-in app-state keypaths/browse-variant-query-path)
+  (let [product (query/get (get-in app-state keypaths/browse-product-query)
+                           (vals (get-in app-state keypaths/products)))
+        variant (query/get (get-in app-state keypaths/browse-variant-query)
                            (:variants product))]
-    (api/add-to-bag (get-in app-state keypaths/event-ch-path)
+    (api/add-to-bag (get-in app-state keypaths/event-ch)
                     (variant :id)
-                    (get-in app-state keypaths/browse-variant-quantity-path)
-                    (get-in app-state keypaths/user-order-token-path)
-                    (get-in app-state keypaths/user-order-id-path)
-                    (get-in app-state keypaths/user-token-path))))
+                    (get-in app-state keypaths/browse-variant-quantity)
+                    (get-in app-state keypaths/user-order-token)
+                    (get-in app-state keypaths/user-order-id)
+                    (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
-  (api/forgot-password (get-in app-state keypaths/event-ch-path)
-                       (get-in app-state keypaths/forgot-password-email-path)))
+  (api/forgot-password (get-in app-state keypaths/event-ch)
+                       (get-in app-state keypaths/forgot-password-email)))
 
 (defmethod perform-effects events/control-reset-password-submit [_ event args app-state]
-  (api/reset-password (get-in app-state keypaths/event-ch-path)
-                      (get-in app-state keypaths/reset-password-password-path)
-                      (get-in app-state keypaths/reset-password-password-confirmation-path)
-                      (get-in app-state keypaths/reset-password-token-path)))
+  (api/reset-password (get-in app-state keypaths/event-ch)
+                      (get-in app-state keypaths/reset-password-password)
+                      (get-in app-state keypaths/reset-password-password-confirmation)
+                      (get-in app-state keypaths/reset-password-token)))
 
 (defn save-cookie [app-state remember?]
-  (cookie-jar/save (get-in app-state keypaths/cookie-path)
-                   (get-in app-state keypaths/user-path)
+  (cookie-jar/save (get-in app-state keypaths/cookie)
+                   (get-in app-state keypaths/user)
                    {:remember? remember?}))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
-  (api/update-account (get-in app-state keypaths/event-ch-path)
-                      (get-in app-state keypaths/user-id-path)
-                      (get-in app-state keypaths/manage-account-email-path)
-                      (get-in app-state keypaths/manage-account-password-path)
-                      (get-in app-state keypaths/manage-account-password-confirmation-path)
-                      (get-in app-state keypaths/user-token-path)))
+  (api/update-account (get-in app-state keypaths/event-ch)
+                      (get-in app-state keypaths/user-id)
+                      (get-in app-state keypaths/manage-account-email)
+                      (get-in app-state keypaths/manage-account-password)
+                      (get-in app-state keypaths/manage-account-password-confirmation)
+                      (get-in app-state keypaths/user-token)))
 
 (defn updated-quantities [line-items quantities]
   (->>
@@ -117,65 +117,65 @@
    (map #(assoc % :quantity (-> % :id quantities)))))
 
 (defmethod perform-effects events/control-cart-update [_ event args app-state]
-  (let [order (get-in app-state keypaths/order-path)]
+  (let [order (get-in app-state keypaths/order)]
     (api/update-cart
-     (get-in app-state keypaths/event-ch-path)
-     (get-in app-state keypaths/user-token-path)
+     (get-in app-state keypaths/event-ch)
+     (get-in app-state keypaths/user-token)
      (merge (select-keys order [:id :number :token])
-            {:coupon_code (get-in app-state keypaths/cart-coupon-code-path)
+            {:coupon_code (get-in app-state keypaths/cart-coupon-code)
              :line_items_attributes (updated-quantities
                                      (:line_items order)
-                                     (get-in app-state keypaths/cart-quantities-path))}))))
+                                     (get-in app-state keypaths/cart-quantities))}))))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
-  (let [order (get-in app-state keypaths/order-path)
+  (let [order (get-in app-state keypaths/order)
         line-item (->> order :line_items (filter (comp #{(:id args)} :id)) first)]
     (api/update-cart
-     (get-in app-state keypaths/event-ch-path)
-     (get-in app-state keypaths/user-token-path)
+     (get-in app-state keypaths/event-ch)
+     (get-in app-state keypaths/user-token)
      (merge (select-keys order [:id :number :token])
             {:line_items_attributes [(merge (select-keys line-item [:id :variant_id])
                                             {:quantity 0})]}))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
-  (let [event-ch (get-in app-state keypaths/event-ch-path)
-        token (get-in app-state keypaths/user-token-path)
-        addresses {:bill_address (get-in app-state keypaths/checkout-billing-address-path)
+  (let [event-ch (get-in app-state keypaths/event-ch)
+        token (get-in app-state keypaths/user-token)
+        addresses {:bill_address (get-in app-state keypaths/checkout-billing-address)
                    :ship_address (get-in app-state
-                                         (if (get-in app-state keypaths/checkout-shipping-address-use-billing-address-path)
-                                           keypaths/checkout-billing-address-path
-                                           keypaths/checkout-shipping-address-path))}]
-    (when (get-in app-state keypaths/checkout-billing-address-save-my-address-path)
+                                         (if (get-in app-state keypaths/checkout-shipping-address-use-billing-address)
+                                           keypaths/checkout-billing-address
+                                           keypaths/checkout-shipping-address))}]
+    (when (get-in app-state keypaths/checkout-billing-address-save-my-address)
       (api/update-account-address event-ch
-                                  (get-in app-state keypaths/user-id-path)
-                                  (get-in app-state keypaths/user-email-path)
+                                  (get-in app-state keypaths/user-id)
+                                  (get-in app-state keypaths/user-email)
                                   (:bill_address addresses)
                                   (:ship_address addresses)
                                   token))
-    (api/update-order event-ch token (merge (get-in app-state keypaths/order-path)
+    (api/update-order event-ch token (merge (get-in app-state keypaths/order)
                                             addresses))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
-  (api/update-order (get-in app-state keypaths/event-ch-path)
-                    (get-in app-state keypaths/user-token-path)
-                    (let [order (get-in app-state keypaths/order-path)]
+  (api/update-order (get-in app-state keypaths/event-ch)
+                    (get-in app-state keypaths/user-token)
+                    (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :token])
                              {:shipments_attributes
                               {:id (get-in order [:shipments 0 :id])
                                :selected_shipping_rate_id (get-in app-state keypaths/checkout-selected-shipping-method-id)}}))))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
-  (save-cookie app-state (get-in app-state keypaths/sign-in-remember-path))
-  (when (= (get-in app-state keypaths/navigation-event-path) events/navigate-sign-in)
+  (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
+  (when (= (get-in app-state keypaths/navigation-event) events/navigate-sign-in)
     (routes/enqueue-navigate app-state events/navigate-home))
-  (put! (get-in app-state keypaths/event-ch-path)
+  (put! (get-in app-state keypaths/event-ch)
         [events/flash-show-success {:message "Logged in successfully"
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch-path)
+  (put! (get-in app-state keypaths/event-ch)
         [events/flash-show-success {:message "Welcome! You have signed up successfully."
                                     :navigation [events/navigate-home {}]}]))
 
@@ -184,21 +184,21 @@
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch-path)
+  (put! (get-in app-state keypaths/event-ch)
         [events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch-path)
+  (put! (get-in app-state keypaths/event-ch)
         [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
                                     :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch-path)
+  (put! (get-in app-state keypaths/event-ch)
         [events/flash-show-success {:message "Account updated"
                                     :navigation [events/navigate-home {}]}]))
 

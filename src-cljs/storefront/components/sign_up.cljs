@@ -23,21 +23,21 @@
                  {:autofocus "autofocus"
                   :type "email"
                   :name "email"
-                  :value (get-in data keypaths/sign-up-email-path)})]]
+                  :value (get-in data keypaths/sign-up-email)})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-up-change :password)
                  {:type "password"
                   :name "password"
-                  :value (get-in data keypaths/sign-up-password-path)})]]
+                  :value (get-in data keypaths/sign-up-password)})]]
         [:div.input.password
          [:label.password "Password Confirmation"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-up-change :password-confirmation)
                  {:type "password"
                   :name "password-confirmation"
-                  :value (get-in data keypaths/sign-up-password-confirmation-path)})]]]
+                  :value (get-in data keypaths/sign-up-password-confirmation)})]]]
        [:p
         [:input.btn.button.primary {:type "submit"
                                     :value "Create"}]]]]])))

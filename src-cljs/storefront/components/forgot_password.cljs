@@ -20,6 +20,6 @@
          (utils/update-text data events/control-forgot-password-change :email)
          {:type "email"
           :name "email"
-          :value (get-in data keypaths/forgot-password-email-path)})]
+          :value (get-in data keypaths/forgot-password-email)})]
        [:p
         [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))

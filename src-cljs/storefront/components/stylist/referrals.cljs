@@ -32,11 +32,11 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (let [sales-rep-email (str "mailto:" (get-in data keypaths/stylist-sales-rep-email-path) "?Subject=Referral")
-          bonus-amount (get-in data keypaths/stylist-referral-program-bonus-amount-path)
-          earning-amount (get-in data keypaths/stylist-referral-program-earning-amount-path)
-          total-amount (get-in data keypaths/stylist-referral-program-total-amount-path)
-          referrals (get-in data keypaths/stylist-referral-program-referrals-path)]
+    (let [sales-rep-email (str "mailto:" (get-in data keypaths/stylist-sales-rep-email) "?Subject=Referral")
+          bonus-amount (get-in data keypaths/stylist-referral-program-bonus-amount)
+          earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
+          total-amount (get-in data keypaths/stylist-referral-program-total-amount)
+          referrals (get-in data keypaths/stylist-referral-program-referrals)]
       [:div
        [:h2.header-bar-heading.referrals "Referrals"]
 
