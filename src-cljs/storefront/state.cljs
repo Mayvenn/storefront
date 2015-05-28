@@ -100,7 +100,11 @@
                                         :state_id 0
                                         :zipcode ""
                                         :phone ""
-                                        :use-billing-address true}}
+                                        :use-billing-address true}
+                     :credit-card-name ""
+                     :credit-card-number ""
+                     :credit-card-expiration ""
+                     :credit-card-ccv ""}
           :flash {:success {:message nil
                             :navigation []}}
           :checkout-selected-shipping-method-id 0}}))
