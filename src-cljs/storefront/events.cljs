@@ -95,9 +95,9 @@
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
-(def api-success-remove-item (conj api-success :remove-item))
 (def api-success-get-order (conj api-success :order))
 (def api-success-sms-number (conj api-success :sms-number))
+(def api-success-update-cart (conj api-success :update-cart))
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-promotions (conj api-success :promotions))
 

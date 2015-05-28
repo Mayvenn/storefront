@@ -190,12 +190,20 @@
     (put! events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch user-token)))
 
+(defn update-cart [events-ch user-token {order-token :token number :number :as order}]
+  (api-req
+   PUT
+   "/cart"
+   {:order (select-keys order [:number :line_items_attributes :coupon_code])
+    :order_token order-token}
+   #(put! events-ch [events/api-success-update-cart %])))
+
 (defn update-order [events-ch user-token {order-token :token number :number :as order}]
   (api-req
    PUT
    "/orders"
    {:order (-> order
-               (select-keys [:number :bill_address :ship_address :line_items_attributes :shipments_attributes :coupon_code])
+               (select-keys [:number :bill_address :ship_address :shipments_attributes])
                (update-in [:bill_address] select-address-keys)
                (update-in [:ship_address] select-address-keys))
     :order_token order-token}
@@ -213,15 +221,6 @@
                                                     :variant-quantity variant-quantity
                                                     :order-number order-number
                                                     :order-token order-token}])))
-
-(defn remove-line-item [events-ch order-number line-item-id order-token]
-  (api-req
-   DELETE
-   "/line-items"
-   {:token order-token
-    :order_number order-number
-    :line_item_id line-item-id}
-   #(put! events-ch [events/api-success-remove-item])))
 
 (defn get-order [events-ch order-number order-token]
   (api-req

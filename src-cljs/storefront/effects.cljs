@@ -118,7 +118,7 @@
 
 (defmethod perform-effects events/control-cart-update [_ event args app-state]
   (let [order (get-in app-state state/order-path)]
-    (api/update-order
+    (api/update-cart
      (get-in app-state state/event-ch-path)
      (get-in app-state state/user-token-path)
      (merge (select-keys order [:id :number :token])
@@ -128,19 +128,14 @@
                                      (get-in app-state state/cart-quantities-path))}))))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
-  (let [order (get-in app-state state/order-path)]
-    (api/remove-line-item
+  (let [order (get-in app-state state/order-path)
+        line-item (->> order :line_items (filter (comp #{(:id args)} :id)) first)]
+    (api/update-cart
      (get-in app-state state/event-ch-path)
-     (:number order)
-     (:id args)
-     (:token order))))
-
-(defmethod perform-effects events/api-success-remove-item [_ event args app-state]
-  (let [order (get-in app-state state/order-path)]
-    (api/get-order
-     (get-in app-state state/event-ch-path)
-     (:number order)
-     (:token order))))
+     (get-in app-state state/user-token-path)
+     (merge (select-keys order [:id :number :token])
+            {:line_items_attributes [(merge (select-keys line-item [:id :variant_id])
+                                            {:quantity 0})]}))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [event-ch (get-in app-state state/event-ch-path)
