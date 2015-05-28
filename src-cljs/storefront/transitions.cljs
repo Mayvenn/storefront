@@ -72,6 +72,10 @@
 (defmethod transition-state events/control-manage-account-change [_ event args app-state]
   (update-in app-state state/manage-account-path merge args))
 
+(defmethod transition-state events/control-change-state
+  [_ event {:keys [state-path value]} app-state]
+  (assoc-in app-state state-path value))
+
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state state/browse-variant-query-path {:id (variant :id)}))
 
