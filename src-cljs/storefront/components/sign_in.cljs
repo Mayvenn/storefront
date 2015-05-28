@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn sign-in-component [data owner]
   (om/component
@@ -23,17 +23,17 @@
                  {:autofocus "autofocus"
                   :type "email"
                   :name "email"
-                  :value (get-in data state/sign-in-email-path)})]]
+                  :value (get-in data keypaths/sign-in-email-path)})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
           (merge (utils/update-text data events/control-sign-in-change :password)
                  {:type "password"
                   :name "password"
-                  :value (get-in data state/sign-in-password-path)})]]]
+                  :value (get-in data keypaths/sign-in-password-path)})]]]
        [:p
         [:input#remember-me
-         (merge (utils/update-checkbox data (get-in data state/sign-in-remember-path)
+         (merge (utils/update-checkbox data (get-in data keypaths/sign-in-remember-path)
                                        events/control-sign-in-change :remember-me)
                 {:type "checkbox"
                  :name "remember-me"})]
@@ -44,6 +44,6 @@
                                 :value "Login"}]]]]])))
 
 (defn requires-sign-in [app-state authorized-component]
-  (if (get-in app-state state/user-id-path)
+  (if (get-in app-state keypaths/user-id-path)
     authorized-component
     sign-in-component))

@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn forgot-password-component [data owner]
   (om/component
@@ -20,6 +20,6 @@
          (utils/update-text data events/control-forgot-password-change :email)
          {:type "email"
           :name "email"
-          :value (get-in data state/forgot-password-email-path)})]
+          :value (get-in data keypaths/forgot-password-email-path)})]
        [:p
         [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))

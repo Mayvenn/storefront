@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn stylist-bonus-component [bonus]
   (html
@@ -20,12 +20,12 @@
  (defn stylist-bonus-credit-component [data]
   (om/component
    (html
-    (let [bonuses (get-in data state/stylist-bonus-credit-bonuses-path)
-          total-credit (get-in data state/stylist-bonus-credit-total-credit-path)
-          available-credit (get-in data state/stylist-bonus-credit-available-credit-path)
-          commissioned-revenue (get-in data state/stylist-bonus-credit-commissioned-revenue-path)
-          bonus-amount (get-in data state/stylist-bonus-credit-bonus-amount-path)
-          earning-amount (get-in data state/stylist-bonus-credit-earning-amount-path)
+    (let [bonuses (get-in data keypaths/stylist-bonus-credit-bonuses-path)
+          total-credit (get-in data keypaths/stylist-bonus-credit-total-credit-path)
+          available-credit (get-in data keypaths/stylist-bonus-credit-available-credit-path)
+          commissioned-revenue (get-in data keypaths/stylist-bonus-credit-commissioned-revenue-path)
+          bonus-amount (get-in data keypaths/stylist-bonus-credit-bonus-amount-path)
+          earning-amount (get-in data keypaths/stylist-bonus-credit-earning-amount-path)
           progress-amount (mod commissioned-revenue earning-amount)
           remaining-amount (- earning-amount progress-amount)
           progress-bar-width (/ progress-amount (/ earning-amount 100.0))]
@@ -74,4 +74,3 @@
           [:span.emphasized-banner-value (f/as-money-without-cents total-credit)]]
 
          (map stylist-bonus-component bonuses)]]]))))
-

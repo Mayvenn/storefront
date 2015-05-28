@@ -1,7 +1,7 @@
 (ns storefront.components.top-level
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.utils :as utils]
             [storefront.components.slideout-nav :refer [slideout-nav-component]]
@@ -35,14 +35,14 @@
     [:div
      (om/build slideout-nav-component data)
      [:div (cond
-             (get-in data state/menu-expanded-path)
+             (get-in data keypaths/menu-expanded-path)
              {:on-click (utils/enqueue-event data events/control-menu-collapse)}
 
-             (get-in data state/account-menu-expanded-path)
+             (get-in data keypaths/account-menu-expanded-path)
              {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
 
              :else {})
-      (when-let [msg (get-in data state/flash-success-message-path)]
+      (when-let [msg (get-in data keypaths/flash-success-message-path)]
         [:div.flash.success msg])
       [:div.page-wrap
        (om/build header-component data)
@@ -52,7 +52,7 @@
         [:div.container
 
          (om/build
-          (condp = (get-in data state/navigation-event-path)
+          (condp = (get-in data keypaths/navigation-event-path)
             events/navigate-home home-component
             events/navigate-category category-component
             events/navigate-product product-component

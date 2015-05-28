@@ -1,6 +1,7 @@
 (ns storefront.core
   (:require-macros [cljs.core.async.macros :refer [go-loop alt!]])
   (:require [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.effects :refer [perform-effects]]
@@ -19,7 +20,7 @@
     (perform-effects event-fragment event args app-state)))
 
 (defn start-event-loop [app-state]
-  (let [event-ch (get-in @app-state state/event-ch-path)]
+  (let [event-ch (get-in @app-state keypaths/event-ch-path)]
     (go-loop []
       (when-let [event-and-args (<! event-ch)]
         (do
@@ -46,8 +47,8 @@
   (clj->js @app-state))
 
 (defn on-jsload []
-  (close! (get-in @app-state state/event-ch-path))
-  (swap! app-state assoc-in state/event-ch-path (chan))
+  (close! (get-in @app-state keypaths/event-ch-path))
+  (swap! app-state assoc-in keypaths/event-ch-path (chan))
   (main app-state))
 
 (main app-state)

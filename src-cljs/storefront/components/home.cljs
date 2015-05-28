@@ -1,6 +1,6 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.taxons :refer [taxon-path-for default-taxon-path]]
             [om.core :as om]
             [clojure.string :as string]
@@ -33,7 +33,7 @@
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
      [:div.squashed-hair-categories
       (map (partial category data)
-           (get-in data state/taxons-path))
+           (get-in data keypaths/taxons-path))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       [:figure.featured-new]

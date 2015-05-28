@@ -1,6 +1,6 @@
 (ns storefront.routes
   (:require [bidi.bidi :as bidi]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [cljs.core.async :refer [put!]]
             [cljs.reader :refer [read-string]]
@@ -34,13 +34,13 @@
   (read-string (name value)))
 
 (defn set-current-page [app-state]
-  (let [uri (.getToken (get-in app-state state/history-path))
+  (let [uri (.getToken (get-in app-state keypaths/history-path))
 
         {nav-event :handler params :route-params}
-        (bidi/match-route (get-in app-state state/routes-path) uri)
+        (bidi/match-route (get-in app-state keypaths/routes-path) uri)
 
         query-params (:query (url js/location.href))
-        event-ch (get-in app-state state/event-ch-path)]
+        event-ch (get-in app-state keypaths/event-ch-path)]
     (put! event-ch
           [(bidi->edn nav-event)
            (-> params
@@ -91,7 +91,7 @@
        "/checkout/payment" (edn->bidi events/navigate-checkout-payment)}])
 
 (defn install-routes [app-state]
-  (let [history (or (get-in @app-state state/history-path)
+  (let [history (or (get-in @app-state keypaths/history-path)
                     (make-history (history-callback app-state)))]
     (swap! app-state
            merge
@@ -109,7 +109,7 @@
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
     (-> (apply bidi/path-for
-               (get-in app-state state/routes-path)
+               (get-in app-state keypaths/routes-path)
                (edn->bidi navigation-event)
                (apply concat (seq args)))
         (set-query-string query-params))))
@@ -117,6 +117,6 @@
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
-    (.setToken (get-in app-state state/history-path)
+    (.setToken (get-in app-state keypaths/history-path)
                (-> (path-for app-state navigation-event args)
                    (set-query-string query-params)))))

@@ -7,7 +7,7 @@
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary]]
             [storefront.components.counter :refer [counter-component]]
-            [storefront.state :as state]))
+            [storefront.keypaths :as keypaths]))
 
 (defn shopping-link-attrs [data]
   (when-let [path (default-taxon-path data)]
@@ -40,7 +40,7 @@
        [:span.cart-value (:display_amount line-item)]]
       (om/build counter-component
                 data
-                {:opts {:path (conj state/cart-quantities-path (:id line-item))}})
+                {:opts {:path (conj keypaths/cart-quantities-path (:id line-item))}})
       [:a.delete
        {:href "#"
         :on-click (utils/enqueue-event data
@@ -50,7 +50,7 @@
      [:div {:style {:clear "both"}}]]))
 
 (defn display-full-cart [data]
-  (let [cart (get-in data state/order-path)]
+  (let [cart (get-in data keypaths/order-path)]
     [:div
      [:form#update-cart
       {:on-submit (utils/enqueue-event data events/control-cart-update)}
@@ -69,7 +69,7 @@
                                :coupon-code)
             {:type "text"
              :name "coupon-code"
-             :value (get-in data state/cart-coupon-code-path)})]]
+             :value (get-in data keypaths/cart-coupon-code-path)})]]
          [:input.primary.button#update-button
           {:type "submit" :name "update" :value "Update"}]]
         [:div.order-summary-cart
@@ -94,8 +94,8 @@
    (html
     [:div
      [:div.cart-container
-      (if (get-in data state/user-order-id-path)
-        (when-let [cart (get-in data state/order-path)]
+      (if (get-in data keypaths/user-order-id-path)
+        (when-let [cart (get-in data keypaths/order-path)]
           (if (> (-> cart :line_items count) 0)
             (display-full-cart data)
             (display-empty-cart data)))

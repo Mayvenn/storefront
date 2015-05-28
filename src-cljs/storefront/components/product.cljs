@@ -1,6 +1,6 @@
 (ns storefront.components.product
   (:require [storefront.components.utils :as utils]
-            [storefront.state :as state]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.query :as query]
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
@@ -12,7 +12,7 @@
             [storefront.events :as events]))
 
 (defn display-price [app-state product]
-  (let [variant-query (get-in app-state state/browse-variant-query-path)
+  (let [variant-query (get-in app-state keypaths/browse-variant-query-path)
         variant (or (->> product :variants (query/get variant-query))
                     (-> product :variants first))]
     (str "$" (.toFixed (js/parseFloat (variant :price))))))
@@ -26,11 +26,11 @@
 
 (defn display-bagged-variant [app-state {:keys [id quantity]}]
   (let [variant (query/get {:id id}
-                           (->> (get-in app-state state/products-path)
+                           (->> (get-in app-state keypaths/products-path)
                                 vals
                                 (mapcat :variants)))
         product (first (filter #(contains? (set (:variants %)) variant)
-                               (-> (get-in app-state state/products-path)
+                               (-> (get-in app-state keypaths/products-path)
                                    vals)))]
     [:div.item-added
      [:strong "Added to Bag: "]
@@ -61,11 +61,11 @@
 (defn product-component [data owner]
   (om/component
    (html
-    (let [taxon (query/get (get-in data state/browse-taxon-query-path)
-                           (get-in data state/taxons-path))
+    (let [taxon (query/get (get-in data keypaths/browse-taxon-query-path)
+                           (get-in data keypaths/taxons-path))
           taxon-path (if taxon (taxon-path-for taxon))
-          product (query/get (get-in data state/browse-product-query-path)
-                             (vals (get-in data state/products-path)))
+          product (query/get (get-in data keypaths/browse-product-query-path)
+                             (vals (get-in data keypaths/products-path)))
           images (->> product :master :images)
           collection-name (:collection_name product)
           variants (:variants product)]
@@ -112,7 +112,7 @@
                         (fn [index variant]
                           (display-variant data
                                            variant
-                                           (if-let [variant-query (get-in data state/browse-variant-query-path)]
+                                           (if-let [variant-query (get-in data keypaths/browse-variant-query-path)]
                                              (query/matches? variant-query variant)
                                              (= index 0))))))
                   [:div {:style {:clear "both"}}]]]
@@ -121,7 +121,7 @@
               [:div.price-container
                [:div.quantity
                 [:h4.quantity-label "Quantity"]
-                (om/build counter-component data {:opts {:path state/browse-variant-quantity-path}})]
+                (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity-path}})]
                [:div#product-price.product-price
                 [:span.price-label "Price:"]
                 [:span.price.selling {:item-prop "price"}
@@ -139,7 +139,7 @@
                   :value "Add to Bag"
                   :on-click (utils/enqueue-event data events/control-browse-add-to-bag)}]]]]]
 
-            (when-let [bagged-variants (seq (get-in data state/browse-recently-added-variants-path))]
+            (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants-path))]
               [:div#after-add {:style {:display "block"}}
                [:div.added-to-bag-container
                 (map (partial display-bagged-variant data) bagged-variants)]
