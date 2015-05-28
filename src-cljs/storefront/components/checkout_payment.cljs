@@ -5,13 +5,37 @@
             [storefront.events :as events]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [cljs.core.async :refer [put!]]))
 
 (defn stylist? [user]
   (seq (:store-slug user)))
 
 (defn format-currency [amount]
   (str "$" (.toFixed amount 2)))
+
+(def digits #{\0 \1 \2 \3 \4 \5 \7 \8 \9})
+
+(defn filter-cc-number-format [s]
+  (->> s
+       (filter digits)
+       (take 16)))
+
+(defn format-cc-number [s]
+  (->> s
+       filter-cc-number-format
+       (partition 4 4 nil)
+       (map (partial string/join ""))
+       (string/join " ")))
+
+(defn format-expiration [s]
+  (let [[month year] (->> s
+                          (filter digits)
+                          (split-at 2)
+                          (map (partial apply str)))]
+    (str month " / " year))
+  (->> s
+       (filter digits)))
 
 (defn display-use-store-credit-option [data]
   [:div
@@ -55,19 +79,29 @@
          (when (stylist? (get-in data keypaths/user))
            [:span "(Coupons can be used by Stylists)"])]]]]]]])
 
-(defn field [id name value & [text-attrs]]
+(defn field [id name app-state value-key-path presenter-fn & [text-attrs]]
   [:p.field
    [:label {:for id} name]
-   [:input (merge {:type "text" :id id :name id :value value :required true} text-attrs)]])
+   [:input (merge {:type "text"
+                   :id id
+                   :name id
+                   :value (presenter-fn (get-in app-state value-key-path))
+                   :required true
+                   :on-change (fn [e]
+                                (.preventDefault e)
+                                (put! (get-in @app-state state/event-ch-path)
+                                      [events/control-change-state {:state-path value-key-path
+                                                                    :value (.. e -target -value)}]))}
+                  text-attrs)]])
 
 (defn display-credit-card-form [data]
   [:div.credit-card-container
-   (field "name" "Cardholder's Name" "<TODO: firstname + lastname>")
-   (field "card_number" "Credit Card Number" ""
-          {:size 19 :maxlength 19 :autocomplete "off" :data-hook "card_number"})
-   (field "card_expiry" "Expiration" ""
+   (field "name" "Cardholder's Name" data state/checkout-credit-card-name-path identity)
+   (field "card_number" "Credit Card Number" data state/checkout-credit-card-number-path format-cc-number
+          {:size 19 :maxlength 19 :autocomplete "off" :data-hook "card_number" :class "required cardNumber"})
+   (field "card_expiry" "Expiration" data state/checkout-credit-card-expiration-path format-expiration
           {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"})
-   (field "card_code" "3 digit number on back of card" ""
+   (field "card_code" "3 digit number on back of card" data state/checkout-credit-card-ccv-path identity
           {:size 5 :autocomplete "off" :data-hook "card_number" :class "required cardCode"})
    [:p.review-message
             "You can review your order on the next page"
