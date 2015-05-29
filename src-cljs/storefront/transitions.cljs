@@ -59,20 +59,11 @@
 (defmethod transition-state events/control-account-menu-collapse [_ event args app-state]
   (assoc-in app-state keypaths/account-menu-expanded false))
 
-(defmethod transition-state events/control-sign-in-change [_ event args app-state]
-  (update-in app-state keypaths/sign-in merge args))
-
-(defmethod transition-state events/control-sign-up-change [_ event args app-state]
-  (update-in app-state keypaths/sign-up merge args))
-
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   ;; FIXME clear other user specific pieces of state
   (-> app-state
       (assoc-in keypaths/user {})
       (assoc-in keypaths/order nil)))
-
-(defmethod transition-state events/control-manage-account-change [_ event args app-state]
-  (update-in app-state keypaths/manage-account merge args))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -95,21 +86,6 @@
             (-> (js/parseInt value-str 10)
                 (Math/abs)
                 (max 1))))
-
-(defmethod transition-state events/control-cart-coupon-change [_ event {coupon-code :coupon-code} app-state]
-  (assoc-in app-state keypaths/cart-coupon-code coupon-code))
-
-(defmethod transition-state events/control-forgot-password-change [_ event args app-state]
-  (update-in app-state keypaths/forgot-password merge args))
-
-(defmethod transition-state events/control-reset-password-change [_ event args app-state]
-  (update-in app-state keypaths/reset-password merge args))
-
-(defmethod transition-state events/control-checkout-change [_ event args app-state]
-  (reduce-kv (fn [m k v]
-               (assoc-in app-state k v))
-             app-state
-             args))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event {id :id} app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method-id id))

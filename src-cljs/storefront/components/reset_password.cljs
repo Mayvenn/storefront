@@ -18,18 +18,16 @@
         [:br]
         [:input#spree_user_password
          (merge
-          (utils/update-text data events/control-reset-password-change :password)
+          (utils/change-text data keypaths/reset-password-password)
           {:type "password"
-           :name "password"
-           :value (get-in data keypaths/reset-password-password)})]]
+           :name "password"})]]
        [:p
         [:label {:for "spree_user_email"} "Password Confirmation"]
         [:br]
         [:input#spree_user_email
          (merge
-          (utils/update-text data events/control-reset-password-change :password-confirmation)
+          (utils/change-text data keypaths/reset-password-password-confirmation)
           {:type "password"
-           :name "password-confirmation"
-           :value (get-in data keypaths/reset-password-password-confirmation)})]]
+           :name "password-confirmation"})]]
        [:p
         [:input.button.primary {:type "submit" :value "Update"}]]]]])))
