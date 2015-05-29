@@ -160,7 +160,7 @@
             [:img {:src (str "/images/products/hairtype-circle-ultra"
                              (if (= collection-name "ultra") "" "-disabled") "@2x.png")}]]
            [:div.product-collection-text
-            [:h3.sub-header (str collection-name ":")]
+            [:h3.sub-header (str collection-name ": ")]
             (product :collection_description)]]
 
           [:div#product-description.product-description
