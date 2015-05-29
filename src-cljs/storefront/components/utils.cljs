@@ -24,14 +24,12 @@
 (defn update-text [app-state control-event arg-name]
   {:on-change
    (fn [e]
-     (.preventDefault e)
      (put! (get-in @app-state keypaths/event-ch)
            [control-event {arg-name (.. e -target -value)}]))})
 
 (defn change-text [app-state keypath]
   {:on-change
    (fn [e]
-     (.preventDefault e)
      (put! (get-in @app-state keypaths/event-ch)
            [events/control-change-state {:keypath keypath
                                          :value (.. e -target -value)}]))
@@ -43,7 +41,6 @@
      :value checked-str
      :on-change
      (fn [e]
-       (.preventDefault e)
        (put! (get-in @app-state keypaths/event-ch)
              [control-event {arg-name (.. e -target -checked)}]))}))
 
@@ -53,7 +50,6 @@
      :value checked-str
      :on-change
      (fn [e]
-       (.preventDefault e)
        (put! (get-in @app-state keypaths/event-ch)
              [events/control-change-state {:keypath keypath
                                            :value (.. e -target -checked)}]))}))
