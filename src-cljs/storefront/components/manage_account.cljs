@@ -14,7 +14,7 @@
       [:label {:for "user-email"} "Email"]
       [:br]
       [:input.title#user-email
-       (merge (utils/update-text data events/control-manage-account-change :email)
+       (merge (utils/change-text data keypaths/manage-account-email)
               {:autofocus "autofocus"
                :type "email"
                :name "email"
@@ -26,18 +26,16 @@
         [:label {:for "user-password"} "Password"]
         [:br]
         [:input.title#user-password
-         (merge (utils/update-text data events/control-manage-account-change :password)
+         (merge (utils/change-text data keypaths/manage-account-password)
                 {:type "password"
-                 :name "password"
-                 :value (get-in data keypaths/manage-account-password)})]]
+                 :name "password"})]]
        [:p
         [:label {:for "user-password-confirmation"} "Enter the same password"]
         [:br]
         [:input.title#user-password-confirmation
-         (merge (utils/update-text data events/control-manage-account-change :password-confirmation)
+         (merge (utils/change-text data keypaths/manage-account-password-confirmation)
                 {:type "password"
-                 :name "password-confirmation"
-                 :value (get-in data keypaths/manage-account-password-confirmation)})]]]
+                 :name "password-confirmation"})]]]
       [:p.user-password-instructions "Leave blank to keep the same password."]
       [:p
        [:input.button.primary {:type "submit" :value "Update"}]]]])))

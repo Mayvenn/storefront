@@ -21,12 +21,6 @@
      (.preventDefault e)
      (routes/enqueue-navigate @app-state navigation-event args))})
 
-(defn update-text [app-state control-event arg-name]
-  {:on-change
-   (fn [e]
-     (put! (get-in @app-state keypaths/event-ch)
-           [control-event {arg-name (.. e -target -value)}]))})
-
 (defn change-text [app-state keypath]
   {:on-change
    (fn [e]
@@ -34,15 +28,6 @@
            [events/control-change-state {:keypath keypath
                                          :value (.. e -target -value)}]))
    :value (get-in app-state keypath)})
-
-(defn update-checkbox [app-state checked? control-event arg-name]
-  (let [checked-str (when checked? "checked")]
-    {:checked checked-str
-     :value checked-str
-     :on-change
-     (fn [e]
-       (put! (get-in @app-state keypaths/event-ch)
-             [control-event {arg-name (.. e -target -checked)}]))}))
 
 (defn change-checkbox [app-state keypath]
   (let [checked-str (when (get-in app-state keypath) "checked")]
@@ -56,5 +41,5 @@
 
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)
-        selected (if (= navigation-keypaths event) {:class "selected"} {})]
+        selected (if (= navigation-state event) {:class "selected"} {})]
     [:a (merge selected (route-to data event)) label]))

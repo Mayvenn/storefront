@@ -64,12 +64,9 @@
           [:label "Enter a coupon code:"]
           [:input.coupon-code-input
            (merge
-            (utils/update-text data
-                               events/control-cart-coupon-change
-                               :coupon-code)
+            (utils/change-text data keypaths/cart-coupon-code)
             {:type "text"
-             :name "coupon-code"
-             :value (get-in data keypaths/cart-coupon-code)})]]
+             :name "coupon-code"})]]
          [:input.primary.button#update-button
           {:type "submit" :name "update" :value "Update"}]]
         [:div.order-summary-cart

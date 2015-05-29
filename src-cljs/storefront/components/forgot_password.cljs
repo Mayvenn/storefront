@@ -17,9 +17,8 @@
        [:br]
        [:input
         (merge
-         (utils/update-text data events/control-forgot-password-change :email)
+         (utils/change-text data keypaths/forgot-password-email)
          {:type "email"
-          :name "email"
-          :value (get-in data keypaths/forgot-password-email)})]
+          :name "email"})]
        [:p
         [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))

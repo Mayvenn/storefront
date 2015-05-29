@@ -38,20 +38,15 @@
 (def control-account-menu-collapse (conj control-account-menu :collapse))
 
 (def control-sign-in (conj control :sign-in))
-(def control-sign-in-change (conj control-sign-in :change))
 (def control-sign-in-submit (conj control-sign-in :submit))
 (def control-sign-out (conj control :sign-out))
 (def control-sign-up (conj control :sign-up))
-(def control-sign-up-change (conj control-sign-up :change))
 (def control-sign-up-submit (conj control-sign-up :submit))
 (def control-forgot-password (conj control :forgot-password))
-(def control-forgot-password-change (conj control-forgot-password :change))
 (def control-forgot-password-submit (conj control-forgot-password :submit))
 (def control-reset-password (conj control :reset-password))
-(def control-reset-password-change (conj control-reset-password :change))
 (def control-reset-password-submit (conj control-reset-password :submit))
 (def control-manage-account (conj control :manage-account))
-(def control-manage-account-change (conj control-manage-account :change))
 (def control-manage-account-submit (conj control-manage-account :submit))
 
 (def control-browse (conj control :browse))
@@ -62,7 +57,6 @@
 (def control-cart (conj control :cart))
 (def control-cart-update (conj control-cart :update))
 (def control-cart-remove (conj control-cart :remove))
-(def control-cart-coupon-change (conj control-cart :coupon-change))
 
 (def control-counter (conj control :counter))
 (def control-counter-inc (conj control-browse-variant :inc))
@@ -70,7 +64,6 @@
 (def control-counter-set (conj control-browse-variant :set))
 
 (def control-checkout (conj control :checkout))
-(def control-checkout-change (conj control-checkout :change))
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :select-shipping-method))
 (def control-checkout-shipping-method-submit (conj control-checkout :update-shipping-method))

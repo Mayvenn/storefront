@@ -19,22 +19,19 @@
         [:div.input.email
          [:label.email "Email"]
          [:input.string.email
-          (merge (utils/update-text data events/control-sign-in-change :email)
+          (merge (utils/change-text data keypaths/sign-in-email)
                  {:autofocus "autofocus"
                   :type "email"
-                  :name "email"
-                  :value (get-in data keypaths/sign-in-email)})]]
+                  :name "email"})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
-          (merge (utils/update-text data events/control-sign-in-change :password)
+          (merge (utils/change-text data keypaths/sign-in-password)
                  {:type "password"
-                  :name "password"
-                  :value (get-in data keypaths/sign-in-password)})]]]
+                  :name "password"})]]]
        [:p
         [:input#remember-me
-         (merge (utils/update-checkbox data (get-in data keypaths/sign-in-remember)
-                                       events/control-sign-in-change :remember-me)
+         (merge (utils/change-checkbox data keypaths/sign-in-remember)
                 {:type "checkbox"
                  :name "remember-me"})]
         [:label {:for "remember-me"} "Remember me"]]
