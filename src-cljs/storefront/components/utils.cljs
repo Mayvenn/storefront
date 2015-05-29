@@ -47,6 +47,17 @@
        (put! (get-in @app-state keypaths/event-ch)
              [control-event {arg-name (.. e -target -checked)}]))}))
 
+(defn change-checkbox [app-state keypath]
+  (let [checked-str (when (get-in app-state keypath) "checked")]
+    {:checked checked-str
+     :value checked-str
+     :on-change
+     (fn [e]
+       (.preventDefault e)
+       (put! (get-in @app-state keypaths/event-ch)
+             [events/control-change-state {:keypath keypath
+                                           :value (.. e -target -checked)}]))}))
+
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)
         selected (if (= navigation-keypaths event) {:class "selected"} {})]
