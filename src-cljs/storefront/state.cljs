@@ -67,7 +67,6 @@
           :browse-recently-added-variants []
           :menu-expanded false
           :account-menu-expanded false
-          :checkout-current-step "address"
           :sign-in {:email ""
                     :password ""
                     :remember-me true}

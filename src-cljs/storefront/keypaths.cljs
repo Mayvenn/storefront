@@ -39,7 +39,6 @@
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 
-(def checkout-current-step (conj ui :checkout-current-step))
 (def checkout-selected-shipping-method-id (conj ui :checkout-selected-shipping-method-id))
 
 (def sign-in (conj ui :sign-in))
