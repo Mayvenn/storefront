@@ -26,6 +26,7 @@
             [storefront.components.checkout-address :refer [checkout-address-component]]
             [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [storefront.components.checkout-payment :refer [checkout-payment-component]]
+            [storefront.components.checkout-confirmation :refer [checkout-confirmation-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [cljs.core.async :refer [put!]]))
 
@@ -72,6 +73,7 @@
             events/navigate-manage-account manage-account-component
             events/navigate-checkout-address (requires-sign-in data checkout-address-component)
             events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
-            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component))
+            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
+            events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component))
           data)]]]
       (om/build footer-component data)]])))
