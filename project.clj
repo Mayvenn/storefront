@@ -44,7 +44,8 @@
                 :asset-path "/js/out"
                 :output-to "resources/public/js/out/main.js"
                 :pretty-print true
-                :output-dir "resources/public/js/out"}}}}
+                :output-dir "resources/public/js/out"
+                :externs ["externs/riskified.js"]}}}}
   :profiles
   {:dev {:source-paths ["dev/clj"]
          :dependencies [[pjstadig/humane-test-output "0.6.0"]
