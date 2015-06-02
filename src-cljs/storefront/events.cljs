@@ -67,6 +67,7 @@
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :select-shipping-method))
 (def control-checkout-shipping-method-submit (conj control-checkout :update-shipping-method))
+(def control-checkout-payment-method-submit (conj control-checkout :update-shipping-method))
 
 (def api [:api])
 (def api-success (conj api :success))

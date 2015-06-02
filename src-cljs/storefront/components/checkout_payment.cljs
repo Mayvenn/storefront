@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.credit-cards :as cc]
             [clojure.string :as string]
             [cljs.core.async :refer [put!]]))
 
@@ -13,29 +14,6 @@
 
 (defn format-currency [amount]
   (str "$" (.toFixed amount 2)))
-
-(def digits #{\0 \1 \2 \3 \4 \5 \7 \8 \9})
-
-(defn filter-cc-number-format [s]
-  (->> s
-       (filter digits)
-       (take 16)))
-
-(defn format-cc-number [s]
-  (->> s
-       filter-cc-number-format
-       (partition 4 4 nil)
-       (map (partial string/join ""))
-       (string/join " ")))
-
-(defn format-expiration [s]
-  (let [[month year] (->> s
-                          (filter digits)
-                          (split-at 2)
-                          (map (partial apply str)))]
-    (str month " / " year))
-  (->> s
-       (filter digits)))
 
 (defn display-use-store-credit-option [data]
   [:div
@@ -97,16 +75,16 @@
 (defn display-credit-card-form [data]
   [:div.credit-card-container
    (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
-   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number format-cc-number
+   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
           {:size 19 :maxlength 19 :autocomplete "off" :data-hook "card_number" :class "required cardNumber"})
-   (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration format-expiration
+   (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
           {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"})
    (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
           {:size 5 :autocomplete "off" :data-hook "card_number" :class "required cardCode"})
    [:p.review-message
             "You can review your order on the next page"
-    (when (get-in data keypaths/order-covered-by-store-credit)
-              " before we can charge your credit card")]])
+    (when-not (get-in data keypaths/order-covered-by-store-credit)
+      " before we can charge your credit card")]])
 
 (defn checkout-payment-component [data owner]
   (om/component
@@ -117,7 +95,7 @@
       [:div.checkout-form-wrapper
        [:form.edit_order
         {:method "POST"
-         :on-submit (utils/enqueue-event data events/control-checkout-update-addresses-submit)}
+         :on-submit (utils/enqueue-event data events/control-checkout-payment-method-submit)}
 
         [:div.checkout-container.payment
          (when (pos? (get-in data keypaths/user-total-available-store-credit))
