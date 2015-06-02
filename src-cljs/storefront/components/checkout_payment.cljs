@@ -76,11 +76,11 @@
   [:div.credit-card-container
    (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
    (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
-          {:size 19 :maxlength 19 :autocomplete "off" :data-hook "card_number" :class "required cardNumber"})
+          {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber"})
    (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
           {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"})
    (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
-          {:size 5 :autocomplete "off" :data-hook "card_number" :class "required cardCode"})
+          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"})
    [:p.review-message
             "You can review your order on the next page"
     (when-not (get-in data keypaths/order-covered-by-store-credit)
