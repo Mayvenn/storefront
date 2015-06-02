@@ -195,15 +195,15 @@
     (put! events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch user-token)))
 
-(defn update-cart [events-ch user-token {order-token :token number :number :as order}]
+(defn update-cart [events-ch user-token {order-token :token number :number :as order} extra-message-args]
   (api-req
    PUT
    "/cart"
    {:order (select-keys order [:number :line_items_attributes :coupon_code])
     :order_token order-token}
-   #(put! events-ch [events/api-success-update-cart %])))
+   #(put! events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
 
-(defn update-order [events-ch user-token {order-token :token number :number :as order}]
+(defn update-order [events-ch user-token {order-token :token number :number :as order} extra-message-args]
   (api-req
    PUT
    "/orders"
@@ -217,7 +217,7 @@
                (update-in [:bill_address] select-address-keys)
                (update-in [:ship_address] select-address-keys))
     :order_token order-token}
-   #(put! events-ch [events/api-success-update-order %])))
+   #(put! events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
   (api-req
