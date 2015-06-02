@@ -117,7 +117,7 @@
    (map #(select-keys % [:id :quantity :variant_id]))
    (map #(assoc % :quantity (-> % :id quantities)))))
 
-(defmethod perform-effects events/control-cart-update [_ event args app-state]
+(defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
   (let [order (get-in app-state keypaths/order)]
     (api/update-cart
      (get-in app-state keypaths/event-ch)
@@ -126,7 +126,8 @@
             {:coupon_code (get-in app-state keypaths/cart-coupon-code)
              :line_items_attributes (updated-quantities
                                      (:line_items order)
-                                     (get-in app-state keypaths/cart-quantities))}))))
+                                     (get-in app-state keypaths/cart-quantities))})
+     {:navigate (when navigate-to-checkout? events/navigate-checkout-address)})))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
   (let [order (get-in app-state keypaths/order)
@@ -136,7 +137,8 @@
      (get-in app-state keypaths/user-token)
      (merge (select-keys order [:id :number :token])
             {:line_items_attributes [(merge (select-keys line-item [:id :variant_id])
-                                            {:quantity 0})]}))))
+                                            {:quantity 0})]})
+     {})))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [event-ch (get-in app-state keypaths/event-ch)
@@ -153,31 +155,38 @@
                                   (:bill_address addresses)
                                   (:ship_address addresses)
                                   token))
-    (api/update-order event-ch token (merge (get-in app-state keypaths/order)
-                                            addresses))))
+    (api/update-order event-ch token
+                      (merge (get-in app-state keypaths/order)
+                             addresses
+                             {:state "delivery"})
+                      {:navigate events/navigate-checkout-delivery})))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-order (get-in app-state keypaths/event-ch)
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :token])
-                             {:shipments_attributes
+                             {:state "payment"
+                              :shipments_attributes
                               {:id (get-in order [:shipments 0 :id])
-                               :selected_shipping_rate_id (get-in app-state keypaths/checkout-selected-shipping-method-id)}}))))
+                               :selected_shipping_rate_id (get-in app-state keypaths/checkout-selected-shipping-method-id)}}))
+                    {:navigate events/navigate-checkout-payment}))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (api/update-order (get-in app-state keypaths/event-ch)
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :token])
-                             {:payments_attributes
+                             {:state "confirm"
+                              :payments_attributes
                               [{:payment_method_id (get-in order [:payment_methods 0 :id])
                                 :source_attributes
                                 {:number (get-in app-state keypaths/checkout-credit-card-number)
                                  :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
                                  :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
                                  :name (get-in app-state keypaths/checkout-credit-card-name)
-                                 :cc_type ""}}]}))))
+                                 :cc_type ""}}]}))
+                    {:navigate events/navigate-checkout-confirmation}))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
@@ -217,8 +226,13 @@
         [events/flash-show-success {:message "Account updated"
                                     :navigation [events/navigate-home {}]}]))
 
-(defmethod perform-effects events/api-success-get-order [_ event args app-state]
+(defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))
 
-(defmethod perform-effects events/api-success-update-order [_ event args app-state]
-  (routes/enqueue-navigate app-state events/navigate-checkout-delivery))
+(defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate]} app-state]
+  (when navigate
+    (routes/enqueue-navigate app-state navigate)))
+
+(defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
+  (when navigate
+    (routes/enqueue-navigate app-state navigate)))

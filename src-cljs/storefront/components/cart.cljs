@@ -53,7 +53,6 @@
   (let [cart (get-in data keypaths/order)]
     [:div
      [:form#update-cart
-      {:on-submit (utils/enqueue-event data events/control-cart-update)}
       [:div.inside-cart-form
        [:div.cart-items
         [:div.cart-line-items
@@ -68,11 +67,13 @@
             {:type "text"
              :name "coupon-code"})]]
          [:input.primary.button#update-button
-          {:type "submit" :name "update" :value "Update"}]]
+          {:type "submit" :name "update" :value "Update"
+           :on-click (utils/enqueue-event data events/control-cart-update)}]]
         [:div.order-summary-cart
          (display-order-summary cart)
          [:input.button.checkout.primary#checkout-link
-          {:type "submit" :value "Checkout" :name "checkout"}]]]]]
+          {:type "submit" :value "Checkout" :name "checkout"
+           :on-click (utils/enqueue-event data events/control-cart-update {:navigate-to-checkout? true})}]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
       "Continue shopping"]]))
