@@ -40,12 +40,8 @@
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (-> app-state
-      (assoc-in keypaths/checkout-current-step "address")
       (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
       (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
-
-(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
-  (assoc-in app-state keypaths/checkout-current-step "delivery"))
 
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state keypaths/menu-expanded true))
