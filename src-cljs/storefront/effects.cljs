@@ -6,6 +6,7 @@
             [storefront.cookie-jar :as cookie-jar]
             [storefront.taxons :refer [taxon-name-from]]
             [storefront.query :as query]
+            [storefront.credit-cards :refer [parse-expiration]]
             [cljs.core.async :refer [put!]]))
 
 (defmulti perform-effects identity)
@@ -163,6 +164,20 @@
                              {:shipments_attributes
                               {:id (get-in order [:shipments 0 :id])
                                :selected_shipping_rate_id (get-in app-state keypaths/checkout-selected-shipping-method-id)}}))))
+
+(defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
+  (api/update-order (get-in app-state keypaths/event-ch)
+                    (get-in app-state keypaths/user-token)
+                    (let [order (get-in app-state keypaths/order)]
+                      (merge (select-keys order [:id :number :token])
+                             {:payments_attributes
+                              [{:payment_method_id (get-in order [:payment_methods 0 :id])
+                                :source_attributes
+                                {:number (get-in app-state keypaths/checkout-credit-card-number)
+                                 :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
+                                 :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
+                                 :name (get-in app-state keypaths/checkout-credit-card-name)
+                                 :cc_type ""}}]}))))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
