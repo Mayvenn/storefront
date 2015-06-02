@@ -3,7 +3,8 @@
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [cljs.core.async :refer [put! take! chan <! mult tap]]
             [storefront.events :as events]
-            [storefront.taxons :refer [taxon-name-from]]))
+            [storefront.taxons :refer [taxon-name-from]]
+            [clojure.set :refer [rename-keys]]))
 
 (def base-url "http://localhost:3005")
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
@@ -102,13 +103,17 @@
   (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
     (select-keys m keys)))
 
+(defn rename-server-address-keys [m]
+  (rename-keys m {:bill_address :billing-address
+                  :ship_address :shipping-address}))
+
 (defn get-account [events-ch id token]
   (api-req
    GET
    "/users"
    {:id id
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses %])))
+   #(put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
 (defn update-account [events-ch id email password password-confirmation token]
   (api-req
@@ -120,7 +125,7 @@
     :password_confirmation password-confirmation
     :token token}
    #(do (put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])
-        (put! events-ch [events/api-success-account-update-addresses %]))))
+        (put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)]))))
 
 (defn update-account-address [events-ch id email billing-address shipping-address token]
   (api-req
@@ -131,7 +136,7 @@
     :billing_address (select-address-keys billing-address)
     :shipping_address (select-address-keys shipping-address)
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses %])))
+   #(put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
