@@ -7,10 +7,17 @@
             [storefront.taxons :refer [taxon-name-from]]
             [storefront.query :as query]
             [storefront.credit-cards :refer [parse-expiration]]
+            [storefront.riskified :as riskified]
             [cljs.core.async :refer [put!]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
+
+(defmethod perform-effects events/app-start [_ event args app-state]
+  (riskified/insert-beacon (get-in app-state keypaths/session-id)))
+
+(defmethod perform-effects events/app-stop [_ event args app-state]
+  (riskified/remove-beacon))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
   (api/get-taxons (get-in app-state keypaths/event-ch))
@@ -31,7 +38,9 @@
              (empty? (get-in app-state keypaths/flash-success-nav))
              (= [event args] (get-in app-state keypaths/flash-success-nav)))
     (put! (get-in app-state keypaths/event-ch)
-          [events/flash-dismiss-success])))
+          [events/flash-dismiss-success]))
+  (when (.hasOwnProperty js/window "RISKX")
+    (.go js/RISKX (clj->js (routes/path-for app-state event args)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/event-ch)

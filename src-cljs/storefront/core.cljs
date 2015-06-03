@@ -26,7 +26,8 @@
         (do
           (swap! app-state transition event-and-args)
           (effects @app-state event-and-args)
-          (recur))))))
+          (recur))))
+    (put! event-ch [events/app-start])))
 
 (defn main [app-state]
   (routes/install-routes app-state)
@@ -47,7 +48,9 @@
   (clj->js @app-state))
 
 (defn on-jsload []
-  (close! (get-in @app-state keypaths/event-ch))
+  (let [event-ch (get-in @app-state keypaths/event-ch)]
+    (put! event-ch [events/app-stop])
+    (close! event-ch))
   (swap! app-state assoc-in keypaths/event-ch (chan))
   (main app-state))
 
