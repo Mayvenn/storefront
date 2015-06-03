@@ -1,5 +1,9 @@
 (ns storefront.events)
 
+(def app [:app])
+(def app-start (conj app :start))
+(def app-stop (conj app :stop))
+
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
