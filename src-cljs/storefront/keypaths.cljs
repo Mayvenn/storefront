@@ -6,6 +6,8 @@
 (def cookie [:cookie])
 (def routes [:routes])
 
+(def session-id [:session-id])
+
 (def user [:user])
 (def user-email (conj user :email))
 (def user-token (conj user :token))
