@@ -15,6 +15,8 @@
      :cookie cookie
      :routes []
 
+     :session-id (cookie-jar/force-session-id cookie)
+
      :user (cookie-jar/retrieve-login cookie)
      :order nil
      :promotions []
