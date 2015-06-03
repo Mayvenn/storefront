@@ -56,11 +56,12 @@
 ;;
 ;; This allows us to override it to never append location.search
 (def non-search-preserving-history-transformer
-  #js
-  {:createUrl (fn [pathPrefix location]
-                (str pathPrefix))
-   :retrieveToken (fn [pathPrefix location]
-                    (.-pathname location))})
+  (let [opts #js {}]
+    (set! (.-createUrl opts) (fn [pathPrefix location]
+                               (str pathPrefix)))
+    (set! (.-retrieveToken opts) (fn [pathPrefix location]
+                                   (.-pathname location)))
+    opts))
 
 (defn make-history [callback]
   (doto (Html5History. nil non-search-preserving-history-transformer)
