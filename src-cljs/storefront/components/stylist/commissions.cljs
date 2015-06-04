@@ -51,7 +51,7 @@
 (defn display-payouts [paid-total payouts]
   [:div.commission-payment-history
    [:h4.dashboard-details-header "Commission Payment History"]
-   [:div.solid-line-diveder]
+   [:div.solid-line-divider]
    [:div.emphasized-banner
     [:span.emphasized-banner-header "Commissions Paid"]
     [:span.emphasized-banner-value (f/as-money paid-total)]]
