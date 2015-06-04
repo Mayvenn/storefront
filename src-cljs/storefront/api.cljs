@@ -254,6 +254,13 @@
     :token user-token}
    #(enqueue-message events-ch [events/api-success-get-past-order %])))
 
+(defn get-my-orders [events-ch user-token]
+  (api-req
+   GET
+   "/my_orders"
+   {:user-token user-token}
+   #(enqueue-message events-ch [events/api-success-my-orders %])))
+
 (defn observe-events [f events-ch & args]
   (let [broadcast-ch (chan)
         mult-ch (mult broadcast-ch)

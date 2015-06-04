@@ -191,6 +191,12 @@
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
   (update-in app-state keypaths/past-orders merge {(:number order) order}))
 
+(defmethod transition-state events/api-success-my-orders [_ event {orders :orders} app-state]
+  (let [order-ids (map :number orders)]
+    (-> app-state
+        (assoc-in keypaths/my-order-ids order-ids)
+        (update-in keypaths/past-orders merge (zipmap order-ids orders)))))
+
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
       (sign-in-user args)

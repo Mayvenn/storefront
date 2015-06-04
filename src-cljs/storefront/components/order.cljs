@@ -9,6 +9,19 @@
 (def order-shipped? (comp #{"partial" "shipped"} :shipment_state))
 (def trackable-shipments (comp (partial filter :tracking) :shipments))
 
+(defn order-label [order]
+  (let [order-state (:state order)]
+    (cond
+      (and (= order-state "complete")
+           (= (:shipment_state order) "shipped"))
+      [:p.order-label.shipped-label.top-pad "Shipped"]
+
+      (= order-state "complete")
+      [:p.order-label.pending-label.top-pad "Pending"]
+
+      :else
+      [:p.order-label.refunded-label.top-pad "Refunded"])))
+
 (defn order-component [data owner]
   (om/component
    (html
@@ -19,17 +32,7 @@
         [:h2.header-bar-heading (:number order)]
         [:div.order-container
          [:div.order-shipment-state-container
-          (let [order-state (:state order)]
-            (cond
-              (and (= order-state "complete")
-                   (= (:shipment_state order) "shipped"))
-              [:p.order-label.shipped-label.top-pad "Shipped"]
-
-              (= order-state "complete")
-              [:p.order-label.pending-label.top-pad "Pending"]
-
-              :else
-              [:p.order-label.refunded-label.top-pad "Refunded"]))]
+          (order-label order)]
          (when (and (order-shipped? order)
                     (seq (trackable-shipments order)))
            [:div.order-shipment-tracking-container
