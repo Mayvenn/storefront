@@ -115,24 +115,21 @@
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-commissions)
-                    {:href "FIXME path"
-                     :icon-class "commissions-and-payouts"
+                    {:icon-class "commissions-and-payouts"
                      :image "/images/slideout_nav/comissions_and_payouts.png"
                      :label "Commissions & Payouts"
                      :full-width? false}))
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-bonus-credit)
-                    {:href "FIXME path"
-                     :icon-class "sales-bonuses"
+                    {:icon-class "sales-bonuses"
                      :image "/images/slideout_nav/sales_bonuses.png"
                      :label "Stylist Bonuses"
                      :full-width? false}))
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-referrals)
-                    {:href "FIXME path"
-                     :icon-class "stylist-referrals"
+                    {:icon-class "stylist-referrals"
                      :image "/images/slideout_nav/stylist_referrals.png"
                      :label "Stylist Referrals"
                      :full-width? false}))
