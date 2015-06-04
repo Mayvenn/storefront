@@ -19,6 +19,7 @@
 (def navigate-manage-account (conj navigate :manage-account))
 (def navigate-account-addresses (conj navigate :account-addresses))
 (def navigate-cart (conj navigate :cart))
+(def navigate-order (conj navigate :order))
 
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
@@ -96,6 +97,7 @@
 (def api-success-create-order (conj api-success :create-order))
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-get-order (conj api-success :order))
+(def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 (def api-success-update-cart (conj api-success :update-cart))
 (def api-success-update-order (conj api-success :update-order))

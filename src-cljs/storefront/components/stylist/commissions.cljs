@@ -3,14 +3,18 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
+            [storefront.components.utils :as utils]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn display-new-order [new-order]
+(defn display-new-order [data new-order]
   [:div.loose-table-row
    [:div.left-content
     [:p (new-order :fullname)]
     [:p.top-pad (f/locale-date (new-order :completed_at))]
-    [:p.top-pad [:a {:href (str "/orders/" (new-order :number))} (new-order :number)]]]
+    [:p.top-pad [:a
+                 (utils/route-to data events/navigate-order {:order-id (new-order :number)})
+                 (new-order :number)]]]
    [:div.right-content
     (cond
       (and (= "complete" (new-order :state))
@@ -27,7 +31,7 @@
       :else
        [:p.commission-label.refunded-label "Refunded"])]])
 
-(defn display-new-orders [new-orders]
+(defn display-new-orders [data new-orders]
   (html
    [:div.new-order-commissions
     [:h4.dashboard-details-header "New Orders"]
@@ -36,7 +40,7 @@
     [:div.loose-table-header
      [:div.left-header "Sale"]
      [:div.right-header "Commission"]]
-    (map display-new-order new-orders)]))
+    (map (partial display-new-order data) new-orders)]))
 
 (defn display-payout [payout]
   [:div.loose-table-row.short-row
@@ -82,6 +86,7 @@
           (get-in data keypaths/stylist-commissions-rate)
           "% commission on each new order shipped from your store excluding tax and shipping."]]]
 
-       (display-new-orders (get-in data keypaths/stylist-commissions-new-orders))
+       (display-new-orders data
+                           (get-in data keypaths/stylist-commissions-new-orders))
        (display-payouts (get-in data keypaths/stylist-commissions-paid-total)
                         (get-in data keypaths/stylist-commissions-payouts))]]])))
