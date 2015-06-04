@@ -70,6 +70,10 @@
                       (get-in app-state keypaths/past-order-id)
                       (get-in app-state keypaths/user-token)))
 
+(defmethod perform-effects events/navigate-my-orders [_ event args app-state]
+  (api/get-my-orders (get-in app-state keypaths/event-ch)
+                     (get-in app-state keypaths/user-token)))
+
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))
 
