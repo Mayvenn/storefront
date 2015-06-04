@@ -91,7 +91,8 @@
        "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)
        "/checkout/payment" (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm" (edn->bidi events/navigate-checkout-confirmation)
-       ["/orders/" :order-id "/complete"] (edn->bidi events/navigate-checkout-complete)}])
+       ["/orders/" :order-id "/complete"] (edn->bidi events/navigate-checkout-complete)
+       ["/orders/" :order-id] (edn->bidi events/navigate-order)}])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state keypaths/history)

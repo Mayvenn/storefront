@@ -23,6 +23,8 @@
 
 (def promotions [:promotions])
 
+(def past-orders [:past-orders])
+
 (def store [:store])
 (def store-slug (conj store :store_slug))
 
@@ -38,6 +40,7 @@
 (def browse-variant-query (conj ui :browse-variant-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
+(def past-order-id (conj ui :past-order-id))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 

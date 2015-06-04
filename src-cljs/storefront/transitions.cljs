@@ -42,6 +42,9 @@
       (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
       (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
 
+(defmethod transition-state events/navigate-order [_ event args app-state]
+  (assoc-in app-state keypaths/past-order-id (args :order-id)))
+
 (defmethod transition-state events/control-menu-expand [_ event args app-state]
   (assoc-in app-state keypaths/menu-expanded true))
 
@@ -184,6 +187,9 @@
       (assoc-in keypaths/order order)
       (assoc-in keypaths/cart-quantities
                 (into {} (map (juxt :id :quantity) (order :line_items))))))
+
+(defmethod transition-state events/api-success-get-past-order [_ event order app-state]
+  (update-in app-state keypaths/past-orders merge {(:number order) order}))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state

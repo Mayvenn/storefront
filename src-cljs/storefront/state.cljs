@@ -20,6 +20,7 @@
      :user (cookie-jar/retrieve-login cookie)
      :order nil
      :promotions []
+     :past-orders {}
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
@@ -67,6 +68,7 @@
           :browse-variant-query nil
           :browse-variant-quantity 1
           :browse-recently-added-variants []
+          :past-order-id nil
           :menu-expanded false
           :account-menu-expanded false
           :sign-in {:email ""

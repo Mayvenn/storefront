@@ -30,9 +30,9 @@
     (when (and user-id token)
       (api/get-account (get-in app-state keypaths/event-ch) user-id token)))
   (when-let [order-id (get-in app-state keypaths/user-order-id)]
-      (api/get-order (get-in app-state keypaths/event-ch)
-                     order-id
-                     (get-in app-state keypaths/user-order-token)))
+    (api/get-order (get-in app-state keypaths/event-ch)
+                   order-id
+                   (get-in app-state keypaths/user-order-token)) )
   (set! (.. js/document -body -scrollTop) 0)
   (when-not (or
              (empty? (get-in app-state keypaths/flash-success-nav))
@@ -64,6 +64,11 @@
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (api/get-states (get-in app-state keypaths/event-ch)))
+
+(defmethod perform-effects events/navigate-order [_ event args app-state]
+  (api/get-past-order (get-in app-state keypaths/event-ch)
+                      (get-in app-state keypaths/past-order-id)
+                      (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))
