@@ -2,10 +2,10 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [cljs.core.async :refer [put!]]))
+            [storefront.messages :refer [enqueue-message]]))
 
 (defn put-event [app-state event & [args]]
-  (put! (get-in @app-state keypaths/event-ch) [event args]))
+  (enqueue-message (get-in @app-state keypaths/event-ch) [event args]))
 
 (defn enqueue-event [app-state event & [args]]
   (fn [e]
@@ -24,9 +24,9 @@
 (defn change-text [app-state keypath]
   {:on-change
    (fn [e]
-     (put! (get-in @app-state keypaths/event-ch)
-           [events/control-change-state {:keypath keypath
-                                         :value (.. e -target -value)}]))
+     (enqueue-message (get-in @app-state keypaths/event-ch)
+                      [events/control-change-state {:keypath keypath
+                                                    :value (.. e -target -value)}]))
    :value (get-in app-state keypath)})
 
 (defn change-checkbox [app-state keypath]
@@ -35,9 +35,9 @@
      :value checked-str
      :on-change
      (fn [e]
-       (put! (get-in @app-state keypaths/event-ch)
-             [events/control-change-state {:keypath keypath
-                                           :value (.. e -target -checked)}]))}))
+       (enqueue-message (get-in @app-state keypaths/event-ch)
+                        [events/control-change-state {:keypath keypath
+                                                      :value (.. e -target -checked)}]))}))
 
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)

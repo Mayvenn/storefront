@@ -2,7 +2,7 @@
   (:require [bidi.bidi :as bidi]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [cljs.core.async :refer [put!]]
+            [storefront.messages :refer [enqueue-message]]
             [cljs.reader :refer [read-string]]
             [clojure.walk :refer [keywordize-keys]]
             [goog.events]
@@ -41,11 +41,11 @@
 
         query-params (:query (url js/location.href))
         event-ch (get-in app-state keypaths/event-ch)]
-    (put! event-ch
-          [(bidi->edn nav-event)
-           (-> params
-               (assoc :query-params query-params)
-               keywordize-keys)])))
+    (enqueue-message event-ch
+                     [(bidi->edn nav-event)
+                      (-> params
+                          (assoc :query-params query-params)
+                          keywordize-keys)])))
 
 (defn history-callback [app-state]
   (fn [e]
