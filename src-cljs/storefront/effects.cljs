@@ -32,7 +32,7 @@
   (when-let [order-id (get-in app-state keypaths/user-order-id)]
     (api/get-order (get-in app-state keypaths/event-ch)
                    order-id
-                   (get-in app-state keypaths/user-order-token)) )
+                   (get-in app-state keypaths/user-order-token)))
   (set! (.. js/document -body -scrollTop) 0)
   (when-not (or
              (empty? (get-in app-state keypaths/flash-success-nav))
