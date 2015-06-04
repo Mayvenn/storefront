@@ -39,6 +39,25 @@
                         [events/control-change-state {:keypath keypath
                                                       :value (.. e -target -checked)}]))}))
 
+(defn change-radio [app-state keypath value]
+  (let [keypath-value (get-in app-state keypath)
+        checked (when (= keypath-value (name value)) "checked")]
+    {:checked checked
+     :on-change
+     (fn [e]
+       (put! (get-in @app-state keypaths/event-ch)
+             [events/control-change-state {:keypath keypath
+                                           :value value}]))}))
+
+(defn change-file [app-state keypath]
+  {:on-change
+   (fn [e]
+     (put! (get-in @app-state keypaths/event-ch)
+           [events/control-change-state {:keypath keypath
+                                         :value (-> (.. e -target -files)
+                                                    array-seq
+                                                    first)}]))})
+
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)
         selected (if (= navigation-state event) {:class "selected"} {})]
