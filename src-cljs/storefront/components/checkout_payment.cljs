@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.utils :as utils]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.credit-cards :as cc]
             [clojure.string :as string]
@@ -11,9 +12,6 @@
 
 (defn stylist? [user]
   (seq (:store-slug user)))
-
-(defn format-currency [amount]
-  (str "$" (.toFixed amount 2)))
 
 (defn display-use-store-credit-option [data]
   [:div
@@ -35,7 +33,7 @@
                 "Use store credit: "
                 (:store_credits (get-in data keypaths/user)))
           "Use store credit: "
-          (format-currency (get-in data keypaths/user-total-available-store-credit))
+          (as-money (get-in data keypaths/user-total-available-store-credit))
           " available"]
          [:br]
          (when (stylist? (get-in data keypaths/user))
@@ -47,8 +45,7 @@
                :name "use_store_credits"
                :value false}
               (if-not (pos? (get-in data keypaths/order-total-applicable-store-credit))
-                {:checked "checked"}
-                {}))
+                {:checked "checked"}))
        [:div.checkbox-container [:figure.large-checkbox]]
        [:div.store-credit-container
         [:div#select_store_credit.use-store-credit-option
@@ -66,7 +63,6 @@
                    :value (presenter-fn (get-in app-state keypath))
                    :required true
                    :on-change (fn [e]
-                                (.preventDefault e)
                                 (put! (get-in @app-state keypaths/event-ch)
                                       [events/control-change-state {:keypath keypath
                                                                     :value (.. e -target -value)}]))}
@@ -78,9 +74,11 @@
    (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
           {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber"})
    (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
-          {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"})
+          {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
+           :max-length 9})
    (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
-          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"})
+          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
+           :max-length 4})
    [:p.review-message
             "You can review your order on the next page"
     (when-not (get-in data keypaths/order-covered-by-store-credit)
