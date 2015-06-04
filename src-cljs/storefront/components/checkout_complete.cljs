@@ -17,6 +17,8 @@
 
      [:p.order-thanks-detail
       "We've received your order and will being processing it right away. Once your order ships we will send you another e-mail confirmation."
-      [:a {:href "TODO: spree.order_path(@order)"} "View Order >"]]
+      [:a
+       (utils/route-to data events/navigate-order (select-keys (get-in data keypaths/navigation-args) [:order-id]))
+       " View Order >"]]
 
      [:a.big-button.left-half (utils/route-to data events/navigate-home) "Return Home"]])))
