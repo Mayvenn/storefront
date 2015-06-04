@@ -20,6 +20,7 @@
 (def navigate-account-addresses (conj navigate :account-addresses))
 (def navigate-cart (conj navigate :cart))
 (def navigate-order (conj navigate :order))
+(def navigate-my-orders (conj navigate :my-orders))
 
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
@@ -102,6 +103,7 @@
 (def api-success-update-cart (conj api-success :update-cart))
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-promotions (conj api-success :promotions))
+(def api-success-my-orders (conj api-success :my-orders))
 
 (def flash [:flash])
 (def flash-show [:show])

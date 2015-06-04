@@ -85,7 +85,7 @@
                [:li
                 [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]])
             [:li
-             [:a {:href "FIXME: my orders"} "My Orders"]]
+             [:a (close-and-route data events/navigate-my-orders) "My Orders"]]
             [:li
              [:a ;; FIXME stylist manage should go directly to their own profile edit
               (close-and-route data events/navigate-manage-account)
@@ -160,11 +160,12 @@
             [:div
              (slideout-nav-link
               data
-              {:href "FIXME path"
-               :icon-class "my-orders"
-               :image "/images/slideout_nav/my_orders.png"
-               :label "My Orders"
-               :full-width? true})
+              (merge
+               (close-and-route data events/navigate-my-orders)
+               {:icon-class "my-orders"
+                :image "/images/slideout_nav/my_orders.png"
+                :label "My Orders"
+                :full-width? true}))
              (slideout-nav-link
               data
               ;; "FIXME path depending on stylist or not?? Current site seems to always go to this manage account"

@@ -24,6 +24,7 @@
 (def promotions [:promotions])
 
 (def past-orders [:past-orders])
+(def my-order-ids [:my-order-ids])
 
 (def store [:store])
 (def store-slug (conj store :store_slug))
