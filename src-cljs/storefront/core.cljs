@@ -7,7 +7,8 @@
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [storefront.routes :as routes]
-            [cljs.core.async :refer [<! chan close! put!]]
+            [storefront.messages :refer [enqueue-message]]
+            [cljs.core.async :refer [<! chan close!]]
             [om.core :as om]))
 
 (enable-console-print!)
@@ -27,7 +28,7 @@
           (swap! app-state transition event-and-args)
           (effects @app-state event-and-args)
           (recur))))
-    (put! event-ch [events/app-start])))
+    (enqueue-message event-ch [events/app-start])))
 
 (defn main [app-state]
   (routes/install-routes app-state)
@@ -49,7 +50,7 @@
 
 (defn on-jsload []
   (let [event-ch (get-in @app-state keypaths/event-ch)]
-    (put! event-ch [events/app-stop])
+    (enqueue-message event-ch [events/app-stop])
     (close! event-ch))
   (swap! app-state assoc-in keypaths/event-ch (chan))
   (main app-state))

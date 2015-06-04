@@ -8,7 +8,7 @@
             [storefront.query :as query]
             [storefront.credit-cards :refer [parse-expiration]]
             [storefront.riskified :as riskified]
-            [cljs.core.async :refer [put!]]))
+            [storefront.messages :refer [enqueue-message]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -37,8 +37,8 @@
   (when-not (or
              (empty? (get-in app-state keypaths/flash-success-nav))
              (= [event args] (get-in app-state keypaths/flash-success-nav)))
-    (put! (get-in app-state keypaths/event-ch)
-          [events/flash-dismiss-success]))
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-dismiss-success]))
   (when (.hasOwnProperty js/window "RISKX")
     (.go js/RISKX (clj->js (routes/path-for app-state event args)))))
 
@@ -204,39 +204,39 @@
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
   (when (= (get-in app-state keypaths/navigation-event) events/navigate-sign-in)
     (routes/enqueue-navigate app-state events/navigate-home))
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "Logged in successfully"
-                                    :navigation [events/navigate-home {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Logged in successfully"
+                                               :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "Welcome! You have signed up successfully."
-                                    :navigation [events/navigate-home {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Welcome! You have signed up successfully."
+                                               :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."
-                                    :navigation [events/navigate-home {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."
+                                               :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
-                                    :navigation [events/navigate-home {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
+                                               :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state true)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "Account updated"
-                                    :navigation [events/navigate-home {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Account updated"
+                                               :navigation [events/navigate-home {}]}]))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))

@@ -7,8 +7,8 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.credit-cards :as cc]
-            [clojure.string :as string]
-            [cljs.core.async :refer [put!]]))
+            [storefront.messages :refer [enqueue-message]]
+            [clojure.string :as string]))
 
 (defn stylist? [user]
   (seq (:store-slug user)))
@@ -63,9 +63,9 @@
                    :value (presenter-fn (get-in app-state keypath))
                    :required true
                    :on-change (fn [e]
-                                (put! (get-in @app-state keypaths/event-ch)
-                                      [events/control-change-state {:keypath keypath
-                                                                    :value (.. e -target -value)}]))}
+                                (enqueue-message (get-in @app-state keypaths/event-ch)
+                                                 [events/control-change-state {:keypath keypath
+                                                                               :value (.. e -target -value)}]))}
                   text-attrs)]])
 
 (defn display-credit-card-form [data]

@@ -1,7 +1,8 @@
 (ns storefront.api
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
-            [cljs.core.async :refer [put! take! chan <! mult tap]]
+            [cljs.core.async :refer [take! chan <! mult tap]]
+            [storefront.messages :refer [enqueue-message]]
             [storefront.events :as events]
             [storefront.taxons :refer [taxon-name-from]]
             [clojure.set :refer [rename-keys]]))
@@ -9,6 +10,9 @@
 (def base-url "http://localhost:3005")
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
 (def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")
+
+(defn filter-nil [m]
+  (into {} (filter second m)))
 
 (defn api-req [method path params success-handler]
   (method (str base-url path)
@@ -24,28 +28,28 @@
    GET
    "/product-nav-taxonomy"
    {}
-   #(put! events-ch [events/api-success-taxons (select-keys % [:taxons])])))
+   #(enqueue-message events-ch [events/api-success-taxons (select-keys % [:taxons])])))
 
 (defn get-store [events-ch store-slug]
   (api-req
    GET
    "/store"
    {:store_slug store-slug}
-   #(put! events-ch [events/api-success-store %])))
+   #(enqueue-message events-ch [events/api-success-store %])))
 
 (defn get-promotions [events-ch]
   (api-req
    GET
    "/promotions"
    {}
-   #(put! events-ch [events/api-success-promotions %])))
+   #(enqueue-message events-ch [events/api-success-promotions %])))
 
 (defn get-products [events-ch taxon-path]
   (api-req
    GET
    "/products"
    {:taxon_name (taxon-name-from taxon-path)}
-   #(put! events-ch [events/api-success-products (merge (select-keys % [:products])
+   #(enqueue-message events-ch [events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path})])))
 
 (defn get-product [events-ch product-path]
@@ -53,7 +57,7 @@
    GET
    (str "/products")
    {:slug product-path}
-   #(put! events-ch [events/api-success-product {:product-path product-path
+   #(enqueue-message events-ch [events/api-success-product {:product-path product-path
                                                  :product %}])))
 
 (defn get-states [events-ch]
@@ -61,7 +65,7 @@
    GET
    "/states"
    {}
-   #(put! events-ch [events/api-success-states (select-keys % [:states])])))
+   #(enqueue-message events-ch [events/api-success-states (select-keys % [:states])])))
 
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
@@ -72,7 +76,7 @@
    "/login"
    {:email email
     :password password}
-   #(put! events-ch [events/api-success-sign-in (select-sign-in-keys %)])))
+   #(enqueue-message events-ch [events/api-success-sign-in (select-sign-in-keys %)])))
 
 (defn sign-up [events-ch email password password-confirmation]
   (api-req
@@ -81,14 +85,14 @@
    {:email email
     :password password
     :password_confirmation password-confirmation}
-   #(put! events-ch [events/api-success-sign-up (select-sign-in-keys %)])))
+   #(enqueue-message events-ch [events/api-success-sign-up (select-sign-in-keys %)])))
 
 (defn forgot-password [events-ch email]
   (api-req
    POST
    "/forgot_password"
    {:email email}
-   #(put! events-ch [events/api-success-forgot-password])))
+   #(enqueue-message events-ch [events/api-success-forgot-password])))
 
 (defn reset-password [events-ch password password-confirmation reset-token]
   (api-req
@@ -97,7 +101,7 @@
    {:password password
     :password_confirmation password-confirmation
     :reset_password_token reset-token}
-   #(put! events-ch [events/api-success-reset-password (select-sign-in-keys %)])))
+   #(enqueue-message events-ch [events/api-success-reset-password (select-sign-in-keys %)])))
 
 (defn select-address-keys [m]
   (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
@@ -113,7 +117,7 @@
    "/users"
    {:id id
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
+   #(enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
 (defn update-account [events-ch id email password password-confirmation token]
   (api-req
@@ -124,8 +128,8 @@
     :password password
     :password_confirmation password-confirmation
     :token token}
-   #(do (put! events-ch [events/api-success-manage-account (select-sign-in-keys %)])
-        (put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)]))))
+   #(do (enqueue-message events-ch [events/api-success-manage-account (select-sign-in-keys %)])
+        (enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)]))))
 
 (defn update-account-address [events-ch id email billing-address shipping-address token]
   (api-req
@@ -136,14 +140,14 @@
     :bill_address (select-address-keys billing-address)
     :ship_address (select-address-keys shipping-address)
     :token token}
-   #(put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
+   #(enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
    GET
    "/stylist/commissions"
    {:user-token user-token}
-   #(put! events-ch [events/api-success-stylist-commissions
+   #(enqueue-message events-ch [events/api-success-stylist-commissions
                      (select-keys % [:rate :next-amount :paid-total :new-orders :payouts])])))
 
 (defn get-stylist-bonus-credits [events-ch user-token]
@@ -151,7 +155,7 @@
    GET
    "/stylist/bonus-credits"
    {:user-token user-token}
-   #(put! events-ch [events/api-success-stylist-bonus-credits
+   #(enqueue-message events-ch [events/api-success-stylist-bonus-credits
                      (select-keys % [:bonus-amount
                                      :earning-amount
                                      :commissioned-revenue
@@ -164,7 +168,7 @@
    GET
    "/stylist/referrals"
    {:user-token user-token}
-   #(put! events-ch [events/api-success-stylist-referral-program
+   #(enqueue-message events-ch [events/api-success-stylist-referral-program
                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :total-amount :referrals])])))
 
 (defn get-sms-number [events-ch]
@@ -173,7 +177,7 @@
                          (drop 3 x)
                          x)))
           (callback [resp]
-            (put! events-ch
+            (enqueue-message events-ch
                   [events/api-success-sms-number
                    {:number (-> resp :available_number normalize-number)}]))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
@@ -188,11 +192,11 @@
    POST
    "/orders"
    (if user-token {:token user-token} {})
-   #(put! events-ch [events/api-success-create-order (select-keys % [:number :token])])))
+   #(enqueue-message events-ch [events/api-success-create-order (select-keys % [:number :token])])))
 
 (defn create-order-if-needed [events-ch order-id order-token user-token]
   (if (and order-token order-id)
-    (put! events-ch [events/api-success-create-order {:number order-id :token order-token}])
+    (enqueue-message events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch user-token)))
 
 (defn update-cart [events-ch user-token {order-token :token number :number :as order} extra-message-args]
@@ -201,25 +205,25 @@
    "/cart"
    {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id])
     :order_token order-token}
-   #(put! events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
+   #(enqueue-message events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
 
 (defn update-order [events-ch user-token order extra-message-args]
   (api-req
    PUT
    "/orders"
-   {:order (-> order
-               (select-keys [:number
-                             :bill_address
-                             :ship_address
-                             :shipments_attributes
-                             :payments_attributes
-                             :state])
-               (update-in [:bill_address] select-address-keys)
-               (update-in [:ship_address] select-address-keys)
-               (rename-keys {:bill_address :bill_address_attributes
-                             :ship_address :ship_address_attributes}))
+   {:order (filter-nil (-> order
+                           (select-keys [:number
+                                         :bill_address
+                                         :ship_address
+                                         :shipments_attributes
+                                         :payments_attributes
+                                         :state])
+                           (update-in [:bill_address] select-address-keys)
+                           (update-in [:ship_address] select-address-keys)
+                           (rename-keys {:bill_address :bill_address_attributes
+                                         :ship_address :ship_address_attributes})))
     :order_token (:token order)}
-   #(put! events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))
+   #(enqueue-message events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
   (api-req
@@ -229,7 +233,7 @@
     :order_id order-number
     :variant_id variant-id
     :variant_quantity variant-quantity}
-   #(put! events-ch [events/api-success-add-to-bag {:variant-id variant-id
+   #(enqueue-message events-ch [events/api-success-add-to-bag {:variant-id variant-id
                                                     :variant-quantity variant-quantity
                                                     :order-number order-number
                                                     :order-token order-token}])))
@@ -240,7 +244,7 @@
    "/orders"
    {:id order-number
     :token order-token}
-   #(put! events-ch [events/api-success-get-order %])))
+   #(enqueue-message events-ch [events/api-success-get-order %])))
 
 (defn observe-events [f events-ch & args]
   (let [broadcast-ch (chan)

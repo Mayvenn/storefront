@@ -6,7 +6,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.taxons :refer [taxon-path-for default-taxon-path]]
-            [cljs.core.async :refer [put!]]))
+            [storefront.messages :refer [enqueue-message]]))
 
 (defn close-and-route [app-state event & [args]]
   {:href
@@ -14,8 +14,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
-     (put! (get-in @app-state keypaths/event-ch) [events/control-account-menu-collapse])
+     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
+     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-account-menu-collapse])
      (routes/enqueue-navigate @app-state event args))})
 
 (defn close-and-enqueue [app-state event]
@@ -23,8 +23,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (put! (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
-     (put! (get-in @app-state keypaths/event-ch) [event]))})
+     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
+     (enqueue-message (get-in @app-state keypaths/event-ch) [event]))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
   [:a.slideout-nav-link
