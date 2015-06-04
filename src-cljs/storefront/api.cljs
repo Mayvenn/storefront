@@ -133,8 +133,8 @@
    "/users"
    {:id id
     :email email
-    :billing_address (select-address-keys billing-address)
-    :shipping_address (select-address-keys shipping-address)
+    :bill_address (select-address-keys billing-address)
+    :ship_address (select-address-keys shipping-address)
     :token token}
    #(put! events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
@@ -199,11 +199,11 @@
   (api-req
    PUT
    "/cart"
-   {:order (select-keys order [:number :line_items_attributes :coupon_code])
+   {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id])
     :order_token order-token}
    #(put! events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
 
-(defn update-order [events-ch user-token {order-token :token number :number :as order} extra-message-args]
+(defn update-order [events-ch user-token order extra-message-args]
   (api-req
    PUT
    "/orders"
@@ -213,10 +213,12 @@
                              :ship_address
                              :shipments_attributes
                              :payments_attributes
-                             :payment_source])
+                             :state])
                (update-in [:bill_address] select-address-keys)
-               (update-in [:ship_address] select-address-keys))
-    :order_token order-token}
+               (update-in [:ship_address] select-address-keys)
+               (rename-keys {:bill_address :bill_address_attributes
+                             :ship_address :ship_address_attributes}))
+    :order_token (:token order)}
    #(put! events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]

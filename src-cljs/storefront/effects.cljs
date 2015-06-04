@@ -132,6 +132,10 @@
      (get-in app-state keypaths/event-ch)
      (get-in app-state keypaths/user-token)
      (merge (select-keys order [:id :number :token])
+            (when navigate-to-checkout?
+              {:state "address"
+               :email (get-in app-state keypaths/user-email)
+               :user_id (get-in app-state keypaths/user-id)})
             {:coupon_code (get-in app-state keypaths/cart-coupon-code)
              :line_items_attributes (updated-quantities
                                      (:line_items order)
@@ -193,8 +197,7 @@
                                 {:number (get-in app-state keypaths/checkout-credit-card-number)
                                  :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
                                  :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
-                                 :name (get-in app-state keypaths/checkout-credit-card-name)
-                                 :cc_type ""}}]}))
+                                 :name (get-in app-state keypaths/checkout-credit-card-name)}}]}))
                     {:navigate events/navigate-checkout-confirmation}))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
