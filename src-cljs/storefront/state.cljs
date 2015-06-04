@@ -62,7 +62,7 @@
                         :zipcode ""
                         :phone ""}
 
-     :ui {:navigation-event events/navigate-home
+     :ui {:navigation-message [events/navigate-home {}]
           :browse-taxon-query nil
           :browse-product-query nil
           :browse-variant-query nil
