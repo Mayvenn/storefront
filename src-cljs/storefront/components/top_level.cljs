@@ -27,8 +27,8 @@
             [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [storefront.components.checkout-payment :refer [checkout-payment-component]]
             [storefront.components.checkout-confirmation :refer [checkout-confirmation-component]]
-            [storefront.components.promotion-banner :refer [promotion-banner-component]]
-            [cljs.core.async :refer [put!]]))
+            [storefront.components.checkout-complete :refer [checkout-complete-component]]
+            [storefront.components.promotion-banner :refer [promotion-banner-component]]))
 
 (defn top-level-component [data owner]
   (om/component
@@ -74,6 +74,7 @@
             events/navigate-checkout-address (requires-sign-in data checkout-address-component)
             events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
             events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
-            events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component))
+            events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component)
+            events/navigate-checkout-complete (requires-sign-in data checkout-complete-component))
           data)]]]
       (om/build footer-component data)]])))

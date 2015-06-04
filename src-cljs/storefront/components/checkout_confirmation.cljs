@@ -7,8 +7,7 @@
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.order-summary :refer [display-order-summary]]
-            [clojure.string :as string]
-            [cljs.core.async :refer [put!]]))
+            [clojure.string :as string]))
 
 (defn field [name value & [classes]]
   [:div.line-item-attr {:class classes}
@@ -42,7 +41,7 @@
       [:div.checkout-form-wrapper
        [:form.edit_order
         {:method "POST"
-         :on-submit (utils/enqueue-event data events/control-checkout-payment-method-submit)}
+         :on-submit (utils/enqueue-event data events/control-checkout-confirmation-submit)}
 
         [:div.checkout-container
 

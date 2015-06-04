@@ -30,6 +30,7 @@
 (def navigate-checkout-delivery (conj navigate-checkout :delivery))
 (def navigate-checkout-payment (conj navigate-checkout :payment))
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
+(def navigate-checkout-complete (conj navigate-checkout :complete))
 
 (def control [:control])
 (def control-change-state (conj control :change-state))
@@ -72,6 +73,7 @@
 (def control-checkout-shipping-method-select (conj control-checkout :shipping-method-select))
 (def control-checkout-shipping-method-submit (conj control-checkout :shipping-method-submit))
 (def control-checkout-payment-method-submit (conj control-checkout :payment-method-submit))
+(def control-checkout-confirmation-submit (conj control-checkout :confirmation-submit))
 
 (def api [:api])
 (def api-success (conj api :success))
