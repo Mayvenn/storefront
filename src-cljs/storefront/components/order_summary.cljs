@@ -1,5 +1,53 @@
 (ns storefront.components.order-summary
-  (:require [storefront.components.formatters :refer [as-money]]))
+  (:require [storefront.components.formatters :refer [as-money]]
+            [storefront.components.utils :as utils]
+            [om.core :as om]
+            [sablono.core :refer-macros [html]]
+            [storefront.events :as events]
+            [storefront.components.counter :refer [counter-component]]
+            [storefront.keypaths :as keypaths]))
+
+(defn field [name value & [classes]]
+  [:div.line-item-attr {:class classes}
+   [:span.cart-label name]
+   [:span.cart-value value]])
+
+(defn display-variant-options [option-value]
+  (field (str (:option_type_presentation option-value) ": ")
+         (:presentation option-value)))
+
+(defn display-line-item [data interactive? line-item]
+  (let [variant (:variant line-item)]
+    [:div.line-item
+     [:a
+      (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+      [:img {:src (-> variant :images first :small_url)
+             :alt (:name variant)}]]
+     [:div.line-item-detail.interactive
+      [:h4
+       [:a
+        (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+        (variant :name)]]
+      (map display-variant-options (:option_values variant))
+      (when (not interactive?)
+        (field "Quantity:" (:quantity line-item)))
+      (field "Price:" (:single_display_amount line-item) "item-form" "price")
+      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
+      (when interactive?
+        (list
+         (om/build counter-component
+                   data
+                   {:opts {:path (conj keypaths/cart-quantities (:id line-item))}})
+         [:a.delete
+          {:href "#"
+           :on-click (utils/enqueue-event data
+                                          events/control-cart-remove
+                                          (select-keys line-item [:id]))}
+          "Remove"]))]
+     [:div {:style {:clear "both"}}]]))
+
+(defn display-line-items [data order & [interactive?]]
+  (map (partial display-line-item data interactive?) (:line_items order)))
 
 (defn valid-payments [payments]
   (filter (comp not #{"failed" "invalid"} :state) payments))
@@ -12,7 +60,7 @@
   (filter :eligible adjustments))
 
 (defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (order :line_items)))
+  (mapcat (comp eligible-adjustments :adjustments) (:line_items order)))
 
 (defn whole-order-adjustments [order]
   (-> order :adjustments eligible-adjustments))
