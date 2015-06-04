@@ -17,7 +17,7 @@
 (defn api-req [method path params success-handler]
   (method (str base-url path)
           {:handler success-handler
-           :error-handler #(js/console.error (clj->js %))
+           :error-handler #(js/console.error path (clj->js %))
            :headers {"Accepts" "application/json"}
            :format :json
            :params params
