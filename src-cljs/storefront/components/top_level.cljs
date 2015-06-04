@@ -29,7 +29,8 @@
             [storefront.components.checkout-confirmation :refer [checkout-confirmation-component]]
             [storefront.components.checkout-complete :refer [checkout-complete-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
-            [storefront.components.order :refer [order-component]]))
+            [storefront.components.order :refer [order-component]]
+            [storefront.components.my-orders :refer [my-orders-component]]))
 
 (defn top-level-component [data owner]
   (om/component
@@ -77,6 +78,7 @@
             events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
             events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component)
             events/navigate-checkout-complete (requires-sign-in data checkout-complete-component)
-            events/navigate-order (requires-sign-in data order-component))
+            events/navigate-order (requires-sign-in data order-component)
+            events/navigate-my-orders (requires-sign-in data my-orders-component))
           data)]]]
       (om/build footer-component data)]])))

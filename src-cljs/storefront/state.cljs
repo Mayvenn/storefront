@@ -21,6 +21,7 @@
      :order nil
      :promotions []
      :past-orders {}
+     :my-order-ids #{}
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
