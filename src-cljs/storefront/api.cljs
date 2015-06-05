@@ -216,12 +216,12 @@
                                          :bill_address
                                          :ship_address
                                          :shipments_attributes
-                                         :payments_attributes
-                                         :state])
+                                         :payments_attributes])
                            (update-in [:bill_address] select-address-keys)
                            (update-in [:ship_address] select-address-keys)
                            (rename-keys {:bill_address :bill_address_attributes
                                          :ship_address :ship_address_attributes})))
+    :state (:state order)
     :order_token (:token order)}
    #(enqueue-message events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))
 

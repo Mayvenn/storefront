@@ -180,7 +180,7 @@
     (api/update-order event-ch token
                       (merge (get-in app-state keypaths/order)
                              addresses
-                             {:state "delivery"})
+                             {:state "address"})
                       {:navigate [events/navigate-checkout-delivery]})))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
@@ -188,7 +188,7 @@
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :token])
-                             {:state "payment"
+                             {:state "delivery"
                               :shipments_attributes
                               {:id (get-in order [:shipments 0 :id])
                                :selected_shipping_rate_id (get-in app-state keypaths/checkout-selected-shipping-method-id)}}))
@@ -199,7 +199,7 @@
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :token])
-                             {:state "confirm"
+                             {:state "payment"
                               :payments_attributes
                               [{:payment_method_id (get-in order [:payment_methods 0 :id])
                                 :source_attributes
