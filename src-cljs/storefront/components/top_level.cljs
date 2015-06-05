@@ -21,6 +21,7 @@
             [storefront.components.stylist.commissions :refer [stylist-commissions-component]]
             [storefront.components.stylist.bonus-credit :refer [stylist-bonus-credit-component]]
             [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
+            [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
             [storefront.components.cart :refer [cart-component]]
             [storefront.components.checkout-address :refer [checkout-address-component]]
@@ -70,6 +71,7 @@
             events/navigate-stylist-commissions stylist-commissions-component
             events/navigate-stylist-bonus-credit stylist-bonus-credit-component
             events/navigate-stylist-referrals stylist-referrals-component
+            events/navigate-stylist-manage-account stylist-manage-account-component
             events/navigate-manage-account manage-account-component
             events/navigate-cart cart-component
             events/navigate-manage-account manage-account-component

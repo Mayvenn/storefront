@@ -26,6 +26,7 @@
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
 (def navigate-stylist-referrals (conj navigate-stylist :referrals))
 (def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
+(def navigate-stylist-manage-account (conj navigate-stylist :manage-account))
 
 (def navigate-checkout (conj navigate :checkout))
 (def navigate-checkout-address (conj navigate-checkout :address))
@@ -77,6 +78,10 @@
 (def control-checkout-payment-method-submit (conj control-checkout :payment-method-submit))
 (def control-checkout-confirmation-submit (conj control-checkout :confirmation-submit))
 
+(def control-stylist-manage-account (conj control :stylist :manage-account))
+(def control-stylist-manage-account-change (conj control-stylist-manage-account :change))
+(def control-stylist-manage-account-submit (conj control-stylist-manage-account :submit))
+
 (def api [:api])
 (def api-success (conj api :success))
 
@@ -92,6 +97,9 @@
 (def api-success-reset-password (conj api-success :reset-password))
 (def api-success-manage-account (conj api-success :manage-account))
 (def api-success-account-update-addresses (conj api-success :account-update-addresses))
+(def api-success-stylist-manage-account (conj api-success :stylist-manage-account))
+(def api-success-stylist-manage-account-profile-picture
+  (conj api-success-stylist-manage-account :profile-picture))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-stylist-bonus-credits (conj api-success :stylist-bonus-credits))
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))

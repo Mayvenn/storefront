@@ -88,6 +88,7 @@
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
        "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)
        "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)
+       "/stylist/edit" (edn->bidi events/navigate-stylist-manage-account)
        "/checkout/address" (edn->bidi events/navigate-checkout-address)
        "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)
        "/checkout/payment" (edn->bidi events/navigate-checkout-payment)

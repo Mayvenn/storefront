@@ -109,6 +109,11 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
+(defmethod transition-state events/api-success-stylist-manage-account
+  [_ event stylist-account app-state]
+  (-> app-state
+      (update-in keypaths/stylist-manage-account merge stylist-account)))
+
 (defmethod transition-state events/api-success-stylist-commissions
   [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
   (-> app-state
