@@ -9,21 +9,21 @@
   (html
    (let [{:keys [stylist-name paid-at percent-complete
                  commissioned-revenue bonus-due earning-amount]} referral]
-     [:div.loose-table-row
-      [:div.left-content
+     [:.loose-table-row
+      [:.left-content
        [:p.chopped-content stylist-name]
        (if paid-at
          [:p.referral-paid-time (f/locale-date paid-at)]
-         [:div.referral-progress
-          [:div.progress-bar
-           [:div.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
+         [:.referral-progress
+          [:.progress-bar
+           [:.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
           [:p.progress-text
            "Sales so far: "
            (f/as-money commissioned-revenue)
            " of "
            (f/as-money-without-cents earning-amount)]])]
 
-      [:div.right-content
+      [:.right-content
        [:p.paid-amount (f/as-money-without-cents bonus-due) " bonus"]
        (if paid-at
          [:p.referral-label.paid-label "Paid"]
@@ -42,26 +42,26 @@
 
        (om/build stylist-dashboard-nav-component data)
 
-       [:div.dashboard-content
+       [:.dashboard-content
         [:a#email-referral.dashboard-summary {:href sales-rep-email :target "_top"}
          [:figure.email-icon]
          "Email us a new referral"
          [:figure.right-arrow-icon]]
 
-        [:div#money-rules
-         [:div.gold-money-box]
-         [:div.money-rule-details
+        [:#money-rules
+         [:.gold-money-box]
+         [:.money-rule-details
           [:p
            "Earn "
            (f/as-money-without-cents bonus-amount)
            " in bonus credit when each stylist makes their first "
            (f/as-money-without-cents earning-amount)]]]
 
-        [:div.my-referrals
+        [:.my-referrals
          [:h4.dashboard-details-header "My Referrals"]
-         [:div.solid-line-divider]
+         [:.solid-line-divider]
 
-         [:div.emphasized-banner
+         [:.emphasized-banner
           [:span.emphasized-banner-header "Total Referral Bonuses"]
           [:span.emphasized-banner-value
           (f/as-money-without-cents total-amount)]]
