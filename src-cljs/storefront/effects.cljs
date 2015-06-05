@@ -65,6 +65,11 @@
         (routes/enqueue-redirect app-state (:event (last allowed-steps))))
       (routes/enqueue-redirect app-state events/navigate-cart))))
 
+(defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
+  (api/get-states (get-in app-state keypaths/event-ch))
+  (api/get-stylist-account (get-in app-state keypaths/event-ch)
+                           (get-in app-state keypaths/user-token)))
+
 (defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
   (api/get-stylist-commissions (get-in app-state keypaths/event-ch)
                                (get-in app-state keypaths/user-token)))
@@ -177,6 +182,14 @@
                                             {:quantity 0})]})
      {})))
 
+(defmethod perform-effects events/control-stylist-manage-account-submit [_ events args app-state]
+  (let [event-ch (get-in app-state keypaths/event-ch)
+        user-token (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+    (api/update-stylist-account event-ch user-token stylist-account)
+    (when (stylist-account :profile-picture)
+      (api/update-stylist-account-profile-picture event-ch user-token stylist-account))))
+
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [event-ch (get-in app-state keypaths/event-ch)
         token (get-in app-state keypaths/user-token)
@@ -268,6 +281,12 @@
   (enqueue-message (get-in app-state keypaths/event-ch)
                    [events/flash-show-success {:message "Account updated"
                                                :navigation [events/navigate-home {}]}]))
+
+(defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
+  (save-cookie app-state true)
+  (put! (get-in app-state keypaths/event-ch)
+        [events/flash-show-success {:message "Account updated"
+                                    :navigation [events/navigate-stylist-manage-account {}]}]))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))

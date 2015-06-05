@@ -142,6 +142,52 @@
     :token token}
    #(enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
 
+(defn get-stylist-account [events-ch user-token]
+  (api-req
+   GET
+   "/stylist"
+   {:user-token user-token}
+   #(put! events-ch [events/api-success-stylist-manage-account
+                     (select-keys % [:birth_date_1i :birth_date_2i :birth_date_3i
+                                     :profile_picture_url
+                                     :chosen_payout_method :venmo_payout_attributes :paypal_payout_attributes
+                                     :instagram_account :styleseat_account
+                                     :user :address])])))
+
+(defn update-stylist-account [events-ch user-token stylist-account]
+  (api-req
+   PUT
+   "/stylist"
+   {:user-token user-token
+    :stylist stylist-account}
+   #(put! events-ch [events/api-success-stylist-manage-account
+                     (select-keys % [:birth_date_1i
+                                     :birth_date_2i
+                                     :birth_date_3i
+                                     :profile_picture_url
+                                     :venmo_payout_attributes
+                                     :paypal_payout_attributes
+                                     :instagram_account
+                                     :styleseat_account
+                                     :chosen_payout_method
+                                     :user
+                                     :address])])))
+
+(defn update-stylist-account-profile-picture [events-ch user-token stylist-account]
+  (let [form-data (doto (js/FormData.)
+                    (.append "file"
+                             (stylist-account :profile-picture)
+                             (.-name (stylist-account :profile-picture)))
+                    (.append "user-token" user-token))]
+    (PUT (str base-url "/stylist/profile-picture")
+         {:handler #(put! events-ch
+                          [events/api-success-stylist-manage-account-profile-picture
+                           (select-keys % [:profile_picture_url])])
+          :error-handler #(js/console.error "stylist profile picture upload error " (clj->js %))
+          :params form-data
+          :response-format (json-response-format {:keywords? true})
+          :timeout 10000})))
+
 (defn get-stylist-commissions [events-ch user-token]
   (api-req
    GET

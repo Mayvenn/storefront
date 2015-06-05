@@ -115,13 +115,14 @@
 
 (def stylist-sales-rep-email (conj stylist :sales-rep-email))
 
+(def stylist-manage-account (conj stylist :manage-account))
+
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))
 (def stylist-commissions-next-amount (conj stylist-commissions :next-amount))
 (def stylist-commissions-paid-total (conj stylist-commissions :paid-total))
 (def stylist-commissions-new-orders (conj stylist-commissions :new-orders))
 (def stylist-commissions-payouts (conj stylist-commissions :payouts))
-
 
 (def stylist-bonus-credit (conj stylist :bonus-credits))
 (def stylist-bonus-credit-bonus-amount (conj stylist-bonus-credit :bonus-amount))

@@ -44,7 +44,23 @@
                                   :next-amount nil
                                   :earning-amount nil
                                   :total-amount nil
-                                  :referrals []}}
+                                  :referrals []}
+               :manage-account {:email nil
+                                :id 10
+                                :birth-date-1i nil
+                                :birth-date-2i nil
+                                :birth-date-3i nil
+                                :password ""
+                                :password_confirmation ""
+                                :address {:firstname nil
+                                          :lastname nil
+                                          :address1 nil
+                                          :address2 nil
+                                          :city nil
+                                          :state_id nil
+                                          :country_id nil
+                                          :zipcode nil
+                                          :phone nil}}}
 
      :billing-address {:firstname ""
                        :lastname ""
