@@ -203,7 +203,7 @@
   (api-req
    PUT
    "/cart"
-   {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id])
+   {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
     :order_token order-token}
    #(enqueue-message events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
 
