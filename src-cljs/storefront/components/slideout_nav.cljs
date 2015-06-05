@@ -87,8 +87,10 @@
             [:li
              [:a (close-and-route data events/navigate-my-orders) "My Orders"]]
             [:li
-             [:a ;; FIXME stylist manage should go directly to their own profile edit
-              (close-and-route data events/navigate-manage-account)
+             [:a
+              (if (own-store? data)
+                (close-and-route data events/navigate-stylist-manage-account)
+                (close-and-route data events/navigate-manage-account))
               "Manage Account"]]
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
@@ -168,8 +170,9 @@
                 :full-width? true}))
              (slideout-nav-link
               data
-              ;; "FIXME path depending on stylist or not?? Current site seems to always go to this manage account"
-              (merge (close-and-route data events/navigate-manage-account)
+              (merge (if (own-store? data)
+                       (close-and-route data events/navigate-stylist-manage-account)
+                       (close-and-route data events/navigate-manage-account))
                      {:icon-class "manage-account"
                       :image "/images/slideout_nav/manage-account.png"
                       :label "Manage Account"
