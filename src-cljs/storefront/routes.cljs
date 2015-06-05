@@ -119,6 +119,13 @@
                (apply concat (seq args)))
         (set-query-string query-params))))
 
+(defn enqueue-redirect [app-state navigation-event & [args]]
+  (let [query-params (:query-params args)
+        args (dissoc args :query-params)]
+    (.replaceToken (get-in app-state keypaths/history)
+                   (-> (path-for app-state navigation-event args)
+                       (set-query-string query-params)))))
+
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]

@@ -8,6 +8,7 @@
             [storefront.query :as query]
             [storefront.credit-cards :refer [parse-expiration]]
             [storefront.riskified :as riskified]
+            [storefront.checkout :as checkout]
             [storefront.messages :refer [enqueue-message]]))
 
 (defmulti perform-effects identity)
@@ -49,6 +50,20 @@
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/event-ch)
                    product-path))
+
+(defmethod perform-effects events/navigate-checkout [_ event args app-state]
+  (let [allowed-steps (->> checkout/steps
+                           (take-while (comp not #{event} :event)))
+        allowed-states (-> (map :name allowed-steps)
+                           (conj "cart")
+                           set)
+        order (get-in app-state keypaths/order)]
+    (js/console.log (clj->js allowed-states) (clj->js (:state (get-in app-state keypaths/order))))
+    (if (:state order)
+      (if (allowed-states (:state (get-in app-state keypaths/order)))
+        :success
+        (routes/enqueue-redirect app-state (:event (last allowed-steps))))
+      (routes/enqueue-redirect app-state events/navigate-cart))))
 
 (defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
   (api/get-stylist-commissions (get-in app-state keypaths/event-ch)
