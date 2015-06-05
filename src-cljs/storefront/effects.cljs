@@ -71,7 +71,7 @@
 
 (defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
   (api/get-stylist-bonus-credits (get-in app-state keypaths/event-ch)
-                               (get-in app-state keypaths/user-token)))
+                                 (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
   (api/get-stylist-referral-program (get-in app-state keypaths/event-ch)
