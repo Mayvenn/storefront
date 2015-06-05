@@ -277,5 +277,6 @@
     (apply routes/enqueue-navigate app-state navigate)))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
+  (save-cookie app-state true)
   (when navigate
     (apply routes/enqueue-navigate app-state navigate)))
