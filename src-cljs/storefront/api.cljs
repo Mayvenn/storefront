@@ -199,12 +199,13 @@
     (enqueue-message events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch user-token)))
 
-(defn update-cart [events-ch user-token {order-token :token number :number :as order} extra-message-args]
+(defn update-cart [events-ch user-token {order-token :token :as order} extra-message-args]
   (api-req
    PUT
    "/cart"
-   {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
-    :order_token order-token}
+   (filter-nil
+    {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
+     :order_token order-token})
    #(enqueue-message events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])))
 
 (defn update-order [events-ch user-token order extra-message-args]
