@@ -223,7 +223,12 @@
       (assoc-in keypaths/cart-coupon-code "")))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
-  (assoc-in app-state keypaths/order order))
+  (if (= (:state order) "complete")
+    (-> app-state
+        (assoc-in keypaths/order {})
+        (assoc-in keypaths/user-order-id nil)
+        (assoc-in keypaths/user-order-token nil))
+    (assoc-in app-state keypaths/order order)))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))
