@@ -22,7 +22,6 @@
                 :as :json})
      :body)))
 
-
 (defn parse-subdomains [server-name]
   (->> (string/split server-name #"\.")
        (drop-last 2)))
