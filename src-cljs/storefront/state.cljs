@@ -124,7 +124,7 @@
                      :credit-card-name ""
                      :credit-card-number ""
                      :credit-card-expiration ""
-                     :credit-card-ccv ""}
+                     :credit-card-ccv ""
+                     :selected-shipping-method-id 0}
           :flash {:success {:message nil
-                            :navigation []}}
-          :checkout-selected-shipping-method-id 0}}))
+                            :navigation []}}}}))
