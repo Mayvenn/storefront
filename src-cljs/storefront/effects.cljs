@@ -58,7 +58,6 @@
                            (conj "cart")
                            set)
         order (get-in app-state keypaths/order)]
-    (js/console.log (clj->js allowed-states) (clj->js (:state (get-in app-state keypaths/order))))
     (if (:state order)
       (if (allowed-states (:state (get-in app-state keypaths/order)))
         :success
