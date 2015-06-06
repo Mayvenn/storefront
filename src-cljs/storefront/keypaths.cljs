@@ -47,8 +47,6 @@
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 
-(def checkout-selected-shipping-method-id (conj ui :checkout-selected-shipping-method-id))
-
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
 (def sign-in-password (conj sign-in :password))
@@ -101,6 +99,7 @@
 (def checkout-credit-card-number (conj checkout :credit-card-number))
 (def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
+(def checkout-selected-shipping-method-id (conj checkout :selected-shipping-method-id))
 
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))
