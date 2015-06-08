@@ -8,7 +8,6 @@
   (reduce #(assoc-in %1 %2 "") app-state fields))
 
 (defmulti transition-state identity)
-;; want to log all transitions? Go to messages.cljs
 
 (defmethod transition-state :default [dispatch event args app-state]
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
