@@ -194,13 +194,7 @@
                      [:p "A prepaid Visa debit card will be mailed to the above address"]]
 
             nil [:#check.payout-method
-                   [:p "Checks will mail to the above address"]]))
-        ;;        <% if @stylist.payout_method.try!(:invalid?) %>
-        ;;          <p class='error'><%= @stylist.payout_method.errors.to_a.join(',') %></p>
-        ;;        <% end %>
-        ;;      </div>
-
-        ]
+                   [:p "Checks will mail to the above address"]]))]
 
        [:.social-media
         [:h4.dashboard-details-header "Social Media"]
