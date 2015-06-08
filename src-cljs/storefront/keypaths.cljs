@@ -33,6 +33,7 @@
 (def products [:products])
 (def states [:states])
 (def sms-number [:sms-number])
+(def api-cache [:api-cache])
 
 (def ui [:ui])
 (def navigation-message (conj ui :navigation-message))

@@ -86,6 +86,8 @@
 (def api [:api])
 (def api-success (conj api :success))
 
+(def api-success-cache (conj api-success :cache))
+
 (def api-success-taxons (conj api-success :taxons))
 (def api-success-store (conj api-success :store))
 (def api-success-category (conj api-success :category))

@@ -21,11 +21,14 @@
   (riskified/remove-beacon))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
-  (api/get-taxons (get-in app-state keypaths/event-ch))
+  (api/get-taxons (get-in app-state keypaths/event-ch)
+                  (get-in app-state keypaths/api-cache))
   (api/get-store (get-in app-state keypaths/event-ch)
+                 (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug))
   (api/get-sms-number (get-in app-state keypaths/event-ch))
-  (api/get-promotions (get-in app-state keypaths/event-ch))
+  (api/get-promotions (get-in app-state keypaths/event-ch)
+                      (get-in app-state keypaths/api-cache))
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)]
     (when (and user-id token)
@@ -52,10 +55,12 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/event-ch)
+                    (get-in app-state keypaths/api-cache)
                     (taxon-name-from taxon-path)))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/event-ch)
+                   (get-in app-state keypaths/api-cache)
                    product-path))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
@@ -64,7 +69,8 @@
       (routes/enqueue-redirect app-state events/navigate-cart))))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
-  (api/get-states (get-in app-state keypaths/event-ch))
+  (api/get-states (get-in app-state keypaths/event-ch)
+                  (get-in app-state keypaths/api-cache))
   (api/get-stylist-account (get-in app-state keypaths/event-ch)
                            (get-in app-state keypaths/user-token)))
 
@@ -81,7 +87,8 @@
                                     (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (api/get-states (get-in app-state keypaths/event-ch)))
+  (api/get-states (get-in app-state keypaths/event-ch)
+                  (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-order [_ event args app-state]
   (api/get-past-order (get-in app-state keypaths/event-ch)
