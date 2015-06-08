@@ -275,9 +275,9 @@
 
 (defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
   (save-cookie app-state true)
-  (put! (get-in app-state keypaths/event-ch)
-        [events/flash-show-success {:message "Account updated"
-                                    :navigation [events/navigate-stylist-manage-account {}]}]))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Account updated"
+                                               :navigation [events/navigate-stylist-manage-account {}]}]))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))
