@@ -20,45 +20,67 @@
            :params params
            :response-format (json-response-format {:keywords? true})}))
 
-(defn get-taxons [events-ch]
-  (api-req
+(defn cache-req [cache events-ch method path params cb]
+  (let [key [path params]
+        res (cache key)]
+    (if res
+      (cb res)
+      (api-req method path params
+               (fn [result]
+                 (enqueue-message events-ch [events/api-success-cache {key result}])
+                 (cb result))))))
+
+(defn get-taxons [events-ch cache]
+  (cache-req
+   cache
+   events-ch
    GET
    "/product-nav-taxonomy"
    {}
    #(enqueue-message events-ch [events/api-success-taxons (select-keys % [:taxons])])))
 
-(defn get-store [events-ch store-slug]
-  (api-req
+(defn get-store [events-ch cache store-slug]
+  (cache-req
+   cache
+   events-ch
    GET
    "/store"
    {:store_slug store-slug}
    #(enqueue-message events-ch [events/api-success-store %])))
 
-(defn get-promotions [events-ch]
-  (api-req
+(defn get-promotions [events-ch cache]
+  (cache-req
+   cache
+   events-ch
    GET
    "/promotions"
    {}
    #(enqueue-message events-ch [events/api-success-promotions %])))
 
-(defn get-products [events-ch taxon-path]
-  (api-req
+(defn get-products [events-ch cache taxon-path]
+  (cache-req
+   cache
+   events-ch
    GET
    "/products"
    {:taxon_name (taxon-name-from taxon-path)}
    #(enqueue-message events-ch [events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path})])))
 
-(defn get-product [events-ch product-path]
-  (api-req
+(defn get-product [events-ch cache product-path]
+  (cache-req
+   cache
+   events-ch
    GET
    (str "/products")
    {:slug product-path}
    #(enqueue-message events-ch [events/api-success-product {:product-path product-path
                                                  :product %}])))
 
-(defn get-states [events-ch]
-  (api-req
+(defn get-states [events-ch cache]
+  (cache-req
+   cache
+   events-ch
    GET
    "/states"
    {}

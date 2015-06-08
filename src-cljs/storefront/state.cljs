@@ -61,6 +61,7 @@
                                           :country_id nil
                                           :zipcode nil
                                           :phone nil}}}
+     :api-cache {}
 
      :billing-address {:firstname ""
                        :lastname ""
