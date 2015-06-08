@@ -95,8 +95,8 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
+(def api-success-account (conj api-success :account))
 (def api-success-manage-account (conj api-success :manage-account))
-(def api-success-account-update-addresses (conj api-success :account-update-addresses))
 (def api-success-stylist-manage-account (conj api-success :stylist-manage-account))
 (def api-success-stylist-manage-account-profile-picture
   (conj api-success-stylist-manage-account :profile-picture))
