@@ -141,17 +141,25 @@
     :token token}
    #(enqueue-message events-ch [events/api-success-account (rename-server-address-keys %)])))
 
+(defn select-stylist-account-keys [args]
+  (select-keys args [:birth_date_1i :birth_date_2i :birth_date_3i
+                     :profile_picture_url
+                     :chosen_payout_method
+                     :venmo_payout_attributes
+                     :paypal_payout_attributes
+                     :instagram_account
+                     :styleseat_account
+                     :user
+                     :address]))
+
 (defn get-stylist-account [events-ch user-token]
   (api-req
    GET
    "/stylist"
    {:user-token user-token}
    #(enqueue-message events-ch [events/api-success-stylist-manage-account
-                                (select-keys % [:birth_date_1i :birth_date_2i :birth_date_3i
-                                                :profile_picture_url
-                                                :chosen_payout_method :venmo_payout_attributes :paypal_payout_attributes
-                                                :instagram_account :styleseat_account
-                                                :user :address])])))
+                                {:updated false
+                                 :stylist (select-stylist-account-keys %)}])))
 
 (defn update-stylist-account [events-ch user-token stylist-account]
   (api-req
@@ -160,17 +168,8 @@
    {:user-token user-token
     :stylist stylist-account}
    #(enqueue-message events-ch [events/api-success-stylist-manage-account
-                                (select-keys % [:birth_date_1i
-                                                :birth_date_2i
-                                                :birth_date_3i
-                                                :profile_picture_url
-                                                :venmo_payout_attributes
-                                                :paypal_payout_attributes
-                                                :instagram_account
-                                                :styleseat_account
-                                                :chosen_payout_method
-                                                :user
-                                                :address])])))
+                                {:updated true
+                                 :stylist (select-stylist-account-keys %)}])))
 
 (defn update-stylist-account-profile-picture [events-ch user-token stylist-account]
   (let [form-data (doto (js/FormData.)
