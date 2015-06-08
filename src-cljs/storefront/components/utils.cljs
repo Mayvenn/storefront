@@ -14,49 +14,48 @@
     nil))
 
 (defn route-to [app-state navigation-event & [args]]
-  {:href
-   (routes/path-for @app-state navigation-event args)
+  {:href (routes/path-for @app-state navigation-event args)
    :on-click
    (fn [e]
      (.preventDefault e)
      (routes/enqueue-navigate @app-state navigation-event args))})
 
 (defn change-text [app-state keypath]
-  {:on-change
+  {:value (get-in app-state keypath)
+   :on-change
    (fn [e]
-     (enqueue-message (get-in @app-state keypaths/event-ch)
-                      [events/control-change-state {:keypath keypath
-                                                    :value (.. e -target -value)}]))
-   :value (get-in app-state keypath)})
+     (put-event app-state
+                events/control-change-state {:keypath keypath
+                                             :value (.. e -target -value)}))})
 
 (defn change-checkbox [app-state keypath]
-  (let [checked-str (when (get-in app-state keypath) "checked")]
-    {:checked checked-str
-     :value checked-str
+  (let [checked-val (when (get-in app-state keypath) "checked")]
+    {:checked checked-val
+     :value checked-val
      :on-change
      (fn [e]
-       (enqueue-message (get-in @app-state keypaths/event-ch)
-                        [events/control-change-state {:keypath keypath
-                                                      :value (.. e -target -checked)}]))}))
+       (put-event app-state
+                  events/control-change-state {:keypath keypath
+                                               :value (.. e -target -checked)}))}))
 
 (defn change-radio [app-state keypath value]
-  (let [keypath-value (get-in app-state keypath)
-        checked (when (= keypath-value (name value)) "checked")]
-    {:checked checked
+  (let [keypath-val (get-in app-state keypath)
+        checked-val (when (= keypath-val (name value)) "checked")]
+    {:checked checked-val
      :on-change
      (fn [e]
-       (put! (get-in @app-state keypaths/event-ch)
-             [events/control-change-state {:keypath keypath
-                                           :value value}]))}))
+       (put-event app-state
+                  events/control-change-state {:keypath keypath
+                                               :value value}))}))
 
 (defn change-file [app-state keypath]
   {:on-change
    (fn [e]
-     (put! (get-in @app-state keypaths/event-ch)
-           [events/control-change-state {:keypath keypath
-                                         :value (-> (.. e -target -files)
-                                                    array-seq
-                                                    first)}]))})
+     (put-event app-state
+                events/control-change-state {:keypath keypath
+                                             :value (-> (.. e -target -files)
+                                                        array-seq
+                                                        first)}))})
 
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)
