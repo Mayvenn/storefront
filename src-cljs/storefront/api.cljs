@@ -117,7 +117,7 @@
    "/users"
    {:id id
     :token token}
-   #(enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
+   #(enqueue-message events-ch [events/api-success-account (rename-server-address-keys %)])))
 
 (defn update-account [events-ch id email password password-confirmation token]
   (api-req
@@ -128,8 +128,7 @@
     :password password
     :password_confirmation password-confirmation
     :token token}
-   #(do (enqueue-message events-ch [events/api-success-manage-account (select-sign-in-keys %)])
-        (enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)]))))
+   #(enqueue-message events-ch [events/api-success-manage-account (select-sign-in-keys %)])))
 
 (defn update-account-address [events-ch id email billing-address shipping-address token]
   (api-req
@@ -140,7 +139,7 @@
     :bill_address (select-address-keys billing-address)
     :ship_address (select-address-keys shipping-address)
     :token token}
-   #(enqueue-message events-ch [events/api-success-account-update-addresses (rename-server-address-keys %)])))
+   #(enqueue-message events-ch [events/api-success-account (rename-server-address-keys %)])))
 
 (defn get-stylist-account [events-ch user-token]
   (api-req

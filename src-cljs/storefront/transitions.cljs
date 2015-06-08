@@ -209,7 +209,7 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
-(defmethod transition-state events/api-success-account-update-addresses [_ event {:keys [billing-address shipping-address] :as args} app-state]
+(defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (let [fullname (str (:firstname billing-address) " " (:lastname billing-address))]
     (-> app-state
         (sign-in-user args)
