@@ -154,15 +154,15 @@
           (input-field data [:address :phone]
                        :field-type "tel" :label "Mobile Phone Number")
 
-        #_  [:.password-reset
+          [:.password-reset
            [:.password-fields
-            (input-field data [:user :password])
+            (input-field data [:user :password]
+                         :field-type "password")
             (input-field data [:user :password-confirmation]
                          :field-type "password"
                          :label "Confirm Password")]
            [:p.password-instructions
-            "Leave blank to keep the same password."]]
-          ]]]
+            "Leave blank to keep the same password."]]]]]
 
        [:.select-payout-method
         [:h4.dashboard-details-header "Commissions"]
