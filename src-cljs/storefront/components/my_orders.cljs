@@ -25,12 +25,12 @@
    (html
     [:div
      [:h2.header-bar-heading "My Account"]
-     [:p.store-credit-balance-wrapper
-      (when false ;; FIXME available store credit for user is 0?
-        {:class "no-credit"})
-      "Available store credit: "
-      [:span.store-credit-balance (as-money 10.0 ;; FIXME get available store credit
-                                            )]]
+     (when-let [store-credit (get-in data keypaths/user-total-available-store-credit)]
+       [:p.store-credit-balance-wrapper
+        (when (zero? store-credit)
+          {:class "no-credit"})
+        "Available store credit: "
+        [:span.store-credit-balance (as-money store-credit)]])
      [:div.account-my-orders
       [:h4.account-orders-header "My Recent Orders"]
       (let [order-ids (get-in data keypaths/my-order-ids)]
