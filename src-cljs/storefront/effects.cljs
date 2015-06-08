@@ -52,16 +52,8 @@
                    product-path))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
-  (let [allowed-steps (->> checkout/steps
-                           (take-while (comp not #{event} :event)))
-        allowed-states (-> (map :name allowed-steps)
-                           (conj "cart")
-                           set)
-        order (get-in app-state keypaths/order)]
-    (if (:state order)
-      (if (allowed-states (:state (get-in app-state keypaths/order)))
-        :success
-        (routes/enqueue-redirect app-state (:event (last allowed-steps))))
+  (let [order (get-in app-state keypaths/order)]
+    (when-not order
       (routes/enqueue-redirect app-state events/navigate-cart))))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
