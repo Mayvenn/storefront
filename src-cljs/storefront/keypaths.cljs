@@ -105,6 +105,9 @@
 (def flash-success (conj flash :success))
 (def flash-success-message (conj flash-success :message))
 (def flash-success-nav (conj flash-success :navigation))
+(def flash-failure (conj flash :failure))
+(def flash-failure-message (conj flash-failure :message))
+(def flash-failure-nav (conj flash-failure :navigation))
 
 (def billing-address [:billing-address])
 

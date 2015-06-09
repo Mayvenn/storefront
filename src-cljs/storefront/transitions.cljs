@@ -243,3 +243,9 @@
 
 (defmethod transition-state events/flash-dismiss-success [_ event args app-state]
   (assoc-in app-state keypaths/flash-success nil))
+
+(defmethod transition-state events/flash-show-failure [_ event args app-state]
+  (assoc-in app-state keypaths/flash-failure (select-keys args [:message :navigation])))
+
+(defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
+  (assoc-in app-state keypaths/flash-failure nil))

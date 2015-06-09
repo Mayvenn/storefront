@@ -127,4 +127,6 @@
                      :credit-card-ccv ""
                      :selected-shipping-method-id 0}
           :flash {:success {:message nil
+                            :navigation []}
+                  :failure {:message nil
                             :navigation []}}}}))

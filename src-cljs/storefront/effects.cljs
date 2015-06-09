@@ -35,11 +35,18 @@
                    order-id
                    (get-in app-state keypaths/user-order-token)))
   (set! (.. js/document -body -scrollTop) 0)
+
   (when-not (or
              (empty? (get-in app-state keypaths/flash-success-nav))
              (= [event args] (get-in app-state keypaths/flash-success-nav)))
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-dismiss-success]))
+  (when-not (or
+             (empty? (get-in app-state keypaths/flash-failure-nav))
+             (= [event args] (get-in app-state keypaths/flash-failure-nav)))
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-dismiss-failure]))
+
   (when (.hasOwnProperty js/window "RISKX")
     (.go js/RISKX (clj->js (routes/path-for app-state event args)))))
 
@@ -84,6 +91,11 @@
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
   (api/get-my-orders (get-in app-state keypaths/event-ch)
                      (get-in app-state keypaths/user-token)))
+
+(defmethod perform-effects events/navigate-not-found [_ event args app-state]
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-failure {:message "The page you were looking for could not be found."
+                                               :navigation [event args]}]))
 
 (defmethod perform-effects events/control-menu-expand [_ event args app-state]
   (set! (.. js/document -body -style -overflow) "hidden"))

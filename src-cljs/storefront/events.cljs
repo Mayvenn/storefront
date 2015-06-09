@@ -21,6 +21,7 @@
 (def navigate-cart (conj navigate :cart))
 (def navigate-order (conj navigate :order))
 (def navigate-my-orders (conj navigate :my-orders))
+(def navigate-not-found (conj navigate :not-found))
 
 (def navigate-stylist (conj navigate :stylist))
 (def navigate-stylist-commissions (conj navigate-stylist :commissions))
@@ -114,7 +115,9 @@
 (def api-success-my-orders (conj api-success :my-orders))
 
 (def flash [:flash])
-(def flash-show [:show])
-(def flash-dismiss [:dismiss])
+(def flash-show (conj flash :show))
+(def flash-dismiss (conj flash :dismiss))
 (def flash-show-success (conj flash-show :success))
 (def flash-dismiss-success (conj flash-dismiss :success))
+(def flash-show-failure (conj flash-show :failure))
+(def flash-dismiss-failure (conj flash-dismiss :failure))
