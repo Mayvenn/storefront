@@ -86,4 +86,4 @@
            (wrap-exceptions %)
            (wrap-internal-error %
                                 :log (comp (partial logger :error) exception-handler)
-                                :error-response "{\"error\": \"could not send\"}"))))))
+                                :error-response "{\"error\": \"something went wrong\"}"))))))
