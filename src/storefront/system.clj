@@ -6,10 +6,11 @@
             [ring.component.jetty :refer [jetty-server]]
             [storefront.handler :refer [create-handler]]))
 
-(defrecord AppHandler [logger exception-handler storeback]
+(defrecord AppHandler [logger exception-handler storeback environment]
   component/Lifecycle
   (start [c]
-    (let [params (merge {:storeback-config storeback}
+    (let [params (merge {:storeback-config storeback
+                         :environment environment}
                         (select-keys c [:logger :exception-handler]))]
       (assoc c :handler (create-handler params))))
   (stop [c] c))
@@ -26,7 +27,7 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :app-handler (map->AppHandler (select-keys config [:storeback]))
+   :app-handler (map->AppHandler (select-keys config [:storeback :environment]))
    :embedded-server (jetty-server (config :server-opts))
    :exception-handler (exception-handler (config :honeybadger-token) (config :environment))))
 
