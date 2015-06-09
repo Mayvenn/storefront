@@ -58,6 +58,7 @@
          (om/build
           (condp = (get-in data keypaths/navigation-event)
             events/navigate-home home-component
+            events/navigate-cart cart-component
             events/navigate-category category-component
             events/navigate-product product-component
             events/navigate-guarantee thirty-day-guarantee-component
@@ -68,13 +69,11 @@
             events/navigate-sign-up sign-up-component
             events/navigate-forgot-password forgot-password-component
             events/navigate-reset-password reset-password-component
-            events/navigate-stylist-commissions stylist-commissions-component
-            events/navigate-stylist-bonus-credit stylist-bonus-credit-component
-            events/navigate-stylist-referrals stylist-referrals-component
-            events/navigate-stylist-manage-account stylist-manage-account-component
-            events/navigate-manage-account manage-account-component
-            events/navigate-cart cart-component
-            events/navigate-manage-account manage-account-component
+            events/navigate-stylist-commissions (requires-sign-in data stylist-commissions-component)
+            events/navigate-stylist-bonus-credit (requires-sign-in data stylist-bonus-credit-component)
+            events/navigate-stylist-referrals (requires-sign-in data stylist-referrals-component)
+            events/navigate-stylist-manage-account (requires-sign-in data stylist-manage-account-component)
+            events/navigate-manage-account (requires-sign-in data manage-account-component)
             events/navigate-checkout-address (requires-sign-in data checkout-address-component)
             events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
             events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
