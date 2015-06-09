@@ -46,10 +46,12 @@
              {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
 
              :else {})
-      (when-let [msg (get-in data keypaths/flash-success-message)]
-        [:div.flash.success msg])
       [:div.page-wrap
        (om/build header-component data)
+       (when-let [msg (get-in data keypaths/flash-success-message)]
+         [:div.flash.success msg])
+       (when-let [msg (get-in data keypaths/flash-failure-message)]
+         [:div.flash.error msg])
        (om/build promotion-banner-component data)
 
        [:main {:role "main"}
@@ -80,6 +82,7 @@
             events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component)
             events/navigate-checkout-complete (requires-sign-in data checkout-complete-component)
             events/navigate-order (requires-sign-in data order-component)
-            events/navigate-my-orders (requires-sign-in data my-orders-component))
+            events/navigate-my-orders (requires-sign-in data my-orders-component)
+            home-component)
           data)]]]
       (om/build footer-component data)]])))

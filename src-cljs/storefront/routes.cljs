@@ -42,9 +42,9 @@
         query-params (:query (url js/location.href))
         event-ch (get-in app-state keypaths/event-ch)]
     (enqueue-message event-ch
-                     [(bidi->edn nav-event)
+                     [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
                       (-> params
-                          (assoc :query-params query-params)
+                          (merge (when query-params {:query-params query-params}))
                           keywordize-keys)])))
 
 (defn history-callback [app-state]
@@ -94,7 +94,8 @@
        "/checkout/payment" (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm" (edn->bidi events/navigate-checkout-confirmation)
        ["/orders/" :order-id "/complete"] (edn->bidi events/navigate-checkout-complete)
-       ["/orders/" :order-id] (edn->bidi events/navigate-order)}])
+       ["/orders/" :order-id] (edn->bidi events/navigate-order)}
+   true (edn->bidi events/navigate-not-found)])
 
 (defn install-routes [app-state]
   (let [history (or (get-in @app-state keypaths/history)
