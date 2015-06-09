@@ -11,6 +11,12 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring-logging.core :refer [make-logger-middleware]]))
 
+(defn storefront-site-defaults
+  []
+  (if (config/development?)
+    site-defaults
+    (assoc secure-site-defaults :proxy true)))
+
 (defn fetch-store [storeback-config store-slug]
   (when (seq store-slug)
     (->
@@ -58,7 +64,7 @@
     (GET "*" [] (slurp (io/resource "public/index.html"))))
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
-   (wrap-defaults site-defaults)))
+   (wrap-defaults (storefront-site-defaults))))
 
 (defn create-handler
   ([] (create-handler {}))
