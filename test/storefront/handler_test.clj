@@ -4,10 +4,11 @@
             [clojure.test :refer :all]
             [standalone-test-server.core :refer :all]
             [cheshire.core :refer [generate-string]]
+            [com.stuartsierra.component :as component]
             [ring.util.response :refer [response status content-type]]))
 
 (def test-overrides {:server-opts {:port 2390}
-                     :logger (constantly nil)})
+                     :logging (constantly nil)})
 
 (def storeback-no-stylist-response
   (-> (response "{}")
@@ -25,25 +26,23 @@
 
 (defmacro with-test-system
   [sys & body]
-  `(let [unstarted-system# (-> (create-system test-overrides)
-                               (assoc :auth-workflows [no-auth/workflow]))]
+  `(let [unstarted-system# (-> (create-system test-overrides))]
      (with-resource [~sys (component/start unstarted-system#)]
-      component/stop
-      ~@body)))
+       component/stop
+       ~@body)))
 
 (defn assert-request [req storeback-resp asserter]
   (let [[get-requests endpoint]
         (recording-endpoint :handler (constantly storeback-resp))]
     (with-standalone-server [ss (standalone-server endpoint)]
-      (let [handler (create-handler {:logger (constantly nil)
-                                     :exception-handler (constantly nil)
-                                     :storeback-config {:endpoint "http://localhost:4334/"}})
-            resp (handler (merge {:server-name "welcome.mayvenn.com"
-                                  :server-port 8080
-                                  :uri "/"
-                                  :request-method :get}
-                                 req))]
-        (asserter resp)))))
+      (with-test-system system
+        (let [resp ((-> system :app-handler :handler)
+                    (merge {:server-name "welcome.mayvenn.com"
+                                    :server-port 8080
+                                    :uri "/"
+                                    :request-method :get}
+                                   req))]
+          (asserter resp))))))
 
 (deftest redirects-missing-stylists-to-store
   (assert-request
