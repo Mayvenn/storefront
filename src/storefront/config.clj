@@ -2,8 +2,8 @@
   (:require [environ.core :refer [env]]
             [taoensso.timbre :as timbre]))
 
-(defn development? []
-  (= (env :environment) "development"))
+(defn development? [env]
+  (= env "development"))
 
 (defn store-location [environment]
   (case environment

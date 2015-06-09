@@ -9,11 +9,13 @@
             [ring.util.response :refer [redirect response status content-type header]]
             [noir-exception.core :refer [wrap-internal-error wrap-exceptions]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
-            [ring-logging.core :refer [make-logger-middleware]]))
+            [ring-logging.core :refer [make-logger-middleware]]
+            [hiccup.page :as page]
+            [hiccup.element :as element]))
 
 (defn storefront-site-defaults
-  []
-  (if (config/development?)
+  [env]
+  (if (config/development? env)
     site-defaults
     (assoc secure-site-defaults :proxy true)))
 
@@ -55,23 +57,32 @@
         (:store_slug store) (h req)
         :else (redirect (str "http://store." domain))))))
 
+(defn index [env]
+  (page/html5
+   [:head
+    (page/include-css "/css/all.css")]
+   [:body
+    [:div#content]
+    (element/javascript-tag (str "var environment=\"" env "\";"))
+    [:script {:src "/js/out/main.js"}]]))
+
 (defn site-routes
-  [logger storeback-config]
+  [logger storeback-config environment]
   (->
    (routes
     (GET "/healthcheck" [] "cool beans")
     (route/resources "/")
-    (GET "*" [] (slurp (io/resource "public/index.html"))))
+    (GET "*" [] (content-type (response (index environment)) "text/html")))
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
-   (wrap-defaults (storefront-site-defaults))))
+   (wrap-defaults (storefront-site-defaults environment))))
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler storeback-config]}]
-   (-> (routes (site-routes logger storeback-config)
+  ([{:keys [logger exception-handler storeback-config environment]}]
+   (-> (routes (site-routes logger storeback-config environment)
                (route/not-found "Not found"))
-       (#(if (config/development?)
+       (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
                                 :log (comp (partial logger :error) exception-handler)

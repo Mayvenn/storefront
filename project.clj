@@ -17,6 +17,7 @@
                  [ring/ring-defaults "0.1.3"]
                  [ring-jetty-component "0.2.2"]
                  [ring-logging "0.1.0"]
+                 [hiccup "1.0.5"]
 
                  [org.clojure/clojurescript "0.0-3211"]
                  [org.clojure/core.cache "0.6.3"]
