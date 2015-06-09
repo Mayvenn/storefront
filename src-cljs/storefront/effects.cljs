@@ -103,7 +103,8 @@
                (get-in app-state keypaths/sign-up-password-confirmation)))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
-  (cookie-jar/clear (get-in app-state keypaths/cookie)))
+  (cookie-jar/clear (get-in app-state keypaths/cookie))
+  (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
