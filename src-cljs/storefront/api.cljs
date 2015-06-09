@@ -5,17 +5,14 @@
             [storefront.messages :refer [enqueue-message]]
             [storefront.events :as events]
             [storefront.taxons :refer [taxon-name-from]]
-            [clojure.set :refer [rename-keys]]))
-
-(def base-url "http://localhost:3005")
-(def send-sonar-base-url "https://www.sendsonar.com/api/v1")
-(def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")
+            [clojure.set :refer [rename-keys]]
+            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]))
 
 (defn filter-nil [m]
   (into {} (filter second m)))
 
 (defn api-req [method path params success-handler]
-  (method (str base-url path)
+  (method (str api-base-url path)
           {:handler success-handler
            :error-handler #(js/console.error path (clj->js %))
            :headers {"Accepts" "application/json"}
@@ -177,7 +174,7 @@
                              (stylist-account :profile-picture)
                              (.-name (stylist-account :profile-picture)))
                     (.append "user-token" user-token))]
-    (PUT (str base-url "/stylist/profile-picture")
+    (PUT (str api-base-url "/stylist/profile-picture")
          {:handler #(enqueue-message events-ch
                                      [events/api-success-stylist-manage-account-profile-picture
                                       (select-keys % [:profile_picture_url])])
