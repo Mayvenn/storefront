@@ -26,7 +26,7 @@
   (let [[month year] (parse-expiration s)]
     (cond
       (and (empty? month) (empty? year)) s
-      (gstring/endsWith s " /") (str month)
+      (gstring/endsWith s " /") (str month) ;; occurs when the user backspaces through the slash
       (and (> month 12) (empty? year)) (str "0" (get s 0) " / " (.substring s 1))
       (and (<= 10 month 12) (empty? year)) (str month " / ")
       (and (< 1 month 10) (not (gstring/startsWith s "0"))) (str "0" month " / ")

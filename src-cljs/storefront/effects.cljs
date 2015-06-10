@@ -262,7 +262,7 @@
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
                       (select-keys order [:id :number :token]))
-                    {:navigate [events/navigate-checkout-complete {:order-id (get-in app-state keypaths/user-order-id)}]}))
+                    {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/user-order-id)}]}))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
