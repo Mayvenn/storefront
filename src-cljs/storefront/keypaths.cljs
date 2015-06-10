@@ -28,6 +28,7 @@
 
 (def store [:store])
 (def store-slug (conj store :store_slug))
+(def store-stylist-id (conj store :stylist_id))
 
 (def taxons [:taxons])
 (def products [:products])

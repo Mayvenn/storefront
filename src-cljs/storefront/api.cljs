@@ -250,17 +250,18 @@
          :format :json
          :response-format (json-response-format {:keywords? true})})))
 
-(defn create-order [events-ch user-token]
+(defn create-order [events-ch stylist-id user-token]
   (api-req
    POST
    "/orders"
-   (if user-token {:token user-token} {})
+   (merge {:stylist-id stylist-id}
+          (if user-token {:token user-token} {}))
    #(enqueue-message events-ch [events/api-success-create-order (select-keys % [:number :token])])))
 
-(defn create-order-if-needed [events-ch order-id order-token user-token]
+(defn create-order-if-needed [events-ch stylist-id order-id order-token user-token]
   (if (and order-token order-id)
     (enqueue-message events-ch [events/api-success-create-order {:number order-id :token order-token}])
-    (create-order events-ch user-token)))
+    (create-order events-ch stylist-id user-token)))
 
 (defn update-cart [events-ch user-token {order-token :token :as order} extra-message-args]
   (api-req
@@ -334,8 +335,8 @@
     (apply f broadcast-ch args)
     result-ch))
 
-(defn add-to-bag [events-ch variant-id variant-quantity order-token order-id user-token]
+(defn add-to-bag [events-ch variant-id variant-quantity stylist-id order-token order-id user-token]
   (go
-    (let [[_ {order-id :number order-token :token}] (<! (observe-events create-order-if-needed events-ch order-id order-token user-token))]
+    (let [[_ {order-id :number order-token :token}] (<! (observe-events create-order-if-needed events-ch stylist-id order-id order-token user-token))]
       (<! (observe-events add-line-item events-ch variant-id variant-quantity order-id order-token))
       (get-order events-ch order-id order-token))))
