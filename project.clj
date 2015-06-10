@@ -36,6 +36,8 @@
             [lein-figwheel "0.3.1"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
+  :hooks [leiningen.cljsbuild]
+  :main storefront.core
   :cljsbuild
   {:builds
    {:dev
@@ -46,9 +48,16 @@
                 :output-to "resources/public/js/out/main.js"
                 :pretty-print true
                 :output-dir "resources/public/js/out"
-                :externs ["externs/riskified.js"]}}}}
+                :externs ["externs/riskified.js"]}}
+    :release
+    {:compiler {:main "storefront.core"
+                :output-to "resources/public/js/out/main.js"
+                :pretty-print false
+                :externs ["externs/riskified.js"]
+                :optimizations :advanced}}}}
   :profiles
-  {:dev {:source-paths ["dev/clj"]
+  {:uberjar {:aot :all}
+   :dev {:source-paths ["dev/clj"]
          :dependencies [[pjstadig/humane-test-output "0.6.0"]
                         [standalone-test-server "0.2.1"]
                         [org.clojure/tools.namespace "0.2.9"]
