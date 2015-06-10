@@ -7,6 +7,7 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.credit-cards :as cc]
+            [storefront.orders :as orders]
             [storefront.messages :refer [enqueue-message]]
             [clojure.string :as string]))
 
@@ -94,8 +95,7 @@
 
 (defn partially-covered-by-store-credit? [app-state]
   (and (get-in app-state keypaths/checkout-use-store-credits)
-       (not= (js/parseFloat (get-in app-state (conj keypaths/order :order_total_after_store_credit)))
-             0)))
+       (orders/partially-covered-by-store-credit? (get-in app-state keypaths/order))))
 
 (defn checkout-payment-component [data owner]
   (om/component

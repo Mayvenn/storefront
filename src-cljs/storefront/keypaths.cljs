@@ -33,6 +33,7 @@
 (def taxons [:taxons])
 (def products [:products])
 (def states [:states])
+(def payment-methods [:payment-methods])
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
 
