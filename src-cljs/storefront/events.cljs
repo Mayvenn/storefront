@@ -20,6 +20,7 @@
 (def navigate-account-addresses (conj navigate :account-addresses))
 (def navigate-cart (conj navigate :cart))
 (def navigate-order (conj navigate :order))
+(def navigate-order-complete (conj navigate :order-complete))
 (def navigate-my-orders (conj navigate :my-orders))
 (def navigate-not-found (conj navigate :not-found))
 
@@ -34,7 +35,6 @@
 (def navigate-checkout-delivery (conj navigate-checkout :delivery))
 (def navigate-checkout-payment (conj navigate-checkout :payment))
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
-(def navigate-checkout-complete (conj navigate-checkout :complete))
 
 (def control [:control])
 (def control-change-state (conj control :change-state))
