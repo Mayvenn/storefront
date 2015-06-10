@@ -233,7 +233,10 @@
         (assoc-in keypaths/order {})
         (assoc-in keypaths/user-order-id nil)
         (assoc-in keypaths/user-order-token nil))
-    (assoc-in app-state keypaths/order order)))
+    (-> app-state
+        (assoc-in keypaths/order order)
+        ;; TODO: refactor, we need a better pattern for computing derived state for UI to display prepopulated values
+        (assoc-in keypaths/checkout-use-store-credits (pos? (:total_applicable_store_credit order))))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))

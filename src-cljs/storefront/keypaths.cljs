@@ -101,6 +101,7 @@
 (def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 (def checkout-selected-shipping-method-id (conj checkout :selected-shipping-method-id))
+(def checkout-use-store-credits (conj checkout :use-store-credits))
 
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))
