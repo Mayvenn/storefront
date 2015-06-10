@@ -38,6 +38,7 @@
              :css-dirs ["resources/public/css"]}
   :hooks [leiningen.cljsbuild]
   :main storefront.core
+  :jvm-opts ["-Xmx1g"]
   :cljsbuild
   {:builds
    {:dev
