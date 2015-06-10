@@ -1,17 +1,12 @@
-(ns storefront.riskified)
+(ns storefront.riskified
+  (:require [storefront.script-tags :refer [insert-tag-with-src remove-tag]]))
 
 (def store-domain "mayvenn.com")
 
 (defn insert-beacon [session-id]
-  (let [src (str "//beacon.riskified.com?shop=" store-domain "&sid=" session-id)
-        script-tag (.createElement js/document "script")
-        first-script-tag (aget (.getElementsByTagName js/document "script") 0)]
-    (set! (.-type script-tag) "text/javascript")
-    (set! (.-async script-tag) "true")
-    (set! (.-src script-tag) src)
-    (.add (.-classList script-tag) "riskified-beacon")
-    (.insertBefore (.-parentNode first-script-tag) script-tag first-script-tag)))
+  (insert-tag-with-src
+   (str "//beacon.riskified.com?shop=" store-domain "&sid=" session-id)
+   "riskified-beacon"))
 
 (defn remove-beacon []
-  (when-let [beacon-tag (aget (.getElementsByClassName js/document "riskified-beacon") 0)]
-    (.remove beacon-tag)))
+  (remove-tag "riskified-beacon"))
