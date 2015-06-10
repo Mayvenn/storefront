@@ -65,7 +65,7 @@
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (let [order (get-in app-state keypaths/order)]
-    (when-not order
+    (when-not (get-in app-state keypaths/user-order-id)
       (routes/enqueue-redirect app-state events/navigate-cart))))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
