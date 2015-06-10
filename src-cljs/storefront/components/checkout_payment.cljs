@@ -48,8 +48,8 @@
      keypaths/checkout-use-store-credits
      true
      (str "Use store credit: "
-            (as-money (get-in data keypaths/user-total-available-store-credit))
-            " available")
+          (as-money (get-in data keypaths/user-total-available-store-credit))
+          " available")
      "(Coupons will be automatically removed for Stylists)")
 
     (display-radio
