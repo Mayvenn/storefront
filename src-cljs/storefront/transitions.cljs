@@ -214,6 +214,7 @@
         (sign-in-user args)
         (merge {:billing-address billing-address
                 :shipping-address shipping-address})
+        ;; TODO: this seems like a code smell that needs some refactoring
         (update-in keypaths/checkout-billing-address merge billing-address)
         (update-in keypaths/checkout-shipping-address merge shipping-address)
         (assoc-in keypaths/checkout-credit-card-name fullname))))
