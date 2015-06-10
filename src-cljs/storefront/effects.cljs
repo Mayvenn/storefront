@@ -133,6 +133,7 @@
     (api/add-to-bag (get-in app-state keypaths/event-ch)
                     (variant :id)
                     (get-in app-state keypaths/browse-variant-quantity)
+                    (get-in app-state keypaths/store-stylist-id)
                     (get-in app-state keypaths/user-order-token)
                     (get-in app-state keypaths/user-order-id)
                     (get-in app-state keypaths/user-token))))
