@@ -28,7 +28,8 @@
                  :honeybadger-token (env :honeybadger-token)
                  :spree {:token (env :spree-token)
                          :endpoint (str (store-location (env :environment)) "/api")}
-                 :storeback {:endpoint (env :storeback-endpoint)}})
+                 :storeback {:endpoint (env :storeback-endpoint)}
+                 :prerender-token (env :prerender-token)})
 
 (defn deep-merge
   [& maps]

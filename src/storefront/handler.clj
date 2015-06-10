@@ -10,6 +10,7 @@
             [noir-exception.core :refer [wrap-internal-error wrap-exceptions]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring-logging.core :refer [make-logger-middleware]]
+            [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
             [hiccup.element :as element]))
 
@@ -60,27 +61,31 @@
 (defn index [storeback-config env]
   (page/html5
    [:head
+    [:meta {:name "fragment" :content "!"}]
     (page/include-css "/css/all.css")]
    [:body
     [:div#content]
+    [:script {:src "/js/phantomjs.js"}]
     (element/javascript-tag (str "var environment=\"" env "\";"))
     [:script {:src "/js/out/main.js"}]]))
 
 (defn site-routes
-  [logger storeback-config environment]
+  [logger storeback-config environment prerender-token]
   (->
    (routes
     (GET "/healthcheck" [] "cool beans")
     (route/resources "/")
     (GET "*" [] (content-type (response (index storeback-config environment)) "text/html")))
+   (wrap-prerender (config/development? environment)
+                   prerender-token)
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))))
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler storeback-config environment]}]
-   (-> (routes (site-routes logger storeback-config environment)
+  ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
+   (-> (routes (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)
            (wrap-exceptions %)
