@@ -9,16 +9,19 @@
             [storefront.credit-cards :refer [parse-expiration]]
             [storefront.riskified :as riskified]
             [storefront.checkout :as checkout]
-            [storefront.messages :refer [enqueue-message]]))
+            [storefront.messages :refer [enqueue-message]]
+            [storefront.analytics :as analytics]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [_ event args app-state]
-  (riskified/insert-beacon (get-in app-state keypaths/session-id)))
+  (riskified/insert-beacon (get-in app-state keypaths/session-id))
+  (analytics/insert-tracking))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
-  (riskified/remove-beacon))
+  (riskified/remove-beacon)
+  (analytics/remove-tracking))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
   (api/get-taxons (get-in app-state keypaths/event-ch)
@@ -49,9 +52,8 @@
              (= [event args] (get-in app-state keypaths/flash-failure-nav)))
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-dismiss-failure]))
-
-  (when (.hasOwnProperty js/window "RISKX")
-    (.go js/RISKX (clj->js (routes/path-for app-state event args)))))
+  (riskified/track-page (routes/path-for app-state event args))
+  (analytics/track-page (routes/path-for app-state event args)))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/event-ch)

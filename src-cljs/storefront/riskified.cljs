@@ -10,3 +10,7 @@
 
 (defn remove-beacon []
   (remove-tag "riskified-beacon"))
+
+(defn track-page [path]
+    (when (.hasOwnProperty js/window "RISKX")
+    (.go js/RISKX (clj->js path))))
