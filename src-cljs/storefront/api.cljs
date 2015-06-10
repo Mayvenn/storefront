@@ -86,6 +86,15 @@
    {}
    #(enqueue-message events-ch [events/api-success-states (select-keys % [:states])])))
 
+(defn get-payment-methods [events-ch cache]
+  (cache-req
+   cache
+   events-ch
+   GET
+   "/payment_methods"
+   {}
+   #(enqueue-message events-ch [events/api-success-payment-methods (select-keys % [:payment_methods])])))
+
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
 
@@ -286,6 +295,7 @@
                            (update-in [:ship_address] select-address-keys)
                            (rename-keys {:bill_address :bill_address_attributes
                                          :ship_address :ship_address_attributes})))
+    :use_store_credits (:use-store-credits order)
     :state (:state order)
     :order_token (:token order)}
    #(enqueue-message events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])))

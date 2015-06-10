@@ -2,7 +2,8 @@
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.taxons :refer [taxon-path-for]]))
+            [storefront.taxons :refer [taxon-path-for]]
+            [storefront.orders :as orders]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -40,6 +41,10 @@
   (-> app-state
       (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
       (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
+
+(defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
+  (let [order (get-in app-state keypaths/order)]
+    (assoc-in app-state keypaths/checkout-use-store-credits (orders/using-store-credit? order))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
@@ -107,6 +112,9 @@
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
+
+(defmethod transition-state events/api-success-payment-methods [_ event {:keys [payment_methods]} app-state]
+  (assoc-in app-state keypaths/payment-methods payment_methods))
 
 (defmethod transition-state events/api-success-stylist-manage-account
   [_ event response app-state]
@@ -234,9 +242,7 @@
         (assoc-in keypaths/user-order-id nil)
         (assoc-in keypaths/user-order-token nil))
     (-> app-state
-        (assoc-in keypaths/order order)
-        ;; TODO: refactor, we need a better pattern for computing derived state for UI to display prepopulated values
-        (assoc-in keypaths/checkout-use-store-credits (pos? (:total_applicable_store_credit order))))))
+        (assoc-in keypaths/order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))

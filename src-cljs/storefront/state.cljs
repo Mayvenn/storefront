@@ -27,6 +27,7 @@
      :taxons []
      :products {}
      :states []
+     :payment-methods []
      :sms-number nil
      :stylist {:sales-rep-email nil
                :commissions {:rate nil
