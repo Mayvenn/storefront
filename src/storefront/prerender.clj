@@ -6,6 +6,7 @@
 (def crawler-user-agents
   #{"baiduspider"
     "facebookexternalhit"
+    "facebot"
     "twitterbot"
     "rogerbot"
     "linkedinbot"
