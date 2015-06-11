@@ -61,12 +61,13 @@
     ".torrent"})
 
 (defn show-prerendered? [req]
-  (and (= :get (:request-method req))
-       (not (ignored-extensions (-> req :uri (string/split #"\.") last)))
-       (or (contains? (:params req) :_escaped_fragment_)
-           ;; may need to do an include instead of exact match here, not sure
-           (crawler-user-agents (string/lower-case (get-in req [:headers "user-agent"])))
-           (get-in req [:headers "x-bufferbot"]))))
+  (let [agent (get-in req [:headers "user-agent"])]
+    (and (= :get (:request-method req))
+         agent
+         (not (ignored-extensions (-> req :uri (string/split #"\.") last)))
+         (or (contains? (:params req) :_escaped_fragment_)
+             (some #(.contains (string/lower-case agent) %) crawler-user-agents)
+             (get-in req [:headers "x-bufferbot"])))))
 
 (defn prerender-service-url [development?]
   (if development?
