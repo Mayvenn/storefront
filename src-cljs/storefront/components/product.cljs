@@ -77,8 +77,9 @@
              {:class (if taxon-path (taxon-class-name taxon) "unknown")}]
 
             (breadcrumbs
-             ["Categories" (:href (utils/route-to data events/navigate-category {:taxon-path taxon-path}))]
-             [(:name taxon) (:href (utils/route-to data events/navigate-category {:taxon-path taxon-path}))])])
+             data
+             ["Categories" [events/navigate-category {:taxon-path taxon-path}]]
+             [(:name taxon) [events/navigate-category {:taxon-path taxon-path}]])])
 
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
