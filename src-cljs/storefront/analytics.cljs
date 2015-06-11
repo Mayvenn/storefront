@@ -10,10 +10,18 @@
 
 ga('create', 'UA-36226630-1', 'auto');
 ga('require', 'displayfeatures');"
-   "analytics"))
+   "analytics")
+  (insert-tag-with-text
+   "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TLS2JL');"
+   "tag-manager"))
 
 (defn remove-tracking []
   (remove-tag "analytics")
+  (remove-tag "tag-manager")
   ;; ga inserts more tags (as expected); remove them to help prevent so many additional ones in development
   (when-let [additional-tracking-tag (aget (.querySelector js/document "[src=\"//www.google-analytics.com/analytics.js\"]") 0)]
     (.remove additional-tracking-tag)))
