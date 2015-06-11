@@ -1,5 +1,5 @@
 (ns storefront.analytics
-  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tag]]))
+  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tag remove-tag-by-src]]))
 
 (defn insert-tracking []
   (insert-tag-with-text
@@ -23,8 +23,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag "analytics")
   (remove-tag "tag-manager")
   ;; ga inserts more tags (as expected); remove them to help prevent so many additional ones in development
-  (when-let [additional-tracking-tag (aget (.querySelector js/document "[src=\"//www.google-analytics.com/analytics.js\"]") 0)]
-    (.remove additional-tracking-tag)))
+  (remove-tag-by-src "//www.google-analytics.com/analytics.js")
+  (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
 (defn track-page [path]
   (js/ga "set" "page" (clj->js path))

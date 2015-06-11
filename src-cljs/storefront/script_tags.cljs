@@ -22,3 +22,7 @@
 (defn remove-tag [class]
   (when-let [beacon-tag (aget (.getElementsByClassName js/document class) 0)]
     (.remove beacon-tag)))
+
+(defn remove-tag-by-src [src]
+  (when-let [tag (.querySelector js/document (str "[src=\"" src "\"]"))]
+    (.remove tag)))
