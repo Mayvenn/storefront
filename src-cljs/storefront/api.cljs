@@ -98,21 +98,23 @@
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
 
-(defn sign-in [events-ch email password]
+(defn sign-in [events-ch email password stylist-id]
   (api-req
    POST
    "/login"
    {:email email
-    :password password}
+    :password password
+    :stylist-id stylist-id}
    #(enqueue-message events-ch [events/api-success-sign-in (select-sign-in-keys %)])))
 
-(defn sign-up [events-ch email password password-confirmation]
+(defn sign-up [events-ch email password password-confirmation stylist-id]
   (api-req
    POST
    "/signup"
    {:email email
     :password password
-    :password_confirmation password-confirmation}
+    :password_confirmation password-confirmation
+    :stylist-id stylist-id}
    #(enqueue-message events-ch [events/api-success-sign-up (select-sign-in-keys %)])))
 
 (defn forgot-password [events-ch email]
