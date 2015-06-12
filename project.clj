@@ -39,6 +39,9 @@
   :hooks [leiningen.cljsbuild]
   :main storefront.core
   :jvm-opts ["-Xmx1g"]
+  :clean-targets ^{:protect false} [:target-path
+                                    "resources/public/js/out/"
+                                    "resources/public/css/"]
   :cljsbuild
   {:builds
    {:dev
