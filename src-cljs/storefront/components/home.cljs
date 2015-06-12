@@ -31,7 +31,7 @@
          [:a.full-link (utils/route-to data events/navigate-category
                                        {:taxon-path path})])]
       [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
-     [:div.squashed-hair-categories
+     [:div.squashed-hair-categories.with-flex-box
       (map (partial category data)
            (get-in data keypaths/taxons))
       [:div {:style {:clear "both"}}]]
