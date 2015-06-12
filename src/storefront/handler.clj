@@ -73,7 +73,6 @@
   [logger storeback-config environment prerender-token]
   (->
    (routes
-    (GET "/healthcheck" [] "cool beans")
     (route/resources "/")
     (GET "*" [] (content-type (response (index storeback-config environment)) "text/html")))
    (wrap-prerender (config/development? environment)
@@ -85,7 +84,8 @@
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
-   (-> (routes (site-routes logger storeback-config environment prerender-token)
+   (-> (routes (GET "/healthcheck" [] "cool beans")
+               (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)
            (wrap-exceptions %)
