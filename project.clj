@@ -59,6 +59,7 @@
                 :pretty-print false
                 :externs ["externs/riskified.js"]
                 :optimizations :advanced}}}}
+  :auto-clean false
   :profiles
   {:uberjar {:aot :all}
    :dev {:source-paths ["dev/clj"]
