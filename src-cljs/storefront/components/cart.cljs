@@ -22,23 +22,24 @@
        [:div.cart-items
         [:div.cart-line-items
          (display-line-items data cart true)]
-        [:div.coupon-cart
-         [:h4 "Have a Coupon Code?"]
-         [:div.coupon-container
-          [:label "Enter a coupon code:"]
-          [:input.coupon-code-input
-           (merge
-            (utils/change-text data keypaths/cart-coupon-code)
-            {:type "text"
-             :name "coupon-code"})]]
-         [:input.primary.button#update-button
-          {:type "submit" :name "update" :value "Update"
-           :on-click (utils/enqueue-event data events/control-cart-update)}]]
-        [:div.order-summary-cart
-         (display-order-summary cart)
-         [:input.button.checkout.primary#checkout-link
-          {:type "submit" :value "Checkout" :name "checkout"
-           :on-click (utils/enqueue-event data events/control-cart-update {:navigate-to-checkout? true})}]]]]]
+        [:div.with-flex-box
+         [:div.coupon-cart
+          [:h4 "Have a Coupon Code?"]
+          [:div.coupon-container
+           [:label "Enter a coupon code:"]
+           [:input.coupon-code-input
+            (merge
+             (utils/change-text data keypaths/cart-coupon-code)
+             {:type "text"
+              :name "coupon-code"})]]
+          [:input.primary.button#update-button
+           {:type "submit" :name "update" :value "Update"
+            :on-click (utils/enqueue-event data events/control-cart-update)}]]
+         [:div.order-summary-cart
+          (display-order-summary cart)
+          [:input.button.checkout.primary#checkout-link
+           {:type "submit" :value "Checkout" :name "checkout"
+            :on-click (utils/enqueue-event data events/control-cart-update {:navigate-to-checkout? true})}]]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
       "Continue shopping"]]))

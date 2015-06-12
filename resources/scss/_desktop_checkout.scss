@@ -47,11 +47,6 @@ div.line-item-detail {
   }
 }
 
-.cart-items {
-  @include display(flex);
-  @include flex-wrap(wrap);
-}
-
 .cart-line-items {
   width: 100%;
 

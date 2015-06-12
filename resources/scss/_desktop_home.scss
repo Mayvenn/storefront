@@ -21,46 +21,46 @@
     border: solid #bd9424 1px;
     border-left: none;
     @include stretch-bg;
-  
+
     &:last-child {
       border-right: 0;
     }
   }
-  
+
   .guarantee {
     background-image: url('/images/desktop_assets/guarantee.png');
-  
+
     &:hover {
       background-image: url('/images/desktop_assets/guarantee-hover.png');
     }
   }
-  
+
   .free-shipping-action {
     background-image: url('/images/desktop_assets/shipping.png');
-  
+
     &:hover {
       background-image: url('/images/desktop_assets/shipping-hover.png');
     }
   }
-  
+
   .shop-now {
     border-right: none;
     background-image: url('/images/desktop_assets/shop-now.png');
-  
+
     &:hover {
       background-image: url('/images/desktop_assets/shop-now-hover.png')
     }
   }
-  
+
   .keep-shopping {
     border-right: none;
     background-image: url('/images/desktop_assets/keep-shopping.png');
-  
+
     &:hover {
       background-image: url('/images/desktop_assets/keep-shopping-hover.png')
     }
   }
-  
+
   .bundle-deal-image {
     background-image: url('/images/desktop_assets/bundle-5percent.png');
     margin-top: -10px;
@@ -147,9 +147,6 @@
 
 div.squashed-hair-categories {
   float: left;
-
-  @include display(flex);
-  @include flex-wrap(wrap);
 
   width: 171px * 3;
   margin-top: 30px;

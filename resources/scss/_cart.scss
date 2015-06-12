@@ -98,6 +98,10 @@ a.button.continue {
   font-size: 0.6rem;
 }
 
+.coupon-cart, .order-summary-cart {
+  @include flex-grow-better(1);
+}
+
 .coupon-container {
   position: relative;
   border-top: solid $medium_blue_grey 1px;
