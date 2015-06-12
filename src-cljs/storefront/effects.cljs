@@ -119,13 +119,15 @@
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/event-ch)
                (get-in app-state keypaths/sign-in-email)
-               (get-in app-state keypaths/sign-in-password)))
+               (get-in app-state keypaths/sign-in-password)
+               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
   (api/sign-up (get-in app-state keypaths/event-ch)
                (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
-               (get-in app-state keypaths/sign-up-password-confirmation)))
+               (get-in app-state keypaths/sign-up-password-confirmation)
+               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
