@@ -28,6 +28,7 @@
                                   first
                                   :product_url)]
         [:div.taxon-product-image-container
+         {:style {:background-image (str "url(" first-image ")")}}
          (when-not (= collection-name "premier")
            [:div.corner-ribbon {:class collection-name}
             collection-name])
