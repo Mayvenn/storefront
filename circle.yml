@@ -1,0 +1,17 @@
+dependencies:
+  pre:
+    - if [[ ! -e ~/rainman ]]; then git clone git@github.com:Mayvenn/rainman.git ~/rainman; fi
+    - cd ~/rainman && git pull
+    - cd ~/rainman && (bundle check --path ~/rainman-gems || bundle --path ~/rainman-gems --retry 3 --jobs 4)
+    - cd ~/rainman && git submodule update --init
+  cache_directories:
+    - ~/rainman-gems
+    - ~/rainman
+deployment:
+  acceptance:
+    branch: master
+    owner: Mayvenn
+    commands:
+      - git config --global user.email "justin+mayvenn-bot@mayvenn.com"
+      - git config --global user.name "Mayvenn-Bot"
+      - cd ~/rainman && bundle exec ./rain storefront acceptance
