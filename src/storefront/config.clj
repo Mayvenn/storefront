@@ -5,12 +5,6 @@
 (defn development? [env]
   (= env "development"))
 
-(defn store-location [environment]
-  (case environment
-    "production" "https://store.mayvenn.com"
-    "acceptance" "https://store.diva-acceptance.com"
-    "http://store.mayvenn-dev.com:3000"))
-
 (defn storeback-location [environment]
   (case environment
     "production" "https://api.mayvenn.com"
@@ -26,8 +20,6 @@
 
 (def env-config {:environment (env :environment)
                  :honeybadger-token (env :honeybadger-token)
-                 :spree {:token (env :spree-token)
-                         :endpoint (str (store-location (env :environment)) "/api")}
                  :storeback {:endpoint (storeback-location (env :environment))}
                  :prerender-token (env :prerender-token)})
 
