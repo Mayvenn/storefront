@@ -1,5 +1,6 @@
 (ns storefront.config
   (:require [environ.core :refer [env]]
+            [storefront.server :as server]
             [taoensso.timbre :as timbre]))
 
 (defn development? [env]
@@ -11,7 +12,8 @@
     "acceptance" "https://api.diva-acceptance.com"
     "http://api.mayvenn-dev.com:3005"))
 
-(def default-config {:server-opts {:port 3006}
+(def default-config {:server-opts {:port 3006
+                                   :configurator server/configurator}
                      :logging
                      (merge (timbre/get-default-config)
                             {:appenders
