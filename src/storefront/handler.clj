@@ -58,17 +58,21 @@
         (:store_slug store) (h req)
         :else (redirect (str "http://store." domain))))))
 
-(defn index [env prerendered-req?]
+(defn index [env needs-phantom?]
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
     (page/include-css "/css/all.css")]
    [:body
     [:div#content]
-    (when prerendered-req?
+    (when needs-phantom?
       [:script {:src "/js/phantomjs.js"}])
     (element/javascript-tag (str "var environment=\"" env "\";"))
     [:script {:src "/js/out/main.js"}]]))
+
+(defn from-prerender? [req]
+  (.contains (or (get-in req [:headers "user-agent"]) "")
+             "Prerender"))
 
 (defn site-routes
   [logger storeback-config environment prerender-token]
@@ -76,9 +80,7 @@
    (routes
     (route/resources "/")
     (GET "*" req (->
-                  (index environment
-                         (.contains (or (get-in req [:headers "user-agent"]) "")
-                                    "Prerender"))
+                  (index environment (from-prerender? req))
                   response
                   (content-type "text/html"))))
    (wrap-prerender (config/development? environment)
