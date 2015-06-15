@@ -1,6 +1,5 @@
 (ns storefront.config
   (:require [environ.core :refer [env]]
-            [storefront.server :as server]
             [taoensso.timbre :as timbre]))
 
 (defn development? [env]
@@ -12,8 +11,7 @@
     
     
 
-(def default-config {:server-opts {:port 3006
-                                   :configurator server/configurator}
+(def default-config {:server-opts {:port 3006}
                      :logging
                      (merge (timbre/get-default-config)
                             {:appenders
