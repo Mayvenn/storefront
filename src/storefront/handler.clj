@@ -12,7 +12,8 @@
             [ring-logging.core :refer [make-logger-middleware]]
             [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
-            [hiccup.element :as element]))
+            [hiccup.element :as element]
+            [storefront.assets :refer [asset-path]]))
 
 (defn storefront-site-defaults
   [env]
@@ -58,21 +59,17 @@
         (:store_slug store) (h req)
         :else (redirect (str "http://store." domain))))))
 
-(defn index [env needs-phantom?]
+(defn index [storeback-config env]
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
-    (page/include-css "/css/all.css")]
+    (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content]
-    (when needs-phantom?
+    (when (config/development? env)
       [:script {:src "/js/phantomjs.js"}])
     (element/javascript-tag (str "var environment=\"" env "\";"))
-    [:script {:src "/js/out/main.js"}]]))
-
-(defn from-prerender? [req]
-  (.contains (or (get-in req [:headers "user-agent"]) "")
-             "Prerender"))
+    [:script {:src (asset-path "/js/out/main.js")}]]))
 
 (defn site-routes
   [logger storeback-config environment prerender-token]
@@ -80,7 +77,7 @@
    (routes
     (route/resources "/")
     (GET "*" req (->
-                  (index environment (from-prerender? req))
+                  (index storeback-config environment)
                   response
                   (content-type "text/html"))))
    (wrap-prerender (config/development? environment)

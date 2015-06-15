@@ -15,4 +15,6 @@ pom.xml.asc
 *.log
 resources/public/js/out
 resources/public/css
+resources/public/cdn
+resources/rev-manifest.json
 node_modules/

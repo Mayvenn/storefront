@@ -18,6 +18,7 @@
                  [ring-jetty-component "0.2.2"]
                  [ring-logging "0.1.0"]
                  [hiccup "1.0.5"]
+                 [cheshire.core "5.5.0"]
 
                  [org.clojure/clojurescript "0.0-3211"]
                  [org.clojure/core.cache "0.6.3"]
@@ -41,7 +42,8 @@
   :jvm-opts ["-Xmx1g"]
   :clean-targets ^{:protect false} [:target-path
                                     "resources/public/js/out/"
-                                    "resources/public/css/"]
+                                    "resources/public/css/"
+                                    "resources/public/cdn"]
   :cljsbuild
   {:builds
    {:dev

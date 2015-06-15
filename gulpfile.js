@@ -3,6 +3,10 @@ var sass = require('gulp-sass');
 var minifyCSS = require('gulp-minify-css');
 var gulpMerge = require('gulp-merge');
 var replace = require('gulp-replace');
+var RevAll = require('gulp-rev-all');
+var path = require('path');
+var argv = require('yargs').argv;
+var rimraf = require('gulp-rimraf');
 
 gulp.task('sass', function () {
   gulp.src('./resources/scss/*.scss')
@@ -40,4 +44,24 @@ gulp.task('copy-assets', function () {
     .pipe(replace("spree\/frontend\/mayvenn\/", ""))
     .pipe(replace("spree\/frontend\/", ""))
     .pipe(gulp.dest('./resources/scss'))
+});
+
+gulp.task('cdn', function () {
+  if (!argv.host) {
+    throw "missing --host";
+  }
+
+  var revAll = new RevAll({
+    prefix: "//" + argv.host + "/cdn/"
+  });
+
+  gulp.src(['./resources/public/cdn', './resources/rev-manifest.json'],
+           { read: false })
+    .pipe(rimraf());
+
+  gulp.src('./resources/public/{js,css,images,fonts}/**')
+    .pipe(revAll.revision())
+    .pipe(gulp.dest('./resources/public/cdn'))
+    .pipe(revAll.manifestFile())
+    .pipe(gulp.dest('./resources'));
 });
