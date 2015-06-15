@@ -261,8 +261,8 @@
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
   (api/update-order (get-in app-state keypaths/event-ch)
                     (get-in app-state keypaths/user-token)
-                    (let [order (get-in app-state keypaths/order)]
-                      (select-keys order [:id :number :token]))
+                    (merge (select-keys (get-in app-state keypaths/order) [:id :number :token])
+                           {:session_id (get-in app-state keypaths/session-id)})
                     {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/user-order-id)}]}))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
