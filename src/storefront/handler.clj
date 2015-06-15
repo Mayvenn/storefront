@@ -86,10 +86,10 @@
                   (index environment)
                   response
                   (content-type "text/html"))))
+   (wrap-cors)
    (wrap-prerender (config/development? environment)
                    prerender-token)
    (wrap-redirect storeback-config)
-   (wrap-cors)
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))))
 
