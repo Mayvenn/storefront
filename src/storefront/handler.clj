@@ -74,8 +74,8 @@
 (defn wrap-cors [f]
   (fn [req]
     (-> (f req)
-        (header "access-control-allow-origin" "*")
-        (header "access-control-allow-methods" "GET"))))
+        (header "Access-Control-Allow-Origin" "*")
+        (header "Access-Control-Allow-Methods" "GET"))))
 
 (defn site-routes
   [logger storeback-config environment prerender-token]
