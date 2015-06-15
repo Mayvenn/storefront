@@ -9,7 +9,7 @@
 
 (defn asset-path [resource-path]
   (let [cdn-host (env :cdn-host)
-        mapped-asset (-> resource-path (subs 1) asset-map)]
+        mapped-asset (when asset-map (-> resource-path (subs 1) asset-map))]
     (if (and cdn-host mapped-asset)
       (str "//" cdn-host "/cdn/" mapped-asset)
       resource-path)))
