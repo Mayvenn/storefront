@@ -5,6 +5,7 @@ var RevAll = require('gulp-rev-all');
 var path = require('path');
 var argv = require('yargs').argv;
 var rimraf = require('gulp-rimraf');
+var gzip = require('gulp-gzip');
 
 gulp.task('sass', function () {
   gulp.src('./resources/scss/*.scss')
@@ -35,6 +36,7 @@ gulp.task('cdn', function () {
     .pipe(rimraf());
 
   gulp.src('./resources/public/{js,css,images,fonts}/**')
+    .pipe(gzip({ append: false }))
     .pipe(revAll.revision())
     .pipe(gulp.dest('./resources/public/cdn'))
     .pipe(revAll.manifestFile())
