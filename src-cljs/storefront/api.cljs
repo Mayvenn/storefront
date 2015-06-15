@@ -57,20 +57,16 @@
    {}
    #(enqueue-message events-ch [events/api-success-promotions %])))
 
-(defn get-products [events-ch cache taxon-path]
-  (cache-req
-   cache
-   events-ch
+(defn get-products [events-ch taxon-path]
+  (api-req
    GET
    "/products"
    {:taxon_name (taxon-name-from taxon-path)}
    #(enqueue-message events-ch [events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path})])))
 
-(defn get-product [events-ch cache product-path]
-  (cache-req
-   cache
-   events-ch
+(defn get-product [events-ch product-path]
+  (api-req
    GET
    (str "/products")
    {:slug product-path}
