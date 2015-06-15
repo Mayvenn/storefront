@@ -81,17 +81,16 @@
   [logger storeback-config environment prerender-token]
   (->
    (routes
-    (route/resources "/")
     (GET "*" req (->
                   (index environment)
                   response
                   (content-type "text/html"))))
-   (wrap-cors)
    (wrap-prerender (config/development? environment)
                    prerender-token)
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
-   (wrap-defaults (storefront-site-defaults environment))))
+   (wrap-defaults (storefront-site-defaults environment))
+   (wrap-cors)))
 
 (defn create-handler
   ([] (create-handler {}))
