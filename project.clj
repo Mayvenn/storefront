@@ -37,7 +37,6 @@
             [lein-figwheel "0.3.1"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
-  :hooks [leiningen.cljsbuild]
   :main storefront.core
   :jvm-opts ["-Xmx1g"]
   :clean-targets ^{:protect false} [:target-path
