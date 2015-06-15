@@ -290,7 +290,8 @@
                                          :bill_address
                                          :ship_address
                                          :shipments_attributes
-                                         :payments_attributes])
+                                         :payments_attributes
+                                         :session_id])
                            (update-in [:bill_address] select-address-keys)
                            (update-in [:ship_address] select-address-keys)
                            (rename-keys {:bill_address :bill_address_attributes
