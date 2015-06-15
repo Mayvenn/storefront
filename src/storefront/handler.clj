@@ -71,6 +71,12 @@
     (element/javascript-tag (str "var environment=\"" env "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
+(defn wrap-cors [f]
+  (fn [req]
+    (-> (f req)
+        (header "access-control-allow-origin" "*")
+        (header "access-control-allow-methods" "GET"))))
+
 (defn site-routes
   [logger storeback-config environment prerender-token]
   (->
@@ -83,6 +89,7 @@
    (wrap-prerender (config/development? environment)
                    prerender-token)
    (wrap-redirect storeback-config)
+   (wrap-cors)
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))))
 
