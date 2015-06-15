@@ -36,8 +36,8 @@ gulp.task('cdn', function () {
     .pipe(rimraf());
 
   gulp.src('./resources/public/{js,css,images,fonts}/**')
-    .pipe(gzip({ append: false }))
     .pipe(revAll.revision())
+    .pipe(gzip({ append: false }))
     .pipe(gulp.dest('./resources/public/cdn'))
     .pipe(revAll.manifestFile())
     .pipe(gulp.dest('./resources'));
