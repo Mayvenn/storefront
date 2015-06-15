@@ -57,8 +57,10 @@
    {}
    #(enqueue-message events-ch [events/api-success-promotions %])))
 
-(defn get-products [events-ch taxon-path]
-  (api-req
+(defn get-products [events-ch cache taxon-path]
+  (cache-req
+   cache
+   events-ch
    GET
    "/products"
    {:taxon_name (taxon-name-from taxon-path)}

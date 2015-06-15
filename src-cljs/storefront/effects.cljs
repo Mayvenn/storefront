@@ -57,6 +57,7 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/event-ch)
+                    (get-in app-state keypaths/api-cache)
                     (taxon-name-from taxon-path)))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
