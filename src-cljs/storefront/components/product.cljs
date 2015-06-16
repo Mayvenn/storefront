@@ -44,19 +44,20 @@
 
 (defn display-variant [app-state variant checked?]
   [:li.keypad-item
-   [:input#variant_id.keypad-input {:type "radio"
-                                    :checked checked?}
-    [:label.keypad-label {:id (str "variant_id_" (:id variant))
-                          :on-click (utils/enqueue-event app-state
+   [:input.keypad-input {:type "radio"
+                         :id (str "variant_id_" (:id variant))
+                         :checked checked?
+                         :on-change (utils/enqueue-event app-state
                                                          events/control-browse-variant-select
-                                                         {:variant variant})}
-     (if (variant :can_supply?)
-       [:div.variant-description
-        (string/join "," (map :presentation (variant :option_values)))]
-       [:div.variant-description.out-of-stock
-        (string/join "," (map :presentation (variant :option_values)))
-        [:br]
-        "sold out"])]]])
+                                                                    {:variant variant})}]
+   [:label.keypad-label {:for (str "variant_id_" (:id variant))}
+    (if (variant :can_supply?)
+      [:div.variant-description
+       (string/join "," (map :presentation (variant :option_values)))]
+      [:div.variant-description.out-of-stock
+       (string/join "," (map :presentation (variant :option_values)))
+       [:br]
+       "sold out"])]])
 
 (defn product-component [data owner]
   (om/component
