@@ -12,6 +12,9 @@
             [storefront.messages :refer [enqueue-message]]
             [storefront.analytics :as analytics]))
 
+(defn scroll-to-top []
+  (set! (.. js/document -body -scrollTop) 0))
+
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
@@ -41,7 +44,7 @@
     (api/get-order (get-in app-state keypaths/event-ch)
                    order-number
                    (get-in app-state keypaths/order-token)))
-  (set! (.. js/document -body -scrollTop) 0)
+  (scroll-to-top)
 
   (when-not (or
              (empty? (get-in app-state keypaths/flash-success-nav))
@@ -337,8 +340,13 @@
                    [events/flash-show-failure
                     {:message "Uh oh, an error occurred. Reload the page and try again."}]))
 
+(defmethod perform-effects events/flash-show [_ event args app-state]
+  (js/console.log "FLASH")
+  (scroll-to-top))
+
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
-  (when-not (seq (:fields validation-errors))
+  (if (seq (:fields validation-errors))
+    (scroll-to-top)
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-show-failure
                       {:message (:error validation-errors)
