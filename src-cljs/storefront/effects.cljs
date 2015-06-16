@@ -156,7 +156,8 @@
 
 (defn save-cookie [app-state remember?]
   (cookie-jar/save (get-in app-state keypaths/cookie)
-                   (get-in app-state keypaths/user)
+                   (merge (get-in app-state keypaths/user)
+                          (get-in app-state keypaths/order))
                    {:remember? remember?}))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]

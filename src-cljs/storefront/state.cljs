@@ -18,7 +18,7 @@
      :session-id (cookie-jar/force-session-id cookie)
 
      :user (cookie-jar/retrieve-login cookie)
-     :order nil
+     :order (cookie-jar/retrieve-current-order cookie)
      :promotions []
      :past-orders {}
      :my-order-ids nil
