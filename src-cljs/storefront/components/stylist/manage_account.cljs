@@ -4,6 +4,7 @@
             [clojure.string :refer [join capitalize]]
             [storefront.components.formatters :as f]
             [storefront.components.utils :as utils]
+            [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -81,6 +82,8 @@
    (html
     [:div
      [:h2.header-bar-heading "Manage Account"]
+
+     (om/build validation-errors-component data)
 
      [:div.dashboard-content
       [:form.edit_mayvenn_stylist.simple_form
