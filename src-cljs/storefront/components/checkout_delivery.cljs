@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.components.utils :as utils]))
 
 (defn shipping-timeframe [rate-name]
@@ -34,6 +35,7 @@
   (om/component
    (html
     [:div#checkout
+     (om/build validation-errors-component data)
      (checkout-step-bar data)
      [:div.checkout-form-wrapper
       [:form.edit_order
