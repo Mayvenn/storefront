@@ -14,7 +14,8 @@
       (zero? (:status response))
       (enqueue-message events-ch [events/api-failure-no-network-connectivity response])
 
-      (seq (get-in response [:response :error]))
+      (or (seq (get-in response [:response :error]))
+          (seq (get-in response [:response :errors])))
       (enqueue-message events-ch [events/api-failure-validation-errors
                                   (-> (:response response)
                                       (select-keys [:error :errors])
