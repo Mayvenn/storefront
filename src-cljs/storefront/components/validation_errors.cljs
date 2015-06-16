@@ -8,23 +8,21 @@
             [clojure.string :as string]
             [clojure.set :as sets]))
 
-(def field->human-name
-  {"bill_address" "Billing Address"
-   "ship_address" "Shipping Address"
-   "address1" "Street Address"
-   "address2" "Street Address (cont'd)"
-   "zipcode" "Zip"
-   "city" "City"
-   "phone" "Phone"
-   "firstname" "First Name"
-   "lastname" "Last Name"
-   "state" "State"})
+(defn- field->human-name [key]
+  (get {"bill_address" "Billing Address"
+        "ship_address" "Shipping Address"
+        "address1" "Street Address"
+        "address2" "Street Address (cont'd)"
+        "firstname" "First Name"
+        "lastname" "Last Name"}
+       key
+       key))
 
-(defn filter-errors [errors]
+(defn- filter-errors [errors]
   (or (seq (filter #(not= % "can't be blank") errors))
       errors))
 
-(defn display-field-errors [[field errors]]
+(defn- display-field-errors [[field errors]]
   (let [field-names (map field->human-name (string/split (name field) #"\."))]
     (->> (filter-errors errors)
          (map (fn [err] [:li (str (string/capitalize (string/join " " field-names))
