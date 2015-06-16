@@ -99,8 +99,7 @@
              (product :name)]]]
           [:div.cart-form-container
            [:div#cart-form
-            [:form {:action "TODO: populate_orders_path"
-                    :method "POST"}
+            [:form
              [:div#inside-product-cart-form {:item-prop "offers"
                                              :item-scope ""
                                              :item-type "http://schema.org/Offer"}
@@ -128,9 +127,7 @@
                 [:span.price-label "Price:"]
                 [:span.price.selling {:item-prop "price"}
                  (display-price data product)]
-                ;; TODO: do we need this SEO for currency?
                 [:span {:item-prop "priceCurrency" :content (:currency product)}]
-
                 (if (get-in product [:master :can_supply?])
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]

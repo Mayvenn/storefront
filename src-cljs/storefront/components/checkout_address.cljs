@@ -154,8 +154,7 @@
      [:div.row
       [:div.checkout-form-wrapper
        [:form.edit_order
-        {:action "TODO: /checkout/update/address"
-         :method "POST"
+        {:method "POST"
          :on-submit (utils/enqueue-event data events/control-checkout-update-addresses-submit)}
 
         (billing-address-form data)
