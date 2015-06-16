@@ -58,11 +58,10 @@
    (html
     [:div
      [:div.cart-container
-      (if (get-in data keypaths/user-order-id)
-        (when-let [cart (get-in data keypaths/order)]
-          (if (> (-> cart :line_items count) 0)
-            (display-full-cart data)
-            (display-empty-cart data)))
+      (if-let [cart (get-in data keypaths/order)]
+        (if (> (-> cart :line_items count) 0)
+          (display-full-cart data)
+          (display-empty-cart data))
         (display-empty-cart data))]
      [:div.home-actions-top
       [:div.guarantee]

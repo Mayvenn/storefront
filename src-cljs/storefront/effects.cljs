@@ -36,10 +36,10 @@
         token (get-in app-state keypaths/user-token)]
     (when (and user-id token)
       (api/get-account (get-in app-state keypaths/event-ch) user-id token)))
-  (when-let [order-id (get-in app-state keypaths/user-order-id)]
+  (when-let [order-number (get-in app-state keypaths/order-number)]
     (api/get-order (get-in app-state keypaths/event-ch)
-                   order-id
-                   (get-in app-state keypaths/user-order-token)))
+                   order-number
+                   (get-in app-state keypaths/order-token)))
   (set! (.. js/document -body -scrollTop) 0)
 
   (when-not (or
@@ -65,9 +65,8 @@
                    product-path))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
-  (let [order (get-in app-state keypaths/order)]
-    (when-not (get-in app-state keypaths/user-order-id)
-      (routes/enqueue-redirect app-state events/navigate-cart))))
+  (when-not (get-in app-state keypaths/order-number)
+    (routes/enqueue-redirect app-state events/navigate-cart)))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (api/get-states (get-in app-state keypaths/event-ch)
@@ -141,8 +140,8 @@
                     (variant :id)
                     (get-in app-state keypaths/browse-variant-quantity)
                     (get-in app-state keypaths/store-stylist-id)
-                    (get-in app-state keypaths/user-order-token)
-                    (get-in app-state keypaths/user-order-id)
+                    (get-in app-state keypaths/order-token)
+                    (get-in app-state keypaths/order-number)
                     (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
@@ -263,7 +262,7 @@
                     (get-in app-state keypaths/user-token)
                     (merge (select-keys (get-in app-state keypaths/order) [:id :number :token])
                            {:session_id (get-in app-state keypaths/session-id)})
-                    {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/user-order-id)}]}))
+                    {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/order-number)}]}))
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
