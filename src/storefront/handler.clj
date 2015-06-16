@@ -71,11 +71,15 @@
     (element/javascript-tag (str "var environment=\"" env "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
-(defn wrap-cors [f]
+(defn wrap-cdn [f]
   (fn [req]
-    (-> (f req)
-        (header "Access-Control-Allow-Origin" "*")
-        (header "Access-Control-Allow-Methods" "GET"))))
+    (let [resp (f req)]
+      (if (.startsWith (:uri req) "/cdn/")
+        (-> resp
+            (header "Content-Encoding" "gzip")
+            (header "Access-Control-Allow-Origin" "*")
+            (header "Access-Control-Allow-Methods" "GET"))
+        resp))))
 
 (defn site-routes
   [logger storeback-config environment prerender-token]
@@ -90,7 +94,7 @@
    (wrap-redirect storeback-config)
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))
-   (wrap-cors)))
+   (wrap-cdn)))
 
 (defn create-handler
   ([] (create-handler {}))
