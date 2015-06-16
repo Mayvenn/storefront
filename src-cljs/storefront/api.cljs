@@ -21,6 +21,10 @@
                                       (select-keys [:error :errors])
                                       (rename-keys {:errors :fields}))])
 
+      (or (seq (get-in response [:response :exception])))
+      (enqueue-message events-ch [events/api-failure-validation-errors
+                                  {:fields {"" [(get-in response [:response :exception])]}}])
+
       :else
       (enqueue-message events-ch [events/api-failure-bad-server-response response]))))
 

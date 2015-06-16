@@ -6,6 +6,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.credit-cards :as cc]
             [storefront.orders :as orders]
             [storefront.messages :refer [enqueue-message]]
@@ -101,6 +102,7 @@
   (om/component
    (html
     [:div#checkout
+     (om/build validation-errors-component data)
      (checkout-step-bar data)
      [:div.row
       [:div.checkout-form-wrapper
