@@ -25,14 +25,17 @@
 
 (defn fetch-store [storeback-config store-slug]
   (when (seq store-slug)
-    (->
-     (http/get (str (:endpoint storeback-config) "/store")
-               {:query-params {:store_slug store-slug}
-                :throw-exceptions false
-                :socket-timeout 10000
-                :conn-timeout 10000
-                :as :json})
-     :body)))
+    (try
+      (->
+       (http/get (str (:endpoint storeback-config) "/store")
+                 {:query-params {:store_slug store-slug}
+                  :throw-exceptions false
+                  :socket-timeout 10000
+                  :conn-timeout 10000
+                  :as :json})
+       :body)
+      (catch java.io.IOException e
+        ::storeback-unavailable))))
 
 (defn parse-subdomains [server-name]
   (->> (string/split server-name #"\.")
@@ -58,6 +61,7 @@
       (cond
         (#{[] ["www"]} subdomains) (redirect (str "http://welcome." domain))
         (= "www" (first subdomains)) (redirect (str "http://" (:store_slug store) "." domain))
+        (= store ::storeback-unavailable) (h req)
         (:store_slug store) (h req)
         :else (redirect (str "http://store." domain))))))
 
