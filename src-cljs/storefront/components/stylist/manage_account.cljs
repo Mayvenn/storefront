@@ -101,7 +101,7 @@
                                                       :profile_picture_url))]
              [:.profile-photo
               {:style {:background-image (str "url(" profile-picture-url ")")}}]
-             [:.empty-profile-picture "FIXME"])
+             [:.empty-profile-picture])
            [:.change-photo-link
             [:span#filename "Change photo"]
 
