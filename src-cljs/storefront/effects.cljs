@@ -187,7 +187,7 @@
     (api/update-cart
      (get-in app-state keypaths/event-ch)
      (get-in app-state keypaths/user-token)
-     (merge (select-keys order [:id :number :token])
+     (merge (select-keys order [:id :number :guest-token])
             (when navigate-to-checkout?
               {:state "address"
                :email (get-in app-state keypaths/user-email)
@@ -204,7 +204,7 @@
     (api/update-cart
      (get-in app-state keypaths/event-ch)
      (get-in app-state keypaths/user-token)
-     (merge (select-keys order [:id :number :token])
+     (merge (select-keys order [:id :number :guest-token])
             {:line_items_attributes [(merge (select-keys line-item [:id :variant_id])
                                             {:quantity 0})]})
      {})))
