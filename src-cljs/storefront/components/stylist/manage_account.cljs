@@ -172,7 +172,7 @@
           (payout-method-radio data :venmo "Venmo")
           (payout-method-radio data :paypal "PayPal")
           (payout-method-radio data :check "Check")
-          (payout-method-radio data :mayvenn_debit "Mayvenn Debit")]] 
+          (payout-method-radio data :mayvenn_debit "Mayvenn Debit")]]
 
         (let [chosen-keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
               chosen-payout-method (get-in data chosen-keypath)]
@@ -205,7 +205,7 @@
          (input-field data [:instagram_account]
                       :placeholder "Enter your Instagram username")]
 
-        [:.social-media-container 
+        [:.social-media-container
          [:figure.styleseat.social-media-icon]
          (input-field data [:styleseat_account]
                       :placeholder "Enter your StyleSeat username")]]
