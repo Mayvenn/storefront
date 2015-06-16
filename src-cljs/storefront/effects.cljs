@@ -32,6 +32,7 @@
   (api/get-sms-number (get-in app-state keypaths/event-ch))
   (api/get-promotions (get-in app-state keypaths/event-ch)
                       (get-in app-state keypaths/api-cache))
+
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)]
     (when (and user-id token)
@@ -336,4 +337,5 @@
   (when-not (seq (:fields validation-errors))
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-show-failure
-                      {:message (:error validation-errors)}])))
+                      {:message (:error validation-errors)
+                       :navigation [event nil]}])))
