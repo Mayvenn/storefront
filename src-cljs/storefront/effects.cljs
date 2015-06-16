@@ -331,3 +331,9 @@
   (enqueue-message (get-in app-state keypaths/event-ch)
                    [events/flash-show-failure
                     {:message "Uh oh, an error occurred. Reload the page and try again."}]))
+
+(defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
+  (when-not (seq (:fields validation-errors))
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-show-failure
+                      {:message (:error validation-errors)}])))
