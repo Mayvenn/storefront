@@ -342,4 +342,4 @@
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-show-failure
                       {:message (:error validation-errors)
-                       :navigation [event nil]}])))
+                       :navigation (get-in app-state keypaths/navigation-message)}])))
