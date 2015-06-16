@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.validation-errors :refer [validation-errors-component]]
             [clojure.string :as string]))
 
 (defn selected-value->int [evt]
@@ -148,6 +149,7 @@
   (om/component
    (html
     [:div#checkout
+     (om/build validation-errors-component data)
      (checkout-step-bar data)
      [:div.row
       [:div.checkout-form-wrapper

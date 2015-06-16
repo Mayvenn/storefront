@@ -82,6 +82,8 @@
                         :phone ""}
 
      :ui {:navigation-message [events/navigate-home {}]
+          :validation-errors {:error nil
+                              :fields {}}
           :browse-taxon-query nil
           :browse-product-query nil
           :browse-variant-query nil

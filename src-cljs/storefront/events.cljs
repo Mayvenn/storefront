@@ -120,7 +120,7 @@
 (def api-failure (conj api :failure))
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))
 (def api-failure-bad-server-response (conj api-failure :bad-server-response))
-(def api-failure-validation-failure (conj api-failure :validation-failure))
+(def api-failure-validation-errors (conj api-failure :validation-errors))
 
 (def flash [:flash])
 (def flash-show (conj flash :show))

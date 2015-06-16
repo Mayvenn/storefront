@@ -248,6 +248,9 @@
 (defmethod transition-state events/api-success-cache [_ event new-data app-state]
   (update-in app-state keypaths/api-cache merge new-data))
 
+(defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
+  (assoc-in app-state keypaths/validation-errors validation-errors))
+
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (assoc-in app-state keypaths/flash-success (select-keys args [:message :navigation])))
 

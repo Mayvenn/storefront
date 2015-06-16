@@ -10,8 +10,17 @@
 
 (defn default-error-handler [events-ch]
   (fn [response]
-    (if (zero? (:status response))
+    (cond
+      (zero? (:status response))
       (enqueue-message events-ch [events/api-failure-no-network-connectivity response])
+
+      (seq (get-in response [:response :error]))
+      (enqueue-message events-ch [events/api-failure-validation-errors
+                                  (-> (:response response)
+                                      (select-keys [:error :errors])
+                                      (rename-keys {:errors :fields}))])
+
+      :else
       (enqueue-message events-ch [events/api-failure-bad-server-response response]))))
 
 (defn filter-nil [m]
