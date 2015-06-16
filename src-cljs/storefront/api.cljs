@@ -313,14 +313,16 @@
     (enqueue-message events-ch [events/api-success-create-order {:number order-id :token order-token}])
     (create-order events-ch stylist-id user-token)))
 
-(defn update-cart [events-ch user-token {order-token :token :as order} extra-message-args]
+(defn update-cart [events-ch user-token {order-token :guest-token :as order} extra-message-args]
   (api-req
    PUT
    "/cart"
    (filter-nil
     {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
      :order_token order-token})
-   #(enqueue-message events-ch [events/api-success-update-cart (merge {:order %} extra-message-args)])
+   #(enqueue-message events-ch [events/api-success-update-cart
+                                (merge {:order (rename-keys % {:token :guest-token})}
+                                       extra-message-args)])
    (default-error-handler events-ch)))
 
 (defn update-order [events-ch user-token order extra-message-args]
@@ -336,12 +338,15 @@
                                          :session_id])
                            (update-in [:bill_address] select-address-keys)
                            (update-in [:ship_address] select-address-keys)
-                           (rename-keys {:bill_address :bill_address_attributes
+                           (rename-keys {:guest-token :token
+                                         :bill_address :bill_address_attributes
                                          :ship_address :ship_address_attributes})))
     :use_store_credits (:use-store-credits order)
     :state (:state order)
-    :order_token (:token order)}
-   #(enqueue-message events-ch [events/api-success-update-order (merge {:order %} extra-message-args)])
+    :order_token (:guest-token order)}
+   #(enqueue-message events-ch [events/api-success-update-order
+                                (merge {:order (rename-keys % {:token :guest-token})}
+                                       extra-message-args)])
    (default-error-handler events-ch)))
 
 (defn add-line-item [events-ch variant-id variant-quantity order-number order-token]
@@ -364,7 +369,7 @@
    "/orders"
    {:id order-number
     :token order-token}
-   #(enqueue-message events-ch [events/api-success-get-order %])
+   #(enqueue-message events-ch [events/api-success-get-order (rename-keys % {:token :guest-token})])
    (default-error-handler events-ch)))
 
 (defn get-past-order [events-ch order-number user-token]
