@@ -137,11 +137,11 @@
                      :full-width? false}))
             (slideout-nav-link
              data
-             {:href "FIXME path"
-              :icon-class "edit-profile"
-              :image "/images/slideout_nav/edit_profile.png"
-              :label "Edit Profile"
-              :full-width? false})
+             (merge (close-and-route data events/navigate-stylist-manage-account)
+                    {:icon-class "edit-profile"
+                     :image "/images/slideout_nav/edit_profile.png"
+                     :label "Edit Profile"
+                     :full-width? false}))
             ])
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Shop"]
