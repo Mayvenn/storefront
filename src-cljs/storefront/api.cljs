@@ -122,15 +122,16 @@
    (default-error-handler events-ch)))
 
 (defn select-sign-in-keys [args]
-  (select-keys args [:email :token :store_slug :id]))
+  (select-keys args [:email :token :store_slug :id :order-id :order-token]))
 
-(defn sign-in [events-ch email password stylist-id]
+(defn sign-in [events-ch email password stylist-id order-token]
   (api-req
    POST
    "/login"
    {:email email
     :password password
-    :stylist-id stylist-id}
+    :stylist-id stylist-id
+    :order-token order-token}
    #(enqueue-message events-ch [events/api-success-sign-in (select-sign-in-keys %)])
    (default-error-handler events-ch)))
 
