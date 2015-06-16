@@ -122,7 +122,8 @@
   (api/sign-in (get-in app-state keypaths/event-ch)
                (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
-               (get-in app-state keypaths/store-stylist-id)))
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
   (api/sign-up (get-in app-state keypaths/event-ch)
