@@ -15,7 +15,9 @@
   app-state)
 
 (defmethod transition-state events/navigate [_ event args app-state]
-  (assoc-in app-state keypaths/navigation-message [event args]))
+  (-> app-state
+      (assoc-in keypaths/validation-errors {})
+      (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
