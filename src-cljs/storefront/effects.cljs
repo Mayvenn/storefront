@@ -321,3 +321,13 @@
   (save-cookie app-state true)
   (when navigate
     (apply routes/enqueue-navigate app-state navigate)))
+
+(defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-failure
+                    {:message "Could not connect to the internet. Reload the page and try again."}]))
+
+(defmethod perform-effects events/api-failure-bad-server-response [_ event response app-state]
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-failure
+                    {:message "Uh oh, an error occurred. Reload the page and try again."}]))
