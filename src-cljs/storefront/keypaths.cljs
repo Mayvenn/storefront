@@ -13,11 +13,11 @@
 (def user-token (conj user :token))
 (def user-store-slug (conj user :store-slug))
 (def user-id (conj user :id))
-(def user-order-token (conj user :order-token))
-(def user-order-id (conj user :order-id))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 
 (def order [:order])
+(def order-token (conj order :token))
+(def order-number (conj order :number))
 (def order-covered-by-store-credit [:order :covered_by_store_credit])
 (def order-total-applicable-store-credit [:order :total_applicable_store_credit])
 

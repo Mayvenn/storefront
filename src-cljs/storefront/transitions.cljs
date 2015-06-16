@@ -183,8 +183,8 @@
 
 (defmethod transition-state events/api-success-create-order [_ event {:keys [number token]} app-state]
   (-> app-state
-      (assoc-in keypaths/user-order-token token)
-      (assoc-in keypaths/user-order-id number)))
+      (assoc-in keypaths/order-token token)
+      (assoc-in keypaths/order-number number)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant-id variant-quantity]} app-state]
   (-> app-state
@@ -238,9 +238,7 @@
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (if (= (:state order) "complete")
     (-> app-state
-        (assoc-in keypaths/order {})
-        (assoc-in keypaths/user-order-id nil)
-        (assoc-in keypaths/user-order-token nil))
+        (assoc-in keypaths/order {}))
     (-> app-state
         (assoc-in keypaths/order order))))
 
