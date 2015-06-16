@@ -150,10 +150,14 @@
                        (get-in app-state keypaths/forgot-password-email)))
 
 (defmethod perform-effects events/control-reset-password-submit [_ event args app-state]
-  (api/reset-password (get-in app-state keypaths/event-ch)
-                      (get-in app-state keypaths/reset-password-password)
-                      (get-in app-state keypaths/reset-password-password-confirmation)
-                      (get-in app-state keypaths/reset-password-token)))
+  (if (empty? (get-in app-state keypaths/reset-password-password))
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-show-failure {:message "Your password cannot be blank."
+                                                 :navigation (get-in app-state keypaths/navigation-message)}])
+    (api/reset-password (get-in app-state keypaths/event-ch)
+                        (get-in app-state keypaths/reset-password-password)
+                        (get-in app-state keypaths/reset-password-password-confirmation)
+                        (get-in app-state keypaths/reset-password-token))))
 
 (defn save-cookie [app-state remember?]
   (cookie-jar/save (get-in app-state keypaths/cookie)
