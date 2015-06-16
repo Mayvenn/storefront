@@ -163,15 +163,10 @@
            [:div.product-collection-text
             [:h3.sub-header (str collection-name ": ")]
             (product :collection_description)]]
-
-          [:div#product-description.product-description
-           [:h3.sub-header "Description"]
-           [:div.product-description-text {:item-prop "description"}
-            (if (:description product)
-              (string/replace (:description product)
-                              #"(.*?)\r?\n\r?\n"
-                              "<p>$1</p>")
-              "This product has no description")]]
+          (when-let [html-description (:description product)]
+            [:div#product-description.product-description
+             [:h3.sub-header "Description"]
+             [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])
 
           [:div.product-reviews]]
 
