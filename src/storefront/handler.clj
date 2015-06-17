@@ -21,7 +21,9 @@
   [env]
   (if (config/development? env)
     site-defaults
-    (assoc secure-site-defaults :proxy true)))
+    (-> secure-site-defaults
+        (assoc :proxy true)
+        (assoc-in [:security :hsts] false))))
 
 (defn fetch-store [storeback-config store-slug]
   (when (seq store-slug)
