@@ -55,15 +55,14 @@
   (fn [req]
     (let [subdomains (parse-subdomains (:server-name req))
           domain (str (parse-tld (:server-name req)) ":"
-                      (:server-port req)
-                      (query-string req))
+                      (:server-port req))
           store (fetch-store storeback-config (last subdomains))]
       (cond
-        (#{[] ["www"]} subdomains) (redirect (str "http://welcome." domain))
-        (= "www" (first subdomains)) (redirect (str "http://" (:store_slug store) "." domain))
+        (#{[] ["www"]} subdomains) (redirect (str "http://welcome." domain "/hello" (query-string req)))
+        (= "www" (first subdomains)) (redirect (str "http://" (:store_slug store) "." domain (query-string req)))
         (= store ::storeback-unavailable) (h req)
         (:store_slug store) (h req)
-        :else (redirect (str "http://store." domain))))))
+        :else (redirect (str "http://store." domain (query-string req)))))))
 
 (defn index [storeback-config env]
   (page/html5
