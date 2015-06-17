@@ -130,7 +130,8 @@
                (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
                (get-in app-state keypaths/sign-up-password-confirmation)
-               (get-in app-state keypaths/store-stylist-id)))
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
