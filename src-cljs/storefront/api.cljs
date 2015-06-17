@@ -173,12 +173,13 @@
   (rename-keys m {:bill_address :billing-address
                   :ship_address :shipping-address}))
 
-(defn get-account [events-ch id token]
+(defn get-account [events-ch id token stylist-id]
   (api-req
    GET
    "/users"
    {:id id
-    :token token}
+    :token token
+    :stylist-id stylist-id}
    #(enqueue-message events-ch [events/api-success-account (rename-server-address-keys %)])
    (default-error-handler events-ch)))
 
