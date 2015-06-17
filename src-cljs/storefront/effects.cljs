@@ -164,10 +164,12 @@
                         (get-in app-state keypaths/reset-password-token))))
 
 (defn save-cookie [app-state remember?]
-  (cookie-jar/save (get-in app-state keypaths/cookie)
-                   (merge (get-in app-state keypaths/user)
-                          (get-in app-state keypaths/order))
-                   {:remember? remember?}))
+  (cookie-jar/save-order (get-in app-state keypaths/cookie)
+                         (get-in app-state keypaths/order)
+                         {:remember? remember?})
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user)
+                        {:remember? remember?}))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
   (api/update-account (get-in app-state keypaths/event-ch)
