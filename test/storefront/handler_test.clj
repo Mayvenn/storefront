@@ -39,10 +39,10 @@
       (with-test-system system
         (let [resp ((-> system :app-handler :handler)
                     (merge {:server-name "welcome.mayvenn.com"
-                                    :server-port 8080
-                                    :uri "/"
-                                    :request-method :get}
-                                   req))]
+                            :server-port 8080
+                            :uri "/"
+                            :request-method :get}
+                           req))]
           (asserter resp))))))
 
 (deftest redirects-missing-stylists-to-store-while-preserving-query-params
