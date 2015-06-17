@@ -135,14 +135,15 @@
    #(enqueue-message events-ch [events/api-success-sign-in (select-sign-in-keys %)])
    (default-error-handler events-ch)))
 
-(defn sign-up [events-ch email password password-confirmation stylist-id]
+(defn sign-up [events-ch email password password-confirmation stylist-id order-token]
   (api-req
    POST
    "/signup"
    {:email email
     :password password
     :password_confirmation password-confirmation
-    :stylist-id stylist-id}
+    :stylist-id stylist-id
+    :order-token order-token}
    #(enqueue-message events-ch [events/api-success-sign-up (select-sign-in-keys %)])
    (default-error-handler events-ch)))
 
