@@ -45,13 +45,14 @@
                                    req))]
           (asserter resp))))))
 
-(deftest redirects-missing-stylists-to-store
+(deftest redirects-missing-stylists-to-store-while-preserving-query-params
   (assert-request
-   {:server-name "no-stylist.mayvenn.com"}
+   {:server-name "no-stylist.mayvenn.com"
+    :query-string "yo=lo&mo=fo"}
    storeback-no-stylist-response
    (fn [resp]
      (is (= 302 (:status resp)))
-     (is (= "http://store.mayvenn.com:8080"
+     (is (= "http://store.mayvenn.com:8080?yo=lo&mo=fo"
             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-www-prefixed-stylists-to-stylist-without-prefix
@@ -69,7 +70,17 @@
    storeback-no-stylist-response
    (fn [resp]
      (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080"
+     (is (= "http://welcome.mayvenn.com:8080/hello"
+            (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-www-to-welcome-preserving-query-params
+  (assert-request
+   {:server-name "www.mayvenn.com"
+    :query-string "world=true"}
+   storeback-no-stylist-response
+   (fn [resp]
+     (is (= 302 (:status resp)))
+     (is (= "http://welcome.mayvenn.com:8080/hello?world=true"
             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-no-subdomain-to-welcome
@@ -78,7 +89,17 @@
    storeback-no-stylist-response
    (fn [resp]
      (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080"
+     (is (= "http://welcome.mayvenn.com:8080/hello"
+            (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-no-subdomain-to-welcome-preserving-query-params
+  (assert-request
+   {:server-name "mayvenn.com"
+    :query-string "hello=world"}
+   storeback-no-stylist-response
+   (fn [resp]
+     (is (= 302 (:status resp)))
+     (is (= "http://welcome.mayvenn.com:8080/hello?hello=world"
             (get-in resp [:headers "Location"]))))))
 
 (deftest renders-page-when-matches-stylist-subdomain
