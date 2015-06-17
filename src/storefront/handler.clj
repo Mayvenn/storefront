@@ -108,9 +108,9 @@
                   (content-type "text/html"))))
    (wrap-prerender (config/development? environment)
                    prerender-token)
-   (wrap-redirect storeback-config)
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))
+   (wrap-redirect storeback-config)
    (wrap-cdn)))
 
 (defn create-handler
