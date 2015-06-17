@@ -27,9 +27,16 @@
       (.set cookie :session-id created-session-id session-age nil nil secure?)
       created-session-id)))
 
-(defn save [cookie attrs {:keys [remember?]}]
+(defn save-user [cookie attrs {:keys [remember?]}]
   (let [age (if remember? remember-me-age -1)]
-    (doseq [attr (into user-attrs order-attrs)]
+    (doseq [attr user-attrs]
+      (if-let [val (attr attrs)]
+        (.set cookie attr val age nil nil secure?)
+        (.remove cookie attr)))))
+
+(defn save-order [cookie attrs {:keys [remember?]}]
+  (let [age (if remember? remember-me-age -1)]
+    (doseq [attr order-attrs]
       (if-let [val (attr attrs)]
         (.set cookie attr val age nil nil secure?)
         (.remove cookie attr)))))
