@@ -71,8 +71,6 @@
     (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content]
-    (when (config/development? env)
-      [:script {:src "/js/phantomjs.js"}])
     (element/javascript-tag (str "var environment=\"" env "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
