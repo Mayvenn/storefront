@@ -60,6 +60,7 @@
                       (:server-port req))
           store (fetch-store storeback-config (last subdomains))]
       (cond
+        (= "jobs" (first subdomains)) (redirect "http://jobs.lever.co/mayvenn")
         (#{[] ["www"]} subdomains) (redirect (str "http://welcome." domain "/hello" (query-string req)))
         (= "www" (first subdomains)) (redirect (str "http://" (:store_slug store) "." domain (query-string req)))
         (= store ::storeback-unavailable) (h req)
