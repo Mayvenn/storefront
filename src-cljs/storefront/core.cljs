@@ -4,30 +4,19 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
-            [storefront.effects :refer [perform-effects]]
-            [storefront.transitions :refer [transition-state]]
             [storefront.routes :as routes]
-            [storefront.messages :refer [enqueue-message]]
+            [storefront.messages :refer [enqueue-message send-message]]
             [cljs.core.async :refer [<! chan close!]]
             [om.core :as om]))
 
 (enable-console-print!)
 
-(defn transition [app-state [event args]]
-  (reduce #(transition-state %2 event args %1) app-state (reductions conj [] event)))
-
-(defn effects [app-state [event args]]
-  (doseq [event-fragment (rest (reductions conj [] event))]
-    (perform-effects event-fragment event args app-state)))
-
 (defn start-event-loop [app-state]
   (let [event-ch (get-in @app-state keypaths/event-ch)]
     (go-loop []
       (when-let [event-and-args (<! event-ch)]
-        (do
-          (swap! app-state transition event-and-args)
-          (effects @app-state event-and-args)
-          (recur))))
+        (send-message app-state event-and-args)
+        (recur)))
     (enqueue-message event-ch [events/app-start])))
 
 (defn main [app-state]
