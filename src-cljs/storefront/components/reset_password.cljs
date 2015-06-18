@@ -20,7 +20,7 @@
         [:br]
         [:input#spree_user_password
          (merge
-          (utils/change-text data keypaths/reset-password-password)
+          (utils/change-text data owner keypaths/reset-password-password)
           {:type "password"
            :name "password"})]]
        [:p
@@ -28,7 +28,7 @@
         [:br]
         [:input#spree_user_email
          (merge
-          (utils/change-text data keypaths/reset-password-password-confirmation)
+          (utils/change-text data owner keypaths/reset-password-password-confirmation)
           {:type "password"
            :name "password-confirmation"})]]
        [:p

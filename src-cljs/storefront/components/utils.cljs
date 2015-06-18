@@ -2,7 +2,9 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [enqueue-message]]))
+            [storefront.messages :refer [enqueue-message]]
+            [storefront.uuid :as uuid]
+            [om.core :as om]))
 
 (defn put-event [app-state event & [args]]
   (enqueue-message (get-in @app-state keypaths/event-ch) [event args]))
@@ -20,14 +22,15 @@
      (.preventDefault e)
      (routes/enqueue-navigate @app-state navigation-event args))})
 
-(defn change-text [app-state keypath]
-  {:value (get-in app-state keypath)
-   :on-change
-   (fn [e]
-     (let [target (.-target e)]
+(defn change-text [app-state owner keypath]
+  (let [id (uuid/random-uuid)]
+    {:value (get-in app-state keypath)
+     :ref id
+     :on-change
+     (fn [e]
        (put-event app-state
                   events/control-change-state {:keypath keypath
-                                               :value #(.-value target)})))})
+                                               :value #(.-value (om/get-node owner id))}))}))
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]

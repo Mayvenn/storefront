@@ -16,9 +16,9 @@
     (str "mayvenn_stylist_" model-attributes field-name)))
 
 (defn- input-field
-  [data field-path & {:keys [field-type label required placeholder]
-                      :or {required false
-                           field-type "string"}}]
+  [data owner field-path & {:keys [field-type label required placeholder]
+                            :or {required false
+                                 field-type "string"}}]
   (let [keypath          (into keypaths/stylist-manage-account field-path)
         field-name       (last field-path)
         field-class-name (str "mayvenn_stylist_" (join "_" (map name field-path)))
@@ -35,7 +35,7 @@
                " "
                (or label (capitalize (name field-name))))])
       [:input
-       (merge (utils/change-text data keypath)
+       (merge (utils/change-text data owner keypath)
               {:id (field-id field-path)
                :class (css-classes)
                :type (if (= "string" field-type) "text" field-type)
@@ -112,56 +112,56 @@
              (merge (utils/change-file data (conj keypaths/stylist-manage-account :profile-picture))
                     {:name "mayvenn_stylist[profile_picture]" :type "file"})]]]
 
-          (input-field data [:user :email] :field-type "email")
+          (input-field data owner [:user :email] :field-type "email")
 
           [:.input.date.required.mayvenn_stylist_birth_date
            [:label.date.required.control-label.top-padded-input
             {:for "mayvenn_stylist_birth_date_1i"}
             [:abbr {:title "required"} "*"] " Birth Date"]
            [:select#mayvenn_stylist_birth_date_2i.date.required
-            (utils/change-text data (conj keypaths/stylist-manage-account :birth_date_2i))
+            (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_2i))
             (month-options)]
            " "
            [:select#mayvenn_stylist_birth_date_3i.date.required
-            (utils/change-text data (conj keypaths/stylist-manage-account :birth_date_3i))
+            (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_3i))
             (day-options)]
            " "
            [:select#mayvenn_stylist_birth_date_1i.date.required
-            (utils/change-text data (conj keypaths/stylist-manage-account :birth_date_1i))
+            (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_1i))
             (year-options)]]
 
-          (input-field data [:address :firstname]
+          (input-field data owner [:address :firstname]
                        :label "First Name" :required true)
-          (input-field data [:address :lastname]
+          (input-field data owner [:address :lastname]
                        :label "Last Name" :required true)]
 
          [:.profile-section.address
 
-          (input-field data [:address :address1]
+          (input-field data owner [:address :address1]
                        :label "Street Address"
                        :required true)
-          (input-field data [:address :address2]
+          (input-field data owner [:address :address2]
                        :label "Street Address 2 (Apartment Or Unit Number)"
                        :required true)
-          (input-field data [:address :city]
+          (input-field data owner [:address :city]
                        :required true)
 
           [:.input.date.optional.mayvenn_stylist_address_state
            [:label.date.optional.control-label.top-padded-input
             {:for "mayvenn_stylist_address_attributes_state_id"} "State"]
            [:select#mayvenn_stylist_address_attributes_state_id
-            (utils/change-text data (conj keypaths/stylist-manage-account :address :state_id))
+            (utils/change-text data owner (conj keypaths/stylist-manage-account :address :state_id))
             (state-options data)]]
 
-          (input-field data [:address :zipcode])
-          (input-field data [:address :phone]
+          (input-field data owner [:address :zipcode])
+          (input-field data owner [:address :phone]
                        :field-type "tel" :label "Mobile Phone Number")
 
           [:.password-reset
            [:.password-fields
-            (input-field data [:user :password]
+            (input-field data owner [:user :password]
                          :field-type "password")
-            (input-field data [:user :password-confirmation]
+            (input-field data owner [:user :password-confirmation]
                          :field-type "password"
                          :label "Confirm Password")]
            [:p.password-instructions
@@ -181,13 +181,13 @@
               chosen-payout-method (get-in data chosen-keypath)]
           (condp = chosen-payout-method
             "venmo" [:#venmo.payout-method
-                     (input-field data [:venmo_payout_attributes :phone]
+                     (input-field data owner [:venmo_payout_attributes :phone]
                                   :label "Phone number on Venmo account"
                                   :field-type "tel"
                                   :required true)]
 
             "paypal" [:#paypal.payout-method
-                      (input-field data [:paypal_payout_attributes :email]
+                      (input-field data owner [:paypal_payout_attributes :email]
                                    :label "Email On PayPal Account"
                                    :field-type "email"
                                    :required true)]
@@ -205,12 +205,12 @@
 
         [:.social-media-container
          [:figure.instagram.social-media-icon]
-         (input-field data [:instagram_account]
+         (input-field data owner [:instagram_account]
                       :placeholder "Enter your Instagram username")]
 
         [:.social-media-container
          [:figure.styleseat.social-media-icon]
-         (input-field data [:styleseat_account]
+         (input-field data owner [:styleseat_account]
                       :placeholder "Enter your StyleSeat username")]]
 
        [:input.big-button {:name "commit" :type "submit" :value "Update Account"}]]]])))

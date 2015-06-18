@@ -14,7 +14,7 @@
                     events/navigate-category
                     {:taxon-path path})))
 
-(defn display-full-cart [data]
+(defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
     [:div
      [:form#update-cart
@@ -29,7 +29,7 @@
            [:label "Enter a coupon code:"]
            [:input.coupon-code-input
             (merge
-             (utils/change-text data keypaths/cart-coupon-code)
+             (utils/change-text data owner keypaths/cart-coupon-code)
              {:type "text"
               :name "coupon-code"})]]
           [:input.primary.button#update-button
@@ -60,7 +60,7 @@
      [:div.cart-container
       (if-let [cart (get-in data keypaths/order)]
         (if (> (-> cart :line_items count) 0)
-          (display-full-cart data)
+          (display-full-cart data owner)
           (display-empty-cart data))
         (display-empty-cart data))]
      [:div.home-actions-top

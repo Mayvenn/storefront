@@ -19,14 +19,14 @@
         [:div.input.email
          [:label.email "Email"]
          [:input.string.email
-          (merge (utils/change-text data keypaths/sign-in-email)
+          (merge (utils/change-text data owner keypaths/sign-in-email)
                  {:autofocus "autofocus"
                   :type "email"
                   :name "email"})]]
         [:div.input.password
          [:label.password "Password"]
          [:input.string.password
-          (merge (utils/change-text data keypaths/sign-in-password)
+          (merge (utils/change-text data owner keypaths/sign-in-password)
                  {:type "password"
                   :name "password"})]]]
        [:p

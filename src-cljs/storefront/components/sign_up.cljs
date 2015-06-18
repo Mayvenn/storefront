@@ -22,20 +22,20 @@
          [:div.input.email
           [:label.email "Email"]
           [:input.string.email
-           (merge (utils/change-text data keypaths/sign-up-email)
+           (merge (utils/change-text data owner keypaths/sign-up-email)
                   {:autofocus "autofocus"
                    :type "email"
                    :name "email"})]]
          [:div.input.password
           [:label.password "Password"]
           [:input.string.password
-           (merge (utils/change-text data keypaths/sign-up-password)
+           (merge (utils/change-text data owner keypaths/sign-up-password)
                   {:type "password"
                    :name "password"})]]
          [:div.input.password
           [:label.password "Password Confirmation"]
           [:input.string.password
-           (merge (utils/change-text data keypaths/sign-up-password-confirmation)
+           (merge (utils/change-text data owner keypaths/sign-up-password-confirmation)
                   {:type "password"
                    :name "password-confirmation"})]]]
         [:p
