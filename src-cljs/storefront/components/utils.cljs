@@ -24,9 +24,10 @@
   {:value (get-in app-state keypath)
    :on-change
    (fn [e]
-     (put-event app-state
-                events/control-change-state {:keypath keypath
-                                             :value #(.. e -target -value)}))})
+     (let [target (.-target e)]
+       (put-event app-state
+                  events/control-change-state {:keypath keypath
+                                               :value #(.-value target)})))})
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
