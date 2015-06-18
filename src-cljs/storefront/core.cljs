@@ -27,7 +27,7 @@
    app-state
    {:target (.getElementById js/document "content")})
 
-  (start-event-loop app-state)
+  (start-event-loop (om/root-cursor app-state))
   (routes/set-current-page @app-state))
 
 (defonce app-state (atom (state/initial-state)))
