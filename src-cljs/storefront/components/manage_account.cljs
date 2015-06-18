@@ -14,7 +14,7 @@
       [:label {:for "user-email"} "Email"]
       [:br]
       [:input.title#user-email
-       (merge (utils/change-text data keypaths/manage-account-email)
+       (merge (utils/change-text data owner keypaths/manage-account-email)
               {:autofocus "autofocus"
                :type "email"
                :name "email"
@@ -26,14 +26,14 @@
         [:label {:for "user-password"} "Password"]
         [:br]
         [:input.title#user-password
-         (merge (utils/change-text data keypaths/manage-account-password)
+         (merge (utils/change-text data owner keypaths/manage-account-password)
                 {:type "password"
                  :name "password"})]]
        [:p
         [:label {:for "user-password-confirmation"} "Enter the same password"]
         [:br]
         [:input.title#user-password-confirmation
-         (merge (utils/change-text data keypaths/manage-account-password-confirmation)
+         (merge (utils/change-text data owner keypaths/manage-account-password-confirmation)
                 {:type "password"
                  :name "password-confirmation"})]]]
       [:p.user-password-instructions "Leave blank to keep the same password."]

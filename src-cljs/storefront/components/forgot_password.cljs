@@ -19,7 +19,7 @@
        [:br]
        [:input
         (merge
-         (utils/change-text data keypaths/forgot-password-email)
+         (utils/change-text data owner keypaths/forgot-password-email)
          {:type "email"
           :name "email"})]
        [:p
