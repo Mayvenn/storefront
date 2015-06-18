@@ -71,7 +71,7 @@
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
-  (assoc-in app-state keypath value))
+  (assoc-in app-state keypath (if (fn? value) (value) value)))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state keypaths/browse-variant-query {:id (variant :id)}))
