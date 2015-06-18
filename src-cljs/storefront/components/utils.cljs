@@ -2,7 +2,8 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [enqueue-message send-message]]))
+            [storefront.messages :refer [enqueue-message]]
+            [storefront.sync-messages :refer [send-message]]))
 
 (defn put-event [app-state event & [args]]
   (enqueue-message (get-in @app-state keypaths/event-ch) [event args]))

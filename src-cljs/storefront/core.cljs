@@ -5,7 +5,8 @@
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
-            [storefront.messages :refer [enqueue-message send-message]]
+            [storefront.messages :refer [enqueue-message]]
+            [storefront.sync-messages :refer [send-message]]
             [cljs.core.async :refer [<! chan close!]]
             [om.core :as om]))
 
