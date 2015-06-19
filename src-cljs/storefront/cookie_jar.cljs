@@ -42,5 +42,5 @@
         (.remove cookie attr)))))
 
 (defn clear [cookie]
-  (doseq [attr user-attrs]
+  (doseq [attr (concat user-attrs order-attrs)]
     (.remove cookie attr)))
