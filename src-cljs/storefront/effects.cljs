@@ -47,16 +47,19 @@
                    (get-in app-state keypaths/order-token)))
   (scroll-to-top)
 
-  (when-not (or
-             (empty? (get-in app-state keypaths/flash-success-nav))
-             (= [event args] (get-in app-state keypaths/flash-success-nav)))
-    (enqueue-message (get-in app-state keypaths/event-ch)
-                     [events/flash-dismiss-success]))
-  (when-not (or
-             (empty? (get-in app-state keypaths/flash-failure-nav))
-             (= [event args] (get-in app-state keypaths/flash-failure-nav)))
-    (enqueue-message (get-in app-state keypaths/event-ch)
-                     [events/flash-dismiss-failure]))
+  (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
+    (when-not (or
+               (empty? (get-in app-state keypaths/flash-success-nav))
+               (= [event (seq args)] [flash-event (seq flash-args)]))
+      (enqueue-message (get-in app-state keypaths/event-ch)
+                       [events/flash-dismiss-success])))
+  (let [[flash-event flash-args] (get-in app-state keypaths/flash-failure-nav)]
+    (when-not (or
+               (empty? (get-in app-state keypaths/flash-failure-nav))
+               (= [event (seq args)] [flash-event (seq flash-args)]))
+      (enqueue-message (get-in app-state keypaths/event-ch)
+                       [events/flash-dismiss-failure])))
+
   (riskified/track-page (routes/path-for app-state event args))
   (analytics/track-page (routes/path-for app-state event args)))
 
