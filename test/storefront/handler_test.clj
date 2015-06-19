@@ -111,6 +111,15 @@
      (is (= "http://jobs.lever.co/mayvenn"
             (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-vistaprint
+  (assert-request
+   {:server-name "vistaprint.mayvenn.com"}
+   storeback-no-stylist-response
+   (fn [resp]
+     (is (= 302 (:status resp)))
+     (is (= "http://www.vistaprint.com/vp/ns/EnterprisePartner.aspx"
+            (get-in resp [:headers "Location"]))))))
+
 (deftest renders-page-when-matches-stylist-subdomain
   (assert-request
    {:server-name "bob.mayvenn.com"}
