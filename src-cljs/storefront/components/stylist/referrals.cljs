@@ -42,28 +42,29 @@
 
        (om/build stylist-dashboard-nav-component data)
 
-       [:.dashboard-content
-        [:a#email-referral.dashboard-summary {:href sales-rep-email :target "_top"}
-         [:figure.email-icon]
-         "Email us a new referral"
-         [:figure.right-arrow-icon]]
+       (when bonus-amount
+         [:.dashboard-content
+          [:a#email-referral.dashboard-summary {:href sales-rep-email :target "_top"}
+           [:figure.email-icon]
+           "Email us a new referral"
+           [:figure.right-arrow-icon]]
 
-        [:#money-rules
-         [:.gold-money-box]
-         [:.money-rule-details
-          [:p
-           "Earn "
-           (f/as-money-without-cents bonus-amount)
-           " in bonus credit when each stylist makes their first "
-           (f/as-money-without-cents earning-amount)]]]
+          [:#money-rules
+           [:.gold-money-box]
+           [:.money-rule-details
+            [:p
+             "Earn "
+             (f/as-money-without-cents bonus-amount)
+             " in bonus credit when each stylist makes their first "
+             (f/as-money-without-cents earning-amount)]]]
 
-        [:.my-referrals
-         [:h4.dashboard-details-header "My Referrals"]
-         [:.solid-line-divider]
+          [:.my-referrals
+           [:h4.dashboard-details-header "My Referrals"]
+           [:.solid-line-divider]
 
-         [:.emphasized-banner
-          [:span.emphasized-banner-header "Total Referral Bonuses"]
-          [:span.emphasized-banner-value
-          (f/as-money-without-cents total-amount)]]
+           [:.emphasized-banner
+            [:span.emphasized-banner-header "Total Referral Bonuses"]
+            [:span.emphasized-banner-value
+             (f/as-money-without-cents total-amount)]]
 
-         (map stylist-referral-component referrals)]]]))))
+           (map stylist-referral-component referrals)]])]))))
