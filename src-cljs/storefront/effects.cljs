@@ -139,6 +139,9 @@
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
+  (enqueue-message (get-in app-state keypaths/event-ch)
+                   [events/flash-show-success {:message "Logged out successfully"
+                                               :navigation [events/navigate-home {}]}])
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
