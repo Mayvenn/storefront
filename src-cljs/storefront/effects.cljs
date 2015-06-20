@@ -36,11 +36,6 @@
   (api/get-promotions (get-in app-state keypaths/event-ch)
                       (get-in app-state keypaths/api-cache))
 
-  (let [user-id (get-in app-state keypaths/user-id)
-        token (get-in app-state keypaths/user-token)
-        stylist-id (get-in app-state keypaths/store-stylist-id)]
-    (when (and user-id token)
-      (api/get-account (get-in app-state keypaths/event-ch) user-id token stylist-id)))
   (when-let [order-number (get-in app-state keypaths/order-number)]
     (api/get-order (get-in app-state keypaths/event-ch)
                    order-number
@@ -328,6 +323,13 @@
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-show-success {:message "Account updated"
                                                  :navigation [events/navigate-stylist-manage-account {}]}])))
+
+(defmethod perform-effects events/api-success-store [_ event order app-state]
+  (let [user-id (get-in app-state keypaths/user-id)
+        token (get-in app-state keypaths/user-token)
+        stylist-id (get-in app-state keypaths/store-stylist-id)]
+    (when (and user-id token)
+      (api/get-account (get-in app-state keypaths/event-ch) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))
