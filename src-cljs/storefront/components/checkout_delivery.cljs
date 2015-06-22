@@ -11,7 +11,8 @@
   (condp = rate-name
     "Priority Shipping" "3-5 business days"
     "Express Shipping" "1-2 business days (No Weekends)"
-    :else "?"))
+    "Overnight Shipping" "1 business day (No Weekends)"
+    "?"))
 
 (defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
