@@ -262,10 +262,12 @@
                       (merge (select-keys order [:id :number :guest-token])
                              {:state "payment"
                               :use-store-credits (get-in app-state keypaths/checkout-use-store-credits)}
-                             (if (get-in app-state keypaths/checkout-use-store-credits)
+                             (if (and (get-in app-state keypaths/checkout-use-store-credits)
+                                      (get-in app-state keypaths/order-covered-by-store-credit))
                                {:payments_attributes
                                 [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
                                                          (get-in app-state (into keypaths/payment-methods [0 :id])))}]}
+
                                {:payments_attributes
                                 [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
                                                          (get-in app-state (into keypaths/payment-methods [0 :id])))
