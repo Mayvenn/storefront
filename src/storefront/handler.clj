@@ -111,6 +111,16 @@
             (header "Expires" (.format (make-http-format) (years-from-now))))
         resp))))
 
+(defn request-scheme [req]
+  (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
+    (keyword forwarded-proto)
+    (:scheme req)))
+
+(defn prerender-original-request-url [development? req]
+  (str (name (request-scheme req)) "://shop."
+       (parse-tld (:server-name req))
+       ":" (if development? (:server-port req) 443) (:uri req)))
+
 (defn site-routes
   [logger storeback-config environment prerender-token]
   (->
@@ -120,7 +130,9 @@
                   response
                   (content-type "text/html"))))
    (wrap-prerender (config/development? environment)
-                   prerender-token)
+                   prerender-token
+                   (partial prerender-original-request-url
+                            (config/development? environment)))
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))
    (wrap-redirect storeback-config)
