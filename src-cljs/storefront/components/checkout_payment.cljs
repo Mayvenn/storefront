@@ -10,6 +10,7 @@
             [storefront.credit-cards :as cc]
             [storefront.orders :as orders]
             [storefront.messages :refer [enqueue-message]]
+            [storefront.sync-messages :refer [send-message]]
             [clojure.string :as string]))
 
 (defn stylist? [user]
@@ -20,9 +21,9 @@
     {:checked (when (= keypath-value value-if-checked) "checked" "")
      :value value-if-checked
      :on-change (fn [e]
-                  (utils/put-event app-state
-                                   events/control-change-state {:keypath keypath
-                                                                :value value-if-checked}))}))
+                  (send-message app-state
+                                [events/control-change-state {:keypath keypath
+                                                              :value value-if-checked}]))}))
 
 (defn display-radio [data keypath value-if-checked text additional-text-when-stylist]
   [:li.store-credit-option
@@ -69,9 +70,9 @@
                    :value (presenter-fn (get-in app-state keypath))
                    :required true
                    :on-change (fn [e]
-                                (enqueue-message (get-in @app-state keypaths/event-ch)
-                                                 [events/control-change-state {:keypath keypath
-                                                                               :value (.. e -target -value)}]))}
+                                (send-message app-state
+                                              [events/control-change-state {:keypath keypath
+                                                                            :value (.. e -target -value)}]))}
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
