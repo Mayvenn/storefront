@@ -83,6 +83,7 @@
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
+    [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content]
