@@ -261,15 +261,19 @@
                     (let [order (get-in app-state keypaths/order)]
                       (merge (select-keys order [:id :number :guest-token])
                              {:state "payment"
-                              :use-store-credits (get-in app-state keypaths/checkout-use-store-credits)
-                              :payments_attributes
-                              [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
-                                                       (get-in app-state (into keypaths/payment-methods [0 :id])))
-                                :source_attributes
-                                {:number (get-in app-state keypaths/checkout-credit-card-number)
-                                 :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
-                                 :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
-                                 :name (get-in app-state keypaths/checkout-credit-card-name)}}]}))
+                              :use-store-credits (get-in app-state keypaths/checkout-use-store-credits)}
+                             (if (get-in app-state keypaths/checkout-use-store-credits)
+                               {:payments_attributes
+                                [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
+                                                         (get-in app-state (into keypaths/payment-methods [0 :id])))}]}
+                               {:payments_attributes
+                                [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
+                                                         (get-in app-state (into keypaths/payment-methods [0 :id])))
+                                  :source_attributes
+                                  {:number (get-in app-state keypaths/checkout-credit-card-number)
+                                   :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
+                                   :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
+                                   :name (get-in app-state keypaths/checkout-credit-card-name)}}]})))
                     {:navigate [events/navigate-checkout-confirmation]}))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
