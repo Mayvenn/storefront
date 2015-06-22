@@ -87,7 +87,7 @@
         [:h5 (as-money summed-amount)]]])))
 
 (defn display-adjustments [adjustments]
-  (map #(apply display-adjustment-row %) (group-by :label adjustments)))
+  (map #(apply display-adjustment-row %) (group-by :display_label adjustments)))
 
 (defn display-shipment [shipment]
   [:tr.order-summary-row
