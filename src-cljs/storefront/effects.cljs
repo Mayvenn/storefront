@@ -248,7 +248,7 @@
   (api/update-order (get-in app-state keypaths/event-ch)
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
-                      (merge (select-keys order [:id :number :token])
+                      (merge (select-keys order [:id :number :guest-token])
                              {:state "delivery"
                               :shipments_attributes
                               {:id (get-in order [:shipments 0 :id])
@@ -259,7 +259,7 @@
   (api/update-order (get-in app-state keypaths/event-ch)
                     (get-in app-state keypaths/user-token)
                     (let [order (get-in app-state keypaths/order)]
-                      (merge (select-keys order [:id :number :token])
+                      (merge (select-keys order [:id :number :guest-token])
                              {:state "payment"
                               :use-store-credits (get-in app-state keypaths/checkout-use-store-credits)
                               :payments_attributes
