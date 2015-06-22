@@ -24,21 +24,21 @@
   (if-let [session-id (.get cookie :session-id)]
     session-id
     (let [created-session-id (random-uuid)]
-      (.set cookie :session-id created-session-id session-age nil nil secure?)
+      (.set cookie :session-id created-session-id session-age "/" nil secure?)
       created-session-id)))
 
 (defn save-user [cookie attrs {:keys [remember?]}]
   (let [age (if remember? remember-me-age -1)]
     (doseq [attr user-attrs]
       (if-let [val (attr attrs)]
-        (.set cookie attr val age nil nil secure?)
+        (.set cookie attr val age "/" nil secure?)
         (.remove cookie attr)))))
 
 (defn save-order [cookie attrs {:keys [remember?]}]
   (let [age (if remember? remember-me-age -1)]
     (doseq [attr order-attrs]
       (if-let [val (attr attrs)]
-        (.set cookie attr val age nil nil secure?)
+        (.set cookie attr val age "/" nil secure?)
         (.remove cookie attr)))))
 
 (defn clear [cookie]
