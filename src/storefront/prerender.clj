@@ -74,16 +74,9 @@
     "http://localhost:4001"
     "http://service.prerender.io"))
 
-(defn request-scheme [req]
-  (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
-    (keyword forwarded-proto)
-    (:scheme req)))
-
-(defn prerendered-resp [req development? token]
+(defn prerendered-resp [req development? token request-url]
   (let [url (str (prerender-service-url development?)
-                 "/" (name (request-scheme req)) "://"
-                 (:server-name req)
-                 ":" (if development? (:server-port req) 443) (:uri req))
+                 "/" (request-url req))
         opts {:throw-exceptions false
               :socket-timeout 40000
               :conn-timeout 40000
@@ -93,8 +86,8 @@
         (select-keys [:body :status])
         (content-type "text/html"))))
 
-(defn wrap-prerender [handler development? token]
+(defn wrap-prerender [handler development? token request-url]
   (fn [req]
     (if (show-prerendered? req)
-      (prerendered-resp req development? token)
+      (prerendered-resp req development? token request-url)
       (handler req))))
