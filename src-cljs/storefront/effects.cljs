@@ -294,9 +294,6 @@
                    [events/flash-show-success {:message "Welcome! You have signed up successfully."
                                                :navigation [events/navigate-home {}]}]))
 
-(defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (routes/enqueue-navigate app-state events/navigate-home))
-
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
   (enqueue-message (get-in app-state keypaths/event-ch)
