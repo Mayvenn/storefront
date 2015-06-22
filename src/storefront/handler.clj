@@ -9,6 +9,7 @@
             [ring.util.response :refer [redirect response status content-type header]]
             [noir-exception.core :refer [wrap-internal-error wrap-exceptions]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
+            [ring.middleware.resource :refer [wrap-resource]]
             [ring-logging.core :refer [make-logger-middleware]]
             [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
@@ -23,7 +24,8 @@
     site-defaults
     (-> secure-site-defaults
         (assoc :proxy true)
-        (assoc-in [:security :hsts] false))))
+        (assoc-in [:security :hsts] false)
+        (assoc-in [:static :resources] false))))
 
 (defn fetch-store [storeback-config store-slug]
   (when (seq store-slug)
@@ -136,6 +138,7 @@
    (make-logger-middleware logger)
    (wrap-defaults (storefront-site-defaults environment))
    (wrap-redirect storeback-config)
+   (wrap-resource "public")
    (wrap-cdn)))
 
 (defn create-handler
