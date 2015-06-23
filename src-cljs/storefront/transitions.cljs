@@ -205,7 +205,7 @@
                   :quantity variant-quantity})))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
-  (if (orders/cart-stage? order)
+  (if (orders/incomplete? order)
     (if (= (order :number) (get-in app-state keypaths/order-number))
       (-> app-state
           (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
@@ -252,7 +252,7 @@
       (assoc-in keypaths/cart-coupon-code "")))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
-  (if (orders/cart-stage? order)
+  (if (orders/incomplete? order)
     (-> app-state
         (assoc-in keypaths/order order))
     (-> app-state
