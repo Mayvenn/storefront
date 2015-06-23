@@ -10,7 +10,8 @@
             [storefront.riskified :as riskified]
             [storefront.checkout :as checkout]
             [storefront.messages :refer [enqueue-message]]
-            [storefront.analytics :as analytics]))
+            [storefront.analytics :as analytics]
+            [storefront.orders :as orders]))
 
 (defn scroll-to-top []
   (set! (.. js/document -body -scrollTop) 0))
@@ -337,7 +338,9 @@
       (api/get-account (get-in app-state keypaths/event-ch) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
-  (save-cookie app-state true))
+  (if (orders/cart-stage? order)
+    (save-cookie app-state true)
+    (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate added-coupon?]} app-state]
   (when navigate

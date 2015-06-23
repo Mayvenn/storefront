@@ -41,6 +41,10 @@
         (.set cookie attr val age "/" nil secure?)
         (.remove cookie attr)))))
 
+(defn clear-order [cookie]
+  (doseq [attr order-attrs]
+    (.remove cookie attr)))
+
 (defn clear [cookie]
   (doseq [attr (concat user-attrs order-attrs)]
     (.remove cookie attr)))
