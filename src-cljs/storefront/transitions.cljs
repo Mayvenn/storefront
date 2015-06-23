@@ -199,11 +199,13 @@
                   :quantity variant-quantity})))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
-  (-> app-state
-      (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
-      (assoc-in keypaths/order order)
-      (assoc-in keypaths/cart-quantities
-                (into {} (map (juxt :id :quantity) (order :line_items))))))
+  (if (orders/cart-stage? order)
+    (-> app-state
+        (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
+        (assoc-in keypaths/order order)
+        (assoc-in keypaths/cart-quantities
+                  (into {} (map (juxt :id :quantity) (order :line_items)))))
+    (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
   (update-in app-state keypaths/past-orders merge {(:number order) order}))
