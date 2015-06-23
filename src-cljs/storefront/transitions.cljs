@@ -64,7 +64,6 @@
   (assoc-in app-state keypaths/account-menu-expanded false))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
-  ;; FIXME clear other user specific pieces of state
   (-> app-state
       (assoc-in keypaths/user {})
       (assoc-in keypaths/order nil)
