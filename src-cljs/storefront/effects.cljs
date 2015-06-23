@@ -68,27 +68,31 @@
   (api/get-product (get-in app-state keypaths/event-ch)
                    product-path))
 
+(defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-states (get-in app-state keypaths/event-ch)
+                    (get-in app-state keypaths/api-cache))
+    (api/get-stylist-account (get-in app-state keypaths/event-ch)
+                             user-token)))
+
+(defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-stylist-commissions (get-in app-state keypaths/event-ch)
+                                 user-token)))
+
+(defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+      (api/get-stylist-bonus-credits (get-in app-state keypaths/event-ch)
+                                     user-token)))
+
+(defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-stylist-referral-program (get-in app-state keypaths/event-ch)
+                                      user-token)))
+
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (when-not (get-in app-state keypaths/order-number)
     (routes/enqueue-redirect app-state events/navigate-cart)))
-
-(defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
-  (api/get-states (get-in app-state keypaths/event-ch)
-                  (get-in app-state keypaths/api-cache))
-  (api/get-stylist-account (get-in app-state keypaths/event-ch)
-                           (get-in app-state keypaths/user-token)))
-
-(defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
-  (api/get-stylist-commissions (get-in app-state keypaths/event-ch)
-                               (get-in app-state keypaths/user-token)))
-
-(defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
-  (api/get-stylist-bonus-credits (get-in app-state keypaths/event-ch)
-                                 (get-in app-state keypaths/user-token)))
-
-(defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
-  (api/get-stylist-referral-program (get-in app-state keypaths/event-ch)
-                                    (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (api/get-states (get-in app-state keypaths/event-ch)
@@ -104,8 +108,9 @@
                       (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
-  (api/get-my-orders (get-in app-state keypaths/event-ch)
-                     (get-in app-state keypaths/user-token)))
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-my-orders (get-in app-state keypaths/event-ch)
+                       user-token)))
 
 (defmethod perform-effects events/navigate-not-found [_ event args app-state]
   (enqueue-message (get-in app-state keypaths/event-ch)
@@ -290,8 +295,11 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
-  (when (= (get-in app-state keypaths/navigation-event) events/navigate-sign-in)
-    (routes/enqueue-navigate app-state events/navigate-home))
+  (let [nav-message (get-in app-state keypaths/navigation-message)
+        nav-event (first nav-message)]
+    (if (= nav-event events/navigate-sign-in)
+      (routes/enqueue-navigate app-state events/navigate-home)
+      (enqueue-message (get-in app-state keypaths/event-ch) nav-message)))
   (enqueue-message (get-in app-state keypaths/event-ch)
                    [events/flash-show-success {:message "Logged in successfully"
                                                :navigation [events/navigate-home {}]}]))
@@ -339,7 +347,9 @@
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (if (orders/cart-stage? order)
-    (save-cookie app-state true)
+    (if (= (order :number) (get-in app-state keypaths/order-number))
+      (save-cookie app-state true)
+      (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate added-coupon?]} app-state]
