@@ -18,8 +18,8 @@
 (def order [:order])
 (def order-token (conj order :guest-token))
 (def order-number (conj order :number))
-(def order-covered-by-store-credit [:order :covered_by_store_credit])
-(def order-total-applicable-store-credit [:order :total_applicable_store_credit])
+(def order-covered-by-store-credit (conj order :covered_by_store_credit))
+(def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
 
 (def promotions [:promotions])
 
