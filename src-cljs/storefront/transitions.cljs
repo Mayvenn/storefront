@@ -67,7 +67,12 @@
   ;; FIXME clear other user specific pieces of state
   (-> app-state
       (assoc-in keypaths/user {})
-      (assoc-in keypaths/order nil)))
+      (assoc-in keypaths/order nil)
+      (assoc-in keypaths/past-orders {})
+      (assoc-in keypaths/my-order-ids nil)
+      (assoc-in keypaths/stylist {})
+      (assoc-in keypaths/billing-address {})
+      (assoc-in keypaths/shipping-address {})))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
