@@ -239,16 +239,15 @@
                                  :stylist (select-stylist-account-keys %)}])
    (default-error-handler events-ch)))
 
-(defn update-stylist-account-profile-picture [events-ch user-token stylist-account]
+(defn update-stylist-account-profile-picture [events-ch user-token profile-picture]
   (let [form-data (doto (js/FormData.)
-                    (.append "file"
-                             (stylist-account :profile-picture)
-                             (.-name (stylist-account :profile-picture)))
+                    (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
          {:handler #(enqueue-message events-ch
                                      [events/api-success-stylist-manage-account-profile-picture
-                                      (select-keys % [:profile_picture_url])])
+                                      (merge {:updated true}
+                                             {:stylist (select-keys % [:profile_picture_url])})])
           :error-handler (default-error-handler events-ch)
           :params form-data
           :response-format (json-response-format {:keywords? true})
