@@ -15,3 +15,4 @@ deployment:
       - git config --global user.email "justin+mayvenn-bot@mayvenn.com"
       - git config --global user.name "Mayvenn-Bot"
       - cd ~/rainman && bundle exec ./rain storefront acceptance
+      - curl -X POST https://circleci.com/api/v1/project/Mayvenn/heat/tree/master?circle-token=${HEAT_TOKEN}
