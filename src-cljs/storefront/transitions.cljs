@@ -3,7 +3,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.taxons :refer [taxon-path-for]]
-            [storefront.orders :as orders]))
+            [storefront.orders :as orders]
+            [storefront.state :as state]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -45,8 +46,9 @@
       (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (assoc-in app-state keypaths/checkout-use-store-credits
-            (pos? (get-in app-state keypaths/user-total-available-store-credit))))
+  (-> app-state
+      (assoc-in keypaths/checkout-use-store-credits
+             (pos? (get-in app-state keypaths/user-total-available-store-credit)))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
@@ -235,7 +237,7 @@
       (-> app-state
           (sign-in-user args)
           (merge {:billing-address billing-address
-                    :shipping-address shipping-address})
+                  :shipping-address shipping-address})
           (update-in keypaths/checkout-billing-address merge billing-address)
           (update-in keypaths/checkout-shipping-address merge shipping-address)
           (assoc-in keypaths/checkout-credit-card-name fullname)))
@@ -250,11 +252,12 @@
       (assoc-in keypaths/cart-coupon-code "")))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
-  (if (= (:state order) "complete")
+  (if (orders/cart-stage? order)
     (-> app-state
-        (assoc-in keypaths/order {}))
+        (assoc-in keypaths/order order))
     (-> app-state
-        (assoc-in keypaths/order order))))
+        (assoc-in keypaths/checkout state/initial-checkout-state)
+        (assoc-in keypaths/order {}))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))

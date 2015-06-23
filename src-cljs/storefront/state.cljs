@@ -7,6 +7,32 @@
 (defn get-store-subdomain []
   (first (string/split (.-hostname js/location) #"\.")))
 
+(def initial-checkout-state
+  {:billing-address {:firstname ""
+                     :lastname ""
+                     :address1 ""
+                     :address2 ""
+                     :city ""
+                     :state_id 0
+                     :zipcode ""
+                     :phone ""
+                     :save-my-address true}
+   :shipping-address {:firstname ""
+                      :lastname ""
+                      :address1 ""
+                      :address2 ""
+                      :city ""
+                      :state_id 0
+                      :zipcode ""
+                      :phone ""
+                      :use-billing-address true}
+   :credit-card-name ""
+   :credit-card-number ""
+   :credit-card-expiration ""
+   :credit-card-ccv ""
+   :selected-shipping-method-id 0
+   :use-store-credits false})
+
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:event-ch (chan)
@@ -107,30 +133,7 @@
                            :password-confirmation ""}
           :cart {:quantities {}
                  :coupon-code ""}
-          :checkout {:billing-address {:firstname ""
-                                       :lastname ""
-                                       :address1 ""
-                                       :address2 ""
-                                       :city ""
-                                       :state_id 0
-                                       :zipcode ""
-                                       :phone ""
-                                       :save-my-address true}
-                     :shipping-address {:firstname ""
-                                        :lastname ""
-                                        :address1 ""
-                                        :address2 ""
-                                        :city ""
-                                        :state_id 0
-                                        :zipcode ""
-                                        :phone ""
-                                        :use-billing-address true}
-                     :credit-card-name ""
-                     :credit-card-number ""
-                     :credit-card-expiration ""
-                     :credit-card-ccv ""
-                     :selected-shipping-method-id 0
-                     :use-store-credits false}
+          :checkout initial-checkout-state
           :flash {:success {:message nil
                             :navigation []}
                   :failure {:message nil
