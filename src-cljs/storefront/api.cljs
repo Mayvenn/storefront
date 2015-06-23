@@ -204,7 +204,7 @@
     :bill_address (select-address-keys billing-address)
     :ship_address (select-address-keys shipping-address)
     :token token}
-   #(enqueue-message events-ch [events/api-success-account (rename-server-address-keys %)])
+   #(enqueue-message events-ch [events/api-success-address (rename-server-address-keys %)])
    (default-error-handler events-ch)))
 
 (defn select-stylist-account-keys [args]
