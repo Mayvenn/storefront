@@ -232,16 +232,23 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
-(defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
+(defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
   (if (get-in app-state keypaths/user-id)
     (let [fullname (str (:firstname billing-address) " " (:lastname billing-address))]
       (-> app-state
-          (sign-in-user args)
           (merge {:billing-address billing-address
                   :shipping-address shipping-address})
           (update-in keypaths/checkout-billing-address merge billing-address)
           (update-in keypaths/checkout-shipping-address merge shipping-address)
           (assoc-in keypaths/checkout-credit-card-name fullname)))
+    app-state))
+
+(defmethod transition-state events/api-success-address [_ event args app-state]
+  (update-account-address app-state args))
+
+(defmethod transition-state events/api-success-account [_ event args app-state]
+  (if (get-in app-state keypaths/user-id)
+    (-> app-state (sign-in-user args) (update-account-address args))
     app-state))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
