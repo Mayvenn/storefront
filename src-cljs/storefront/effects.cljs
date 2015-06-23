@@ -344,7 +344,8 @@
     (apply routes/enqueue-navigate app-state navigate))
   (when added-coupon?
     (enqueue-message (get-in app-state keypaths/event-ch)
-                     [events/flash-show-success {:message "The coupon code was successfully applied to your order."}])
+                     [events/flash-show-success {:message "The coupon code was successfully applied to your order."
+                                                 :navigation [events/navigate-cart {}]}])
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-dismiss-failure])))
 
