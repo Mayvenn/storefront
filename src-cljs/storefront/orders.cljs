@@ -12,5 +12,5 @@
   (not= (js/parseFloat (:order_total_after_store_credit order))
         0))
 
-(defn cart-stage? [order]
+(defn incomplete? [order]
   (-> order :state #{"cart" "address" "delivery" "payment" "confirm"}))
