@@ -189,7 +189,8 @@
    (map #(assoc % :quantity (-> % :id quantities)))))
 
 (defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
-  (let [order (get-in app-state keypaths/order)]
+  (let [order (get-in app-state keypaths/order)
+        coupon-code (get-in app-state keypaths/cart-coupon-code)]
     (api/update-cart
      (get-in app-state keypaths/event-ch)
      (get-in app-state keypaths/user-token)
@@ -198,11 +199,12 @@
               {:state "address"
                :email (get-in app-state keypaths/user-email)
                :user_id (get-in app-state keypaths/user-id)})
-            {:coupon_code (get-in app-state keypaths/cart-coupon-code)
+            {:coupon_code coupon-code
              :line_items_attributes (updated-quantities
                                      (:line_items order)
                                      (get-in app-state keypaths/cart-quantities))})
-     {:navigate (when navigate-to-checkout? [events/navigate-checkout-address])})))
+     {:navigate (when navigate-to-checkout? [events/navigate-checkout-address])
+      :added-coupon? (not (empty? coupon-code))})))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
   (let [order (get-in app-state keypaths/order)
@@ -337,9 +339,14 @@
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (save-cookie app-state true))
 
-(defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate]} app-state]
+(defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate added-coupon?]} app-state]
   (when navigate
-    (apply routes/enqueue-navigate app-state navigate)))
+    (apply routes/enqueue-navigate app-state navigate))
+  (when added-coupon?
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-show-success {:message "The coupon code was successfully applied to your order."}])
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-dismiss-failure])))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (save-cookie app-state true)
