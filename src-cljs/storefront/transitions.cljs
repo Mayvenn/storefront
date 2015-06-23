@@ -125,9 +125,10 @@
   (assoc-in app-state keypaths/payment-methods payment_methods))
 
 (defmethod transition-state events/api-success-stylist-manage-account
-  [_ event response app-state]
+  [_ event {:keys [stylist]} app-state]
   (-> app-state
-      (update-in keypaths/stylist-manage-account merge (:stylist response))))
+      (update-in keypaths/stylist-manage-account merge stylist)
+      (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
 
 (defmethod transition-state events/api-success-stylist-commissions
   [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]

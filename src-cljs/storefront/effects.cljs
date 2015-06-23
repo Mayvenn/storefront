@@ -223,6 +223,12 @@
                                             {:quantity 0})]})
      {})))
 
+(defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
+  (let [event-ch (get-in app-state keypaths/event-ch)
+        user-token (get-in app-state keypaths/user-token)
+        profile-picture (:file args)]
+    (api/update-stylist-account-profile-picture event-ch user-token profile-picture)))
+
 (defmethod perform-effects events/control-stylist-manage-account-submit [_ events args app-state]
   (let [event-ch (get-in app-state keypaths/event-ch)
         user-token (get-in app-state keypaths/user-token)

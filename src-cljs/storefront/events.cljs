@@ -79,6 +79,8 @@
 (def control-checkout-payment-method-submit (conj control-checkout :payment-method-submit))
 (def control-checkout-confirmation-submit (conj control-checkout :confirmation-submit))
 
+(def control-stylist-profile-picture (conj control :stylist :profile-picture))
+
 (def control-stylist-manage-account (conj control :stylist :manage-account))
 (def control-stylist-manage-account-change (conj control-stylist-manage-account :change))
 (def control-stylist-manage-account-submit (conj control-stylist-manage-account :submit))
