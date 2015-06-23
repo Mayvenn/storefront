@@ -204,8 +204,8 @@
                   :quantity variant-quantity})))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
-  (if (get-in app-state keypaths/order-number)
-    (if (orders/cart-stage? order)
+  (if (orders/cart-stage? order)
+    (if (= (order :number) (get-in app-state keypaths/order-number))
       (-> app-state
           (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
           (assoc-in keypaths/order order)
