@@ -233,23 +233,31 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
+(defn default-checkout-addresses [app-state billing-address shipping-address]
+  (-> app-state
+      (update-in keypaths/checkout-billing-address merge billing-address)
+      (update-in keypaths/checkout-shipping-address merge shipping-address)))
+
+(defn default-credit-card-name [app-state {:keys [firstname lastname]}]
+  (assoc-in app-state keypaths/checkout-credit-card-name (str firstname " " lastname)))
+
 (defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
-  (if (get-in app-state keypaths/user-id)
-    (let [fullname (str (:firstname billing-address) " " (:lastname billing-address))]
-      (-> app-state
-          (merge {:billing-address billing-address
-                  :shipping-address shipping-address})
-          (update-in keypaths/checkout-billing-address merge billing-address)
-          (update-in keypaths/checkout-shipping-address merge shipping-address)
-          (assoc-in keypaths/checkout-credit-card-name fullname)))
-    app-state))
+  (-> app-state
+      (merge {:billing-address billing-address
+              :shipping-address shipping-address})
+      (default-credit-card-name billing-address)))
 
 (defmethod transition-state events/api-success-address [_ event args app-state]
-  (update-account-address app-state args))
-
-(defmethod transition-state events/api-success-account [_ event args app-state]
   (if (get-in app-state keypaths/user-id)
-    (-> app-state (sign-in-user args) (update-account-address args))
+    (update-account-address app-state args)
+    app-state))
+
+(defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
+  (if (get-in app-state keypaths/user-id)
+    (-> app-state
+        (sign-in-user args)
+        (update-account-address args)
+        (default-checkout-addresses billing-address shipping-address))
     app-state))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
