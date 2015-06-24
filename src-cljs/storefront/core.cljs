@@ -48,4 +48,10 @@
   (exception-handler/remove-handler)
   (main app-state))
 
+(defn ^:export fail []
+  (try
+    (throw (js/Error. "Pokemon"))
+    (catch js/Error e
+      (exception-handler/report e))))
+
 (main app-state)
