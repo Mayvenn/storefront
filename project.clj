@@ -54,7 +54,7 @@
                 :output-to "resources/public/js/out/main.js"
                 :pretty-print true
                 :output-dir "resources/public/js/out"
-                :externs ["externs/riskified.js"]}}
+                :externs ["externs/riskified.js" "externs/honeybadger.js"]}}
     :release
     {:compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
@@ -62,7 +62,7 @@
                 :source-map "target/release/js/out/main.js.map"
                 :source-map-path "/js/out"
                 :pretty-print false
-                :externs ["externs/riskified.js"]
+                :externs ["externs/riskified.js" "externs/honeybadger.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles
