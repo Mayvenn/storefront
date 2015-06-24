@@ -78,6 +78,7 @@
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
+  (throw "Pie")
   (assoc-in app-state keypath (if (fn? value) (value) value)))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
