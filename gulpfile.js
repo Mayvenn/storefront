@@ -6,6 +6,11 @@ var path = require('path');
 var argv = require('yargs').argv;
 var rimraf = require('gulp-rimraf');
 var gzip = require('gulp-gzip');
+var jsonTransform = require('gulp-json-transform');
+var gutil = require('gulp-util');
+var merge = require('merge-stream');
+var gulpIgnore = require('gulp-ignore');
+var debug = require('gulp-debug');
 
 gulp.task('sass', function () {
   gulp.src('./resources/scss/*.scss')
@@ -27,15 +32,30 @@ gulp.task('cdn', function () {
     throw "missing --host";
   }
 
-  var revAll = new RevAll({
-    prefix: "//" + argv.host + "/cdn/"
-  });
-
   gulp.src(['./resources/public/cdn', './resources/rev-manifest.json'],
            { read: false })
     .pipe(rimraf());
 
-  gulp.src('./resources/public/{js,css,images,fonts}/**')
+  var revAll = new RevAll({
+    prefix: "//" + argv.host + "/cdn/"
+  });
+
+  gulp.src(['./target/release/**'])
+    .pipe(gulp.dest('./resources/public/'));
+
+  var sourceMapPath = 'resources/public/js/out/main.js.map'
+  var sourceMapStream = gulp.src([sourceMapPath])
+      .pipe(jsonTransform(function(data) {
+        data["sources"] = data["sources"].map(function(f) {
+          return f.replace("\/", "/");
+        });
+        return data;
+      }));
+
+  var fileStream = gulp.src('resources/public/{js,css,images,fonts}/**')
+      .pipe(gulpIgnore.exclude("*.map"));
+
+  merge(fileStream, sourceMapStream)
     .pipe(revAll.revision())
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('./resources/public/cdn'))

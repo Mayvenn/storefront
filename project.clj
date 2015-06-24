@@ -57,7 +57,10 @@
                 :externs ["externs/riskified.js"]}}
     :release
     {:compiler {:main "storefront.core"
-                :output-to "resources/public/js/out/main.js"
+                :output-to "target/release/js/out/main.js"
+                :output-dir "target/release/js/out"
+                :source-map "target/release/js/out/main.js.map"
+                :source-map-path "/js/out"
                 :pretty-print false
                 :externs ["externs/riskified.js"]
                 :optimizations :advanced}}}}
