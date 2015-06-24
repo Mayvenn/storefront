@@ -13,7 +13,7 @@
        "'});"))
 
 (defn honeybadger-enabled? []
-  (not (config/development?)))
+  (not config/development?))
 
 (defn report [error & [custom-class]]
   (cond (and (honeybadger-enabled?) js/Honeybadger)
