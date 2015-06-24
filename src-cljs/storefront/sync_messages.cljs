@@ -33,5 +33,5 @@
     ;; rename transition to transition-log to log messages
     (om/transact! app-state-ref #(transition % message))
     (effects @app-state-ref message)
-    (catch js/Error e
+    (catch js/Object e
         (exception-handler/report e))))
