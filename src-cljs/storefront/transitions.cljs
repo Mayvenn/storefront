@@ -21,7 +21,6 @@
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (throw (js/Error. "Pizza"))
   (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
