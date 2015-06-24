@@ -77,8 +77,6 @@
                                 :birth-date-1i nil
                                 :birth-date-2i nil
                                 :birth-date-3i nil
-                                :password ""
-                                :password_confirmation ""
                                 :address {:firstname nil
                                           :lastname nil
                                           :address1 nil
