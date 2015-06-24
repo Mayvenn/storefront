@@ -1,0 +1,2 @@
+figwheel: rm -rf resources/public/js/out/ && lein figwheel
+gulp: node_modules/.bin/gulp watch
