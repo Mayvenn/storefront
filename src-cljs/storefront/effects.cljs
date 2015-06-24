@@ -342,7 +342,9 @@
   (when (:updated args)
     (enqueue-message (get-in app-state keypaths/event-ch)
                      [events/flash-show-success {:message "Account updated"
-                                                 :navigation [events/navigate-stylist-manage-account {}]}])))
+                                                 :navigation [events/navigate-stylist-manage-account {}]}])
+    (enqueue-message (get-in app-state keypaths/event-ch)
+                     [events/flash-dismiss-failure])))
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -389,6 +391,7 @@
   (scroll-to-top))
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
+  (enqueue-message (get-in app-state keypaths/event-ch) [events/flash-dismiss-success])
   (if (seq (:fields validation-errors))
     (scroll-to-top)
     (enqueue-message (get-in app-state keypaths/event-ch)
