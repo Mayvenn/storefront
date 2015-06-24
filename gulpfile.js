@@ -27,6 +27,11 @@ gulp.task('watch', function () {
 
 gulp.task('default', ['sass']);
 
+gulp.task('copy-release-assets', function () {
+  gulp.src(['./target/release/**'])
+    .pipe(gulp.dest('./resources/public/'));
+});
+
 gulp.task('cdn', function () {
   if (!argv.host) {
     throw "missing --host";
@@ -39,9 +44,6 @@ gulp.task('cdn', function () {
   var revAll = new RevAll({
     prefix: "//" + argv.host + "/cdn/"
   });
-
-  gulp.src(['./target/release/**'])
-    .pipe(gulp.dest('./resources/public/'));
 
   var sourceMapPath = 'resources/public/js/out/main.js.map'
   var sourceMapStream = gulp.src([sourceMapPath])
