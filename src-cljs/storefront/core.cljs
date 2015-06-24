@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
+            [storefront.exception-handler :as exception-handler]
             [storefront.messages :refer [enqueue-message]]
             [storefront.sync-messages :refer [send-message]]
             [cljs.core.async :refer [<! chan close!]]
@@ -21,6 +22,7 @@
     (enqueue-message event-ch [events/app-start])))
 
 (defn main [app-state]
+  (exception-handler/insert-handler)
   (routes/install-routes app-state)
   (om/root
    top-level-component
@@ -43,6 +45,7 @@
     (enqueue-message event-ch [events/app-stop])
     (close! event-ch))
   (swap! app-state assoc-in keypaths/event-ch (chan))
+  (exception-handler/remove-handler)
   (main app-state))
 
 (main app-state)

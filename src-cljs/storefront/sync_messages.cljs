@@ -1,6 +1,7 @@
 (ns storefront.sync-messages
   (:require [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
+            [storefront.exception-handler :as exception-handler]
             [om.core :as om]
             [clojure.data :refer [diff]]))
 
@@ -28,6 +29,9 @@
   (log-deltas app-state (transition app-state message) message))
 
 (defn send-message [app-state-ref message]
-  ;; rename transition to transition-log to log messages
-  (om/transact! app-state-ref #(transition-log % message))
-  (effects @app-state-ref message))
+  (try
+    ;; rename transition to transition-log to log messages
+    (om/transact! app-state-ref #(transition-log % message))
+    (effects @app-state-ref message)
+    (catch js/Error e
+        (exception-handler/report e))))
