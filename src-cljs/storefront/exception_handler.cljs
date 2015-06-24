@@ -22,7 +22,8 @@
         (and js/console js/console.error)
         (js/console.error "[Honeybadger not loaded when exception occurred]: " error custom-class)
 
-        :else ""))
+        :else "")
+  (throw error))
 
 (defn insert-handler []
   (when (honeybadger-enabled?)
