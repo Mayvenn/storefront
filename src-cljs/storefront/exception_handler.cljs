@@ -15,14 +15,15 @@
 (defn honeybadger-enabled? []
   (not config/development?))
 
+(defn- log [msg error error-class]
+  (when (and js/console js/console.error)
+    (js/console.error (str msg error error-class))))
+
 (defn report [error & [custom-class]]
-  (cond (and (honeybadger-enabled?) js/Honeybadger)
-        (js/Honeybadger.notify error custom-class)
-
-        (and js/console js/console.error)
-        (js/console.error "[Honeybadger not loaded when exception occurred]: " error custom-class)
-
-        :else "")
+  (if (and (honeybadger-enabled?) js/Honeybadger)
+    (do (js/Honeybadger.notify error custom-class)
+        (log "[Exception occurred, logged to honeybadger]: " error custom-class))
+    (log "[Honeybadger not loaded when exception occurred]: " error custom-class))
   (throw error))
 
 (defn insert-handler []
