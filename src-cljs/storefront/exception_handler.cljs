@@ -28,6 +28,6 @@
   (when (honeybadger-enabled?)
     (insert-tag-pair src configuration class-name)))
 
-(defn remove-handler [h]
+(defn remove-handler []
   (when (honeybadger-enabled?)
     (remove-tag-pair class-name)))
