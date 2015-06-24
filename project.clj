@@ -39,7 +39,7 @@
              :css-dirs ["resources/public/css"]}
   :main storefront.core
   :repl-options {:init-ns user}
-  :jvm-opts ["-Xmx1g"]
+  :jvm-opts ["-Xmx3g"]
   :clean-targets ^{:protect false} [:target-path
                                     "resources/public/js/out/"
                                     "resources/public/css/"
