@@ -21,7 +21,7 @@
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (throw "Pizza")
+  (throw (js/Error. "Pizza"))
   (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
@@ -78,7 +78,6 @@
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
-  (throw "Pie")
   (assoc-in app-state keypath (if (fn? value) (value) value)))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
