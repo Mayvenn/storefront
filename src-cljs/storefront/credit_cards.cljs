@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [goog.string :as gstring]))
 
-(def digits (into #{} (range 0 10)))
+(def digits (into #{} (map str (range 0 10))))
 
 (defn filter-cc-number-format [s]
   (->> s
