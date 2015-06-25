@@ -255,7 +255,8 @@
     (api/update-order event-ch token
                       (merge (get-in app-state keypaths/order)
                              addresses
-                             {:state "address"})
+                             {:state "address"
+                              :email (get-in app-state keypaths/user-email)})
                       {:navigate [events/navigate-checkout-delivery]})))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
