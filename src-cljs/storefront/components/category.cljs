@@ -61,9 +61,12 @@
            [:div {:style {:clear "both"}}]]
 
           [:div.taxon-products-list-container
-           (map (partial display-product data (:id taxon))
-                (filter #(contains? (set (:taxon_ids %)) (:id taxon))
-                        (vals (get-in data keypaths/products))))]]
+           (->>
+            (get-in data keypaths/products)
+            vals
+            (sort-by :index)
+            (filter #(contains? (set (:taxon_ids %)) (:id taxon)))
+            (map (partial display-product data (:id taxon))))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]
