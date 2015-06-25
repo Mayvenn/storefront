@@ -23,7 +23,7 @@ div#product-images {
       text-align: left;
       display: block;
       flex: none;
-      flex-direction: inherit; 
+      flex-direction: inherit;
 
       .product-collection {
           order: 1;
@@ -37,15 +37,28 @@ div#product-images {
           text-transform: capitalize;
           border: 0 none;
 
-          img {
+          .product-collection-indicator {
               width: 1.78rem;
               height: 1.78rem;
               margin-top: -0.3rem;
               display: inline-block;
               vertical-align: middle;
+              @include stretch-bg;
+
+              &.ultra {
+                background-image: url("/images/products/squiggle-categories-ultra@2x.png");
+              }
+
+              &.premier {
+                background-image: url("/images/products/squiggle-categories-premier@2x.png");
+              }
+
+              &.deluxe {
+                background-image: url("/images/products/squiggle-categories-deluxe@2x.png");
+              }
           }
       }
-      
+
       .product-title {
           order: 2;
           background-color: inherit;

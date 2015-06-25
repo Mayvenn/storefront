@@ -92,8 +92,7 @@
               (display-product-image (first images)))]
            [:div.product-info
             [:div.product-collection
-             [:img {:src (str "/images/products/squiggle-categories-" collection-name "@2x.png")
-                    :class collection-name}]
+             [:div.product-collection-indicator {:class collection-name}]
              [:span collection-name]]
             [:div.product-title {:item-prop "name"}
              (product :name)]]]

@@ -39,12 +39,26 @@
               vertical-align: middle;
           }
 
-          img {
+
+          .product-collection-indicator {
+              @include stretch-bg;
               height: 1.4rem;
               width: 1.4rem;
+
+              &.ultra {
+                background-image: url("/images/products/squiggle-categories-ultra@2x.png");
+              }
+
+              &.premier {
+                background-image: url("/images/products/squiggle-categories-premier@2x.png");
+              }
+
+              &.deluxe {
+                background-image: url("/images/products/squiggle-categories-deluxe@2x.png");
+              }
           }
       }
-      
+
       .product-title {
           line-height: 2rem;
           @include order(1);
@@ -100,7 +114,7 @@
 div.product-collection-description {
     margin-top:2rem;
     clear: both;
-    
+
     .bar {
         z-index: 0;
         position: relative;
@@ -110,13 +124,13 @@ div.product-collection-description {
         height: 0.2rem;
         width: 75%;
     }
-    
+
     .product-collection-circles {
         z-index: 1;
         margin: auto;
         width: 75%;
         @include display(flex);
-        @include flex-direction(row); 
+        @include flex-direction(row);
         @include justify-content(space-between);
 
         img {
@@ -128,7 +142,7 @@ div.product-collection-description {
 
     .product-collection-text {
         margin-top: 2rem;
-        
+
         .sub-header {
             font-family: $primary_font_medium;
             background-image: none;
