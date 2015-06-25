@@ -50,7 +50,9 @@
                             {:class "no-picture"})
          [:div.slideout-nav-header
          [:div.slideout-nav-img-container
-          [:img.slideout-nav-portrait {:src (store :profile_picture_url)}]]
+          [:img.slideout-nav-portrait
+           {:src (or (store :profile_picture_url)
+                     "/images/profile_pictures/standard/missing.png")}]]
          [:h2.slideout-nav-title (store :store_name)]]
         [:div.horizontal-nav-list
          [:div.account-detail
