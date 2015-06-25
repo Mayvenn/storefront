@@ -30,7 +30,7 @@
        (when-let [path (default-taxon-path data)]
          [:a.full-link (utils/route-to data events/navigate-category
                                        {:taxon-path path})])]
-      [:img.home-free-shipping {:src "/images/30_day_ship_combo.png"}]]
+      [:div.home-free-shipping]]
      [:div.squashed-hair-categories.with-flex-box
       (map (partial category data)
            (get-in data keypaths/taxons))

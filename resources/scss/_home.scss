@@ -10,7 +10,9 @@
 }
 
 .home-free-shipping {
-  width: 100%;
+  height: 145px;
+  background-image: url("/images/30_day_ship_combo.png");
+  @include stretch-bg;
 }
 
 .squashed-hair-categories {
