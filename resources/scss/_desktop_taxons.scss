@@ -82,7 +82,7 @@ div.gold-features {
     border-right: solid #bd9424 1px;
     background-image: url('/images/desktop_assets/shipping.png');
   }
-  
+
   .triple-bundle-feature {
     @include stretch-bg;
     background-image: url('/images/desktop_assets/bundle-5percent.png');
@@ -91,7 +91,7 @@ div.gold-features {
   }
 
 
-  
+
 }
 
 .taxon-products-container {
@@ -129,10 +129,24 @@ div.taxon-product-info-container {
     .taxon-product-collection {
       padding: 0;
       font-size: 1rem;
-      img {
+      .taxon-product-collection-indicator {
         margin-left: 2px;
         width: 18px;
         height: 18px;
+        @include stretch-bg;
+        display: inline-block;
+
+        &.ultra {
+          background-image: url("/images/products/squiggle-categories-ultra@2x.png");
+        }
+
+        &.premier {
+          background-image: url("/images/products/squiggle-categories-premier@2x.png");
+        }
+
+        &.deluxe {
+          background-image: url("/images/products/squiggle-categories-deluxe@2x.png");
+        }
       }
     }
     .taxon-product-title {
