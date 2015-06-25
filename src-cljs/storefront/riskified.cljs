@@ -1,5 +1,6 @@
 (ns storefront.riskified
-  (:require [storefront.script-tags :refer [insert-tag-with-src remove-tag]]))
+  (:require [storefront.script-tags :refer [insert-tag-with-src remove-tag]]
+            [storefront.exception-handler :as exception-handler]))
 
 (def store-domain "mayvenn.com")
 
@@ -13,4 +14,7 @@
 
 (defn track-page [path]
     (when (.hasOwnProperty js/window "RISKX")
-    (.go js/RISKX (clj->js path))))
+      (try
+        (.go js/RISKX (clj->js path))
+        (catch :default e
+          (exception-handler/report e)))))
