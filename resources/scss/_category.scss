@@ -64,7 +64,7 @@
   font-size: 1.56rem;
   line-height: 1.7rem;
   padding: 0;
-  
+
   .taxon-product-description-container {
     font-family: $primary_font_regular;
     flex: flex-grow;
@@ -78,11 +78,25 @@
       text-transform: capitalize;
       letter-spacing: 0.1rem;
 
-      img {
+      .taxon-product-collection-indicator {
+        @include stretch-bg;
+        display: inline-block;
         width: 1.4rem;
         height: 1.4rem;
         margin-top: -0.3rem;
         vertical-align: middle;
+
+        &.ultra {
+          background-image: url("/images/products/squiggle-categories-ultra@2x.png");
+        }
+
+        &.premier {
+          background-image: url("/images/products/squiggle-categories-premier@2x.png");
+        }
+
+        &.deluxe {
+          background-image: url("/images/products/squiggle-categories-deluxe@2x.png");
+        }
       }
     }
     .taxon-product-title {
@@ -91,7 +105,7 @@
       width: 100%;
     }
   }
-  
+
   .taxon-from-price {
     flex: none;
     font-size: 1.1rem;

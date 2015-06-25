@@ -36,8 +36,8 @@
       [:div.taxon-product-info-container
        [:div.taxon-product-description-container
         [:div.taxon-product-collection
-         [:img {:class collection-name
-                :src (str "/images/products/squiggle-categories-" collection-name "@2x.png")}]
+         [:div.taxon-product-collection-indicator
+          {:class collection-name}]
          collection-name]
         [:div.taxon-product-title (:name product)]]
        [:div.taxon-from-price
