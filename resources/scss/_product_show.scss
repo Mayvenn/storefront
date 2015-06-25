@@ -133,10 +133,36 @@ div.product-collection-description {
         @include flex-direction(row);
         @include justify-content(space-between);
 
-        img {
+        .inner-product-collection-circles {
+            @include stretch-bg;
             z-index: 1;
             height: 5rem;
             width: 5rem;
+            display: inline-block;
+
+            &.ultra {
+              background-image: url("/images/products/hairtype-circle-ultra@2x.png");
+
+              &.disabled {
+                background-image: url("/images/products/hairtype-circle-ultra-disabled@2x.png");
+              }
+            }
+
+            &.premier {
+              background-image: url("/images/products/hairtype-circle-premier@2x.png");
+
+              &.disabled {
+                background-image: url("/images/products/hairtype-circle-premier-disabled@2x.png");
+              }
+            }
+
+            &.deluxe {
+              background-image: url("/images/products/hairtype-circle-deluxe@2x.png");
+
+              &.disabled {
+                background-image: url("/images/products/hairtype-circle-deluxe-disabled@2x.png");
+              }
+            }
         }
     }
 
