@@ -22,8 +22,11 @@
 .guarantee-header-image {
   display: inline-block;
   width: (250rem / $default_font_size);
+  height: (205rem / $default_font_size);
   margin-top: 1rem;
   margin-bottom: 1rem;
+  background-image: url('/images/30_day_header.png');
+  @include stretch-bg;
 }
 
 .guarantee-info-banner {
@@ -72,4 +75,3 @@
     }
   }
 }
-

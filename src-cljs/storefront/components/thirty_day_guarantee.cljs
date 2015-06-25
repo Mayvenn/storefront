@@ -7,7 +7,7 @@
    (html
     [:div
      [:div.guarantee-header
-      [:img.guarantee-header-image {:src "/images/30_day_header.png"}]]
+      [:div.guarantee-header-image {:src "/images/30_day_header.png"}]]
      [:div.guarantee-info-banner
       "Buy "
       [:em "risk free"]
