@@ -110,7 +110,9 @@
   (update-in app-state keypaths/products
              merge
              (->> products
-                  (mapcat (fn [p] [(:id p) p]))
+                  (mapcat
+                   (fn [idx p] [(:id p)(assoc p :index idx)])
+                   (range))
                   (apply hash-map))))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
