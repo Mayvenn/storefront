@@ -12,6 +12,7 @@
             [storefront.analytics :as analytics]
             [storefront.experiments :as experiments]
             [storefront.messages :refer [send]]
+            [storefront.reviews :as reviews]
             [storefront.orders :as orders]))
 
 (defn scroll-to-top []
@@ -69,7 +70,8 @@
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
-                   product-path))
+                   product-path)
+  (reviews/insert-reviews))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
