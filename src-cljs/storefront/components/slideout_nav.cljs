@@ -49,10 +49,10 @@
        [:nav.slideout-nav (when-not (store :profile_picture_url)
                             {:class "no-picture"})
          [:div.slideout-nav-header
-         [:div.slideout-nav-img-container
-          [:img.slideout-nav-portrait
-           {:src (or (store :profile_picture_url)
-                     "/images/profile_pictures/standard/missing.png")}]]
+          [:div.slideout-nav-img-container
+           (if-let [profile-picture-url (store :profile_picture_url)]
+             [:img.slideout-nav-portrait {:src profile-picture-url}]
+             [:div.slideout-nav-portrait.missing-picture])]
          [:h2.slideout-nav-title (store :store_name)]]
         [:div.horizontal-nav-list
          [:div.account-detail
