@@ -150,3 +150,5 @@
 (def validation-errors (conj ui :validation-errors))
 (def validation-errors-message (conj validation-errors :error))
 (def validation-errors-fields (conj validation-errors :fields))
+
+(def reviews-loaded (conj ui :reviews-loaded))

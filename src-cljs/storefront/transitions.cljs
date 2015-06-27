@@ -302,3 +302,6 @@
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
   (update-in app-state keypaths/optimizely-variations conj variation))
+
+(defmethod transition-state events/reviews-inserted [_ event args app-state]
+  (assoc-in app-state keypaths/reviews-loaded true))

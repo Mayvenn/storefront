@@ -56,6 +56,7 @@
                 :output-dir "resources/public/js/out"
                 :externs ["externs/riskified.js"
                           "externs/honeybadger.js"
+                          "externs/yotpo.js"
                           "externs/optimizely.js"]}}
     :release
     {:compiler {:main "storefront.core"
@@ -66,6 +67,7 @@
                 :pretty-print false
                 :externs ["externs/riskified.js"
                           "externs/honeybadger.js"
+                          "externs/yotpo.js"
                           "externs/optimizely.js"]
                 :optimizations :advanced}}}}
   :auto-clean false

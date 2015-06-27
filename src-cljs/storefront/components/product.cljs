@@ -6,10 +6,10 @@
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
+            [storefront.components.reviews :refer [reviews-component]]
             [om.core :as om]
             [clojure.string :as string]
-            [sablono.core :refer-macros [html]]
-            [storefront.events :as events]))
+            [sablono.core :refer-macros [html]]))
 
 (defn display-price [app-state product]
   (let [variant-query (get-in app-state keypaths/browse-variant-query)
@@ -148,22 +148,24 @@
                  [:figure.checkout-cart]
                  [:figure.checkout-guarantee]]]])]]
 
-          [:div#product-collection-description.product-collection-description
-           [:div.product-collection-circles-container
-            [:div.product-collection-circles
-             [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
-             [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
-             [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
-            [:div.bar]]
-           [:div.product-collection-text
-            [:h3.sub-header (str collection-name ": ")]
-            (product :collection_description)]]
-          (when-let [html-description (:description product)]
-            [:div#product-description.product-description
-             [:h3.sub-header "Description"]
-             [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])
-
-          [:div.product-reviews]]
+          [:div
+           [:div.left-of-reviews-wrapper
+            [:div#product-collection-description.product-collection-description
+             [:div.product-collection-circles-container
+              [:div.product-collection-circles
+               [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
+               [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
+               [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
+              [:div.bar]]
+             [:div.product-collection-text
+              [:h3.sub-header (str collection-name ": ")]
+              (product :collection_description)]]
+            (when-let [html-description (:description product)]
+              [:div#product-description.product-description
+               [:h3.sub-header "Description"]
+               [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]
+           (when (get-in data keypaths/reviews-loaded)
+             (om/build reviews-component data))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]

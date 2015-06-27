@@ -71,7 +71,7 @@
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
                    product-path)
-  (reviews/insert-reviews))
+  (reviews/insert-reviews app-state))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -404,3 +404,9 @@
           events/flash-show-failure
           {:message (:error validation-errors)
            :navigation (get-in app-state keypaths/navigation-message)})))
+
+(defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
+  (reviews/start))
+
+(defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
+  (reviews/stop))

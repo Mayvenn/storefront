@@ -103,11 +103,19 @@ div.price-container {
   margin-top: 31px;
 }
 
-div.cart-form-container, .product-reviews {
+.left-of-reviews-wrapper {
+  float: left;
+}
+
+div.cart-form-container,  .product-reviews {
   float: right;
   width: 420px;
-  margin-right: 54px;
+  margin-right: 45px;
   margin-bottom: 2rem;
+}
+
+div.product-reviews {
+  padding: 0;
 }
 
 div#after-add {

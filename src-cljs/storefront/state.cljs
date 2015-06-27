@@ -133,4 +133,5 @@
           :flash {:success {:message nil
                             :navigation []}
                   :failure {:message nil
-                            :navigation []}}}}))
+                            :navigation []}}
+          :reviews-loaded false}}))

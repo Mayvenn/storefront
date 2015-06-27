@@ -133,4 +133,10 @@
 (def flash-show-failure (conj flash-show :failure))
 (def flash-dismiss-failure (conj flash-dismiss :failure))
 
+
 (def optimizely [:optimizely])
+
+(def reviews [:reviews])
+(def reviews-inserted (conj reviews :inserted))
+(def reviews-component-mounted (conj reviews :component-mounted))
+(def reviews-component-will-unmount (conj reviews :component-will-unmount))

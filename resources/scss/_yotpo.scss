@@ -1,0 +1,20 @@
+.yotpo {
+  div, span, p, a, img, i, strong, sup, ul, li, form, label {
+    font-family: $primary_font_regular !important;
+    line-height: (17em / 12) !important;
+    font-size: inherit !important;
+    -webkit-font-smoothing: auto !important;
+  }
+
+  .yotpo-review-wrapper .content-review {
+    color: $dark_text !important;
+  }
+
+  .yotpo-label.yotpo-small-box * {
+    display: none;
+  }
+
+  .write-review-button.write-button {
+    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+  }
+}
