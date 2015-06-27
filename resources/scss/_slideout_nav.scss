@@ -139,31 +139,71 @@
   width: auto;
   max-height: 4rem;
   margin: 0 auto 0.42rem auto;
+  @include stretch-bg;
+
+
+  &.icon-hair-extensions {
+    width: 78px;
+    height: 94px;
+    background-image: url("/images/slideout_nav/hair_extensions.png");
+  }
+
+  &.icon-my-orders {
+    width: 67px;
+    height: 91px;
+    background-image: url("/images/slideout_nav/my_orders.png");
+  }
 
   .slideout-nav-link.half-width & {
-    max-height: 2.17rem;
-
     // The following is just some pixel pushing to make sure everything lines
     // up nicely.
-    &.icon-stylist-referrals,
+    &.icon-stylist-referrals {
+      width: 63px;
+      height: 63px;
+      background-image: url("/images/slideout_nav/stylist_referrals.png");
+    }
+
     &.icon-30-day-guarantee {
-      max-height: 2.5rem;
+      width: 63px;
+      height: 63px;
+      background-image: url("/images/slideout_nav/30_day_guarantee.png");
     }
 
     &.icon-customer-service {
+      width: 82px;
+      height: 70px;
+      background-image: url("/images/slideout_nav/customer_service.png");
       max-height: 3.08rem;
     }
 
+    &.icon-sales-bonuses {
+      width: 60px;
+      height: 54px;
+      background-image: url("/images/slideout_nav/sales_bonuses.png");
+    }
+
     &.icon-commissions-and-payouts {
-      max-height: 2.67rem;
+      width: 82px;
+      height: 65px;
+      background-image: url("/images/slideout_nav/comissions_and_payouts.png");
+    }
+
+    &.icon-manage-account {
+      width: 53px;
+      height: 53px;
+      background-image: url("/images/slideout_nav/manage-account.png");
     }
 
     &.icon-join {
-      max-height: 3.1rem;
+      width: 83px;
+      height: 75px;
+      background-image: url("/images/slideout_nav/join.png");
     }
 
     &.icon-sign-in {
-      max-height: 3rem;
+      width: 71px;
+      height: 73px;
+      background-image: url("/images/slideout_nav/sign_in.png");
     }
 
     &.icon-join,
@@ -172,7 +212,16 @@
       margin-bottom: 1rem;
     }
 
+    &.icon-edit-profile {
+      width: 76px;
+      height: 54px;
+      background-image: url("/images/slideout_nav/edit_profile.png");
+    }
+
     &.icon-logout {
+      width: 72px;
+      height: 57px;
+      background-image: url("/images/slideout_nav/logout.png");
       margin-bottom: 0.92rem;
     }
   }
