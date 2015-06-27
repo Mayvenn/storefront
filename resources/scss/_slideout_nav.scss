@@ -37,6 +37,13 @@
   position: absolute;
   top: 50%;
   @include transform(translateY(-50%));
+
+  &.missing-picture {
+    @include stretch-bg;
+    background-image: url("/images/profile_pictures/standard/missing.png");
+    width: 150px;
+    height: 146px;
+  }
 }
 
 .slideout-nav-title {
