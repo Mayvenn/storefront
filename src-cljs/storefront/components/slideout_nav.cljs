@@ -26,11 +26,11 @@
      (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
      (enqueue-message (get-in @app-state keypaths/event-ch) [event]))})
 
-(defn slideout-nav-link [data {:keys [href on-click icon-class image label full-width?]}]
+(defn slideout-nav-link [data {:keys [href on-click icon-class label full-width?]}]
   [:a.slideout-nav-link
    {:href href :on-click on-click :class (if full-width? "full-width" "half-width")}
    [:div.slideout-nav-link-inner
-    [:img.slideout-nav-link-icon {:class (str "icon-" icon-class) :src image}]
+    [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
     label]])
 
 (defn logged-in? [data]
@@ -120,31 +120,26 @@
              data
              (merge (close-and-route data events/navigate-stylist-commissions)
                     {:icon-class "commissions-and-payouts"
-                     :image "/images/slideout_nav/comissions_and_payouts.png"
                      :label "Commissions & Payouts"
                      :full-width? false}))
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-bonus-credit)
                     {:icon-class "sales-bonuses"
-                     :image "/images/slideout_nav/sales_bonuses.png"
                      :label "Stylist Bonuses"
                      :full-width? false}))
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-referrals)
                     {:icon-class "stylist-referrals"
-                     :image "/images/slideout_nav/stylist_referrals.png"
                      :label "Stylist Referrals"
                      :full-width? false}))
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-manage-account)
                     {:icon-class "edit-profile"
-                     :image "/images/slideout_nav/edit_profile.png"
                      :label "Edit Profile"
-                     :full-width? false}))
-            ])
+                     :full-width? false}))])
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Shop"]
           (slideout-nav-link
@@ -155,7 +150,6 @@
                                {:taxon-path path})
               {})
             {:icon-class "hair-extensions"
-             :image "/images/slideout_nav/hair_extensions.png"
              :label "Hair Extensions"
              :full-width? true}))]
          [:li.slideout-nav-section
@@ -167,7 +161,6 @@
               (merge
                (close-and-route data events/navigate-my-orders)
                {:icon-class "my-orders"
-                :image "/images/slideout_nav/my_orders.png"
                 :label "My Orders"
                 :full-width? true}))
              (slideout-nav-link
@@ -176,14 +169,12 @@
                        (close-and-route data events/navigate-stylist-manage-account)
                        (close-and-route data events/navigate-manage-account))
                      {:icon-class "manage-account"
-                      :image "/images/slideout_nav/manage-account.png"
                       :label "Manage Account"
                       :full-width? false}))
              (slideout-nav-link
               data
               (merge (close-and-enqueue data events/control-sign-out)
                      {:icon-class "logout"
-                      :image "/images/slideout_nav/logout.png"
                       :label "Logout"
                       :full-width? false}))]
             [:div
@@ -191,30 +182,25 @@
               data
               (merge (close-and-route data events/navigate-sign-in)
                      {:icon-class "sign-in"
-                      :image "/images/slideout_nav/sign_in.png"
                       :label "Sign In"
                       :full-width? false}))
              (slideout-nav-link
               data
               (merge (close-and-route data events/navigate-sign-up)
                      {:icon-class "join"
-                      :image "/images/slideout_nav/join.png"
                       :label "Join"
-                      :full-width? false}))]
-            )]
+                      :full-width? false}))])]
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Help"]
           (slideout-nav-link
            data
            (merge (close-and-route data events/navigate-help)
                   {:icon-class "customer-service"
-                   :image "/images/slideout_nav/customer_service.png"
                    :label "Customer Service"
                    :full-width? false}))
           (slideout-nav-link
            data
            (merge (close-and-route data events/navigate-guarantee)
                   {:icon-class "30-day-guarantee"
-                   :image "/images/slideout_nav/30_day_guarantee.png"
                    :label "30 Day Guarantee"
                    :full-width? false}))]]])])))
