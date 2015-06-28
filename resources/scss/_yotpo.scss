@@ -1,4 +1,4 @@
-.yotpo {
+div.yotpo {
   div, span, p, a, img, i, strong, sup, ul, li, form, label {
     font-family: $primary_font_regular !important;
     line-height: (17em / 12) !important;
@@ -14,7 +14,23 @@
     display: none;
   }
 
-  .write-review-button.write-button {
+  &.yotpo-main-widget.yotpo-small .yotpo-nav .yotpo-dropdown-wrapper.mobile-collapse .yotpo-menu-mobile-collapse .yotpo-nav-dropdown-category {
     @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+    .yotpo-icon-write, .y-label {
+      color: white !important;
+      text-transform: capitalize;
+    }
+
+    &:hover {
+      @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+      color: white !important;
+    }
+  }
+
+  div.yotpo-default-button, & input[type="button"].yotpo-default-button {
+    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
+    font-family: $primary_font_regular !important;
+    line-height: (17em / 12) !important;
+    font-size: inherit !important;
   }
 }
