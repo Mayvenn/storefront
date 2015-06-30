@@ -28,10 +28,13 @@
 (defn- transition-log [app-state message]
   (log-deltas app-state (transition app-state message) message))
 
-(defn send-message [app-state-ref message]
-  (try
-    ;; rename transition to transition-log to log messages
-    (om/transact! app-state-ref #(transition % message))
-    (effects @app-state-ref message)
-    (catch :default e
-      (exception-handler/report e))))
+(defn send-message
+  ([app-state event] (send-message app-state event nil))
+  ([app-state event args]
+   (let [message [event args]]
+     ;; rename transition to transition-log to log messages
+     (try
+       (om/transact! (om/root-cursor app-state) #(transition % message))
+       (effects @app-state message)
+       (catch :default e
+         (exception-handler/report e))))))

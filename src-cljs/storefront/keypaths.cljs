@@ -1,6 +1,7 @@
 (ns storefront.keypaths)
 
 (def event-ch [:event-ch])
+(def send-message [:send-message])
 
 (def history [:history])
 (def cookie [:cookie])

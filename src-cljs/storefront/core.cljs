@@ -6,7 +6,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
             [storefront.exception-handler :as exception-handler]
-            [storefront.messages :refer [enqueue-message]]
+            [storefront.messages :refer [enqueue-message send]]
             [storefront.sync-messages :refer [send-message]]
             [cljs.core.async :refer [<! chan close!]]
             [om.core :as om]))
@@ -16,20 +16,21 @@
 (defn start-event-loop [app-state]
   (let [event-ch (get-in @app-state keypaths/event-ch)]
     (go-loop []
-      (when-let [event-and-args (<! event-ch)]
-        (send-message app-state event-and-args)
+      (when-let [[event args] (<! event-ch)]
+        (send-message app-state event args)
         (recur)))
     (enqueue-message event-ch [events/app-start])))
 
 (defn main [app-state]
   (exception-handler/insert-handler)
+  (swap! app-state assoc-in keypaths/send-message (partial send-message app-state))
   (routes/install-routes app-state)
   (om/root
    top-level-component
    app-state
    {:target (.getElementById js/document "content")})
 
-  (start-event-loop (om/root-cursor app-state))
+  (start-event-loop app-state)
   (routes/set-current-page @app-state))
 
 (defonce app-state (atom (state/initial-state)))
