@@ -6,7 +6,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.taxons :refer [taxon-path-for default-taxon-path]]
-            [storefront.messages :refer [enqueue-message]]))
+            [storefront.messages :refer [send]]))
 
 (defn close-and-route [app-state event & [args]]
   {:href
@@ -14,8 +14,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
-     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-account-menu-collapse])
+     (send app-state events/control-menu-collapse)
+     (send app-state events/control-account-menu-collapse)
      (routes/enqueue-navigate @app-state event args))})
 
 (defn close-and-enqueue [app-state event]
@@ -23,8 +23,8 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (enqueue-message (get-in @app-state keypaths/event-ch) [events/control-menu-collapse])
-     (enqueue-message (get-in @app-state keypaths/event-ch) [event]))})
+     (send app-state events/control-menu-collapse)
+     (send app-state event))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class label full-width?]}]
   [:a.slideout-nav-link
@@ -61,8 +61,8 @@
              {:href "#"
               :on-click
               (if (get-in data keypaths/account-menu-expanded)
-                (utils/enqueue-event data events/control-account-menu-collapse)
-                (utils/enqueue-event data events/control-account-menu-expand))}
+                (utils/send-event-callback data events/control-account-menu-collapse)
+                (utils/send-event-callback data events/control-account-menu-expand))}
              [:span.account-detail-name
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])

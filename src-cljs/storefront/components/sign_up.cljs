@@ -17,7 +17,7 @@
        [:a (utils/route-to data events/navigate-sign-in) "Log In"]]
       [:div#existing-customer
        [:form.new_spree_user.simple_form
-        {:on-submit (utils/enqueue-event data events/control-sign-up-submit)}
+        {:on-submit (utils/send-event-callback data events/control-sign-up-submit)}
         [:div#password-credentials
          [:div.input.email
           [:label.email "Email"]

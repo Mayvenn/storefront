@@ -40,10 +40,10 @@
      (om/build slideout-nav-component data)
      [:div (cond
              (get-in data keypaths/menu-expanded)
-             {:on-click (utils/enqueue-event data events/control-menu-collapse)}
+             {:on-click (utils/send-event-callback data events/control-menu-collapse)}
 
              (get-in data keypaths/account-menu-expanded)
-             {:on-click (utils/enqueue-event data events/control-account-menu-collapse)}
+             {:on-click (utils/send-event-callback data events/control-account-menu-collapse)}
 
              :else {})
       [:div.page-wrap

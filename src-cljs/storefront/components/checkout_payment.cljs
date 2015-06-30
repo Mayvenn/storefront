@@ -9,8 +9,7 @@
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.credit-cards :as cc]
             [storefront.orders :as orders]
-            [storefront.messages :refer [enqueue-message send]]
-            [storefront.sync-messages :refer [send-message]]
+            [storefront.messages :refer [send]]
             [clojure.string :as string]))
 
 (defn stylist? [user]
@@ -111,7 +110,7 @@
       [:div.checkout-form-wrapper
        [:form.edit_order
         {:method "POST"
-         :on-submit (utils/enqueue-event data events/control-checkout-payment-method-submit)}
+         :on-submit (utils/send-event-callback data events/control-checkout-payment-method-submit)}
 
         [:div.checkout-container.payment
          (when (pos? (get-in data keypaths/user-total-available-store-credit))

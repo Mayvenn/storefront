@@ -14,7 +14,7 @@
      (om/build validation-errors-component data)
      [:div#change-password
       [:form.new_spree_user
-       {:on-submit (utils/enqueue-event data events/control-reset-password-submit)}
+       {:on-submit (utils/send-event-callback data events/control-reset-password-submit)}
        [:p
         [:label {:for "spree_user_password"} "Password"]
         [:br]

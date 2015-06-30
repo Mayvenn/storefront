@@ -1,6 +1,5 @@
 (ns storefront.state
-  (:require [cljs.core.async :refer [chan]]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [clojure.string :as string]
             [storefront.cookie-jar :as cookie-jar]))
 
@@ -35,9 +34,7 @@
 
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
-    {:event-ch (chan)
-
-     :history nil
+    {:history nil
      :cookie cookie
      :routes []
 
