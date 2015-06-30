@@ -2,14 +2,11 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [enqueue-message]]
+            [storefront.messages :refer [enqueue-message send]]
             [storefront.sync-messages :refer [send-message]]))
 
 (defn put-event [app-state event & [args]]
   (enqueue-message (get-in @app-state keypaths/event-ch) [event args]))
-
-(defn sync-event [app-state event & [args]]
-  (send-message app-state [event args]))
 
 (defn enqueue-event [app-state event & [args]]
   (fn [e]
@@ -28,9 +25,9 @@
   {:value (get-in app-state keypath)
    :on-change
    (fn [e]
-     (sync-event app-state
-                 events/control-change-state {:keypath keypath
-                                              :value (.. e -target -value)}))})
+     (send app-state
+           events/control-change-state {:keypath keypath
+                                        :value (.. e -target -value)}))})
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
