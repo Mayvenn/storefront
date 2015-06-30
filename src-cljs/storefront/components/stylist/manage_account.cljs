@@ -88,7 +88,7 @@
      [:div.dashboard-content
       [:form.edit_mayvenn_stylist.simple_form
        {:on-submit
-        (utils/enqueue-event data
+        (utils/send-event-callback data
                              events/control-stylist-manage-account-submit)}
        [:.profile-info
 

@@ -6,6 +6,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.messages :refer [send]]
             [clojure.string :as string]))
 
 (defn selected-value->int [evt]
@@ -77,10 +78,10 @@
                    :required? true
                    :options (get-in data keypaths/states)
                    :value (get-in data keypaths/checkout-billing-address-state)
-                   :on-change #(utils/put-event data
-                                                events/control-change-state
-                                                {:keypath keypaths/checkout-billing-address-state
-                                                 :value (selected-value->int %)})})
+                   :on-change #(send data
+                                     events/control-change-state
+                                     {:keypath keypaths/checkout-billing-address-state
+                                      :value (selected-value->int %)})})
      (textfield "Zip"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
                        {:id :zipcode
@@ -131,10 +132,10 @@
                    :required? true
                    :options (get-in data keypaths/states)
                    :value (get-in data keypaths/checkout-shipping-address-state)
-                   :on-change #(utils/put-event data
-                                                events/control-change-state
-                                                {:keypath keypaths/checkout-shipping-address-state
-                                                 :value (selected-value->int %)})})
+                   :on-change #(send data
+                                     events/control-change-state
+                                     {:keypath keypaths/checkout-shipping-address-state
+                                      :value (selected-value->int %)})})
      (textfield "Zip"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
                        {:id :zipcode
@@ -155,7 +156,7 @@
       [:div.checkout-form-wrapper
        [:form.edit_order
         {:method "POST"
-         :on-submit (utils/enqueue-event data events/control-checkout-update-addresses-submit)}
+         :on-submit (utils/send-event-callback data events/control-checkout-update-addresses-submit)}
 
         (billing-address-form data owner)
 

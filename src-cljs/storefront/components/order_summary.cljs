@@ -40,7 +40,7 @@
                    {:opts {:path (conj keypaths/cart-quantities (:id line-item))}})
          [:a.delete
           {:href "#"
-           :on-click (utils/enqueue-event data
+           :on-click (utils/send-event-callback data
                                           events/control-cart-remove
                                           (select-keys line-item [:id]))}
           "Remove"]))]

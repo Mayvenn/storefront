@@ -34,12 +34,12 @@
               :name "coupon-code"})]]
           [:input.primary.button#update-button
            {:type "submit" :name "update" :value "Update"
-            :on-click (utils/enqueue-event data events/control-cart-update)}]]
+            :on-click (utils/send-event-callback data events/control-cart-update)}]]
          [:div.order-summary-cart
           (display-order-summary cart)
           [:input.button.checkout.primary#checkout-link
            {:type "submit" :value "Checkout" :name "checkout"
-            :on-click (utils/enqueue-event data events/control-cart-update {:navigate-to-checkout? true})}]]]]]]
+            :on-click (utils/send-event-callback data events/control-cart-update {:navigate-to-checkout? true})}]]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
       "Continue shopping"]]))

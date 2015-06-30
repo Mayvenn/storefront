@@ -19,7 +19,7 @@
    (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-id)
                  (:id shipping-method))
             {:class "selected"})
-          {:on-click (utils/enqueue-event app-state
+          {:on-click (utils/send-event-callback app-state
                                           events/control-checkout-shipping-method-select
                                           {:id (:id shipping-method)})})
    [:label
@@ -40,7 +40,7 @@
      (checkout-step-bar data)
      [:div.checkout-form-wrapper
       [:form.edit_order
-       {:on-submit (utils/enqueue-event data events/control-checkout-shipping-method-submit)}
+       {:on-submit (utils/send-event-callback data events/control-checkout-shipping-method-submit)}
        [:div.checkout-container.delivery
         [:h2.checkout-header "Delivery Options"]
         [:div#methods

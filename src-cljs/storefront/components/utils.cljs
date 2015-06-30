@@ -2,16 +2,12 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [enqueue-message send]]
-            [storefront.sync-messages :refer [send-message]]))
+            [storefront.messages :refer [send]]))
 
-(defn put-event [app-state event & [args]]
-  (enqueue-message (get-in @app-state keypaths/event-ch) [event args]))
-
-(defn enqueue-event [app-state event & [args]]
+(defn send-event-callback [app-state event & [args]]
   (fn [e]
     (.preventDefault e)
-    (put-event app-state event args)
+    (send app-state event args)
     nil))
 
 (defn route-to [app-state navigation-event & [args]]
@@ -35,7 +31,7 @@
      :value checked-val
      :on-change
      (fn [e]
-       (put-event app-state
+       (send app-state
                   events/control-change-state {:keypath keypath
                                                :value (.. e -target -checked)}))}))
 
@@ -45,12 +41,12 @@
     {:checked checked-val
      :on-change
      (fn [e]
-       (put-event app-state
+       (send app-state
                   events/control-change-state {:keypath keypath
                                                :value value}))}))
 (defn change-file [app-state event]
   {:on-change (fn [e]
-                (put-event app-state event {:file (-> (.. e -target -files)
+                (send app-state event {:file (-> (.. e -target -files)
                                                       array-seq
                                                       first)}))})
 

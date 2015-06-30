@@ -47,7 +47,7 @@
    [:input.keypad-input {:type "radio"
                          :id (str "variant_id_" (:id variant))
                          :checked checked?
-                         :on-change (utils/enqueue-event app-state
+                         :on-change (utils/send-event-callback app-state
                                                          events/control-browse-variant-select
                                                                     {:variant variant})}]
    [:label.keypad-label {:for (str "variant_id_" (:id variant))}
@@ -135,7 +135,7 @@
                 [:input.large.primary#add-to-cart-button
                  {:type "submit"
                   :value "Add to Bag"
-                  :on-click (utils/enqueue-event data events/control-browse-add-to-bag)}]]]]]
+                  :on-click (utils/send-event-callback data events/control-browse-add-to-bag)}]]]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}

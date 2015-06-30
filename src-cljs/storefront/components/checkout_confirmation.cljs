@@ -16,7 +16,7 @@
       [:div.checkout-form-wrapper
        [:form.edit_order
         {:method "POST"
-         :on-submit (utils/enqueue-event data events/control-checkout-confirmation-submit)}
+         :on-submit (utils/send-event-callback data events/control-checkout-confirmation-submit)}
         [:div.checkout-container
          (display-line-items data (get-in data keypaths/order))
          (display-order-summary (get-in data keypaths/order))
