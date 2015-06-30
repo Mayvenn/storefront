@@ -26,8 +26,8 @@
   (let [field-names (map field->human-name (string/split (name field) #"\."))]
     (->> (filter-errors errors)
          (map (fn [err] [:li (str (string/capitalize (string/join " " field-names))
-                                 " "
-                                 err)])))))
+                                  " "
+                                  err)])))))
 
 (defn validation-errors-component [data owner]
   (om/component

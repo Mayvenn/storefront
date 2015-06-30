@@ -41,8 +41,8 @@
          [:a.delete
           {:href "#"
            :on-click (utils/send-event-callback data
-                                          events/control-cart-remove
-                                          (select-keys line-item [:id]))}
+                                                events/control-cart-remove
+                                                (select-keys line-item [:id]))}
           "Remove"]))]
      [:div {:style {:clear "both"}}]]))
 
@@ -106,11 +106,11 @@
        (when-not (empty? all-adjustments)
          (list
           [:tr.cart-subtotal.order-summary-row
-                [:td
-                 [:h5 (str "Subtotal (" quantity " Item"
-                           (when (> quantity 1) "s") ")")]]
-                [:td
-                 [:h5 (:display_item_total order)]]]
+           [:td
+            [:h5 (str "Subtotal (" quantity " Item"
+                      (when (> quantity 1) "s") ")")]]
+           [:td
+            [:h5 (:display_item_total order)]]]
           (let [li-promotion-adjustments (line-item-promotion-adjustments order)
                 tax-adjustments (tax-adjustments order)
                 whole-order-adjustments (whole-order-adjustments order)]

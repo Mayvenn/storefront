@@ -56,7 +56,7 @@
    "/product-nav-taxonomy"
    {}
    #(handle-message events/api-success-taxons (select-keys % [:taxons]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-store [handle-message cache store-slug]
   (cache-req
@@ -66,7 +66,7 @@
    "/store"
    {:store_slug store-slug}
    #(handle-message events/api-success-store %)
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-promotions [handle-message  cache]
   (cache-req
@@ -76,7 +76,7 @@
    "/promotions"
    {}
    #(handle-message events/api-success-promotions %)
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-products [handle-message  cache taxon-path]
   (cache-req
@@ -87,7 +87,7 @@
    {:taxon_name (taxon-name-from taxon-path)}
    #(handle-message events/api-success-products (merge (select-keys % [:products])
                                                        {:taxon-path taxon-path}))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-product [handle-message  product-path]
   (api-req
@@ -96,7 +96,7 @@
    {:slug product-path}
    #(handle-message events/api-success-product {:product-path product-path
                                                 :product %})
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-states [handle-message  cache]
   (cache-req
@@ -106,7 +106,7 @@
    "/states"
    {}
    #(handle-message events/api-success-states (select-keys % [:states]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-payment-methods [handle-message  cache]
   (cache-req
@@ -116,7 +116,7 @@
    "/payment_methods"
    {}
    #(handle-message events/api-success-payment-methods (select-keys % [:payment_methods]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id :order-id :order-token]))
@@ -130,7 +130,7 @@
     :stylist-id stylist-id
     :order-token order-token}
    #(handle-message events/api-success-sign-in (select-sign-in-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn sign-up [handle-message  email password password-confirmation stylist-id order-token]
   (api-req
@@ -142,7 +142,7 @@
     :stylist-id stylist-id
     :order-token order-token}
    #(handle-message events/api-success-sign-up (select-sign-in-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn forgot-password [handle-message  email]
   (api-req
@@ -150,7 +150,7 @@
    "/forgot_password"
    {:email email}
    #(handle-message events/api-success-forgot-password)
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn reset-password [handle-message  password password-confirmation reset-token]
   (api-req
@@ -160,7 +160,7 @@
     :password_confirmation password-confirmation
     :reset_password_token reset-token}
    #(handle-message events/api-success-reset-password (select-sign-in-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn select-address-keys [m]
   (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
@@ -178,7 +178,7 @@
     :token token
     :stylist-id stylist-id}
    #(handle-message events/api-success-account (rename-server-address-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn update-account [handle-message  id email password password-confirmation token]
   (api-req
@@ -190,7 +190,7 @@
     :password_confirmation password-confirmation
     :token token}
    #(handle-message events/api-success-manage-account (select-sign-in-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn update-account-address [handle-message  id email billing-address shipping-address token]
   (api-req
@@ -202,7 +202,7 @@
     :ship_address (select-address-keys shipping-address)
     :token token}
    #(handle-message events/api-success-address (rename-server-address-keys %))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn select-stylist-account-keys [args]
   (select-keys args [:birth_date_1i :birth_date_2i :birth_date_3i
@@ -223,7 +223,7 @@
    #(handle-message events/api-success-stylist-manage-account
                     {:updated false
                      :stylist (select-stylist-account-keys %)})
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn update-stylist-account [handle-message  user-token stylist-account]
   (api-req
@@ -234,20 +234,20 @@
    #(handle-message events/api-success-stylist-manage-account
                     {:updated true
                      :stylist (select-stylist-account-keys %)})
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn update-stylist-account-profile-picture [handle-message  user-token profile-picture]
   (let [form-data (doto (js/FormData.)
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
-         {:handler #(handle-message events/api-success-stylist-manage-account-profile-picture
-                                    (merge {:updated true}
-                                           {:stylist (select-keys % [:profile_picture_url])}))
-          :error-handler (default-error-handler handle-message )
-          :params form-data
-          :response-format (json-response-format {:keywords? true})
-          :timeout 10000})))
+      {:handler #(handle-message events/api-success-stylist-manage-account-profile-picture
+                                 (merge {:updated true}
+                                        {:stylist (select-keys % [:profile_picture_url])}))
+       :error-handler (default-error-handler handle-message)
+       :params form-data
+       :response-format (json-response-format {:keywords? true})
+       :timeout 10000})))
 
 (defn get-stylist-commissions [handle-message  user-token]
   (api-req
@@ -256,7 +256,7 @@
    {:user-token user-token}
    #(handle-message events/api-success-stylist-commissions
                     (select-keys % [:rate :next-amount :paid-total :new-orders :payouts]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-stylist-bonus-credits [handle-message  user-token]
   (api-req
@@ -270,7 +270,7 @@
                                     :total-credit
                                     :available-credit
                                     :bonuses]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-stylist-referral-program [handle-message  user-token]
   (api-req
@@ -279,9 +279,9 @@
    {:user-token user-token}
    #(handle-message events/api-success-stylist-referral-program
                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :total-amount :referrals]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
-(defn get-sms-number [handle-message ]
+(defn get-sms-number [handle-message]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
             (apply str (if (= "+" (first x))
                          (drop 3 x)
@@ -290,11 +290,11 @@
             (handle-message events/api-success-sms-number
                             {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
-        {:handler callback
-         :headers {"Accepts" "application/json"
-                   "X-Publishable-Key" send-sonar-publishable-key}
-         :format :json
-         :response-format (json-response-format {:keywords? true})})))
+      {:handler callback
+       :headers {"Accepts" "application/json"
+                 "X-Publishable-Key" send-sonar-publishable-key}
+       :format :json
+       :response-format (json-response-format {:keywords? true})})))
 
 (defn create-order [handle-message  stylist-id user-token]
   (api-req
@@ -303,7 +303,7 @@
    (merge {:stylist-id stylist-id}
           (if user-token {:token user-token} {}))
    #(handle-message events/api-success-create-order (select-keys % [:number :token]))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn create-order-if-needed [handle-message  stylist-id order-id order-token user-token]
   (if (and order-token order-id)
@@ -320,7 +320,7 @@
    #(handle-message events/api-success-update-cart
                     (merge {:order (rename-keys % {:token :guest-token})}
                            extra-message-args))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn update-order [handle-message  user-token order extra-message-args]
   (api-req
@@ -345,7 +345,7 @@
    #(handle-message events/api-success-update-order
                     (merge {:order (rename-keys % {:token :guest-token})}
                            extra-message-args))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn add-line-item [handle-message  variant-id variant-quantity order-number order-token]
   (api-req
@@ -359,7 +359,7 @@
                                                    :variant-quantity variant-quantity
                                                    :order-number order-number
                                                    :order-token order-token})
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-order [handle-message  order-number order-token]
   (api-req
@@ -368,7 +368,7 @@
    {:id order-number
     :token order-token}
    #(handle-message events/api-success-get-order (rename-keys % {:token :guest-token}))
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-past-order [handle-message  order-number user-token]
   (api-req
@@ -377,7 +377,7 @@
    {:id order-number
     :token user-token}
    #(handle-message events/api-success-get-past-order %)
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn get-my-orders [handle-message  user-token]
   (api-req
@@ -385,7 +385,7 @@
    "/my_orders"
    {:user-token user-token}
    #(handle-message events/api-success-my-orders %)
-   (default-error-handler handle-message )))
+   (default-error-handler handle-message)))
 
 (defn add-to-bag [handle-message variant-id variant-quantity stylist-id order-token order-id user-token]
   (letfn [(refetch-order [order-id order-token]

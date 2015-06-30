@@ -21,9 +21,9 @@
      :value value-if-checked
      :on-change (fn [e]
                   (send app-state
-                                events/control-change-state
-                                {:keypath keypath
-                                 :value value-if-checked}))}))
+                        events/control-change-state
+                        {:keypath keypath
+                         :value value-if-checked}))}))
 
 (defn display-radio [data keypath value-if-checked text additional-text-when-stylist]
   [:li.store-credit-option
@@ -88,7 +88,7 @@
           {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
            :max-length 4})
    [:p.review-message
-            "You can review your order on the next page"
+    "You can review your order on the next page"
     (when-not (get-in data keypaths/order-covered-by-store-credit)
       " before we can charge your credit card")]])
 

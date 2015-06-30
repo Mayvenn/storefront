@@ -16,8 +16,8 @@
   (match-pattern [this env]
     (when (every? (fn [[k v]]
                     (cond
-                     (or (fn? v) (set? v)) (v (get env k))
-                     :otherwise (= v (get env k))))
+                      (or (fn? v) (set? v)) (v (get env k))
+                      :otherwise (= v (get env k))))
                   (seq this))
       env))
   (unmatch-pattern [_ _] ""))
