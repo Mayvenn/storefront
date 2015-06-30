@@ -75,7 +75,7 @@
               :name "mayvenn_stylist[chosen_payout_method]"
               :type "radio"}
              (utils/change-radio data keypath payout-method))]
-     [:label {:for field-id} payout-label ]]))
+     [:label {:for field-id} payout-label]]))
 
 (defn stylist-manage-account-component [data owner]
   (om/component
@@ -89,7 +89,7 @@
       [:form.edit_mayvenn_stylist.simple_form
        {:on-submit
         (utils/send-event-callback data
-                             events/control-stylist-manage-account-submit)}
+                                   events/control-stylist-manage-account-submit)}
        [:.profile-info
 
         [:h4.dashboard-details-header.no-top-space "Profile Info"]
@@ -194,10 +194,10 @@
             "check" [:#check.payout-method
                      [:p "Checks will mail to the above address"]]
             "mayvenn_debit" [:#mayvenn_debit.payout-method
-                     [:p "A prepaid Visa debit card will be mailed to the above address"]]
+                             [:p "A prepaid Visa debit card will be mailed to the above address"]]
 
             nil [:#check.payout-method
-                   [:p "Checks will mail to the above address"]]))]
+                 [:p "Checks will mail to the above address"]]))]
 
        [:.social-media
         [:h4.dashboard-details-header "Social Media"]

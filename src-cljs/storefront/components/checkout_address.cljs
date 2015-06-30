@@ -144,7 +144,7 @@
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
                        {:id :order_bill_address_attributes_phone
                         :required? true
-                                :type "tel"}))]]])
+                        :type "tel"}))]]])
 
 (defn checkout-address-component [data owner]
   (om/component

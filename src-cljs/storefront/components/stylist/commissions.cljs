@@ -29,7 +29,7 @@
        [:p.commission-label.pending-label.top-pad "Pending"])
 
       :else
-       [:p.commission-label.refunded-label "Refunded"])]])
+      [:p.commission-label.refunded-label "Refunded"])]])
 
 (defn list-new-orders [data]
   (when-let [new-orders (not-empty (get-in data
@@ -47,8 +47,8 @@
 (defn show-payout [data payout]
   [:.loose-table-row.short-row
    [:.left-content [:span (f/locale-date (payout :paid_at))]]
-    [:.right-content
-     [:span.payout-amount (f/as-money (payout :amount))]]])
+   [:.right-content
+    [:span.payout-amount (f/as-money (payout :amount))]]])
 
 (defn list-payouts [data]
   (when-let [paid-total (get-in data keypaths/stylist-commissions-paid-total)] 

@@ -13,8 +13,8 @@
   (remove-tag "riskified-beacon"))
 
 (defn track-page [path]
-    (when (.hasOwnProperty js/window "RISKX")
-      (try
-        (.go js/RISKX (clj->js path))
-        (catch :default e
-          (exception-handler/report e)))))
+  (when (.hasOwnProperty js/window "RISKX")
+    (try
+      (.go js/RISKX (clj->js path))
+      (catch :default e
+        (exception-handler/report e)))))

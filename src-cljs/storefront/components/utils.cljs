@@ -32,8 +32,8 @@
      :on-change
      (fn [e]
        (send app-state
-                  events/control-change-state {:keypath keypath
-                                               :value (.. e -target -checked)}))}))
+             events/control-change-state {:keypath keypath
+                                          :value (.. e -target -checked)}))}))
 
 (defn change-radio [app-state keypath value]
   (let [keypath-val (get-in app-state keypath)
@@ -42,13 +42,13 @@
      :on-change
      (fn [e]
        (send app-state
-                  events/control-change-state {:keypath keypath
-                                               :value value}))}))
+             events/control-change-state {:keypath keypath
+                                          :value value}))}))
 (defn change-file [app-state event]
   {:on-change (fn [e]
                 (send app-state event {:file (-> (.. e -target -files)
-                                                      array-seq
-                                                      first)}))})
+                                                 array-seq
+                                                 first)}))})
 
 (defn link-with-selected [data event label]
   (let [navigation-state (get-in data keypaths/navigation-event)

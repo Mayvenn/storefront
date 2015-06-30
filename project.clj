@@ -33,6 +33,7 @@
                              :passphrase :env}]]
   :plugins [[s3-wagon-private "1.1.2"]
             [lein-cljsbuild "1.0.5"]
+            [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.3.1" :exclusions [cider/cider-nrepl]]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}

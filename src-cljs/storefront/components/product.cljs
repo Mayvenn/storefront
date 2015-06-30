@@ -48,8 +48,8 @@
                          :id (str "variant_id_" (:id variant))
                          :checked checked?
                          :on-change (utils/send-event-callback app-state
-                                                         events/control-browse-variant-select
-                                                                    {:variant variant})}]
+                                                               events/control-browse-variant-select
+                                                               {:variant variant})}]
    [:label.keypad-label {:for (str "variant_id_" (:id variant))}
     (if (variant :can_supply?)
       [:div.variant-description

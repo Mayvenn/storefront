@@ -17,7 +17,7 @@
     [:.right-content
      [:p (f/as-money-without-cents (bonus :amount))]]]))
 
- (defn stylist-bonus-credit-component [data]
+(defn stylist-bonus-credit-component [data]
   (om/component
    (html
     (let [bonuses (get-in data keypaths/stylist-bonus-credit-bonuses)
