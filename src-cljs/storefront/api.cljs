@@ -68,7 +68,7 @@
    #(handle-message events/api-success-store %)
    (default-error-handler handle-message)))
 
-(defn get-promotions [handle-message  cache]
+(defn get-promotions [handle-message cache]
   (cache-req
    cache
    handle-message 
@@ -78,7 +78,7 @@
    #(handle-message events/api-success-promotions %)
    (default-error-handler handle-message)))
 
-(defn get-products [handle-message  cache taxon-path]
+(defn get-products [handle-message cache taxon-path]
   (cache-req
    cache
    handle-message 
@@ -89,7 +89,7 @@
                                                        {:taxon-path taxon-path}))
    (default-error-handler handle-message)))
 
-(defn get-product [handle-message  product-path]
+(defn get-product [handle-message product-path]
   (api-req
    GET
    (str "/products")
@@ -98,7 +98,7 @@
                                                 :product %})
    (default-error-handler handle-message)))
 
-(defn get-states [handle-message  cache]
+(defn get-states [handle-message cache]
   (cache-req
    cache
    handle-message 
@@ -108,7 +108,7 @@
    #(handle-message events/api-success-states (select-keys % [:states]))
    (default-error-handler handle-message)))
 
-(defn get-payment-methods [handle-message  cache]
+(defn get-payment-methods [handle-message cache]
   (cache-req
    cache
    handle-message 
@@ -121,7 +121,7 @@
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id :order-id :order-token]))
 
-(defn sign-in [handle-message  email password stylist-id order-token]
+(defn sign-in [handle-message email password stylist-id order-token]
   (api-req
    POST
    "/login"
@@ -132,7 +132,7 @@
    #(handle-message events/api-success-sign-in (select-sign-in-keys %))
    (default-error-handler handle-message)))
 
-(defn sign-up [handle-message  email password password-confirmation stylist-id order-token]
+(defn sign-up [handle-message email password password-confirmation stylist-id order-token]
   (api-req
    POST
    "/signup"
@@ -144,7 +144,7 @@
    #(handle-message events/api-success-sign-up (select-sign-in-keys %))
    (default-error-handler handle-message)))
 
-(defn forgot-password [handle-message  email]
+(defn forgot-password [handle-message email]
   (api-req
    POST
    "/forgot_password"
@@ -152,7 +152,7 @@
    #(handle-message events/api-success-forgot-password)
    (default-error-handler handle-message)))
 
-(defn reset-password [handle-message  password password-confirmation reset-token]
+(defn reset-password [handle-message password password-confirmation reset-token]
   (api-req
    POST
    "/reset_password"
@@ -170,7 +170,7 @@
   (rename-keys m {:bill_address :billing-address
                   :ship_address :shipping-address}))
 
-(defn get-account [handle-message  id token stylist-id]
+(defn get-account [handle-message id token stylist-id]
   (api-req
    GET
    "/users"
@@ -180,7 +180,7 @@
    #(handle-message events/api-success-account (rename-server-address-keys %))
    (default-error-handler handle-message)))
 
-(defn update-account [handle-message  id email password password-confirmation token]
+(defn update-account [handle-message id email password password-confirmation token]
   (api-req
    PUT
    "/users"
@@ -192,7 +192,7 @@
    #(handle-message events/api-success-manage-account (select-sign-in-keys %))
    (default-error-handler handle-message)))
 
-(defn update-account-address [handle-message  id email billing-address shipping-address token]
+(defn update-account-address [handle-message id email billing-address shipping-address token]
   (api-req
    PUT
    "/users"
@@ -215,7 +215,7 @@
                      :user
                      :address]))
 
-(defn get-stylist-account [handle-message  user-token]
+(defn get-stylist-account [handle-message user-token]
   (api-req
    GET
    "/stylist"
@@ -225,7 +225,7 @@
                      :stylist (select-stylist-account-keys %)})
    (default-error-handler handle-message)))
 
-(defn update-stylist-account [handle-message  user-token stylist-account]
+(defn update-stylist-account [handle-message user-token stylist-account]
   (api-req
    PUT
    "/stylist"
@@ -236,7 +236,7 @@
                      :stylist (select-stylist-account-keys %)})
    (default-error-handler handle-message)))
 
-(defn update-stylist-account-profile-picture [handle-message  user-token profile-picture]
+(defn update-stylist-account-profile-picture [handle-message user-token profile-picture]
   (let [form-data (doto (js/FormData.)
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
@@ -249,7 +249,7 @@
        :response-format (json-response-format {:keywords? true})
        :timeout 10000})))
 
-(defn get-stylist-commissions [handle-message  user-token]
+(defn get-stylist-commissions [handle-message user-token]
   (api-req
    GET
    "/stylist/commissions"
@@ -258,7 +258,7 @@
                     (select-keys % [:rate :next-amount :paid-total :new-orders :payouts]))
    (default-error-handler handle-message)))
 
-(defn get-stylist-bonus-credits [handle-message  user-token]
+(defn get-stylist-bonus-credits [handle-message user-token]
   (api-req
    GET
    "/stylist/bonus-credits"
@@ -272,7 +272,7 @@
                                     :bonuses]))
    (default-error-handler handle-message)))
 
-(defn get-stylist-referral-program [handle-message  user-token]
+(defn get-stylist-referral-program [handle-message user-token]
   (api-req
    GET
    "/stylist/referrals"
@@ -296,7 +296,7 @@
        :format :json
        :response-format (json-response-format {:keywords? true})})))
 
-(defn create-order [handle-message  stylist-id user-token]
+(defn create-order [handle-message stylist-id user-token]
   (api-req
    POST
    "/orders"
@@ -305,12 +305,12 @@
    #(handle-message events/api-success-create-order (select-keys % [:number :token]))
    (default-error-handler handle-message)))
 
-(defn create-order-if-needed [handle-message  stylist-id order-id order-token user-token]
+(defn create-order-if-needed [handle-message stylist-id order-id order-token user-token]
   (if (and order-token order-id)
     (handle-message events/api-success-create-order {:number order-id :token order-token})
-    (create-order handle-message  stylist-id user-token)))
+    (create-order handle-message stylist-id user-token)))
 
-(defn update-cart [handle-message  user-token {order-token :guest-token :as order} extra-message-args]
+(defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
   (api-req
    PUT
    "/cart"
@@ -322,7 +322,7 @@
                            extra-message-args))
    (default-error-handler handle-message)))
 
-(defn update-order [handle-message  user-token order extra-message-args]
+(defn update-order [handle-message user-token order extra-message-args]
   (api-req
    PUT
    "/orders"
@@ -347,7 +347,7 @@
                            extra-message-args))
    (default-error-handler handle-message)))
 
-(defn add-line-item [handle-message  variant-id variant-quantity order-number order-token]
+(defn add-line-item [handle-message variant-id variant-quantity order-number order-token]
   (api-req
    POST
    "/line-items"
@@ -361,7 +361,7 @@
                                                    :order-token order-token})
    (default-error-handler handle-message)))
 
-(defn get-order [handle-message  order-number order-token]
+(defn get-order [handle-message order-number order-token]
   (api-req
    GET
    "/orders"
@@ -370,7 +370,7 @@
    #(handle-message events/api-success-get-order (rename-keys % {:token :guest-token}))
    (default-error-handler handle-message)))
 
-(defn get-past-order [handle-message  order-number user-token]
+(defn get-past-order [handle-message order-number user-token]
   (api-req
    GET
    "/orders"
@@ -379,7 +379,7 @@
    #(handle-message events/api-success-get-past-order %)
    (default-error-handler handle-message)))
 
-(defn get-my-orders [handle-message  user-token]
+(defn get-my-orders [handle-message user-token]
   (api-req
    GET
    "/my_orders"
