@@ -83,6 +83,8 @@
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
+    [:meta {:property "og:type" :content "website"}]
+    [:meta {:property "og:title" :content "Shop Mayvenn"}]
     [:meta {:property "og:image" :content (asset-path "/images/home_image.jpg")}]
     [:meta {:property "og:description" :content "Mayvenn sells 100% natural hair extensions backed by a 30-day Quality Guarantee."}]
     [:meta {:property "og:site_name" :content "Mayvenn"}]
