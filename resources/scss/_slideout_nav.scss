@@ -41,8 +41,8 @@
   &.missing-picture {
     @include stretch-bg;
     background-image: url("/images/profile_pictures/standard/missing.png");
-    width: 150px;
-    height: 146px;
+    width: 6.25rem;
+    height: 6.0833rem;
   }
 }
 
@@ -150,66 +150,63 @@
 
 
   &.icon-hair-extensions {
-    width: 78px;
-    height: 94px;
+    width: 3.25rem;
+    height: 3.9167rem;
     background-image: url("/images/slideout_nav/hair_extensions.png");
   }
 
   &.icon-my-orders {
-    width: 67px;
-    height: 91px;
+    width: 2.7917rem;
+    height: 3.792rem;
     background-image: url("/images/slideout_nav/my_orders.png");
   }
 
   .slideout-nav-link.half-width & {
-    // The following is just some pixel pushing to make sure everything lines
-    // up nicely.
     &.icon-stylist-referrals {
-      width: 63px;
-      height: 63px;
+      width: 2.625rem;
+      height: 2.625rem;
       background-image: url("/images/slideout_nav/stylist_referrals.png");
     }
 
     &.icon-30-day-guarantee {
-      width: 63px;
-      height: 63px;
+      width: 2.625rem;
+      height: 2.625rem;
       background-image: url("/images/slideout_nav/30_day_guarantee.png");
     }
 
     &.icon-customer-service {
-      width: 82px;
-      height: 70px;
+      width: 3.4167rem;
+      height: 2.9167rem;
       background-image: url("/images/slideout_nav/customer_service.png");
-      max-height: 3.08rem;
     }
 
     &.icon-sales-bonuses {
-      width: 60px;
-      height: 54px;
+      width: 2.5rem;
+      height: 2.25rem;
       background-image: url("/images/slideout_nav/sales_bonuses.png");
     }
 
     &.icon-commissions-and-payouts {
-      width: 82px;
-      height: 65px;
+      width: 3.4167rem;
+      height: 2.7083rem;
       background-image: url("/images/slideout_nav/comissions_and_payouts.png");
     }
 
     &.icon-manage-account {
-      width: 53px;
-      height: 53px;
+      width: 2.2083rem;
+      height: 2.2083rem;
       background-image: url("/images/slideout_nav/manage-account.png");
     }
 
     &.icon-join {
-      width: 83px;
-      height: 75px;
+      width: 3.4583rem;
+      height: 3.125rem;
       background-image: url("/images/slideout_nav/join.png");
     }
 
     &.icon-sign-in {
-      width: 71px;
-      height: 73px;
+      width: 2.9583rem;
+      height: 3.0417rem;
       background-image: url("/images/slideout_nav/sign_in.png");
     }
 
@@ -220,14 +217,14 @@
     }
 
     &.icon-edit-profile {
-      width: 76px;
-      height: 54px;
+      width: 3.1667rem;
+      height: 2.25rem;
       background-image: url("/images/slideout_nav/edit_profile.png");
     }
 
     &.icon-logout {
-      width: 72px;
-      height: 57px;
+      width: 3.0rem;
+      height: 2.375rem;
       background-image: url("/images/slideout_nav/logout.png");
       margin-bottom: 0.92rem;
     }
