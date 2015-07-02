@@ -20,7 +20,7 @@
     (js/console.error (str msg error error-class))))
 
 (defn report [error & [custom-class]]
-  (if (and (honeybadger-enabled?) js/Honeybadger)
+  (if (and (honeybadger-enabled?) (.hasOwnProperty js/window "Honeybadger"))
     (do (js/Honeybadger.notify error custom-class)
         (log "[Exception occurred, logged to honeybadger]: " error custom-class))
     (log "[Honeybadger not loaded when exception occurred]: " error custom-class))
