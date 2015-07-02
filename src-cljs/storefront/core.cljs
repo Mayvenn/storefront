@@ -15,8 +15,13 @@
 
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
-            (or (transition-state dispatch event args app-state)
-                app-state))
+            (try
+              (or (transition-state dispatch event args app-state)
+                  app-state)
+              (catch js/TypeError te
+                (exception-handler/report te (clj->js {:context {:dispatch dispatch
+                                                                 :event event
+                                                                 :args args}})))))
           app-state
           (reductions conj [] event)))
 
