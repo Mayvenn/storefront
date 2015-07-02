@@ -27,5 +27,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
 (defn track-page [path]
-  (js/ga "set" "page" (clj->js path))
-  (js/ga "send" "pageview"))
+  (if (.hasOwnProperty js/window "ga")
+    (do
+      (js/ga "set" "page" (clj->js path))
+      (js/ga "send" "pageview"))))
