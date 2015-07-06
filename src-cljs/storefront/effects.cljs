@@ -10,6 +10,7 @@
             [storefront.riskified :as riskified]
             [storefront.checkout :as checkout]
             [storefront.analytics :as analytics]
+            [storefront.experiments :as experiments]
             [storefront.messages :refer [send]]
             [storefront.orders :as orders]))
 
@@ -20,10 +21,12 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [_ event args app-state]
+  (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
+  (experiments/remove-optimizely)
   (riskified/remove-beacon)
   (analytics/remove-tracking))
 
