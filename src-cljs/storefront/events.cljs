@@ -132,3 +132,6 @@
 (def flash-dismiss-success (conj flash-dismiss :success))
 (def flash-show-failure (conj flash-show :failure))
 (def flash-dismiss-failure (conj flash-dismiss :failure))
+
+(def external [:external])
+(def external-optimizely (conj external :optimizely))

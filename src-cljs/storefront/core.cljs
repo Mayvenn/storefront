@@ -84,4 +84,7 @@
     (catch js/Error e
       (exception-handler/report e))))
 
+(defn ^:export external [ns args]
+  (handle-message app-state [:external (keyword ns)] args))
+
 (main app-state)

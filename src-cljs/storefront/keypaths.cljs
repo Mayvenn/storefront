@@ -6,6 +6,9 @@
 (def cookie [:cookie])
 (def routes [:routes])
 
+(def optimizely [:optimizely])
+(def optimizely-variations [:optimizely :variations])
+
 (def session-id [:session-id])
 
 (def user [:user])
