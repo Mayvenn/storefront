@@ -299,5 +299,6 @@
 (defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
   (assoc-in app-state keypaths/flash-failure nil))
 
-(defmethod transition-state events/external-optimizely [_ event args app-state]
-  (update-in app-state keypaths/optimizely-variations conj (str args)))
+(defmethod transition-state events/optimizely
+  [_ event {:keys [variation]} app-state]
+  (update-in app-state keypaths/optimizely-variations conj variation))
