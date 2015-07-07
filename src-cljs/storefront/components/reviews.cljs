@@ -2,7 +2,7 @@
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
             [storefront.events :as events]
-            [storefront.components.utils :as utils]
+            [storefront.messages :refer [send]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.query :as query]))
@@ -10,9 +10,9 @@
 (defn reviews-component [data owner]
   (reify
     om/IDidMount
-    (did-mount [_] (utils/put-event data events/reviews-component-mounted))
+    (did-mount [_] (send data events/reviews-component-mounted))
     om/IWillUnmount
-    (will-unmount [_] (utils/put-event data events/reviews-component-will-unmount))
+    (will-unmount [_] (send data events/reviews-component-will-unmount))
     om/IRender
     (render [_]
       (html

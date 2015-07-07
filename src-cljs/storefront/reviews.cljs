@@ -1,6 +1,6 @@
 (ns storefront.reviews
   (:require [storefront.script-tags :refer [src-tag insert-tag-with-callback]]
-            [storefront.messages :refer [enqueue-message]]
+            [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]
             [storefront.events :as events]))
@@ -11,8 +11,7 @@
   (when-not (aget (.getElementsByClassName js/document tag-class) 0)
     (insert-tag-with-callback
      (src-tag config/review-tag-url tag-class)
-     #(enqueue-message (get-in data keypaths/event-ch)
-                       [events/reviews-inserted]))))
+     #(send data events/reviews-inserted))))
 
 (defn start []
   (when (.hasOwnProperty js/window "yotpo")
