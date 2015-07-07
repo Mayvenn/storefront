@@ -14,5 +14,5 @@
 (def honeybadger-api-key "b0a4a070")
 
 (def optimizely-app-id (case js/environment
-                         "production" 1234341
+                         "production" 592210561
                          3156430062))
