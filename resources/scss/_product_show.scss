@@ -115,21 +115,20 @@ div.product-collection-description {
 
     .bar {
         z-index: 0;
-        position: relative;
-        top: 2.6rem;
-        margin: auto;
         background-color: #cccccc;
         height: 0.2rem;
-        width: 75%;
+        margin: 2.5rem 4.0rem;
+    }
+
+    .product-collection-circles-container {
+      clear: both;
+      overflow: hidden;
     }
 
     .product-collection-circles {
         z-index: 1;
-        margin: auto;
-        width: 75%;
-        @include display(flex);
-        @include flex-direction(row);
-        @include justify-content(space-between);
+        float: left;
+        margin-left: 2.8rem;
 
         .inner-product-collection-circles {
             @include stretch-bg;
@@ -137,6 +136,11 @@ div.product-collection-description {
             height: 5rem;
             width: 5rem;
             display: inline-block;
+            margin-right: 2.5rem;
+
+            &:last-child {
+              margin-right: 0;
+            }
 
             &.ultra {
               background-image: url("/images/products/hairtype-circle-ultra@2x.png");

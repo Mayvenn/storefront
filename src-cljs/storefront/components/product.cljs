@@ -149,11 +149,12 @@
                  [:figure.checkout-guarantee]]]])]]
 
           [:div#product-collection-description.product-collection-description
-           [:div.bar]
-           [:div.product-collection-circles
-            [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
-            [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
-            [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
+           [:div.product-collection-circles-container
+            [:div.product-collection-circles
+             [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
+             [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
+             [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
+            [:div.bar]]
            [:div.product-collection-text
             [:h3.sub-header (str collection-name ": ")]
             (product :collection_description)]]
