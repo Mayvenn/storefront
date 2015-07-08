@@ -164,7 +164,8 @@
               [:div#product-description.product-description
                [:h3.sub-header "Description"]
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]
-           (when (get-in data keypaths/reviews-loaded)
+
+           (when (and false (get-in data keypaths/reviews-loaded))
              (om/build reviews-component data))]]
 
          [:div.gold-features
