@@ -101,7 +101,11 @@
 
 .product-description, .product-collection-description, .cart-form-container, #after-add {
   margin: 0 auto;
-  width: (300em / 12);
+  width: (300rem / 12);
+}
+
+.product-description-text {
+  background-color: white; // work around android 4.0 bug
 }
 
 .product-description-text, .product-collection-text {
