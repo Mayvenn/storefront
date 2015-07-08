@@ -22,8 +22,6 @@ div#product-images {
       padding: 12px;
       text-align: left;
       display: block;
-      flex: none;
-      flex-direction: inherit;
 
       .product-collection {
           order: 1;
@@ -36,6 +34,7 @@ div#product-images {
           opacity: 0.90;
           text-transform: capitalize;
           border: 0 none;
+          float: none;
 
           .product-collection-indicator {
               width: 1.78rem;

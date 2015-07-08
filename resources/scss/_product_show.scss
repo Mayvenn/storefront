@@ -20,19 +20,18 @@
       font-family: $primary_font_regular;
       padding: 0;
       text-align: left;
-      @include display(flex);
-      @include flex-direction(row);
       vertical-align: middle;
 
       .product-collection {
-          @include order(2);
           font-family: $secondary_font;
           font-size: 1rem;
           font-style: italic;
           text-transform: capitalize;
-          width: 12rem;
+          width: 8.56rem;
           padding: 1rem;
           border-left: 1px solid #a0a0a0;
+          float: right;
+          line-height: 1.93rem;
 
           * {
               display: inline-block;
@@ -61,7 +60,6 @@
 
       .product-title {
           line-height: 2rem;
-          @include order(1);
           font-family: $primary_font_regular;
           font-size: (12em / 12);
           font-style: none;
