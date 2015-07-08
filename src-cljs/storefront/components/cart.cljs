@@ -22,7 +22,7 @@
        [:div.cart-items
         [:div.cart-line-items
          (display-line-items data cart true)]
-        [:div.with-flex-box
+        [:div.cart-bottom
          [:div.coupon-cart
           [:h4 "Have a Coupon Code?"]
           [:div.coupon-container

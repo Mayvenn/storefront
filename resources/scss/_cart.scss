@@ -98,8 +98,13 @@ a.button.continue {
   font-size: 0.6rem;
 }
 
+.cart-bottom {
+  overflow: hidden;
+}
+
 .coupon-cart, .order-summary-cart {
-  @include flex-grow-better(1);
+  float: left;
+  width: 100%;
 }
 
 .coupon-container {
