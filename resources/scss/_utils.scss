@@ -2,3 +2,13 @@
   @include display(flex);
   @include flex-wrap(wrap);
 }
+
+.spinner {
+    padding: 1rem;
+    margin: 3rem auto;
+    width: 100%;
+    height: 64px;
+    background-image: url("/images/spinner.svg");
+    background-position: top center;
+    background-repeat: no-repeat; 
+}
