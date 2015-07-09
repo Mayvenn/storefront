@@ -1,5 +1,6 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
+            [storefront.analytics :as analytics]
             [storefront.keypaths :as keypaths]
             [storefront.taxons :refer [taxon-path-for default-taxon-path]]
             [om.core :as om]
@@ -36,6 +37,11 @@
            (get-in data keypaths/taxons))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
+      {:on-click (fn [_] (analytics/track-event "Banner"
+                                                "Click"
+                                                "deluxeUltraBannerHome"
+                                                1
+                                                false))}
       [:figure.featured-new]
       [:figure.featured-product-image]
       [:p.featured-product-banner "Introducing DELUXE and ULTRA hair"]]
