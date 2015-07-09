@@ -8,6 +8,7 @@
             [ring.middleware.defaults :refer :all]
             [ring.util.response :refer [redirect response status content-type header]]
             [noir-exception.core :refer [wrap-internal-error wrap-exceptions]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring-logging.core :refer [make-logger-middleware]]
@@ -145,6 +146,7 @@
    (wrap-defaults (storefront-site-defaults environment))
    (wrap-redirect storeback-config)
    (wrap-resource "public")
+   (wrap-content-type)
    (wrap-cdn)))
 
 (defn create-handler
