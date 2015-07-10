@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.query :as query]))
@@ -46,6 +47,12 @@
         "$"
         (js/Math.floor (product :from_price))]]]]))
 
+(defn- variation-sort-by-premier-deluxe-ultra [products]
+  (sort-by #(.indexOf (clj->js ["premier" "deluxe" "ultra"]) (:collection_name %)) products))
+
+(defn- variation-hide-deluxe-ultra [products]
+  (filterv #(= "premier" (:collection_name %)) products))
+
 (defn category-component [data owner]
   (om/component
    (html
@@ -61,13 +68,21 @@
            [:div {:style {:clear "both"}}]]
 
           [:div.taxon-products-list-container
-           (let [products (->>
-                              (get-in data keypaths/products)
-                              vals
-                              (sort-by :index)
-                              (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
+           (let [products (->> (get-in data keypaths/products)
+                               vals
+                               (sort-by :index)
+                               (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
              (if (> (count products) 0)
-               (map (partial display-product data (:id taxon)) products)
+               (map (partial display-product data (:id taxon))
+                    (cond
+                      (experiments/display-variation data "premier-first")
+                      (variation-sort-by-premier-deluxe-ultra products)
+
+                      (experiments/display-variation data "premier-only")
+                      (variation-hide-deluxe-ultra products)
+
+                      :else
+                      products))
                [:.spinner]))]]
 
          [:div.gold-features

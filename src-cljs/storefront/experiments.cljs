@@ -14,3 +14,6 @@
   (when (.hasOwnProperty js/window "optimizely")
     (.push js/optimizely (clj->js ["trackEvent" event-name]))))
 
+(defn display-variation [data variation]
+  (contains? (get-in data keypaths/optimizely-variations)
+             variation))
