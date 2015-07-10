@@ -113,6 +113,9 @@
                       (get-in app-state keypaths/past-order-id)
                       (get-in app-state keypaths/user-token)))
 
+(defmethod perform-effects events/navigate-order-complete [_ _ _ _]
+  (experiments/track-event "place-order"))
+
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-my-orders (get-in app-state keypaths/handle-message)
@@ -405,6 +408,10 @@
           events/flash-show-failure
           {:message (:error validation-errors)
            :navigation (get-in app-state keypaths/navigation-message)})))
+
+(defmethod perform-effects events/api-success-add-to-bag [_ _ _ _]
+  (experiments/track-event "add-to-bag"))
+
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
   (reviews/start))
