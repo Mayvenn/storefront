@@ -71,8 +71,7 @@
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
                    product-path)
-  (when false
-    (reviews/insert-reviews app-state)))
+  (reviews/insert-reviews app-state))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -411,7 +410,6 @@
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ _ _]
   (experiments/track-event "add-to-bag"))
-
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
   (reviews/start))
