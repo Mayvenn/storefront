@@ -92,10 +92,9 @@
               (seq images)
               (display-product-image (first images)))]
            [:div.product-info
-            (when-not (experiments/display-variation data "premier-only")
-              [:div.product-collection
-               [:div.product-collection-indicator {:class collection-name}]
-               [:span collection-name]])
+            [:div.product-collection
+             [:div.product-collection-indicator {:class collection-name}]
+             [:span collection-name]]
             [:div.product-title {:item-prop "name"}
              (product :name)]]]
           [:div.cart-form-container
@@ -152,17 +151,16 @@
 
           [:div
            [:div.left-of-reviews-wrapper
-            (when-not (experiments/display-variation data "premier-only")
-              [:div#product-collection-description.product-collection-description
-               [:div.product-collection-circles-container
-                [:div.product-collection-circles
-                 [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
-                 [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
-                 [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
-                [:div.bar]]
-               [:div.product-collection-text
-                [:h3.sub-header (str collection-name ": ")]
-                (product :collection_description)]])
+            [:div#product-collection-description.product-collection-description
+             [:div.product-collection-circles-container
+              [:div.product-collection-circles
+               [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
+               [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
+               [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
+              [:div.bar]]
+             [:div.product-collection-text
+              [:h3.sub-header (str collection-name ": ")]
+              (product :collection_description)]]
             (when-let [html-description (:description product)]
               [:div#product-description.product-description
                [:h3.sub-header "Description"]

@@ -36,11 +36,10 @@
          [:img {:src first-image}]])
       [:div.taxon-product-info-container
        [:div.taxon-product-description-container
-        (when-not (experiments/display-variation data "premier-only")
-          [:div.taxon-product-collection
-           [:div.taxon-product-collection-indicator
-            {:class collection-name}]
-           collection-name])
+        [:div.taxon-product-collection
+         [:div.taxon-product-collection-indicator
+          {:class collection-name}]
+         collection-name]
         [:div.taxon-product-title (:name product)]]
        [:div.taxon-from-price
         [:span "From: "]
@@ -74,16 +73,7 @@
                                (sort-by :index)
                                (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
              (if (> (count products) 0)
-               (map (partial display-product data (:id taxon))
-                    (cond
-                      (experiments/display-variation data "premier-first")
-                      (variation-sort-by-premier-deluxe-ultra products)
-
-                      (experiments/display-variation data "premier-only")
-                      (variation-hide-deluxe-ultra products)
-
-                      :else
-                      products))
+               (map (partial display-product data (:id taxon)) products)
                [:.spinner]))]]
 
          [:div.gold-features
