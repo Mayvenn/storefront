@@ -21,9 +21,9 @@
              master-variant (:master product)]
          [:div.product-reviews
           [:div.yotpo.yotpo-main-widget
-           {:data-product-id (:id master-variant)
-            :data-name (:name master-variant)
+           {:data-product-id (:id product)
+            :data-name (:name product)
             :data-url (apply routes/path-for @data
                              (get-in data keypaths/navigation-message))
             :data-image-url (get-in master-variant [:images 0])
-            :data-description (:description master-variant)}]])))))
+            :data-description (:description product)}]])))))
