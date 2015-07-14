@@ -47,12 +47,6 @@
         "$"
         (js/Math.floor (product :from_price))]]]]))
 
-(defn- variation-sort-by-premier-deluxe-ultra [products]
-  (sort-by #(.indexOf (clj->js ["premier" "deluxe" "ultra"]) (:collection_name %)) products))
-
-(defn- variation-hide-deluxe-ultra [products]
-  (filterv #(= "premier" (:collection_name %)) products))
-
 (defn category-component [data owner]
   (om/component
    (html
