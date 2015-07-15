@@ -51,7 +51,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 
 (defn set-action [action & args]
   (when (.hasOwnProperty js/window "ga")
-    (js/ga "ec:setAction" action args)))
+    (js/ga "ec:setAction" action (clj->js (apply hash-map args)))))
 
 (defn track-event [category action & [label value non-interaction]]
   (when (.hasOwnProperty js/window "ga")

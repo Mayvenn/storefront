@@ -275,6 +275,7 @@
     (-> app-state
         (assoc-in keypaths/order order))
     (-> app-state
+        (assoc-in keypaths/last-order order)
         (assoc-in keypaths/checkout state/initial-checkout-state)
         (assoc-in keypaths/order {}))))
 
