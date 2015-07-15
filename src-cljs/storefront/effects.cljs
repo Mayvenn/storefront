@@ -286,7 +286,11 @@
 
 (defmethod perform-effects events/control-click-category-product [_ _ {:keys [target taxon]} app-state]
   (analytics/add-product target)
+<<<<<<< HEAD
   (analytics/set-action "click" :list (:name taxon))
+=======
+  (analytics/set-action "click" {:list (:name taxon)})
+>>>>>>> Track analytics EC: impressions, detail, add-to-bag
   (analytics/track-event "UX" "click" "Results")
   (routes/enqueue-navigate app-state events/navigate-product {:product-path (:slug target)
                                                               :query-params {:taxon-id (taxon :id)}}))
@@ -457,10 +461,14 @@
           events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
+<<<<<<< HEAD
   (let [taxon (query/get (get-in app-state keypaths/browse-taxon-query)
                          (get-in app-state keypaths/taxons))]
     (doseq [product products]
       (analytics/add-impression product {:list (:name taxon)})))
+=======
+  (doseq [product products] (analytics/add-impression product))
+>>>>>>> Track analytics EC: impressions, detail, add-to-bag
   (analytics/track-page (routes/path-for app-state
                                          (get-in app-state keypaths/navigation-message))))
 
