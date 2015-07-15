@@ -4,6 +4,9 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
+            [clojure.string :as string]
+            [storefront.products :refer [collection->grade strip-origin-and-collection product-name->collection]]
+            [storefront.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
             [storefront.keypaths :as keypaths]))
 
@@ -27,7 +30,15 @@
       [:h4
        [:a
         (utils/route-to data events/navigate-product {:product-path (:slug variant)})
-        (variant :name)]]
+        (if (experiments/display-variation data "add-grades")
+          (str (-> :name
+                   variant
+                   string/lower-case
+                   product-name->collection
+                   (collection->grade (variant :name)))
+               " "
+               (strip-origin-and-collection (variant :name)))
+          (:name variant))]]
       (map display-variant-options (:option_values variant))
       (when (not interactive?)
         (field "Quantity:" (:quantity line-item)))

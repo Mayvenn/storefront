@@ -35,3 +35,10 @@
    product-name
    #"(?:Peruvian|Malaysian|Peruvian|Brazilian|Indian|Russian|Ultra|Deluxe)\s"
    ""))
+
+(defn product-name->collection [product-name]
+  (-> (string/split product-name #"\s")
+      first
+      string/lower-case
+      #{"ultra" "deluxe"}
+      (or "premier")))
