@@ -58,6 +58,9 @@
 (def control-manage-account (conj control :manage-account))
 (def control-manage-account-submit (conj control-manage-account :submit))
 
+(def control-click (conj control :click))
+(def control-click-category-product (conj control-click :category-product))
+
 (def control-browse (conj control :browse))
 (def control-browse-variant (conj control-browse :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))

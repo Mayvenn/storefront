@@ -201,11 +201,11 @@
       (assoc-in keypaths/order-token token)
       (assoc-in keypaths/order-number number)))
 
-(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant-id variant-quantity]} app-state]
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants
                  conj
-                 {:id variant-id
+                 {:id (variant :id)
                   :quantity variant-quantity})))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]

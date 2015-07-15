@@ -347,18 +347,19 @@
                            extra-message-args))
    (default-error-handler handle-message)))
 
-(defn add-line-item [handle-message variant-id variant-quantity order-number order-token]
+(defn add-line-item [handle-message variant product variant-quantity order-number order-token]
   (api-req
    POST
    "/line-items"
    {:token order-token
     :order_id order-number
-    :variant_id variant-id
+    :variant_id (variant :id)
     :variant_quantity variant-quantity}
-   #(handle-message events/api-success-add-to-bag {:variant-id variant-id
-                                                   :variant-quantity variant-quantity
-                                                   :order-number order-number
-                                                   :order-token order-token})
+   #(handle-message events/api-success-add-to-bag  {:variant variant
+                                                    :product product
+                                                    :variant-quantity variant-quantity
+                                                    :order-number order-number
+                                                    :order-token order-token})
    (default-error-handler handle-message)))
 
 (defn get-order [handle-message order-number order-token]
@@ -387,14 +388,14 @@
    #(handle-message events/api-success-my-orders %)
    (default-error-handler handle-message)))
 
-(defn add-to-bag [handle-message variant-id variant-quantity stylist-id order-token order-id user-token]
+(defn add-to-bag [handle-message variant product variant-quantity stylist-id order-token order-id user-token]
   (letfn [(refetch-order [order-id order-token]
             (get-order handle-message order-id order-token))
           (add-line-item-cb [order-id order-token]
             (add-line-item (fn [event args]
                              (refetch-order order-id order-token)
                              (handle-message event args))
-                           variant-id variant-quantity order-id order-token))
+                           variant product variant-quantity order-id order-token))
           (created-order-cb [event {:keys [number token] :as args}]
             (add-line-item-cb number token)
             (handle-message event args))]

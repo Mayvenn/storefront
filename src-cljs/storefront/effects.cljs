@@ -61,7 +61,9 @@
             events/flash-dismiss-failure)))
 
   (riskified/track-page (routes/path-for app-state event args))
-  (analytics/track-page (routes/path-for app-state event args)))
+
+  (when-not (contains? #{events/navigate-product events/navigate-category} event)
+    (analytics/track-page (routes/path-for app-state event args))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/handle-message)
@@ -159,7 +161,8 @@
         variant (query/get (get-in app-state keypaths/browse-variant-query)
                            (:variants product))]
     (api/add-to-bag (get-in app-state keypaths/handle-message)
-                    (variant :id)
+                    variant
+                    product
                     (get-in app-state keypaths/browse-variant-quantity)
                     (get-in app-state keypaths/store-stylist-id)
                     (get-in app-state keypaths/order-token)
@@ -201,6 +204,13 @@
    line-items
    (map #(select-keys % [:id :quantity :variant_id]))
    (map #(assoc % :quantity (-> % :id quantities)))))
+
+(defmethod perform-effects events/control-click-category-product [_ _ {:keys [target taxon]} app-state]
+  (analytics/add-product target)
+  (analytics/set-action "click" {:list (:name taxon)})
+  (analytics/track-event "UX" "click" "Results")
+  (routes/enqueue-navigate app-state events/navigate-product {:product-path (:slug target)
+                                                              :query-params {:taxon-id (taxon :id)}}))
 
 (defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
   (let [order (get-in app-state keypaths/order)
@@ -355,6 +365,17 @@
     (send app-state
           events/flash-dismiss-failure)))
 
+(defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
+  (doseq [product products] (analytics/add-impression product))
+  (analytics/track-page (routes/path-for app-state
+                                         (get-in app-state keypaths/navigation-message))))
+
+(defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
+  (analytics/add-product product)
+  (analytics/set-action "detail")
+  (analytics/track-page (routes/path-for app-state
+                                         (get-in app-state keypaths/navigation-message))))
+
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)
@@ -408,8 +429,12 @@
           {:message (:error validation-errors)
            :navigation (get-in app-state keypaths/navigation-message)})))
 
-(defmethod perform-effects events/api-success-add-to-bag [_ _ _ _]
-  (experiments/track-event "add-to-bag"))
+(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} _]
+  (experiments/track-event "add-to-bag")
+  (analytics/add-product product {:quantity variant-quantity
+                                  :variant (:sku variant)})
+  (analytics/set-action "add")
+  (analytics/track-event "UX" "click" "add to cart"))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
   (reviews/start))

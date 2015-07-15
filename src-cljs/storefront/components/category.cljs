@@ -18,11 +18,10 @@
      [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
       [:p.hair-taxon-name (:name taxon)]]]))
 
-(defn display-product [data taxon-id product]
+(defn display-product [data taxon product]
   (let [collection-name (:collection_name product)]
-    [:a (utils/route-to data events/navigate-product
-                        {:product-path (:slug product)
-                         :query-params {:taxon_id taxon-id}})
+   [:a {:href (utils/href-to data events/navigate-product {:product-path (:slug product) :query-params {:taxon_id (taxon :id)}})
+        :on-click (utils/click-to data events/control-click-category-product {:target product :taxon taxon})}
      [:div.taxon-product-container
       (when-let [first-image (->> product
                                   :master
@@ -74,7 +73,7 @@
                                (sort-by :index)
                                (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
              (if (> (count products) 0)
-               (map (partial display-product data (:id taxon)) products)
+               (map (partial display-product data taxon) products)
                [:.spinner]))]]
 
          [:div.gold-features
