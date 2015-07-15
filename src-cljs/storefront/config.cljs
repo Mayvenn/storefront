@@ -11,9 +11,9 @@
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
 (def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")
 
-(def review-tag-url (if development?
-                      "//staticw2.yotpo.com/5je9H3h4cV9fsgrpTkbJ42Ccci2bifloJGvnXwcq/widget.js"
-                      "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"))
+(def review-tag-url (case js/environment
+                      "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
+                      "//staticw2.yotpo.com/5je9H3h4cV9fsgrpTkbJ42Ccci2bifloJGvnXwcq/widget.js"))
 
 (def honeybadger-api-key "b0a4a070")
 
