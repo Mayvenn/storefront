@@ -8,6 +8,7 @@
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.reviews :refer [reviews-component]]
+            [storefront.products :refer [collection->grade strip-origin-and-collection]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]))
@@ -94,9 +95,14 @@
            [:div.product-info
             [:div.product-collection
              [:div.product-collection-indicator {:class collection-name}]
-             [:span collection-name]]
+             [:span
+              (if (experiments/display-variation data "add-grades")
+                (collection->grade collection-name (:name product))
+                collection-name)]]
             [:div.product-title {:item-prop "name"}
-             (product :name)]]]
+             (if (experiments/display-variation data "add-grades")
+               (strip-origin-and-collection (:name product))
+               (:name product))]]]
           [:div.cart-form-container
            [:div#cart-form
             [:form
@@ -152,15 +158,17 @@
           [:div
            [:div.left-of-reviews-wrapper
             [:div#product-collection-description.product-collection-description
-             [:div.product-collection-circles-container
-              [:div.product-collection-circles
-               [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
-               [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
-               [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
-              [:div.bar]]
-             [:div.product-collection-text
-              [:h3.sub-header (str collection-name ": ")]
-              (product :collection_description)]]
+             (when-not (experiments/display-variation data "add-grades")
+               (list
+                [:div.product-collection-circles-container
+                 [:div.product-collection-circles
+                  [:div.inner-product-collection-circles {:class (str "premier" (when-not (= collection-name "premier") " disabled"))}]
+                  [:div.inner-product-collection-circles {:class (str "deluxe" (when-not (= collection-name "deluxe") " disabled"))}]
+                  [:div.inner-product-collection-circles {:class (str "ultra" (when-not (= collection-name "ultra") " disabled"))}]]
+                 [:div.bar]]
+                [:div.product-collection-text
+                 [:h3.sub-header (str collection-name ": ")]
+                 (product :collection_description)]))]
             (when-let [html-description (:description product)]
               [:div#product-description.product-description
                [:h3.sub-header "Description"]
