@@ -63,7 +63,6 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (add-line-items (:line_items order))
   (set-action "purchase"
               :id (:number order)
-              :affiliation "Mayvenn"
               :revenue (:total order)
               :tax (:tax_total order)
               :shipping (:ship_total order)))
