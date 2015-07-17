@@ -100,6 +100,14 @@
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event {id :id} app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method-id id))
 
+(defmethod transition-state events/api-start
+  [_ event {:keys [request request-key]} app-state]
+  (assoc-in app-state (concat keypaths/api-requests request-key) request))
+
+(defmethod transition-state events/api-end
+  [_ event {:keys [request-key]} app-state]
+  (assoc-in app-state (concat keypaths/api-requests request-key) nil))
+
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))
 

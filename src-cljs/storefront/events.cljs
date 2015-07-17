@@ -89,8 +89,10 @@
 (def control-stylist-manage-account-submit (conj control-stylist-manage-account :submit))
 
 (def api [:api])
-(def api-success (conj api :success))
+(def api-start (conj api :start))
+(def api-end (conj api :end))
 
+(def api-success (conj api :success))
 (def api-success-cache (conj api-success :cache))
 
 (def api-success-taxons (conj api-success :taxons))

@@ -1,0 +1,36 @@
+(ns storefront.request-keys)
+
+(def get-taxons [:get-taxons])
+(def get-store [:get-store])
+(def get-promotions [:get-promotions])
+(def get-products [:get-products])
+(def get-product [:get-product])
+(def get-states [:get-states])
+(def get-payment-methods [:get-payment-methods])
+
+
+(def sign-in [:sign-in])
+(def sign-up [:sign-up])
+(def forgot-password [:forgot-password])
+(def reset-password [:reset-password])
+(def get-account [:get-account])
+(def update-account [:update-account])
+(def update-account-address [:update-account-address])
+
+(def get-stylist-account [:get-stylist-account])
+(def update-stylist-account [:update-stylist-account])
+(def update-stylist-account-profile-picture [:update-stylist-account-profile-picture])
+(def get-stylist-commissions [:get-stylist-commissions])
+(def get-stylist-bonus-credits [:get-stylist-bonus-credits])
+(def get-stylist-referral-program [:get-stylist-referral-program])
+
+(def get-sms-number [:get-sms-number])
+
+(def create-order [:create-order])
+(def update-cart [:update-cart])
+(def update-order [:update-order])
+(def add-line-item [:add-line-item])
+(def get-order [:get-order])
+(def get-past-order [:get-past-order])
+(def get-my-orders [:get-my-orders])
+(def add-to-bag [:add-to-bag])

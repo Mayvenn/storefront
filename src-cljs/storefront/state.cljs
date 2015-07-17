@@ -103,7 +103,8 @@
                         :zipcode ""
                         :phone ""}
 
-     :ui {:navigation-message [events/navigate-home {}]
+     :ui {:api-requests {}
+          :navigation-message [events/navigate-home {}]
           :validation-errors {:error nil
                               :fields {}}
           :browse-taxon-query nil

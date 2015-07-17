@@ -44,6 +44,7 @@
 (def api-cache [:api-cache])
 
 (def ui [:ui])
+(def api-requests (conj ui :api-requests))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))
