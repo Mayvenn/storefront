@@ -1,6 +1,7 @@
 (ns storefront.components.product
   (:require [storefront.components.utils :as utils]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.experiments :as experiments]
             [storefront.query :as query]
@@ -138,11 +139,14 @@
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]
 
-               [:div.add-to-cart {:style {:clear "both"}}
-                [:input.large.primary#add-to-cart-button
-                 {:type "submit"
-                  :value "Add to Bag"
-                  :on-click (utils/send-event-callback data events/control-browse-add-to-bag)}]]]]]
+               (let [adding-to-cart (get-in data (concat keypaths/api-requests request-keys/add-to-bag))]
+                 [:div.add-to-cart {:style {:clear "both"}}
+                  [:.large.primary#add-to-cart-button
+                   {:on-click
+                    (when-not adding-to-cart
+                      (utils/send-event-callback data events/control-browse-add-to-bag))
+                    :class (when adding-to-cart "saving")}
+                   (when-not adding-to-cart "Add to Bag")]])]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}

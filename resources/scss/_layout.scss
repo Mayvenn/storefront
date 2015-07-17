@@ -87,6 +87,7 @@ p {
   border: none;
   margin: (26em / 32) 0;
   text-align: center;
+  cursor: pointer;
 
   &.half {
     display: inline-block;
@@ -104,6 +105,24 @@ p {
 
   &.primary {
     @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+  }
+
+  &.saving { // fixme: only works when button is a div
+    position: relative;
+    cursor: default;
+
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("/images/spinner.svg");
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
   }
 }
 
