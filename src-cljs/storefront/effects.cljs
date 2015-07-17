@@ -137,10 +137,8 @@
                       (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-order-complete [_ _ _ app-state]
-  (let [last-order (get-in app-state keypaths/last-order)]
-    (analytics/set-purchase last-order)
-    (analytics/track-page (routes/path-for app-state
-                                           (get-in app-state keypaths/navigation-message))))
+  (analytics/set-purchase (get-in app-state keypaths/last-order))
+  (analytics/track-page (routes/path-for app-state (get-in app-state keypaths/navigation-message)))
   (experiments/track-event "place-order"))
 
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
