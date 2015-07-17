@@ -138,6 +138,7 @@
 (def flash-show-failure (conj flash-show :failure))
 (def flash-dismiss-failure (conj flash-dismiss :failure))
 
+(def added-to-bag [:added-to-bag])
 
 (def optimizely [:optimizely])
 

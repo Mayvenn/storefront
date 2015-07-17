@@ -11,12 +11,24 @@
             [storefront.checkout :as checkout]
             [storefront.analytics :as analytics]
             [storefront.experiments :as experiments]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [send send-later]]
             [storefront.reviews :as reviews]
-            [storefront.orders :as orders]))
+            [storefront.orders :as orders]
+            [goog.object :as object]))
 
-(defn scroll-to-top []
-  (set! (.. js/document -body -scrollTop) 0))
+(defn scroll-to [x]
+  (set! (.. js/document -body -scrollTop) x))
+
+(def scroll-to-top (partial scroll-to 0))
+
+(def scroll-padding 25.0)
+(defn scroll-to-elem [el]
+  (let [scroll-top (.. js/document -body -scrollTop)
+        doc-height js/window.innerHeight
+        el-bottom (object/get (.getBoundingClientRect el) "bottom")
+        offset (- el-bottom doc-height)]
+    (when (pos? offset)
+      (scroll-to (+ offset scroll-top scroll-padding)))))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -463,12 +475,17 @@
           {:message (:error validation-errors)
            :navigation (get-in app-state keypaths/navigation-message)})))
 
-(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} _]
+(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} app-state]
   (experiments/track-event "add-to-bag")
   (analytics/add-product product {:quantity variant-quantity
                                   :variant (:sku variant)})
   (analytics/set-action "add")
-  (analytics/track-event "UX" "click" "add to cart"))
+  (analytics/track-event "UX" "click" "add to cart")
+  (send-later app-state events/added-to-bag))
+
+(defmethod perform-effects events/added-to-bag [_ _ _ _]
+  (when-let [el (.querySelector js/document ".cart-button")]
+    (scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
   (reviews/start))
