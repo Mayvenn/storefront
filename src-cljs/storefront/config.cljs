@@ -20,3 +20,7 @@
 (def optimizely-app-id (case js/environment
                          "production" 592210561
                          3156430062))
+
+(def google-analytics-property (case js/environment
+                                 "production" "UA-36226630-1"
+                                 "UA-36226630-2"))

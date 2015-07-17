@@ -104,15 +104,7 @@
                                       user-token)))
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
-  (doseq [line-item (get-in app-state [:order :line_items])]
-    (let [variant (:variant line-item)]
-      (analytics/add-product {:id (:product_id variant)
-                               :name (:name variant)
-                               :price (:price variant)
-                               :slug (:slug variant)}
-                              {:quantity (:quantity line-item)
-                               :variant (:sku variant)})))
-  (analytics/set-action "checkout" {:step 1})
+  (analytics/set-checkout-step 1 (get-in app-state [:order :line_items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
@@ -120,55 +112,23 @@
     (routes/enqueue-redirect app-state events/navigate-cart)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (doseq [line-item (get-in app-state [:order :line_items])]
-    (let [variant (:variant line-item)]
-      (analytics/add-product {:id (:product_id variant)
-                              :name (:name variant)
-                              :price (:price variant)
-                              :slug (:slug variant)}
-                             {:quantity (:quantity line-item)
-                              :variant (:sku variant)})))
-  (analytics/set-action "checkout" {:step 2})
+  (analytics/set-checkout-step 2 (get-in app-state [:order :line_items]))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-states (get-in app-state keypaths/handle-message)
                   (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
-  (doseq [line-item (get-in app-state [:order :line_items])]
-    (let [variant (:variant line-item)]
-      (analytics/add-product {:id (:product_id variant)
-                              :name (:name variant)
-                              :price (:price variant)
-                              :slug (:slug variant)}
-                             {:quantity (:quantity line-item)
-                              :variant (:sku variant)})))
-  (analytics/set-action "checkout" {:step 3})
+  (analytics/set-checkout-step 3 (get-in app-state [:order :line_items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (doseq [line-item (get-in app-state [:order :line_items])]
-    (let [variant (:variant line-item)]
-      (analytics/add-product {:id (:product_id variant)
-                              :name (:name variant)
-                              :price (:price variant)
-                              :slug (:slug variant)}
-                             {:quantity (:quantity line-item)
-                              :variant (:sku variant)})))
-  (analytics/set-action "checkout" {:step 4})
+  (analytics/set-checkout-step 4 (get-in app-state [:order :line_items]))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-payment-methods (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
-  (doseq [line-item (get-in app-state [:order :line_items])]
-    (let [variant (:variant line-item)]
-      (analytics/add-product {:id (:product_id variant)
-                              :name (:name variant)
-                              :price (:price variant)
-                              :slug (:slug variant)}
-                             {:quantity (:quantity line-item)
-                              :variant (:sku variant)})))
-  (analytics/set-action "checkout" {:step 5})
+  (analytics/set-checkout-step 5 (get-in app-state [:order :line_items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-order [_ event args app-state]
@@ -178,20 +138,7 @@
 
 (defmethod perform-effects events/navigate-order-complete [_ _ _ app-state]
   (let [last-order (get-in app-state keypaths/last-order)]
-    (doseq [line-item (:line_items last-order)]
-      (let [variant (:variant line-item)]
-        (analytics/add-product {:id (:product_id variant)
-                                :name (:name variant)
-                                :price (:price variant)
-                                :slug (:slug variant)}
-                               {:quantity (:quantity line-item)
-                                :variant (:sku variant)})))
-    (analytics/set-action "purchase"
-                          :id (:number last-order)
-                          :affiliation "Mayvenn"
-                          :revenue (:total last-order)
-                          :tax (:tax_total last-order)
-                          :shipping (:ship_total last-order))
+    (analytics/set-purchase last-order)
     (analytics/track-page (routes/path-for app-state
                                            (get-in app-state keypaths/navigation-message))))
   (experiments/track-event "place-order"))
@@ -344,10 +291,7 @@
                                          (if use-billing
                                            keypaths/checkout-billing-address
                                            keypaths/checkout-shipping-address))}]
-    (analytics/set-action "checkout_option"
-                          :step 2
-                          :option (str save-address "/" use-billing))
-    (analytics/track-event "Checkout" "Option")
+    (analytics/track-checkout-option 2 (str save-address "/" use-billing))
     (when save-address
       (api/update-account-address handle-message
                                   (get-in app-state keypaths/user-id)
@@ -364,8 +308,7 @@
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (let [shipping-method-id (get-in app-state keypaths/checkout-selected-shipping-method-id)]
-    (analytics/set-action "checkout_option" :step 3 :option shipping-method-id)
-    (analytics/track-event "Checkout" "Option")
+    (analytics/track-checkout-option 3 shipping-method-id)
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]
@@ -379,8 +322,7 @@
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)
         covered-by-store-credit (get-in app-state keypaths/order-covered-by-store-credit)]
-    (analytics/set-action "checkout_option" :step 4 :option (str use-store-credit "/" covered-by-store-credit))
-    (analytics/track-event "Checkout" "Option")
+    (analytics/track-checkout-option 4 (str use-store-credit "/" covered-by-store-credit))
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]

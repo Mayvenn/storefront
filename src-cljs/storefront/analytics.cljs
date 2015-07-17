@@ -1,16 +1,18 @@
 (ns storefront.analytics
-  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tag remove-tag-by-src]]))
+  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tag remove-tag-by-src]]
+            [storefront.config :as config]
+            [clojure.string :as s]))
 
 (defn insert-tracking []
   (insert-tag-with-text
-   "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+   (str "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-36226630-1', 'auto');
+ga('create', '" config/google-analytics-property "', 'auto');
 ga('require', 'displayfeatures');
-ga('require', 'ec');"
+ga('require', 'ec');")
    "analytics")
   (insert-tag-with-text
    "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -28,17 +30,10 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag-by-src "//www.google-analytics.com/analytics.js")
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
-(defn track-page [path]
-  (when (.hasOwnProperty js/window "ga")
-    (js/ga "set" "page" (clj->js path))
-    (js/ga "send" "pageview")))
-
-(defn- ->ga-product [{category :slug, :keys [id name price]} & [event-fields]]
-  (merge {:id id
-          :name name
-          :price price
-          :category category
-          :brand "Mayvenn"}
+(defn- ->ga-product [product & [event-fields]]
+  (merge (select-keys product [:name :price :category])
+         {:brand (s/lower-case (str "mayvenn-" (:collection_name product) "-hair"))
+          :id (or (:master_sku product) (-> product :master :sku))}
          event-fields))
 
 (defn add-impression [product & [event-fields]]
@@ -49,9 +44,29 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (when (.hasOwnProperty js/window "ga")
     (js/ga "ec:addProduct" (clj->js (->ga-product product event-fields)))))
 
+(defn add-line-items [line-items]
+  (doseq [line-item line-items]
+    (let [variant (:variant line-item)]
+      (add-product (select-keys variant
+                                [:master_sku :name :price :category :collection_name])
+                   {:quantity (:quantity line-item) :variant (:sku variant)}))))
+
 (defn set-action [action & args]
   (when (.hasOwnProperty js/window "ga")
     (js/ga "ec:setAction" action (clj->js (apply hash-map args)))))
+
+(defn set-checkout-step [step line-items]
+  (add-line-items line-items)
+  (set-action "checkout" :step step))
+
+(defn set-purchase [order]
+  (add-line-items (:line_items order))
+  (set-action "purchase"
+              :id (:number order)
+              :affiliation "Mayvenn"
+              :revenue (:total order)
+              :tax (:tax_total order)
+              :shipping (:ship_total order)))
 
 (defn track-event [category action & [label value non-interaction]]
   (when (.hasOwnProperty js/window "ga")
@@ -61,4 +76,13 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
            action
            label
            value
-           (clj->js {"nonInteraction" (str non-interaction)}))))
+           (when non-interaction (clj->js {"nonInteraction" (str non-interaction)})))))
+
+(defn track-checkout-option [step option]
+  (set-action "checkout_option" :step step :option option)
+  (track-event "Checkout" "Option"))
+
+(defn track-page [path]
+  (when (.hasOwnProperty js/window "ga")
+    (js/ga "set" "page" (clj->js path))
+    (js/ga "send" "pageview")))
