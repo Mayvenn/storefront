@@ -14,21 +14,7 @@
             [storefront.messages :refer [send send-later]]
             [storefront.reviews :as reviews]
             [storefront.orders :as orders]
-            [goog.object :as object]))
-
-(defn scroll-to [x]
-  (set! (.. js/document -body -scrollTop) x))
-
-(def scroll-to-top (partial scroll-to 0))
-
-(def scroll-padding 25.0)
-(defn scroll-to-elem [el]
-  (let [scroll-top (.. js/document -body -scrollTop)
-        doc-height js/window.innerHeight
-        el-bottom (object/get (.getBoundingClientRect el) "bottom")
-        offset (- el-bottom doc-height)]
-    (when (pos? offset)
-      (scroll-to (+ offset scroll-top scroll-padding)))))
+            [storefront.scroll :as scroll]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -57,7 +43,7 @@
     (api/get-order (get-in app-state keypaths/handle-message)
                    order-number
                    (get-in app-state keypaths/order-token)))
-  (scroll-to-top)
+  (scroll/scroll-to-top)
 
   (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
     (when-not (or
@@ -464,12 +450,12 @@
          :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/flash-show [_ event args app-state]
-  (scroll-to-top))
+  (scroll/scroll-to-top))
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
   (send app-state events/flash-dismiss-success)
   (when (seq (:fields validation-errors))
-    (scroll-to-top)
+    (scroll/scroll-to-top)
     (send app-state
           events/flash-show-failure
           {:message (:error validation-errors)
@@ -485,7 +471,7 @@
 
 (defmethod perform-effects events/added-to-bag [_ _ _ _]
   (when-let [el (.querySelector js/document ".cart-button")]
-    (scroll-to-elem el)))
+    (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
   (reviews/start))
