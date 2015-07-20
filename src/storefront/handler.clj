@@ -84,6 +84,7 @@
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
+    [:meta {:name "viewport" :content "width=320, initial-scale=1"}]
     [:meta {:property "og:type" :content "website"}]
     [:meta {:property "og:title" :content "Shop Mayvenn"}]
     [:meta {:property "og:image" :content (asset-path "/images/home_image.jpg")}]
