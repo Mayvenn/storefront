@@ -454,7 +454,7 @@
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
   (send app-state events/flash-dismiss-success)
-  (scroll-to-top)
+  (scroll/scroll-to-top)
   (if (seq (:fields validation-errors))
     (send app-state
           events/flash-show-failure
