@@ -2,7 +2,6 @@
   (:require [storefront.components.utils :as utils]
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [clojure.string :as string]
-            [storefront.products :refer [collection->grade strip-origin-and-collection]]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.experiments :as experiments]
@@ -31,23 +30,18 @@
                                   :product_url)]
         [:div.taxon-product-image-container
          {:style {:background-image (str "url(" first-image ")")}}
-         (when-not (experiments/display-variation data "add-grades")
-           (when-not (= collection-name "premier")
-             [:div.corner-ribbon {:class collection-name}
-              collection-name]))
+         (when-not (= collection-name "premier")
+           [:div.corner-ribbon {:class collection-name}
+            collection-name])
          [:img {:src first-image}]])
       [:div.taxon-product-info-container
        [:div.taxon-product-description-container
         [:div.taxon-product-collection
          [:div.taxon-product-collection-indicator
           {:class collection-name}]
-         (if (experiments/display-variation data "add-grades")
-           (collection->grade collection-name (:name product))
-           collection-name)]
+         collection-name]
         [:div.taxon-product-title
-         (if (experiments/display-variation data "add-grades")
-           (strip-origin-and-collection (:name product))
-           (:name product))]]
+         (:name product)]]
        [:div.taxon-from-price
         [:span "From: "]
         [:br]
