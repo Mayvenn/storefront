@@ -8,6 +8,7 @@
             [storefront.products :refer [collection->grade strip-origin-and-collection product-name->collection]]
             [storefront.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
+            [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
 (defn field [name value & [classes]]
@@ -48,7 +49,14 @@
         (list
          (om/build counter-component
                    data
-                   {:opts {:path (conj keypaths/cart-quantities (:id line-item))}})
+                   {:opts {:path (conj keypaths/cart-quantities (:id line-item))
+                           :inc-event events/control-cart-line-item-inc
+                           :dec-event events/control-cart-line-item-dec
+                           :set-event events/control-cart-line-item-set
+                           :spinner-path (concat
+                                          keypaths/api-requests
+                                          (conj request-keys/update-line-item (:id line-item)))
+                           }})
          [:a.delete
           {:href "#"
            :on-click (utils/send-event-callback data

@@ -67,6 +67,9 @@
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
 (def control-cart (conj control :cart))
+(def control-cart-line-item-inc (conj control-cart :line-item-inc))
+(def control-cart-line-item-dec (conj control-cart :line-item-dec))
+(def control-cart-line-item-set (conj control-cart :line-item-set))
 (def control-cart-update (conj control-cart :update))
 (def control-cart-remove (conj control-cart :remove))
 

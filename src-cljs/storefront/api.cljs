@@ -371,20 +371,51 @@
     (handle-message events/api-success-create-order {:number order-id :token order-token})
     (create-order handle-message stylist-id user-token)))
 
-(defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
+(defn- update-cart-helper
+  [handle-message user-token order-token order request-key success-handler]
   (api-req
    handle-message
    PUT
    "/cart"
-   request-keys/update-cart
+   request-key
    {:params
     (filter-nil
      {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
       :order_token order-token})
-    :handler
-    #(handle-message events/api-success-update-cart
-                     (merge {:order (rename-keys % {:token :guest-token})}
-                            extra-message-args))}))
+    :handler success-handler
+    }))
+
+(defn- edit-line-item [handle-message user-token {order-token :guest-token :as order} {:keys [line-item-id]} f]
+  (let [line-item-attribute (first (filter #(= (:id %) line-item-id) (:line_items_attributes order)))
+        new-line-item-attribute (update line-item-attribute :quantity f)]
+    (update-cart-helper
+     handle-message
+     user-token
+     order-token
+     (assoc order :line_items_attributes [new-line-item-attribute])
+     (conj request-keys/update-line-item line-item-id)
+     #(handle-message events/api-success-update-cart
+                      {:order (rename-keys % {:token :guest-token})}))))
+
+(defn inc-line-item [handle-message user-token order opts]
+  (edit-line-item handle-message user-token order opts inc))
+
+(defn dec-line-item [handle-message user-token order opts]
+  (edit-line-item handle-message user-token order opts dec))
+
+(defn set-line-item [handle-message user-token order opts]
+  (edit-line-item handle-message user-token order opts #((:line-item-quantity opts))))
+
+(defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
+  (update-cart-helper
+   handle-message
+   user-token
+   order-token
+   order
+   request-keys/update-cart
+   #(handle-message events/api-success-update-cart
+                    (merge {:order (rename-keys % {:token :guest-token})}
+                           extra-message-args))))
 
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req

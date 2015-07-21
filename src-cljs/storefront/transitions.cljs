@@ -276,7 +276,12 @@
 (defmethod transition-state events/api-success-update-cart [_ event {:keys [order navigate]} app-state]
   (-> app-state
       (assoc-in keypaths/order order)
-      (assoc-in keypaths/cart-coupon-code "")))
+      (assoc-in keypaths/cart-coupon-code "")
+      (assoc-in keypaths/cart-quantities (reduce
+                                          (fn [quantities line-item]
+                                            (merge quantities {(:id line-item)(:quantity line-item)}))
+                                          {}
+                                          (:line_items order)))))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (if (orders/incomplete? order)

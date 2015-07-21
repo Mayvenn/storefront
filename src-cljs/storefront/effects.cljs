@@ -234,6 +234,26 @@
   (routes/enqueue-navigate app-state events/navigate-product {:product-path (:slug target)
                                                               :query-params {:taxon-id (taxon :id)}}))
 
+
+(defn- update-line-item [{:keys [path]} app-state api-method]
+  (let [order (get-in app-state keypaths/order)
+        coupon-code (get-in app-state keypaths/cart-coupon-code)]
+    (api-method
+     (get-in app-state keypaths/handle-message)
+     (get-in app-state keypaths/user-token)
+     (merge (select-keys order [:id :number :guest-token])
+            {:coupon_code coupon-code
+             :line_items_attributes (updated-quantities
+                                     (:line_items order);;Increment here
+                                     (get-in app-state keypaths/cart-quantities))})
+     {:line-item-id (last path)})))
+
+(defmethod perform-effects events/control-cart-line-item-inc [_ event args app-state]
+  (update-line-item args app-state api/inc-line-item))
+
+(defmethod perform-effects events/control-cart-line-item-dec [_ event args app-state]
+  (update-line-item args app-state api/dec-line-item))
+
 (defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
   (let [order (get-in app-state keypaths/order)
         coupon-code (get-in app-state keypaths/cart-coupon-code)]
