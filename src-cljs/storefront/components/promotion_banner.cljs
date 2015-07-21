@@ -16,8 +16,4 @@
     (when-let [promo (first (get-in data keypaths/promotions))]
       (when (allowed-navigation-events (get-in data keypaths/navigation-event))
         [:div.advertised-promo
-         (str
-          "Save "
-          (:percent_discount promo)
-          "% now - use promo code: "
-          (:code promo))])))))
+         (:description promo)])))))
