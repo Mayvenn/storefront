@@ -129,7 +129,10 @@
               [:div.price-container
                [:div.quantity
                 [:h4.quantity-label "Quantity"]
-                (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity}})]
+                (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
+                                                         :inc-event events/control-counter-inc
+                                                         :dec-event events/control-counter-dec
+                                                         :set-event events/control-counter-set}})]
                [:div#product-price.product-price
                 [:span.price-label "Price:"]
                 [:span.price.selling {:item-prop "price"}
