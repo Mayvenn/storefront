@@ -284,6 +284,13 @@ input.quantity-selector-input {
   border: solid $medium_blue_grey 1px;
 }
 
+input.quantity-selector-input.saving {
+    color:transparent;
+    background-repeat: no-repeat;
+    background-image: url("/images/spinner.svg");
+    background-size: 100% 100%;
+}
+
 .minus {
   position: absolute;
   top: 0;
