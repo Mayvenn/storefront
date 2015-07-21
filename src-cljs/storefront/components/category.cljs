@@ -1,6 +1,6 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
-            [storefront.taxons :refer [taxon-path-for]]
+            [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [clojure.string :as string]
             [storefront.products :refer [collection->grade strip-origin-and-collection]]
             [om.core :as om]
@@ -58,26 +58,25 @@
    (html
     (if-let [taxon (query/get (get-in data keypaths/browse-taxon-query)
                               (get-in data keypaths/taxons))]
-      (let [taxon-permalink-class (string/replace (:permalink taxon) #"/" "-")]
-        [:div
-         [:div.taxon-products-banner {:class taxon-permalink-class}]
-         [:div.taxon-products-container
-          [:div.taxon-nav
-           (map (partial display-taxon data taxon)
-                (get-in data keypaths/taxons))
-           [:div {:style {:clear "both"}}]]
+      [:div
+       [:div.taxon-products-banner {:class (taxon-class-name taxon)}]
+       [:div.taxon-products-container
+        [:div.taxon-nav
+         (map (partial display-taxon data taxon)
+              (get-in data keypaths/taxons))
+         [:div {:style {:clear "both"}}]]
 
-          [:div.taxon-products-list-container
-           (let [products (->> (get-in data keypaths/products)
-                               vals
-                               (sort-by :index)
-                               (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
-             (if (> (count products) 0)
-               (map (partial display-product data taxon) products)
-               [:.spinner]))]]
+        [:div.taxon-products-list-container
+         (let [products (->> (get-in data keypaths/products)
+                             vals
+                             (sort-by :index)
+                             (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
+           (if (> (count products) 0)
+             (map (partial display-product data taxon) products)
+             [:.spinner]))]]
 
-         [:div.gold-features
-          [:figure.guarantee-feature]
-          [:figure.free-shipping-feature]
-          [:figure.triple-bundle-feature]
-          [:feature.fs-feature]]])))))
+       [:div.gold-features
+        [:figure.guarantee-feature]
+        [:figure.free-shipping-feature]
+        [:figure.triple-bundle-feature]
+        [:feature.fs-feature]]]))))
