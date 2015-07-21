@@ -8,6 +8,7 @@
             [storefront.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [storefront.query :as query]))
 
 (defn display-taxon [data selected-taxon taxon]
@@ -71,9 +72,11 @@
                              vals
                              (sort-by :index)
                              (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
-           (if (> (count products) 0)
-             (map (partial display-product data taxon) products)
-             [:.spinner]))]]
+           (if (get-in data (concat keypaths/api-requests
+                                    request-keys/get-products
+                                    [(taxon-path-for taxon)]))
+             [:.spinner]
+             (map (partial display-product data taxon) products)))]]
 
        [:div.gold-features
         [:figure.guarantee-feature]
