@@ -406,7 +406,7 @@
   (edit-line-item request-keys/increment-line-item handle-message user-token order opts inc))
 
 (defn dec-line-item [handle-message user-token order opts]
-  (edit-line-item request-keys/decrement-line-item handle-message user-token order opts dec))
+  (edit-line-item request-keys/decrement-line-item handle-message user-token order opts #(max (dec %) 1)))
 
 (defn set-line-item [handle-message user-token order opts]
   (edit-line-item request-keys/set-line-item handle-message user-token order opts
