@@ -6,6 +6,40 @@ div.yotpo {
     -webkit-font-smoothing: auto !important;
   }
 
+  a {
+    color: #43b4d1 !important;
+
+    &:hover {
+      color: #3085c7 !important;
+    }
+  }
+
+  .yotpo-nav ul {
+    .yotpo-nav-tab {
+      &:hover span {
+        color: #43b4d1;
+      }
+
+      &.yotpo-active .yotpo-nav-wrapper {
+        border-color: #43b4d1;
+
+        span {
+          color: #43b4d1;
+        }
+      }
+    }
+  }
+
+  .yotpo-first-review {
+    .yotpo-first-review-content span {
+      color: #43b4d1;
+    }
+
+    .yotpo-first-review-stars .yotpo-icon-star {
+      color: #43b4d1;
+    }
+  }
+
   .yotpo-review-wrapper .content-review {
     color: $dark_text !important;
   }
@@ -32,5 +66,19 @@ div.yotpo {
     font-family: $primary_font_regular !important;
     line-height: (17em / 12) !important;
     font-size: inherit !important;
+
+    &:hover {
+      background-color: $main_gradient_dark !important;
+      background-image: linear-gradient(to right, $main_gradient_dark, $main_gradient_light) !important;
+      color: white !important;
+    }
+  }
+
+  .primary-color-btn.yotpo-disabled, input[type="button"].primary-color-btn.yotpo-disabled {
+    background: $darkest_blue_grey;
+
+    &:hover {
+      background: $darkest_blue_grey !important;
+    }
   }
 }
