@@ -24,6 +24,7 @@
          {:min 1
           :name "quantity"
           :type "text"
+          :disabled (nil? set-event)
           :class (when spinning "saving")
           :value (str (get-in data path))
           :on-change #(send data

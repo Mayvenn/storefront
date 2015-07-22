@@ -48,7 +48,6 @@
                      {:opts {:path (conj keypaths/cart-quantities (:id line-item))
                              :inc-event events/control-cart-line-item-inc
                              :dec-event events/control-cart-line-item-dec
-                             :set-event events/control-cart-line-item-set
                              :spinner-path update-spinner-path }})
            [:a.delete
             {:href "#"
