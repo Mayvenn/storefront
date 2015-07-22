@@ -400,7 +400,7 @@
      order-token
      (assoc couponless-order :line_items_attributes [new-line-item-attribute])
      (conj request-key line-item-id)
-     #(handle-message events/api-success-update-cart
+     #(handle-message events/api-success-update-line-item
                       {:order (rename-keys % {:token :guest-token})}))))
 
 (defn inc-line-item [handle-message user-token order opts]

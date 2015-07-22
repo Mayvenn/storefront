@@ -124,6 +124,7 @@
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 (def api-success-update-cart (conj api-success :update-cart))
+(def api-success-update-line-item (conj api-success :update-line-item))
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))

@@ -273,15 +273,19 @@
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
-(defmethod transition-state events/api-success-update-cart [_ event {:keys [order navigate]} app-state]
+(defmethod transition-state events/api-success-update-line-item [_ event {:keys [order]} app-state]
   (-> app-state
       (assoc-in keypaths/order order)
-      (assoc-in keypaths/cart-coupon-code "")
       (assoc-in keypaths/cart-quantities (reduce
                                           (fn [quantities line-item]
                                             (merge quantities {(:id line-item)(:quantity line-item)}))
                                           {}
                                           (:line_items order)))))
+
+(defmethod transition-state events/api-success-update-cart [_ event {:keys [order navigate]} app-state]
+  (-> app-state
+      (assoc-in keypaths/order order)
+      (assoc-in keypaths/cart-coupon-code "")))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (if (orders/incomplete? order)
