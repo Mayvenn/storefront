@@ -385,7 +385,12 @@
     :handler success-handler
     }))
 
-(defn- edit-line-item [handle-message user-token {order-token :guest-token :as order} {:keys [line-item-id]} f]
+(defn- edit-line-item [request-key
+                       handle-message
+                       user-token
+                       {order-token :guest-token :as order}
+                       {:keys [line-item-id]}
+                       f]
   (let [line-item-attribute (first (filter #(= (:id %) line-item-id) (:line_items_attributes order)))
         new-line-item-attribute (update line-item-attribute :quantity f)]
     (update-cart-helper
@@ -393,18 +398,23 @@
      user-token
      order-token
      (assoc order :line_items_attributes [new-line-item-attribute])
-     (conj request-keys/update-line-item line-item-id)
+     (conj request-key line-item-id)
      #(handle-message events/api-success-update-cart
                       {:order (rename-keys % {:token :guest-token})}))))
 
 (defn inc-line-item [handle-message user-token order opts]
-  (edit-line-item handle-message user-token order opts inc))
+  (edit-line-item request-keys/increment-line-item handle-message user-token order opts inc))
 
 (defn dec-line-item [handle-message user-token order opts]
-  (edit-line-item handle-message user-token order opts dec))
+  (edit-line-item request-keys/decrement-line-item handle-message user-token order opts dec))
 
 (defn set-line-item [handle-message user-token order opts]
-  (edit-line-item handle-message user-token order opts #((:line-item-quantity opts))))
+  (edit-line-item request-keys/set-line-item handle-message user-token order opts
+                             (fn [_] (:line-item-quantity opts))))
+
+(defn delete-line-item [handle-message user-token order opts]
+  (edit-line-item request-keys/delete-line-item handle-message user-token order opts
+                                (fn [_] 0)))
 
 (defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
   (update-cart-helper

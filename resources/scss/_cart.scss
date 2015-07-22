@@ -76,6 +76,15 @@ a.button.continue {
     right: 0;
   }
 
+  a.delete.saving {
+    color:transparent;
+    height:1.5rem;
+    width:1.5rem;
+    background-repeat: no-repeat;
+    background-image: url("/images/spinner.svg");
+    background-size: 100% 100%;
+  }
+
   &.interactive {
     padding-bottom: 2.1rem;
   }

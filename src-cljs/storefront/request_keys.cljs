@@ -32,6 +32,7 @@
 (def increment-line-item [:update-line-item])
 (def decrement-line-item [:update-line-item])
 (def set-line-item [:update-line-item])
+(def delete-line-item [:delete-line-item])
 (def update-order [:update-order])
 (def add-line-item [:add-line-item])
 (def get-order [:get-order])
