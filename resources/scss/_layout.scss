@@ -108,6 +108,7 @@ p {
   }
 
   &.saving { // fixme: only works when button is a div
+    color: transparent;
     position: relative;
     cursor: default;
 

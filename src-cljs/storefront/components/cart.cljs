@@ -6,6 +6,7 @@
             [storefront.taxons :refer [default-taxon-path]]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
+            [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
 (defn shopping-link-attrs [data]
@@ -13,6 +14,12 @@
     (utils/route-to data
                     events/navigate-category
                     {:taxon-path path})))
+
+(defn block-on-spin [data]
+  (not (and (every? (comp nil? last)
+                    (get-in data (concat keypaths/api-requests request-keys/update-line-item)))
+            (nil? (get-in data (concat keypaths/api-requests request-keys/checkout-cart)))
+            (nil? (get-in data (concat keypaths/api-requests request-keys/update-coupon))))))
 
 (defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
@@ -32,14 +39,21 @@
              (utils/change-text data owner keypaths/cart-coupon-code)
              {:type "text"
               :name "coupon-code"})]]
-          [:input.primary.button#update-button
-           {:type "submit" :name "update" :value "Update"
-            :on-click (utils/send-event-callback data events/control-cart-update)}]]
+          [:div.primary.button#update-button
+           (let [spinning (get-in data (concat keypaths/api-requests request-keys/update-coupon))]
+             {:type "submit" :name "update" 
+              :class (when spinning "saving")
+              :disabled spinning
+              :on-click (utils/send-event-callback data events/control-cart-update-coupon)})
+           "Update"]]
          [:div.order-summary-cart
           (display-order-summary cart)
           [:input.button.checkout.primary#checkout-link
-           {:type "submit" :value "Checkout" :name "checkout"
-            :on-click (utils/send-event-callback data events/control-cart-update {:navigate-to-checkout? true})}]]]]]]
+           {:type "submit"
+            :value "Checkout"
+            :name "checkout"
+            :disabled (block-on-spin data)
+            :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
       "Continue shopping"]]))
