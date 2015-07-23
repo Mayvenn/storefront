@@ -13,7 +13,7 @@
 
 (def review-tag-url (case js/environment
                       "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
-                      "//staticw2.yotpo.com/5je9H3h4cV9fsgrpTkbJ42Ccci2bifloJGvnXwcq/widget.js"))
+                      "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))
 
 (def honeybadger-api-key "b0a4a070")
 

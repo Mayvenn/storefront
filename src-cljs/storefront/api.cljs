@@ -8,7 +8,11 @@
             [storefront.ajax :refer [->PlaceholderRequest]]))
 
 (defn default-error-handler [handle-message req-key response]
+  (handle-message events/api-end {:request-key req-key})
   (cond
+    (neg? (:status response))
+    (handle-message events/api-abort)
+
     (zero? (:status response))
     (handle-message events/api-failure-no-network-connectivity response)
 

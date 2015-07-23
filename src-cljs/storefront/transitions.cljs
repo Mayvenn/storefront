@@ -218,13 +218,11 @@
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
-    (if (= (order :number) (get-in app-state keypaths/order-number))
-      (-> app-state
-          (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
-          (assoc-in keypaths/order order)
-          (assoc-in keypaths/cart-quantities
-                    (into {} (map (juxt :id :quantity) (order :line_items)))))
-      (assoc-in app-state keypaths/order nil))
+    (-> app-state
+        (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
+        (assoc-in keypaths/order order)
+        (assoc-in keypaths/cart-quantities
+                  (into {} (map (juxt :id :quantity) (order :line_items)))))
     app-state))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
@@ -258,17 +256,13 @@
       (default-credit-card-name billing-address)))
 
 (defmethod transition-state events/api-success-address [_ event args app-state]
-  (if (get-in app-state keypaths/user-id)
-    (update-account-address app-state args)
-    app-state))
+  (update-account-address app-state args))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
-  (if (get-in app-state keypaths/user-id)
-    (-> app-state
-        (sign-in-user args)
-        (update-account-address args)
-        (default-checkout-addresses billing-address shipping-address))
-    app-state))
+  (-> app-state
+      (sign-in-user args)
+      (update-account-address args)
+      (default-checkout-addresses billing-address shipping-address)))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))

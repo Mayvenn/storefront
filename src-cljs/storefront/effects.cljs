@@ -14,7 +14,8 @@
             [storefront.messages :refer [send send-later]]
             [storefront.reviews :as reviews]
             [storefront.orders :as orders]
-            [storefront.scroll :as scroll]))
+            [storefront.scroll :as scroll]
+            [ajax.core :refer [-abort]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -170,11 +171,24 @@
                (get-in app-state keypaths/store-stylist-id)
                (get-in app-state keypaths/order-token)))
 
+(defn- nested-map-vals [m]
+  (if-not (map? m)
+    m
+    (->> m
+         vals
+         (split-with map?)
+         ((juxt first (comp (partial map nested-map-vals) last)))
+         (flatten))))
+
+(defn- abort-pending-requests [requests-map]
+  (doseq [r (nested-map-vals requests-map)] (when r (-abort r))))
+
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
   (send app-state
         events/flash-show-success {:message "Logged out successfully"
                                    :navigation [events/navigate-home {}]})
+  (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate app-state events/navigate-home))
 
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
