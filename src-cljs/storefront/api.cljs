@@ -386,40 +386,56 @@
     (filter-nil
      {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
       :order_token order-token})
-    :handler success-handler
-    }))
+    :handler success-handler}))
 
-(defn- edit-line-item [request-key
-                       handle-message
-                       user-token
-                       {order-token :guest-token :as order}
-                       {:keys [line-item-id]}
-                       f]
-  (let [line-item-attribute (first (filter #(= (:id %) line-item-id) (:line_items_attributes order)))
-        new-line-item-attribute (update line-item-attribute :quantity f)
-        couponless-order (dissoc order :coupon_code)]
+(defn checkout-cart-submit [handle-message user-token order args]
+  (update-cart-helper handle-message
+                      user-token
+                      (:guest-token order)
+                      (merge args {:state "address"
+                                   :number (:number order)})
+                      request-keys/checkout-cart
+                      #(handle-message events/api-success-checkout-cart
+                                       {:order (rename-keys % {:token :guest-token})})))
+
+(defn- update-line-item [handle-message
+                         user-token
+                         {order-token :guest-token :as order}
+                         line-item-id
+                         request-key
+                         f]
+  (let [line-item-attribute (first (filter #(= (:id %) line-item-id) (:line_items order)))
+        new-line-item-attribute (update line-item-attribute :quantity f)]
     (update-cart-helper
      handle-message
      user-token
      order-token
-     (assoc couponless-order :line_items_attributes [new-line-item-attribute])
+     (assoc order :line_items_attributes [new-line-item-attribute])
      (conj request-key line-item-id)
      #(handle-message events/api-success-update-line-item
                       {:order (rename-keys % {:token :guest-token})}))))
 
-(defn inc-line-item [handle-message user-token order opts]
-  (edit-line-item request-keys/increment-line-item handle-message user-token order opts inc))
 
-(defn dec-line-item [handle-message user-token order opts]
-  (edit-line-item request-keys/decrement-line-item handle-message user-token order opts #(max (dec %) 1)))
+(defn inc-line-item [handle-message user-token order {:keys [line-item-id]}]
+  (update-line-item handle-message user-token order line-item-id request-keys/increment-line-item inc))
 
-(defn set-line-item [handle-message user-token order opts]
-  (edit-line-item request-keys/set-line-item handle-message user-token order opts
-                             (fn [_] (:line-item-quantity opts))))
+(defn dec-line-item [handle-message user-token order {:keys [line-item-id]}]
+  (update-line-item handle-message user-token order line-item-id request-keys/decrement-line-item #(max (dec %) 1)))
 
-(defn delete-line-item [handle-message user-token order opts]
-  (edit-line-item request-keys/delete-line-item handle-message user-token order opts
-                                (fn [_] 0)))
+(defn delete-line-item [handle-message user-token order {:keys [line-item-id]}]
+  (update-line-item handle-message user-token order line-item-id request-keys/delete-line-item (fn [_] 0)))
+
+(defn update-coupon [handle-message user-token {order-token :guest-token :as order} {:keys [coupon_code]}]
+  (update-cart-helper handle-message
+                      user-token
+                      (:guest-token order)
+                      {:coupon_code coupon_code
+                       :number (:number order)}
+                      request-keys/update-coupon
+                      #(handle-message events/api-success-checkout-coupon
+                                       {:order (rename-keys % {:token :guest-token})})))
+
+
 
 (defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
   (update-cart-helper

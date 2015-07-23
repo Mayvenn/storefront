@@ -248,29 +248,36 @@
   (routes/enqueue-navigate app-state events/navigate-product {:product-path (:slug target)
                                                               :query-params {:taxon-id (taxon :id)}}))
 
-
-(defn- update-line-item [args app-state api-method]
+(defn- modify-cart [app-state args f]
   (let [order (get-in app-state keypaths/order)
         coupon-code (get-in app-state keypaths/cart-coupon-code)]
-    (api-method
+    (f
      (get-in app-state keypaths/handle-message)
      (get-in app-state keypaths/user-token)
-     (merge (select-keys order [:id :number :guest-token])
-            {:coupon_code coupon-code
-             :line_items_attributes (updated-quantities
-                                     (:line_items order);;Increment here
-                                     (get-in app-state keypaths/cart-quantities))})
+     order
      args)))
 
+(defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [path]} app-state]
+  (modify-cart app-state {:line-item-id (last path)} api/inc-line-item))
 
-(defmethod perform-effects events/control-cart-line-item-inc [_ event args app-state]
-  (update-line-item {:line-item-id (last (:path args))} app-state api/inc-line-item))
-
-(defmethod perform-effects events/control-cart-line-item-dec [_ event args app-state]
-  (update-line-item {:line-item-id (last (:path args))} app-state api/dec-line-item))
+(defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [path]} app-state]
+  (modify-cart app-state {:line-item-id (last path)} api/dec-line-item))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
-  (update-line-item {:line-item-id (:id args)} app-state api/delete-line-item))
+  (modify-cart app-state {:line-item-id (:id args)} api/delete-line-item))
+
+(defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
+  (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
+
+(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
+  (js/console.log "effects for: " (clj->js event))
+  (modify-cart app-state
+               {:email (get-in app-state keypaths/user-email)
+                :user_id (get-in app-state keypaths/user-id)
+                ;;:navigate (when navigate-to-checkout? [events/navigate-checkout-address])
+                }
+               api/checkout-cart-submit))
+
 
 (defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
   (let [order (get-in app-state keypaths/order)
@@ -449,6 +456,9 @@
       (save-cookie app-state true)
       (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
+
+(defmethod perform-effects events/api-success-checkout-cart [_ _ _ app-state]
+  (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate added-coupon?]} app-state]
   (when navigate

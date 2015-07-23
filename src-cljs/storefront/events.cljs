@@ -67,6 +67,7 @@
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
 (def control-cart (conj control :cart))
+(def control-cart-update-coupon (conj control-cart :update-coupon))
 (def control-cart-line-item-inc (conj control-cart :line-item-inc))
 (def control-cart-line-item-dec (conj control-cart :line-item-dec))
 (def control-cart-line-item-set (conj control-cart :line-item-set))
@@ -79,6 +80,7 @@
 (def control-counter-set (conj control-browse-variant :set))
 
 (def control-checkout (conj control :checkout))
+(def control-checkout-cart-submit (conj control-checkout :cart-submit))
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :shipping-method-select))
 (def control-checkout-shipping-method-submit (conj control-checkout :shipping-method-submit))
@@ -125,10 +127,21 @@
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 (def api-success-update-cart (conj api-success :update-cart))
+(def api-success-update-coupon (conj api-success :update-coupon))
 (def api-success-update-line-item (conj api-success :update-line-item))
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))
+
+;;TODO Make this its own event?
+;;(def api-success-checkout (conj api-success :checkout))
+(def api-success-checkout api-success-update-cart)
+(def api-success-checkout-coupon (conj api-success-checkout :coupon))
+(def api-success-checkout-cart (conj api-success-checkout :cart))
+(def api-success-checkout-address (conj api-success-checkout :address))
+(def api-success-checkout-shipping (conj api-success-checkout :shipping))
+(def api-success-checkout-payment (conj api-success-checkout :payment))
+(def api-success-checkout-confirm (conj api-success-checkout :confirm))
 
 (def api-failure (conj api :failure))
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))

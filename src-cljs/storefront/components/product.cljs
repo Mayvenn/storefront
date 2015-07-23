@@ -144,7 +144,7 @@
                     (when-not adding-to-cart
                       (utils/send-event-callback data events/control-browse-add-to-bag))
                     :class (when adding-to-cart "saving")}
-                   (when-not adding-to-cart "Add to Bag")]])]]]
+                   "Add to Bag"]])]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}

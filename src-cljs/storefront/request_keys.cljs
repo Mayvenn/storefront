@@ -28,7 +28,9 @@
 
 (def create-order [:create-order])
 (def update-cart [:update-cart])
-(def update-line-item [:update-line-item]) ;;Any of them should trigger the spinner
+(def checkout-cart [:checkout-cart])
+(def update-coupon [:update-coupon])
+(def update-line-item [:update-line-item])
 (def increment-line-item [:update-line-item])
 (def decrement-line-item [:update-line-item])
 (def set-line-item [:update-line-item])
