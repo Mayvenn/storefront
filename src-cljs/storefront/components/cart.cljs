@@ -17,10 +17,12 @@
                     {:taxon-path path})))
 
 (defn cart-update-pending? [data]
-  (let [requests (get-in data keypaths/api-requests)]
-    (or (query/get {:request-key request-keys/checkout-cart} requests)
-        (query/get {:request-key request-keys/update-coupon} requests)
-        (query/get {(comp first :request-key) request-keys/update-line-item} requests))))
+  (let [request-key-prefix (comp vector first :request-key)]
+    (some #(query/get % (get-in data keypaths/api-requests))
+          [{:request-key request-keys/checkout-cart}
+           {:request-key request-keys/update-coupon}
+           {request-key-prefix request-keys/update-line-item}
+           {request-key-prefix request-keys/delete-line-item}])))
 
 (defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
@@ -59,7 +61,7 @@
             {:type "submit"
              :value "Checkout"
              :name "checkout"
-             :disabled (cart-update-pending? data)
+             :disabled (when (cart-update-pending? data) "disabled")
              :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]]]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
