@@ -290,7 +290,10 @@
                                          (if use-billing
                                            keypaths/checkout-billing-address
                                            keypaths/checkout-shipping-address))}]
-    (analytics/track-checkout-option 2 (str save-address "/" use-billing))
+    (analytics/track-checkout-option 2 (str (if  save-address "save" "noSave")
+                                            "/"
+                                            (if use-billing "useBilling" "useDiff")))
+
     (when save-address
       (api/update-account-address handle-message
                                   (get-in app-state keypaths/user-id)
