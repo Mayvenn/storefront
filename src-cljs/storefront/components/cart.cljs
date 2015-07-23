@@ -48,7 +48,7 @@
                :class (when spinning "saving")
                :disabled spinning
                :on-click (utils/send-event-callback data events/control-cart-update-coupon)})
-            "Update"]]]
+            "Apply Coupon Code"]]]
          [:form
           {:on-submit (utils/send-event-callback data events/control-checkout-cart-submit)}
           [:div.order-summary-cart
