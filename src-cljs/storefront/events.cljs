@@ -91,6 +91,7 @@
 (def api [:api])
 (def api-start (conj api :start))
 (def api-end (conj api :end))
+(def api-abort (conj api :abort))
 
 (def api-success (conj api :success))
 (def api-success-cache (conj api-success :cache))
