@@ -404,13 +404,33 @@
                          line-item-id
                          request-key
                          f]
-  (let [line-item-attribute (first (filter #(= (:id %) line-item-id) (:line_items order)))
-        new-line-item-attribute (update line-item-attribute :quantity f)]
+  (let [line-item (first (filter #(= (:id %) line-item-id) (:line_items order)))
+        updated-line-item (select-keys (update line-item :quantity f)
+                                       [:quantity :id :variant_id])
+        order (select-keys (merge order {:line_items_attributes [updated-line-item]
+                                         :state "cart"})
+                           [:line_items_attributes :number])]
     (update-cart-helper
      handle-message
      user-token
      order-token
-     (assoc order :line_items_attributes [new-line-item-attribute])
+     order
+     (conj request-key line-item-id)
+     #(handle-message events/api-success-cart-update-line-item
+                      {:order (rename-keys % {:token :guest-token})}))))
+
+(defn- update-line-item [handle-message user-token order line-item-id request-key f]
+  (let [line-item (first (filter #(= (:id %) line-item-id) (:line_items order)))
+        updated-line-item (select-keys (update line-item :quantity f)
+                                       [:quantity :id :variant_id])
+        updated-order (select-keys (merge order {:line_items_attributes [updated-line-item]
+                                         :state "cart"})
+                           [:line_items_attributes :number])]
+    (update-cart-helper
+     handle-message
+     user-token
+     (:guest-token order)
+     updated-order
      (conj request-key line-item-id)
      #(handle-message events/api-success-cart-update-line-item
                       {:order (rename-keys % {:token :guest-token})}))))
