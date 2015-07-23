@@ -395,7 +395,7 @@
                       (merge args {:state "address"
                                    :number (:number order)})
                       request-keys/checkout-cart
-                      #(handle-message events/api-success-order-update-checkout
+                      #(handle-message events/api-success-cart-update-checkout
                                        {:order (rename-keys % {:token :guest-token})})))
 
 (defn- update-line-item [handle-message
@@ -412,7 +412,7 @@
      order-token
      (assoc order :line_items_attributes [new-line-item-attribute])
      (conj request-key line-item-id)
-     #(handle-message events/api-success-order-update-line-item
+     #(handle-message events/api-success-cart-update-line-item
                       {:order (rename-keys % {:token :guest-token})}))))
 
 
@@ -432,7 +432,7 @@
                       {:coupon_code coupon_code
                        :number (:number order)}
                       request-keys/update-coupon
-                      #(handle-message events/api-success-order-update-coupon
+                      #(handle-message events/api-success-cart-update-coupon
                                        {:order (rename-keys % {:token :guest-token})})))
 
 

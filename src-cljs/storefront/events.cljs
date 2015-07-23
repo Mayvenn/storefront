@@ -126,11 +126,11 @@
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 
-(def api-success-order (conj api-success :order))
-(def api-success-order-update (conj api-success-order :update))
-(def api-success-order-update-checkout (conj api-success-order-update :checkout))
-(def api-success-order-update-coupon (conj api-success-order-update :coupon))
-(def api-success-order-update-line-item (conj api-success-order-update :line-item))
+(def api-success-cart (conj api-success :cart))
+(def api-success-cart-update (conj api-success-cart :update))
+(def api-success-cart-update-checkout (conj api-success-cart-update :checkout))
+(def api-success-cart-update-coupon (conj api-success-cart-update :coupon))
+(def api-success-cart-update-line-item (conj api-success-cart-update :line-item))
 
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-promotions (conj api-success :promotions))

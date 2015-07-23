@@ -434,10 +434,10 @@
       (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
-(defmethod perform-effects events/api-success-order-update-checkout [_ _ _ app-state]
+(defmethod perform-effects events/api-success-cart-update-checkout [_ _ _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
-#_(defmethod perform-effects events/api-success-order-update [_ event {:keys [order navigate added-coupon?]} app-state]
+#_(defmethod perform-effects events/api-success-cart-update [_ event {:keys [order navigate added-coupon?]} app-state]
   (when navigate
     (apply routes/enqueue-navigate app-state navigate))
   (when added-coupon?
