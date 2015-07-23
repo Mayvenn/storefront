@@ -15,7 +15,7 @@
                     events/navigate-category
                     {:taxon-path path})))
 
-(defn block-on-spin [data]
+(defn cart-update-pending? [data]
   (not (and (every? (comp nil? last)
                     (get-in data (concat keypaths/api-requests request-keys/update-line-item)))
             (nil? (get-in data (concat keypaths/api-requests request-keys/checkout-cart)))
@@ -57,7 +57,7 @@
             {:type "submit"
              :value "Checkout"
              :name "checkout"
-             :disabled (block-on-spin data)
+             :disabled (cart-update-pending? data)
              :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]]]]]]]
      [:a.cart-continue.continue.button.gray
       (shopping-link-attrs data)
