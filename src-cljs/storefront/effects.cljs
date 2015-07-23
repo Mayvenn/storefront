@@ -270,33 +270,10 @@
   (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
-  (js/console.log "effects for: " (clj->js event))
   (modify-cart app-state
                {:email (get-in app-state keypaths/user-email)
-                :user_id (get-in app-state keypaths/user-id)
-                ;;:navigate (when navigate-to-checkout? [events/navigate-checkout-address])
-                }
+                :user_id (get-in app-state keypaths/user-id)}
                api/checkout-cart-submit))
-
-
-(defmethod perform-effects events/control-cart-update [_ event {:keys [navigate-to-checkout?]} app-state]
-  (let [order (get-in app-state keypaths/order)
-        coupon-code (get-in app-state keypaths/cart-coupon-code)]
-    (api/update-cart
-     (get-in app-state keypaths/handle-message)
-     (get-in app-state keypaths/user-token)
-     (merge (select-keys order [:id :number :guest-token])
-            (when navigate-to-checkout?
-              {:state "address"
-               :email (get-in app-state keypaths/user-email)
-               :user_id (get-in app-state keypaths/user-id)})
-            {:coupon_code coupon-code
-             :line_items_attributes (updated-quantities
-                                     (:line_items order)
-                                     (get-in app-state keypaths/cart-quantities))})
-     {:navigate (when navigate-to-checkout? [events/navigate-checkout-address])
-      :added-coupon? (not (empty? coupon-code))})))
-
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
   (let [handle-message (get-in app-state keypaths/handle-message)
@@ -457,10 +434,10 @@
       (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
-(defmethod perform-effects events/api-success-checkout-cart [_ _ _ app-state]
+(defmethod perform-effects events/api-success-order-update-checkout [_ _ _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
-(defmethod perform-effects events/api-success-update-cart [_ event {:keys [order navigate added-coupon?]} app-state]
+#_(defmethod perform-effects events/api-success-order-update [_ event {:keys [order navigate added-coupon?]} app-state]
   (when navigate
     (apply routes/enqueue-navigate app-state navigate))
   (when added-coupon?
