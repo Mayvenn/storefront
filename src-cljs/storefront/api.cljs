@@ -435,19 +435,6 @@
                       #(handle-message events/api-success-cart-update-coupon
                                        {:order (rename-keys % {:token :guest-token})})))
 
-
-
-#_(defn update-cart [handle-message user-token {order-token :guest-token :as order} extra-message-args]
-  (update-cart-helper
-   handle-message
-   user-token
-   order-token
-   order
-   request-keys/update-cart
-   #(handle-message events/api-success-update-cart
-                    (merge {:order (rename-keys % {:token :guest-token})}
-                           extra-message-args))))
-
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req
    handle-message
