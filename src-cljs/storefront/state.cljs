@@ -103,7 +103,7 @@
                         :zipcode ""
                         :phone ""}
 
-     :ui {:api-requests {}
+     :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
           :validation-errors {:error nil
                               :fields {}}

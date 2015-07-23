@@ -8,6 +8,7 @@
             [storefront.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
+            [storefront.query :as query]
             [storefront.keypaths :as keypaths]))
 
 (defn field [name value & [classes]]
@@ -37,18 +38,18 @@
       (field "Price:" (:single_display_amount line-item) "item-form" "price")
       (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
       (when interactive?
-        (let [update-spinner-path (concat keypaths/api-requests
-                                          (conj request-keys/update-line-item (:id line-item)))
-              delete-spinner-path (concat keypaths/api-requests
-                                          (conj request-keys/delete-line-item (:id line-item)))
-              delete-spinning (get-in data delete-spinner-path)]
+        (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
+              delete-spinning (query/get
+                               {:request-key
+                                (conj request-keys/delete-line-item (:id line-item))}
+                               (get-in data keypaths/api-requests))]
           (list
            (om/build counter-component
                      data
                      {:opts {:path (conj keypaths/cart-quantities (:id line-item))
                              :inc-event events/control-cart-line-item-inc
                              :dec-event events/control-cart-line-item-dec
-                             :spinner-path update-spinner-path }})
+                             :spinner-key update-spinner-key}})
            [:a.delete
             {:href "#"
              :class (when delete-spinning "saving")

@@ -66,9 +66,9 @@
                              vals
                              (sort-by :index)
                              (filter #(contains? (set (:taxon_ids %)) (:id taxon))))]
-           (if (get-in data (concat keypaths/api-requests
-                                    request-keys/get-products
-                                    [(taxon-path-for taxon)]))
+           (if (query/get {:request-key (concat request-keys/get-products
+                                                [(taxon-path-for taxon)])}
+                          (get-in data keypaths/api-requests))
              [:.spinner]
              (map (partial display-product data taxon) products)))]]
 

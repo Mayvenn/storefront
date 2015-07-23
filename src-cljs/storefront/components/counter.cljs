@@ -4,11 +4,13 @@
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
+            [storefront.query :as query]
             [sablono.core :refer-macros [html]]
             [om.core :as om]))
 
-(defn counter-component [data owner {:keys [path set-event inc-event dec-event spinner-path]}]
-  (let [spinning (when spinner-path (get-in data spinner-path))]
+(defn counter-component [data owner {:keys [path set-event inc-event dec-event spinner-key]}]
+  (let [spinning (when spinner-key (query/get {:request-key spinner-key}
+                                              (get-in data keypaths/api-requests)))]
     (om/component
      (html
       [:div.quantity
@@ -37,4 +39,3 @@
                                                           inc-event
                                                           {:path path})}
                     "+"]]]]))))
- 

@@ -137,7 +137,8 @@
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]
 
-               (let [adding-to-cart (get-in data (concat keypaths/api-requests request-keys/add-to-bag))]
+               (let [adding-to-cart (query/get {:request-key request-keys/add-to-bag}
+                                               (get-in data keypaths/api-requests))]
                  [:div.add-to-cart {:style {:clear "both"}}
                   [:.large.primary#add-to-cart-button
                    {:on-click

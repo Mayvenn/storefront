@@ -171,17 +171,8 @@
                (get-in app-state keypaths/store-stylist-id)
                (get-in app-state keypaths/order-token)))
 
-(defn- nested-map-vals [m]
-  (if-not (map? m)
-    m
-    (->> m
-         vals
-         (split-with map?)
-         ((juxt first (comp (partial map nested-map-vals) last)))
-         (flatten))))
-
-(defn- abort-pending-requests [requests-map]
-  (doseq [r (nested-map-vals requests-map)] (when r (-abort r))))
+(defn- abort-pending-requests [requests]
+  (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))

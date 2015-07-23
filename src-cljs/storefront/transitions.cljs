@@ -101,12 +101,12 @@
   (assoc-in app-state keypaths/checkout-selected-shipping-method-id id))
 
 (defmethod transition-state events/api-start
-  [_ event {:keys [request request-key]} app-state]
-  (assoc-in app-state (concat keypaths/api-requests request-key) request))
+  [_ event request app-state]
+  (update-in app-state keypaths/api-requests conj request))
 
 (defmethod transition-state events/api-end
-  [_ event {:keys [request-key]} app-state]
-  (assoc-in app-state (concat keypaths/api-requests request-key) nil))
+  [_ event {:keys [request-id] :as request} app-state]
+  (update-in app-state keypaths/api-requests (partial remove (comp #{request-id} :request-id))))
 
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))

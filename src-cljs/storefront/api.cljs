@@ -5,12 +5,14 @@
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
+            [storefront.uuid :refer [random-uuid]]
             [storefront.ajax :refer [->PlaceholderRequest]]))
 
-(defn default-error-handler [handle-message req-key response]
-  (handle-message events/api-end {:request-key req-key})
+(defn default-error-handler [handle-message req-key req-id response]
+  (handle-message events/api-end {:request-id req-id
+                                  :request-key req-key})
   (cond
-    (neg? (:status response))
+    (#{:aborted} (:failure response))
     (handle-message events/api-abort)
 
     (zero? (:status response))
@@ -37,20 +39,24 @@
                       :format :json
                       :response-format (json-response-format {:keywords? true})})
 
-(defn merge-req-opts [handle-message req-key {:keys [handler] :as request-opts}]
+(defn merge-req-opts [handle-message req-key req-id {:keys [handler] :as request-opts}]
   (merge default-req-opts
-         {:error-handler (partial default-error-handler handle-message req-key)}
+         {:error-handler (partial default-error-handler handle-message req-key req-id)}
          request-opts
          {:handler (fn [res]
-                     (handle-message events/api-end {:request-key req-key})
+                     (handle-message events/api-end {:request-key req-key
+                                                     :request-id req-id})
                      (handler res))}))
 
 (defn api-req
   [handle-message method path req-key request-opts]
-  (let [request
+  (let [req-id (random-uuid)
+        request
         (method (str api-base-url path)
-                (merge-req-opts handle-message req-key request-opts))]
-    (handle-message events/api-start {:request request :request-key req-key})))
+                (merge-req-opts handle-message req-key req-id request-opts))]
+    (handle-message events/api-start {:xhr request
+                                      :request-key req-key
+                                      :request-id req-id})))
 
 (defn cache-req
   [cache handle-message method path req-key {:keys [handler params] :as request-opts}]
@@ -516,19 +522,22 @@
     #(handle-message events/api-success-my-orders %)}))
 
 (defn add-to-bag [handle-message variant product variant-quantity stylist-id order-token order-id user-token]
-  (letfn [(refetch-order [order-id order-token]
-            (handle-message events/api-end {:request-key request-keys/add-to-bag})
-            (get-order handle-message order-id order-token))
-          (add-line-item-cb [order-id order-token]
-            (add-line-item (fn [event args]
-                             (when (= event events/api-success-add-to-bag)
-                               (refetch-order order-id order-token))
-                             (handle-message event args))
-                           variant product variant-quantity order-id order-token))
-          (created-order-cb [event {:keys [number token] :as args}]
-            (when (= event events/api-success-create-order)
-              (add-line-item-cb number token))
-            (handle-message event args))]
-    (handle-message events/api-start {:request (->PlaceholderRequest)
-                                      :request-key request-keys/add-to-bag})
-    (create-order-if-needed created-order-cb stylist-id order-id order-token user-token)))
+  (let [req-id (random-uuid)]
+    (letfn [(refetch-order [order-id order-token]
+              (handle-message events/api-end {:request-key request-keys/add-to-bag
+                                              :request-id req-id})
+              (get-order handle-message order-id order-token))
+            (add-line-item-cb [order-id order-token]
+              (add-line-item (fn [event args]
+                               (when (= event events/api-success-add-to-bag)
+                                 (refetch-order order-id order-token))
+                               (handle-message event args))
+                             variant product variant-quantity order-id order-token))
+            (created-order-cb [event {:keys [number token] :as args}]
+              (when (= event events/api-success-create-order)
+                (add-line-item-cb number token))
+              (handle-message event args))]
+      (handle-message events/api-start {:xhr (->PlaceholderRequest)
+                                        :request-key request-keys/add-to-bag
+                                        :request-id req-id})
+      (create-order-if-needed created-order-cb stylist-id order-id order-token user-token))))

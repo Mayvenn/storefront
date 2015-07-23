@@ -7,7 +7,8 @@
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.query :as query]))
 
 (defn shopping-link-attrs [data]
   (when-let [path (default-taxon-path data)]
@@ -16,10 +17,10 @@
                     {:taxon-path path})))
 
 (defn cart-update-pending? [data]
-  (not (and (every? (comp nil? last)
-                    (get-in data (concat keypaths/api-requests request-keys/update-line-item)))
-            (nil? (get-in data (concat keypaths/api-requests request-keys/checkout-cart)))
-            (nil? (get-in data (concat keypaths/api-requests request-keys/update-coupon))))))
+  (let [requests (get-in data keypaths/api-requests)]
+    (or (query/get {:request-key request-keys/checkout-cart} requests)
+        (query/get {:request-key request-keys/update-coupon} requests)
+        (query/get {(comp first :request-key) request-keys/update-line-item} requests))))
 
 (defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
@@ -42,7 +43,8 @@
               {:type "text"
                :name "coupon-code"})]]
            [:div.primary.button#update-button
-            (let [spinning (get-in data (concat keypaths/api-requests request-keys/update-coupon))]
+            (let [spinning (query/get {:request-key request-keys/update-coupon}
+                                      (get-in data keypaths/api-requests))]
               {:type "submit"
                :name "update"
                :class (when spinning "saving")
