@@ -437,15 +437,11 @@
 (defmethod perform-effects events/api-success-cart-update-checkout [_ _ _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
-#_(defmethod perform-effects events/api-success-cart-update [_ event {:keys [order navigate added-coupon?]} app-state]
-  (when navigate
-    (apply routes/enqueue-navigate app-state navigate))
-  (when added-coupon?
-    (send app-state
-          events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                     :navigation [events/navigate-cart {}]})
-    (send app-state
-          events/flash-dismiss-failure)))
+(defmethod perform-effects events/api-success-cart-update-coupon [_ _ _ app-state]
+  (send app-state
+        events/flash-show-success {:message "The coupon code was successfully applied to your order."
+                                   :navigation [events/navigate-cart {}]})
+  (send app-state events/flash-dismiss-failure))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (save-cookie app-state true)
