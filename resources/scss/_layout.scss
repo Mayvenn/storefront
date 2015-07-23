@@ -88,6 +88,8 @@ p {
   margin: (26em / 32) 0;
   text-align: center;
   cursor: pointer;
+  text-transform:capitalize;
+
 
   &.half {
     display: inline-block;
