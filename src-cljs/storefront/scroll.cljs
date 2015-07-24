@@ -1,5 +1,16 @@
 (ns storefront.scroll
-  (:require [goog.object :as object]))
+  (:require [goog.object :as object]
+            [goog.dom.classlist :as classlist]))
+
+(defn animate [el end-event start-fn end-fn]
+  (let [body (.-body js/document)]
+    (letfn [(listener [e]
+              (end-fn e)
+              (classlist/remove body "animating")
+              (.removeEventListener el end-event listener))]
+      (classlist/add body "animating")
+      (start-fn)
+      (.addEventListener el end-event listener))))
 
 (defn set-scroll-top [y]
   (set! (.. js/document -body -scrollTop) y))
@@ -10,11 +21,16 @@
   (let [body (.-body js/document)
         scroll-top (.. js/document -body -scrollTop)
         dy (- y scroll-top)]
-    (set! (.. body -style -marginTop) (str dy "px"))
-    (set-scroll-top y)
-    (set! (.. body -style -transition) "margin-top 1s ease")
-    (set! (.. body -style -marginTop) 0)
-    (.setTimeout js/window #(set! (.. body -style -transition) "none") 1000)))
+    (animate
+     body
+     "transitionend"
+     #(do
+        (set! (.. body -style -marginTop) (str dy "px"))
+        (set-scroll-top y)
+        (set! (.. body -style -transition) "margin-top 1s ease")
+        (set! (.. body -style -marginTop) 0))
+     #(when (= (.-target %) (.-currentTarget %))
+        (set! (.. body -style -transition) "none")))))
 
 (def scroll-padding 35.0)
 (defn scroll-to-elem [el]
