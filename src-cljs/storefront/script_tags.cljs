@@ -1,4 +1,5 @@
-(ns storefront.script-tags)
+(ns storefront.script-tags
+  (:require [goog.dom.classlist :as classlist]))
 
 (defn insert-tag [tag]
   (let [first-script-tag (aget (.getElementsByTagName js/document "script") 0)]
@@ -10,14 +11,14 @@
     (set! (.-type script-tag) "text/javascript")
     (set! (.-async script-tag) "true")
     (set! (.-src script-tag) src)
-    (.add (.-classList script-tag) class)
+    (classlist/add script-tag class)
     script-tag))
 
 (defn text-tag [text class]
   (let [script-tag (.createElement js/document "script")]
     (set! (.-type script-tag) "text/javascript")
     (set! (.-innerText script-tag) text)
-    (.add (.-classList script-tag) class)
+    (classlist/add script-tag class)
     script-tag))
 
 (defn insert-tag-with-src [src class]
