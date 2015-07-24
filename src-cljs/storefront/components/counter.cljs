@@ -9,8 +9,8 @@
             [om.core :as om]))
 
 (defn counter-component [data owner {:keys [path set-event inc-event dec-event spinner-key]}]
-  (let [spinning (when spinner-key (query/get {:request-key spinner-key}
-                                              (get-in data keypaths/api-requests)))]
+  (let [request (when spinner-key (query/get {:request-key spinner-key}
+                                                       (get-in data keypaths/api-requests)))]
     (om/component
      (html
       [:div.quantity
@@ -18,24 +18,28 @@
         [:div.minus
          [:a.pm-link
           {:href "#"
-           :on-click (utils/send-event-callback data
-                                                dec-event
-                                                {:path path})}
+           :disabled request
+           :on-click (if (not request)
+                       (utils/send-event-callback data dec-event {:path path})
+                       utils/noop-callback)}
           "-"]]
         [:input#quantity.quantity-selector-input
          {:min 1
           :name "quantity"
           :type "text"
-          :disabled (nil? set-event)
-          :class (when spinning "saving")
+          :disabled (or (nil? set-event) request)
+          :class (when request "saving")
           :value (str (get-in data path))
-          :on-change #(send data
-                            set-event
-                            {:value-str (.. % -target -value)
-                             :path path})}]
-        [:div.plus [:a.pm-link
-                    {:href "#"
-                     :on-click (utils/send-event-callback data
-                                                          inc-event
-                                                          {:path path})}
-                    "+"]]]]))))
+          :on-change (if (not request)
+                       #(send data
+                              set-event
+                              {:value-str (.. % -target -value) :path path})
+                       utils/noop-callback)}]
+        [:div.plus
+         [:a.pm-link
+          {:href "#"
+           :disabled request
+           :on-click (if (not request)
+                       (utils/send-event-callback data inc-event {:path path})
+                       utils/noop-callback)}
+          "+"]]]]))))

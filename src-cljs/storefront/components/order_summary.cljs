@@ -39,7 +39,7 @@
       (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
       (when interactive?
         (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
-              delete-spinning (query/get
+              delete-request (query/get
                                {:request-key
                                 (conj request-keys/delete-line-item (:id line-item))}
                                (get-in data keypaths/api-requests))]
@@ -52,10 +52,12 @@
                              :spinner-key update-spinner-key}})
            [:a.delete
             {:href "#"
-             :class (when delete-spinning "saving")
-             :on-click (utils/send-event-callback data
-                                                  events/control-cart-remove
-                                                  (select-keys line-item [:id]))}
+             :class (when delete-request "saving")
+             :on-click (if delete-request
+                         utils/noop-callback
+                         (utils/send-event-callback data
+                                                    events/control-cart-remove
+                                                    (select-keys line-item [:id])))}
             "Remove"])))]
      [:div {:style {:clear "both"}}]]))
 

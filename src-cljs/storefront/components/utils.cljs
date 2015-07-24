@@ -4,6 +4,8 @@
             [storefront.events :as events]
             [storefront.messages :refer [send]]))
 
+(defn noop-callback [e] (.preventDefault e))
+
 (defn send-event-callback [app-state event & [args]]
   (fn [e]
     (.preventDefault e)
