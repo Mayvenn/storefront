@@ -14,7 +14,10 @@
     (set-scroll-top y)
     (set! (.. body -style -transition) "margin-top 1s ease")
     (set! (.. body -style -marginTop) 0)
-    (.setTimeout js/window #(set! (.. body -style -transition) "none") 1000)))
+    (.addEventListener body
+                       "transitionend"
+                       #(when (= (.-target %) (.-currentTarget %))
+                          (set! (.. body -style -transition) "none")))))
 
 (def scroll-padding 35.0)
 (defn scroll-to-elem [el]
