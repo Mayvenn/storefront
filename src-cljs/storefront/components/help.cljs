@@ -21,9 +21,17 @@
        [:p.spaced-help.hours "HOURS: Monday - Saturday, 9-5 PST"]
        [:p.spaced-help.shipment-schedule
         "Orders placed before 11am PST ship that day"]]
-      [:h4.dashboard-details-header.no-top-space "Contact Info"]
+      [:h4.dashboard-details-header.no-top-space "Get In Touch"]
       [:div.solid-line-divider]
       [:div#help-methods
+       [:a.help-link {:href "http://help.mayvenn.com" :target "_blank"}
+        [:div.help-method-row
+         [:div.help-method-icon.faq]
+         [:div.help-method-details-container
+          [:div.help-method-details
+           [:p.help-method "Frequently Asked Questions"]
+           [:p.help-method-means.emphasized "Visit our FAQ and help center"]]]]]
+       [:div.solid-line-divider]
        [:a.help-link {:href "tel://+18885627952"}
         [:div.help-method-row
          [:div.help-method-icon.call]

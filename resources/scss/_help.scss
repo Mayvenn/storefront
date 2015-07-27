@@ -58,6 +58,10 @@
   &.email {
     background-image: url("/images/customer_service_email.png");
   }
+
+  &.faq {
+    background-image: url("/images/customer_service_faq.png")
+  }
 }
 
 .help-method-details-container {
@@ -81,4 +85,8 @@
 .help-method-means {
   margin-top: 0.4em;
   color: $dark_grey;
+
+  &.emphasized {
+    color: $light_teal;
+  }
 }
