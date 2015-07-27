@@ -35,7 +35,6 @@
     (let [fields (get-in data keypaths/validation-errors-fields)]
       (when (seq fields)
         [:div#errorExplanation.errorExplanation
-         [:h2 (str (count fields) " errors prohibited this record from being saved")]
          [:p "There were problems with the following fields:"]
          [:ul
           (map display-field-errors (sort-by first fields))]])))))
