@@ -106,23 +106,24 @@
     [:div#checkout
      (om/build validation-errors-component data)
      (checkout-step-bar data)
-     [:div.row
-      [:div.checkout-form-wrapper
-       [:form.edit_order
-        {:method "POST"
-         :on-submit (utils/send-event-callback data events/control-checkout-payment-method-submit)}
+     (when (seq (get-in data keypaths/payment-methods))
+       [:div.row
+        [:div.checkout-form-wrapper
+         [:form.edit_order
+          {:method "POST"
+           :on-submit (utils/send-event-callback data events/control-checkout-payment-method-submit)}
 
-        [:div.checkout-container.payment
-         (when (pos? (get-in data keypaths/user-total-available-store-credit))
-           (display-use-store-credit-option data))
-         (when-not (fully-covered-by-store-credit? data)
-           [:div#cc-form
-            [:div
-             (if (partially-covered-by-store-credit? data)
-               [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
-               [:h2.checkout-header "Credit Card Info (Required)"])
+          [:div.checkout-container.payment
+           (when (pos? (get-in data keypaths/user-total-available-store-credit))
+             (display-use-store-credit-option data))
+           (when-not (fully-covered-by-store-credit? data)
+             [:div#cc-form
+              [:div
+               (if (partially-covered-by-store-credit? data)
+                 [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
+                 [:h2.checkout-header "Credit Card Info (Required)"])
 
-             (display-credit-card-form data)]])
+               (display-credit-card-form data)]])
 
-         [:div.form-buttons
-          [:input.continue.button.primary {:type "submit" :name "Commit" :value "Continue"}]]]]]]])))
+           [:div.form-buttons
+            [:input.continue.button.primary {:type "submit" :name "Commit" :value "Continue"}]]]]]])])))
