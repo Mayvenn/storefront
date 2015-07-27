@@ -80,6 +80,21 @@
         (:store_slug store) (h req)
         :else (redirect (str "http://store." domain (query-string req)))))))
 
+(defn robots [req]
+  (let [subdomain (first (parse-subdomains (:server-name req)))]
+    (if (= subdomain "shop")
+      (string/join "\n" ["User-agent: *"
+                         "Disallow: /account"
+                         "Disallow: /checkout"
+                         "Disallow: /orders"
+                         "Disallow: /stylist"
+                         "Disallow: /cart"
+                         "Disallow: /categories"
+                         "Disallow: /m/"
+                         "Disallow: /admin"])
+      (string/join "\n" ["User-agent: googlebot"
+                         "Disallow: /"]))))
+
 (defn index [storeback-config env]
   (page/html5
    [:head
@@ -154,6 +169,8 @@
   ([] (create-handler {}))
   ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
+               (GET "/robots.txt" req (content-type (response (robots req))
+                                                "text/plain"))
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)
