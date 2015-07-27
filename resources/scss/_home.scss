@@ -9,10 +9,19 @@
   @include stretch-bg;
 }
 
-.home-free-shipping {
-  height: 6.0rem;
-  background-image: url("/images/30_day_ship_combo.png");
+.home-30-day-guarantee, .home-free-shipping {
+  height: 6.06rem;
   @include stretch-bg;
+  float: left;
+  width: 50%;
+}
+
+.home-30-day-guarantee {
+  background-image: url("/images/home_30_day_guarantee.png");
+}
+
+.home-free-shipping {
+  background-image: url("/images/home_free_shipping.png");
 }
 
 .squashed-hair-categories {

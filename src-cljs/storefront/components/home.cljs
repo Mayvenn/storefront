@@ -6,7 +6,8 @@
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.experiments :as experiments]))
 
 (defn category [data taxon]
   (let [taxon-name (taxon :name)
@@ -25,13 +26,22 @@
     [:div#home-content
      [:div.home-large-image]
      [:div.home-actions-top
-      [:div.guarantee]
-      [:div.free-shipping-action]
+      [:a.guarantee
+       (when (experiments/display-variation data "home-page-links")
+         (utils/route-to data events/navigate-guarantee))]
+      [:a.free-shipping-action
+       (when (experiments/display-variation data "home-page-links")
+         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"})]
       [:div.shop-now
        (when-let [path (default-taxon-path data)]
          [:a.full-link (utils/route-to data events/navigate-category
                                        {:taxon-path path})])]
-      [:div.home-free-shipping]]
+      [:a.home-30-day-guarantee
+       (when (experiments/display-variation data "home-page-links")
+         (utils/route-to data events/navigate-guarantee))]
+      [:a.home-free-shipping
+       (when (experiments/display-variation data "home-page-links")
+         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"})]]
      [:div.squashed-hair-categories
       (map (partial category data)
            (get-in data keypaths/taxons))
