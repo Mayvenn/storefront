@@ -267,6 +267,14 @@
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
+(defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
+  (if (orders/incomplete? order)
+    (assoc-in app-state keypaths/order order)
+    (-> app-state
+        (assoc-in keypaths/last-order order)
+        (assoc-in keypaths/checkout state/initial-checkout-state)
+        (assoc-in keypaths/order {}))))
+
 (defmethod transition-state events/api-success-cart-update [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/order order))
 
