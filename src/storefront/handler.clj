@@ -89,7 +89,6 @@
                          "Disallow: /orders"
                          "Disallow: /stylist"
                          "Disallow: /cart"
-                         "Disallow: /categories"
                          "Disallow: /m/"
                          "Disallow: /admin"])
       (string/join "\n" ["User-agent: googlebot"
