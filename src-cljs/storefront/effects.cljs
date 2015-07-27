@@ -324,7 +324,9 @@
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)
         covered-by-store-credit (get-in app-state keypaths/order-covered-by-store-credit)]
-    (analytics/track-checkout-option 4 (str use-store-credit "/" covered-by-store-credit))
+    (analytics/track-checkout-option 4 (str (if use-store-credit "creditYes" "creditNo")
+                                            "/"
+                                            (if covered-by-store-credit "creditCovers" "partiatCovers")))
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]
