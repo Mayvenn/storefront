@@ -309,8 +309,8 @@
                       {:navigate [events/navigate-checkout-delivery]})))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
-  (let [shipping-method-id (get-in app-state keypaths/checkout-selected-shipping-method-id)]
-    (analytics/track-checkout-option 3 shipping-method-id)
+  (let [shipping-method (get-in app-state keypaths/checkout-selected-shipping-method)]
+    (analytics/track-checkout-option 3 (:name shipping-method))
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]
@@ -318,7 +318,7 @@
                                {:state "delivery"
                                 :shipments_attributes
                                 {:id (get-in order [:shipments 0 :id])
-                                 :selected_shipping_rate_id shipping-method-id}}))
+                                 :selected_shipping_rate_id (:id shipping-method)}}))
                       {:navigate [events/navigate-checkout-payment]})))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]

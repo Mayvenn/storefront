@@ -21,7 +21,7 @@
             {:class "selected"})
           {:on-click (utils/send-event-callback app-state
                                                 events/control-checkout-shipping-method-select
-                                                {:id (:id shipping-method)})})
+                                                shipping-method)})
    [:label
     [:input.ship-method-radio {:type "radio"}]
     [:div.checkbox-container

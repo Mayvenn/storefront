@@ -97,8 +97,8 @@
                 (Math/abs)
                 (max 1))))
 
-(defmethod transition-state events/control-checkout-shipping-method-select [_ event {id :id} app-state]
-  (assoc-in app-state keypaths/checkout-selected-shipping-method-id id))
+(defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
+  (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]
@@ -219,7 +219,7 @@
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
     (-> app-state
-        (assoc-in keypaths/checkout-selected-shipping-method-id (get-in order [:shipments 0 :selected_shipping_rate :id]))
+        (assoc-in keypaths/checkout-selected-shipping-method (get-in order [:shipments 0 :selected_shipping_rate]))
         (assoc-in keypaths/order order)
         (assoc-in keypaths/cart-quantities
                   (into {} (map (juxt :id :quantity) (order :line_items)))))

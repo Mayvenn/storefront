@@ -29,7 +29,7 @@
    :credit-card-number ""
    :credit-card-expiration ""
    :credit-card-ccv ""
-   :selected-shipping-method-id 0
+   :selected-shipping-method {:id  0}
    :use-store-credits false})
 
 (defn initial-state []
