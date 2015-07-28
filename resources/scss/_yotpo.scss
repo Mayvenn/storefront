@@ -134,4 +134,12 @@ div.yotpo {
       background: $darkest_blue_grey !important;
     }
   }
+
+  &.bottomLine, &.QABottomLine {
+    .yotpo-bottomline {
+      .text-m {
+        margin-left: 7px;
+      }
+    }
+  }
 }
