@@ -31,7 +31,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
 (defn- ->ga-product [product & [event-fields]]
-  (merge (select-keys product [:name :price :category])
+  (merge (select-keys product [:name :price :category :coupon])
          {:brand (s/lower-case (str "mayvenn-" (:collection_name product) "-hair"))
           :id (or (:master_sku product) (-> product :master :sku))}
          event-fields))
@@ -44,11 +44,15 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (when (.hasOwnProperty js/window "ga")
     (js/ga "ec:addProduct" (clj->js (->ga-product product event-fields)))))
 
-(defn add-line-items [line-items]
+(defn add-line-items [line-items] 
   (doseq [line-item line-items]
-    (let [variant (:variant line-item)]
-      (add-product (select-keys variant
-                                [:master_sku :name :price :category :collection_name])
+    (let [variant (:variant line-item)
+          inline-coupon (:display_label (first (filter #(and (= (:source_type %) "Spree::PromotionAction")
+                                                             (= (:adjustable_type %) "Spree::LineItem")
+                                                             (not= (:amount %) "0.0"))
+                                                       (:adjustments line-item))))]
+      (add-product (assoc (select-keys variant [:master_sku :name :price :category :collection_name])
+                          :coupon inline-coupon)
                    {:quantity (:quantity line-item) :variant (:sku variant)}))))
 
 (defn set-action [action & args]
@@ -61,11 +65,16 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 
 (defn set-purchase [order]
   (add-line-items (:line_items order))
-  (set-action "purchase"
-              :id (:number order)
-              :revenue (:total order)
-              :tax (:tax_total order)
-              :shipping (:ship_total order)))
+  (let [coupon (:display_label
+                (first (filter #(and (= (:source_type %) "Spree::PromotionAction")
+                                     (= (:adjustable_type %) "Spree::Order"))
+                               (:adjustments order))))]
+    (set-action "purchase"
+                :id (:number order)
+                :revenue (:total order)
+                :tax (:tax_total order)
+                :shipping (:ship_total order)
+                :coupon coupon)))
 
 (defn track-event [category action & [label value non-interaction]]
   (when (.hasOwnProperty js/window "ga")
