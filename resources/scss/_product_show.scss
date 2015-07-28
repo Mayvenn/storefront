@@ -442,3 +442,17 @@ a.cart-button {
   width: 25rem;
   margin: 0 auto 2rem auto;
 }
+
+.product-reviews-summary {
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+
+  .star-summary, .question-summary {
+    float: left;
+    clear: none;
+  }
+
+  .question-summary {
+    margin-left: 1.5rem;
+  }
+}

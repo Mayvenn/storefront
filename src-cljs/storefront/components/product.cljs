@@ -8,7 +8,7 @@
             [storefront.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
-            [storefront.components.reviews :refer [reviews-component]]
+            [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]))
@@ -86,6 +86,8 @@
 
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
+           (when (get-in data keypaths/reviews-loaded)
+             (om/build reviews-summary-component data))
            [:div#main-image
             (cond
               (> (count images) 1)
@@ -176,7 +178,8 @@
                [:h3.sub-header "Description"]
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]
 
-           (om/build reviews-component data)]]
+           (when (get-in data keypaths/reviews-loaded)
+             (om/build reviews-component data))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]
