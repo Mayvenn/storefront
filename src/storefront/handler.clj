@@ -82,7 +82,7 @@
 
 (defn robots [req]
   (let [subdomain (first (parse-subdomains (:server-name req)))]
-    (if (= subdomain "shop")
+    (if (or (= subdomain "shop")(= subdomain "www")(= subdomain nil))
       (string/join "\n" ["User-agent: *"
                          "Disallow: /account"
                          "Disallow: /checkout"
