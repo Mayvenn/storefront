@@ -24,7 +24,7 @@
   (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
-  (let [taxon-id (js/parseInt (:taxon_id query-params))]
+  (let [taxon-id (js/parseInt (:taxon-id query-params))]
     (-> app-state
         (assoc-in keypaths/browse-taxon-query {:id taxon-id})
         (assoc-in keypaths/browse-product-query {:slug product-path})
