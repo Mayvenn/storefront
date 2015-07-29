@@ -8,7 +8,7 @@
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
-            [storefront.query :as query]))
+            [storefront.util.query :as query]))
 
 (defn shopping-link-attrs [data]
   (when-let [path (default-taxon-path data)]

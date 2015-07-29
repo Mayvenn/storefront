@@ -1,4 +1,4 @@
-(ns storefront.query
+(ns storefront.util.query
   (:refer-clojure :exclude [get]))
 
 (defn matches? [query object]

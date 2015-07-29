@@ -8,7 +8,7 @@
             [storefront.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
-            [storefront.query :as query]
+            [storefront.util.query :as query]
             [storefront.keypaths :as keypaths]))
 
 (defn field [name value & [classes]]

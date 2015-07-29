@@ -5,7 +5,7 @@
             [storefront.routes :as routes]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.taxons :refer [taxon-name-from]]
-            [storefront.query :as query]
+            [storefront.util.query :as query]
             [storefront.credit-cards :refer [parse-expiration]]
             [storefront.riskified :as riskified]
             [storefront.checkout :as checkout]

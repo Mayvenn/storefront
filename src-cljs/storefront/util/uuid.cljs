@@ -1,4 +1,4 @@
-(ns storefront.uuid)
+(ns storefront.util.uuid)
 
 ;; use cljs.core directly when we upgrade to 0.0-3308 or beyond
 (defn random-uuid []
