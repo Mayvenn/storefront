@@ -99,16 +99,13 @@
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
-    [:meta {:property "og:type" :content "website"}]
-    [:meta {:property "og:title" :content "Shop Mayvenn"}]
-    [:meta {:property "og:image" :content (asset-path "/images/home_image.jpg")}]
-    [:meta {:property "og:description" :content "Mayvenn sells 100% natural hair extensions backed by a 30-day Quality Guarantee."}]
-    [:meta {:property "og:site_name" :content "Mayvenn"}]
+
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content]
-    (element/javascript-tag (str "var environment=\"" env "\";"))
+    (element/javascript-tag (str "var environment=\"" env "\";"
+                                 "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
 (defn- ^SimpleDateFormat make-http-format

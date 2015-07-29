@@ -1,9 +1,12 @@
 (ns storefront.script-tags
   (:require [goog.dom.classlist :as classlist]))
 
-(defn insert-tag [tag]
-  (let [first-script-tag (aget (.getElementsByTagName js/document "script") 0)]
-    (.insertBefore (.-parentNode first-script-tag) tag first-script-tag)))
+(defn- insert-before-selector [selector tag]
+  (let [first-tag (.querySelector js/document selector)]
+    (.insertBefore (.-parentNode first-tag) tag first-tag)))
+
+(def insert-body-bottom (partial insert-before-selector "script"))
+(def insert-in-head (partial insert-before-selector "head link"))
 
 (defn src-tag
   [src class]
@@ -21,29 +24,36 @@
     (classlist/add script-tag class)
     script-tag))
 
+(defn meta-tag [properties class]
+  (let [meta-tag (.createElement js/document "meta")]
+    (classlist/add meta-tag class)
+    (doseq [[k,v] properties]
+      (.setAttribute meta-tag (clj->js k) v))
+    meta-tag))
+
 (defn insert-tag-with-src [src class]
-  (insert-tag (src-tag src class)))
+  (insert-body-bottom (src-tag src class)))
 
 (defn insert-tag-with-text [text class]
-  (insert-tag (text-tag text class)))
+  (insert-body-bottom (text-tag text class)))
 
 (defn insert-tag-with-callback [tag callback]
   (set! (.-onload tag) callback)
-  (insert-tag tag))
+  (insert-body-bottom tag))
 
 (defn insert-tag-pair [src text class]
   (let [tag (src-tag src (str class "-src"))
-        callback #(insert-tag (text-tag text class))]
+        callback #(insert-body-bottom (text-tag text class))]
     (insert-tag-with-callback tag callback)))
 
-(defn remove-tag [class]
-  (when-let [beacon-tag (aget (.getElementsByClassName js/document class) 0)]
-    (.remove beacon-tag)))
+(defn ^:export remove-tags [class]
+  (doseq [tag (array-seq (.querySelectorAll js/document (str "." class)))]
+    (.remove tag)))
 
 (defn remove-tag-by-src [src]
   (when-let [tag (.querySelector js/document (str "[src=\"" src "\"]"))]
     (.remove tag)))
 
 (defn remove-tag-pair [class]
-  (remove-tag (str class "-src"))
-  (remove-tag class))
+  (remove-tags (str class "-src"))
+  (remove-tags class))

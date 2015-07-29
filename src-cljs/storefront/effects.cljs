@@ -15,6 +15,7 @@
             [storefront.reviews :as reviews]
             [storefront.orders :as orders]
             [storefront.scroll :as scroll]
+            [storefront.opengraph :as opengraph]
             [ajax.core :refer [-abort]]))
 
 (defmulti perform-effects identity)
@@ -44,6 +45,7 @@
     (api/get-order (get-in app-state keypaths/handle-message)
                    order-number
                    (get-in app-state keypaths/order-token)))
+  (opengraph/set-site-tags)
   (scroll/scroll-to-top)
 
   (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
@@ -414,7 +416,15 @@
   (analytics/add-product product)
   (analytics/set-action "detail")
   (analytics/track-page (routes/path-for app-state
-                                         (get-in app-state keypaths/navigation-message))))
+                                         (get-in app-state keypaths/navigation-message)))
+  (opengraph/set-product-tags {:name (:name product)
+                               :image (when-let [image-url (->> product
+                                                                :master
+                                                                :images
+                                                                first
+                                                                :large_url)]
+                                        (str "http:" image-url))}))
+
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)

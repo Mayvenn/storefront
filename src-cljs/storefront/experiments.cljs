@@ -1,6 +1,6 @@
 (ns storefront.experiments
   (:require [storefront.script-tags :refer [insert-tag-with-src
-                                            remove-tag]]
+                                            remove-tags]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]))
 
@@ -8,7 +8,7 @@
   (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
 
 (defn remove-optimizely []
-  (remove-tag "optimizely"))
+  (remove-tags "optimizely"))
 
 (defn track-event [event-name]
   (when (.hasOwnProperty js/window "optimizely")

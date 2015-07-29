@@ -1,5 +1,5 @@
 (ns storefront.riskified
-  (:require [storefront.script-tags :refer [insert-tag-with-src remove-tag]]
+  (:require [storefront.script-tags :refer [insert-tag-with-src remove-tags]]
             [storefront.exception-handler :as exception-handler]))
 
 (def store-domain "mayvenn.com")
@@ -10,7 +10,7 @@
    "riskified-beacon"))
 
 (defn remove-beacon []
-  (remove-tag "riskified-beacon"))
+  (remove-tags "riskified-beacon"))
 
 (defn track-page [path]
   (when (.hasOwnProperty js/window "RISKX")

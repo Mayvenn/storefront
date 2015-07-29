@@ -1,5 +1,5 @@
 (ns storefront.analytics
-  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tag remove-tag-by-src]]
+  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tags remove-tag-by-src]]
             [storefront.config :as config]
             [clojure.string :as s]))
 
@@ -24,8 +24,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   )
 
 (defn remove-tracking []
-  (remove-tag "analytics")
-  (remove-tag "tag-manager")
+  (remove-tags "analytics")
+  (remove-tags "tag-manager")
   ;; ga inserts more tags (as expected); remove them to help prevent so many additional ones in development
   (remove-tag-by-src "//www.google-analytics.com/analytics.js")
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
@@ -44,7 +44,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (when (.hasOwnProperty js/window "ga")
     (js/ga "ec:addProduct" (clj->js (->ga-product product event-fields)))))
 
-(defn add-line-items [line-items] 
+(defn add-line-items [line-items]
   (doseq [line-item line-items]
     (let [variant (:variant line-item)
           inline-coupon (:display_label (first (filter #(and (= (:source_type %) "Spree::PromotionAction")
