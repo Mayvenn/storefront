@@ -68,7 +68,7 @@
         (redirect "http://jobs.lever.co/mayvenn")
 
         (= "vistaprint" subdomain)
-        (redirect "http://www.vistaprint.com/vp/ns/EnterprisePartner.aspx")
+        (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
         (#{[] ["www"]} subdomains)
         (redirect (str "http://welcome." domain "/hello" (query-string req)))

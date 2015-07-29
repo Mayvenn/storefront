@@ -117,7 +117,7 @@
    storeback-no-stylist-response
    (fn [resp]
      (is (= 302 (:status resp)))
-     (is (= "http://www.vistaprint.com/vp/ns/EnterprisePartner.aspx"
+     (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
             (get-in resp [:headers "Location"]))))))
 
 (deftest renders-page-when-matches-stylist-subdomain
