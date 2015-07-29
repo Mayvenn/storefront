@@ -1,4 +1,4 @@
-(ns storefront.script-tags
+(ns storefront.tags
   (:require [goog.dom.classlist :as classlist]))
 
 (defn- insert-before-selector [selector tag]

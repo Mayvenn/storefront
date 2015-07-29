@@ -1,5 +1,5 @@
 (ns storefront.opengraph
-  (:require [storefront.script-tags :as tags]
+  (:require [storefront.tags :as tags]
             [storefront.config :as config]))
 
 (def ^:private graph-class "opengraph-tag")

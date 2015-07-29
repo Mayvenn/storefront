@@ -1,5 +1,5 @@
 (ns storefront.analytics
-  (:require [storefront.script-tags :refer [insert-tag-with-text remove-tags remove-tag-by-src]]
+  (:require [storefront.tags :refer [insert-tag-with-text remove-tags remove-tag-by-src]]
             [storefront.config :as config]
             [clojure.string :as s]))
 
