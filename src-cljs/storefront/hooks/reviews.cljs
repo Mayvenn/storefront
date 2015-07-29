@@ -1,4 +1,4 @@
-(ns storefront.reviews
+(ns storefront.hooks.reviews
   (:require [storefront.browser.tags :refer [src-tag insert-tag-with-callback]]
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]

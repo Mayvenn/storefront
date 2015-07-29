@@ -3,7 +3,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
-            [storefront.experiments :as experiments]
+            [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]

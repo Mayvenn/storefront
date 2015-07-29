@@ -1,6 +1,6 @@
-(ns storefront.riskified
+(ns storefront.hooks.riskified
   (:require [storefront.browser.tags :refer [insert-tag-with-src remove-tags]]
-            [storefront.exception-handler :as exception-handler]))
+            [storefront.hooks.exception-handler :as exception-handler]))
 
 (def store-domain "mayvenn.com")
 

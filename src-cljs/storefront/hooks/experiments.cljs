@@ -1,4 +1,4 @@
-(ns storefront.experiments
+(ns storefront.hooks.experiments
   (:require [storefront.browser.tags :refer [insert-tag-with-src
                                             remove-tags]]
             [storefront.keypaths :as keypaths]

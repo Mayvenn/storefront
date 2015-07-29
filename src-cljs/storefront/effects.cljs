@@ -7,15 +7,15 @@
             [storefront.accessors.taxons :refer [taxon-name-from]]
             [storefront.utils.query :as query]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
-            [storefront.riskified :as riskified]
+            [storefront.hooks.riskified :as riskified]
             [storefront.checkout :as checkout]
-            [storefront.analytics :as analytics]
-            [storefront.experiments :as experiments]
+            [storefront.hooks.analytics :as analytics]
+            [storefront.hooks.experiments :as experiments]
             [storefront.messages :refer [send send-later]]
-            [storefront.reviews :as reviews]
+            [storefront.hooks.reviews :as reviews]
             [storefront.accessors.orders :as orders]
             [storefront.browser.scroll :as scroll]
-            [storefront.opengraph :as opengraph]
+            [storefront.hooks.opengraph :as opengraph]
             [ajax.core :refer [-abort]]))
 
 (defmulti perform-effects identity)

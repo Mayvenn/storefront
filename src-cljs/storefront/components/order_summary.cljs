@@ -5,7 +5,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [clojure.string :as string]
-            [storefront.experiments :as experiments]
+            [storefront.hooks.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]

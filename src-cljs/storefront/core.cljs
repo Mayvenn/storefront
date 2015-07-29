@@ -4,7 +4,7 @@
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
-            [storefront.exception-handler :as exception-handler]
+            [storefront.hooks.exception-handler :as exception-handler]
             [storefront.messages :refer [send]]
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]

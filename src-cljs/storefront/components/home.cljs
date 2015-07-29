@@ -1,13 +1,13 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
-            [storefront.analytics :as analytics]
+            [storefront.hooks.analytics :as analytics]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :refer [taxon-path-for default-taxon-path]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.experiments :as experiments]))
+            [storefront.hooks.experiments :as experiments]))
 
 (defn category [data taxon]
   (let [taxon-name (taxon :name)

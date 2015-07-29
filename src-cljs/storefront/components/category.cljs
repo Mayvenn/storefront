@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.experiments :as experiments]
+            [storefront.hooks.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]

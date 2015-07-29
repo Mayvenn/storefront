@@ -1,4 +1,4 @@
-(ns storefront.exception-handler
+(ns storefront.hooks.exception-handler
   (:require [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
             [storefront.config :as config]))
 

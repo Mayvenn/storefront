@@ -1,4 +1,4 @@
-(ns storefront.analytics
+(ns storefront.hooks.analytics
   (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags remove-tag-by-src]]
             [storefront.config :as config]
             [clojure.string :as s]))

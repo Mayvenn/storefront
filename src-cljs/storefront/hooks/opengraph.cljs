@@ -1,4 +1,4 @@
-(ns storefront.opengraph
+(ns storefront.hooks.opengraph
   (:require [storefront.browser.tags :as tags]
             [storefront.config :as config]))
 
