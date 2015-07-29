@@ -1,5 +1,5 @@
 (ns storefront.reviews
-  (:require [storefront.tags :refer [src-tag insert-tag-with-callback]]
+  (:require [storefront.browser.tags :refer [src-tag insert-tag-with-callback]]
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]

@@ -3,7 +3,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.api :as api]
             [storefront.routes :as routes]
-            [storefront.cookie-jar :as cookie-jar]
+            [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.taxons :refer [taxon-name-from]]
             [storefront.query :as query]
             [storefront.credit-cards :refer [parse-expiration]]
@@ -14,7 +14,7 @@
             [storefront.messages :refer [send send-later]]
             [storefront.reviews :as reviews]
             [storefront.orders :as orders]
-            [storefront.scroll :as scroll]
+            [storefront.browser.scroll :as scroll]
             [storefront.opengraph :as opengraph]
             [ajax.core :refer [-abort]]))
 

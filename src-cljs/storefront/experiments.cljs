@@ -1,5 +1,5 @@
 (ns storefront.experiments
-  (:require [storefront.tags :refer [insert-tag-with-src
+  (:require [storefront.browser.tags :refer [insert-tag-with-src
                                             remove-tags]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]))

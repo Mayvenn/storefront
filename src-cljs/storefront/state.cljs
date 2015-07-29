@@ -1,7 +1,7 @@
 (ns storefront.state
   (:require [storefront.events :as events]
             [clojure.string :as string]
-            [storefront.cookie-jar :as cookie-jar]))
+            [storefront.browser.cookie-jar :as cookie-jar]))
 
 (defn get-store-subdomain []
   (first (string/split (.-hostname js/location) #"\.")))

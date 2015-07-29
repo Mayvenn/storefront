@@ -1,5 +1,5 @@
 (ns storefront.exception-handler
-  (:require [storefront.tags :refer [insert-tag-pair remove-tag-pair]]
+  (:require [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
             [storefront.config :as config]))
 
 (def ^:private class-name ".honeybadger-script")
