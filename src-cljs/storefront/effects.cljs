@@ -8,7 +8,6 @@
             [storefront.utils.query :as query]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.hooks.riskified :as riskified]
-            [storefront.checkout :as checkout]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.messages :refer [send send-later]]
