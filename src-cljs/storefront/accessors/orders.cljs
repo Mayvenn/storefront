@@ -1,4 +1,4 @@
-(ns storefront.orders)
+(ns storefront.accessors.orders)
 
 (defn active-payments [order]
   (filter #(not= (:state %) "invalid")

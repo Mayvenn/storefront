@@ -1,4 +1,4 @@
-(ns storefront.taxons
+(ns storefront.accessors.taxons
   (:require [clojure.string :as string]
             [storefront.keypaths :as keypaths]))
 

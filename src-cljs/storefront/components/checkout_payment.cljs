@@ -7,8 +7,8 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
-            [storefront.credit-cards :as cc]
-            [storefront.orders :as orders]
+            [storefront.accessors.credit-cards :as cc]
+            [storefront.accessors.orders :as orders]
             [storefront.messages :refer [send]]
             [clojure.string :as string]))
 

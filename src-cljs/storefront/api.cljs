@@ -1,7 +1,7 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [storefront.events :as events]
-            [storefront.taxons :refer [taxon-name-from]]
+            [storefront.accessors.taxons :refer [taxon-name-from]]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]

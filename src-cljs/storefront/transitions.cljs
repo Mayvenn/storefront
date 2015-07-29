@@ -2,8 +2,8 @@
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.taxons :refer [taxon-path-for]]
-            [storefront.orders :as orders]
+            [storefront.accessors.taxons :refer [taxon-path-for]]
+            [storefront.accessors.orders :as orders]
             [storefront.state :as state]))
 
 (defn clear-fields [app-state & fields]
@@ -281,7 +281,7 @@
 (defmethod transition-state events/api-success-cart-update-coupon [_ event _ app-state]
   (assoc-in app-state keypaths/cart-coupon-code ""))
 
-(defmethod transition-state events/api-success-cart-update-line-item [_ event {:keys [order]} app-state] 
+(defmethod transition-state events/api-success-cart-update-line-item [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/cart-quantities (reduce
                                       (fn [quantities line-item]
                                         (merge quantities {(:id line-item)(:quantity line-item)}))

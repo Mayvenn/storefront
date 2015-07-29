@@ -2,7 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.analytics :as analytics]
             [storefront.keypaths :as keypaths]
-            [storefront.taxons :refer [taxon-path-for default-taxon-path]]
+            [storefront.accessors.taxons :refer [taxon-path-for default-taxon-path]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]

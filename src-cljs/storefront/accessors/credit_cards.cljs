@@ -1,4 +1,4 @@
-(ns storefront.credit-cards
+(ns storefront.accessors.credit-cards
   (:require [clojure.string :as string]
             [goog.string :as gstring]))
 

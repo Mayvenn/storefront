@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.experiments :as experiments]
             [storefront.util.query :as query]
-            [storefront.taxons :refer [taxon-path-for taxon-class-name]]
+            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]

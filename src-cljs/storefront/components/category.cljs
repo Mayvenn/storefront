@@ -1,6 +1,6 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
-            [storefront.taxons :refer [taxon-path-for taxon-class-name]]
+            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]

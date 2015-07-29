@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.taxons :refer [taxon-path-for default-taxon-path]]
+            [storefront.accessors.taxons :refer [taxon-path-for default-taxon-path]]
             [storefront.messages :refer [send]]))
 
 (defn close-and-route [app-state event & [args]]

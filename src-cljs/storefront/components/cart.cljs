@@ -3,7 +3,7 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.taxons :refer [default-taxon-path]]
+            [storefront.accessors.taxons :refer [default-taxon-path]]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
