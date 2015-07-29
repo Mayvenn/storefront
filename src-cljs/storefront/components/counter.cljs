@@ -4,7 +4,7 @@
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.util.query :as query]
+            [storefront.utils.query :as query]
             [sablono.core :refer-macros [html]]
             [om.core :as om]))
 

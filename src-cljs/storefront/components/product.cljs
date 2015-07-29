@@ -4,7 +4,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.experiments :as experiments]
-            [storefront.util.query :as query]
+            [storefront.utils.query :as query]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]

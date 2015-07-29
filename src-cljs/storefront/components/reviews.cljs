@@ -5,7 +5,7 @@
             [storefront.messages :refer [send]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
-            [storefront.util.query :as query]))
+            [storefront.utils.query :as query]))
 
 (defn reviews-component [data owner]
   (reify

@@ -5,8 +5,8 @@
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
-            [storefront.util.uuid :refer [random-uuid]]
-            [storefront.util.ajax :refer [->PlaceholderRequest]]))
+            [storefront.utils.uuid :refer [random-uuid]]
+            [storefront.utils.ajax :refer [->PlaceholderRequest]]))
 
 (defn default-error-handler [handle-message req-key req-id response]
   (handle-message events/api-end {:request-id req-id

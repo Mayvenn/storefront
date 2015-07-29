@@ -8,7 +8,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.util.query :as query]))
+            [storefront.utils.query :as query]))
 
 (defn display-taxon [data selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)

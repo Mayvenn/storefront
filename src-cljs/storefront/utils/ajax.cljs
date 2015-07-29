@@ -1,4 +1,4 @@
-(ns storefront.util.ajax
+(ns storefront.utils.ajax
   (:require [ajax.core :as ajax]))
 
 (defrecord PlaceholderRequest []
