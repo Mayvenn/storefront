@@ -1,6 +1,7 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
             [storefront.components.formatters :refer [as-money-without-cents]]
+            [storefront.accessors.products :as products]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [clojure.string :as string]
             [om.core :as om]
@@ -38,8 +39,9 @@
       [:div.taxon-product-info-container
        [:div.taxon-product-description-container
         [:div.taxon-product-collection
-         [:div.taxon-product-collection-indicator
-          {:class collection-name}]
+         (when (products/graded? product)
+           [:div.taxon-product-collection-indicator
+            {:class collection-name}])
          collection-name]
         [:div.taxon-product-title
          (:name product)]]
