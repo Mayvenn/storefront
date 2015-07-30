@@ -1,5 +1,6 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
+            [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
             [clojure.string :as string]
             [om.core :as om]
@@ -45,8 +46,7 @@
        [:div.taxon-from-price
         [:span "From: "]
         [:br]
-        "$"
-        (js/Math.floor (product :from_price))]]]]))
+        (as-money-without-cents (product :from_price))]]]]))
 
 (defn category-component [data owner]
   (om/component
