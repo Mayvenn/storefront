@@ -32,7 +32,7 @@
                                   :product_url)]
         [:div.taxon-product-image-container
          {:style {:background-image (str "url(" first-image ")")}}
-         (when-not (= collection-name "premier")
+         (when (#{"ultra" "deluxe"} collection-name)
            [:div.corner-ribbon {:class collection-name}
             collection-name])
          [:img {:src first-image}]])
