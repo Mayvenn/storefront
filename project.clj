@@ -8,7 +8,7 @@
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.2.2"]
                  [environ "1.0.0"]
-                 [clj-honeybadger "0.3.0"]
+                 [clj-honeybadger "0.3.1"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [clj-http "1.0.1" :exclusions [org.clojure/tools.reader]]
                  [compojure "1.3.2"]
@@ -16,7 +16,7 @@
                  [ring/ring-json "0.3.1"]
                  [ring/ring-defaults "0.1.3"]
                  [ring-jetty-component "0.2.2"]
-                 [ring-logging "0.1.0"]
+                 [ring-logging "0.1.1"]
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
 
