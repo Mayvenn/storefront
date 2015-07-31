@@ -71,7 +71,7 @@
   {:uberjar {:aot :all}
    :dev {:source-paths ["dev/clj"]
          :dependencies [[pjstadig/humane-test-output "0.6.0"]
-                        [standalone-test-server "0.2.1"]
+                        [standalone-test-server "0.3.0"]
                         [org.clojure/tools.namespace "0.2.9"]
                         [figwheel-sidecar "0.3.1"]]
          :injections [(require 'pjstadig.humane-test-output)

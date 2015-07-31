@@ -25,6 +25,14 @@
       (status 200)
       (content-type "application/json")))
 
+(defmacro with-resource
+  [bindings close-fn & body]
+  `(let ~bindings
+     (try
+       ~@body
+       (finally
+         (~close-fn ~(bindings 0))))))
+
 (defmacro with-test-system
   [sys & body]
   `(let [unstarted-system# (-> (create-system test-overrides))]
@@ -34,7 +42,7 @@
 
 (defn assert-request [req storeback-resp asserter]
   (let [[get-requests endpoint]
-        (recording-endpoint :handler (constantly storeback-resp))]
+        (recording-endpoint {:handler (constantly storeback-resp)})]
     (with-standalone-server [ss (standalone-server endpoint)]
       (with-test-system system
         (let [resp ((-> system :app-handler :handler)
