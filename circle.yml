@@ -7,6 +7,9 @@ dependencies:
   cache_directories:
     - ~/rainman-gems
     - ~/rainman
+  branches:
+    only:
+      - master
 deployment:
   acceptance:
     branch: master
