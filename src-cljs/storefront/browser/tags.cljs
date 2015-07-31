@@ -46,13 +46,16 @@
         callback #(insert-body-bottom (text-tag text class))]
     (insert-tag-with-callback tag callback)))
 
-(defn ^:export remove-tags [class]
+(defn remove-tag [tag]
+  (.removeChild (.-parentNode tag) tag))
+
+(defn remove-tags [class]
   (doseq [tag (array-seq (.querySelectorAll js/document (str "." class)))]
-    (.remove tag)))
+    (remove-tag tag)))
 
 (defn remove-tag-by-src [src]
   (when-let [tag (.querySelector js/document (str "[src=\"" src "\"]"))]
-    (.remove tag)))
+    (remove-tag tag)))
 
 (defn remove-tag-pair [class]
   (remove-tags (str class "-src"))
