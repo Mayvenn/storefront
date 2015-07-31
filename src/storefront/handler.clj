@@ -106,6 +106,7 @@
     [:div#content]
     (element/javascript-tag (str "var environment=\"" env "\";"
                                  "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
+                                 "var apiUrl=\"" (:endpoint storeback-config) "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
 (defn- ^SimpleDateFormat make-http-format

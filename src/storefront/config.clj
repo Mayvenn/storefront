@@ -5,12 +5,6 @@
 (defn development? [env]
   (= env "development"))
 
-
-  
-    
-    
-    
-
 (def default-config {:server-opts {:port 3006}
                      :logging
                      (merge (timbre/get-default-config)
