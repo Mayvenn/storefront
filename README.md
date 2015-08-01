@@ -43,7 +43,7 @@ Starting at [/src-cljs/storefront/][13], there are some directories.
   * The vast majority of Storefront's tests are in a different project.
   This was done because they are integration tests and test more than just storefront.
 * Whats up with your SCSS and CSS?
-  * They are from the previous version of the site.
+  * They are from the previous version of the site.  Going forward we would like to make the SCSS more component oriented.
 * Can I run this?
   * You have our permission, but not our support :smile:
 
