@@ -28,7 +28,14 @@ For example, lets say the [navigate-product][3] event, equivilant to ```[:naviga
 
 [Here is some more information about effects and transistions][8]
 
+## ClojureScript Directory Structure
+Starting at [/src-cljs/storefront/][13], there are some directories.
 
+* Accessors - Utility modules for working with our domain models
+* Browser - Modules which work with browser APIs directly, e.g. scrolling and cookies
+* Components - React UI components
+* Hooks - Things like middleware or 3rd party code which is non-essential to the operation of storefront e.g. yotpo, honeybadger, optimizely
+* Utils - Small helper libraries that are generic in nature, e.g. a Uuid generator
 
 
 ## Questions
@@ -54,3 +61,4 @@ For example, lets say the [navigate-product][3] event, equivilant to ```[:naviga
 [10]: https://clojuredocs.org/clojure.core/reductions
 [11]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs#L18
 [12]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/effects.cljs#L33
+[13]: https://github.com/Mayvenn/storefront/tree/master/src-cljs/storefront
