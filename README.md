@@ -45,7 +45,7 @@ Starting at [/src-cljs/storefront/][13], there are some directories.
 * Whats up with your SCSS and CSS?
   * They are from the previous version of the site.  Going forward we would like to make the SCSS more component oriented.
 * Can I run this?
-  * You have our permission, but not our support :smile:
+  * Sure, but you will need to setup up some external dependencies, such as an API server. We hope this project serves as a reference project moreso than generic ecommerce solution.
 
 
 [0]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs
