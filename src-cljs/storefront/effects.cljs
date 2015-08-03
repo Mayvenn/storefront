@@ -153,11 +153,15 @@
         events/flash-show-failure {:message "The page you were looking for could not be found."
                                    :navigation [event args]}))
 
-(defmethod perform-effects events/control-menu-expand [_ event args app-state]
-  (set! (.. js/document -body -style -overflow) "hidden"))
+(defmethod perform-effects events/control-menu-expand
+  [_ event {keypath :keypath} app-state]
+  (when (#{keypaths/menu-expanded} keypath)
+    (set! (.. js/document -body -style -overflow) "hidden")))
 
-(defmethod perform-effects events/control-menu-collapse [_ event args app-state]
-  (set! (.. js/document -body -style -overflow) "auto"))
+(defmethod perform-effects events/control-menu-collapse
+  [_ event {keypath :keypath} app-state]
+  (when (#{keypaths/menu-expanded} keypath)
+    (set! (.. js/document -body -style -overflow) "auto")  ))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/handle-message)

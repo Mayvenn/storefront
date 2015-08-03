@@ -53,17 +53,13 @@
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
 
-(defmethod transition-state events/control-menu-expand [_ event args app-state]
-  (assoc-in app-state keypaths/menu-expanded true))
+(defmethod transition-state events/control-menu-expand
+  [_ event {keypath :keypath} app-state]
+  (assoc-in app-state keypath true))
 
-(defmethod transition-state events/control-menu-collapse [_ event args app-state]
-  (assoc-in app-state keypaths/menu-expanded false))
-
-(defmethod transition-state events/control-account-menu-expand [_ event args app-state]
-  (assoc-in app-state keypaths/account-menu-expanded true))
-
-(defmethod transition-state events/control-account-menu-collapse [_ event args app-state]
-  (assoc-in app-state keypaths/account-menu-expanded false))
+(defmethod transition-state events/control-menu-collapse
+  [_ event {keypath :keypath} app-state]
+  (assoc-in app-state keypath false))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   (-> app-state

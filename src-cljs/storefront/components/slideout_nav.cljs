@@ -5,8 +5,21 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.accessors.taxons :refer [taxon-path-for default-taxon-path]]
+            [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
             [storefront.messages :refer [send]]))
+
+(def stylist-only-products-available? false)
+
+(defn close-all-menus [app-state]
+  (send app-state
+        events/control-menu-collapse
+        {:keypath keypaths/menu-expanded})
+  (send app-state
+        events/control-menu-collapse
+        {:keypath keypaths/account-menu-expanded})
+  (send app-state
+        events/control-menu-collapse
+        {:keypath keypaths/shop-menu-expanded}))
 
 (defn close-and-route [app-state event & [args]]
   {:href
@@ -14,17 +27,16 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (send app-state events/control-menu-collapse)
-     (send app-state events/control-account-menu-collapse)
+     (close-all-menus app-state)
      (routes/enqueue-navigate @app-state event args))})
 
-(defn close-and-enqueue [app-state event]
+(defn close-and-enqueue [app-state event & [args]]
   {:href "#"
    :on-click
    (fn [e]
      (.preventDefault e)
-     (send app-state events/control-menu-collapse)
-     (send app-state event))})
+     (close-all-menus app-state)
+     (send app-state event args))})
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class label full-width?]}]
   [:a.slideout-nav-link
@@ -43,8 +55,9 @@
 (defn slideout-nav-component [data owner]
   (om/component
    (html
-    [:div.slideout-nav-wrapper {:class (when (get-in data keypaths/menu-expanded)
-                                         "slideout-nav-open")}
+    [:div.slideout-nav-wrapper
+     {:class (when (get-in data keypaths/menu-expanded)
+               "slideout-nav-open")}
      (let [store (get-in data keypaths/store)]
        [:nav.slideout-nav (when-not (store :profile_picture_url)
                             {:class "no-picture"})
@@ -61,8 +74,12 @@
              {:href "#"
               :on-click
               (if (get-in data keypaths/account-menu-expanded)
-                (utils/send-event-callback data events/control-account-menu-collapse)
-                (utils/send-event-callback data events/control-account-menu-expand))}
+                (utils/send-event-callback data
+                                           events/control-menu-collapse
+                                           {:keypath keypaths/account-menu-expanded})
+                (utils/send-event-callback data
+                                           events/control-menu-expand
+                                           {:keypath keypaths/account-menu-expanded}))}
              [:span.account-detail-name
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
@@ -106,12 +123,33 @@
          [:ul.horizontal-nav-menu
           [:li
            [:a
-            (when-let [path (default-taxon-path data)]
-              (close-and-route data events/navigate-category
-                               {:taxon-path path}))
-            "Shop"]]
+            (if (and (own-store? data) stylist-only-products-available?)
+              (close-and-enqueue data events/control-menu-expand
+                                 {:keypath keypaths/shop-menu-expanded})
+              (when-let [path (default-nav-taxon-path data)]
+                (close-and-route data events/navigate-category
+                                 {:taxon-path path})))
+            (if (and (own-store? data) stylist-only-products-available?)
+              "Shop "
+              "Shop")
+            (when (and (own-store? data) stylist-only-products-available?)
+              [:figure.down-arrow])]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
           [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
+        (when (get-in data keypaths/shop-menu-expanded)
+          [:ul.shop-menu-expanded.open
+           [:li
+            [:a
+             (when-let [path (default-nav-taxon-path data)]
+               (close-and-route data events/navigate-category
+                                {:taxon-path path}))
+             "Hair Extensions"]]
+           [:li
+            [:a
+             (when-let [path (default-stylist-taxon-path data)]
+               (close-and-route data events/navigate-category
+                                {:taxon-path path}))
+             "Stylist Only Products"]]])
         [:ul.slideout-nav-list
          (when (own-store? data)
            [:li.slideout-nav-section.stylist
@@ -145,13 +183,24 @@
           (slideout-nav-link
            data
            (merge
-            (if-let [path (default-taxon-path data)]
+            (if-let [path (default-nav-taxon-path data)]
               (close-and-route data events/navigate-category
                                {:taxon-path path})
               {})
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
-             :full-width? true}))]
+             :full-width? true}))
+          (when (and (own-store? data) stylist-only-products-available?)
+            (slideout-nav-link
+             data
+             (merge
+              (if-let [path (default-stylist-taxon-path data)]
+                (close-and-route data events/navigate-category
+                                 {:taxon-path path})
+                {})
+              {:icon-class "stylist-products"
+               :label "Stylist Products"
+               :full-width? true})))]
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)

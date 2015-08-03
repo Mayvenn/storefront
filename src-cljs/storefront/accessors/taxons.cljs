@@ -14,11 +14,14 @@
 (defn taxon-name-from [taxon-path]
   (string/replace taxon-path #"-" " "))
 
-(defn default-taxon-path [app-state]
+(defn- default-taxon-path [filter-fn app-state]
   (when-let [default-taxon (-> (get-in app-state keypaths/taxons)
-                               filter-nav-taxons
+                               filter-fn
                                first)]
     (taxon-path-for default-taxon)))
+
+(def default-nav-taxon-path (partial default-taxon-path filter-nav-taxons))
+(def default-stylist-taxon-path (partial default-taxon-path filter-stylist-taxons))
 
 (defn taxon-class-name [taxon]
   (string/replace (:permalink taxon) #"/" "-"))

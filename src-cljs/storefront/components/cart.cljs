@@ -3,7 +3,7 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.accessors.taxons :refer [default-taxon-path]]
+            [storefront.accessors.taxons :refer [default-nav-taxon-path]]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
@@ -11,7 +11,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (when-let [path (default-taxon-path data)]
+  (when-let [path (default-nav-taxon-path data)]
     (utils/route-to data
                     events/navigate-category
                     {:taxon-path path})))
