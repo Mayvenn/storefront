@@ -2,7 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.hooks.analytics :as analytics]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.taxons :refer [taxon-path-for default-taxon-path]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for default-taxon-path]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -44,7 +44,7 @@
          {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"})]]
      [:div.squashed-hair-categories
       (map (partial category data)
-           (get-in data keypaths/taxons))
+           (filter-nav-taxons (get-in data keypaths/taxons)))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       {:on-click (fn [_] (analytics/track-event "Banner"

@@ -82,9 +82,6 @@
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
   (assoc-in app-state keypaths/browse-variant-query {:id (variant :id)}))
 
-(defmethod transition-state events/control-browse-add-to-bag [_ event args app-state]
-  app-state)
-
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
   (update-in app-state (:path args) inc))
 

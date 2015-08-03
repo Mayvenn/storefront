@@ -2,7 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name]]
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
@@ -58,11 +58,11 @@
       [:div
        [:div.taxon-products-banner {:class (taxon-class-name taxon)}]
        [:div.taxon-products-container
-        [:div.taxon-nav
-         (map (partial display-taxon data taxon)
-              (get-in data keypaths/taxons))
-         [:div {:style {:clear "both"}}]]
-
+        (when-not (:stylist_only? taxon)
+          [:div.taxon-nav
+           (map (partial display-taxon data taxon)
+                (filter-nav-taxons (get-in data keypaths/taxons)))
+           [:div {:style {:clear "both"}}]])
         [:div.taxon-products-list-container
          (let [products (->> (get-in data keypaths/products)
                              vals

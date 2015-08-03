@@ -1,12 +1,13 @@
 (ns storefront.components.product
   (:require [storefront.components.utils :as utils]
+            [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
-            [storefront.accessors.products :refer [graded?]]
+            [storefront.accessors.products :refer [graded? all-variants]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
@@ -18,7 +19,7 @@
   (let [variant-query (get-in app-state keypaths/browse-variant-query)
         variant (or (->> product :variants (query/get variant-query))
                     (-> product :variants first))]
-    (str "$" (.toFixed (js/parseFloat (variant :price))))))
+    (as-money-without-cents (:price variant))))
 
 (defn display-product-image [image]
   [:img {:src (:product_url image)}])
@@ -31,8 +32,8 @@
   (let [variant (query/get {:id id}
                            (->> (get-in app-state keypaths/products)
                                 vals
-                                (mapcat :variants)))
-        product (first (filter #(contains? (set (:variants %)) variant)
+                                (mapcat all-variants)))
+        product (first (filter #(contains? (set (all-variants %)) variant)
                                (-> (get-in app-state keypaths/products)
                                    vals)))]
     [:div.item-added
@@ -96,11 +97,12 @@
               (seq images)
               (display-product-image (first images)))]
            [:div.product-info
-            [:div.product-collection
-             (when (graded? product)
-               [:div.product-collection-indicator {:class collection-name}])
-             [:span
-              collection-name]]
+            (when collection-name
+              [:div.product-collection
+               (when (graded? product)
+                 [:div.product-collection-indicator {:class collection-name}])
+               [:span
+                collection-name]])
             [:div.product-title {:item-prop "name"}
              (:name product)]]]
           [:div.cart-form-container

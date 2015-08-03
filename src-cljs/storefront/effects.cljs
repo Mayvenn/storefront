@@ -13,6 +13,7 @@
             [storefront.messages :refer [send send-later]]
             [storefront.hooks.reviews :as reviews]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as products]
             [storefront.browser.scroll :as scroll]
             [storefront.hooks.opengraph :as opengraph]
             [ajax.core :refer [-abort]]))
@@ -74,7 +75,8 @@
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/api-cache)
-                    taxon-path))
+                    taxon-path
+                    (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
@@ -187,7 +189,7 @@
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
         variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (:variants product))]
+                           (products/all-variants product))]
     (api/add-to-bag (get-in app-state keypaths/handle-message)
                     variant
                     product
@@ -422,7 +424,11 @@
                                                                 :images
                                                                 first
                                                                 :large_url)]
-                                        (str "http:" image-url))}))
+                                        (str "http:" image-url))})
+  (send app-state
+        events/control-browse-variant-select
+        {:variant (or (-> product :variants first)
+                      (-> product :master))}))
 
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
