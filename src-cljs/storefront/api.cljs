@@ -1,5 +1,6 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
+            [clojure.set :refer [subset?]]
             [storefront.events :as events]
             [storefront.accessors.taxons :refer [taxon-name-from]]
             [clojure.set :refer [rename-keys]]
@@ -522,21 +523,30 @@
     :handler
     #(handle-message events/api-success-my-orders %)}))
 
+(defn api-failure? [event]
+  (= events/api-failure (subvec event 0 2)))
+
 (defn add-to-bag [handle-message variant product variant-quantity stylist-id order-token order-id user-token]
   (let [req-id (random-uuid)]
-    (letfn [(refetch-order [order-id order-token]
+    (letfn [(end-api-req []
               (handle-message events/api-end {:request-key request-keys/add-to-bag
-                                              :request-id req-id})
+                                              :request-id req-id}))
+            (refetch-order [order-id order-token]
+              (end-api-req)
               (get-order handle-message order-id order-token))
             (add-line-item-cb [order-id order-token]
               (add-line-item (fn [event args]
                                (when (= event events/api-success-add-to-bag)
                                  (refetch-order order-id order-token))
+                               (when (api-failure? event)
+                                 (end-api-req))
                                (handle-message event args))
                              variant product variant-quantity order-id order-token))
             (created-order-cb [event {:keys [number token] :as args}]
               (when (= event events/api-success-create-order)
                 (add-line-item-cb number token))
+              (when (api-failure? event)
+                (end-api-req))
               (handle-message event args))]
       (handle-message events/api-start {:xhr (->PlaceholderRequest)
                                         :request-key request-keys/add-to-bag
