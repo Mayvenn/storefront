@@ -17,8 +17,7 @@
 
 (defn display-price [app-state product]
   (let [variant-query (get-in app-state keypaths/browse-variant-query)
-        variant (or (->> product :variants (query/get variant-query))
-                    (-> product :variants first))]
+        variant (->> product all-variants (query/get variant-query))]
     (as-money-without-cents (:price variant))))
 
 (defn display-product-image [image]
