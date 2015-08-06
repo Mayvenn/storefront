@@ -8,7 +8,6 @@
     "hairbyarelis"
     "hairmedley"
     "ajashair"
-    "ajashair"
     "kierriasbeauty"
     "anointedwithapurpose"
     "blancoextensions"
