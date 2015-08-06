@@ -6,9 +6,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
+            [storefront.accessors.stylist-only-products :refer [stylist-only-products-available?]]
             [storefront.messages :refer [send]]))
-
-(def stylist-only-products-available? false)
 
 (defn close-all-menus [app-state]
   (send app-state
@@ -58,7 +57,8 @@
     [:div.slideout-nav-wrapper
      {:class (when (get-in data keypaths/menu-expanded)
                "slideout-nav-open")}
-     (let [store (get-in data keypaths/store)]
+     (let [store (get-in data keypaths/store)
+           store-slug (get-in data keypaths/store-slug)]
        [:nav.slideout-nav (when-not (store :profile_picture_url)
                             {:class "no-picture"})
         [:div.slideout-nav-header
@@ -123,16 +123,16 @@
          [:ul.horizontal-nav-menu
           [:li
            [:a
-            (if (and (own-store? data) stylist-only-products-available?)
+            (if (and (own-store? data) (stylist-only-products-available? store-slug))
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
               (when-let [path (default-nav-taxon-path data)]
                 (close-and-route data events/navigate-category
                                  {:taxon-path path})))
-            (if (and (own-store? data) stylist-only-products-available?)
+            (if (and (own-store? data) (stylist-only-products-available? store-slug))
               "Shop "
               "Shop")
-            (when (and (own-store? data) stylist-only-products-available?)
+            (when (and (own-store? data) (stylist-only-products-available? store-slug))
               [:figure.down-arrow])]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
           [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
@@ -190,7 +190,7 @@
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
              :full-width? true}))
-          (when (and (own-store? data) stylist-only-products-available?)
+          (when (and (own-store? data) (stylist-only-products-available? store-slug))
             (slideout-nav-link
              data
              (merge
