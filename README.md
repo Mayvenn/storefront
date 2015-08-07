@@ -47,6 +47,8 @@ Starting at [/src-cljs/storefront/][13], there are some directories.
 * Can I run this?
   * Sure, but you will need to setup up some external dependencies, such as an API server. We hope this project serves as a reference project moreso than generic ecommerce solution.
 
+## License
+Copyright (C) Mayvenn, Inc. - All Rights Reserved
 
 [0]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs
 [1]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/effects.cljs
