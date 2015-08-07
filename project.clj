@@ -1,8 +1,7 @@
 (defproject storefront "0.1.0-SNAPSHOT"
   :description "The front of the store"
   :url "https://github.com/Mayvenn/storefront"
-  
-            
+  :license {:name "All rights reserved"}
   :dependencies [[org.clojure/clojure "1.6.0"]
 
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
