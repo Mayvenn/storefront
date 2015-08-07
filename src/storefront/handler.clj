@@ -81,8 +81,8 @@
         :else (redirect (str "http://store." domain (query-string req)))))))
 
 (defn robots [req]
-  (let [subdomain (first (parse-subdomains (:server-name req)))]
-    (if (#{"shop" "www" nil} subdomain)
+  (let [subdomains (parse-subdomains (:server-name req))]
+    (if (#{["shop"] ["www"] []} subdomains)
       (string/join "\n" ["User-agent: *"
                          "Disallow: /account"
                          "Disallow: /checkout"
