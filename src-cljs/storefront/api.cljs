@@ -429,7 +429,7 @@
      updated-order
      (conj request-key line-item-id)
      #(handle-message events/api-success-cart-update-line-item
-                      {:order (rename-keys % {:token :token})}))))
+                      {:order %}))))
 
 
 (defn inc-line-item [handle-message user-token order {:keys [line-item-id]}]
