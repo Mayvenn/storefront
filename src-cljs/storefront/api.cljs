@@ -496,10 +496,10 @@
   (api-req
    handle-message
    GET
-   "/orders"
+   "/v2/orders"
    request-keys/get-past-order
    {:params
-    {:id order-number
+    {:number order-number
      :token user-token}
     :handler
     #(handle-message events/api-success-get-past-order %)}))

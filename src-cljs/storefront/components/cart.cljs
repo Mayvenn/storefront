@@ -82,11 +82,10 @@
     [:div
      [:div.cart-container
       (let [cart (get-in data keypaths/order)]
-        (if (:number cart)
-          (when (:channel cart)
-            (if (> (-> cart :line_items count) 0)
-              (display-full-cart data owner)
-              (display-empty-cart data)))
+        (if (and (:state cart)
+                 (:number cart)
+                 (-> cart :line-items count (> 0)))
+          (display-full-cart data owner)
           (display-empty-cart data)))]
      [:div.home-actions-top
       [:div.guarantee]

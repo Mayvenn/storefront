@@ -16,53 +16,51 @@
    [:span.cart-label name]
    [:span.cart-value value]])
 
-(defn display-variant-options [option-value]
-  (field (str (:option_type_presentation option-value) ": ")
-         (:presentation option-value)))
+(defn line-item-subtotal [{:keys [quantity unit-price]}]
+  (* quantity unit-price))
 
-(defn display-line-item [data interactive? line-item]
-  (let [variant (:variant line-item)]
-    [:div.line-item
+(defn display-line-item [data interactive? [variant-id line-item]]
+  [:div.line-item
+   [:a
+    #_ (utils/route-to data events/navigate-product {:product-path (:product-slug line-item)})
+    [:img {:src (:product-image line-item)
+           :alt (:product-name line-item)}]]
+   [:div.line-item-detail.interactive
+    [:h4
      [:a
-      (utils/route-to data events/navigate-product {:product-path (:slug variant)})
-      [:img {:src (-> variant :images first :small_url)
-             :alt (:name variant)}]]
-     [:div.line-item-detail.interactive
-      [:h4
-       [:a
-        (utils/route-to data events/navigate-product {:product-path (:slug variant)})
-        (:name variant)]]
-      (map display-variant-options (:option_values variant))
-      (when (not interactive?)
-        (field "Quantity:" (:quantity line-item)))
-      (field "Price:" (:single_display_amount line-item) "item-form" "price")
-      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
-      (when interactive?
-        (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
-              delete-request (query/get
-                               {:request-key
-                                (conj request-keys/delete-line-item (:id line-item))}
-                               (get-in data keypaths/api-requests))]
-          (list
-           (om/build counter-component
-                     data
-                     {:opts {:path (conj keypaths/cart-quantities (:id line-item))
-                             :inc-event events/control-cart-line-item-inc
-                             :dec-event events/control-cart-line-item-dec
-                             :spinner-key update-spinner-key}})
-           [:a.delete
-            {:href "#"
-             :class (when delete-request "saving")
-             :on-click (if delete-request
-                         utils/noop-callback
-                         (utils/send-event-callback data
-                                                    events/control-cart-remove
-                                                    (select-keys line-item [:id])))}
-            "Remove"])))]
-     [:div {:style {:clear "both"}}]]))
+      #_ (utils/route-to data events/navigate-product {:product-path (:product-slug variant)})
+      (:product-name line-item)]]
+    (:variant-option-display line-item)
+    (when (not interactive?)
+      (field "Quantity:" (:quantity line-item)))
+    (field "Price:" (:unit-price line-item) "item-form" "price")
+    (field "Subtotal: " (line-item-subtotal line-item) "item-form" "subtotal")
+    (when interactive?
+      (let [update-spinner-key (conj request-keys/update-line-item variant-id)
+            delete-request (query/get
+                            {:request-key
+                             (conj request-keys/delete-line-item variant-id)}
+                            (get-in data keypaths/api-requests))]
+        (list
+         (om/build counter-component
+                   data
+                   {:opts {:path (conj keypaths/order :line-items)
+                           :inc-event events/control-cart-line-item-inc
+                           :dec-event events/control-cart-line-item-dec
+                           :spinner-key update-spinner-key}})
+         [:a.delete
+          {:href "#"
+           :class (when delete-request "saving")
+           :on-click (if delete-request
+                       utils/noop-callback
+                       (utils/send-event-callback data
+                                                  events/control-cart-remove
+                                                  variant-id))}
+          "Remove"])))]
+   [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]
-  (map (partial display-line-item data interactive?) (:line_items order)))
+  (map (partial display-line-item data interactive?) (:line-items order)))
 
 (defn valid-payments [payments]
   (filter (comp not #{"failed" "invalid"} :state) payments))
@@ -75,7 +73,7 @@
   (filter :eligible adjustments))
 
 (defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (:line_items order)))
+  (mapcat (comp eligible-adjustments :adjustments) (:line-items order)))
 
 (defn whole-order-adjustments [order]
   (-> order :adjustments eligible-adjustments))
