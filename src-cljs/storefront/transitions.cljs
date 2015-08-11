@@ -202,12 +202,10 @@
       (assoc-in keypaths/order-token token)
       (assoc-in keypaths/order-number number)))
 
-(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
-      (update-in keypaths/browse-recently-added-variants
-                 conj
-                 {:id (variant :id)
-                  :quantity variant-quantity})))
+      (update-in keypaths/browse-recently-added-variants conj requested)
+      (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
@@ -215,7 +213,7 @@
         (assoc-in keypaths/checkout-selected-shipping-method (get-in order [:shipments 0 :selected_shipping_rate]))
         (assoc-in keypaths/order order)
         (assoc-in keypaths/cart-quantities
-                  (into {} (map (juxt :id :quantity) (order :line_items)))))
+                  (into {} (map (fn [[k v]] [k (:quantity v)]) (:line-items order)))))
     app-state))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]

@@ -490,9 +490,11 @@
           events/flash-show-failure {:message (validation-errors :error)
                                      :navigation (get-in app-state keypaths/navigation-message)})))
 
-(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} app-state]
+(defmethod perform-effects events/api-success-add-to-bag
+  [_ _ {:keys [order {:keys [product quantity variant]}]} app-state]
+  (save-cookie app-state true)
   (experiments/track-event "add-to-bag")
-  (analytics/add-product product {:quantity variant-quantity
+  (analytics/add-product product {:quantity quantity
                                   :variant (:sku variant)})
   (analytics/set-action "add")
   (analytics/track-event "UX" "click" "add to cart")

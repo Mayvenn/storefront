@@ -27,23 +27,16 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-variant [app-state {:keys [id quantity]}]
-  (let [variant (query/get {:id id}
-                           (->> (get-in app-state keypaths/products)
-                                vals
-                                (mapcat all-variants)))
-        product (first (filter #(contains? (set (all-variants %)) variant)
-                               (-> (get-in app-state keypaths/products)
-                                   vals)))]
-    [:div.item-added
-     [:strong "Added to Bag: "]
-     (str (number->words quantity)
-          " "
-          (-> (:options_text variant)
-              (string/replace #"Length: " "")
-              (string/replace #"''" " inch"))
-          " "
-          (:name product))]))
+(defn display-bagged-variant [app-state {:keys [id quantity product variant]}]
+  [:div.item-added
+   [:strong "Added to Bag: "]
+   (str (number->words quantity)
+        " "
+        (-> (:options_text variant)
+            (string/replace #"Length: " "")
+            (string/replace #"''" " inch"))
+        " "
+        (:name product))])
 
 (defn display-variant [app-state variant checked?]
   [:li.keypad-item
