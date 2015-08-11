@@ -479,23 +479,6 @@
                      (merge {:order (rename-keys % {:token :token})}
                             extra-message-args))}))
 
-(defn add-line-item [handle-message variant product variant-quantity order-number order-token]
-  (api-req
-   handle-message
-   POST
-   "/line-items"
-   request-keys/add-line-item
-   {:params
-    {:token order-token
-     :order_id order-number
-     :variant_id (variant :id)
-     :variant_quantity variant-quantity}
-    :handler
-    #(handle-message events/api-success-add-to-bag {:variant variant
-                                                    :product product
-                                                    :variant-quantity variant-quantity
-                                                    :order-number order-number
-                                                    :order-token order-token})}))
 
 (defn get-order [handle-message order-number order-token]
   (api-req
@@ -542,11 +525,13 @@
    POST
    "/v2/add-to-bag"
    request-keys/add-to-bag
-   {:params
-    (merge {:variant-id (:id variant)
-            :quantity quantity
-            :stylist-id stylist-id}
-           (when (and order-token order-id)
-             {:token order-token
-              :number order-id}))
-    :handler (partial handle-message events/api-success-add-to-bag)}))
+   {:params (merge {:variant-id (:id variant)
+                    :quantity quantity
+                    :stylist-id stylist-id}
+                   (when (and order-token order-id)
+                     {:token order-token
+                      :number order-id}))
+    :handler #(handle-message events/api-success-add-to-bag {:order %
+                                                             :requested {:quantity quantity
+                                                                         :product product
+                                                                         :variant variant}})}))
