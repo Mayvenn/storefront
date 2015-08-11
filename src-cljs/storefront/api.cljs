@@ -6,19 +6,21 @@
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.uuid :refer [random-uuid]]
-            [storefront.utils.ajax :refer [->PlaceholderRequest]]))
+            [storefront.utils.uuid :refer [random-uuid]]))
 
 (defn default-error-handler [handle-message req-key req-id response]
   (handle-message events/api-end {:request-id req-id
                                   :request-key req-key})
   (cond
+    ;; aborted request
     (#{:aborted} (:failure response))
     (handle-message events/api-abort)
 
+    ;; connectivity
     (zero? (:status response))
     (handle-message events/api-failure-no-network-connectivity response)
 
+    ;; standard rails error response
     (or (seq (get-in response [:response :error]))
         (seq (get-in response [:response :errors])))
     (handle-message events/api-failure-validation-errors
@@ -26,9 +28,17 @@
                         (select-keys [:error :errors])
                         (rename-keys {:errors :fields})))
 
+    ;; standard rails validation errors
     (or (seq (get-in response [:response :exception])))
     (handle-message events/api-failure-validation-errors
                     {:fields {"" [(get-in response [:response :exception])]}})
+
+    ;; Standard waiter response
+    (seq (get-in response [:response :error-code]))
+    (handle-message events/api-failure-validation-errors
+                    (-> (:response response)
+                        (select-keys [:error-message])
+                        (rename-keys {:error-message :error})))
 
     :else
     (handle-message events/api-failure-bad-server-response response)))
@@ -107,7 +117,7 @@
    {:handler
     #(handle-message events/api-success-promotions %)}))
 
-(defn get-products [handle-message cache taxon-path user-token]
+(defn get-products [handle-message cache taxon-path]
   (cache-req
    cache
    handle-message
@@ -115,8 +125,7 @@
    "/products"
    (conj request-keys/get-products taxon-path)
    {:params
-    {:taxon_name (taxon-name-from taxon-path)
-     :user-token user-token}
+    {:taxon_name (taxon-name-from taxon-path)}
     :handler
     #(handle-message events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path}))}))
@@ -399,12 +408,12 @@
 (defn checkout-cart-submit [handle-message user-token order args]
   (update-cart-helper handle-message
                       user-token
-                      (:guest-token order)
+                      (:token order)
                       (merge args {:state "address"
                                    :number (:number order)})
                       request-keys/checkout-cart
                       #(handle-message events/api-success-cart-update-checkout
-                                       {:order (rename-keys % {:token :guest-token})})))
+                                       {:order %})))
 
 (defn- update-line-item [handle-message user-token order line-item-id request-key f]
   (let [line-item (first (filter #(= (:id %) line-item-id) (:line_items order)))
@@ -416,11 +425,11 @@
     (update-cart-helper
      handle-message
      user-token
-     (:guest-token order)
+     (:token order)
      updated-order
      (conj request-key line-item-id)
      #(handle-message events/api-success-cart-update-line-item
-                      {:order (rename-keys % {:token :guest-token})}))))
+                      {:order (rename-keys % {:token :token})}))))
 
 
 (defn inc-line-item [handle-message user-token order {:keys [line-item-id]}]
@@ -432,15 +441,15 @@
 (defn delete-line-item [handle-message user-token order {:keys [line-item-id]}]
   (update-line-item handle-message user-token order line-item-id request-keys/delete-line-item (fn [_] 0)))
 
-(defn update-coupon [handle-message user-token {order-token :guest-token :as order} {:keys [coupon_code]}]
+(defn update-coupon [handle-message user-token {order-token :token :as order} {:keys [coupon_code]}]
   (update-cart-helper handle-message
                       user-token
-                      (:guest-token order)
+                      (:token order)
                       {:coupon_code coupon_code
                        :number (:number order)}
                       request-keys/update-coupon
                       #(handle-message events/api-success-cart-update-coupon
-                                       {:order (rename-keys % {:token :guest-token})})))
+                                       {:order (rename-keys % {:token :token})})))
 
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req
@@ -459,15 +468,15 @@
                                           :email])
                             (update-in [:bill_address] select-address-keys)
                             (update-in [:ship_address] select-address-keys)
-                            (rename-keys {:guest-token :token
+                            (rename-keys {:token :token
                                           :bill_address :bill_address_attributes
                                           :ship_address :ship_address_attributes})))
      :use_store_credits (:use-store-credits order)
      :state (:state order)
-     :order_token (:guest-token order)}
+     :order_token (:token order)}
     :handler
     #(handle-message events/api-success-update-order
-                     (merge {:order (rename-keys % {:token :guest-token})}
+                     (merge {:order (rename-keys % {:token :token})}
                             extra-message-args))}))
 
 (defn add-line-item [handle-message variant product variant-quantity order-number order-token]
@@ -498,7 +507,7 @@
     {:id order-number
      :token order-token}
     :handler
-    #(handle-message events/api-success-get-order (rename-keys % {:token :guest-token}))}))
+    #(handle-message events/api-success-get-order %)}))
 
 (defn get-past-order [handle-message order-number user-token]
   (api-req
@@ -526,29 +535,18 @@
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 
-(defn add-to-bag [handle-message variant product variant-quantity stylist-id order-token order-id user-token]
-  (let [req-id (random-uuid)]
-    (letfn [(end-api-req []
-              (handle-message events/api-end {:request-key request-keys/add-to-bag
-                                              :request-id req-id}))
-            (refetch-order [order-id order-token]
-              (end-api-req)
-              (get-order handle-message order-id order-token))
-            (add-line-item-cb [order-id order-token]
-              (add-line-item (fn [event args]
-                               (when (= event events/api-success-add-to-bag)
-                                 (refetch-order order-id order-token))
-                               (when (api-failure? event)
-                                 (end-api-req))
-                               (handle-message event args))
-                             variant product variant-quantity order-id order-token))
-            (created-order-cb [event {:keys [number token] :as args}]
-              (when (= event events/api-success-create-order)
-                (add-line-item-cb number token))
-              (when (api-failure? event)
-                (end-api-req))
-              (handle-message event args))]
-      (handle-message events/api-start {:xhr (->PlaceholderRequest)
-                                        :request-key request-keys/add-to-bag
-                                        :request-id req-id})
-      (create-order-if-needed created-order-cb stylist-id order-id order-token user-token))))
+(defn add-to-bag
+  [handle-message variant product quantity stylist-id order-token order-id]
+  (api-req
+   handle-message
+   POST
+   "/v2/add-to-bag"
+   request-keys/add-to-bag
+   {:params
+    (merge {:variant-id (:id variant)
+            :quantity quantity
+            :stylist-id stylist-id}
+           (when (and order-token order-id)
+             {:token order-token
+              :number order-id}))
+    :handler (partial handle-message events/api-success-add-to-bag)}))

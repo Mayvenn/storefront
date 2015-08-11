@@ -75,8 +75,7 @@
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (api/get-products (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/api-cache)
-                    taxon-path
-                    (get-in app-state keypaths/user-token)))
+                    taxon-path))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
@@ -106,7 +105,7 @@
                                       user-token)))
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
-  (analytics/set-checkout-step 1 (get-in app-state [:order :line_items]))
+  (analytics/set-checkout-step 1 (get-in app-state [:order :line-items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
@@ -114,23 +113,23 @@
     (routes/enqueue-redirect app-state events/navigate-cart)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (analytics/set-checkout-step 2 (get-in app-state [:order :line_items]))
+  (analytics/set-checkout-step 2 (get-in app-state [:order :line-items]))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-states (get-in app-state keypaths/handle-message)
                   (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
-  (analytics/set-checkout-step 3 (get-in app-state [:order :line_items]))
+  (analytics/set-checkout-step 3 (get-in app-state [:order :line-items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (analytics/set-checkout-step 4 (get-in app-state [:order :line_items]))
+  (analytics/set-checkout-step 4 (get-in app-state [:order :line-items]))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-payment-methods (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
-  (analytics/set-checkout-step 5 (get-in app-state [:order :line_items]))
+  (analytics/set-checkout-step 5 (get-in app-state [:order :line-items]))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-order [_ event args app-state]
@@ -193,15 +192,15 @@
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
         variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (products/all-variants product))]
-    (api/add-to-bag (get-in app-state keypaths/handle-message)
-                    variant
-                    product
-                    (get-in app-state keypaths/browse-variant-quantity)
-                    (get-in app-state keypaths/store-stylist-id)
-                    (get-in app-state keypaths/order-token)
-                    (get-in app-state keypaths/order-number)
-                    (get-in app-state keypaths/user-token))))
+                           (:variants product))]
+    (api/add-to-bag
+     (get-in app-state keypaths/handle-message)
+     variant
+     product
+     (get-in app-state keypaths/browse-variant-quantity)
+     (get-in app-state keypaths/store-stylist-id)
+     (get-in app-state keypaths/order-token)
+     (get-in app-state keypaths/order-number))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/handle-message)
@@ -321,7 +320,7 @@
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]
-                        (merge (select-keys order [:id :number :guest-token])
+                        (merge (select-keys order [:id :number :token])
                                {:state "delivery"
                                 :shipments_attributes
                                 {:id (get-in order [:shipments 0 :id])
@@ -337,7 +336,7 @@
     (api/update-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-token)
                       (let [order (get-in app-state keypaths/order)]
-                        (merge (select-keys order [:id :number :guest-token])
+                        (merge (select-keys order [:id :number :token])
                                {:state "payment"
                                 :use-store-credits use-store-credit}
                                (if (and use-store-credit covered-by-store-credit)
@@ -358,7 +357,7 @@
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
   (api/update-order (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/user-token)
-                    (merge (select-keys (get-in app-state keypaths/order) [:id :number :guest-token])
+                    (merge (select-keys (get-in app-state keypaths/order) [:id :number :token])
                            {:session_id (get-in app-state keypaths/session-id)})
                     {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/order-number)}]}))
 

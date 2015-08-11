@@ -6,19 +6,20 @@
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]))
 
+(defn- total-quantity [order]
+  (reduce + 0
+          (map :quantity
+               (vals (:line-items order)))))
+
 (defn header-component [data owner]
   (om/component
    (html
     (let [store (get-in data keypaths/store)]
       [:header#header.header (when-not (store :profile_picture_url)
                                {:class "no-picture"})
-       [:a.header-menu
-        {:href "#"
-         :on-click (fn [_] (send data events/control-menu-expand
-                                {:keypath keypaths/menu-expanded}))}
-        "Menu"]
+       [:a.header-menu {:href "#" :on-click (fn [_] (send data events/control-menu-expand))} "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
-       (let [item-count (get-in data (conj keypaths/order :total_quantity))]
+       (let [item-count (total-quantity (get-in data keypaths/order))]
          (if (> item-count 0)
            [:a.cart.populated
             (utils/route-to data events/navigate-cart)
