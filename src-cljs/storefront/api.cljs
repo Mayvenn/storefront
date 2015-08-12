@@ -500,7 +500,7 @@
      :order_token (:token order)}
     :handler
     #(handle-message events/api-success-update-order
-                     (merge {:order (rename-keys % {:token :token})}
+                     (merge {:order %}
                             extra-message-args))}))
 
 
