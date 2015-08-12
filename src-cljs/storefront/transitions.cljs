@@ -172,8 +172,8 @@
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
       (assoc-in keypaths/user-store-slug store_slug)
-      (assoc-in keypaths/order-token order-token)
-      (assoc-in keypaths/order-number order-id)
+      #_(assoc-in keypaths/order-token order-token)
+      #_(assoc-in keypaths/order-number order-id)
       (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]

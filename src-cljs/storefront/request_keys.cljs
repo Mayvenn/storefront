@@ -41,3 +41,4 @@
 (def get-past-order [:get-past-order])
 (def get-my-orders [:get-my-orders])
 (def add-to-bag [:add-to-bag])
+(def add-user-in-order [:add-user-in-order])

@@ -217,6 +217,20 @@
     :handler
     #(handle-message events/api-success-reset-password (select-sign-in-keys %))}))
 
+(defn add-user-in-order [handle-message token number user-token user-id]
+  (api-req
+   handle-message
+   POST
+   "/v2/add-user-to-order"
+   request-keys/add-user-in-order
+   {:params
+    {:user-id user-id
+     :user-token user-token
+     :number number
+     :token token}
+    :handler
+    #(handle-message events/api-success-update-order {:order %})}))
+
 (defn select-address-keys [m]
   (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
     (select-keys m keys)))

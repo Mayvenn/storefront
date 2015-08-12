@@ -365,6 +365,12 @@
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
   (let [after-sign-in-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
     (routes/enqueue-redirect app-state after-sign-in-event))
+  (when (get-in app-state keypaths/order-number)
+    (api/add-user-in-order (get-in app-state keypaths/handle-message)
+                              (get-in app-state keypaths/order-token)
+                              (get-in app-state keypaths/order-number)
+                              (get-in app-state keypaths/user-token)
+                              (get-in app-state keypaths/user-id)))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
