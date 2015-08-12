@@ -443,7 +443,7 @@
     :handler #(handle-message events/api-success-add-to-bag {:order %
                                                              :requested-quantity 1})}))
 
-(defn dec-line-item [handle-message order {:keys [variant-id] :as thing}]
+(defn dec-line-item [handle-message order {:keys [variant-id]}]
   (api-req
    handle-message
    POST
