@@ -246,13 +246,9 @@
                                                               :query-params {:taxon-id (taxon :id)}}))
 
 (defn- modify-cart [app-state args f]
-  (let [order (get-in app-state keypaths/order)
-        coupon-code (get-in app-state keypaths/cart-coupon-code)]
-    (f
-     (get-in app-state keypaths/handle-message)
-     (get-in app-state keypaths/user-token)
-     order
-     args)))
+  (f (get-in app-state keypaths/handle-message)
+     (get-in app-state keypaths/order)
+     args))
 
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [path]} app-state]
   (modify-cart app-state {:line-item-id (last path)} api/inc-line-item))
