@@ -454,8 +454,16 @@
                     :quantity 1})
     :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
-(defn delete-line-item [handle-message user-token order {:keys [line-item-id]}]
-  (update-line-item handle-message user-token order line-item-id request-keys/delete-line-item (fn [_] 0)))
+(defn delete-line-item [handle-message order variant-id]
+  (api-req
+   handle-message
+   POST
+   "/v2/remove-from-bag"
+   (conj request-keys/delete-line-item variant-id)
+   {:params (merge (select-keys order [:number :token])
+                   {:variant-id variant-id
+                    :quantity (get-in order [:line-items (keyword variant-id) :quantity])})
+    :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
 (defn update-coupon [handle-message user-token {order-token :token :as order} {:keys [coupon_code]}]
   (update-cart-helper handle-message

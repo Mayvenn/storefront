@@ -256,8 +256,8 @@
 (defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [path]} app-state]
   (modify-cart app-state {:variant-id (last path)} api/dec-line-item))
 
-(defmethod perform-effects events/control-cart-remove [_ event args app-state]
-  (modify-cart app-state {:line-item-id (:id args)} api/delete-line-item))
+(defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
+  (modify-cart app-state variant-id api/delete-line-item))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
   (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
