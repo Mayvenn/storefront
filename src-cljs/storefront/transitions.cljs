@@ -32,6 +32,9 @@
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/browse-recently-added-variants []))))
 
+(defmethod transition-state events/navigate-stylist [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 

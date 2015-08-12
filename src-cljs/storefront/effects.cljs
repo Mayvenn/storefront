@@ -82,6 +82,10 @@
                    product-path)
   (reviews/insert-reviews app-state))
 
+(defmethod perform-effects events/navigate-stylist [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-token)
+    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-states (get-in app-state keypaths/handle-message)
@@ -262,7 +266,7 @@
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
   (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
 
-(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
+#_(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
   (modify-cart app-state
                {:email (get-in app-state keypaths/user-email)
                 :user_id (get-in app-state keypaths/user-id)}
@@ -359,18 +363,16 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ event args app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
-  (let [nav-message (get-in app-state keypaths/navigation-message)
-        nav-event (first nav-message)]
-    (if (= nav-event events/navigate-sign-in)
-      (routes/enqueue-navigate app-state events/navigate-home)
-      (apply send app-state nav-message)))
+  (let [after-sign-in-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
+    (routes/enqueue-redirect app-state after-sign-in-event))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
-  (routes/enqueue-navigate app-state events/navigate-home)
+  (let [after-sign-up-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
+    (routes/enqueue-redirect app-state after-sign-up-event))
   (send app-state
         events/flash-show-success {:message "Welcome! You have signed up successfully."
                                    :navigation [events/navigate-home {}]}))

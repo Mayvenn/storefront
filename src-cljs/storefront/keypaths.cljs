@@ -45,6 +45,7 @@
 
 (def ui [:ui])
 (def api-requests (conj ui :api-requests))
+(def return-navigation-event (conj ui :return-navigation-event))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))
