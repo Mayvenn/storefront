@@ -251,10 +251,10 @@
      args))
 
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [path]} app-state]
-  (modify-cart app-state {:line-item-id (last path)} api/inc-line-item))
+  (modify-cart app-state {:variant-id (last path)} api/inc-line-item))
 
 (defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [path]} app-state]
-  (modify-cart app-state {:line-item-id (last path)} api/dec-line-item))
+  (modify-cart app-state {:variant-id (last path)} api/dec-line-item))
 
 (defmethod perform-effects events/control-cart-remove [_ event args app-state]
   (modify-cart app-state {:line-item-id (:id args)} api/delete-line-item))

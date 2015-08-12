@@ -205,6 +205,8 @@
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)
+      (assoc-in keypaths/cart-quantities
+                (into {} (map (fn [[k v]] [k (:quantity v)]) (:line-items order))))
       (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]

@@ -44,7 +44,7 @@
         (list
          (om/build counter-component
                    data
-                   {:opts {:path (conj keypaths/order :line-items)
+                   {:opts {:path (conj keypaths/cart-quantities variant-id)
                            :inc-event events/control-cart-line-item-inc
                            :dec-event events/control-cart-line-item-dec
                            :spinner-key update-spinner-key}})

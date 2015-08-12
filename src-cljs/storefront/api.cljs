@@ -431,12 +431,28 @@
      #(handle-message events/api-success-cart-update-line-item
                       {:order %}))))
 
+(defn inc-line-item [handle-message order {:keys [variant-id] :as params}]
+  (api-req
+   handle-message
+   POST
+   "/v2/add-to-bag"
+   (conj request-keys/increment-line-item variant-id)
+   {:params (merge (select-keys order [:number :token])
+                   {:variant-id variant-id
+                    :quantity 1})
+    :handler #(handle-message events/api-success-add-to-bag {:order %
+                                                             :requested-quantity 1})}))
 
-(defn inc-line-item [handle-message user-token order {:keys [line-item-id]}]
-  (update-line-item handle-message user-token order line-item-id request-keys/increment-line-item inc))
-
-(defn dec-line-item [handle-message user-token order {:keys [line-item-id]}]
-  (update-line-item handle-message user-token order line-item-id request-keys/decrement-line-item #(max (dec %) 1)))
+(defn dec-line-item [handle-message order {:keys [variant-id] :as thing}]
+  (api-req
+   handle-message
+   POST
+   "/v2/remove-from-bag"
+   (conj request-keys/decrement-line-item variant-id)
+   {:params (merge (select-keys order [:number :token])
+                   {:variant-id variant-id
+                    :quantity 1})
+    :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
 (defn delete-line-item [handle-message user-token order {:keys [line-item-id]}]
   (update-line-item handle-message user-token order line-item-id request-keys/delete-line-item (fn [_] 0)))
