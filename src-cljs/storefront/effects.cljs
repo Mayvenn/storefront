@@ -113,8 +113,12 @@
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
-  (when-not (get-in app-state keypaths/order-number)
-    (routes/enqueue-redirect app-state events/navigate-cart)))
+  (cond
+    (not (get-in app-state keypaths/order-number))
+    (routes/enqueue-redirect app-state events/navigate-cart)
+
+    (not (get-in app-state keypaths/user-token))
+    (routes/enqueue-redirect app-state events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (analytics/set-checkout-step 2 (get-in app-state [:order :line-items]))
@@ -199,12 +203,14 @@
                            (:variants product))]
     (api/add-to-bag
      (get-in app-state keypaths/handle-message)
-     variant
-     product
-     (get-in app-state keypaths/browse-variant-quantity)
-     (get-in app-state keypaths/store-stylist-id)
-     (get-in app-state keypaths/order-token)
-     (get-in app-state keypaths/order-number))))
+     {:variant variant
+      :product product
+      :quantity (get-in app-state keypaths/browse-variant-quantity)
+      :stylist-id (get-in app-state keypaths/store-stylist-id)
+      :token (get-in app-state keypaths/order-token)
+      :number (get-in app-state keypaths/order-number)
+      :user-id (get-in app-state keypaths/user-id)
+      :user-token (get-in app-state keypaths/user-token)})))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/handle-message)
@@ -266,11 +272,8 @@
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
   (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
 
-#_(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
-  (modify-cart app-state
-               {:email (get-in app-state keypaths/user-email)
-                :user_id (get-in app-state keypaths/user-id)}
-               api/checkout-cart-submit))
+(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
+  (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
   (let [handle-message (get-in app-state keypaths/handle-message)
@@ -361,16 +364,23 @@
                            {:session_id (get-in app-state keypaths/session-id)})
                     {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/order-number)}]}))
 
-(defmethod perform-effects events/api-success-sign-in [_ event args app-state]
+(defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
   (let [after-sign-in-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
     (routes/enqueue-redirect app-state after-sign-in-event))
-  (when (get-in app-state keypaths/order-number)
-    (api/add-user-in-order (get-in app-state keypaths/handle-message)
-                              (get-in app-state keypaths/order-token)
-                              (get-in app-state keypaths/order-number)
-                              (get-in app-state keypaths/user-token)
-                              (get-in app-state keypaths/user-id)))
+  ;; if have-order then tell waiter
+  ;; else take the order that waiter, then order-for-token
+  (let [handle-message (get-in app-state keypaths/handle-message)]
+    (cond
+      (get-in app-state keypaths/order-number)
+      (api/add-user-in-order handle-message
+                             (get-in app-state keypaths/order-token)
+                             (get-in app-state keypaths/order-number)
+                             (get-in app-state keypaths/user-token)
+                             (get-in app-state keypaths/user-id))
+
+      (and order-number order-token)
+      (api/get-order handle-message order-number order-token)))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
@@ -379,6 +389,12 @@
   (save-cookie app-state true)
   (let [after-sign-up-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
     (routes/enqueue-redirect app-state after-sign-up-event))
+  (when (get-in app-state keypaths/order-number)
+    (api/add-user-in-order (get-in app-state keypaths/handle-message)
+                           (get-in app-state keypaths/order-token)
+                           (get-in app-state keypaths/order-number)
+                           (get-in app-state keypaths/user-token)
+                           (get-in app-state keypaths/user-id)))
   (send app-state
         events/flash-show-success {:message "Welcome! You have signed up successfully."
                                    :navigation [events/navigate-home {}]}))
@@ -452,9 +468,6 @@
       (save-cookie app-state true)
       (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
-
-(defmethod perform-effects events/api-success-cart-update-checkout [_ _ _ app-state]
-  (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/api-success-cart-update-coupon [_ _ _ app-state]
   (send app-state

@@ -6,7 +6,7 @@
 (defn make-cookie []
   (Cookies. js/document))
 
-(def user-attrs [:email :token :store-slug :id])
+(def user-attrs [:email :user-token :store-slug :id])
 (def order-attrs [:token :number])
 (def remember-me-age (* 60 60 24 7 4))
 (def session-age (* 60 60 24 7 52))

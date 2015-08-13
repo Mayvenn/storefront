@@ -162,9 +162,9 @@
     #(handle-message events/api-success-payment-methods (select-keys % [:payment_methods]))}))
 
 (defn select-sign-in-keys [args]
-  (select-keys args [:email :token :store_slug :id :order-id :order-token]))
+  (select-keys args [:email :token :store_slug :id]))
 
-(defn sign-in [handle-message email password stylist-id order-token]
+(defn sign-in [handle-message email password stylist-id token]
   (api-req
    handle-message
    POST
@@ -173,8 +173,7 @@
    {:params
     {:email email
      :password password
-     :stylist-id stylist-id
-     :order-token order-token}
+     :stylist-id stylist-id}
     :handler
     #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
@@ -419,16 +418,6 @@
       :order_token order-token})
     :handler success-handler}))
 
-(defn checkout-cart-submit [handle-message user-token order args]
-  (update-cart-helper handle-message
-                      user-token
-                      (:token order)
-                      (merge args {:state "address"
-                                   :number (:number order)})
-                      request-keys/checkout-cart
-                      #(handle-message events/api-success-cart-update-checkout
-                                       {:order %})))
-
 (defn- update-line-item [handle-message user-token order line-item-id request-key f]
   (let [line-item (first (filter #(= (:id %) line-item-id) (:line_items order)))
         updated-line-item (select-keys (update line-item :quantity f)
@@ -518,15 +507,15 @@
                             extra-message-args))}))
 
 
-(defn get-order [handle-message order-number order-token]
+(defn get-order [handle-message number token]
   (api-req
    handle-message
    GET
-   "/v2/orders"
+   "/v2/order-for-number"
    request-keys/get-order
    {:params
-    {:number order-number
-     :token order-token}
+    {:number number
+     :token token}
     :handler
     #(handle-message events/api-success-get-order %)}))
 
@@ -556,20 +545,15 @@
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 
-(defn add-to-bag
-  [handle-message variant product quantity stylist-id order-token order-id]
+(defn add-to-bag [handle-message {:keys [token number variant], :as params}]
   (api-req
    handle-message
    POST
    "/v2/add-to-bag"
    request-keys/add-to-bag
-   {:params (merge {:variant-id (:id variant)
-                    :quantity quantity
-                    :stylist-id stylist-id}
-                   (when (and order-token order-id)
-                     {:token order-token
-                      :number order-id}))
-    :handler #(handle-message events/api-success-add-to-bag {:order %
-                                                             :requested {:quantity quantity
-                                                                         :product product
-                                                                         :variant variant}})}))
+   {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
+                   {:variant-id (:id variant)}
+                   (when (and token number) {:token token :number number}))
+    :handler #(handle-message events/api-success-add-to-bag
+                              {:order %
+                               :requested (select-keys params [:quantity :product :variant])})}))

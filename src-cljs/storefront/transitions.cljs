@@ -43,6 +43,12 @@
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
 
+(defmethod transition-state events/navigate-checkout [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
+(defmethod transition-state events/navigate-stylist [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (-> app-state
       (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
@@ -166,14 +172,12 @@
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
 (defn sign-in-user
-  [app-state {:keys [email token store_slug id total_available_store_credit order-token order-id]}]
+  [app-state {:keys [email token store_slug id total_available_store_credit]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
       (assoc-in keypaths/user-store-slug store_slug)
-      #_(assoc-in keypaths/order-token order-token)
-      #_(assoc-in keypaths/order-number order-id)
       (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]
