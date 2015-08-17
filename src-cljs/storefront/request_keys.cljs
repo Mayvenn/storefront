@@ -26,7 +26,6 @@
 
 (def get-sms-number [:get-sms-number])
 
-(def create-order [:create-order])
 (def update-cart [:update-cart])
 (def checkout-cart [:checkout-cart])
 (def update-coupon [:update-coupon])

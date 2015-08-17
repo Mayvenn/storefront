@@ -204,11 +204,6 @@
                     keypaths/reset-password-token)
       (assoc-in keypaths/sign-in-remember true)))
 
-(defmethod transition-state events/api-success-create-order [_ event {:keys [number token]} app-state]
-  (-> app-state
-      (assoc-in keypaths/order-token token)
-      (assoc-in keypaths/order-number number)))
-
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)

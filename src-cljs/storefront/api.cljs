@@ -387,23 +387,6 @@
          :format :json
          :response-format (json-response-format {:keywords? true})})))
 
-(defn create-order [handle-message stylist-id user-token]
-  (api-req
-   handle-message
-   POST
-   "/orders"
-   request-keys/create-order
-   {:params
-    (merge {:stylist-id stylist-id}
-           (if user-token {:token user-token} {}))
-    :handler
-    #(handle-message events/api-success-create-order (select-keys % [:number :token]))}))
-
-(defn create-order-if-needed [handle-message stylist-id order-id order-token user-token]
-  (if (and order-token order-id)
-    (handle-message events/api-success-create-order {:number order-id :token order-token})
-    (create-order handle-message stylist-id user-token)))
-
 (defn- update-cart-helper
   [handle-message user-token order-token order request-key success-handler]
   (api-req
@@ -475,7 +458,8 @@
                        :number (:number order)}
                       request-keys/update-coupon
                       #(handle-message events/api-success-cart-update-coupon
-                                       {:order (rename-keys % {:token :token})})))
+                                       {:order %})))
+
 (defn update-addresses [handle-message user-token order]
   (api-req
    handle-message
@@ -486,7 +470,6 @@
     :handler #(handle-message events/api-success-update-order
                               {:order %
                                :navigate events/navigate-checkout-delivery})}))
-
 
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req
