@@ -105,8 +105,8 @@
 
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
-          :validation-errors {:error nil
-                              :fields {}}
+          :validation-errors {:error-message nil
+                              :details {}}
           :browse-taxon-query nil
           :browse-product-query nil
           :browse-variant-query nil

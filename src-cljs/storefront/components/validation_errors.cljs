@@ -32,7 +32,7 @@
 (defn validation-errors-component [data owner]
   (om/component
    (html
-    (let [fields (get-in data keypaths/validation-errors-fields)]
+    (let [fields (get-in data keypaths/validation-errors-details)]
       (when (seq fields)
         [:div#errorExplanation.errorExplanation
          [:p "There were problems with the following fields:"]

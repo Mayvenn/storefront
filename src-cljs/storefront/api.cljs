@@ -26,19 +26,18 @@
     (handle-message events/api-failure-validation-errors
                     (-> (:response response)
                         (select-keys [:error :errors])
-                        (rename-keys {:errors :fields})))
+                        (rename-keys {:error :error-message
+                                      :errors :details})))
 
     ;; standard rails validation errors
-    (or (seq (get-in response [:response :exception])))
+    (seq (get-in response [:response :exception]))
     (handle-message events/api-failure-validation-errors
-                    {:fields {"" [(get-in response [:response :exception])]}})
+                    {:details {"" [(get-in response [:response :exception])]}})
 
     ;; Standard waiter response
     (seq (get-in response [:response :error-code]))
     (handle-message events/api-failure-validation-errors
-                    (-> (:response response)
-                        (select-keys [:error-message])
-                        (rename-keys {:error-message :error})))
+                    (select-keys (:response response) [:error-message :details]))
 
     :else
     (handle-message events/api-failure-bad-server-response response)))

@@ -155,7 +155,7 @@
 (def stylist-referral-program-referrals (conj stylist-referral-program :referral-program-referrals))
 
 (def validation-errors (conj ui :validation-errors))
-(def validation-errors-message (conj validation-errors :error))
-(def validation-errors-fields (conj validation-errors :fields))
+(def validation-errors-message (conj validation-errors :error-message))
+(def validation-errors-details (conj validation-errors :details))
 
 (def reviews-loaded (conj ui :reviews-loaded))

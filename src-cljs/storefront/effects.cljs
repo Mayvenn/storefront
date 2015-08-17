@@ -494,13 +494,13 @@
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
   (send app-state events/flash-dismiss-success)
   (scroll/scroll-to-top)
-  (if (seq (:fields validation-errors))
+  (if (seq (:details validation-errors))
     (send app-state
           events/flash-show-failure
-          {:message (:error validation-errors)
+          {:message (:error-message validation-errors)
            :navigation (get-in app-state keypaths/navigation-message)})
     (send app-state
-          events/flash-show-failure {:message (validation-errors :error)
+          events/flash-show-failure {:message (:error-message validation-errors)
                                      :navigation (get-in app-state keypaths/navigation-message)})))
 
 (defmethod perform-effects events/api-success-add-to-bag
