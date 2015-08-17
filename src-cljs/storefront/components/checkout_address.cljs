@@ -15,9 +15,9 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn textfield [name & [{:keys [id value required? type on-change] :or {type "text"}}]]
+(defn textfield [label & [{:keys [id value required? type on-change] :or {type "text"}}]]
   [:p.field
-   [:label {:for id} name (when required? [:span.required "*"])]
+   [:label {:for id} label (when required? [:span.required "*"])]
    [:input {:id id
             :name id
             :type type
@@ -40,10 +40,10 @@
             [:option {:value val} (str name)])
           options)]]])
 
-(defn checkbox [name & [{:keys [id class value on-change checked]}]]
+(defn checkbox [label & [{:keys [id class value on-change checked]}]]
   [:p.field {:class class}
    [:input {:type "checkbox" :id id :name id :value value :on-change on-change :checked checked}]
-   [:label {:for id} " " name]])
+   [:label {:for id} " " label]])
 
 (defn billing-address-form [data owner]
   [:div.billing-address-wrapper
