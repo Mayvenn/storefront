@@ -7,24 +7,24 @@
   (first (string/split (.-hostname js/location) #"\.")))
 
 (def initial-checkout-state
-  {:billing-address {:firstname ""
-                     :lastname ""
+  {:billing-address {:first-name ""
+                     :last-name ""
                      :address1 ""
                      :address2 ""
                      :city ""
-                     :state_id 0
+                     :state ""
                      :zipcode ""
-                     :phone ""
-                     :save-my-address true}
-   :shipping-address {:firstname ""
-                      :lastname ""
+                     :phone ""}
+   :shipping-address {:first-name ""
+                      :last-name ""
                       :address1 ""
                       :address2 ""
                       :city ""
-                      :state_id 0
+                      :state ""
                       :zipcode ""
-                      :phone ""
-                      :use-billing-address true}
+                      :phone ""}
+   :save-my-address true
+   :use-billing-address true
    :credit-card-name ""
    :credit-card-number ""
    :credit-card-expiration ""

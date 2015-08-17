@@ -290,32 +290,28 @@
       (api/update-stylist-account-profile-picture handle-message user-token stylist-account))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
-  (let [handle-message (get-in app-state keypaths/handle-message)
-        token (get-in app-state keypaths/user-token)
-        use-billing (get-in app-state keypaths/checkout-shipping-address-use-billing-address)
-        save-address (get-in app-state keypaths/checkout-billing-address-save-my-address)
-        addresses {:bill_address (get-in app-state keypaths/checkout-billing-address)
-                   :ship_address (get-in app-state
-                                         (if use-billing
-                                           keypaths/checkout-billing-address
-                                           keypaths/checkout-shipping-address))}]
+  (let [use-billing  (get-in app-state keypaths/checkout-ship-to-billing-address)
+        save-address (get-in app-state keypaths/checkout-save-my-addresses)]
     (analytics/track-checkout-option 2 (str (if  save-address "save" "noSave")
                                             "/"
                                             (if use-billing "useBilling" "useDiff")))
-
-    (when save-address
-      (api/update-account-address handle-message
-                                  (get-in app-state keypaths/user-id)
-                                  (get-in app-state keypaths/user-email)
-                                  (:bill_address addresses)
-                                  (:ship_address addresses)
-                                  token))
-    (api/update-order handle-message token
-                      (merge (get-in app-state keypaths/order)
-                             addresses
-                             {:state "address"
-                              :email (get-in app-state keypaths/user-email)})
-                      {:navigate [events/navigate-checkout-delivery]})))
+    (let [billing-address (get-in app-state keypaths/checkout-billing-address)
+          shipping-address (if use-billing
+                             billing-address
+                             (get-in app-state keypaths/checkout-shipping-address))]
+      (when save-address
+        (api/update-account-address (get-in app-state keypaths/handle-message)
+                                    (get-in app-state keypaths/user-id)
+                                    (get-in app-state keypaths/user-email)
+                                    billing-address
+                                    shipping-address
+                                    (get-in app-state keypaths/user-token)))
+      (api/update-addresses (get-in app-state keypaths/handle-message)
+                            (get-in app-state keypaths/user-token)
+                            (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+                                   {:email (get-in app-state keypaths/user-email)
+                                    :billing-address billing-address
+                                    :shipping-address shipping-address})))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (let [shipping-method (get-in app-state keypaths/checkout-selected-shipping-method)]

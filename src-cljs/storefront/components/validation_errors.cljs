@@ -9,12 +9,12 @@
             [clojure.set :as sets]))
 
 (defn- field->human-name [key]
-  (get {"bill_address" "Billing Address"
-        "ship_address" "Shipping Address"
+  (get {"billing-address" "Billing Address"
+        "shipping-address" "Shipping Address"
         "address1" "Street Address"
         "address2" "Street Address (cont'd)"
-        "firstname" "First Name"
-        "lastname" "Last Name"}
+        "first-name" "First Name"
+        "last-name" "Last Name"}
        key
        key))
 

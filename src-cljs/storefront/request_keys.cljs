@@ -36,6 +36,7 @@
 (def set-line-item [:update-line-item])
 (def delete-line-item [:delete-line-item])
 (def update-order [:update-order])
+(def update-addresses [:update-addresses])
 (def add-line-item [:add-line-item])
 (def get-order [:get-order])
 (def get-past-order [:get-past-order])

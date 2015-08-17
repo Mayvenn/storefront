@@ -9,12 +9,11 @@
             [storefront.messages :refer [send]]
             [clojure.string :as string]))
 
-(defn selected-value->int [evt]
+(defn selected-value [evt]
   (let [elem (.-target evt)]
-    (-> (.-value
-         (aget (.-options elem)
-               (.-selectedIndex elem)))
-        (js/parseInt 10))))
+    (.-value
+     (aget (.-options elem)
+           (.-selectedIndex elem)))))
 
 (defn textfield [name & [{:keys [id value required? type on-change] :or {type "text"}}]]
   [:p.field
@@ -37,7 +36,7 @@
               :on-change on-change
               :value value}
      [:option ""]
-     (map (fn [{name :name val :id}]
+     (map (fn [{name :name val :abbr}]
             [:option {:value val} (str name)])
           options)]]])
 
@@ -55,24 +54,20 @@
 
     [:div.inner
      (textfield "First Name"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-firstname)
-                       {:id :firstname
-                        :required? true}))
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-first-name)
+                       {:id :first-name :required? true}))
      (textfield "Last Name"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-lastname)
-                       {:id :lastname
-                        :required? true}))
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
+                       {:id :last-name :required? true}))
      (textfield "Street Address"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
-                       {:id :address1
-                        :required? true}))
+                       {:id :address1 :required? true}))
      (textfield "Street Address (cont'd)"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
                        {:id :address2}))
      (textfield "City"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
-                       {:id :city
-                        :required? true}))
+                       {:id :city :required? true}))
      (selectfield "State"
                   {:id :state
                    :required? true
@@ -81,20 +76,17 @@
                    :on-change #(send data
                                      events/control-change-state
                                      {:keypath keypaths/checkout-billing-address-state
-                                      :value (selected-value->int %)})})
+                                      :value (selected-value %)})})
      (textfield "Zip"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
-                       {:id :zipcode
-                        :required? true}))
+                       {:id :zipcode :required? true}))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
-                       {:id :order_bill_address_attributes_phone
-                        :required? true
-                        :type "tel"}))
+                       {:id :order_bill_address_attributes_phone :required? true :type "tel"}))
      (checkbox "Save my address"
                (merge (utils/change-checkbox
                        data
-                       keypaths/checkout-billing-address-save-my-address)
+                       keypaths/checkout-save-my-addresses)
                       {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data owner]
@@ -104,17 +96,17 @@
     (checkbox "Use Billing Address"
               (merge (utils/change-checkbox
                       data
-                      keypaths/checkout-shipping-address-use-billing-address)
+                      keypaths/checkout-ship-to-billing-address)
                      {:id "use_billing" :class "checkbox checkout-use-billing-address"}))
 
-    [:div.inner {:class (if (get-in data keypaths/checkout-shipping-address-use-billing-address) "hidden" "")}
+    [:div.inner {:class (if (get-in data keypaths/checkout-ship-to-billing-address) "hidden" "")}
      (textfield "First Name"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-firstname)
-                       {:id :firstname
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-first-name)
+                       {:id :first-name
                         :required? true}))
      (textfield "Last Name"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-lastname)
-                       {:id :lastname
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
+                       {:id :last-name
                         :required? true}))
      (textfield "Street Address"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
@@ -135,7 +127,7 @@
                    :on-change #(send data
                                      events/control-change-state
                                      {:keypath keypaths/checkout-shipping-address-state
-                                      :value (selected-value->int %)})})
+                                      :value (selected-value %)})})
      (textfield "Zip"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
                        {:id :zipcode

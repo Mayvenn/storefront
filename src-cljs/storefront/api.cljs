@@ -477,6 +477,17 @@
                       request-keys/update-coupon
                       #(handle-message events/api-success-cart-update-coupon
                                        {:order (rename-keys % {:token :token})})))
+(defn update-addresses [handle-message user-token order]
+  (api-req
+   handle-message
+   PUT
+   "/v2/update-addresses"
+   request-keys/update-addresses
+   {:params (select-keys order [:number :token :email :billing-address :shipping-address])
+    :handler #(handle-message events/api-success-update-order
+                              {:order %
+                               :navigate events/navigate-checkout-delivery})}))
+
 
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req
