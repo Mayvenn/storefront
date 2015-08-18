@@ -2,6 +2,7 @@
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [clojure.set :refer [subset?]]
             [storefront.events :as events]
+            [storefront.accessors.states :as states]
             [storefront.accessors.taxons :refer [taxon-name-from]]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
@@ -229,13 +230,29 @@
     :handler
     #(handle-message events/api-success-update-order {:order %})}))
 
-(defn select-address-keys [m]
-  (let [keys [:address1 :address2 :city :country_id :firstname :lastname :id :phone :state_id :zipcode]]
-    (select-keys m keys)))
+(defn mayvenn->spree-address [states address]
+  (-> address
+      (select-keys [:address1 :address2 :city :first-name :last-name :id :phone :state :zipcode])
+      (rename-keys {:first-name :firstname
+                    :last-name :lastname
+                    :state :state_id})
+      (update-in [:state] (partial states/abbr->id states))
+      (merge {:country_id 49})))
 
-(defn rename-server-address-keys [m]
-  (rename-keys m {:bill_address :billing-address
-                  :ship_address :shipping-address}))
+(defn spree->mayvenn-address [address]
+  (-> address
+      (dissoc :country_id)
+      (rename-keys {:firstname :first-name
+                    :lastname :last-name})
+      (update-in [:state] :abbr)
+      (select-keys [:address1 :address2 :city :first-name :last-name :id :phone :state :zipcode])))
+
+(defn spree->mayvenn-addresses [contains-addresses]
+  (-> contains-addresses
+      (rename-keys {:bill_address :billing-address
+                    :ship_address :shipping-address})
+      (update-in [:billing-address] spree->mayvenn-address)
+      (update-in [:shipping-address] spree->mayvenn-address)))
 
 (defn get-account [handle-message id token stylist-id]
   (api-req
@@ -248,7 +265,7 @@
      :token token
      :stylist-id stylist-id}
     :handler
-    #(handle-message events/api-success-account (rename-server-address-keys %))}))
+    #(handle-message events/api-success-account (spree->mayvenn-addresses %))}))
 
 (defn update-account [handle-message id email password password-confirmation token]
   (api-req
@@ -265,7 +282,7 @@
     :handler
     #(handle-message events/api-success-manage-account (select-sign-in-keys %))}))
 
-(defn update-account-address [handle-message id email billing-address shipping-address token]
+(defn update-account-address [handle-message states {:keys [id email user-token]} billing-address shipping-address]
   (api-req
    handle-message
    PUT
@@ -274,11 +291,9 @@
    {:params
     {:id id
      :email email
-     :bill_address (select-address-keys billing-address)
-     :ship_address (select-address-keys shipping-address)
-     :token token}
-    :handler
-    #(handle-message events/api-success-address (rename-server-address-keys %))}))
+     :token user-token
+     :bill_address (mayvenn->spree-address states billing-address)
+     :ship_address (mayvenn->spree-address states shipping-address)}}))
 
 (defn select-stylist-account-keys [args]
   (select-keys args [:birth_date_1i :birth_date_2i :birth_date_3i
@@ -467,7 +482,7 @@
    "/v2/update-addresses"
    request-keys/update-addresses
    {:params (select-keys order [:number :token :email :billing-address :shipping-address])
-    :handler #(handle-message events/api-success-update-order
+    :handler #(handle-message events/api-success-update-order-update-address
                               {:order %
                                :navigate events/navigate-checkout-delivery})}))
 

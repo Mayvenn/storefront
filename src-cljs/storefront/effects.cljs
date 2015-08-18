@@ -299,13 +299,6 @@
           shipping-address (if use-billing
                              billing-address
                              (get-in app-state keypaths/checkout-shipping-address))]
-      (when save-address
-        (api/update-account-address (get-in app-state keypaths/handle-message)
-                                    (get-in app-state keypaths/user-id)
-                                    (get-in app-state keypaths/user-email)
-                                    billing-address
-                                    shipping-address
-                                    (get-in app-state keypaths/user-token)))
       (api/update-addresses (get-in app-state keypaths/handle-message)
                             (get-in app-state keypaths/user-token)
                             (merge (select-keys (get-in app-state keypaths/order) [:number :token])
@@ -470,6 +463,14 @@
         events/flash-show-success {:message "The coupon code was successfully applied to your order."
                                    :navigation [events/navigate-cart {}]})
   (send app-state events/flash-dismiss-failure))
+
+(defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
+  (when (get-in app-state keypaths/checkout-save-my-addresses)
+    (api/update-account-address (get-in app-state keypaths/handle-message)
+                                (get-in app-state keypaths/states)
+                                (get-in app-state keypaths/user)
+                                (:billing-address order)
+                                (:shipping-address order))))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (save-cookie app-state true)
