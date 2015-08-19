@@ -301,11 +301,11 @@
                              billing-address
                              (get-in app-state keypaths/checkout-shipping-address))]
       (api/update-addresses (get-in app-state keypaths/handle-message)
-                            (get-in app-state keypaths/user-token)
                             (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                    {:email (get-in app-state keypaths/user-email)
                                     :billing-address billing-address
                                     :shipping-address shipping-address})))))
+
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (let [shipping-method (get-in app-state keypaths/checkout-selected-shipping-method)]

@@ -454,7 +454,7 @@
                       #(handle-message events/api-success-cart-update-coupon
                                        {:order %})))
 
-(defn update-addresses [handle-message user-token order]
+(defn update-addresses [handle-message order]
   (api-req
    handle-message
    PUT
