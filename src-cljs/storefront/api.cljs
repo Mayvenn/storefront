@@ -410,35 +410,6 @@
          :format :json
          :response-format (json-response-format {:keywords? true})})))
 
-(defn- update-cart-helper
-  [handle-message user-token order-token order request-key success-handler]
-  (api-req
-   handle-message
-   PUT
-   "/cart"
-   request-key
-   {:params
-    (filter-nil
-     {:order (select-keys order [:number :line_items_attributes :coupon_code :email :user_id :state])
-      :order_token order-token})
-    :handler success-handler}))
-
-(defn- update-line-item [handle-message user-token order line-item-id request-key f]
-  (let [line-item (first (filter #(= (:id %) line-item-id) (:line_items order)))
-        updated-line-item (select-keys (update line-item :quantity f)
-                                       [:quantity :id :variant_id])
-        updated-order (select-keys (merge order {:line_items_attributes [updated-line-item]
-                                         :state "cart"})
-                           [:line_items_attributes :number])]
-    (update-cart-helper
-     handle-message
-     user-token
-     (:token order)
-     updated-order
-     (conj request-key line-item-id)
-     #(handle-message events/api-success-cart-update-line-item
-                      {:order %}))))
-
 (defn inc-line-item [handle-message order {:keys [variant-id] :as params}]
   (api-req
    handle-message

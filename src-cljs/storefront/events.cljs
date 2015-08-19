@@ -127,7 +127,6 @@
 (def api-success-cart-update (conj api-success-cart :update))
 (def api-success-cart-update-checkout (conj api-success-cart-update :checkout))
 (def api-success-cart-update-coupon (conj api-success-cart-update :coupon))
-(def api-success-cart-update-line-item (conj api-success-cart-update :line-item))
 
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-update-order-update-address (conj api-success-update-order :update-address))
