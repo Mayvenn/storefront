@@ -319,6 +319,14 @@
                      {:updated false
                       :stylist (select-stylist-account-keys %)})}))
 
+(defn get-shipping-methods [handle-message]
+  (api-req
+   handle-message
+   GET
+   "/v2/shipping-methods"
+   request-keys/get-shipping-methods
+   {:handler #(handle-message events/api-success-shipping-methods %)}))
+
 (defn update-stylist-account [handle-message user-token stylist-account]
   (api-req
    handle-message
@@ -485,6 +493,17 @@
     :handler #(handle-message events/api-success-update-order-update-address
                               {:order %
                                :navigate events/navigate-checkout-delivery})}))
+
+(defn update-shipping-method [handle-message order]
+  (api-req
+   handle-message
+   PUT
+   "/v2/update-shipping-method"
+   request-keys/update-shipping-method
+   {:params (select-keys order [:number :token :shipping-method-id])
+    :handler #(handle-message events/api-success-update-order-update-address
+                              {:order %
+                               :navigate events/navigate-checkout-payment})}))
 
 (defn update-order [handle-message user-token order extra-message-args]
   (api-req

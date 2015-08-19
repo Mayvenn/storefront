@@ -26,6 +26,8 @@
 
 (def get-sms-number [:get-sms-number])
 
+(def get-shipping-methods [:shipping-methods])
+
 (def update-cart [:update-cart])
 (def checkout-cart [:checkout-cart])
 (def update-coupon [:update-coupon])
@@ -36,6 +38,7 @@
 (def delete-line-item [:delete-line-item])
 (def update-order [:update-order])
 (def update-addresses [:update-addresses])
+(def update-shipping-method [:update-shipping-method])
 (def add-line-item [:add-line-item])
 (def get-order [:get-order])
 (def get-past-order [:get-past-order])

@@ -29,7 +29,7 @@
     [:div.shipping-method-container
      [:div.rate-name (:name shipping-method)]
      [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
-    [:div.rate-cost (:display_cost shipping-method)]]])
+    [:div.rate-cost (:price shipping-method)]]])
 
 
 (defn checkout-delivery-component [data owner]
@@ -49,7 +49,7 @@
           [:ul.field.radios.shipping-methods
 
            (map (partial display-shipping-method data)
-                (get-in data [:order :shipments 0 :shipping_rates]))]]]
+                (get-in data keypaths/shipping-methods))]]]
         [:div.form-buttons
          [:input.continue.button.primary
           {:type "submit" :value "Continue"}]]]]]])))

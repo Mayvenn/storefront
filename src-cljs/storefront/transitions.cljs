@@ -54,6 +54,11 @@
       (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
       (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
 
+(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
+  (-> app-state
+      (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
+                                                                 (get-in app-state keypaths/order-shipping-method)))))
+
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/checkout-use-store-credits
@@ -214,8 +219,9 @@
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
     (-> app-state
-        (assoc-in keypaths/checkout-selected-shipping-method (get-in order [:shipments 0 :selected_shipping_rate]))
         (assoc-in keypaths/order order)
+        (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
+                                                                    (:shipping-method order)))
         (assoc-in keypaths/cart-quantities
                   (into {} (map (fn [[k v]] [k (:quantity v)]) (:line-items order)))))
     app-state))
@@ -243,6 +249,12 @@
 
 (defn default-credit-card-name [app-state {:keys [firstname lastname]}]
   (assoc-in app-state keypaths/checkout-credit-card-name (str firstname " " lastname)))
+
+(defmethod transition-state events/api-success-shipping-methods [_ events {:keys [shipping-methods]} app-state]
+  (-> app-state
+      (assoc-in keypaths/shipping-methods shipping-methods)
+      (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
+                                                                  (get-in app-state keypaths/order-shipping-method)))))
 
 (defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
   (-> app-state

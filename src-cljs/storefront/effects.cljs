@@ -38,6 +38,7 @@
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug))
   (api/get-sms-number (get-in app-state keypaths/handle-message))
+  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
   (api/get-promotions (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/api-cache))
 
@@ -309,15 +310,10 @@
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (let [shipping-method (get-in app-state keypaths/checkout-selected-shipping-method)]
     (analytics/track-checkout-option 3 (:name shipping-method))
-    (api/update-order (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/user-token)
-                      (let [order (get-in app-state keypaths/order)]
-                        (merge (select-keys order [:id :number :token])
-                               {:state "delivery"
-                                :shipments_attributes
-                                {:id (get-in order [:shipments 0 :id])
-                                 :selected_shipping_rate_id (:id shipping-method)}}))
-                      {:navigate [events/navigate-checkout-payment]})))
+    (api/update-shipping-method (get-in app-state keypaths/handle-message)
+                                (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+                                       {:shipping-method-id (get-in app-state
+                                                                    keypaths/checkout-selected-shipping-method-id)}))))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)

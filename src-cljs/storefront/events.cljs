@@ -134,6 +134,8 @@
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))
 
+(def api-success-shipping-methods (conj api-success :shipping-methods))
+
 
 (def api-failure (conj api :failure))
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))

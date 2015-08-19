@@ -23,7 +23,8 @@
 (def order-number (conj order :number))
 (def order-covered-by-store-credit (conj order :covered_by_store_credit))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
-(def order-shipments (conj order :shipments))
+(def order-shipments (conj order :shipments)) ;;TODO delete 'cause it doesn't exist
+(def order-shipping-method (conj order :shipping-method))
 
 (def last-order [:last-order])
 
@@ -36,10 +37,12 @@
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
 
+
 (def taxons [:taxons])
 (def products [:products])
 (def states [:states])
 (def payment-methods [:payment-methods])
+(def shipping-methods [:shipping-methods])
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
 
@@ -111,7 +114,7 @@
 (def checkout-credit-card-number (conj checkout :credit-card-number))
 (def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
-(def checkout-selected-shipping-method (conj checkout :selected-shipping-method))
+(def checkout-selected-shipping-method (conj checkout :shipping-method)) ;;TODO reorg to orders
 (def checkout-selected-shipping-method-id (conj checkout-selected-shipping-method :id))
 (def checkout-use-store-credits (conj checkout :use-store-credits))
 

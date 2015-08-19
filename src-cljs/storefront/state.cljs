@@ -52,6 +52,7 @@
      :products {}
      :states []
      :payment-methods []
+     :shipping-methods []
      :sms-number nil
      :stylist {:sales-rep-email nil
                :commissions {:rate nil
