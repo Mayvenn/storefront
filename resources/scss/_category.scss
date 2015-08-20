@@ -110,7 +110,7 @@
     flex: none;
     font-size: 1.1rem;
     margin: 0;
-    padding: 0.3rem 0.833rem;
+    padding: 0.3rem 0.2rem;
     width: 5rem;
     line-height: 1.6rem;
     text-transform: uppercase;
@@ -118,6 +118,16 @@
 
     span {
       font-size: 0.9rem;
+    }
+
+    .original-price {
+      text-decoration: line-through;
+    }
+
+    .from-price {
+      margin-left: 0.4rem;
+      color: #f88;
+      text-shadow: 0 0 20px rgba(0,0,0,.5);
     }
   }
 }
