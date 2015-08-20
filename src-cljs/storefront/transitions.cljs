@@ -62,7 +62,10 @@
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/checkout-use-store-credits
-                (pos? (get-in app-state keypaths/user-total-available-store-credit)))))
+                (pos? (get-in app-state keypaths/user-total-available-store-credit)))
+      (assoc-in keypaths/checkout-order-covered-by-store-credit
+                (<= (get-in app-state keypaths/order-total)
+                   (get-in app-state keypaths/user-total-available-store-credit)))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
