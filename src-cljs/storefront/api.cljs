@@ -444,16 +444,6 @@
                     :quantity (get-in order [:line-items (keyword variant-id) :quantity])})
     :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
-(defn update-coupon [handle-message user-token {order-token :token :as order} {:keys [coupon_code]}]
-  (update-cart-helper handle-message
-                      user-token
-                      (:token order)
-                      {:coupon_code coupon_code
-                       :number (:number order)}
-                      request-keys/update-coupon
-                      #(handle-message events/api-success-cart-update-coupon
-                                       {:order %})))
-
 (defn update-addresses [handle-message order]
   (api-req
    handle-message
@@ -475,34 +465,6 @@
     :handler #(handle-message events/api-success-update-order-update-address
                               {:order %
                                :navigate events/navigate-checkout-payment})}))
-
-(defn update-order [handle-message user-token order extra-message-args]
-  (api-req
-   handle-message
-   PUT
-   "/orders"
-   request-keys/update-order
-   {:params
-    {:order (filter-nil (-> order
-                            (select-keys [:number
-                                          :bill_address
-                                          :ship_address
-                                          :shipments_attributes
-                                          :payments_attributes
-                                          :session_id
-                                          :email])
-                            (update-in [:bill_address] select-address-keys)
-                            (update-in [:ship_address] select-address-keys)
-                            (rename-keys {:token :token
-                                          :bill_address :bill_address_attributes
-                                          :ship_address :ship_address_attributes})))
-     :use_store_credits (:use-store-credits order)
-     :state (:state order)
-     :order_token (:token order)}
-    :handler
-    #(handle-message events/api-success-update-order
-                     (merge {:order %}
-                            extra-message-args))}))
 
 
 (defn get-order [handle-message number token]
