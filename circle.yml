@@ -1,3 +1,6 @@
+machine:
+  services:
+    - docker
 dependencies:
   pre:
     - if [[ ! -e ~/rainman ]]; then git clone git@github.com:Mayvenn/rainman.git ~/rainman; fi
@@ -16,6 +19,7 @@ deployment:
     branch: master
     owner: Mayvenn
     commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - git config --global user.email "justin+mayvenn-bot@mayvenn.com"
       - git config --global user.name "Mayvenn-Bot"
       - cd ~/rainman && bundle exec ./rain storefront acceptance
