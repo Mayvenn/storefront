@@ -236,7 +236,7 @@
       (rename-keys {:first-name :firstname
                     :last-name :lastname
                     :state :state_id})
-      (update-in [:state] (partial states/abbr->id states))
+      (update-in [:state_id] (partial states/abbr->id states))
       (merge {:country_id 49})))
 
 (defn spree->mayvenn-address [address]
@@ -293,7 +293,8 @@
      :email email
      :token user-token
      :bill_address (mayvenn->spree-address states billing-address)
-     :ship_address (mayvenn->spree-address states shipping-address)}}))
+     :ship_address (mayvenn->spree-address states shipping-address)}
+    :handler identity}))
 
 (defn select-stylist-account-keys [args]
   (select-keys args [:birth_date_1i :birth_date_2i :birth_date_3i
