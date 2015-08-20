@@ -89,12 +89,12 @@
            :max-length 4})
    [:p.review-message
     "You can review your order on the next page"
-    (when-not (get-in data keypaths/order-covered-by-store-credit)
+    (when-not (get-in data keypaths/checkout-order-covered-by-store-credit)
       " before we can charge your credit card")]])
 
 (defn fully-covered-by-store-credit? [app-state]
   (and (get-in app-state keypaths/checkout-use-store-credits)
-       (get-in app-state keypaths/order-covered-by-store-credit)))
+       (get-in app-state keypaths/checkout-order-covered-by-store-credit)))
 
 (defn partially-covered-by-store-credit? [app-state]
   (and (get-in app-state keypaths/checkout-use-store-credits)

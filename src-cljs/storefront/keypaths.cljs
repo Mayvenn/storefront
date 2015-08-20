@@ -21,7 +21,6 @@
 (def order [:order])
 (def order-token (conj order :token))
 (def order-number (conj order :number))
-(def order-covered-by-store-credit (conj order :covered_by_store_credit))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
 (def order-shipments (conj order :shipments)) ;;TODO delete 'cause it doesn't exist
 (def order-shipping-method (conj order :shipping-method))
@@ -117,6 +116,7 @@
 (def checkout-selected-shipping-method (conj checkout :shipping-method)) ;;TODO reorg to orders
 (def checkout-selected-shipping-method-id (conj checkout-selected-shipping-method :id))
 (def checkout-use-store-credits (conj checkout :use-store-credits))
+(def checkout-order-covered-by-store-credit (conj checkout :covered-by-store-credit))
 
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))
