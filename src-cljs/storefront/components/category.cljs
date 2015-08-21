@@ -54,7 +54,7 @@
             (list
              [:span.original-price
               (as-money-without-cents (variant :original_price))]
-             [:span.from-price
+             [:span.current-price
               (as-money-without-cents (variant :price))])))]]]]))
 
 (defn category-component [data owner]

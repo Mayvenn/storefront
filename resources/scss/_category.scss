@@ -120,16 +120,19 @@
       font-size: 0.9rem;
     }
 
-    .original-price {
-      text-decoration: line-through;
-    }
-
-    .from-price {
-      margin-left: 0.4rem;
-      color: #f88;
+    .current-price {
       text-shadow: 0 0 20px rgba(0,0,0,.5);
     }
   }
+}
+
+.original-price {
+  text-decoration: line-through;
+}
+
+.current-price {
+  margin-left: 0.4rem;
+  color: #f88;
 }
 
 .taxon-product-image-container {
