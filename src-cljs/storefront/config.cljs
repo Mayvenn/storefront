@@ -25,3 +25,7 @@
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))
+
+(def stripe-publishable-key (case js/environment
+                              "production" "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"
+                              "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))

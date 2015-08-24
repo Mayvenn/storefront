@@ -10,18 +10,21 @@
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
+            [storefront.hooks.stripe :as stripe]
             [storefront.messages :refer [send send-later]]
             [storefront.hooks.reviews :as reviews]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.browser.scroll :as scroll]
             [storefront.hooks.opengraph :as opengraph]
+            [clojure.string :as string]
             [ajax.core :refer [-abort]]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [_ event args app-state]
+  (stripe/insert)
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking))
@@ -312,38 +315,43 @@
     (analytics/track-checkout-option 3 (:name shipping-method))
     (api/update-shipping-method (get-in app-state keypaths/handle-message)
                                 (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                                       {:shipping-method-id (get-in app-state
-                                                                    keypaths/checkout-selected-shipping-method-id)}))))
+                                       {:shipping-method-id (get-in
+                                                             app-state
+                                                             keypaths/checkout-selected-shipping-method-id)}))))
+
+(defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
+  (api/update-cart-payments
+   (get-in app-state keypaths/handle-message)
+   (-> app-state
+       (get-in keypaths/order)
+       (select-keys [:token :number])
+       (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
+       (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)
         covered-by-store-credit (get-in app-state keypaths/checkout-order-covered-by-store-credit)]
     (analytics/track-checkout-option 4 (str (if use-store-credit "creditYes" "creditNo")
                                             "/"
-                                            (if covered-by-store-credit "creditCovers" "partiatCovers")))
-    (api/update-order (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/user-token)
-                      (let [order (get-in app-state keypaths/order)]
-                        (merge (select-keys order [:id :number :token])
-                               {:state "payment"
-                                :use-store-credits use-store-credit}
-                               (if (and use-store-credit covered-by-store-credit)
-                                 {:payments_attributes
-                                  [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
-                                                           (get-in app-state (into keypaths/payment-methods [0 :id])))}]}
-
-                                 {:payments_attributes
-                                  [{:payment_method_id (or (get-in order [:payment_methods 0 :id])
-                                                           (get-in app-state (into keypaths/payment-methods [0 :id])))
-                                    :source_attributes
-                                    {:number (get-in app-state keypaths/checkout-credit-card-number)
-                                     :expiry (get-in app-state keypaths/checkout-credit-card-expiration)
-                                     :verification_value (get-in app-state keypaths/checkout-credit-card-ccv)
-                                     :name (get-in app-state keypaths/checkout-credit-card-name)}}]})))
-                      {:navigate [events/navigate-checkout-confirmation]})))
+                                            (if covered-by-store-credit "creditCovers" "partialCovers")))
+    (if (and use-store-credit covered-by-store-credit)
+      ;; command waiter w/ payment methods(success handler navigate to confirm)
+      (api/update-cart-payments
+       (get-in app-state keypaths/handle-message)
+       (-> app-state
+           (get-in keypaths/order)
+           (select-keys [:token :number])
+           (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))))
+      ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
+      (let [expiry (string/split (get-in app-state keypaths/checkout-credit-card-expiration) #"/")]
+        (stripe/create-token app-state
+                             (get-in app-state keypaths/checkout-credit-card-number)
+                             (get-in app-state keypaths/checkout-credit-card-ccv)
+                             (first expiry)
+                             (last expiry))))))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
-  (api/update-order (get-in app-state keypaths/handle-message)
+ #_ (api/update-order (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/user-token)
                     (merge (select-keys (get-in app-state keypaths/order) [:id :number :token])
                            {:session_id (get-in app-state keypaths/session-id)})

@@ -39,6 +39,7 @@
 (def update-order [:update-order])
 (def update-addresses [:update-addresses])
 (def update-shipping-method [:update-shipping-method])
+(def update-cart-payments [:update-cart-payments])
 (def add-line-item [:add-line-item])
 (def get-order [:get-order])
 (def get-past-order [:get-past-order])

@@ -19,6 +19,12 @@
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 
 (def order [:order])
+(def order-total (conj order :total))
+(def order-cart-payments (conj order :cart-payments))
+(def order-cart-payments-stripe (conj order-cart-payments :stripe))
+(def order-cart-payments-stripe-source (conj order-cart-payments-stripe-source :source))
+(def order-cart-payments-stripe-amount (conj order-cart-payments-stripe-amount :amount))
+
 (def order-token (conj order :token))
 (def order-number (conj order :number))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
@@ -115,6 +121,7 @@
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 (def checkout-selected-shipping-method (conj checkout :shipping-method)) ;;TODO reorg to orders
 (def checkout-selected-shipping-method-id (conj checkout-selected-shipping-method :id))
+(def checkout-selected-payment-methods (conj checkout :payment-methods)) ;;TODO reorg to orders
 (def checkout-use-store-credits (conj checkout :use-store-credits))
 (def checkout-order-covered-by-store-credit (conj checkout :covered-by-store-credit))
 

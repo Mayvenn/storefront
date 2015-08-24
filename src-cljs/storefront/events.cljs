@@ -36,6 +36,8 @@
 (def navigate-checkout-payment (conj navigate-checkout :payment))
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
 
+(def stripe-success-create-token [:stripe-success-create-token])
+
 (def control [:control])
 (def control-change-state (conj control :change-state))
 
@@ -130,6 +132,7 @@
 
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-update-order-update-address (conj api-success-update-order :update-address))
+(def api-success-update-order-update-cart-payments (conj api-success-update-order :update-cart-payments))
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))
 

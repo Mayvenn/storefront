@@ -12,5 +12,13 @@
   (not= (js/parseFloat (:order_total_after_store_credit order))
         0))
 
-(defn incomplete? [order]
+(defn incomplete? [order] ;;TODO remove unnecessary states
   (-> order :state #{"cart" "address" "delivery" "payment" "confirm"}))
+
+(defn form-payment-methods [order-total store-credit use-store-credit]
+  (let [store-credit-used (if use-store-credit (min order-total store-credit) 0)]
+    (merge {}
+           (when use-store-credit
+             {:store-credit {:amount store-credit-used}})
+           (when (> order-total store-credit-used)
+             {:stripe {:amount (- order-total store-credit-used)}}))))

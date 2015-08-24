@@ -467,6 +467,16 @@
                               {:order %
                                :navigate events/navigate-checkout-payment})}))
 
+(defn update-cart-payments [handle-message order]
+  (api-req
+   handle-message
+   PUT
+   "/v2/update-cart-payments"
+   request-keys/update-cart-payments
+   {:params (select-keys order [:number :token :cart-payments])
+    :handler #(handle-message events/api-success-update-order-update-cart-payments
+                              {:order %
+                               :navigate events/navigate-checkout-confirmation})}))
 
 (defn get-order [handle-message number token]
   (api-req

@@ -70,6 +70,13 @@
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
 
+
+(defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
+  (assoc-in app-state keypaths/checkout-selected-payment-methods
+            (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                         (get-in app-state keypaths/user-total-available-store-credit)
+                                         (get-in app-state keypaths/checkout-use-store-credits))))
+
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
   (assoc-in app-state keypath true))
