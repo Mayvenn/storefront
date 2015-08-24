@@ -15,7 +15,9 @@
 (defn incomplete? [order] ;;TODO remove unnecessary states
   (-> order :state #{"cart" "address" "delivery" "payment" "confirm"}))
 
-(def line-items (comp :line-items last :shipments))
+(def line-items (comp (partial filter (comp pos? :id last)) :line-items last :shipments))
+
+(def shipping (comp #(get % -1) :line-items last :shipments))
 
 (defn form-payment-methods [order-total store-credit use-store-credit]
   (let [store-credit-used (if use-store-credit (min order-total store-credit) 0)]
