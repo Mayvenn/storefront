@@ -11,10 +11,11 @@
    (src-tag "https://js.stripe.com/v2/stripe.js" "stripe-is-great")
    (fn [] (js/Stripe.setPublishableKey config/stripe-publishable-key))))
 
-(defn create-token [app-state number cvc exp-month exp-year]
+(defn create-token [app-state cardholder-name number cvc exp-month exp-year]
   (when (.hasOwnProperty js/window "Stripe")
     (js/Stripe.card.createToken (clj->js {:number number
                                           :cvc cvc
+                                          :name cardholder-name
                                           :exp_month (js/parseInt exp-month)
                                           :exp_year (js/parseInt exp-year)})
                                 (fn [status response]
