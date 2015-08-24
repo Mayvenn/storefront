@@ -327,7 +327,7 @@
    GET
    "/v2/shipping-methods"
    request-keys/get-shipping-methods
-   {:handler #(handle-message events/api-success-shipping-methods %)}))
+   {:handler #(handle-message events/api-success-shipping-methods (update-in % [:shipping-methods] reverse))}))
 
 (defn update-stylist-account [handle-message user-token stylist-account]
   (api-req
