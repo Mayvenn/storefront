@@ -57,7 +57,7 @@
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                                                 (get-in app-state keypaths/order-shipping-method)))))
+                                                                  (get-in app-state keypaths/order-shipping-method)))))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (-> app-state
@@ -65,11 +65,10 @@
                 (pos? (get-in app-state keypaths/user-total-available-store-credit)))
       (assoc-in keypaths/checkout-order-covered-by-store-credit
                 (<= (get-in app-state keypaths/order-total)
-                   (get-in app-state keypaths/user-total-available-store-credit)))))
+                    (get-in app-state keypaths/user-total-available-store-credit)))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (args :order-id)))
-
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods

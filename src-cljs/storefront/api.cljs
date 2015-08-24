@@ -48,8 +48,8 @@
   (into {} (filter second m)))
 
 (def default-req-opts {:headers {"Accepts" "application/json"}
-                      :format :json
-                      :response-format (json-response-format {:keywords? true})})
+                       :format :json
+                       :response-format (json-response-format {:keywords? true})})
 
 (defn merge-req-opts [handle-message req-key req-id {:keys [handler] :as request-opts}]
   (merge default-req-opts
@@ -348,13 +348,13 @@
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
-        {:handler #(handle-message events/api-success-stylist-manage-account-profile-picture
-                                   (merge {:updated true}
-                                          {:stylist (select-keys % [:profile_picture_url])}))
-         :error-handler (partial default-error-handler handle-message)
-         :params form-data
-         :response-format (json-response-format {:keywords? true})
-         :timeout 10000})))
+      {:handler #(handle-message events/api-success-stylist-manage-account-profile-picture
+                                 (merge {:updated true}
+                                        {:stylist (select-keys % [:profile_picture_url])}))
+       :error-handler (partial default-error-handler handle-message)
+       :params form-data
+       :response-format (json-response-format {:keywords? true})
+       :timeout 10000})))
 
 (defn get-stylist-commissions [handle-message user-token]
   (api-req
@@ -403,14 +403,14 @@
                          (drop 3 x)
                          x)))
           (callback [resp]
-            (handle-message events/api-success-sms-number
-                            {:number (-> resp :available_number normalize-number)}))]
+                    (handle-message events/api-success-sms-number
+                                    {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
-        {:handler callback
-         :headers {"Accepts" "application/json"
-                   "X-Publishable-Key" send-sonar-publishable-key}
-         :format :json
-         :response-format (json-response-format {:keywords? true})})))
+      {:handler callback
+       :headers {"Accepts" "application/json"
+                 "X-Publishable-Key" send-sonar-publishable-key}
+       :format :json
+       :response-format (json-response-format {:keywords? true})})))
 
 (defn inc-line-item [handle-message order {:keys [variant-id] :as params}]
   (api-req
