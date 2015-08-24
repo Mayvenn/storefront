@@ -9,6 +9,7 @@
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
+            [storefront.accessors.orders :as orders]
             [storefront.keypaths :as keypaths]))
 
 (defn field [name value & [classes]]
@@ -60,7 +61,7 @@
    [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]
-  (map (partial display-line-item data interactive?) (:line-items order)))
+  (map (partial display-line-item data interactive?) (orders/line-items order)))
 
 (defn valid-payments [payments]
   (filter (comp not #{"failed" "invalid"} :state) payments))
@@ -73,7 +74,7 @@
   (filter :eligible adjustments))
 
 (defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (:line-items order)))
+  (mapcat (comp eligible-adjustments :adjustments) (orders/line-items order)))
 
 (defn whole-order-adjustments [order]
   (-> order :adjustments eligible-adjustments))

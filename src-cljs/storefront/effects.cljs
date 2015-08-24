@@ -7,6 +7,7 @@
             [storefront.accessors.taxons :refer [taxon-name-from]]
             [storefront.utils.query :as query]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
+            [storefront.accessors.orders :as orders]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
@@ -113,7 +114,7 @@
                                       user-token)))
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
-  (analytics/set-checkout-step 1 (get-in app-state [:order :line-items]))
+  (analytics/set-checkout-step 1 (-> app-state :order (orders/line-items)))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
@@ -125,23 +126,23 @@
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (analytics/set-checkout-step 2 (get-in app-state [:order :line-items]))
+  (analytics/set-checkout-step 2 (-> app-state :order (orders/line-items)))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-states (get-in app-state keypaths/handle-message)
                   (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
-  (analytics/set-checkout-step 3 (get-in app-state [:order :line-items]))
+  (analytics/set-checkout-step 3 (-> app-state :order (orders/line-items)))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (analytics/set-checkout-step 4 (get-in app-state [:order :line-items]))
+  (analytics/set-checkout-step 4 (-> app-state :order (orders/line-items)))
   (analytics/track-page (routes/path-for app-state event))
   (api/get-payment-methods (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
-  (analytics/set-checkout-step 5 (get-in app-state [:order :line-items]))
+  (analytics/set-checkout-step 5 (-> app-state :order (orders/line-items)))
   (analytics/track-page (routes/path-for app-state event)))
 
 (defmethod perform-effects events/navigate-order [_ event args app-state]

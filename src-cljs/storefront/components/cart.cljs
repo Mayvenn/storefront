@@ -4,6 +4,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.taxons :refer [default-nav-taxon-path]]
+            [storefront.accessors.orders :as orders]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
@@ -84,7 +85,7 @@
       (let [cart (get-in data keypaths/order)]
         (if (and (:state cart)
                  (:number cart)
-                 (-> cart :line-items count (> 0)))
+                 (-> cart orders/line-items count (> 0)))
           (display-full-cart data owner)
           (display-empty-cart data)))]
      [:div.home-actions-top

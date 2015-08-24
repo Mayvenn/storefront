@@ -4,6 +4,7 @@
             [storefront.events :as events]
             [storefront.accessors.states :as states]
             [storefront.accessors.taxons :refer [taxon-name-from]]
+            [storefront.accessors.orders :as orders]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
@@ -442,7 +443,7 @@
    (conj request-keys/delete-line-item variant-id)
    {:params (merge (select-keys order [:number :token])
                    {:variant-id variant-id
-                    :quantity (get-in order [:line-items (keyword variant-id) :quantity])})
+                    :quantity (-> order (orders/line-items) (get variant-id) :quantity)})
     :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
 (defn update-addresses [handle-message order]

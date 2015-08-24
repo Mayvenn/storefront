@@ -3,13 +3,14 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
+            [storefront.accessors.orders :as orders]
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]))
 
 (defn- total-quantity [order]
   (reduce + 0
           (map :quantity
-               (vals (:line-items order)))))
+               (vals (orders/line-items order)))))
 
 (defn header-component [data owner]
   (om/component
