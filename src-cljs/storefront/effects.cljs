@@ -275,7 +275,10 @@
   (modify-cart app-state variant-id api/delete-line-item))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
-  (modify-cart app-state {:coupon_code (get-in app-state keypaths/cart-coupon-code)} api/update-coupon))
+  (api/add-promotion-code (get-in app-state keypaths/handle-message)
+                          (get-in app-state keypaths/order-number)
+                          (get-in app-state keypaths/order-token)
+                          (get-in app-state keypaths/cart-coupon-code)))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))

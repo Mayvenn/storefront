@@ -30,7 +30,6 @@
 
 (def update-cart [:update-cart])
 (def checkout-cart [:checkout-cart])
-(def update-coupon [:update-coupon])
 (def update-line-item [:update-line-item])
 (def increment-line-item [:update-line-item])
 (def decrement-line-item [:update-line-item])
@@ -41,6 +40,7 @@
 (def update-shipping-method [:update-shipping-method])
 (def update-cart-payments [:update-cart-payments])
 (def add-line-item [:add-line-item])
+(def add-promotion-code [:add-line-item])
 (def get-order [:get-order])
 (def get-past-order [:get-past-order])
 (def get-my-orders [:get-my-orders])

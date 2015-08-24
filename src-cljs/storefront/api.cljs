@@ -517,6 +517,18 @@
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 
+(defn add-promotion-code [handle-message number token promo-code]
+  (api-req
+   handle-message
+   POST
+   "/v2/add-promotion-code"
+   request-keys/add-promotion-code
+   {:params {:number number
+             :token token
+             :code promo-code}
+    :handler #(handle-message events/api-success-update-order-add-promotion-code
+                              {:order %})}))
+
 (defn add-to-bag [handle-message {:keys [token number variant], :as params}]
   (api-req
    handle-message
