@@ -37,7 +37,6 @@
   (map display-adjustment-row adjustments))
 
 (defn- display-shipment [shipping]
-  (js/console.log "HYE" (clj->js shipping))
   [:tr.order-summary-row
    [:td
     [:h5 (:options-text shipping)]]
