@@ -79,6 +79,9 @@
 (defn whole-order-adjustments [order]
   (-> order :adjustments eligible-adjustments))
 
+(defn tax-adjustment [order]
+  {:name "Tax" :price (:tax-total order)})
+
 (defn all-order-adjustments [order]
   (concat (whole-order-adjustments order)
           (line-item-adjustments order)))
