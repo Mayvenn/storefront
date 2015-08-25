@@ -10,7 +10,7 @@
 (defn- total-quantity [order]
   (reduce + 0
           (map :quantity
-               (vals (orders/line-items order)))))
+               (vals (orders/product-items order)))))
 
 (defn header-component [data owner]
   (om/component

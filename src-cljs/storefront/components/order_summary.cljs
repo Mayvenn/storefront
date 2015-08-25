@@ -12,30 +12,54 @@
             [storefront.accessors.orders :as orders]
             [storefront.keypaths :as keypaths]))
 
-(defn field [name value & [classes]]
+(defn- field [name value & [classes]]
   [:div.line-item-attr {:class classes}
    [:span.cart-label name]
    [:span.cart-value value]])
 
-(defn line-item-subtotal [{:keys [quantity unit-price]}]
-  (* quantity unit-price))
+(defn- tax-adjustment [order]
+  {:name "Tax" :price (:tax-total order)})
 
-(defn display-line-item [data interactive? [variant-id line-item]]
+(defn- all-order-adjustments [order]
+  (conj (:adjustments order)
+        (tax-adjustment order)
+        #_(shipping-adjustment order))) ;;TODO Manifest this stub. MATTTTHHHHHHHH
+
+(defn- display-adjustment-row [{:keys [name price]}]
+  (when-not (= price 0)
+    [:tr.order-summary-row.adjustment
+     [:td
+      [:h5 name]]
+     [:td
+      [:h5 (as-money price)]]]))
+
+(defn- display-adjustments [adjustments]
+  (map display-adjustment-row adjustments))
+
+(defn- display-shipment [shipping]
+  (js/console.log "HYE" (clj->js shipping))
+  [:tr.order-summary-row
+   [:td
+    [:h5 (:options-text shipping)]]
+   [:td
+    [:h5 (as-money (reduce * ((juxt :quantity :unit-price) shipping)))]]])
+
+(defn- display-line-item [data interactive? [variant-id line-item]]
   [:div.line-item
    [:a
-    #_ (utils/route-to data events/navigate-product {:product-path (:product-slug line-item)})
+    #_(utils/route-to data events/navigate-product {:product-path (:product-slug line-item)})
     [:img {:src (:product-image line-item)
            :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
     [:h4
      [:a
-      #_ (utils/route-to data events/navigate-product {:product-path (:product-slug variant)})
+      #_(utils/route-to data events/navigate-product {:product-path (:product-slug variant)})
       (:product-name line-item)]]
     (:variant-option-display line-item)
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
-    (field "Price:" (:unit-price line-item) "item-form" "price")
-    (field "Subtotal: " (line-item-subtotal line-item) "item-form" "subtotal")
+    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
+    (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal")
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
             delete-request (query/get
@@ -61,89 +85,33 @@
    [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]
-  (map (partial display-line-item data interactive?) (orders/line-items order)))
-
-(defn valid-payments [payments]
-  (filter (comp not #{"failed" "invalid"} :state) payments))
-
-(defn storecredit-payments [order]
-  (filter #(= "Spree::StoreCredit" (:source_type %))
-          (valid-payments (:payments order))))
-
-(defn eligible-adjustments [adjustments]
-  (filter :eligible adjustments))
-
-(defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (orders/line-items order)))
-
-(defn whole-order-adjustments [order]
-  (-> order :adjustments eligible-adjustments))
-
-(defn tax-adjustment [order]
-  {:name "Tax" :price (:tax-total order)})
-
-(defn all-order-adjustments [order]
-  (concat (whole-order-adjustments order)
-          (line-item-adjustments order)))
-
-(defn line-item-promotion-adjustments [order]
-  (filter (comp #{"Spree::PromotionAction"} :source_type)
-          (line-item-adjustments order)))
-
-(defn tax-adjustments [order]
-  (filter (comp #{"Spree::TaxRate"} :source_type)
-          (line-item-adjustments order)))
-
-(defn display-adjustment-row [label adjustments]
-  (let [summed-amount (reduce + (map (comp js/parseFloat :amount) adjustments))]
-    (when-not  (= summed-amount 0)
-      [:tr.order-summary-row.adjustment
-       [:td
-        [:h5 label]]
-       [:td
-        [:h5 (as-money summed-amount)]]])))
-
-(defn display-adjustments [adjustments]
-  (map #(apply display-adjustment-row %) (group-by :display_label adjustments)))
-
-(defn display-shipment [shipment]
-  [:tr.order-summary-row
-   [:td
-    [:h5 (-> shipment :selected_shipping_rate :name)]]
-   [:td
-    [:h5 (-> shipment :selected_shipping_rate :display_cost)]]])
+  (map (partial display-line-item data interactive?) (orders/product-items order)))
 
 (defn display-order-summary [order]
   [:div
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
-    (let [all-adjustments (all-order-adjustments order)
-          quantity (:total_quantity order)]
+    (let [adjustments (all-order-adjustments order)
+          quantity    (orders/item-count order)]
       [:tbody
-       (when-not (empty? all-adjustments)
+       (when-not (empty? adjustments)
          (list
           [:tr.cart-subtotal.order-summary-row
            [:td
             [:h5 (str "Subtotal (" quantity " Item"
                       (when (> quantity 1) "s") ")")]]
            [:td
-            [:h5 (:display_item_total order)]]]
-          (let [li-promotion-adjustments (line-item-promotion-adjustments order)
-                tax-adjustments (tax-adjustments order)
-                whole-order-adjustments (whole-order-adjustments order)]
-            (list
-             (display-adjustments li-promotion-adjustments)
-             (display-adjustments tax-adjustments)
-             (map display-shipment (order :shipments))
-             (display-adjustments whole-order-adjustments)))))
+            [:h5 (as-money (:line-items-total order))]]]
+          (display-adjustments adjustments)
+          (display-shipment (orders/shipping-items order))))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
-        [:td [:h5 (:display_total order)]]]
-       (when-not (empty? (storecredit-payments order))
+        [:td [:h5 (as-money (:total order))]]]
+       (when-let [store-credit (-> order :cart-payments :store-credit)]
          (list
           [:tr.store-credit-used.order-summary-row.adjustment
            [:td [:h5 "Store Credit"]]
-           [:td [:h5 (:display_total_applicable_store_credit order)]]]
+           [:td [:h5 (as-money (:amount store-credit))]]]
           [:tr.balance-due.order-summary-row.cart-total
-           [:td [:h5 (if (= "complete" (:state order)) "Amount charged" "Balance Due")]]
-           [:td [:h5 (:display_order_total_after_store_credit order)]]]))])]])
+           [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
+           [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]]))])]])

@@ -222,7 +222,7 @@
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)
       (assoc-in keypaths/cart-quantities
-                (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/line-items order))))
+                (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/product-items order))))
       (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
@@ -232,7 +232,7 @@
         (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
                                                                     (:shipping-method order)))
         (assoc-in keypaths/cart-quantities
-                  (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/line-items order)))))
+                  (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/product-items order)))))
     app-state))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
