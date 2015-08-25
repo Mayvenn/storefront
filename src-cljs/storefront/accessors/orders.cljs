@@ -15,11 +15,20 @@
 (defn incomplete? [order] ;;TODO remove unnecessary states
   (-> order :state #{"cart" "address" "delivery" "payment" "confirm"}))
 
-(def line-items (comp (partial into {})
-                      (partial filter (comp pos? :id last))
-                      :line-items
-                      last
-                      :shipments))
+(defn line-items
+  "Returns cart items from an order hashmap.
+  Excludes shipping and items added by El Jefe.
+  Cart line-items are added as the last shipment.
+  Line-items are from last shipment as it is the user created shipment."
+  [order]
+  (js/console.log "Input to line-items" (clj->js order))
+  (when order
+    (->> order
+         :shipments
+         (last)
+         :line-items
+         (filter #(not= (:source (last %)) "waiter"))
+         (into {}))))
 
 (def shipping (comp #(get % -1) :line-items last :shipments))
 
