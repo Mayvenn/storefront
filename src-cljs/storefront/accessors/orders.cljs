@@ -36,7 +36,7 @@
        (filter #(not= (:source (last %)) "waiter"))
        (into {})))
 
-(defn shipping-items
+(defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
   Includes only items added by waiter.
   Shipping items are added as the last shipment.
@@ -46,6 +46,14 @@
        (vals)
        (filter #(= (:source %) "waiter"))
        (first)))
+
+(defn shipping-items ;;Deprecate
+  "Returns the first shipping line-item from an order hashmap.
+  Includes only items added by waiter.
+  Shipping items are added as the last shipment.
+  Line-items are from last shipment as it is the user created shipment."
+  [order]
+  (shipping-item order))
 
 (defn form-payment-methods [order-total store-credit use-store-credit]
   (let [store-credit-used (if use-store-credit (min order-total store-credit) 0)]
