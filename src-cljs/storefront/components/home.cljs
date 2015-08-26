@@ -27,21 +27,17 @@
      [:div.home-large-image]
      [:div.home-actions-top
       [:a.guarantee
-       (when (experiments/display-variation data "home-page-links")
-         (utils/route-to data events/navigate-guarantee))]
+       (utils/route-to data events/navigate-guarantee)]
       [:a.free-shipping-action
-       (when (experiments/display-variation data "home-page-links")
-         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"})]
+       {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
       [:div.shop-now
        (when-let [path (default-nav-taxon-path data)]
          [:a.full-link (utils/route-to data events/navigate-category
                                        {:taxon-path path})])]
       [:a.home-30-day-guarantee
-       (when (experiments/display-variation data "home-page-links")
-         (utils/route-to data events/navigate-guarantee))]
+       (utils/route-to data events/navigate-guarantee)]
       [:a.home-free-shipping
-       (when (experiments/display-variation data "home-page-links")
-         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"})]]
+       {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]]
      [:div.squashed-hair-categories
       (map (partial category data)
            (filter-nav-taxons (get-in data keypaths/taxons)))
