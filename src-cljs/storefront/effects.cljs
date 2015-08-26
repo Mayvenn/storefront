@@ -513,15 +513,16 @@
           events/flash-show-failure {:message (:error validation-errors)
                                      :navigation (get-in app-state keypaths/navigation-message)})))
 
-(defmethod perform-effects events/api-success-add-to-bag
-  [_ _ {:keys [order {:keys [product quantity variant]}]} app-state]
-  (save-cookie app-state true)
-  (experiments/track-event "add-to-bag")
-  (analytics/add-product product {:quantity quantity
-                                  :variant (:sku variant)})
-  (analytics/set-action "add")
-  (analytics/track-event "UX" "click" "add to cart")
-  (send-later app-state events/added-to-bag))
+(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
+  (let [{:keys [product quantity variant]} requested]
+    (js/console.log "product" (clj->js [product quantity variant]))
+    (save-cookie app-state true)
+    (experiments/track-event "add-to-bag")
+    (analytics/add-product product {:quantity quantity
+                                    :variant (:sku variant)})
+    (analytics/set-action "add")
+    (analytics/track-event "UX" "click" "add to cart")
+    (send-later app-state events/added-to-bag)))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ _]
   (when-let [el (.querySelector js/document ".cart-button")]
