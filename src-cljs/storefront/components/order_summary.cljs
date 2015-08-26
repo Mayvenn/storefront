@@ -106,8 +106,8 @@
            [:td
             [:h5 (as-money (:line-items-total order))]]]
           (display-adjustments adjustments)
-          (when-let [shipping-items (orders/shipping-items order)]
-            (display-shipment shipping-items))))
+          (when-let [shipping-item (orders/shipping-item order)]
+            (display-shipment shipping-item))))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]
