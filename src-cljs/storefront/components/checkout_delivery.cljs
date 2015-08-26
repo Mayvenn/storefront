@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.components.utils :as utils]))
 
 (defn shipping-timeframe [rate-name]
@@ -29,7 +30,7 @@
     [:div.shipping-method-container
      [:div.rate-name (:name shipping-method)]
      [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
-    [:div.rate-cost (:price shipping-method)]]])
+    [:div.rate-cost (as-money (:price shipping-method))]]])
 
 
 (defn checkout-delivery-component [data owner]
