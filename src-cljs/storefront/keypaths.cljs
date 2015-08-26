@@ -28,8 +28,6 @@
 (def order-token (conj order :token))
 (def order-number (conj order :number))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
-(def order-shipments (conj order :shipments)) ;;TODO delete 'cause it doesn't exist
-(def order-shipping-method (conj order :shipping-method))
 
 (def last-order [:last-order])
 
@@ -119,9 +117,8 @@
 (def checkout-credit-card-number (conj checkout :credit-card-number))
 (def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
-(def checkout-selected-shipping-method (conj checkout :shipping-method)) ;;TODO reorg to orders
-(def checkout-selected-shipping-method-id (conj checkout-selected-shipping-method :id)) ;;TODO deprecate
-(def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku)) ;;TODO deprecate
+(def checkout-selected-shipping-method (conj checkout :shipping-method))
+(def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods)) ;;TODO reorg to orders
 (def checkout-use-store-credits (conj checkout :use-store-credits))
 (def checkout-order-covered-by-store-credit (conj checkout :covered-by-store-credit))
