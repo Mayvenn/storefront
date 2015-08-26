@@ -43,6 +43,9 @@
    [:td
     [:h5 (as-money (reduce * ((juxt :quantity :unit-price) shipping)))]]])
 
+(defn- display-variant-options [{:keys [name value]}]
+  (field (str name ": ") (if (= name "Length") (str value "\"") value)))
+
 (defn- display-line-item [data interactive? [variant-id line-item]]
   [:div.line-item
    [:a
@@ -55,6 +58,7 @@
       #_(utils/route-to data events/navigate-product {:product-path (:product-slug variant)})
       (:product-name line-item)]]
     (:variant-option-display line-item)
+    (map display-variant-options (:options line-item))
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
     (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
