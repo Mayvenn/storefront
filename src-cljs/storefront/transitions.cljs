@@ -56,8 +56,9 @@
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
-      (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                                                  (get-in app-state keypaths/order-shipping-method)))))
+      (assoc-in keypaths/checkout-selected-shipping-method
+                (merge (first (get-in app-state keypaths/shipping-methods))
+                       (orders/shipping-item (:order app-state))))))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (-> app-state
@@ -229,8 +230,9 @@
   (if (orders/incomplete? order)
     (-> app-state
         (assoc-in keypaths/order order)
-        (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                                                    (:shipping-method order)))
+        (assoc-in keypaths/checkout-selected-shipping-method
+                  (merge (first (get-in app-state keypaths/shipping-methods))
+                         (orders/shipping-item order)))
         (assoc-in keypaths/cart-quantities
                   (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/product-items order)))))
     app-state))
@@ -263,7 +265,7 @@
   (-> app-state
       (assoc-in keypaths/shipping-methods shipping-methods)
       (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                                                  (get-in app-state keypaths/order-shipping-method)))))
+                                                                  (orders/shipping-item (:order app-state))))))
 
 (defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
   (-> app-state

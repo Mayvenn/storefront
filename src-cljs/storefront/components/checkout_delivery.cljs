@@ -16,8 +16,8 @@
 
 (defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
-   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-id)
-                 (:id shipping-method))
+   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-sku)
+                 (:sku shipping-method))
             {:class "selected"})
           {:on-click (utils/send-event-callback app-state
                                                 events/control-checkout-shipping-method-select

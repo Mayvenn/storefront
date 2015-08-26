@@ -319,9 +319,9 @@
     (analytics/track-checkout-option 3 (:name shipping-method))
     (api/update-shipping-method (get-in app-state keypaths/handle-message)
                                 (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                                       {:shipping-method-id (get-in
+                                       {:shipping-method-sku (get-in
                                                              app-state
-                                                             keypaths/checkout-selected-shipping-method-id)}))))
+                                                             keypaths/checkout-selected-shipping-method-sku)}))))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments
