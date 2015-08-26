@@ -21,7 +21,7 @@
   (let [request-key-prefix (comp vector first :request-key)]
     (some #(query/get % (get-in data keypaths/api-requests))
           [{:request-key request-keys/checkout-cart}
-           {:request-key request-keys/update-coupon}
+           {:request-key request-keys/add-promotion-code}
            {request-key-prefix request-keys/update-line-item}
            {request-key-prefix request-keys/delete-line-item}])))
 
@@ -46,7 +46,7 @@
               {:type "text"
                :name "coupon-code"})]]
            [:div.primary.button#update-button
-            (let [spinning (query/get {:request-key request-keys/update-coupon}
+            (let [spinning (query/get {:request-key request-keys/add-promotion-code}
                                       (get-in data keypaths/api-requests))]
               {:type "submit"
                :name "update"
