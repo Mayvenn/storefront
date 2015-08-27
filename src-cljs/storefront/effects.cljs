@@ -356,11 +356,10 @@
                              (last expiry))))))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
- #_ (api/update-order (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/user-token)
-                    (merge (select-keys (get-in app-state keypaths/order) [:id :number :token])
-                           {:session_id (get-in app-state keypaths/session-id)})
-                    {:navigate [events/navigate-order-complete {:order-id (get-in app-state keypaths/order-number)}]}))
+  (api/place-order (get-in app-state keypaths/handle-message)
+                   (merge (get-in app-state keypaths/order)
+                          {:session-id (get-in app-state keypaths/session-id)
+                           :browser-ip "127.0.0.1"})))
 
 (defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
@@ -515,7 +514,6 @@
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
   (let [{:keys [product quantity variant]} requested]
-    (js/console.log "product" (clj->js [product quantity variant]))
     (save-cookie app-state true)
     (experiments/track-event "add-to-bag")
     (analytics/add-product product {:quantity quantity

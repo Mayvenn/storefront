@@ -412,6 +412,20 @@
        :format :json
        :response-format (json-response-format {:keywords? true})})))
 
+(defn place-order [handle-message order]
+  (api-req
+   handle-message
+   POST
+   "/v2/place-order"
+   request-keys/place-order
+   {:params order
+    :handler #(handle-message events/api-success-update-order-place-order
+                              {:order %
+                               :navigate [events/navigate-order-complete
+                                          {:order-id (:order-id %)
+                                        ;(get-in app-state keypaths/order-number)
+                                           }]})}))
+
 (defn inc-line-item [handle-message order {:keys [variant-id] :as params}]
   (api-req
    handle-message
