@@ -449,7 +449,7 @@
 (defn update-addresses [handle-message order]
   (api-req
    handle-message
-   PUT
+   POST
    "/v2/update-addresses"
    request-keys/update-addresses
    {:params (select-keys order [:number :token :email :billing-address :shipping-address])
@@ -460,7 +460,7 @@
 (defn update-shipping-method [handle-message order]
   (api-req
    handle-message
-   PUT
+   POST
    "/v2/update-shipping-method"
    request-keys/update-shipping-method
    {:params (select-keys order [:number :token :shipping-method-sku])
@@ -471,7 +471,7 @@
 (defn update-cart-payments [handle-message order]
   (api-req
    handle-message
-   PUT
+   POST
    "/v2/update-cart-payments"
    request-keys/update-cart-payments
    {:params (select-keys order [:number :token :cart-payments])
