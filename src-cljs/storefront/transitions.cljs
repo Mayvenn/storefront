@@ -4,7 +4,8 @@
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
-            [storefront.state :as state]))
+            [storefront.state :as state]
+            [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -48,11 +49,6 @@
 
 (defmethod transition-state events/navigate-stylist [_ event args app-state]
   (assoc-in app-state keypaths/return-navigation-event event))
-
-(defmethod transition-state events/navigate-checkout-address [_ event args app-state]
-  (-> app-state
-      (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
-      (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
@@ -229,6 +225,8 @@
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
     (-> app-state
+        (update-in keypaths/checkout-billing-address merge (:billing-address order))
+        (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
         (assoc-in keypaths/order order)
         (assoc-in keypaths/checkout-selected-shipping-method
                   (merge (first (get-in app-state keypaths/shipping-methods))
@@ -253,11 +251,6 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
-(defn default-checkout-addresses [app-state billing-address shipping-address]
-  (-> app-state
-      (update-in keypaths/checkout-billing-address merge billing-address)
-      (update-in keypaths/checkout-shipping-address merge shipping-address)))
-
 (defn default-credit-card-name [app-state {:keys [firstname lastname]}]
   (assoc-in app-state keypaths/checkout-credit-card-name (str firstname " " lastname)))
 
@@ -275,6 +268,15 @@
 
 (defmethod transition-state events/api-success-address [_ event args app-state]
   (update-account-address app-state args))
+
+(def vals-empty? (comp (partial every? string/blank?) vals))
+
+(defn default-checkout-addresses [app-state billing-address shipping-address]
+  (if (vals-empty? (get-in app-state keypaths/checkout-billing-address))
+    (-> app-state
+        (assoc-in keypaths/checkout-billing-address billing-address)
+        (assoc-in keypaths/checkout-shipping-address shipping-address))
+    app-state))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state
