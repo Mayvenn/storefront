@@ -52,7 +52,8 @@
                 :externs ["externs/riskified.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
-                          "externs/optimizely.js"]}}
+                          "externs/optimizely.js"
+                          "externs/stripe.js"]}}
     :release
     {:compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
@@ -63,7 +64,8 @@
                 :externs ["externs/riskified.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
-                          "externs/optimizely.js"]
+                          "externs/optimizely.js"
+                          "externs/stripe.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles
