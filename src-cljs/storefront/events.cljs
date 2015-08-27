@@ -37,6 +37,7 @@
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
 
 (def stripe-success-create-token [:stripe-success-create-token])
+(def stripe-failure-create-token [:stripe-failure-create-token])
 
 (def control [:control])
 (def control-change-state (conj control :change-state))

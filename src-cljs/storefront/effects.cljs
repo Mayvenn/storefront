@@ -332,7 +332,14 @@
        (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
        (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))))
 
+(defmethod perform-effects events/stripe-failure-create-token [_ _ stripe-response app-state]
+  (send app-state
+        events/flash-show-failure
+        {:message (get-in stripe-response [:error :message])
+         :navigation (get-in app-state keypaths/navigation-message)}))
+
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
+  (send app-state events/flash-dismiss-failure)
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)
         covered-by-store-credit (get-in app-state keypaths/checkout-order-covered-by-store-credit)]
     (analytics/track-checkout-option 4 (str (if use-store-credit "creditYes" "creditNo")

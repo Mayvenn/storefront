@@ -19,7 +19,10 @@
                                           :exp_month (js/parseInt exp-month)
                                           :exp_year (js/parseInt exp-year)})
                                 (fn [status response]
-                                  (when (= 200 status)
+                                  (if (= 200 status)
                                     (send app-state
                                           events/stripe-success-create-token
+                                          (js->clj response :keywordize-keys true))
+                                    (send app-state
+                                          events/stripe-failure-create-token
                                           (js->clj response :keywordize-keys true)))))))
