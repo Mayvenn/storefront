@@ -42,7 +42,6 @@
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug))
   (api/get-sms-number (get-in app-state keypaths/handle-message))
-  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
   (api/get-promotions (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/api-cache))
 
@@ -133,7 +132,8 @@
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
   (analytics/set-checkout-step 3 (-> app-state :order (orders/product-items)))
-  (analytics/track-page (routes/path-for app-state event)))
+  (analytics/track-page (routes/path-for app-state event))
+  (api/get-shipping-methods (get-in app-state keypaths/handle-message)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
   (analytics/set-checkout-step 4 (-> app-state :order (orders/product-items)))
