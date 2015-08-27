@@ -7,11 +7,6 @@
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]))
 
-(defn- total-quantity [order]
-  (reduce + 0
-          (map :quantity
-               (vals (orders/product-items order)))))
-
 (defn header-component [data owner]
   (om/component
    (html
@@ -20,11 +15,11 @@
                                {:class "no-picture"})
        [:a.header-menu {:href "#" :on-click (fn [_] (send data events/control-menu-expand))} "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
-       (let [item-count (total-quantity (get-in data keypaths/order))]
-         (if (> item-count 0)
+       (let [product-quantity (orders/product-quantity (get-in data keypaths/order))]
+         (if (> product-quantity 0)
            [:a.cart.populated
             (utils/route-to data events/navigate-cart)
-            item-count]
+            product-quantity]
            [:a.cart
             (utils/route-to data events/navigate-cart)]))
        (when (= (get-in data keypaths/navigation-event) events/navigate-home)

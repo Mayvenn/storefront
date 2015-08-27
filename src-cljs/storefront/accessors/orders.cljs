@@ -26,7 +26,7 @@
          (last)
          :line-items)))
 
-(defn product-items ;;TODO Rename to product-items
+(defn product-items
   "Returns cart items from an order hashmap.
   Excludes shipping and items added by El Jefe.
   Cart line-items are added as the last shipment.
@@ -58,5 +58,5 @@
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
 
-(defn item-count [order]
-  (reduce + 0 (map (comp :quantity last) (line-items order))))
+(defn product-quantity [order]
+  (reduce + 0 (map (comp :quantity last) (product-items order))))

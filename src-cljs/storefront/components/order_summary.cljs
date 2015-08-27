@@ -95,7 +95,7 @@
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
     (let [adjustments (all-order-adjustments order)
-          quantity    (orders/item-count order)]
+          quantity    (orders/product-quantity order)]
       [:tbody
        (when-not (empty? adjustments)
          (list
