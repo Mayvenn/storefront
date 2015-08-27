@@ -419,12 +419,8 @@
    "/v2/place-order"
    request-keys/place-order
    {:params order
-    :handler #(handle-message events/api-success-update-order-place-order
-                              {:order %
-                               :navigate [events/navigate-order-complete
-                                          {:order-id (:order-id %)
-                                        ;(get-in app-state keypaths/order-number)
-                                           }]})}))
+    :handler #(handle-message events/navigate-order-complete {:order %
+                                                              :order-id (:number %)})}))
 
 (defn inc-line-item [handle-message order {:keys [variant-id] :as params}]
   (api-req
