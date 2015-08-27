@@ -8,7 +8,7 @@
 
 (defn insert []
   (insert-tag-with-callback
-   (src-tag "https://js.stripe.com/v2/stripe.js" "stripe-is-great")
+   (src-tag "https://js.stripe.com/v2/stripe.js" "stripe")
    (fn [] (js/Stripe.setPublishableKey config/stripe-publishable-key))))
 
 (defn create-token [app-state cardholder-name number cvc exp-month exp-year]
