@@ -115,7 +115,7 @@
          (list
           [:tr.store-credit-used.order-summary-row.adjustment
            [:td [:h5 "Store Credit"]]
-           [:td [:h5 (as-money (:amount store-credit))]]]
+           [:td [:h5 (as-money (- (:amount store-credit)))]]]
           [:tr.balance-due.order-summary-row.cart-total
            [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
            [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]]))])]])
