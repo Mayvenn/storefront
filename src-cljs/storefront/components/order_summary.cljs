@@ -31,7 +31,7 @@
      [:td
       [:h5 name]]
      [:td
-      [:h5 (as-money price)]]]))
+      [:h5 (as-money (- price))]]]))
 
 (defn- display-adjustments [adjustments]
   (map display-adjustment-row adjustments))
