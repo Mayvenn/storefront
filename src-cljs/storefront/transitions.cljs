@@ -51,6 +51,8 @@
   (assoc-in app-state keypaths/return-navigation-event event))
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
+  (js/console.log "its all a lie " (clj->js (first (get-in app-state keypaths/shipping-methods))))
+  (js/console.log "mentiras " (clj->js (orders/shipping-item (:order app-state))))
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
                 (merge (first (get-in app-state keypaths/shipping-methods))
@@ -257,8 +259,9 @@
 (defmethod transition-state events/api-success-shipping-methods [_ events {:keys [shipping-methods]} app-state]
   (-> app-state
       (assoc-in keypaths/shipping-methods shipping-methods)
-      (assoc-in keypaths/checkout-selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                                                  (orders/shipping-item (:order app-state))))))
+      (assoc-in keypaths/checkout-selected-shipping-method
+                (merge (first shipping-methods)
+                       (orders/shipping-item (:order app-state))))))
 
 (defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
   (-> app-state
