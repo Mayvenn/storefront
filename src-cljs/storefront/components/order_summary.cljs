@@ -41,7 +41,7 @@
    [:td
     [:h5 (:options-text shipping)]]
    [:td
-    [:h5 (as-money (reduce * ((juxt :quantity :unit-price) shipping)))]]])
+    [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])
 
 (defn- display-variant-options [{:keys [name value]}]
   (field (str name ": ") (if (= name "Length") (str value "\"") value)))
