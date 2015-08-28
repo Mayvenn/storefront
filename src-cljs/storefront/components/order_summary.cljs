@@ -22,8 +22,7 @@
 
 (defn- all-order-adjustments [order]
   (conj (:adjustments order)
-        (tax-adjustment order)
-        #_(shipping-adjustment order))) ;;TODO Manifest this stub. MATTTTHHHHHHHH
+        (tax-adjustment order)))
 
 (defn- display-adjustment-row [{:keys [name price]}]
   (when-not (= price 0)
