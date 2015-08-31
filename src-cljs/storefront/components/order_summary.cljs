@@ -47,15 +47,9 @@
 
 (defn- display-line-item [data interactive? [variant-id line-item]]
   [:div.line-item
-   [:a
-    #_(utils/route-to data events/navigate-product {:product-path (:product-slug line-item)})
-    [:img {:src (:product-image line-item)
-           :alt (:product-name line-item)}]]
+   [:a [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
-    [:h4
-     [:a
-      #_(utils/route-to data events/navigate-product {:product-path (:product-slug variant)})
-      (:product-name line-item)]]
+    [:h4 [:a (:product-name line-item)]]
     (:variant-option-display line-item)
     (map display-variant-options (:options line-item))
     (when (not interactive?)
