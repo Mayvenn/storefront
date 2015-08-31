@@ -8,7 +8,7 @@ Storefront is built primarily using ClojureScript and Om, with a smidgen of Cloj
 On the server side, there is a simple static file server with some redirects and a very tiny bit of dynamic code (for robots and stuff).
 
 ## Client Architecture
-Storefront's Om code is built around a single application state and two disparate [events][2] systems, [transistions][0] and [effects][1].
+Storefront's Om code is built around a single application state and two disparate [events][2] systems, [transitions][0] and [effects][1].
 Events processed in transitions mutate state, e.g. adding product information after it has been retrieved.
 On the other hand, those processed in effects cause side-effects, such as making api calls and causing animations.
 Despite being separate, the two event systems operate on the same events.
@@ -26,7 +26,7 @@ For example, lets say the [navigate-product][3] event, equivilant to ```[:naviga
  7. Via the magic of Om (and therefore react) bindings, the product information is bound from the application state.
 
 
-[Here is some more information about effects and transistions][8]
+[Here is some more information about effects and transitions][8]
 
 ## ClojureScript Directory Structure
 Starting at [/src-cljs/storefront/][13], there are some directories.

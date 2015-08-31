@@ -48,7 +48,14 @@
        [:div.taxon-from-price
         [:span "From: "]
         [:br]
-        (as-money-without-cents (product :from_price))]]]]))
+        (let [variant (-> product products/all-variants first)]
+          (if (= (variant :price) (variant :original_price))
+            (as-money-without-cents (variant :price))
+            (list
+             [:span.original-price
+              (as-money-without-cents (variant :original_price))]
+             [:span.current-price
+              (as-money-without-cents (variant :price))])))]]]]))
 
 (defn category-component [data owner]
   (om/component

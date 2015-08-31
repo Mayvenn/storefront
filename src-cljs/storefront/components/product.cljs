@@ -15,10 +15,11 @@
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]))
 
-(defn display-price [app-state product]
-  (let [variant-query (get-in app-state keypaths/browse-variant-query)
-        variant (->> product all-variants (query/get variant-query))]
-    (as-money-without-cents (:price variant))))
+(defn selected-variant [app-state product]
+  (let [variant-query (get-in app-state keypaths/browse-variant-query)]
+    (->> product
+         all-variants
+         (query/get variant-query))))
 
 (defn display-product-image [image]
   [:img {:src (:product_url image)}])
@@ -127,9 +128,19 @@
                                                          :dec-event events/control-counter-dec
                                                          :set-event events/control-counter-set}})]
                [:div#product-price.product-price
-                [:span.price-label "Price:"]
-                [:span.price.selling {:item-prop "price"}
-                 (display-price data product)]
+                (let [variant (selected-variant data product)]
+                  (if (= (variant :price) (variant :original_price))
+                    (list
+                     [:span.price-label "Price:"]
+                     [:span.price.selling {:item-prop "price"}
+                      (as-money-without-cents (:price variant))])
+                    (list
+                     [:span.price-label "New Price:"]
+                     [:span.price.selling {:item-prop "price"}
+                      [:span.original-price
+                       (as-money-without-cents (:original_price variant))]
+                      [:span.current-price
+                       (as-money-without-cents (:price variant))]])))
                 [:span {:item-prop "priceCurrency" :content (:currency product)}]
                 (if (get-in product [:master :can_supply?])
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
