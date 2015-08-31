@@ -111,7 +111,7 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
-(def api-success-address (conj api-success :address))
+
 (def api-success-account (conj api-success :account))
 (def api-success-manage-account (conj api-success :manage-account))
 (def api-success-stylist-manage-account (conj api-success :stylist-manage-account))
@@ -120,16 +120,11 @@
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-stylist-bonus-credits (conj api-success :stylist-bonus-credits))
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
-(def api-success-create-order (conj api-success :create-order))
+
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-get-order (conj api-success :order))
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
-
-(def api-success-cart (conj api-success :cart))
-(def api-success-cart-update (conj api-success-cart :update))
-(def api-success-cart-update-checkout (conj api-success-cart-update :checkout))
-(def api-success-cart-update-coupon (conj api-success-cart-update :coupon))
 
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-update-order-update-address (conj api-success-update-order :update-address))
@@ -140,7 +135,6 @@
 (def api-success-my-orders (conj api-success :my-orders))
 
 (def api-success-shipping-methods (conj api-success :shipping-methods))
-
 
 (def api-failure (conj api :failure))
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))

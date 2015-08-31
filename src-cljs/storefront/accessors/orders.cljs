@@ -12,8 +12,8 @@
   (not= (js/parseFloat (:order_total_after_store_credit order))
         0))
 
-(defn incomplete? [order] ;;TODO remove unnecessary states
-  (-> order :state #{"cart" "address" "delivery" "payment" "confirm"}))
+(defn incomplete? [order]
+  (-> order :state #{"cart"} boolean))
 
 (defn line-items
   "Returns line items from an order hashmap.
@@ -60,3 +60,5 @@
 
 (defn product-quantity [order]
   (reduce + 0 (map (comp :quantity last) (product-items order))))
+
+

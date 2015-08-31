@@ -274,12 +274,6 @@
 (defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
   (modify-cart app-state variant-id api/delete-line-item))
 
-(defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
-  (api/add-promotion-code (get-in app-state keypaths/handle-message)
-                          (get-in app-state keypaths/order-number)
-                          (get-in app-state keypaths/order-token)
-                          (get-in app-state keypaths/cart-coupon-code)))
-
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
@@ -475,12 +469,6 @@
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event order app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
-
-(defmethod perform-effects events/api-success-cart-update-coupon [_ _ _ app-state]
-  (send app-state
-        events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                   :navigation [events/navigate-cart {}]})
-  (send app-state events/flash-dismiss-failure))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
   (when (get-in app-state keypaths/checkout-save-my-addresses)

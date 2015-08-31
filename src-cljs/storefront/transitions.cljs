@@ -5,6 +5,7 @@
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
             [storefront.state :as state]
+            [storefront.utils.combinators :refer [map-values]]
             [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]
@@ -219,7 +220,7 @@
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)
       (assoc-in keypaths/cart-quantities
-                (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/product-items order))))
+                (map-values :quantity (orders/product-items order)))
       (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
@@ -232,7 +233,7 @@
                   (merge (first (get-in app-state keypaths/shipping-methods))
                          (orders/shipping-item order)))
         (assoc-in keypaths/cart-quantities
-                  (into {} (map (fn [[k v]] [k (:quantity v)]) (orders/product-items order)))))
+                  (map-values :quantity (orders/product-items order))))
     app-state))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
@@ -251,8 +252,10 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
-(defn default-credit-card-name [app-state {:keys [firstname lastname]}]
-  (assoc-in app-state keypaths/checkout-credit-card-name (str firstname " " lastname)))
+(defn default-credit-card-name [app-state {:keys [first-name last-name]}]
+  (if (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
+    (assoc-in app-state keypaths/checkout-credit-card-name (str first-name " " last-name))
+    app-state))
 
 (defmethod transition-state events/api-success-shipping-methods [_ events {:keys [shipping-methods]} app-state]
   (-> app-state
@@ -266,9 +269,6 @@
       (merge {:billing-address billing-address
               :shipping-address shipping-address})
       (default-credit-card-name billing-address)))
-
-(defmethod transition-state events/api-success-address [_ event args app-state]
-  (update-account-address app-state args))
 
 (def vals-empty? (comp (partial every? string/blank?) vals))
 
@@ -293,12 +293,6 @@
       (assoc-in keypaths/last-order order)
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/order {})))
-
-(defmethod transition-state events/api-success-cart-update [_ event {:keys [order]} app-state]
-  (assoc-in app-state keypaths/order order))
-
-(defmethod transition-state events/api-success-cart-update-coupon [_ event _ app-state]
-  (assoc-in app-state keypaths/cart-coupon-code ""))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))
