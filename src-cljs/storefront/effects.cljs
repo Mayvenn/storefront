@@ -467,11 +467,14 @@
       (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
-  (if (orders/incomplete? order)
-    (if (= (order :number) (get-in app-state keypaths/order-number))
-      (save-cookie app-state true)
-      (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
+  (if (and (orders/incomplete? order)
+           (= (order :number)
+              (get-in app-state keypaths/order-number)))
+    (save-cookie app-state true)
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
+
+(defmethod perform-effects events/api-success-update-order-place-order [_ event order app-state]
+  (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-success-cart-update-coupon [_ _ _ app-state]
   (send app-state

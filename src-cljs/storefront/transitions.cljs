@@ -51,8 +51,6 @@
   (assoc-in app-state keypaths/return-navigation-event event))
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
-  (js/console.log "its all a lie " (clj->js (first (get-in app-state keypaths/shipping-methods))))
-  (js/console.log "mentiras " (clj->js (orders/shipping-item (:order app-state))))
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
                 (merge (first (get-in app-state keypaths/shipping-methods))
@@ -67,7 +65,7 @@
                     (get-in app-state keypaths/user-total-available-store-credit)))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
-  (assoc-in app-state keypaths/past-order-id (args :order-id)))
+  (assoc-in app-state keypaths/past-order-id (:number args)))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
@@ -290,13 +288,11 @@
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
-(defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (if (orders/incomplete? order)
-    (assoc-in app-state keypaths/order order)
-    (-> app-state
-        (assoc-in keypaths/last-order order)
-        (assoc-in keypaths/checkout state/initial-checkout-state)
-        (assoc-in keypaths/order {}))))
+(defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
+  (-> app-state
+      (assoc-in keypaths/last-order order)
+      (assoc-in keypaths/checkout state/initial-checkout-state)
+      (assoc-in keypaths/order {})))
 
 (defmethod transition-state events/api-success-cart-update [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/order order))
