@@ -9,15 +9,16 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]))
 
-(defn category [data taxon]
+(defn category [data taxon index]
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
     [:a.hair-category-link (utils/route-to data
                                            events/navigate-category
                                            {:taxon-path taxon-path})
      [:div.hair-container.not-decorated.no-margin
-      [:div.hair-taxon {:class taxon-path}
-       [:p.hair-taxon-name (string/capitalize taxon-name)]]
+      (when (> index 5)
+        {:class "extra-wide"})
+      [:div.hair-taxon {:class taxon-path}]
       [:div.hair-image.image-cover {:class taxon-path}]]]))
 
 (defn home-component [data owner]
@@ -40,7 +41,8 @@
        {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]]
      [:div.squashed-hair-categories
       (map (partial category data)
-           (filter-nav-taxons (get-in data keypaths/taxons)))
+           (filter-nav-taxons (get-in data keypaths/taxons))
+           (range))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content
       {:on-click (fn [_] (analytics/track-event "Banner"

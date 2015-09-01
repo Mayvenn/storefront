@@ -85,6 +85,16 @@
    {:handler
     #(handle-message events/api-success-taxons (select-keys % [:taxons]))}))
 
+(defn get-builder-taxons [handle-message cache]
+  (cache-req
+   cache
+   handle-message
+   GET
+   "/bundle-builder-nav-taxonomy"
+   request-keys/get-taxons
+   {:handler
+    #(handle-message events/api-success-taxons (select-keys % [:taxons]))}))
+
 (defn get-store [handle-message cache store-slug]
   (cache-req
    cache

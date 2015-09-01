@@ -157,20 +157,23 @@ div#home-content {
   .hair-container {
     position: relative;
     width: 167px;
-    height: 168px;
+    height: 135px;
 
     .hair-image {
       position: absolute;
       top: 0;
       left: 0;
-      width: 167px;
-      height: 168px;
+    }
+
+    &.extra-wide {
+      width: 510px;
+      height: 66px;
     }
   }
 
   a.hair-category-link {
     width: 167px;
-    margin: 2px;
+    margin: 0 2px;
   }
 
   .hair-taxon {

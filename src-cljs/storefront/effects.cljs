@@ -32,8 +32,11 @@
   (analytics/remove-tracking))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
-  (api/get-taxons (get-in app-state keypaths/handle-message)
-                  (get-in app-state keypaths/api-cache))
+  (if (experiments/display-variation app-state "bundle-builder")
+    (api/get-builder-taxons (get-in app-state keypaths/handle-message)
+                            (get-in app-state keypaths/api-cache))
+    (api/get-taxons (get-in app-state keypaths/handle-message)
+                    (get-in app-state keypaths/api-cache)))
   (api/get-store (get-in app-state keypaths/handle-message)
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug))
@@ -508,3 +511,7 @@
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
   (reviews/stop))
+
+(defmethod perform-effects events/optimizely [_ event args app-state]
+  (when (= (:variation args) "bundle-builder")
+    (send app-state events/navigate)))
