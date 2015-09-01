@@ -514,4 +514,4 @@
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (when (= (:variation args) "bundle-builder")
-    (send app-state events/navigate)))
+    (apply send app-state (get-in app-state keypaths/navigation-message))))
