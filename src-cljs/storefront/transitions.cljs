@@ -288,6 +288,9 @@
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
+(defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
+  (assoc-in app-state keypaths/order order))
+
 (defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
   (-> app-state
       (assoc-in keypaths/last-order order)

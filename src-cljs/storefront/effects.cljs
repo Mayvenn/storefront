@@ -253,6 +253,12 @@
    (map #(select-keys % [:id :quantity :variant_id]))
    (map #(assoc % :quantity (-> % :id quantities)))))
 
+(defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
+  (api/add-promotion-code (get-in app-state keypaths/handle-message)
+                          (get-in app-state keypaths/order-number)
+                          (get-in app-state keypaths/order-token)
+                          (get-in app-state keypaths/cart-coupon-code)))
+
 (defmethod perform-effects events/control-click-category-product [_ _ {:keys [target taxon]} app-state]
   (analytics/add-product target)
   (analytics/set-action "click" :list (:name taxon))
