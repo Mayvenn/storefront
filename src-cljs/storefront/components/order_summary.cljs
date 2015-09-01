@@ -18,7 +18,7 @@
    [:span.cart-value value]])
 
 (defn- tax-adjustment [order]
-  {:name "Tax" :price (:tax-total order)})
+  {:name "Tax" :price (- (:tax-total order))})
 
 (defn- all-order-adjustments [order]
   (conj (:adjustments order)
