@@ -13,7 +13,12 @@
     (let [store (get-in data keypaths/store)]
       [:header#header.header (when-not (store :profile_picture_url)
                                {:class "no-picture"})
-       [:a.header-menu {:href "#" :on-click (fn [_] (send data events/control-menu-expand))} "Menu"]
+       [:a.header-menu {:href "#"
+                        :on-click (fn [_]
+                                    (send data
+                                          events/control-menu-expand
+                                          {:keypath keypaths/menu-expanded}))}
+        "Menu"]
        [:a.logo (utils/route-to data events/navigate-home)]
        (let [product-quantity (orders/product-quantity (get-in data keypaths/order))]
          (if (> product-quantity 0)
