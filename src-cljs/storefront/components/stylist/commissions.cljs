@@ -69,8 +69,12 @@
       [:h2.header-bar-heading.commissions "Commissions"]
 
       (om/build stylist-dashboard-nav-component data)
-
-      [:.dashboard-content
+      [:.update-coming
+       [:.update-image]
+       [:h4.update-header "Update Coming"]
+       [:.update-text "'Comissions' is getting a fresh update."]
+       [:.update-help [:a {:href "/help"} "Contact Customer Service"]]]
+      #_[:.dashboard-content
        (when-let [next-commission-amount
                   (get-in data keypaths/stylist-commissions-next-amount)]
          [:#next-commission-summary.dashboard-summary

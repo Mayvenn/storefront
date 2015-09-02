@@ -98,9 +98,9 @@
                              user-token)))
 
 (defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
-                                 user-token)))
+  (comment (when-let [user-token (get-in app-state keypaths/user-token)]
+             (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
+                                          user-token))))
 
 (defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -156,9 +156,9 @@
   (experiments/track-event "place-order"))
 
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-my-orders (get-in app-state keypaths/handle-message)
-                       user-token)))
+  (comment (when-let [user-token (get-in app-state keypaths/user-token)]
+             (api/get-my-orders (get-in app-state keypaths/handle-message)
+                                user-token))))
 
 (defmethod perform-effects events/navigate-not-found [_ event args app-state]
   (send app-state
