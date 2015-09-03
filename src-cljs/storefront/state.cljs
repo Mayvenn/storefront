@@ -24,7 +24,7 @@
                       :zipcode ""
                       :phone ""}
    :save-my-address true
-   :use-billing-address true
+   :ship-to-billing-address true
    :credit-card-name ""
    :credit-card-number ""
    :credit-card-expiration ""
