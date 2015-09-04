@@ -118,7 +118,7 @@
    {:handler
     #(handle-message events/api-success-promotions %)}))
 
-(defn get-products [handle-message cache taxon-path]
+(defn get-products [handle-message cache taxon-path user-token]
   (cache-req
    cache
    handle-message
@@ -126,7 +126,8 @@
    "/products"
    (conj request-keys/get-products taxon-path)
    {:params
-    {:taxon_name (taxon-name-from taxon-path)}
+    {:taxon_name (taxon-name-from taxon-path)
+     :user-token user-token}
     :handler
     #(handle-message events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path}))}))
