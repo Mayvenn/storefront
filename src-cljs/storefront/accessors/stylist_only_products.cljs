@@ -201,6 +201,7 @@
     "bankshairstyles"
     "anquinettesbeautyboutique"
     "mary"
+    "bob"
     "justin"})
 
 (def stylist-only-products-available? (comp boolean whitelisted-slugs))
