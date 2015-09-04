@@ -206,7 +206,7 @@
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
         variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (:variants product))]
+                           (products/all-variants product))]
     (api/add-to-bag
      (get-in app-state keypaths/handle-message)
      {:variant variant
