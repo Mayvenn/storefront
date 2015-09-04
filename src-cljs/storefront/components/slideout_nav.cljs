@@ -6,7 +6,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
-            [storefront.accessors.stylist-only-products :refer [stylist-only-products-available?]]
             [storefront.messages :refer [send]]))
 
 (defn close-all-menus [app-state]
@@ -123,16 +122,16 @@
          [:ul.horizontal-nav-menu
           [:li
            [:a
-            (if (and (own-store? data) (stylist-only-products-available? store-slug))
+            (if (own-store? data)
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
               (when-let [path (default-nav-taxon-path data)]
                 (close-and-route data events/navigate-category
                                  {:taxon-path path})))
-            (if (and (own-store? data) (stylist-only-products-available? store-slug))
+            (if (own-store? data)
               "Shop "
               "Shop")
-            (when (and (own-store? data) (stylist-only-products-available? store-slug))
+            (when (own-store? data)
               [:figure.down-arrow])]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
           [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
@@ -190,7 +189,7 @@
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
              :full-width? true}))
-          (when (and (own-store? data) (stylist-only-products-available? store-slug))
+          (when (own-store? data)
             (slideout-nav-link
              data
              (merge
