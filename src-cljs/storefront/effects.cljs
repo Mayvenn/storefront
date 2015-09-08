@@ -487,7 +487,7 @@
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
   (save-cookie app-state true)
   (when navigate
-    (routes/enqueue-navigate app-state navigate)))
+    (routes/enqueue-navigate app-state navigate {:number (:number order)})))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
   (send app-state
