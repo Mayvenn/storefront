@@ -321,8 +321,8 @@
     (api/update-shipping-method (get-in app-state keypaths/handle-message)
                                 (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                        {:shipping-method-sku (get-in
-                                                             app-state
-                                                             keypaths/checkout-selected-shipping-method-sku)}))))
+                                                              app-state
+                                                              keypaths/checkout-selected-shipping-method-sku)}))))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments
@@ -366,8 +366,7 @@
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
   (api/place-order (get-in app-state keypaths/handle-message)
                    (merge (get-in app-state keypaths/order)
-                          {:session-id (get-in app-state keypaths/session-id)
-                           :browser-ip "127.0.0.1"})))
+                          {:session-id (get-in app-state keypaths/session-id)})))
 
 (defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
