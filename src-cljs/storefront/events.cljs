@@ -7,6 +7,7 @@
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
+(def navigate-categories (conj navigate :categories))
 (def navigate-product (conj navigate :product))
 (def navigate-guarantee (conj navigate :guarantee))
 (def navigate-help (conj navigate :help))

@@ -6,7 +6,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
-            [storefront.messages :refer [send]]))
+            [storefront.messages :refer [send]]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn close-all-menus [app-state]
   (send app-state
@@ -125,9 +126,11 @@
             (if (and false (own-store? data))
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
-              (when-let [path (default-nav-taxon-path data)]
-                (close-and-route data events/navigate-category
-                                 {:taxon-path path})))
+              (if (experiments/display-variation data "bundle-builder")
+                (close-and-route data events/navigate-categories)
+                (when-let [path (default-nav-taxon-path data)]
+                  (close-and-route data events/navigate-category
+                                   {:taxon-path path}))))
             (if (and false (own-store? data))
               "Shop "
               "Shop")
@@ -139,9 +142,11 @@
           [:ul.shop-menu-expanded.open
            [:li
             [:a
-             (when-let [path (default-nav-taxon-path data)]
-               (close-and-route data events/navigate-category
-                                {:taxon-path path}))
+             (if (experiments/display-variation data "bundle-builder")
+               (close-and-route data events/navigate-categories)
+               (when-let [path (default-nav-taxon-path data)]
+                 (close-and-route data events/navigate-category
+                                  {:taxon-path path})))
              "Hair Extensions"]]
            [:li
             [:a
@@ -182,10 +187,11 @@
           (slideout-nav-link
            data
            (merge
-            (if-let [path (default-nav-taxon-path data)]
-              (close-and-route data events/navigate-category
-                               {:taxon-path path})
-              {})
+            (if (experiments/display-variation data "bundle-builder")
+              (close-and-route data events/navigate-categories)
+              (when-let [path (default-nav-taxon-path data)]
+                (close-and-route data events/navigate-category
+                                 {:taxon-path path})))
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
              :full-width? true}))
@@ -193,10 +199,9 @@
             (slideout-nav-link
              data
              (merge
-              (if-let [path (default-stylist-taxon-path data)]
+              (when-let [path (default-stylist-taxon-path data)]
                 (close-and-route data events/navigate-category
-                                 {:taxon-path path})
-                {})
+                                 {:taxon-path path}))
               {:icon-class "stylist-products"
                :label "Stylist Products"
                :full-width? true})))]

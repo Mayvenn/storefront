@@ -32,9 +32,11 @@
       [:a.free-shipping-action
        {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
       [:div.shop-now
-       (when-let [path (default-nav-taxon-path data)]
-         [:a.full-link (utils/route-to data events/navigate-category
-                                       {:taxon-path path})])]
+       (if (experiments/display-variation data "bundle-builder")
+         [:a.full-link (utils/route-to data events/navigate-categories)]
+         (when-let [path (default-nav-taxon-path data)]
+           [:a.full-link (utils/route-to data events/navigate-category
+                                         {:taxon-path path})]))]
       [:a.home-30-day-guarantee
        (utils/route-to data events/navigate-guarantee)]
       [:a.home-free-shipping
