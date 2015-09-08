@@ -285,6 +285,9 @@
       (update-account-address args)
       (default-checkout-addresses billing-address shipping-address)))
 
+(defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
+  (assoc-in app-state keypaths/cart-coupon-code ""))
+
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 

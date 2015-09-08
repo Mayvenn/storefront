@@ -536,3 +536,9 @@
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
   (reviews/stop))
+
+(defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ _ app-state]
+  (send app-state
+        events/flash-show-success {:message "The coupon code was successfully applied to your order."
+                                   :navigation [events/navigate-cart {}]})
+  (send app-state events/flash-dismiss-failure))
