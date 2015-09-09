@@ -36,10 +36,15 @@
     (handle-message events/api-failure-validation-errors
                     {:details {"" [(get-in response [:response :exception])]}})
 
+    ;; kill order cookies if no order is found
+    (= "order-not-found" (-> response :response :error-code))
+    (handle-message events/api-handle-order-not-found response)
+
     ;; Standard waiter response
     (seq (get-in response [:response :error-code]))
     (handle-message events/api-failure-validation-errors
                     (select-keys (:response response) [:error-message :details]))
+
 
     :else
     (handle-message events/api-failure-bad-server-response response)))
@@ -404,8 +409,8 @@
                          (drop 3 x)
                          x)))
           (callback [resp]
-                    (handle-message events/api-success-sms-number
-                                    {:number (-> resp :available_number normalize-number)}))]
+            (handle-message events/api-success-sms-number
+                            {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
       {:handler callback
        :headers {"Accepts" "application/json"

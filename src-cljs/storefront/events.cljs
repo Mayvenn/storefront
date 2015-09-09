@@ -141,6 +141,9 @@
 (def api-failure-bad-server-response (conj api-failure :bad-server-response))
 (def api-failure-validation-errors (conj api-failure :validation-errors))
 
+(def api-handle (conj api :handle))
+(def api-handle-order-not-found (conj api-handle :order-not-found))
+
 (def flash [:flash])
 (def flash-show (conj flash :show))
 (def flash-dismiss (conj flash :dismiss))

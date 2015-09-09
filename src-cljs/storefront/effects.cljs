@@ -240,6 +240,11 @@
                         (get-in app-state keypaths/user)
                         {:remember? remember?}))
 
+(defmethod perform-effects events/api-handle-order-not-found [_ _ _ app-state]
+  (cookie-jar/save-order (get-in app-state keypaths/cookie)
+                         (get-in app-state keypaths/order)
+                         {:remember? nil}))
+
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
   (api/update-account (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/user-id)
