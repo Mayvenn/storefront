@@ -123,7 +123,7 @@
          [:ul.horizontal-nav-menu
           [:li
            [:a
-            (if (and false (own-store? data))
+            (if (own-store? data)
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
               (if (experiments/display-variation data "bundle-builder")
@@ -131,10 +131,10 @@
                 (when-let [path (default-nav-taxon-path data)]
                   (close-and-route data events/navigate-category
                                    {:taxon-path path}))))
-            (if (and false (own-store? data))
+            (if (own-store? data)
               "Shop "
               "Shop")
-            (when (and false (own-store? data))
+            (when (own-store? data)
               [:figure.down-arrow])]]
           [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
           [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
@@ -195,7 +195,7 @@
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
              :full-width? true}))
-          (when (and false (own-store? data))
+          (when (own-store? data)
             (slideout-nav-link
              data
              (merge
