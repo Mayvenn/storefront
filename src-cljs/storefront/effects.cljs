@@ -366,7 +366,8 @@
                              (get-in app-state keypaths/checkout-credit-card-number)
                              (get-in app-state keypaths/checkout-credit-card-ccv)
                              (first expiry)
-                             (last expiry))))))
+                             (last expiry)
+                             (get-in app-state (conj keypaths/order :billing-address)))))))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
   (api/place-order (get-in app-state keypaths/handle-message)
