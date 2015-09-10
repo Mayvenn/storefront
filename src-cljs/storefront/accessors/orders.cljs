@@ -61,4 +61,5 @@
 (defn product-quantity [order]
   (reduce + 0 (map (comp :quantity last) (product-items order))))
 
-
+(defn products-subtotal [order]
+  (reduce + 0 (map (comp line-item-subtotal last) (product-items order))))

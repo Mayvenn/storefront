@@ -97,7 +97,7 @@
             [:h5 (str "Subtotal (" quantity " Item"
                       (when (> quantity 1) "s") ")")]]
            [:td
-            [:h5 (as-money (:line-items-total order))]]]
+            [:h5 (as-money (orders/products-subtotal order))]]]
           (display-adjustments adjustments)
           (when-let [shipping-item (orders/shipping-item order)]
             (display-shipment shipping-item))))
