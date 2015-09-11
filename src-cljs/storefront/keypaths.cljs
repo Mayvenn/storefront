@@ -58,6 +58,11 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
 
+(def bundle-builder (conj ui :bundle-builder))
+(def bundle-builder-grade (conj bundle-builder :grade))
+(def bundle-builder-origin (conj bundle-builder :origin))
+(def bundle-builder-length (conj bundle-builder :length))
+
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
 (def sign-in-password (conj sign-in :password))

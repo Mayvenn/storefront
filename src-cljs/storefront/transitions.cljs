@@ -90,6 +90,13 @@
                 (Math/abs)
                 (max 1))))
 
+(defmethod transition-state events/control-chooser-select [_ event {:keys [path applied-filters filtered-products choice], :as args} app-state]
+  (prn "select narrowed down products to " (map :name filtered-products))
+  (-> app-state
+      (update-in keypaths/bundle-builder select-keys applied-filters)
+      (assoc-in path choice)
+      (assoc-in [:ui :bundle :filtered-products] filtered-products)))
+
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 

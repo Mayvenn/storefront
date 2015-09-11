@@ -37,7 +37,7 @@
     {:history nil
      :cookie cookie
      :routes []
-     :optimizely {:variations #{}}
+     :optimizely {:variations #{"bundle-builder"}}
 
      :session-id (cookie-jar/force-session-id cookie)
 

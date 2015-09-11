@@ -1,4 +1,5 @@
-(ns storefront.accessors.products)
+(ns storefront.accessors.products
+  (:require [storefront.keypaths :as keypaths]))
 
 (defn graded? [product]
   (-> product
@@ -8,3 +9,9 @@
 
 (defn all-variants [product]
   (conj (:variants product) (:master product)))
+
+(defn for-taxon [data taxon]
+  (->> (get-in data keypaths/products)
+       vals
+       (sort-by :index)
+       (filter #(contains? (set (:taxon_ids %)) (:id taxon)))))
