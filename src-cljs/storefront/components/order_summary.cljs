@@ -30,7 +30,8 @@
      [:div.line-item-detail.interactive
       [:h4
        [:a
-        (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+        (when-not (experiments/display-variation data "bundle-builder")
+          (utils/route-to data events/navigate-product {:product-path (:slug variant)}))
         (:name variant)]]
       (map display-variant-options (:option_values variant))
       (when (not interactive?)
