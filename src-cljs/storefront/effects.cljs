@@ -4,7 +4,7 @@
             [storefront.api :as api]
             [storefront.routes :as routes]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.accessors.taxons :refer [taxon-name-from]]
+            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for]]
             [storefront.utils.query :as query]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.hooks.riskified :as riskified]
@@ -424,22 +424,27 @@
                                          (get-in app-state keypaths/navigation-message))))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (analytics/add-product product)
-  (analytics/set-action "detail")
-  (analytics/track-page (routes/path-for app-state
-                                         (get-in app-state keypaths/navigation-message)))
-  (opengraph/set-product-tags {:name (:name product)
-                               :image (when-let [image-url (->> product
-                                                                :master
-                                                                :images
-                                                                first
-                                                                :large_url)]
-                                        (str "http:" image-url))})
-  (send app-state
-        events/control-browse-variant-select
-        {:variant (if-let [variants (seq (-> product :variants))]
-                    (or (->> variants (filter :can_supply?) first) (first variants))
-                    (:master product))}))
+  (if (experiments/display-variation app-state "bundle-builder")
+    (routes/enqueue-navigate app-state
+                             events/navigate-category
+                             {:taxon-path (-> product :product_attrs :style first taxon-path-for)})
+    (do
+      (analytics/add-product product)
+      (analytics/set-action "detail")
+      (analytics/track-page (routes/path-for app-state
+                                             (get-in app-state keypaths/navigation-message)))
+      (opengraph/set-product-tags {:name (:name product)
+                                   :image (when-let [image-url (->> product
+                                                                    :master
+                                                                    :images
+                                                                    first
+                                                                    :large_url)]
+                                            (str "http:" image-url))})
+      (send app-state
+            events/control-browse-variant-select
+            {:variant (if-let [variants (seq (-> product :variants))]
+                        (or (->> variants (filter :can_supply?) first) (first variants))
+                        (:master product))}))))
 
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
