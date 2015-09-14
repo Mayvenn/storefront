@@ -40,9 +40,9 @@
       (when interactive?
         (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
               delete-request (query/get
-                               {:request-key
-                                (conj request-keys/delete-line-item (:id line-item))}
-                               (get-in data keypaths/api-requests))]
+                              {:request-key
+                               (conj request-keys/delete-line-item (:id line-item))}
+                              (get-in data keypaths/api-requests))]
           (list
            (om/build counter-component
                      data
