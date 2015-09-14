@@ -307,16 +307,22 @@
             (string/split (:name taxon) " ")))
           " Hair"]
          [:div.buy-now "Buy now and get FREE SHIPPING"]]]
-       [:.reviews
-        "Reviews"]
-       [:.carousel
-        "Images"]
-       (bundle-builder-steps data products selection-flow)
-       [:.summary
-        [:h3 "Summary"]
-        (summary-section data)
-        [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]]
-        ]]))))
+       (if (seq products)
+         [:div
+          [:.reviews]
+          [:.carousel
+           [:.hair-category-image {:class (taxon-path-for taxon)}]]
+          (bundle-builder-steps data products selection-flow)
+          [:.summary
+           [:h3 "Summary"]
+           (summary-section data)
+           [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]]
+           ]]
+         [:.spinner])
+       [:div.gold-features
+        [:figure.guarantee-feature]
+        [:figure.free-shipping-feature]
+        [:figure.triple-bundle-feature]]]))))
 
 (defn category-component [data owner]
   (apply (if (experiments/display-variation data "bundle-builder")
