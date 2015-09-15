@@ -91,7 +91,6 @@
                 (max 1))))
 
 (defmethod transition-state events/control-chooser-select [_ event {:keys [path applied-filters filtered-products choice], :as args} app-state]
-  (prn "select narrowed down products to " (map :name filtered-products))
   (-> app-state
       (update-in keypaths/bundle-builder select-keys applied-filters)
       (assoc-in path choice)
@@ -211,6 +210,7 @@
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
   (-> app-state
+      (update-in keypaths/bundle-builder dissoc :length)
       (update-in keypaths/browse-recently-added-variants
                  conj
                  {:id (variant :id)
@@ -287,7 +287,6 @@
                                         (merge quantities {(:id line-item)(:quantity line-item)}))
                                       {}
                                       (:line_items order))))
-
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))

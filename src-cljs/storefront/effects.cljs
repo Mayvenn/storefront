@@ -1,22 +1,22 @@
 (ns storefront.effects
-  (:require [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.api :as api]
-            [storefront.routes :as routes]
-            [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for]]
-            [storefront.utils.query :as query]
+  (:require [ajax.core :refer [-abort]]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
-            [storefront.hooks.riskified :as riskified]
-            [storefront.hooks.analytics :as analytics]
-            [storefront.hooks.experiments :as experiments]
-            [storefront.messages :refer [send send-later]]
-            [storefront.hooks.reviews :as reviews]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
+            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for]]
+            [storefront.api :as api]
+            [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
+            [storefront.events :as events]
+            [storefront.hooks.analytics :as analytics]
+            [storefront.hooks.experiments :as experiments]
             [storefront.hooks.opengraph :as opengraph]
-            [ajax.core :refer [-abort]]))
+            [storefront.hooks.reviews :as reviews]
+            [storefront.hooks.riskified :as riskified]
+            [storefront.keypaths :as keypaths]
+            [storefront.messages :refer [send send-later]]
+            [storefront.routes :as routes]
+            [storefront.utils.query :as query]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -198,8 +198,10 @@
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
-        variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (products/all-variants product))]
+        variant (if (experiments/display-variation app-state "bundle-builder")
+                  (products/selected-variant app-state)
+                  (query/get (get-in app-state keypaths/browse-variant-query)
+                             (products/all-variants product)))]
     (api/add-to-bag (get-in app-state keypaths/handle-message)
                     variant
                     product
@@ -510,8 +512,11 @@
   (analytics/track-event "UX" "click" "add to cart")
   (send-later app-state events/added-to-bag))
 
-(defmethod perform-effects events/added-to-bag [_ _ _ _]
-  (when-let [el (.querySelector js/document ".cart-button")]
+(defmethod perform-effects events/added-to-bag [_ _ _ app-state]
+  (when-let [el (.querySelector js/document
+                                (if (experiments/display-variation app-state "bundle-builder")
+                                  "#summary"
+                                  ".cart-button"))]
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]

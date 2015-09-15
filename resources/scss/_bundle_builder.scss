@@ -206,7 +206,33 @@
       }
   }
 
-  .summary {
+  #after-add {
+      margin: 0;
+      width: auto;
+
+      .added-to-bag-container {
+          margin: 0;
+      }
+
+      .item-added, .go-to-checkout {
+          font-family: Graphik-Medium;
+          text-align: center;
+          width: auto;
+          height: auto;
+          margin: .8em 0;
+          padding: .35rem 0;
+      }
+
+      .go-to-checkout {
+          background-color: #444;
+          text-transform: uppercase;
+          .cart-button {
+              padding: 1rem 0;
+          }
+      }
+  }
+
+  #summary {
       border-color: #a0a0a0;
       border-style: solid;
       border-width: 0;
@@ -224,7 +250,21 @@
 
       .price {
           color: #585858;
-          font-size: 2.8em;
+          font-size: 2.6em;
+          float: right;
+          margin-top: -.3rem;
+          margin-right: 1rem;
+
+          &::before {
+              content: "PRICE";
+              color: black;
+              display:block;
+              font-size: 1.1rem;
+              font-style: italic;
+              padding-left: 1rem;
+              letter-spacing: 2px;
+              line-height: 1.5em;
+          }
       }
 
       em.bundle-discount-callout {
@@ -238,6 +278,15 @@
           margin-top: 1rem;
           padding: .55rem 0;
           font-style: normal;
+      }
+
+      #add-to-cart-button {
+          margin: 0;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1;
       }
   }
 }

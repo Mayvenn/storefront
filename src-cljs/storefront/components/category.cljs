@@ -1,8 +1,10 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
+            [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name]]
+            [storefront.components.counter :refer [counter-component]]
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
@@ -90,25 +92,7 @@
         [:figure.triple-bundle-feature]
         [:feature.fs-feature]]]))))
 
-
-;;(defn bundle-builder-chooser [data all-choices valid-choices step-filters path]
-;;  [:.chooser
-;;   (map (fn [{choice :name position :position}]
-;;          [:div
-;;           [:input {:type "radio"
-;;                    :id choice
-;;                    :disabled (not (get valid-choices choice))
-;;                    :checked (= (get-in data path) choice)
-;;                    :on-change (utils/send-event-callback data
-;;                                                          events/control-chooser-select
-;;                                                          {:path path
-;;                                                           :step-filters step-filters
-;;                                                           :choice choice})}]
-;;           [:.choice
-;;            [:.choice-name choice]
-;;            [:.from-price "position " position]
-;;            [:label {:for choice}]]])
-;;        (sort-by :position all-choices))])
+;; Bundle builder below
 
 (defn choice-matches? [product [choice value]]
   (some (partial = value)
@@ -266,25 +250,35 @@
 
 
 ;; TODO: Fix this in the API because it's borderline incomprehensible
-(defn selected-variant [data]
-  (let [variants (mapcat :variants (get-in data [:ui :bundle :filtered-products]))
-        matches (filter
-                 (fn [variant] (= (-> variant :option_values first :name (#(str % "\"")))
-                                  (get-in data keypaths/bundle-builder-length)))
-                 variants)]
-    (when (= 1 (count matches))
-      (first matches))))
+
 
 (defn summary-format [data]
   (map (fn [[k v]] [:li (name k) ": " v])
        (get-in data keypaths/bundle-builder)))
 
+(defn price-preview [data variant]
+  (as-money (* (get-in data keypaths/browse-variant-quantity)
+               (:price variant))))
+
+(defn add-to-bag-button [data]
+  (if (query/get {:request-key request-keys/add-to-bag}
+                 (get-in data keypaths/api-requests))
+    [:button.large.primary#add-to-cart-button.saving]
+    [:button.large.primary#add-to-cart-button
+     {:on-click (utils/send-event-callback data events/control-browse-add-to-bag)}
+     "ADD TO BAG"]))
+
 (defn summary-section [data]
-  (let [variant (selected-variant data)]
+  (let [variant (products/selected-variant data)]
     (if variant
       [:.selected
        [:ul (summary-format data)]
-       [:.price (as-money (:price variant))]]
+       (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
+                                                :inc-event events/control-counter-inc
+                                                :dec-event events/control-counter-dec
+                                                :set-event events/control-counter-set}})
+       [:.price (price-preview data variant)]
+       (add-to-bag-button data)]
       [:.selected
        [:div (str "Select " (next-choice data) "!")]
        [:.price "$--.--"]])))
@@ -307,16 +301,23 @@
             (string/split (:name taxon) " ")))
           " Hair"]
          [:div.buy-now "Buy now and get FREE SHIPPING"]]]
+
        (if (seq products)
          [:div
           [:.reviews]
           [:.carousel
            [:.hair-category-image {:class (taxon-path-for taxon)}]]
           (bundle-builder-steps data products selection-flow)
-          [:.summary
+          [:#summary
            [:h3 "Summary"]
            (summary-section data)
            [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]]
+           (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
+             [:div#after-add {:style {:display "block"}}
+              [:div.added-to-bag-container
+               (map (partial display-bagged-variant data) bagged-variants)]
+              [:div.go-to-checkout
+               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])
            ]]
          [:.spinner])
        [:div.gold-features
