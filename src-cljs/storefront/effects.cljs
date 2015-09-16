@@ -84,10 +84,21 @@
                       "original")
                     (get-in app-state keypaths/user-token)))
 
+(defn bundle-builder-redirect [app-state product]
+  (when product
+    (routes/enqueue-navigate app-state
+                             events/navigate-category
+                             {:taxon-path (-> product :product_attrs :style first taxon-path-for)})))
+
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
-  (api/get-product (get-in app-state keypaths/handle-message)
-                   product-path)
-  (reviews/insert-reviews app-state))
+  (if (experiments/display-variation "bundle-builder")
+    (bundle-builder-redirect app-state
+                             (query/get (get-in data keypaths/browse-product-query)
+                                        (vals (get-in data keypaths/products))))
+    (do
+      (api/get-product (get-in app-state keypaths/handle-message)
+                       product-path)
+      (reviews/insert-reviews app-state))))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -427,9 +438,7 @@
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
   (if (experiments/display-variation app-state "bundle-builder")
-    (routes/enqueue-navigate app-state
-                             events/navigate-category
-                             {:taxon-path (-> product :product_attrs :style first taxon-path-for)})
+    (bundle-builder-redirect app-state product)
     (do
       (analytics/add-product product)
       (analytics/set-action "detail")
