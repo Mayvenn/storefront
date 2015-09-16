@@ -91,14 +91,13 @@
                              {:taxon-path (-> product :product_attrs :style first taxon-path-for)})))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
+  (api/get-product (get-in app-state keypaths/handle-message)
+                   product-path)
   (if (experiments/display-variation app-state "bundle-builder")
     (bundle-builder-redirect app-state
                              (query/get (get-in app-state keypaths/browse-product-query)
                                         (vals (get-in app-state keypaths/products))))
-    (do
-      (api/get-product (get-in app-state keypaths/handle-message)
-                       product-path)
-      (reviews/insert-reviews app-state))))
+    (reviews/insert-reviews app-state)))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
