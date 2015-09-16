@@ -260,8 +260,7 @@
          string/upper-case)))
 
 (defn price-preview [data variant]
-  (as-money (* (get-in data keypaths/browse-variant-quantity)
-               (:price variant))))
+  (as-money (:price variant)))
 
 (defn add-to-bag-button [data]
   (if (query/get {:request-key request-keys/add-to-bag}
