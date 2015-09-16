@@ -130,7 +130,12 @@
 (defn choice-checked? [data choice choice-type]
   (= (:name choice) (get-in data (choice-type-path choice-type))))
 
-(def selection-flow '(:grade :origin :length))
+(defn selection-flow [data]
+  (let [taxon-name (:name (query/get (get-in data keypaths/browse-taxon-query)
+                                (get-in data keypaths/taxons)))]
+    (condp = taxon-name
+      "closures" '(:style :material :origin :length)
+      '(:grade :origin :length))))
 
 (defn index-of [xs x]
   (or (reduce (fn [acc [idx elem]]
@@ -147,14 +152,15 @@
 
 (defn next-choice [data]
   (prn (last  (keys  (get-in data keypaths/bundle-builder))))
-  (->> (get-in data keypaths/bundle-builder)
-       keys
-       last
-       (index-of selection-flow)
-       inc
-       (nth selection-flow)
-       name
-       choose-string))
+  (let [flow (selection-flow data)]
+    (->> (get-in data keypaths/bundle-builder)
+         keys
+         last
+         (index-of flow)
+         inc
+         (nth flow)
+         name
+         choose-string)))
 
 (defn choice-selection-event [data choice-type filters-to-apply filtered-products choice]
   (utils/send-event-callback
@@ -195,7 +201,9 @@
 (defn format-subtext [choice-type subtext]
   (case choice-type
     :grade (str "From " (as-money subtext))
+    :material  (str "+ " (as-money subtext))
     :origin  (str "+ " (as-money subtext))
+    :style ""
     :length ""))
 
 (defn build-choices [data products choice-type filters-to-apply]
@@ -305,7 +313,7 @@
           [:.reviews]
           [:.carousel
            [:.hair-category-image {:class (taxon-path-for taxon)}]]
-          (bundle-builder-steps data products selection-flow)
+          (bundle-builder-steps data products (selection-flow data))
           [:#summary
            [:h3 "Summary"]
            (summary-section data)
