@@ -21,7 +21,10 @@
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
+  (-> app-state
+      (assoc-in keypaths/browse-taxon-query {taxon-path-for taxon-path})
+      (assoc-in keypaths/bundle-builder nil)
+      (assoc-in [:ui :bundle :filtered-products] nil)))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
   (let [taxon-id (js/parseInt (:taxon-id query-params))]
