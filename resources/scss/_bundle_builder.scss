@@ -7,6 +7,10 @@
       font-size: 1.8rem;
     }
 
+    h1 {
+      text-transform: capitalize;
+    }
+
     div.buy-now {
       padding-top:1em;
       display: block;
@@ -242,6 +246,9 @@
       margin: 0 1rem 1rem; 
       padding: 1rem 0;
 
+      .line-item-summary {
+          margin: 0.2rem 0 1.0rem 0;
+      }
 
       h3 {
           color: #585858;

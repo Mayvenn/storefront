@@ -243,16 +243,21 @@
                                  (build-choices data
                                                 products
                                                 choice-type
-                                                (get key-steps idx)
-                                                ))) keys)))
+                                                (get key-steps idx))))
+                 keys)))
 
 
 ;; TODO: Fix this in the API because it's borderline incomprehensible
 
 
 (defn summary-format [data]
-  (map (fn [[k v]] [:li (name k) ": " v])
-       (get-in data keypaths/bundle-builder)))
+  (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
+                         (get-in data keypaths/taxons))]
+    (->> (get-in data keypaths/bundle-builder)
+         vals
+         (#(concat % [(:name taxon)]))
+         (string/join " ")
+         string/upper-case)))
 
 (defn price-preview [data variant]
   (as-money (* (get-in data keypaths/browse-variant-quantity)
@@ -270,7 +275,7 @@
   (let [variant (products/selected-variant data)]
     (if variant
       [:.selected
-       [:ul (summary-format data)]
+       [:.line-item-summary (summary-format data)]
        (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
                                                 :inc-event events/control-counter-inc
                                                 :dec-event events/control-counter-dec
@@ -292,11 +297,7 @@
         [:h1
          [:div
           "Select Your "
-          (string/join
-           " "
-           (map
-            string/capitalize
-            (string/split (:name taxon) " ")))
+          (:name taxon)
           " Hair"]
          [:div.buy-now "Buy now and get FREE SHIPPING"]]]
 
