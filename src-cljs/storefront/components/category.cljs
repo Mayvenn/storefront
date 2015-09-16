@@ -174,7 +174,7 @@
 
 (defn grade-minimums [all-products]
   (let [grade-name #(-> % :product_attrs :grade first :name keyword)
-        low-price #(-> % :from_price)]
+        low-price  #(-> % :from_price)]
     (reduce (fn [acc product]
               (update-in acc [(grade-name product)]
                          (partial min-strs (low-price product))))
@@ -184,12 +184,12 @@
 (defn origin-minimums [all-products]
   (let [origin-name #(-> % :product_attrs :origin first :name keyword)
         low-price   #(-> % :from_price)
-        min-prices (reduce (fn [acc product]
-                             (update-in acc [(origin-name product)]
-                                        (partial min-strs (low-price product))))
-                           {}
-                           all-products)
-        minnest-price (apply min (vals min-prices))] ;; blame Corey for naming --Alex
+        min-prices  (reduce (fn [acc product]
+                              (update-in acc [(origin-name product)]
+                                         (partial min-strs (low-price product))))
+                            {}
+                            all-products)
+        minnest-price (apply min (vals min-prices))] 
     (into {} (map (fn [[k v]] [k (- v minnest-price)]) min-prices))))
 
 (defn format-subtext [choice-type subtext]
@@ -206,8 +206,7 @@
         choice-disabled? (mk-choice-disabled
                           (valid-choices filtered-products choice-type))
         choice-subtexts (merge (grade-minimums products)
-                               (origin-minimums products))
-        ]
+                               (origin-minimums products))]
     (for [choice all-choices]
       {:id (:name choice)
        :subtext ((keyword (:name choice)) choice-subtexts)
@@ -220,12 +219,11 @@
                                           filtered-products
                                           choice)})))
 
-
 (defn choices-html [choice-type idx choices]
     [:.choose.step
      [:h2 (str (inc idx)) ". Choose " (choose-string (name choice-type))]
      [:.chooser
-      (for [[idx {:keys [id subtext disabled checked on-change]}] (index choices)]
+      (for [[idx {:keys [id subtext disabled checked sold-out on-change]}] (index choices)]
         (list
          [:input {:type "radio"
                   :id id
@@ -235,6 +233,7 @@
          [:.choice {:class choice-type}
           [:.choice-name id]
           [:.from-price (format-subtext choice-type subtext)]
+          [:span "sold out"]
           [:label {:for id}]]))]])
 
 
@@ -330,4 +329,3 @@
            bundle-builder-category-component
            original-category-component)
          [data owner]))
-
