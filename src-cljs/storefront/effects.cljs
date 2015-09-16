@@ -88,7 +88,7 @@
   (when product
     (routes/enqueue-navigate app-state
                              events/navigate-category
-                             {:taxon-path (-> product :product_attrs :style first taxon-path-for)})))
+                             {:taxon-path (-> product :product_attrs :category first taxon-path-for)})))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
