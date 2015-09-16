@@ -233,7 +233,6 @@
          [:.choice {:class choice-type}
           [:.choice-name id]
           [:.from-price (format-subtext choice-type subtext)]
-          [:span "sold out"]
           [:label {:for id}]]))]])
 
 
