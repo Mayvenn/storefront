@@ -257,8 +257,11 @@
                  keys)))
 
 
-;; TODO: Fix this in the API because it's borderline incomprehensible
-
+(def summary-choice-mapping
+  {"6a premier collection" "6a premier"
+   "7a deluxe collection" "7a deluxe"
+   "8a ultra collection" "8a ultra"
+   "closures" "closure"})
 
 (defn summary-format [data]
   (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
@@ -266,6 +269,7 @@
     (->> (get-in data keypaths/bundle-builder)
          vals
          (#(concat % [(:name taxon)]))
+         (map #(get summary-choice-mapping % %))
          (string/join " ")
          string/upper-case)))
 
