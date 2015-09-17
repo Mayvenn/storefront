@@ -123,7 +123,7 @@
           background-color: #40cbac;
           border-color: #40cbac;
           color: #fff;
-          .from-price {
+          .choice-subtext {
               color: #fff;
           }
       }
@@ -131,7 +131,7 @@
       [type=radio]:disabled + .choice {
           background-color: #ececec;
           color: #d5d3d4;
-          .from-price {
+          .choice-subtext {
               color: #d5d3d4;
           }
       }
@@ -144,28 +144,22 @@
           height: 4rem;
           margin: 1rem 0;
           background-color: white;
+          padding: 0.65rem;
+          @include display(flex);
+          @include align-items(center);
+          @include flex-direction(column);
+          @include justify-content(center);
 
-          &.origin, &.style, &.material{
-              float: left;
-              padding: .6em 0;
-              width: 49%;
-              .choice-name {
-                  font-size: 1.1rem;
-              }
-              .choice-name, .from-price {
-                  float: none;
-                  line-height: 1.4rem;
-                  text-align: center;
-                  padding: 0;
-              }
-              &:nth-of-type(2n) {
-                  margin-left: 2%;
-              }
+          &.grade {
+              @include flex-direction(row);
+              @include justify-content(space-between);
           }
 
-          &.style {
-              .choice-name {
-                  padding: 0.65rem;
+          &.origin, &.style, &.material, &.color{
+              float: left;
+              width: 49%;
+              &:nth-of-type(2n) {
+                  margin-left: 2%;
               }
           }
 
@@ -173,11 +167,6 @@
               float: left;
               width: 32%;
               margin: .3rem 0 .3rem 2%;
-              .choice-name {
-                  float: none;
-                  text-align: center;
-              }
-              .from-price { display: none }
               &:nth-of-type(3n+1) {
                   margin-left: 0;
               }
@@ -198,20 +187,18 @@
       }
 
       .choice-name {
-          z-index: 1;
           font-size: 1.1rem;
           text-transform: uppercase;
-          float: left;
-          padding: 1.5rem 1rem;
+          line-height: 1.4rem;
+          text-align: center;
       }
 
-      .from-price {
-          z-index: 1;
+      .choice-subtext {
           font-size: .9rem;
           text-transform: uppercase;
-          float: right;
           color: #9b9b9b;
-          padding: 1.5rem 1rem;
+          line-height: 1.4rem;
+          text-align: center;
       }
   }
 

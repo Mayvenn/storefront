@@ -135,6 +135,7 @@
                                 (get-in data keypaths/taxons)))]
     (condp = taxon-name
       "closures" '(:style :material :origin :length)
+      "blonde" '(:color :grade :origin :length)
       '(:grade :origin :length))))
 
 (defn index-of [xs x]
@@ -199,11 +200,11 @@
     :material [:diff-price price-diff]
     :origin [:diff-price price-diff]
     :style []
-    :length []))
+    :length []
+    :color []))
 
 (defn format-subtext [[type price]]
-  (when type
-    (str ({:min-price "From " :diff-price "+ "} type) (as-money price))))
+  (str ({:min-price "From " :diff-price "+ "} type) (as-money price)))
 
 (defn build-choices [data products choice-type filters-to-apply]
   (let [all-choices (gen-choices products choice-type)
@@ -242,7 +243,8 @@
                   :on-change on-change}]
          [:.choice {:class choice-type}
           [:.choice-name id]
-          [:.from-price (format-subtext subtext)]
+          (when (seq subtext)
+            [:.choice-subtext (format-subtext subtext)])
           [:label {:for id}]]))]])
 
 
