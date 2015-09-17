@@ -18,7 +18,7 @@
    [:span.cart-value value]])
 
 (defn- tax-adjustment [order]
-  {:name "Tax" :price (- (:tax-total order))})
+  {:name "Tax" :price (:tax-total order)})
 
 (defn- all-order-adjustments [order]
   (conj (:adjustments order)
@@ -30,7 +30,7 @@
      [:td
       [:h5 name]]
      [:td
-      [:h5 (as-money (- price))]]]))
+      [:h5 (as-money price)]]]))
 
 (defn- display-adjustments [adjustments]
   (map display-adjustment-row adjustments))
