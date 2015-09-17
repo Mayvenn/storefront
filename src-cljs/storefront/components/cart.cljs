@@ -8,13 +8,15 @@
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
+            [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (when-let [path (default-nav-taxon-path data)]
-    (utils/route-to data
-                    events/navigate-category
-                    {:taxon-path path})))
+  (if (experiments/display-variation data "bundle-builder")
+    (utils/route-to data events/navigate-categories)
+    (when-let [path (default-nav-taxon-path data)]
+      (utils/route-to data events/navigate-category
+                      {:taxon-path path}))))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]
