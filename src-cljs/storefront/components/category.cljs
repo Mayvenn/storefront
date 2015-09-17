@@ -178,33 +178,32 @@
       (min old numeric-new)
       numeric-new)))
 
-(defn grade-minimums [all-products]
-  (let [grade-name #(-> % :product_attrs :grade first :name keyword)
-        low-price  #(-> % :from_price)]
-    (reduce (fn [acc product]
-              (update-in acc [(grade-name product)]
-                         (partial min-strs (low-price product))))
-            {}
-            all-products)))
+(defn attribute-val [attr product]
+  (-> product :product_attrs attr first :name keyword))
 
-(defn origin-minimums [all-products]
-  (let [origin-name #(-> % :product_attrs :origin first :name keyword)
-        low-price   #(-> % :from_price)
-        min-prices  (reduce (fn [acc product]
-                              (update-in acc [(origin-name product)]
-                                         (partial min-strs (low-price product))))
-                            {}
-                            all-products)
-        minnest-price (apply min (vals min-prices))] 
+(defn minimums-for-products [label-fn all-products]
+  (reduce (fn [acc product]
+              (update-in acc [(label-fn product)]
+                         (partial min-strs (:from_price product))))
+            {}
+            all-products))
+
+(defn price-differences [label-fn all-products]
+  (let [min-prices (minimums-for-products label-fn all-products)
+        minnest-price (apply min (vals min-prices))]
     (into {} (map (fn [[k v]] [k (- v minnest-price)]) min-prices))))
 
-(defn format-subtext [choice-type subtext]
+(defn subtext-for-choice [choice-type min-price price-diff]
   (case choice-type
-    :grade (str "From " (as-money subtext))
-    :material  (str "+ " (as-money subtext))
-    :origin  (str "+ " (as-money subtext))
-    :style ""
-    :length ""))
+    :grade [:min-price min-price]
+    :material [:diff-price price-diff]
+    :origin [:diff-price price-diff]
+    :style []
+    :length []))
+
+(defn format-subtext [[type price]]
+  (when type
+    (str ({:min-price "From " :diff-price "+ "} type) (as-money price))))
 
 (defn build-choices [data products choice-type filters-to-apply]
   (let [all-choices (gen-choices products choice-type)
@@ -213,19 +212,22 @@
                            products)
         choice-disabled? (mk-choice-disabled
                           (valid-choices filtered-products choice-type))
-        choice-subtexts (merge (grade-minimums products)
-                               (origin-minimums products))]
+        minimums (minimums-for-products (partial attribute-val choice-type) products)
+        differences (price-differences (partial attribute-val choice-type) products)]
     (for [choice all-choices]
-      {:id (:name choice)
-       :subtext ((keyword (:name choice)) choice-subtexts)
-       :disabled (or (choice-disabled? choice)
-                     (> (count filters-to-apply) (count (get-in data keypaths/bundle-builder))))
-       :checked (choice-checked? data choice choice-type)
-       :on-change (choice-selection-event data
-                                          choice-type
-                                          filters-to-apply
-                                          filtered-products
-                                          choice)})))
+      (let [choice-kw (keyword (:name choice))]
+        {:id (:name choice)
+         :subtext (subtext-for-choice choice-type
+                                      (choice-kw minimums)
+                                      (choice-kw differences))
+         :disabled (or (choice-disabled? choice)
+                       (> (count filters-to-apply) (count (get-in data keypaths/bundle-builder))))
+         :checked (choice-checked? data choice choice-type)
+         :on-change (choice-selection-event data
+                                            choice-type
+                                            filters-to-apply
+                                            filtered-products
+                                            choice)}))))
 
 (defn choices-html [choice-type idx choices]
     [:.choose.step
@@ -240,7 +242,7 @@
                   :on-change on-change}]
          [:.choice {:class choice-type}
           [:.choice-name id]
-          [:.from-price (format-subtext choice-type subtext)]
+          [:.from-price (format-subtext subtext)]
           [:label {:for id}]]))]])
 
 
