@@ -178,10 +178,9 @@
         minimums                (minimums-for-products step-name variants)
         differences             (price-differences step-name variants)]
     (for [option-name option-names]
-      (let [variants-for-option (partial filter-variants-by-selections
-                                         {step-name option-name})
-            sold-out? (every? (comp not :can_supply?)
-                              (variants-for-option variants))]
+      (let [variants-for-option (filter-variants-by-selections {step-name option-name} selected-variants)
+            sold-out? (and (not (empty? variants-for-option))
+                           (every? (comp not :can_supply?) variants-for-option))]
         {:option-name option-name
          :price (price-for-option step-name (minimums option-name) (differences option-name))
          :disabled (or step-disabled?
@@ -192,7 +191,7 @@
          :on-change (option-selection-event data
                                             step-name
                                             dependent-steps
-                                            (variants-for-option selected-variants)
+                                            variants-for-option
                                             option-name)}))))
 
 (defn step-html [step-name idx options]
