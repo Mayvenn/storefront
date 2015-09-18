@@ -225,9 +225,6 @@
          (string/join " ")
          string/upper-case)))
 
-(defn price-preview [data variant]
-  (as-money (:price variant)))
-
 (defn add-to-bag-button [data]
   (if (query/get {:request-key request-keys/add-to-bag}
                  (get-in data keypaths/api-requests))
@@ -244,7 +241,7 @@
                                               :inc-event events/control-counter-inc
                                               :dec-event events/control-counter-dec
                                               :set-event events/control-counter-set}})
-     [:.price (price-preview data variant)]
+     [:.price (as-money (:price variant))]
      (add-to-bag-button data)]
     [:.selected
      [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
