@@ -14,9 +14,6 @@
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]))
 
-(defn index [xs]
-  (map vector (range 0 (count xs)) xs))
-
 (defn display-taxon [data selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)
         selected-class (if (= selected-taxon taxon) "selected" nil)
@@ -101,14 +98,6 @@
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :grade :origin :length)
       '(:grade :origin :length))))
-
-(defn index-of [xs x]
-  (or (reduce (fn [acc [idx elem]]
-                (or acc
-                    (when (= elem x) idx)))
-              nil
-              (index xs))
-      -1))
 
 (defn format-step-name [step-name]
   (let [step-name (name step-name)
@@ -198,7 +187,7 @@
     [:.step
      [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
      [:.options
-      (for [[idx {:keys [option-name price disabled checked sold-out on-change]}] (index options)]
+      (for [{:keys [option-name price disabled checked sold-out on-change]} options]
         (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
           (list
            [:input {:type "radio"
