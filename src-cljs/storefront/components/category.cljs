@@ -94,45 +94,9 @@
 
 ;; Bundle builder below
 
-(defn choice-matches? [product [choice value]]
-  (some (partial = value)
-        (->> product :product_attrs choice (map :name))))
-
-(defn filter-products-by-choices [selected-choices products]
-  (filter (fn [product]
-            (every? (partial choice-matches? product)
-                    selected-choices))
-          products))
-
-(defn min-price [products]
-  (mapcat (comp (partial map :price) products/all-variants) products))
-
-(defn gen-choices [products choice-type]
-  (->> products
-       (mapcat (comp choice-type :product_attrs))
-       (set)
-       (sort-by :position)))
-
-(defn filter-selected [data filters-to-apply]
-  (select-keys (get-in data keypaths/bundle-builder) filters-to-apply))
-
-(defn valid-choices [products choice-type]
-  (->> products
-       (mapcat (comp choice-type :product_attrs))
-       (set)))
-
-(defn mk-choice-disabled [valid-choices]
-  (fn [choice]  (not (valid-choices choice))))
-
-(defn choice-type-path [choice-type]
-  (conj keypaths/bundle-builder choice-type))
-
-(defn choice-checked? [data choice choice-type]
-  (= (:name choice) (get-in data (choice-type-path choice-type))))
-
 (defn selection-flow [data]
   (let [taxon-name (:name (query/get (get-in data keypaths/browse-taxon-query)
-                                (get-in data keypaths/taxons)))]
+                                     (get-in data keypaths/taxons)))]
     (condp = taxon-name
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :grade :origin :length)
@@ -146,41 +110,33 @@
               (index xs))
       -1))
 
-(defn choose-string [choice-name]
-  (str (if ((set "AEIOUaeiou") (first choice-name))
-         "an " "a ")
-       (string/capitalize choice-name)))
+(defn format-step-name [step-name]
+  (let [step-name (name step-name)
+        vowel? (set "AEIOUaeiou")]
+    (str (if (vowel? (first step-name)) "an " "a ")
+         (string/capitalize step-name))))
 
-(defn next-choice [data]
-  (prn (last  (keys  (get-in data keypaths/bundle-builder))))
+(defn next-step [data step-name]
   (let [flow (selection-flow data)]
-    (->> (get-in data keypaths/bundle-builder)
-         keys
-         last
-         (index-of flow)
-         inc
-         (nth flow)
-         name
-         choose-string)))
+    (get (->> flow
+              (partition 2 1)
+              (map vec)
+              (into {nil (first flow)}))
+         step-name)))
 
-(defn choice-selection-event [data choice-type filters-to-apply filtered-products choice]
-  (utils/send-event-callback
-   data
-   events/control-chooser-select
-   {:path (choice-type-path choice-type)
-    :applied-filters filters-to-apply
-    :filtered-products filtered-products
-    :choice (:name choice)}))
-
+(defn option-selection-event [data step-name dependent-steps selected-variants option-name]
+  (utils/send-event-callback data
+                             events/control-bundle-option-select
+                             {:step-name step-name
+                              :selected-steps dependent-steps
+                              :selected-variants selected-variants
+                              :option-name option-name}))
 
 (defn min-strs [new old]
   (let [numeric-new (js/parseFloat new)]
     (if (and old (> old 0))
       (min old numeric-new)
       numeric-new)))
-
-(defn attribute-val [attr product]
-  (-> product :product_attrs attr first :name keyword))
 
 (defn minimums-for-products [label-fn all-products]
   (reduce (fn [acc product]
@@ -194,72 +150,78 @@
         minnest-price (apply min (vals min-prices))]
     (into {} (map (fn [[k v]] [k (- v minnest-price)]) min-prices))))
 
-(defn subtext-for-choice [choice-type min-price price-diff]
-  (case choice-type
-    :grade [:min-price min-price]
-    :material [:diff-price price-diff]
-    :origin [:diff-price price-diff]
-    :style []
-    :length []
-    :color []))
+(defn price-for-option [step-name option-min-price option-price-diff]
+  (case step-name
+    :grade    [:min-price option-min-price]
+    :material [:diff-price option-price-diff]
+    :origin   [:diff-price option-price-diff]
+    :style    []
+    :length   []
+    :color    []))
 
-(defn format-subtext [[type price]]
+(defn format-price [[type price]]
   (str ({:min-price "From " :diff-price "+ "} type) (as-money price)))
 
-(defn build-choices [data products choice-type filters-to-apply]
-  (let [all-choices (gen-choices products choice-type)
-        filtered-products (filter-products-by-choices
-                           (filter-selected data filters-to-apply)
-                           products)
-        choice-disabled? (mk-choice-disabled
-                          (valid-choices filtered-products choice-type))
-        minimums (minimums-for-products (partial attribute-val choice-type) products)
-        differences (price-differences (partial attribute-val choice-type) products)]
-    (for [choice all-choices]
-      (let [choice-kw (keyword (:name choice))]
-        {:id (:name choice)
-         :subtext (subtext-for-choice choice-type
-                                      (choice-kw minimums)
-                                      (choice-kw differences))
-         :disabled (or (choice-disabled? choice)
-                       (> (count filters-to-apply) (count (get-in data keypaths/bundle-builder))))
-         :checked (choice-checked? data choice choice-type)
-         :on-change (choice-selection-event data
-                                            choice-type
-                                            filters-to-apply
-                                            filtered-products
-                                            choice)}))))
+(defn filter-variants-by-selections [selections variants]
+  (filter (fn [variant]
+            (every? (fn [[step-name option-name]]
+                      (= (step-name variant) option-name))
+                    selections))
+          variants))
 
-(defn choices-html [choice-type idx choices]
-    [:.choose.step
-     [:h2 (str (inc idx)) ". Choose " (choose-string (name choice-type))]
-     [:.chooser
-      (for [[idx {:keys [id subtext disabled checked sold-out on-change]}] (index choices)]
-        (list
-         [:input {:type "radio"
-                  :id id
-                  :disabled disabled
-                  :checked checked
-                  :on-change on-change}]
-         [:.choice {:class choice-type}
-          [:.choice-name id]
-          (when (seq subtext)
-            [:.choice-subtext (format-subtext subtext)])
-          [:label {:for id}]]))]])
+(defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
+  (let [all-selections          (get-in data keypaths/bundle-selected-options) ;; e.g. {:grade "6a nsd"}
+        prior-selections        (select-keys all-selections dependent-steps)
+        step-disabled?          (> (count dependent-steps) (count all-selections))
+        selected-variants       (filter-variants-by-selections prior-selections variants)
+        selectable-option-names (set (map step-name selected-variants))
+        minimums                (minimums-for-products step-name variants)
+        differences             (price-differences step-name variants)]
+    (for [option-name option-names]
+      (let [variants-for-option (partial filter-variants-by-selections
+                                         {step-name option-name})
+            sold-out? (every? (comp not :can_supply?)
+                              (variants-for-option variants))]
+        {:option-name option-name
+         :price (price-for-option step-name (minimums option-name) (differences option-name))
+         :disabled (or step-disabled?
+                       sold-out?
+                       (not (selectable-option-names option-name)))
+         :checked (= (get all-selections step-name nil) option-name)
+         :sold-out sold-out?
+         :on-change (option-selection-event data
+                                            step-name
+                                            dependent-steps
+                                            (variants-for-option selected-variants)
+                                            option-name)}))))
 
+(defn step-html [step-name idx options]
+    [:.step
+     [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
+     [:.options
+      (for [[idx {:keys [option-name price disabled checked sold-out on-change]}] (index options)]
+        (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
+          (list
+           [:input {:type "radio"
+                    :id option-id
+                    :disabled disabled
+                    :checked checked
+                    :on-change on-change}]
+           [:.option {:class [step-name (when sold-out "sold-out")]}
+            [:.option-name option-name]
+            (cond
+              sold-out [:.subtext "Sold Out"]
+              (seq price) [:.subtext (format-price price)])
+            [:label {:for option-id}]])))]])
 
-(defn bundle-builder-steps [data products keys]
-  (let [key-steps (vec (reductions #(conj %1 %2) [] keys))]
-    (map-indexed (fn [idx choice-type]
-                   (choices-html choice-type idx
-                                 (build-choices data
-                                                products
-                                                choice-type
-                                                (get key-steps idx))))
-                 keys)))
+(defn bundle-builder-steps [data variants steps]
+  (map-indexed (fn [idx {:keys [step-name] :as step}]
+                 (step-html step-name
+                            idx
+                            (build-options-for-step data variants step)))
+               steps))
 
-
-(def summary-choice-mapping
+(def summary-option-mapping
   {"6a premier collection" "6a premier"
    "7a deluxe collection" "7a deluxe"
    "8a ultra collection" "8a ultra"
@@ -268,10 +230,10 @@
 (defn summary-format [data]
   (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
                          (get-in data keypaths/taxons))]
-    (->> (get-in data keypaths/bundle-builder)
+    (->> (get-in data keypaths/bundle-selected-options)
          vals
          (#(concat % [(:name taxon)]))
-         (map #(get summary-choice-mapping % %))
+         (map #(get summary-option-mapping % %))
          (string/join " ")
          string/upper-case)))
 
@@ -287,19 +249,56 @@
      "ADD TO BAG"]))
 
 (defn summary-section [data]
-  (let [variant (products/selected-variant data)]
-    (if variant
-      [:.selected
-       [:.line-item-summary (summary-format data)]
-       (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
-                                                :inc-event events/control-counter-inc
-                                                :dec-event events/control-counter-dec
-                                                :set-event events/control-counter-set}})
-       [:.price (price-preview data variant)]
-       (add-to-bag-button data)]
-      [:.selected
-       [:div (str "Select " (next-choice data) "!")]
-       [:.price "$--.--"]])))
+  (if-let [variant (products/selected-variant data)]
+    [:.selected
+     [:.line-item-summary (summary-format data)]
+     (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
+                                              :inc-event events/control-counter-inc
+                                              :dec-event events/control-counter-dec
+                                              :set-event events/control-counter-set}})
+     [:.price (price-preview data variant)]
+     (add-to-bag-button data)]
+    [:.selected
+     [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-previous-step))) "!")]
+     [:.price "$--.--"]]))
+
+;; FIXME: Move to utils or something
+(defn map-kv [f m]
+  (reduce-kv #(assoc %1 %2 (f %3)) {} m))
+
+(defn build-variants
+  "We wish the API gave us a list of variants.  Instead, variants are nested
+  inside products.
+
+  So, this explodes them out into the data structure we'd prefer."
+  [product]
+  (let [product-attrs (map-kv (comp :name first) (:product_attrs product))
+        variants (:variants product)]
+    (map (fn [variant]
+           (-> variant
+               (merge product-attrs)
+               ;; Variants have one specific length, stored in option_values.
+               ;; We need to overwrite the product length, which includes all
+               ;; possible lengths.
+               (assoc :length (some-> variant :option_values first :name (str "\""))
+                      :from_price (:from_price product))
+               (dissoc :option_values)))
+         variants)))
+
+(defn build-steps [flow redundant-attributes]
+  (let [options (->> redundant-attributes
+                     (apply merge-with concat)
+                     (map-kv set)
+                     (map-kv (fn [opts] (->> opts
+                                             (sort-by :position)
+                                             (map :name)))))
+        dependent-steps (vec (reductions #(conj %1 %2) [] flow))]
+    (map (fn [step step-dependencies]
+           {:step-name step
+            :option-names (step options)
+            :dependent-steps step-dependencies})
+         flow
+         dependent-steps)))
 
 (defn bundle-builder-category-component [data owner]
   (om/component
@@ -321,7 +320,9 @@
           [:.reviews]
           [:.carousel
            [:.hair-category-image {:class (taxon-path-for taxon)}]]
-          (bundle-builder-steps data products (selection-flow data))
+          (let [variants (mapcat build-variants products)
+                steps (build-steps (selection-flow data) (map :product_attrs products))]
+            (bundle-builder-steps data variants steps))
           [:#summary
            [:h3 "Summary"]
            (summary-section data)
@@ -331,9 +332,9 @@
               [:div.added-to-bag-container
                (map (partial display-bagged-variant data) bagged-variants)]
               [:div.go-to-checkout
-               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])
-           ]]
+               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]]
          [:.spinner])
+
        [:div.gold-features
         [:figure.guarantee-feature]
         [:figure.free-shipping-feature]

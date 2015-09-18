@@ -23,8 +23,7 @@
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (-> app-state
       (assoc-in keypaths/browse-taxon-query {taxon-path-for taxon-path})
-      (assoc-in keypaths/bundle-builder nil)
-      (assoc-in [:ui :bundle :filtered-products] nil)))
+      (assoc-in keypaths/bundle nil)))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
   (let [taxon-id (js/parseInt (:taxon-id query-params))]
@@ -93,11 +92,13 @@
                 (Math/abs)
                 (max 1))))
 
-(defmethod transition-state events/control-chooser-select [_ event {:keys [path applied-filters filtered-products choice], :as args} app-state]
+(defmethod transition-state events/control-bundle-option-select
+  [_ event {:keys [selected-steps selected-variants step-name option-name], :as args} app-state]
   (-> app-state
-      (update-in keypaths/bundle-builder select-keys applied-filters)
-      (assoc-in path choice)
-      (assoc-in [:ui :bundle :filtered-products] filtered-products)))
+      (update-in keypaths/bundle-selected-options select-keys selected-steps)
+      (assoc-in (conj keypaths/bundle-selected-options step-name) option-name)
+      (assoc-in keypaths/bundle-previous-step step-name)
+      (assoc-in keypaths/bundle-selected-variants selected-variants)))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -213,7 +214,7 @@
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
   (-> app-state
-      (update-in keypaths/bundle-builder dissoc :length)
+      (update-in keypaths/bundle-selected-options dissoc :length)
       (update-in keypaths/browse-recently-added-variants
                  conj
                  {:id (variant :id)

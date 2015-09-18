@@ -94,7 +94,7 @@
     }
   }
 
-  .choose.step {
+  .step {
       margin: auto;
       padding: 1rem;
 
@@ -106,7 +106,7 @@
   }
 
   /* format to 2 */
-  .chooser {
+  .options {
       font-size: 0;
 
       &::after {
@@ -119,24 +119,24 @@
           display: none;
       }
 
-      [type=radio]:checked + .choice {
+      [type=radio]:checked + .option {
           background-color: #40cbac;
           border-color: #40cbac;
           color: #fff;
-          .choice-subtext {
-              color: #fff;
+          .subtext {
+              color: #fff; 
           }
       }
 
-      [type=radio]:disabled + .choice {
+      [type=radio]:disabled + .option {
           background-color: #ececec;
           color: #d5d3d4;
-          .choice-subtext {
-              color: #d5d3d4;
+          .subtext {
+              color: #d5d3d4; 
           }
       }
 
-      .choice {
+      .option {
           font-size: 1rem;
           box-sizing: border-box;
           position: relative;
@@ -155,9 +155,28 @@
               @include justify-content(space-between);
           }
 
-          &.origin, &.style, &.material, &.color{
+          &.sold-out {
+              color: #d3d4d5;
+              background-color: #ececec;
+              border-color: #d3d4d5;
+              .subtext {
+                color: #d3d4d5;
+              }
+          }
+
+          &.origin, &.style, &.material, &.color {
               float: left;
               width: 49%;
+
+              .option-name {
+                  font-size: 1.1rem;
+              }
+              .option-name, .subtext {
+                  float: none;
+                  line-height: 1.4rem;
+                  text-align: center;
+                  padding: 0;
+              }
               &:nth-of-type(2n) {
                   margin-left: 2%;
               }
@@ -167,13 +186,21 @@
               float: left;
               width: 32%;
               margin: .3rem 0 .3rem 2%;
+
+              .option-name {
+                  float: none;
+                  text-align: center;
+              }
+
+              .subtext { display: none }
+
               &:nth-of-type(3n+1) {
                   margin-left: 0;
               }
           }
       }
 
-      .choice label {
+      .option label {
           cursor: pointer;
           display: block;
           position: absolute;
@@ -186,14 +213,15 @@
           margin: 0;
       }
 
-      .choice-name {
+      .option-name {
           font-size: 1.1rem;
           text-transform: uppercase;
           line-height: 1.4rem;
           text-align: center;
       }
 
-      .choice-subtext {
+      .subtext {
+          z-index: 1;
           font-size: .9rem;
           text-transform: uppercase;
           color: #9b9b9b;

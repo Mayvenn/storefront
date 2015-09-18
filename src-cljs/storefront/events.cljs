@@ -59,7 +59,7 @@
 (def control-click (conj control :click))
 (def control-click-category-product (conj control-click :category-product))
 
-(def control-chooser-select (conj control :chooser-select))
+(def control-bundle-option-select (conj control :bundle :option-select))
 
 (def control-browse (conj control :browse))
 (def control-browse-variant (conj control-browse :variant))
