@@ -12,7 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]))
+            [storefront.utils.query :as query]
+            [storefront.utils.sequences :refer [update-vals]]))
 
 (defn display-taxon [data selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)
@@ -247,34 +248,11 @@
      [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
      [:.price "$--.--"]]))
 
-;; FIXME: Move to utils or something
-(defn map-kv [f m]
-  (reduce-kv #(assoc %1 %2 (f %3)) {} m))
-
-(defn build-variants
-  "We wish the API gave us a list of variants.  Instead, variants are nested
-  inside products.
-
-  So, this explodes them out into the data structure we'd prefer."
-  [product]
-  (let [product-attrs (map-kv (comp :name first) (:product_attrs product))
-        variants (:variants product)]
-    (map (fn [variant]
-           (-> variant
-               (merge product-attrs)
-               ;; Variants have one specific length, stored in option_values.
-               ;; We need to overwrite the product length, which includes all
-               ;; possible lengths.
-               (assoc :length (some-> variant :option_values first :name (str "\""))
-                      :from_price (:from_price product))
-               (dissoc :option_values)))
-         variants)))
-
 (defn build-steps [flow redundant-attributes]
   (let [options (->> redundant-attributes
                      (apply merge-with concat)
-                     (map-kv set)
-                     (map-kv (fn [opts] (->> opts
+                     (update-vals set)
+                     (update-vals (fn [opts] (->> opts
                                              (sort-by :position)
                                              (map :name)))))
         dependent-steps (vec (reductions #(conj %1 %2) [] flow))]
@@ -305,7 +283,7 @@
           [:.reviews]
           [:.carousel
            [:.hair-category-image {:class (taxon-path-for taxon)}]]
-          (let [variants (mapcat build-variants products)
+          (let [variants (mapcat products/build-variants products)
                 steps (build-steps (selection-flow data) (map :product_attrs products))]
             (bundle-builder-steps data variants steps))
           [:#summary
