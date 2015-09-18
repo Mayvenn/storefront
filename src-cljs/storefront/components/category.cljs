@@ -159,7 +159,7 @@
           variants))
 
 (defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
-  (let [all-selections          (get-in data keypaths/bundle-selected-options) ;; e.g. {:grade "6a nsd"}
+  (let [all-selections          (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a nsd"}
         prior-selections        (select-keys all-selections dependent-steps)
         step-disabled?          (> (count dependent-steps) (count all-selections))
         selected-variants       (filter-variants-by-selections prior-selections variants)
@@ -218,7 +218,7 @@
 (defn summary-format [data]
   (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
                          (get-in data keypaths/taxons))]
-    (->> (get-in data keypaths/bundle-selected-options)
+    (->> (get-in data keypaths/bundle-builder-selected-options)
          vals
          (#(concat % [(:name taxon)]))
          (map #(get summary-option-mapping % %))
@@ -247,7 +247,7 @@
      [:.price (price-preview data variant)]
      (add-to-bag-button data)]
     [:.selected
-     [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-previous-step))) "!")]
+     [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
      [:.price "$--.--"]]))
 
 ;; FIXME: Move to utils or something

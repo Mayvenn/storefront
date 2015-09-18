@@ -17,6 +17,6 @@
        (filter #(contains? (set (:taxon_ids %)) (:id taxon)))))
 
 (defn selected-variant [data]
-  (let [variants (get-in data keypaths/bundle-selected-variants)]
+  (let [variants (get-in data keypaths/bundle-builder-selected-variants)]
     (when (= 1 (count variants))
       (first variants))))

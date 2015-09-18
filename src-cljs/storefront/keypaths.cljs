@@ -58,10 +58,10 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
 
-(def bundle (conj ui :bundle))
-(def bundle-previous-step (conj bundle :previous-step))
-(def bundle-selected-variants (conj bundle :selected-variants))
-(def bundle-selected-options (conj bundle :selected-options))
+(def bundle-builder (conj ui :bundle-builder))
+(def bundle-builder-previous-step (conj bundle-builder :previous-step))
+(def bundle-builder-selected-variants (conj bundle-builder :selected-variants))
+(def bundle-builder-selected-options (conj bundle-builder :selected-options))
 
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
