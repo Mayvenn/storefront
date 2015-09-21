@@ -1,3 +1,29 @@
+.carousel {
+    position: relative;
+
+    .left, .right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 30%;
+        cursor: pointer;
+        cursor: hand;
+        background-image: url('/images/carousel/arrow.png');
+        background-repeat: no-repeat;
+        background-position: center;
+        &:active {
+            background-color: #000;
+            opacity: 0.3;
+        }
+    }
+    .right { right: 0; }
+    .left {
+        left: 0;
+        @include transform( rotate(180deg) );
+    }
+}
+
+
 .bundle-builder {
   header {
     padding: 1em;

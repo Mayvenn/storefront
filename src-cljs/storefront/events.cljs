@@ -40,6 +40,8 @@
 (def control [:control])
 (def control-change-state (conj control :change-state))
 
+(def control-carousel-move (conj control :carousel-move))
+
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse (conj control-menu :collapse))

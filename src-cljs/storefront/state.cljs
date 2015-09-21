@@ -104,6 +104,41 @@
                         :phone ""}
 
      :ui {:api-requests []
+          :taxon-images {:closures  ["/images/style_images/hair.png"
+                                     "http://lorempixel.com/640/580/business/?lsdhadkjh"
+                                     "http://lorempixel.com/640/580/business/?lsdjadlkjh"
+                                     "http://lorempixel.com/640/580/business/?lsdkjhjh"
+                                     "http://lorempixel.com/640/580/business/?fksdjhf"]
+                         (keyword "deep wave") ["/images/style_images/hair.png"
+                                                "http://lorempixel.com/640/580/people/?fksjhf"
+                                                "http://lorempixel.com/640/580/people/?fdjhf"
+                                                "http://lorempixel.com/640/580/people/?fkdjhf"
+                                                "http://lorempixel.com/640/580/people/?fkhf"]
+                         (keyword "loose wave") ["/images/style_images/hair.png"
+                                                 "http://lorempixel.com/640/580/transport/?fksjhf"
+                                                 "http://lorempixel.com/640/580/transport/?fdjhf"
+                                                 "http://lorempixel.com/640/580/transport/?fkdjhf"
+                                                 "http://lorempixel.com/640/580/transport/?fkhf"]
+                         (keyword "body wave") ["/images/style_images/hair.png"
+                                                "http://lorempixel.com/640/580/nature/?fksjhf"
+                                                "http://lorempixel.com/640/580/nature/?fdjhf"
+                                                "http://lorempixel.com/640/580/nature/?fkdjhf"
+                                                "http://lorempixel.com/640/580/nature/?fkhf"]
+                         :blonde  ["/images/style_images/hair.png"
+                                   "http://lorempixel.com/640/580/sports/?fhf"
+                                   "http://lorempixel.com/640/580/sports/?fdjh"
+                                   "http://lorempixel.com/640/580/sports/?ksdf"
+                                   "http://lorempixel.com/640/580/sports/?sdjhf"]
+                         :curly  ["/images/style_images/hair.png"
+                                  "http://lorempixel.com/640/580/nightlife/?fhf"
+                                  "http://lorempixel.com/640/580/nightlife/?fdjh"
+                                  "http://lorempixel.com/640/580/nightlife/?ksdf"
+                                  "http://lorempixel.com/640/580/nightlife/?sdjhf"]
+                         :straight  ["/images/style_images/hair.png"
+                                     "http://lorempixel.com/640/580/food/?fhf"
+                                     "http://lorempixel.com/640/580/food/?fdjh"
+                                     "http://lorempixel.com/640/580/food/?ksdf"
+                                     "http://lorempixel.com/640/580/food/?sdjhf"]}
           :navigation-message [events/navigate-home {}]
           :validation-errors {:error nil
                               :fields {}}

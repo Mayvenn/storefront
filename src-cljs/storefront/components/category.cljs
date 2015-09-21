@@ -6,6 +6,7 @@
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name]]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
+            [storefront.components.carousel :refer [carousel-component]]
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
@@ -292,7 +293,9 @@
           [:.carousel
            (if-let [product-url (product-image-url data taxon)]
              [:.hair-category-image {:style {:background-image (css-url product-url)}}]
-             [:.hair-category-image {:class (taxon-path-for taxon)}])]
+             (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
+                                                       :images-path (conj keypaths/taxon-images
+                                                                          (keyword (:name taxon)))}}))]
           (let [variants (mapcat products/build-variants products)
                 steps (build-steps (selection-flow data) (map :product_attrs products))]
             (bundle-builder-steps data variants steps))

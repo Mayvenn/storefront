@@ -103,6 +103,9 @@
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 
+(defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
+  (assoc-in app-state keypaths/bundle-builder-carousel-index index))
+
 (defmethod transition-state events/api-start
   [_ event request app-state]
   (update-in app-state keypaths/api-requests conj request))
