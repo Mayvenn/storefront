@@ -460,7 +460,10 @@
    (conj request-keys/delete-line-item variant-id)
    {:params (merge (select-keys order [:number :token])
                    {:variant-id variant-id
-                    :quantity (-> order (orders/product-items) (get variant-id) :quantity)})
+                    :quantity (->> order
+                                   orders/product-items
+                                   (orders/line-item-by-id variant-id)
+                                   :quantity)})
     :handler #(handle-message events/api-success-add-to-bag {:order %})}))
 
 (defn update-addresses [handle-message order]

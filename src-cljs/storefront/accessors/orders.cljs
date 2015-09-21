@@ -26,15 +26,16 @@
          (last)
          :line-items)))
 
+(defn line-item-by-id [variant-id line-items]
+  (first (filter (comp #{variant-id} :id) line-items)))
+
 (defn product-items
   "Returns cart items from an order hashmap.
   Excludes shipping and items added by El Jefe.
   Cart line-items are added as the last shipment.
   Line-items are from last shipment as it is the user created shipment."
   [order]
-  (->> (line-items order)
-       (filter #(not= (:source (last %)) "waiter"))
-       (into {})))
+  (filter #(not= (:source %) "waiter") (line-items order)))
 
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
@@ -43,9 +44,8 @@
   Line-items are from last shipment as it is the user created shipment."
   [order]
   (->> (line-items order)
-       (vals)
        (filter #(= (:source %) "waiter"))
-       (first)))
+       first))
 
 (defn form-payment-methods [order-total store-credit use-store-credit]
   (let [store-credit-used (if use-store-credit (min order-total store-credit) 0)]
@@ -59,7 +59,7 @@
   (* quantity unit-price))
 
 (defn product-quantity [order]
-  (reduce + 0 (map (comp :quantity last) (product-items order))))
+  (reduce + 0 (map :quantity (product-items order))))
 
 (defn products-subtotal [order]
-  (reduce + 0 (map (comp line-item-subtotal last) (product-items order))))
+  (reduce + 0 (map line-item-subtotal (product-items order))))
