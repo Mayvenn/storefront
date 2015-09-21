@@ -138,7 +138,7 @@
     :material [:diff-price option-price-diff]
     :origin   [:diff-price option-price-diff]
     :style    []
-    :length   []
+    :length   [:diff-price option-price-diff]
     :color    []))
 
 (defn format-price [[type price]]
