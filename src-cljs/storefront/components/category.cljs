@@ -92,6 +92,8 @@
 
 ;; Bundle builder below
 
+(def display-product-images-for-taxons #{"blonde" "closures"})
+
 (defn selection-flow [data]
   (let [taxon-name (:name (query/get (get-in data keypaths/browse-taxon-query)
                                      (get-in data keypaths/taxons)))]
@@ -256,7 +258,7 @@
 
 (defn product-image-url [data taxon]
   (when-let [product (products/selected-product data)]
-    (when (= (:name taxon) "blonde")
+    (when (contains? display-product-images-for-taxons (:name taxon))
       (get-in product [:master :images 0 :large_url]))))
 
 (defn bundle-builder-category-component [data owner]
