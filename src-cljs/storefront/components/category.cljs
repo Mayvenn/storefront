@@ -167,6 +167,7 @@
          :disabled (or step-disabled?
                        sold-out?
                        (not represented?))
+         :represented represented?
          :checked (= (get all-selections step-name nil) option-name)
          :sold-out sold-out?
          :on-change (option-selection-event data
@@ -179,20 +180,21 @@
     [:.step
      [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
      [:.options
-      (for [{:keys [option-name price disabled checked sold-out on-change]} options]
-        (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
-          (list
-           [:input {:type "radio"
-                    :id option-id
-                    :disabled disabled
-                    :checked checked
-                    :on-change on-change}]
-           [:.option {:class [step-name (when sold-out "sold-out")]}
-            [:.option-name option-name]
-            (cond
-              sold-out [:.subtext "Sold Out"]
-              (seq price) [:.subtext (format-price price)])
-            [:label {:for option-id}]])))]])
+      (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
+        (when represented
+          (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
+            (list
+             [:input {:type "radio"
+                      :id option-id
+                      :disabled disabled
+                      :checked checked
+                      :on-change on-change}]
+             [:.option {:class [step-name (when sold-out "sold-out")]}
+              [:.option-name option-name]
+              (cond
+                sold-out [:.subtext "Sold Out"]
+                (seq price) [:.subtext (format-price price)])
+              [:label {:for option-id}]]))))]])
 
 (defn bundle-builder-steps [data variants steps]
   (map-indexed (fn [idx {:keys [step-name] :as step}]
