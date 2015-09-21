@@ -22,6 +22,16 @@
     (when (= 1 (count variants))
       (first variants))))
 
+(defn selected-products [data]
+  (let [variants (get-in data keypaths/bundle-builder-selected-variants)
+        product-ids (set (map :product_id variants))]
+    (select-keys (get-in data keypaths/products) product-ids)))
+
+(defn selected-product [data]
+  (let [selected (selected-products data)]
+    (when (= 1 (count selected))
+      (last (first selected)))))
+
 (defn build-variants
   "We wish the API gave us a list of variants.  Instead, variants are nested
   inside products.

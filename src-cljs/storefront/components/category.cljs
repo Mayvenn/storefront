@@ -252,6 +252,13 @@
          flow
          dependent-steps)))
 
+(defn css-url [url] (str "url(" url ")"))
+
+(defn product-image-url [data taxon]
+  (when-let [product (products/selected-product data)]
+    (when (= (:name taxon) "blonde")
+      (get-in product [:master :images 0 :large_url]))))
+
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
@@ -271,7 +278,9 @@
          [:div
           [:.reviews]
           [:.carousel
-           [:.hair-category-image {:class (taxon-path-for taxon)}]]
+           (if-let [product-url (product-image-url data taxon)]
+             [:.hair-category-image {:style {:background-image (css-url product-url)}}]
+             [:.hair-category-image {:class (taxon-path-for taxon)}])]
           (let [variants (mapcat products/build-variants products)
                 steps (build-steps (selection-flow data) (map :product_attrs products))]
             (bundle-builder-steps data variants steps))
