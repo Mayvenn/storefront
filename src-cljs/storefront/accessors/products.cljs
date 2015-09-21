@@ -37,7 +37,7 @@
                ;; We need to overwrite the product length, which includes all
                ;; possible lengths.
                (assoc :length (some-> variant :option_values first :name (str "\""))
-                      :from_price (:from_price product))
+                      :price (js/parseFloat (:price variant))
+                      :sold-out? (not (:can_supply? variant)))
                (dissoc :option_values)))
          variants)))
-

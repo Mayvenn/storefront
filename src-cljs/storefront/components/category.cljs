@@ -122,23 +122,11 @@
                               :selected-variants selected-variants
                               :option-name option-name}))
 
-(defn min-strs [new old]
-  (let [numeric-new (js/parseFloat new)]
-    (if (and old (> old 0))
-      (min old numeric-new)
-      numeric-new)))
-
-(defn minimums-for-products [label-fn all-products]
-  (reduce (fn [acc product]
-              (update-in acc [(label-fn product)]
-                         (partial min-strs (:from_price product))))
-            {}
-            all-products))
-
-(defn price-differences [label-fn all-products]
-  (let [min-prices (minimums-for-products label-fn all-products)
-        minnest-price (apply min (vals min-prices))]
-    (into {} (map (fn [[k v]] [k (- v minnest-price)]) min-prices))))
+(defn min-price [variants]
+  (when (seq variants)
+    (->> variants
+         (map :price)
+         (apply min))))
 
 (defn price-for-option [step-name option-min-price option-price-diff]
   (case step-name
@@ -160,28 +148,29 @@
           variants))
 
 (defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
-  (let [all-selections          (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a nsd"}
-        prior-selections        (select-keys all-selections dependent-steps)
-        step-disabled?          (> (count dependent-steps) (count all-selections))
-        selected-variants       (filter-variants-by-selections prior-selections variants)
-        selectable-option-names (set (map step-name selected-variants))
-        minimums                (minimums-for-products step-name variants)
-        differences             (price-differences step-name variants)]
+  (let [all-selections   (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a" :source "malaysia"}
+        prior-selections (select-keys all-selections dependent-steps)
+        step-disabled?   (> (count dependent-steps) (count all-selections))
+        step-variants    (filter-variants-by-selections prior-selections variants)
+        step-min-price   (min-price step-variants)]
     (for [option-name option-names]
-      (let [variants-for-option (filter-variants-by-selections {step-name option-name} selected-variants)
-            sold-out? (and (not (empty? variants-for-option))
-                           (every? (comp not :can_supply?) variants-for-option))]
+      (let [option-variants  (filter-variants-by-selections {step-name option-name} step-variants)
+            option-min-price (min-price option-variants)
+            represented?     (not (empty? option-variants))
+            sold-out?        (and represented?
+                                  (every? :sold-out? option-variants))]
         {:option-name option-name
-         :price (price-for-option step-name (minimums option-name) (differences option-name))
+         :price (when (and (not step-disabled?) represented?)
+                  (price-for-option step-name option-min-price (- option-min-price step-min-price)))
          :disabled (or step-disabled?
                        sold-out?
-                       (not (selectable-option-names option-name)))
+                       (not represented?))
          :checked (= (get all-selections step-name nil) option-name)
          :sold-out sold-out?
          :on-change (option-selection-event data
                                             step-name
                                             dependent-steps
-                                            variants-for-option
+                                            option-variants
                                             option-name)}))))
 
 (defn step-html [step-name idx options]
