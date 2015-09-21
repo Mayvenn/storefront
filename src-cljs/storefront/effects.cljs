@@ -253,12 +253,6 @@
                       (get-in app-state keypaths/manage-account-password-confirmation)
                       (get-in app-state keypaths/user-token)))
 
-(defn updated-quantities [line-items quantities]
-  (->>
-   line-items
-   (map #(select-keys % [:id :quantity :variant_id]))
-   (map #(assoc % :quantity (-> % :id quantities)))))
-
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
   (api/add-promotion-code (get-in app-state keypaths/handle-message)
                           (get-in app-state keypaths/order-number)
