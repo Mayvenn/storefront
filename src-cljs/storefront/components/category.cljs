@@ -227,6 +227,8 @@
      {:on-click (utils/send-event-callback data events/control-browse-add-to-bag)}
      "ADD TO BAG"]))
 
+(def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]])
+
 (defn summary-section [data]
   (if-let [variant (products/selected-variant data)]
     [:.selected
@@ -236,10 +238,12 @@
                                               :dec-event events/control-counter-dec
                                               :set-event events/control-counter-set}})
      [:.price (as-money (:price variant))]
+     bundle-promotion-notice
      (add-to-bag-button data)]
     [:.selected
      [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
-     [:.price "$--.--"]]))
+     [:.price "$--.--"]
+     bundle-promotion-notice]))
 
 (defn build-steps [flow redundant-attributes]
   (let [options (->> redundant-attributes
@@ -291,7 +295,6 @@
           [:#summary
            [:h3 "Summary"]
            (summary-section data)
-           [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]]
            (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
              [:div#after-add {:style {:display "block"}}
               [:div.added-to-bag-container
