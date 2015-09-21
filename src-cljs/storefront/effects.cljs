@@ -76,6 +76,8 @@
     (analytics/track-page (routes/path-for app-state event args))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
+  (when (experiments/display-variation app-state "bundle-builder")
+    (reviews/insert-reviews app-state))
   (api/get-products (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/api-cache)
                     taxon-path

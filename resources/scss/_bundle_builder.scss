@@ -56,6 +56,16 @@
     }
   }
 
+  .reviews-wrapper {
+    text-align: center;
+    margin: 0 auto;
+    @include clearfix;
+  }
+
+  .reviews-inner-wrapper {
+    display: inline-block;
+  }
+
   .carousel {
     height: 31rem;
   }
@@ -308,5 +318,9 @@
       #add-to-cart-button {
           margin: 0 0 0.25rem 0;
       }
+  }
+
+  .product-reviews {
+    float: none;
   }
 }

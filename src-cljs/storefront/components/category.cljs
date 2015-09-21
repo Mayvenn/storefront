@@ -4,6 +4,7 @@
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name]]
+            [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
             [clojure.string :as string]
             [om.core :as om]
@@ -284,7 +285,10 @@
 
        (if (seq products)
          [:div
-          [:.reviews]
+          [:.reviews-wrapper
+           [:.reviews-inner-wrapper
+            (when (get-in data keypaths/reviews-loaded)
+              (om/build reviews-summary-component data))]]
           [:.carousel
            (if-let [product-url (product-image-url data taxon)]
              [:.hair-category-image {:style {:background-image (css-url product-url)}}]
@@ -302,7 +306,9 @@
               [:div.go-to-checkout
                [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]]
          [:.spinner])
-
+       [:.reviews-wrapper
+        (when (get-in data keypaths/reviews-loaded)
+          (om/build reviews-component data))]
        [:div.gold-features
         [:figure.guarantee-feature]
         [:figure.free-shipping-feature]
