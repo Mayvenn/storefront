@@ -269,6 +269,26 @@
     (when (contains? display-product-images-for-taxons (:name taxon))
       (get-in product [:master :images 0 :large_url]))))
 
+(defn category-descriptions [taxon]
+  (case (:name taxon)
+    "closures"
+    '("100% Human Virgin Hair"
+      "Silk and Lace Materials"
+      "Colors: 1B and #613 Blonde"
+      "14\" and 18\" Length Bundles"
+      "3.5 ounces")
+
+    "blonde"
+    '("100% Human Virgin Hair"
+      "Colors: #27 and #613 Blonde"
+      "14\" - 26\" Length Bundles"
+      "3.5 ounces")
+
+    '("100% Human Virgin Hair"
+      "Color 1B"
+      "12\" - 28\" Length Bundles"
+      "3.5 ounces")))
+
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
@@ -309,6 +329,9 @@
               [:div.go-to-checkout
                [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]]
          [:.spinner])
+       [:ul.category-description
+        (for [description (category-descriptions taxon)]
+          [:li description])]
        [:.reviews-wrapper
         (when (get-in data keypaths/reviews-loaded)
           (om/build reviews-component data))]
