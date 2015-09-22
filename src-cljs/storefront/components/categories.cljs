@@ -30,7 +30,7 @@
      [:header
       [:h1
        [:div "Select Your Favorite Style"]
-       [:small "Mayvenn hair is available in" [:br] "six different styles for every occasion"]]]
+       [:.category-sub-header "Mayvenn hair is available in six" [:br] "different styles for every occasion"]]]
      [:div
       [:div.category-list
        (map (partial category data)

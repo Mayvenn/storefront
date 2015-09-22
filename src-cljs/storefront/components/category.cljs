@@ -302,7 +302,7 @@
           "Select Your "
           (:name taxon)
           " Hair"]
-         [:div.buy-now "Buy now and get FREE SHIPPING"]]]
+         [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
 
        (if (seq products)
          [:div

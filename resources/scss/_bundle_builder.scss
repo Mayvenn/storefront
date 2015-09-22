@@ -26,6 +26,8 @@
 
 .bundle-builder {
   header {
+    color: $darker_text;
+
     padding: 1em;
     text-align: center;
 
@@ -37,10 +39,9 @@
       text-transform: capitalize;
     }
 
-    div.buy-now {
+    .category-sub-header {
       padding-top:1em;
-      display: block;
-      letter-spacing: 1.5px;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       font-size: 0.9rem;
     }
