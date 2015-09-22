@@ -94,10 +94,9 @@
                 (max 1))))
 
 (defmethod transition-state events/control-bundle-option-select
-  [_ event {:keys [selected-steps selected-variants step-name option-name], :as args} app-state]
+  [_ event {:keys [selected-options selected-variants step-name], :as args} app-state]
   (-> app-state
-      (update-in keypaths/bundle-builder-selected-options select-keys selected-steps)
-      (assoc-in (conj keypaths/bundle-builder-selected-options step-name) option-name)
+      (assoc-in keypaths/bundle-builder-selected-options selected-options)
       (assoc-in keypaths/bundle-builder-previous-step step-name)
       (assoc-in keypaths/bundle-builder-selected-variants selected-variants)))
 

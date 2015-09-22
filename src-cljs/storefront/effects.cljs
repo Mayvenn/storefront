@@ -515,6 +515,18 @@
                                      :navigation (get-in app-state keypaths/navigation-message)})))
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} app-state]
+  (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
+    (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
+          all-variants (products/current-taxon-variants app-state)
+          previous-variants (products/filter-variants-by-selections
+                             previous-options
+                             all-variants)]
+      (send app-state
+            events/control-bundle-option-select
+            {:step-name step
+             :selected-options previous-options
+             :selected-variants previous-variants})))
+
   (experiments/track-event "add-to-bag")
   (analytics/add-product product {:quantity variant-quantity
                                   :variant (:sku variant)})

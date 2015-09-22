@@ -1,6 +1,7 @@
 (ns storefront.accessors.products
   (:require [storefront.keypaths :as keypaths]
-            [storefront.utils.sequences :refer [update-vals]]))
+            [storefront.utils.sequences :refer [update-vals]]
+            [storefront.utils.query :as query]))
 
 (defn graded? [product]
   (-> product
@@ -51,3 +52,15 @@
                       :sold-out? (not (:can_supply? variant)))
                (dissoc :option_values)))
          variants)))
+
+(defn current-taxon-variants [app-state]
+  (let [products (for-taxon app-state (query/get (get-in app-state keypaths/browse-taxon-query)
+                                                 (get-in app-state keypaths/taxons)))]
+    (mapcat build-variants products)))
+
+(defn filter-variants-by-selections [selections variants]
+  (filter (fn [variant]
+            (every? (fn [[step-name option-name]]
+                      (= (step-name variant) option-name))
+                    selections))
+          variants))

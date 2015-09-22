@@ -111,20 +111,16 @@
          (string/capitalize step-name))))
 
 (defn next-step [data step-name]
-  (let [flow (selection-flow data)]
-    (get (->> flow
-              (partition 2 1)
-              (map vec)
-              (into {nil (first flow)}))
-         step-name)))
+  (if step-name
+    (first (drop-while (partial not= step-name) (selection-flow data)))
+    (first (selection-flow data))))
 
-(defn option-selection-event [data step-name dependent-steps selected-variants option-name]
+(defn option-selection-event [data step-name selected-options selected-variants]
   (utils/send-event-callback data
                              events/control-bundle-option-select
                              {:step-name step-name
-                              :selected-steps dependent-steps
-                              :selected-variants selected-variants
-                              :option-name option-name}))
+                              :selected-options selected-options
+                              :selected-variants selected-variants}))
 
 (defn min-price [variants]
   (when (seq variants)
@@ -144,21 +140,14 @@
 (defn format-price [[type price]]
   (str ({:min-price "From " :diff-price "+ "} type) (as-money price)))
 
-(defn filter-variants-by-selections [selections variants]
-  (filter (fn [variant]
-            (every? (fn [[step-name option-name]]
-                      (= (step-name variant) option-name))
-                    selections))
-          variants))
-
 (defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
   (let [all-selections   (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a" :source "malaysia"}
         prior-selections (select-keys all-selections dependent-steps)
         step-disabled?   (> (count dependent-steps) (count all-selections))
-        step-variants    (filter-variants-by-selections prior-selections variants)
+        step-variants    (products/filter-variants-by-selections prior-selections variants)
         step-min-price   (min-price step-variants)]
     (for [option-name option-names]
-      (let [option-variants  (filter-variants-by-selections {step-name option-name} step-variants)
+      (let [option-variants  (products/filter-variants-by-selections {step-name option-name} step-variants)
             option-min-price (min-price option-variants)
             represented?     (not (empty? option-variants))
             sold-out?        (and represented?
@@ -174,9 +163,8 @@
          :sold-out sold-out?
          :on-change (option-selection-event data
                                             step-name
-                                            dependent-steps
-                                            option-variants
-                                            option-name)}))))
+                                            (assoc prior-selections step-name option-name)
+                                            option-variants)}))))
 
 (defn step-html [step-name idx options]
     [:.step
@@ -221,7 +209,7 @@
          (string/join " ")
          string/upper-case)))
 
-(defn add-to-bag-button [data]
+(defn add-to-bag-button [data variants]
   (if (query/get {:request-key request-keys/add-to-bag}
                  (get-in data keypaths/api-requests))
     [:button.large.primary#add-to-cart-button.saving]
@@ -231,7 +219,7 @@
 
 (def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]])
 
-(defn summary-section [data]
+(defn summary-section [data variants]
   (if-let [variant (products/selected-variant data)]
     [:.selected
      [:.line-item-summary (summary-format data)]
@@ -241,7 +229,7 @@
                                               :set-event events/control-counter-set}})
      [:.price (as-money (:price variant))]
      bundle-promotion-notice
-     (add-to-bag-button data)]
+     (add-to-bag-button data variants)]
     [:.selected
      [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
      [:.price "$--.--"]
@@ -319,16 +307,17 @@
                                                                           (keyword (:name taxon)))}}))]
           (let [variants (mapcat products/build-variants products)
                 steps (build-steps (selection-flow data) (map :product_attrs products))]
-            (bundle-builder-steps data variants steps))
-          [:#summary
-           [:h3 "Summary"]
-           (summary-section data)
-           (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
-             [:div#after-add {:style {:display "block"}}
-              [:div.added-to-bag-container
-               (map (partial display-bagged-variant data) bagged-variants)]
-              [:div.go-to-checkout
-               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]
+            (list
+             (bundle-builder-steps data variants steps)
+             [:#summary
+              [:h3 "Summary"]
+              (summary-section data variants)
+              (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
+                [:div#after-add {:style {:display "block"}}
+                 [:div.added-to-bag-container
+                  (map (partial display-bagged-variant data) bagged-variants)]
+                 [:div.go-to-checkout
+                  [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
           [:ul.category-description
            (for [description (category-descriptions taxon)]
              [:li description])]
