@@ -304,7 +304,8 @@
           " Hair"]
          [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
 
-       (if (seq products)
+       (if-not (seq products)
+         [:.spinner]
          [:div
           [:.reviews-wrapper
            [:.reviews-inner-wrapper
@@ -327,14 +328,13 @@
               [:div.added-to-bag-container
                (map (partial display-bagged-variant data) bagged-variants)]
               [:div.go-to-checkout
-               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]]
-         [:.spinner])
-       [:ul.category-description
-        (for [description (category-descriptions taxon)]
-          [:li description])]
-       [:.reviews-wrapper
-        (when (get-in data keypaths/reviews-loaded)
-          (om/build reviews-component data))]
+               [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]
+          [:ul.category-description
+           (for [description (category-descriptions taxon)]
+             [:li description])]
+          [:.reviews-wrapper
+           (when (get-in data keypaths/reviews-loaded)
+             (om/build reviews-component data))]])
        [:div.gold-features
         [:figure.guarantee-feature]
         [:figure.free-shipping-feature]
