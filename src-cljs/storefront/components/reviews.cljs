@@ -1,6 +1,7 @@
 (ns storefront.components.reviews
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
+            [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.messages :refer [send]]

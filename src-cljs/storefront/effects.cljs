@@ -3,7 +3,7 @@
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for]]
+            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -430,8 +430,7 @@
           events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
-  (let [taxon (query/get (get-in app-state keypaths/browse-taxon-query)
-                         (get-in app-state keypaths/taxons))]
+  (let [taxon (taxons/current-taxon app-state)]
     (doseq [product products]
       (analytics/add-impression product {:list (:name taxon)})))
   (analytics/track-page (routes/path-for app-state

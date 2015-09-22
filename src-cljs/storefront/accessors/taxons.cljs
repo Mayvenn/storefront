@@ -1,5 +1,6 @@
 (ns storefront.accessors.taxons
   (:require [clojure.string :as string]
+            [storefront.utils.query :as query]
             [storefront.keypaths :as keypaths]))
 
 (def filter-nav-taxons
@@ -22,6 +23,10 @@
 
 (def default-nav-taxon-path (partial default-taxon-path filter-nav-taxons))
 (def default-stylist-taxon-path (partial default-taxon-path filter-stylist-taxons))
+
+(defn current-taxon [app-state]
+  (query/get (get-in app-state keypaths/browse-taxon-query)
+             (get-in app-state keypaths/taxons)))
 
 (defn taxon-class-name [taxon]
   (string/replace (:permalink taxon) #"/" "-"))

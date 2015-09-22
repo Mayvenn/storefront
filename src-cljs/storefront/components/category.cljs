@@ -3,7 +3,7 @@
             [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name] :as taxons]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
@@ -65,8 +65,7 @@
 (defn original-category-component [data owner]
   (om/component
    (html
-    (if-let [taxon (query/get (get-in data keypaths/browse-taxon-query)
-                              (get-in data keypaths/taxons))]
+    (if-let [taxon (taxons/current-taxon data)]
       [:div
        [:div.taxon-products-banner {:class (taxon-class-name taxon)}]
        [:div.taxon-products-container
@@ -97,8 +96,7 @@
 (def display-product-images-for-taxons #{"blonde" "closures"})
 
 (defn selection-flow [data]
-  (let [taxon-name (:name (query/get (get-in data keypaths/browse-taxon-query)
-                                     (get-in data keypaths/taxons)))]
+  (let [taxon-name (:name (taxons/current-taxon data))]
     (condp = taxon-name
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :grade :origin :length)
@@ -200,8 +198,7 @@
    "closures" "closure"})
 
 (defn summary-format [data]
-  (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
-                         (get-in data keypaths/taxons))]
+  (let [taxon (taxons/current-taxon data)]
     (->> (get-in data keypaths/bundle-builder-selected-options)
          vals
          (#(concat % [(:name taxon)]))
@@ -280,8 +277,7 @@
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
-    (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
-                           (get-in data keypaths/taxons))
+    (let [taxon (taxons/current-taxon data)
           products (products/for-taxon data taxon)]
       [:.bundle-builder
        [:header
