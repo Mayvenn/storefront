@@ -301,7 +301,7 @@
              (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
                                                        :images-path (conj keypaths/taxon-images
                                                                           (keyword (:name taxon)))}}))]
-          (let [variants (mapcat products/build-variants products)
+          (let [variants (products/current-taxon-variants data)
                 steps (build-steps (selection-flow data) (map :product_attrs products))]
             (list
              (bundle-builder-steps data variants steps)
