@@ -26,7 +26,7 @@
           :deep-wave 11
           :curly 9
           :blonde 15
-          :closure 28}
+          :closures 28}
          taxon)))
 
 (defn get-product-id [data]
