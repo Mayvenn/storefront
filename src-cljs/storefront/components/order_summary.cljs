@@ -1,6 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.components.formatters :refer [as-money]]
             [storefront.components.utils :as utils]
+            [storefront.accessors.products :as products]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
@@ -9,8 +10,7 @@
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
-            [storefront.keypaths :as keypaths]
-            [storefront.accessors.summary-parser :as summary-parser]))
+            [storefront.keypaths :as keypaths]))
 
 (defn field [name value & [classes]]
   [:div.line-item-attr {:class classes}
@@ -31,7 +31,7 @@
      [:div.line-item-detail.interactive
       [:h4
        (if (experiments/display-variation data "bundle-builder")
-         [:a (summary-parser/summary variant)]
+         [:a (products/summary variant)]
          [:a (utils/route-to data events/navigate-product {:product-path (:slug variant)})
           (:name variant)])] ;;TODO move into variation
       (when interactive?

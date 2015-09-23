@@ -63,3 +63,29 @@
                       (= (step-name variant) option-name))
                     selections))
           variants))
+
+(defn not-black-color [attr]
+  (when (not= "black" (:color attr))
+    (:color attr)))
+
+(def summary-option-mapping
+  {"6a premier collection" "6a premier"
+   "7a deluxe collection" "7a deluxe"
+   "8a ultra collection" "8a ultra"
+   "closures" "closure"})
+
+(def ^:private closure-summary [:style :material :origin :length (constantly "closure")])
+(def ^:private bundle-summary [not-black-color (comp summary-option-mapping :grade) :origin :length :style])
+
+(defn closure? [variant]
+  (= "closures" (get-in variant [:variant_attrs :category])))
+
+(defn bundle? [variant]
+  (boolean (get-in variant [:variant_attrs :category])))
+
+(defn summary [{:keys [variant_attrs name] :as variant}]
+  (let [summary-fns (cond (closure? variant) closure-summary
+                          (bundle? variant)  bundle-summary
+                          :else [(constantly name)])
+        strs (filter identity ((apply juxt summary-fns) variant_attrs))]
+    (clojure.string/join " " strs)))

@@ -191,18 +191,12 @@
                             (build-options-for-step data variants step)))
                steps))
 
-(def summary-option-mapping
-  {"6a premier collection" "6a premier"
-   "7a deluxe collection" "7a deluxe"
-   "8a ultra collection" "8a ultra"
-   "closures" "closure"})
-
 (defn summary-format [data]
   (let [variant (products/selected-variant data)
         flow (conj (vec (selection-flow data)) :category)]
     (->> flow
          (map variant)
-         (map #(get summary-option-mapping % %))
+         (map #(get products/summary-option-mapping % %))
          (string/join " ")
          string/upper-case)))
 
