@@ -33,18 +33,13 @@
         (when-not (experiments/display-variation data "bundle-builder")
           (utils/route-to data events/navigate-product {:product-path (:slug variant)}))
         (:name variant)]]
-      (map display-variant-options (:option_values variant))
-      (when (not interactive?)
-        (field "Quantity:" (:quantity line-item)))
-      (field "Price:" (:single_display_amount line-item) "item-form" "price")
-      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
       (when interactive?
         (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
               delete-request (query/get
                               {:request-key
                                (conj request-keys/delete-line-item (:id line-item))}
                               (get-in data keypaths/api-requests))]
-          (list
+          [:div.quantity-adjustments
            (om/build counter-component
                      data
                      {:opts {:path (conj keypaths/cart-quantities (:id line-item))
@@ -59,7 +54,13 @@
                          (utils/send-event-callback data
                                                     events/control-cart-remove
                                                     (select-keys line-item [:id])))}
-            "Remove"])))]
+            "Remove"]]))
+      (map display-variant-options (:option_values variant))
+      (when (not interactive?)
+        (field "Quantity:" (:quantity line-item)))
+      (field "Price:" (:single_display_amount line-item) "item-form" "price")
+      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
+      ]
      [:div {:style {:clear "both"}}]]))
 
 (defn display-line-items [data order & [interactive?]]

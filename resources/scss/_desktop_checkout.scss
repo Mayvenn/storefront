@@ -20,9 +20,6 @@ div.cart-container, div.checkout-container {
 
 div.line-item-detail {
   .quantity {
-    top: 35px;
-    left: auto;
-    right: 0;
     width: 105px;
 
     .quantity-selector {
@@ -40,10 +37,6 @@ div.line-item-detail {
 
   &.interactive {
     padding-bottom: 0;
-  }
-
-  a.delete {
-    bottom: 7px;
   }
 }
 

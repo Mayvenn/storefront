@@ -35,25 +35,34 @@ a.button.continue {
 }
 
 .line-item img {
-  float: left;
   width: (164em / $default-font-size);
   height: (150em / $default-font-size);
   margin-right: (20em / $default-font-size);
 }
 
 .line-item {
-  position: relative;
   margin: 1em auto;
   padding-bottom: 1em;
   border-bottom: solid $medium_blue_grey 1px;
+
+  & > a {
+    float: left;
+    display: block;
+  }
+
+  .quantity-adjustments {
+    float: right;
+    a.delete {
+      margin-top: 1em;
+      padding: 0.5em 0;
+      display: inline-block;
+      float: right;
+    }
+  }
 }
 
 .line-item-detail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding-left: (200rem / $default-font-size);
+  overflow: hidden;
   min-height: (150em / 22);
   font-size: (22em / $default-font-size);
 
@@ -70,10 +79,7 @@ a.button.continue {
 
   a.delete {
     color: $light-text;
-    position: absolute;
     font-size: 0.85em;
-    bottom: 0;
-    right: 0;
   }
 
   a.delete.saving {
@@ -83,10 +89,6 @@ a.button.continue {
     background-repeat: no-repeat;
     background-image: url("/images/spinner.svg");
     background-size: 100% 100%;
-  }
-
-  &.interactive {
-    padding-bottom: 2.1rem;
   }
 }
 
@@ -101,9 +103,7 @@ a.button.continue {
 }
 
 .line-item-detail .quantity {
-  position: absolute;
-  bottom: 0;
-  left: (200rem / $default-font-size);
+  float: none;
   font-size: 0.6rem;
 }
 
