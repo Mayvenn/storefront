@@ -76,7 +76,7 @@
 
     &.extra-wide {
       height: 9rem;
-      width: 25.5rem;
+      width: 26.0rem;
 
       .hair-category-label {
         top: (9.0rem - 1.3)/2.0;
@@ -107,31 +107,31 @@
     height: 100%;
 
     &.straight {
-      background-image: url('/images/desktop_assets/categories_model_straight.jpg');
+      background-image: url('/images/style_images/category_images/StraightCategoryImage.png');
     }
 
     &.blonde {
-      background-image: url('/images/desktop_assets/categories_model_blonde.jpg');
+      background-image: url('/images/style_images/category_images/BlondeCategoryImage.png');
     }
 
     &.curly {
-      background-image: url('/images/desktop_assets/categories_model_curly.jpg');
+      background-image: url('/images/style_images/category_images/CurlyCategoryImage.png');
     }
 
     &.deep-wave {
-      background-image: url('/images/desktop_assets/categories_model_deep-wave.jpg');
+      background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png');
     }
 
     &.loose-wave {
-      background-image: url('/images/desktop_assets/categories_model_loose-wave.jpg');
+      background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png');
     }
 
     &.body-wave {
-      background-image: url('/images/desktop_assets/categories_model_body-wave.jpg');
+      background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png');
     }
 
     &.closures {
-      background-image: url('/images/desktop_assets/categories_model_body-wave.jpg');
+      background-image: url('/images/style_images/category_images/ClosuresCategoryImage.png');
     }
   }
 
