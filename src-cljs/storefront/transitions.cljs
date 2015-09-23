@@ -24,6 +24,7 @@
   (-> app-state
       (assoc-in keypaths/browse-taxon-query {taxon-path-for taxon-path})
       (assoc-in keypaths/browse-recently-added-variants [])
+      (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
