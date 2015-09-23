@@ -198,10 +198,10 @@
    "closures" "closure"})
 
 (defn summary-format [data]
-  (let [taxon (taxons/current-taxon data)]
-    (->> (get-in data keypaths/bundle-builder-selected-options)
-         vals
-         (#(concat % [(:name taxon)]))
+  (let [variant (products/selected-variant data)
+        flow (conj (vec (selection-flow data)) :category)]
+    (->> flow
+         (map variant)
          (map #(get summary-option-mapping % %))
          (string/join " ")
          string/upper-case)))

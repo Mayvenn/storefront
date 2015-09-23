@@ -9,7 +9,8 @@
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.summary-parser :as summary-parser]))
 
 (defn field [name value & [classes]]
   [:div.line-item-attr {:class classes}
@@ -29,10 +30,10 @@
              :alt (:name variant)}]]
      [:div.line-item-detail.interactive
       [:h4
-       [:a
-        (when-not (experiments/display-variation data "bundle-builder")
-          (utils/route-to data events/navigate-product {:product-path (:slug variant)}))
-        (:name variant)]]
+       (if (experiments/display-variation data "bundle-builder")
+         [:a (summary-parser/summary variant)]
+         [:a (utils/route-to data events/navigate-product {:product-path (:slug variant)})
+          (:name variant)])] ;;TODO move into variation
       (when interactive?
         (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
               delete-request (query/get

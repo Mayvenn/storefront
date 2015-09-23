@@ -92,6 +92,10 @@ a.button.continue {
   }
 }
 
+.line-item-detail.interactive h4 a{
+  text-transform: capitalize;
+}
+
 .cart-label, .cart-value {
   color: $dark-text;
   font-size: (20rem / $default-font-size);
