@@ -218,6 +218,7 @@
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
   (-> app-state
       (update-in keypaths/bundle-builder-selected-options dissoc :length)
+      (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/browse-recently-added-variants
                  conj
                  {:id (variant :id)
