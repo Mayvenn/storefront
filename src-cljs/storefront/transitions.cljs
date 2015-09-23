@@ -292,10 +292,10 @@
 
 (defmethod transition-state events/api-success-cart-update-line-item [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/cart-quantities (reduce
-                                      (fn [quantities line-item]
-                                        (merge quantities {(:id line-item)(:quantity line-item)}))
-                                      {}
-                                      (:line_items order))))
+                                                (fn [quantities line-item]
+                                                  (merge quantities {(:id line-item) (:quantity line-item)}))
+                                                {}
+                                                (:line_items order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))
