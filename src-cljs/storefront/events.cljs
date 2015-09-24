@@ -68,6 +68,9 @@
 (def control-browse-variant-select (conj control-browse-variant :select))
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
 
+(def control-build (conj control :build))
+(def control-build-add-to-bag (conj control-build :add-to-bag))
+
 (def control-cart (conj control :cart))
 (def control-cart-update-coupon (conj control-cart :update-coupon))
 (def control-cart-line-item-inc (conj control-cart :line-item-inc))

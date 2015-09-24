@@ -96,10 +96,10 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options selected-variants step-name], :as args} app-state]
-  (-> app-state
-      (assoc-in keypaths/bundle-builder-selected-options selected-options)
-      (assoc-in keypaths/bundle-builder-previous-step step-name)
-      (assoc-in keypaths/bundle-builder-selected-variants selected-variants)))
+  (assoc app-state
+         keypaths/bundle-builder-selected-options selected-options
+         keypaths/bundle-builder-previous-step step-name
+         keypaths/bundle-builder-selected-variants selected-variants))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -218,7 +218,6 @@
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
   (-> app-state
-      (update-in keypaths/bundle-builder-selected-options dissoc :length)
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/browse-recently-added-variants
                  conj

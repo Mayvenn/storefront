@@ -88,7 +88,8 @@
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
            (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-summary-component data))
+             (om/build reviews-summary-component data
+                       {:opts {:product-id (:id product)}}))
            [:div#main-image
             (cond
               (> (count images) 1)
@@ -193,7 +194,8 @@
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]
 
            (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-component data))]]
+             (om/build reviews-component data
+                       {:opts {:product-id (:id product)}}))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]

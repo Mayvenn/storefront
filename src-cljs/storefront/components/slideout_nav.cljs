@@ -126,7 +126,7 @@
             (if (own-store? data)
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
-              (if (experiments/display-variation data "bundle-builder")
+              (if (experiments/bundle-builder? data)
                 (close-and-route data events/navigate-categories)
                 (when-let [path (default-nav-taxon-path data)]
                   (close-and-route data events/navigate-category
@@ -142,7 +142,7 @@
           [:ul.shop-menu-expanded.open
            [:li
             [:a
-             (if (experiments/display-variation data "bundle-builder")
+             (if (experiments/bundle-builder? data)
                (close-and-route data events/navigate-categories)
                (when-let [path (default-nav-taxon-path data)]
                  (close-and-route data events/navigate-category
@@ -187,7 +187,7 @@
           (slideout-nav-link
            data
            (merge
-            (if (experiments/display-variation data "bundle-builder")
+            (if (experiments/bundle-builder? data)
               (close-and-route data events/navigate-categories)
               (when-let [path (default-nav-taxon-path data)]
                 (close-and-route data events/navigate-category

@@ -32,7 +32,7 @@
   (analytics/remove-tracking))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
-  (if (experiments/display-variation app-state "bundle-builder")
+  (if (experiments/bundle-builder? app-state)
     (api/get-builder-taxons (get-in app-state keypaths/handle-message)
                             (get-in app-state keypaths/api-cache))
     (api/get-taxons (get-in app-state keypaths/handle-message)
@@ -76,7 +76,7 @@
     (analytics/track-page (routes/path-for app-state event args))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (let [bundle-builder? (experiments/display-variation app-state "bundle-builder")]
+  (let [bundle-builder? (experiments/bundle-builder? app-state)]
     ;; To avoid a race-condition on direct load
     (when (or bundle-builder? (not= "closures" taxon-path))
       (reviews/insert-reviews app-state)
@@ -87,19 +87,18 @@
                         (get-in app-state keypaths/user-token)))))
 
 (defn bundle-builder-redirect [app-state product]
-  (when product
-    (routes/enqueue-navigate app-state
-                             events/navigate-category
-                             {:taxon-path (-> product :product_attrs :category first taxon-path-for)})))
+  (routes/enqueue-navigate app-state
+                           events/navigate-category
+                           {:taxon-path (-> product :product_attrs :category first taxon-path-for)}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
                    product-path)
-  (if (experiments/display-variation app-state "bundle-builder")
-    (bundle-builder-redirect app-state
-                             (query/get (get-in app-state keypaths/browse-product-query)
-                                        (vals (get-in app-state keypaths/products))))
-    (reviews/insert-reviews app-state)))
+  (reviews/insert-reviews app-state)
+  (let [product (query/get (get-in app-state keypaths/browse-product-query)
+                           (vals (get-in app-state keypaths/products)))]
+    (when (and product (experiments/bundle-builder-included-product? app-state product))
+      (bundle-builder-redirect app-state product))))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -207,21 +206,27 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate app-state events/navigate-home))
 
+(defn api-add-to-bag [app-state product variant]
+  (api/add-to-bag (get-in app-state keypaths/handle-message)
+                  variant
+                  product
+                  (get-in app-state keypaths/browse-variant-quantity)
+                  (get-in app-state keypaths/store-stylist-id)
+                  (get-in app-state keypaths/order-token)
+                  (get-in app-state keypaths/order-number)
+                  (get-in app-state keypaths/user-token)))
+
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
-        variant (if (experiments/display-variation app-state "bundle-builder")
-                  (products/selected-variant app-state)
-                  (query/get (get-in app-state keypaths/browse-variant-query)
-                             (products/all-variants product)))]
-    (api/add-to-bag (get-in app-state keypaths/handle-message)
-                    variant
-                    product
-                    (get-in app-state keypaths/browse-variant-quantity)
-                    (get-in app-state keypaths/store-stylist-id)
-                    (get-in app-state keypaths/order-token)
-                    (get-in app-state keypaths/order-number)
-                    (get-in app-state keypaths/user-token))))
+        variant (query/get (get-in app-state keypaths/browse-variant-query)
+                           (products/all-variants product))]
+    (api-add-to-bag app-state product variant)))
+
+(defmethod perform-effects events/control-build-add-to-bag [_ event _ app-state]
+  (let [product (products/selected-product app-state)
+        variant (products/selected-variant app-state)]
+    (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/handle-message)
@@ -437,7 +442,7 @@
                                          (get-in app-state keypaths/navigation-message))))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (if (experiments/display-variation app-state "bundle-builder")
+  (if (experiments/bundle-builder-included-product? app-state product)
     (bundle-builder-redirect app-state product)
     (do
       (analytics/add-product product)
@@ -514,17 +519,18 @@
                                      :navigation (get-in app-state keypaths/navigation-message)})))
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [product variant variant-quantity]} app-state]
-  (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
-    (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
-          all-variants (products/current-taxon-variants app-state)
-          previous-variants (products/filter-variants-by-selections
-                             previous-options
-                             all-variants)]
-      (send app-state
-            events/control-bundle-option-select
-            {:step-name step
-             :selected-options previous-options
-             :selected-variants previous-variants})))
+  (when (experiments/bundle-builder-included-product? app-state product)
+    (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
+      (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
+            all-variants (products/current-taxon-variants app-state)
+            previous-variants (products/filter-variants-by-selections
+                               previous-options
+                               all-variants)]
+        (send app-state
+              events/control-bundle-option-select
+              {:step-name step
+               :selected-options previous-options
+               :selected-variants previous-variants}))))
 
   (experiments/track-event "add-to-bag")
   (analytics/add-product product {:quantity variant-quantity
@@ -534,10 +540,7 @@
   (send-later app-state events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
-  (when-let [el (.querySelector js/document
-                                (if (experiments/display-variation app-state "bundle-builder")
-                                  "#summary"
-                                  ".cart-button"))]
+  (when-let [el (.querySelector js/document ".cart-button")]
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]

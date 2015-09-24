@@ -205,7 +205,7 @@
                  (get-in data keypaths/api-requests))
     [:button.large.primary#add-to-cart-button.saving]
     [:button.large.primary#add-to-cart-button
-     {:on-click (utils/send-event-callback data events/control-browse-add-to-bag)}
+     {:on-click (utils/send-event-callback data events/control-build-add-to-bag)}
      "ADD TO BAG"]))
 
 (def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]])
@@ -268,6 +268,20 @@
       "12\" - 28\" Length Bundles"
       "3.5 ounces")))
 
+(defn representative-product-id-for-taxon
+  "The bundle-builder shows data for many products, but yotpo can show
+  reviews for only one product at a time.  For now, we just pick one product that represents the whole taxon."
+  [taxon]
+  (let [taxon-path (keyword (taxons/taxon-path-for taxon))]
+    (get {:straight 13
+          :loose-wave 1
+          :body-wave 3
+          :deep-wave 11
+          :curly 9
+          :blonde 15
+          :closures 28}
+         taxon-path)))
+
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
@@ -288,7 +302,8 @@
           [:.reviews-wrapper
            [:.reviews-inner-wrapper
             (when (get-in data keypaths/reviews-loaded)
-              (om/build reviews-summary-component data))]]
+              (om/build reviews-summary-component data
+                        {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
           [:.carousel
            (if-let [product-url (product-image-url data taxon)]
              [:.hair-category-image {:style {:background-image (css-url product-url)}}]
@@ -313,14 +328,15 @@
              [:li description])]
           [:.reviews-wrapper
            (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-component data))]])
+             (om/build reviews-component data
+                       {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]])
        [:div.gold-features
         [:figure.guarantee-feature]
         [:figure.free-shipping-feature]
         [:figure.triple-bundle-feature]]]))))
 
 (defn category-component [data owner]
-  (apply (if (experiments/display-variation data "bundle-builder")
+  (apply (if (experiments/bundle-builder-included-taxon? data (taxons/current-taxon data))
            bundle-builder-category-component
            original-category-component)
          [data owner]))

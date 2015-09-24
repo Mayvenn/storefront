@@ -32,7 +32,7 @@
       [:a.free-shipping-action
        {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
       [:div.shop-now
-       (if (experiments/display-variation data "bundle-builder")
+       (if (experiments/bundle-builder? data)
          [:a.full-link (utils/route-to data events/navigate-categories)]
          (when-let [path (default-nav-taxon-path data)]
            [:a.full-link (utils/route-to data events/navigate-category

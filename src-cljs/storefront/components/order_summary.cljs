@@ -30,7 +30,7 @@
              :alt (:name variant)}]]
      [:div.line-item-detail.interactive
       [:h4
-       (if (experiments/display-variation data "bundle-builder")
+       (if (experiments/bundle-builder? data)
          [:a (products/summary variant)]
          [:a (utils/route-to data events/navigate-product {:product-path (:slug variant)})
           (:name variant)])] ;;TODO move into variation
@@ -60,8 +60,7 @@
       (when (not interactive?)
         (field "Quantity:" (:quantity line-item)))
       (field "Price:" (:single_display_amount line-item) "item-form" "price")
-      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")
-      ]
+      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")]
      [:div {:style {:clear "both"}}]]))
 
 (defn display-line-items [data order & [interactive?]]

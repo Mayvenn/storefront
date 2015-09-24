@@ -12,7 +12,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (if (experiments/display-variation data "bundle-builder")
+  (if (experiments/bundle-builder? data)
     (utils/route-to data events/navigate-categories)
     (when-let [path (default-nav-taxon-path data)]
       (utils/route-to data events/navigate-category
