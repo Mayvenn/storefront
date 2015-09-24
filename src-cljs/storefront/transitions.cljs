@@ -96,10 +96,10 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options selected-variants step-name], :as args} app-state]
-  (assoc app-state
-         keypaths/bundle-builder-selected-options selected-options
-         keypaths/bundle-builder-previous-step step-name
-         keypaths/bundle-builder-selected-variants selected-variants))
+  (-> app-state
+      (assoc-in keypaths/bundle-builder-selected-options selected-options)
+      (assoc-in keypaths/bundle-builder-previous-step step-name)
+      (assoc-in keypaths/bundle-builder-selected-variants selected-variants)))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
