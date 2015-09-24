@@ -27,8 +27,8 @@
 
 (defn display-product [data taxon product]
   (let [collection-name (:collection_name product)]
-   [:a {:href (utils/href-to data events/navigate-product {:product-path (:slug product) :query-params {:taxon_id (taxon :id)}})
-        :on-click (utils/click-to data events/control-click-category-product {:target product :taxon taxon})}
+    [:a {:href (utils/href-to data events/navigate-product {:product-path (:slug product) :query-params {:taxon_id (taxon :id)}})
+         :on-click (utils/click-to data events/control-click-category-product {:target product :taxon taxon})}
      [:div.taxon-product-container
       (when-let [first-image (->> product
                                   :master
@@ -165,24 +165,24 @@
                                             option-variants)}))))
 
 (defn step-html [step-name idx options]
-    [:.step
-     [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
-     [:.options
-      (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
-        (when represented
-          (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
-            (list
-             [:input {:type "radio"
-                      :id option-id
-                      :disabled disabled
-                      :checked checked
-                      :on-change on-change}]
-             [:.option {:class [step-name (when sold-out "sold-out")]}
-              [:.option-name option-name]
-              (cond
-                sold-out [:.subtext "Sold Out"]
-                (seq price) [:.subtext (format-price price)])
-              [:label {:for option-id}]]))))]])
+  [:.step
+   [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
+   [:.options
+    (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
+      (when represented
+        (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
+          (list
+           [:input {:type "radio"
+                    :id option-id
+                    :disabled disabled
+                    :checked checked
+                    :on-change on-change}]
+           [:.option {:class [step-name (when sold-out "sold-out")]}
+            [:.option-name option-name]
+            (cond
+              sold-out [:.subtext "Sold Out"]
+              (seq price) [:.subtext (format-price price)])
+            [:label {:for option-id}]]))))]])
 
 (defn bundle-builder-steps [data variants steps]
   (map-indexed (fn [idx {:keys [step-name] :as step}]
@@ -231,8 +231,8 @@
                      (apply merge-with concat)
                      (update-vals set)
                      (update-vals (fn [opts] (->> opts
-                                             (sort-by :position)
-                                             (map :name)))))
+                                                  (sort-by :position)
+                                                  (map :name)))))
         dependent-steps (vec (reductions #(conj %1 %2) [] flow))]
     (map (fn [step step-dependencies]
            {:step-name step
