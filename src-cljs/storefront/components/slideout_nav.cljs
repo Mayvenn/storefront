@@ -51,6 +51,13 @@
   (= (get-in data keypaths/user-store-slug)
      (get-in data keypaths/store-slug)))
 
+(defn shop-now-attrs [data]
+  (if (experiments/bundle-builder? data)
+    (close-and-route data events/navigate-categories)
+    (when-let [path (default-nav-taxon-path data)]
+      (close-and-route data events/navigate-category
+                       {:taxon-path path}))))
+
 (defn slideout-nav-component [data owner]
   (om/component
    (html
@@ -126,11 +133,7 @@
             (if (own-store? data)
               (close-and-enqueue data events/control-menu-expand
                                  {:keypath keypaths/shop-menu-expanded})
-              (if (experiments/bundle-builder? data)
-                (close-and-route data events/navigate-categories)
-                (when-let [path (default-nav-taxon-path data)]
-                  (close-and-route data events/navigate-category
-                                   {:taxon-path path}))))
+              (shop-now-attrs data))
             (if (own-store? data)
               "Shop "
               "Shop")
@@ -142,11 +145,7 @@
           [:ul.shop-menu-expanded.open
            [:li
             [:a
-             (if (experiments/bundle-builder? data)
-               (close-and-route data events/navigate-categories)
-               (when-let [path (default-nav-taxon-path data)]
-                 (close-and-route data events/navigate-category
-                                  {:taxon-path path})))
+             (shop-now-attrs data)
              "Hair Extensions"]]
            [:li
             [:a
@@ -187,11 +186,7 @@
           (slideout-nav-link
            data
            (merge
-            (if (experiments/bundle-builder? data)
-              (close-and-route data events/navigate-categories)
-              (when-let [path (default-nav-taxon-path data)]
-                (close-and-route data events/navigate-category
-                                 {:taxon-path path})))
+            (shop-now-attrs data)
             {:icon-class "hair-extensions"
              :label "Hair Extensions"
              :full-width? true}))
