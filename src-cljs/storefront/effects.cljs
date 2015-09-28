@@ -1,25 +1,24 @@
 (ns storefront.effects
-  (:require [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.api :as api]
-            [storefront.routes :as routes]
-            [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.accessors.taxons :refer [taxon-name-from]]
-            [storefront.utils.query :as query]
+  (:require [ajax.core :refer [-abort]]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
-            [storefront.hooks.riskified :as riskified]
+            [storefront.accessors.products :as products]
+            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
+            [storefront.api :as api]
+            [storefront.browser.cookie-jar :as cookie-jar]
+            [storefront.browser.scroll :as scroll]
+            [storefront.events :as events]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
-            [storefront.hooks.stripe :as stripe]
-            [storefront.messages :refer [send send-later]]
-            [storefront.hooks.reviews :as reviews]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as products]
-            [storefront.browser.scroll :as scroll]
             [storefront.hooks.opengraph :as opengraph]
             [clojure.string :as string]
-            [ajax.core :refer [-abort]]))
+            [storefront.hooks.reviews :as reviews]
+            [storefront.hooks.riskified :as riskified]
+            [storefront.hooks.stripe :as stripe]
+            [storefront.keypaths :as keypaths]
+            [storefront.messages :refer [send send-later]]
+            [storefront.routes :as routes]
+            [storefront.utils.query :as query]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -36,8 +35,11 @@
   (analytics/remove-tracking))
 
 (defmethod perform-effects events/navigate [_ event args app-state]
-  (api/get-taxons (get-in app-state keypaths/handle-message)
-                  (get-in app-state keypaths/api-cache))
+  (if (experiments/bundle-builder? app-state)
+    (api/get-builder-taxons (get-in app-state keypaths/handle-message)
+                            (get-in app-state keypaths/api-cache))
+    (api/get-taxons (get-in app-state keypaths/handle-message)
+                    (get-in app-state keypaths/api-cache)))
   (api/get-store (get-in app-state keypaths/handle-message)
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug))
@@ -77,15 +79,29 @@
     (analytics/track-page (routes/path-for app-state event args))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (api/get-products (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/api-cache)
-                    taxon-path
-                    (get-in app-state keypaths/user-token)))
+  (let [bundle-builder? (experiments/bundle-builder? app-state)]
+    ;; To avoid a race-condition on direct load
+    (when (or bundle-builder? (not= "closures" taxon-path))
+      (reviews/insert-reviews app-state)
+      (api/get-products (get-in app-state keypaths/handle-message)
+                        (get-in app-state keypaths/api-cache)
+                        taxon-path
+                        (if bundle-builder? "bundle-builder" "original")
+                        (get-in app-state keypaths/user-token)))))
+
+(defn bundle-builder-redirect [app-state product]
+  (routes/enqueue-navigate app-state
+                           events/navigate-category
+                           {:taxon-path (-> product :product_attrs :category first taxon-path-for)}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product (get-in app-state keypaths/handle-message)
                    product-path)
-  (reviews/insert-reviews app-state))
+  (reviews/insert-reviews app-state)
+  (let [product (query/get (get-in app-state keypaths/browse-product-query)
+                           (vals (get-in app-state keypaths/products)))]
+    (when (and product (experiments/bundle-builder-included-product? app-state product))
+      (bundle-builder-redirect app-state product))))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -202,21 +218,29 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate app-state events/navigate-home))
 
+(defn api-add-to-bag [app-state product variant]
+  (api/add-to-bag
+   (get-in app-state keypaths/handle-message)
+   {:variant variant
+    :product product
+    :quantity (get-in app-state keypaths/browse-variant-quantity)
+    :stylist-id (get-in app-state keypaths/store-stylist-id)
+    :token (get-in app-state keypaths/order-token)
+    :number (get-in app-state keypaths/order-number)
+    :user-id (get-in app-state keypaths/user-id)
+    :user-token (get-in app-state keypaths/user-token)}))
+
 (defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
         variant (query/get (get-in app-state keypaths/browse-variant-query)
                            (products/all-variants product))]
-    (api/add-to-bag
-     (get-in app-state keypaths/handle-message)
-     {:variant variant
-      :product product
-      :quantity (get-in app-state keypaths/browse-variant-quantity)
-      :stylist-id (get-in app-state keypaths/store-stylist-id)
-      :token (get-in app-state keypaths/order-token)
-      :number (get-in app-state keypaths/order-number)
-      :user-id (get-in app-state keypaths/user-id)
-      :user-token (get-in app-state keypaths/user-token)})))
+    (api-add-to-bag app-state product variant)))
+
+(defmethod perform-effects events/control-build-add-to-bag [_ event _ app-state]
+  (let [product (products/selected-product app-state)
+        variant (products/selected-variant app-state)]
+    (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/handle-message)
@@ -433,30 +457,32 @@
           events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
-  (let [taxon (query/get (get-in app-state keypaths/browse-taxon-query)
-                         (get-in app-state keypaths/taxons))]
+  (let [taxon (taxons/current-taxon app-state)]
     (doseq [product products]
       (analytics/add-impression product {:list (:name taxon)})))
   (analytics/track-page (routes/path-for app-state
                                          (get-in app-state keypaths/navigation-message))))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (analytics/add-product product)
-  (analytics/set-action "detail")
-  (analytics/track-page (routes/path-for app-state
-                                         (get-in app-state keypaths/navigation-message)))
-  (opengraph/set-product-tags {:name (:name product)
-                               :image (when-let [image-url (->> product
-                                                                :master
-                                                                :images
-                                                                first
-                                                                :large_url)]
-                                        (str "http:" image-url))})
-  (send app-state
-        events/control-browse-variant-select
-        {:variant (if-let [variants (seq (-> product :variants))]
-                    (or (->> variants (filter :can_supply?) first) (first variants))
-                    (:master product))}))
+  (if (experiments/bundle-builder-included-product? app-state product)
+    (bundle-builder-redirect app-state product)
+    (do
+      (analytics/add-product product)
+      (analytics/set-action "detail")
+      (analytics/track-page (routes/path-for app-state
+                                             (get-in app-state keypaths/navigation-message)))
+      (opengraph/set-product-tags {:name (:name product)
+                                   :image (when-let [image-url (->> product
+                                                                    :master
+                                                                    :images
+                                                                    first
+                                                                    :large_url)]
+                                            (str "http:" image-url))})
+      (send app-state
+            events/control-browse-variant-select
+            {:variant (if-let [variants (seq (-> product :variants))]
+                        (or (->> variants (filter :can_supply?) first) (first variants))
+                        (:master product))}))))
 
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
@@ -520,6 +546,18 @@
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
   (let [{:keys [product quantity variant]} requested]
     (save-cookie app-state true)
+    (when (experiments/bundle-builder-included-product? app-state product)
+      (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
+        (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
+              all-variants (products/current-taxon-variants app-state)
+              previous-variants (products/filter-variants-by-selections
+                                 previous-options
+                                 all-variants)]
+          (send app-state
+                events/control-bundle-option-select
+                {:step-name step
+                 :selected-options previous-options
+                 :selected-variants previous-variants}))))
     (experiments/track-event "add-to-bag")
     (analytics/add-product product {:quantity quantity
                                     :variant (:sku variant)})
@@ -527,7 +565,7 @@
     (analytics/track-event "UX" "click" "add to cart")
     (send-later app-state events/added-to-bag)))
 
-(defmethod perform-effects events/added-to-bag [_ _ _ _]
+(defmethod perform-effects events/added-to-bag [_ _ _ app-state]
   (when-let [el (.querySelector js/document ".cart-button")]
     (scroll/scroll-to-elem el)))
 
@@ -542,3 +580,7 @@
         events/flash-show-success {:message "The coupon code was successfully applied to your order."
                                    :navigation [events/navigate-cart {}]})
   (send app-state events/flash-dismiss-failure))
+
+(defmethod perform-effects events/optimizely [_ event args app-state]
+  (when (= (:variation args) "bundle-builder")
+    (apply send app-state (get-in app-state keypaths/navigation-message))))

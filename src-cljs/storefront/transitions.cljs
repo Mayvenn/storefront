@@ -23,7 +23,11 @@
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (assoc-in app-state keypaths/browse-taxon-query {taxon-path-for taxon-path}))
+  (-> app-state
+      (assoc-in keypaths/browse-taxon-query {taxon-path-for taxon-path})
+      (assoc-in keypaths/browse-recently-added-variants [])
+      (assoc-in keypaths/browse-variant-quantity 1)
+      (assoc-in keypaths/bundle-builder nil)))
 
 (defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
   (let [taxon-id (js/parseInt (:taxon-id query-params))]
@@ -111,8 +115,18 @@
                 (Math/abs)
                 (max 1))))
 
+(defmethod transition-state events/control-bundle-option-select
+  [_ event {:keys [selected-options selected-variants step-name], :as args} app-state]
+  (-> app-state
+      (assoc-in keypaths/bundle-builder-selected-options selected-options)
+      (assoc-in keypaths/bundle-builder-previous-step step-name)
+      (assoc-in keypaths/bundle-builder-selected-variants selected-variants)))
+
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
+
+(defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
+  (assoc-in app-state keypaths/bundle-builder-carousel-index index))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]
@@ -222,6 +236,7 @@
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)
+      (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/cart-quantities (updated-cart-quantities order))
       (update-in keypaths/order merge order)))
 

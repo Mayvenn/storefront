@@ -7,6 +7,7 @@
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
+(def navigate-categories (conj navigate :categories))
 (def navigate-product (conj navigate :product))
 (def navigate-guarantee (conj navigate :guarantee))
 (def navigate-help (conj navigate :help))
@@ -42,6 +43,8 @@
 (def control [:control])
 (def control-change-state (conj control :change-state))
 
+(def control-carousel-move (conj control :carousel-move))
+
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse (conj control-menu :collapse))
@@ -61,10 +64,15 @@
 (def control-click (conj control :click))
 (def control-click-category-product (conj control-click :category-product))
 
+(def control-bundle-option-select (conj control :bundle :option-select))
+
 (def control-browse (conj control :browse))
 (def control-browse-variant (conj control-browse :variant))
 (def control-browse-variant-select (conj control-browse-variant :select))
 (def control-browse-add-to-bag (conj control-browse :add-to-bag))
+
+(def control-build (conj control :build))
+(def control-build-add-to-bag (conj control-build :add-to-bag))
 
 (def control-cart (conj control :cart))
 (def control-cart-update-coupon (conj control-cart :update-coupon))

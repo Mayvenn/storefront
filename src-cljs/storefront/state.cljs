@@ -105,6 +105,50 @@
                         :phone ""}
 
      :ui {:api-requests []
+          :taxon-images {:closures  ["/images/style_images/closures/1.png"
+                                     "/images/style_images/closures/2.png"
+                                     "/images/style_images/closures/3.png"
+                                     "/images/style_images/closures/4.png"
+                                     "/images/style_images/closures/5.png"
+                                     "/images/style_images/closures/6.png"]
+                         (keyword "deep wave") ["/images/style_images/deep_wave/1.png"
+                                                "/images/style_images/deep_wave/2.png"
+                                                "/images/style_images/deep_wave/3.png"
+                                                "/images/style_images/deep_wave/4.png"
+                                                "/images/style_images/deep_wave/5.png"
+                                                "/images/style_images/deep_wave/6.png"]
+                         (keyword "loose wave") ["/images/style_images/loose_wave/1.png"
+                                                 "/images/style_images/loose_wave/2.png"
+                                                 "/images/style_images/loose_wave/3.png"
+                                                 "/images/style_images/loose_wave/4.png"
+                                                 "/images/style_images/loose_wave/5.png"
+                                                 "/images/style_images/loose_wave/6.png"]
+                         (keyword "body wave") ["/images/style_images/body_wave/1.png"
+                                                "/images/style_images/body_wave/2.png"
+                                                "/images/style_images/body_wave/3.png"
+                                                "/images/style_images/body_wave/4.png"
+                                                "/images/style_images/body_wave/5.png"
+                                                "/images/style_images/body_wave/6.png"]
+                         :blonde  ["/images/style_images/blonde/1.png"
+                                   "/images/style_images/blonde/2.png"
+                                   "/images/style_images/blonde/3.png"
+                                   "/images/style_images/blonde/4.png"
+                                   "/images/style_images/blonde/5.png"
+                                   "/images/style_images/blonde/6.png"
+                                   "/images/style_images/blonde/7.png"
+                                   "/images/style_images/blonde/8.png"]
+                         :curly  ["/images/style_images/curly/1.png"
+                                  "/images/style_images/curly/2.png"
+                                  "/images/style_images/curly/3.png"
+                                  "/images/style_images/curly/4.png"
+                                  "/images/style_images/curly/5.png"
+                                  "/images/style_images/curly/6.png"]
+                         :straight  ["/images/style_images/straight/1.png"
+                                     "/images/style_images/straight/2.png"
+                                     "/images/style_images/straight/3.png"
+                                     "/images/style_images/straight/4.png"
+                                     "/images/style_images/straight/5.png"
+                                     "/images/style_images/straight/6.png"]}
           :navigation-message [events/navigate-home {}]
           :validation-errors {:error-message nil
                               :details {}}

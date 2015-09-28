@@ -207,6 +207,10 @@
   &.blonde {
     background-image: url("/images/blonde.jpg");
   }
+
+  &.closures {
+    background-image: url("/images/loose_wave.jpg");
+  }
 }
 
 .hair-image-container {
@@ -220,12 +224,17 @@
     width: (211rem / $default-font-size);
     height: (211rem / $default-font-size);
 
+    &.extra-wide {
+      width: (642rem / $default-font-size);
+      height: (100rem / $default-font-size);
+    }
+
     .hair-image {
       position: absolute;
       top: 0;
       left: 0;
-      width: (211rem / $default-font-size);
-      height: (211rem / $default-font-size);
+      width: 100%;
+      height: 100%;
     }
   }
 
@@ -262,6 +271,10 @@
 
     &.deep-wave {
       background-image: url('/images/desktop_assets/knockout/deep-wave-knockout.png');
+    }
+
+    &.closures {
+      background-image: url('/images/desktop_assets/knockout/closures-knockout.png');
     }
 
     p.hair-taxon-name {

@@ -168,7 +168,6 @@
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                 "text/plain"))
-               (GET "/categories" req (redirect "/categories/hair/straight"))
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)

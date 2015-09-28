@@ -1,6 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.components.formatters :refer [as-money]]
             [storefront.components.utils :as utils]
+            [storefront.accessors.products :as products]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
@@ -23,6 +24,7 @@
 (defn- all-order-adjustments [order]
   (conj (:adjustments order)
         (tax-adjustment order)))
+
 
 (defn- display-adjustment-row [{:keys [name price]}]
   (when-not (= price 0)
@@ -49,20 +51,17 @@
   [:div.line-item
    [:a [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
-    [:h4 [:a (:product-name line-item)]]
-    (:variant-option-display line-item)
-    (map display-variant-options (:options line-item))
-    (when (not interactive?)
-      (field "Quantity:" (:quantity line-item)))
-    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
-    (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal")
+    [:h4
+     (if (experiments/bundle-builder? data)
+       [:a (products/summary line-item)] ;; TODO: pass in variant_attrs
+       [:a (:product-name line-item)])]
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
             delete-request (query/get
                             {:request-key
                              (conj request-keys/delete-line-item variant-id)}
                             (get-in data keypaths/api-requests))]
-        (list
+        [:.quantity-adjustments
          (om/build counter-component
                    data
                    {:opts {:path (conj keypaths/cart-quantities variant-id)
@@ -77,7 +76,12 @@
                        (utils/send-event-callback data
                                                   events/control-cart-remove
                                                   variant-id))}
-          "Remove"])))]
+          "Remove"]]))
+    (map display-variant-options (:options line-item))
+    (when (not interactive?)
+      (field "Quantity:" (:quantity line-item)))
+    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
+    (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal")]
    [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]

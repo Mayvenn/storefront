@@ -65,6 +65,14 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
 
+(def taxon-images (conj ui :taxon-images))
+
+(def bundle-builder (conj ui :bundle-builder))
+(def bundle-builder-carousel-index (conj bundle-builder :carousel-index))
+(def bundle-builder-previous-step (conj bundle-builder :previous-step))
+(def bundle-builder-selected-variants (conj bundle-builder :selected-variants))
+(def bundle-builder-selected-options (conj bundle-builder :selected-options))
+
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
 (def sign-in-password (conj sign-in :password))

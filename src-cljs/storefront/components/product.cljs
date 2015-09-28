@@ -6,7 +6,7 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
-            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name]]
+            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name] :as taxons]
             [storefront.accessors.products :refer [graded? all-variants]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
@@ -59,8 +59,7 @@
 (defn product-component [data owner]
   (om/component
    (html
-    (let [taxon (query/get (get-in data keypaths/browse-taxon-query)
-                           (get-in data keypaths/taxons))
+    (let [taxon (taxons/current-taxon data)
           taxon-path (if taxon (taxon-path-for taxon))
           product (query/get (get-in data keypaths/browse-product-query)
                              (vals (get-in data keypaths/products)))
@@ -82,7 +81,8 @@
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
            (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-summary-component data))
+             (om/build reviews-summary-component data
+                       {:opts {:product-id (:id product)}}))
            [:div#main-image
             (cond
               (> (count images) 1)
@@ -187,7 +187,8 @@
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]
 
            (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-component data))]]
+             (om/build reviews-component data
+                       {:opts {:product-id (:id product)}}))]]
 
          [:div.gold-features
           [:figure.guarantee-feature]
