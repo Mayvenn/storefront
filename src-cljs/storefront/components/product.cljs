@@ -28,7 +28,7 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-variant [app-state {:keys [id quantity product variant]}]
+(defn display-bagged-variant [app-state {:keys [quantity product variant]}]
   [:div.item-added
    [:strong "Added to Bag: "]
    (str (number->words quantity)
