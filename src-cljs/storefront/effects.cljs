@@ -378,7 +378,7 @@
            (select-keys [:token :number])
            (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))))
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-      (let [expiry (string/split (get-in app-state keypaths/checkout-credit-card-expiration) #"/")]
+      (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
         (stripe/create-token app-state
                              (get-in app-state keypaths/checkout-credit-card-name)
                              (get-in app-state keypaths/checkout-credit-card-number)
