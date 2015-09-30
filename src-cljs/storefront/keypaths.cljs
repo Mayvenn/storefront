@@ -127,9 +127,8 @@
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 (def checkout-selected-shipping-method (conj checkout :shipping-method))
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
-(def checkout-selected-payment-methods (conj checkout :payment-methods)) 
+(def checkout-selected-payment-methods (conj checkout :payment-methods))
 (def checkout-use-store-credits (conj checkout :use-store-credits))
-(def checkout-order-covered-by-store-credit (conj checkout :covered-by-store-credit))
 
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))

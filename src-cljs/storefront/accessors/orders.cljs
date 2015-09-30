@@ -1,17 +1,5 @@
 (ns storefront.accessors.orders)
 
-(defn active-payments [order]
-  (filter #(not= (:state %) "invalid")
-          (:payments order)))
-
-(defn using-store-credit? [order]
-  (some #(= (:source_type %) "Spree::StoreCredit")
-        (active-payments order)))
-
-(defn partially-covered-by-store-credit? [order]
-  (not= (js/parseFloat (:order_total_after_store_credit order))
-        0))
-
 (defn incomplete? [order]
   (-> order :state #{"cart"} boolean))
 
@@ -47,13 +35,16 @@
        (filter #(= (:source %) "waiter"))
        first))
 
+(defn subtract-rounded-floats [a b]
+  (/ (.toFixed (- (* 100.0 a) (* 100.0 b)) 0) 100.0))
+
 (defn form-payment-methods [order-total store-credit use-store-credit]
   (let [store-credit-used (if use-store-credit (min order-total store-credit) 0)]
     (merge {}
            (when use-store-credit
              {:store-credit {:amount store-credit-used}})
            (when (> order-total store-credit-used)
-             {:stripe {:amount (- order-total store-credit-used)}}))))
+             {:stripe {:amount (subtract-rounded-floats order-total store-credit-used)}}))))
 
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
@@ -63,3 +54,15 @@
 
 (defn products-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-items order))))
+
+(defn fully-covered-by-store-credit? [order user]
+  (boolean
+   (when (and order user)
+     (>= (:total-available-store-credit user)
+         (:total order)))))
+
+(defn partially-covered-by-store-credit? [order user]
+  (boolean
+   (when (and order user)
+     (< (:total-available-store-credit user)
+        (:total order)))))

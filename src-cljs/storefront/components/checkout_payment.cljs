@@ -12,9 +12,6 @@
             [storefront.messages :refer [send]]
             [clojure.string :as string]))
 
-(defn stylist? [user]
-  (seq (:store-slug user)))
-
 (defn change-radio [app-state keypath value-if-checked]
   (let [keypath-value (get-in app-state keypath)]
     {:checked (when (= keypath-value value-if-checked) "checked" "")
@@ -25,7 +22,7 @@
                         {:keypath keypath
                          :value value-if-checked}))}))
 
-(defn display-radio [data keypath value-if-checked text additional-text-when-stylist]
+(defn display-radio [data keypath value-if-checked text]
   [:li.store-credit-option
    (when (= (get-in data keypath) value-if-checked)
      {:class "selected"})
@@ -37,9 +34,7 @@
      [:div.checkbox-container [:figure.large-checkbox]]
      [:div.store-credit-container
       [:div#select_store_credit.use-store-credit-option
-       [:div text]
-       (when (stylist? (get-in data keypaths/user))
-         [:span additional-text-when-stylist])]]]]])
+       [:div text]]]]]])
 
 (defn display-use-store-credit-option [data]
   [:div
@@ -51,15 +46,13 @@
      true
      (str "Use store credit: "
           (as-money (get-in data keypaths/user-total-available-store-credit))
-          " available")
-     "(Coupons will be automatically removed for Stylists)")
+          " available"))
 
     (display-radio
      data
      keypaths/checkout-use-store-credits
      false
-     "Do not use store credit"
-     "(Coupons can be used by Stylists)")]])
+     "Do not use store credit")]])
 
 (defn field [id name app-state keypath presenter-fn & [text-attrs]]
   [:p.field
@@ -88,17 +81,7 @@
           {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
            :max-length 4})
    [:p.review-message
-    "You can review your order on the next page"
-    (when-not (get-in data keypaths/checkout-order-covered-by-store-credit)
-      " before we can charge your credit card")]])
-
-(defn fully-covered-by-store-credit? [app-state]
-  (and (get-in app-state keypaths/checkout-use-store-credits)
-       (get-in app-state keypaths/checkout-order-covered-by-store-credit)))
-
-(defn partially-covered-by-store-credit? [app-state]
-  (and (get-in app-state keypaths/checkout-use-store-credits)
-       (orders/partially-covered-by-store-credit? (get-in app-state keypaths/order))))
+    "You can review your order on the next page before we charge your credit card"]])
 
 (defn checkout-payment-component [data owner]
   (om/component
@@ -116,10 +99,16 @@
           [:div.checkout-container.payment
            (when (pos? (get-in data keypaths/user-total-available-store-credit))
              (display-use-store-credit-option data))
-           (when-not (fully-covered-by-store-credit? data)
+           (when-not (and (get-in data keypaths/checkout-use-store-credits)
+                          (orders/fully-covered-by-store-credit?
+                           (get-in data keypaths/order)
+                           (get-in data keypaths/user)))
              [:div#cc-form
               [:div
-               (if (partially-covered-by-store-credit? data)
+               (if (and (get-in data keypaths/checkout-use-store-credits)
+                        (orders/partially-covered-by-store-credit?
+                         (get-in data keypaths/order)
+                         (get-in data keypaths/user)))
                  [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
                  [:h2.checkout-header "Credit Card Info (Required)"])
 

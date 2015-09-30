@@ -365,7 +365,9 @@
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (send app-state events/flash-dismiss-failure)
   (let [use-store-credit (get-in app-state keypaths/checkout-use-store-credits)
-        covered-by-store-credit (get-in app-state keypaths/checkout-order-covered-by-store-credit)]
+        covered-by-store-credit (orders/fully-covered-by-store-credit?
+                                 (get-in app-state keypaths/order)
+                                 (get-in app-state keypaths/user))]
     (analytics/track-checkout-option 4 (str (if use-store-credit "creditYes" "creditNo")
                                             "/"
                                             (if covered-by-store-credit "creditCovers" "partialCovers")))
