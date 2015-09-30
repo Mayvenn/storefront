@@ -78,14 +78,14 @@
 (def ^:private bundle-summary [not-black-color (comp summary-option-mapping :grade) :origin :length :style])
 
 (defn closure? [variant]
-  (= "closures" (get-in variant [:variant_attrs :category])))
+  (= "closures" (get-in variant [:variant-attrs :category])))
 
 (defn bundle? [variant]
-  (boolean (get-in variant [:variant_attrs :category])))
+  (boolean (get-in variant [:variant-attrs :category])))
 
-(defn summary [{:keys [variant_attrs product-name] :as variant}]
+(defn summary [{:keys [variant-attrs product-name] :as variant}]
   (let [summary-fns (cond (closure? variant) closure-summary
                           (bundle? variant)  bundle-summary
                           :else [(constantly product-name)])
-        strs (filter identity ((apply juxt summary-fns) variant_attrs))]
+        strs (filter identity ((apply juxt summary-fns) variant-attrs))]
     (clojure.string/join " " strs)))

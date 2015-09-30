@@ -53,7 +53,7 @@
    [:div.line-item-detail.interactive
     [:h4
      (if (experiments/bundle-builder? data)
-       [:a (products/summary line-item)] ;; TODO: pass in variant_attrs
+       [:a (products/summary line-item)]
        [:a (:product-name line-item)])]
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
