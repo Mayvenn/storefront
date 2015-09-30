@@ -250,7 +250,7 @@
 
 (defn mayvenn->spree-address [states address]
   (-> address
-      (select-keys [:address1 :address2 :city :first-name :last-name :id :phone :state :zipcode])
+      (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])
       (rename-keys {:first-name :firstname
                     :last-name :lastname
                     :state :state_id})
@@ -263,7 +263,7 @@
       (rename-keys {:firstname :first-name
                     :lastname :last-name})
       (update-in [:state] :abbr)
-      (select-keys [:address1 :address2 :city :first-name :last-name :id :phone :state :zipcode])))
+      (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])))
 
 (defn spree->mayvenn-addresses [contains-addresses]
   (-> contains-addresses
@@ -435,7 +435,7 @@
    POST
    "/v2/place-order"
    request-keys/place-order
-   {:params order
+   {:params (select-keys order [:number :token :session-id])
     :handler #(handle-message events/api-success-update-order-place-order
                               {:order %
                                :navigate events/navigate-order-complete})}))
@@ -483,7 +483,7 @@
    POST
    "/v2/update-addresses"
    request-keys/update-addresses
-   {:params (select-keys order [:number :token :email :billing-address :shipping-address])
+   {:params (select-keys order [:number :token :billing-address :shipping-address])
     :handler #(handle-message events/api-success-update-order-update-address
                               {:order %
                                :navigate events/navigate-checkout-delivery})}))
