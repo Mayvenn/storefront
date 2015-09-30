@@ -50,7 +50,7 @@
     (handle-message events/api-failure-bad-server-response response)))
 
 (defn filter-nil [m]
-  (into {} (filter second m)))
+  (into {} (filter (comp not nil? val) m)))
 
 (def default-req-opts {:headers {"Accepts" "application/json"}
                        :format :json
@@ -67,7 +67,8 @@
 
 (defn api-req
   [handle-message method path req-key request-opts]
-  (let [req-id (random-uuid)
+  (let [request-opts (update-in request-opts [:params] filter-nil)
+        req-id (random-uuid)
         request
         (method (str api-base-url path)
                 (merge-req-opts handle-message req-key req-id request-opts))]
