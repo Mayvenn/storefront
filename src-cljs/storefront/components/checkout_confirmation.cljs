@@ -2,7 +2,9 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [storefront.events :as events]
+            [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]))
@@ -15,11 +17,13 @@
      [:div.row
       [:div.checkout-form-wrapper
        [:form.edit_order
-        {:method "POST"
-         :on-submit (utils/send-event-callback data events/control-checkout-confirmation-submit)}
         [:div.checkout-container
          (display-line-items data (get-in data keypaths/order))
          (display-order-summary (get-in data keypaths/order))
          [:div.form-buttons.pay-for-order
-          [:input.continue.button.primary
-           {:type "submit" :name "commit" :value "Pay for order"}]]]]]]])))
+          (let [placing-order (query/get {:request-key request-keys/place-order}
+                                         (get-in data keypaths/api-requests))]
+            [:.large.continue.button.primary
+             {:on-click (when-not placing-order (utils/send-event-callback data events/control-checkout-confirmation-submit))
+              :class (when placing-order "saving")}
+             "Pay for order"])]]]]]])))
