@@ -4,6 +4,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
+            [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -168,9 +169,13 @@
                       (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-order-complete [_ _ _ app-state]
-  (analytics/set-purchase (get-in app-state keypaths/last-order))
-  (analytics/track-page (apply routes/path-for app-state (get-in app-state keypaths/navigation-message)))
-  (experiments/track-event "place-order"))
+  (let [last-order (get-in app-state keypaths/last-order)]
+    (analytics/set-purchase last-order)
+    (analytics/track-page (apply routes/path-for app-state (get-in app-state keypaths/navigation-message)))
+    (when (stylists/own-store? app-state)
+      (experiments/set-dimension "stylist-own-store" "stylists"))
+    (experiments/track-event "place-order"
+                             {:revenue (* 100 (:total last-order))})))
 
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
   (comment (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -191,7 +196,7 @@
   [_ event {keypath :keypath} app-state]
   (when (#{keypaths/menu-expanded} keypath)
     (set! (.. js/document -body -style -overflow) "auto")))
-
+ 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/handle-message)
                (get-in app-state keypaths/sign-in-email)
@@ -555,6 +560,8 @@
                 {:step-name step
                  :selected-options previous-options
                  :selected-variants previous-variants}))))
+    (when (stylists/own-store? app-state)
+      (experiments/set-dimension "stylist-own-store" "stylists"))
     (experiments/track-event "add-to-bag")
     (analytics/add-product product {:quantity quantity
                                     :variant (:sku variant)})

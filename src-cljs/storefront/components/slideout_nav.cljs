@@ -6,6 +6,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
+            [storefront.accessors.stylists :refer [own-store?]]
             [storefront.messages :refer [send]]
             [storefront.hooks.experiments :as experiments]))
 
@@ -46,10 +47,6 @@
 
 (defn logged-in? [data]
   (boolean (get-in data keypaths/user-email)))
-
-(defn own-store? [data]
-  (= (get-in data keypaths/user-store-slug)
-     (get-in data keypaths/store-slug)))
 
 (defn shop-now-attrs [data]
   (if (experiments/bundle-builder? data)
