@@ -4,7 +4,6 @@ var minifyCSS = require('gulp-minify-css');
 var RevAll = require('gulp-rev-all');
 var path = require('path');
 var argv = require('yargs').argv;
-var rimraf = require('gulp-rimraf');
 var gzip = require('gulp-gzip');
 var jsonTransform = require('gulp-json-transform');
 var gutil = require('gulp-util');
@@ -12,7 +11,8 @@ var merge = require('merge-stream');
 var gulpIgnore = require('gulp-ignore');
 var debug = require('gulp-debug');
 var runSequence = require('run-sequence');
-var shell = require('gulp-shell')
+var shell = require('gulp-shell');
+var del = require('del');
 
 gulp.task('sass', function () {
   gulp.src('./resources/scss/*.scss')
@@ -41,9 +41,8 @@ gulp.task('cdn', function () {
     throw "missing --host";
   }
 
-  gulp.src(['./resources/public/cdn', './resources/rev-manifest.json'],
-           { read: false })
-    .pipe(rimraf());
+  // Clean up from last build
+  del(['./resources/public/cdn', './resources/rev-manifest.json']);
 
   var revAll = new RevAll({
     prefix: "//" + argv.host + "/cdn/"
