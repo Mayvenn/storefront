@@ -10,9 +10,13 @@
 (defn remove-optimizely []
   (remove-tags "optimizely"))
 
-(defn track-event [event-name]
+(defn set-dimension [dimension-name value]
   (when (.hasOwnProperty js/window "optimizely")
-    (.push js/optimizely (clj->js ["trackEvent" event-name]))))
+    (.push js/optimizely (clj->js ["setDimensionValue" dimension-name value]))))
+
+(defn track-event [event-name & [opts]]
+  (when (.hasOwnProperty js/window "optimizely")
+    (.push js/optimizely (clj->js ["trackEvent" event-name opts]))))
 
 (defn display-variation [data variation]
   (contains? (get-in data keypaths/optimizely-variations)
