@@ -15,7 +15,7 @@ var shell = require('gulp-shell');
 var del = require('del');
 
 gulp.task('sass', function () {
-  gulp.src('./resources/scss/*.scss')
+  return gulp.src('./resources/scss/*.scss')
     .pipe(sass({errLogToConsole: true,
                 indentedSyntax: true,
                 includePaths: require('node-bourbon').includePaths}))
@@ -24,7 +24,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('./resources/scss/*.scss', ['sass']);
+  return gulp.watch('./resources/scss/*.scss', ['sass']);
 });
 
 gulp.task('default', ['sass']);
@@ -32,7 +32,7 @@ gulp.task('default', ['sass']);
 gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
 
 gulp.task('copy-release-assets', function () {
-  gulp.src(['./target/release/**'])
+  return gulp.src(['./target/release/**'])
     .pipe(gulp.dest('./resources/public/'));
 });
 
@@ -60,7 +60,7 @@ gulp.task('cdn', function () {
   var fileStream = gulp.src('resources/public/{js,css,images,fonts}/**')
       .pipe(gulpIgnore.exclude("*.map"));
 
-  merge(fileStream, sourceMapStream)
+  return merge(fileStream, sourceMapStream)
     .pipe(revAll.revision())
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('./resources/public/cdn'))
