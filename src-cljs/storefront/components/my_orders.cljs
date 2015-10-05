@@ -31,10 +31,8 @@
           {:class "no-credit"})
         "Available store credit: "
         [:span.store-credit-balance (as-money store-credit)]])
-     [:div.account-my-orders
-      [:h4.account-orders-header "My Recent Orders"]
-      (let [order-ids (get-in data keypaths/my-order-ids)]
-        (when order-ids
-          (if (empty? order-ids)
-            [:p "You have no orders yet"]
-            (map (partial display-order data) order-ids))))]])))
+     [:.update-coming
+      [:.update-image]
+      [:h4.update-header "Update Coming"]
+      [:.update-text "'My Orders' is getting a fresh update."]
+      [:.update-help [:a {:href "/help"} "Contact Customer Service"]]]])))

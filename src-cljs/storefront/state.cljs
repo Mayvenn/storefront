@@ -7,29 +7,29 @@
   (first (string/split (.-hostname js/location) #"\.")))
 
 (def initial-checkout-state
-  {:billing-address {:firstname ""
-                     :lastname ""
+  {:billing-address {:first-name ""
+                     :last-name ""
                      :address1 ""
                      :address2 ""
                      :city ""
-                     :state_id 0
+                     :state ""
                      :zipcode ""
-                     :phone ""
-                     :save-my-address true}
-   :shipping-address {:firstname ""
-                      :lastname ""
+                     :phone ""}
+   :shipping-address {:first-name ""
+                      :last-name ""
                       :address1 ""
                       :address2 ""
                       :city ""
-                      :state_id 0
+                      :state ""
                       :zipcode ""
-                      :phone ""
-                      :use-billing-address true}
+                      :phone ""}
+   :save-my-address true
+   :ship-to-billing-address true
    :credit-card-name ""
    :credit-card-number ""
    :credit-card-expiration ""
    :credit-card-ccv ""
-   :selected-shipping-method {:id  0}
+   :selected-shipping-method {}
    :use-store-credits false})
 
 (defn initial-state []
@@ -52,6 +52,7 @@
      :products {}
      :states []
      :payment-methods []
+     :shipping-methods []
      :sms-number nil
      :stylist {:sales-rep-email nil
                :commissions {:rate nil
@@ -149,8 +150,8 @@
                                      "/images/style_images/straight/5.png"
                                      "/images/style_images/straight/6.png"]}
           :navigation-message [events/navigate-home {}]
-          :validation-errors {:error nil
-                              :fields {}}
+          :validation-errors {:error-message nil
+                              :details {}}
           :browse-taxon-query nil
           :browse-product-query nil
           :browse-variant-query nil

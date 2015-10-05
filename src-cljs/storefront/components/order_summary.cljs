@@ -10,140 +10,109 @@
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
+            [storefront.accessors.orders :as orders]
             [storefront.keypaths :as keypaths]))
 
-(defn field [name value & [classes]]
+(defn- field [name value & [classes]]
   [:div.line-item-attr {:class classes}
    [:span.cart-label name]
    [:span.cart-value value]])
 
-(defn display-variant-options [option-value]
-  (field (str (:option_type_presentation option-value) ": ")
-         (:presentation option-value)))
+(defn- tax-adjustment [order]
+  {:name "Tax" :price (:tax-total order)})
 
-(defn display-line-item [data interactive? line-item]
-  (let [variant (:variant line-item)]
-    [:div.line-item
-     [:a
-      (utils/route-to data events/navigate-product {:product-path (:slug variant)})
-      [:img {:src (-> variant :images first :small_url)
-             :alt (:name variant)}]]
-     [:div.line-item-detail.interactive
-      [:h4
-       (if (experiments/bundle-builder? data)
-         [:a (products/summary variant)]
-         [:a (utils/route-to data events/navigate-product {:product-path (:slug variant)})
-          (:name variant)])] ;;TODO move into variation
-      (when interactive?
-        (let [update-spinner-key (conj request-keys/update-line-item (:id line-item))
-              delete-request (query/get
-                              {:request-key
-                               (conj request-keys/delete-line-item (:id line-item))}
-                              (get-in data keypaths/api-requests))]
-          [:div.quantity-adjustments
-           (om/build counter-component
-                     data
-                     {:opts {:path (conj keypaths/cart-quantities (:id line-item))
-                             :inc-event events/control-cart-line-item-inc
-                             :dec-event events/control-cart-line-item-dec
-                             :spinner-key update-spinner-key}})
-           [:a.delete
-            {:href "#"
-             :class (when delete-request "saving")
-             :on-click (if delete-request
-                         utils/noop-callback
-                         (utils/send-event-callback data
-                                                    events/control-cart-remove
-                                                    (select-keys line-item [:id])))}
-            "Remove"]]))
-      (map display-variant-options (:option_values variant))
-      (when (not interactive?)
-        (field "Quantity:" (:quantity line-item)))
-      (field "Price:" (:single_display_amount line-item) "item-form" "price")
-      (field "Subtotal: " (:single_display_amount line-item) "item-form" "subtotal")]
-     [:div {:style {:clear "both"}}]]))
+(defn- all-order-adjustments [order]
+  (conj (:adjustments order)
+        (tax-adjustment order)))
 
-(defn display-line-items [data order & [interactive?]]
-  (map (partial display-line-item data interactive?) (:line_items order)))
 
-(defn valid-payments [payments]
-  (filter (comp not #{"failed" "invalid"} :state) payments))
+(defn- display-adjustment-row [{:keys [name price]}]
+  (when-not (= price 0)
+    [:tr.order-summary-row.adjustment
+     [:td
+      [:h5 name]]
+     [:td
+      [:h5 (as-money price)]]]))
 
-(defn storecredit-payments [order]
-  (filter #(= "Spree::StoreCredit" (:source_type %))
-          (valid-payments (:payments order))))
+(defn- display-adjustments [adjustments]
+  (map display-adjustment-row adjustments))
 
-(defn eligible-adjustments [adjustments]
-  (filter :eligible adjustments))
-
-(defn line-item-adjustments [order]
-  (mapcat (comp eligible-adjustments :adjustments) (:line_items order)))
-
-(defn whole-order-adjustments [order]
-  (-> order :adjustments eligible-adjustments))
-
-(defn all-order-adjustments [order]
-  (concat (whole-order-adjustments order)
-          (line-item-adjustments order)))
-
-(defn line-item-promotion-adjustments [order]
-  (filter (comp #{"Spree::PromotionAction"} :source_type)
-          (line-item-adjustments order)))
-
-(defn tax-adjustments [order]
-  (filter (comp #{"Spree::TaxRate"} :source_type)
-          (line-item-adjustments order)))
-
-(defn display-adjustment-row [label adjustments]
-  (let [summed-amount (reduce + (map (comp js/parseFloat :amount) adjustments))]
-    (when-not  (= summed-amount 0)
-      [:tr.order-summary-row.adjustment
-       [:td
-        [:h5 label]]
-       [:td
-        [:h5 (as-money summed-amount)]]])))
-
-(defn display-adjustments [adjustments]
-  (map #(apply display-adjustment-row %) (group-by :display_label adjustments)))
-
-(defn display-shipment [shipment]
+(defn- display-shipment [shipping]
   [:tr.order-summary-row
    [:td
-    [:h5 (-> shipment :selected_shipping_rate :name)]]
+    [:h5 (:options-text shipping)]]
    [:td
-    [:h5 (-> shipment :selected_shipping_rate :display_cost)]]])
+    [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])
+
+(defn- display-variant-options [{:keys [name value]}]
+  (field (str name ": ") (if (= name "Length") (str value "\"") value)))
+
+(defn- display-line-item [data interactive? {variant-id :id :as line-item}]
+  [:div.line-item
+   [:a [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
+   [:div.line-item-detail.interactive
+    [:h4
+     (if (experiments/bundle-builder? data)
+       [:a (products/summary line-item)]
+       [:a (:product-name line-item)])]
+    (when interactive?
+      (let [update-spinner-key (conj request-keys/update-line-item variant-id)
+            delete-request (query/get
+                            {:request-key
+                             (conj request-keys/delete-line-item variant-id)}
+                            (get-in data keypaths/api-requests))]
+        [:.quantity-adjustments
+         (om/build counter-component
+                   data
+                   {:opts {:path (conj keypaths/cart-quantities variant-id)
+                           :inc-event events/control-cart-line-item-inc
+                           :dec-event events/control-cart-line-item-dec
+                           :spinner-key update-spinner-key}})
+         [:a.delete
+          {:href "#"
+           :class (when delete-request "saving")
+           :on-click (if delete-request
+                       utils/noop-callback
+                       (utils/send-event-callback data
+                                                  events/control-cart-remove
+                                                  variant-id))}
+          "Remove"]]))
+    (map display-variant-options (:options line-item))
+    (when (not interactive?)
+      (field "Quantity:" (:quantity line-item)))
+    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
+    (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal")]
+   [:div {:style {:clear "both"}}]])
+
+(defn display-line-items [data order & [interactive?]]
+  (map (partial display-line-item data interactive?) (orders/product-items order)))
 
 (defn display-order-summary [order]
   [:div
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
-    (let [all-adjustments (all-order-adjustments order)
-          quantity (:total_quantity order)]
+    (let [adjustments (all-order-adjustments order)
+          quantity    (orders/product-quantity order)]
       [:tbody
-       (when-not (empty? all-adjustments)
+       (when-not (empty? adjustments)
          (list
           [:tr.cart-subtotal.order-summary-row
            [:td
             [:h5 (str "Subtotal (" quantity " Item"
                       (when (> quantity 1) "s") ")")]]
            [:td
-            [:h5 (:display_item_total order)]]]
-          (let [li-promotion-adjustments (line-item-promotion-adjustments order)
-                tax-adjustments (tax-adjustments order)
-                whole-order-adjustments (whole-order-adjustments order)]
-            (list
-             (display-adjustments li-promotion-adjustments)
-             (display-adjustments tax-adjustments)
-             (map display-shipment (order :shipments))
-             (display-adjustments whole-order-adjustments)))))
+            [:h5 (as-money (orders/products-subtotal order))]]]
+          (display-adjustments adjustments)
+          (when-let [shipping-item (orders/shipping-item order)]
+            (display-shipment shipping-item))))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
-        [:td [:h5 (:display_total order)]]]
-       (when-not (empty? (storecredit-payments order))
+        [:td [:h5 (as-money (:total order))]]]
+       (when-let [store-credit (-> order :cart-payments :store-credit)]
          (list
           [:tr.store-credit-used.order-summary-row.adjustment
            [:td [:h5 "Store Credit"]]
-           [:td [:h5 (:display_total_applicable_store_credit order)]]]
+           [:td [:h5 (as-money (- (:amount store-credit)))]]]
           [:tr.balance-due.order-summary-row.cart-total
-           [:td [:h5 (if (= "complete" (:state order)) "Amount charged" "Balance Due")]]
-           [:td [:h5 (:display_order_total_after_store_credit order)]]]))])]])
+           [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
+           [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]]))])]])

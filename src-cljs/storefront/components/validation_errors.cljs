@@ -9,12 +9,12 @@
             [clojure.set :as sets]))
 
 (defn- field->human-name [key]
-  (get {"bill_address" "Billing Address"
-        "ship_address" "Shipping Address"
+  (get {"billing-address" "Billing Address"
+        "shipping-address" "Shipping Address"
         "address1" "Street Address"
         "address2" "Street Address (cont'd)"
-        "firstname" "First Name"
-        "lastname" "Last Name"}
+        "first-name" "First Name"
+        "last-name" "Last Name"}
        key
        key))
 
@@ -32,7 +32,7 @@
 (defn validation-errors-component [data owner]
   (om/component
    (html
-    (let [fields (get-in data keypaths/validation-errors-fields)]
+    (let [fields (get-in data keypaths/validation-errors-details)]
       (when (seq fields)
         [:div#errorExplanation.errorExplanation
          [:p "There were problems with the following fields:"]

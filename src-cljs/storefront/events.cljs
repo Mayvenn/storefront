@@ -37,6 +37,9 @@
 (def navigate-checkout-payment (conj navigate-checkout :payment))
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
 
+(def stripe-success-create-token [:stripe-success-create-token])
+(def stripe-failure-create-token [:stripe-failure-create-token])
+
 (def control [:control])
 (def control-change-state (conj control :change-state))
 
@@ -116,7 +119,7 @@
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))
 (def api-success-reset-password (conj api-success :reset-password))
-(def api-success-address (conj api-success :address))
+
 (def api-success-account (conj api-success :account))
 (def api-success-manage-account (conj api-success :manage-account))
 (def api-success-stylist-manage-account (conj api-success :stylist-manage-account))
@@ -125,27 +128,29 @@
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-stylist-bonus-credits (conj api-success :stylist-bonus-credits))
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
-(def api-success-create-order (conj api-success :create-order))
+
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-get-order (conj api-success :order))
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 
-(def api-success-cart (conj api-success :cart))
-(def api-success-cart-update (conj api-success-cart :update))
-(def api-success-cart-update-checkout (conj api-success-cart-update :checkout))
-(def api-success-cart-update-coupon (conj api-success-cart-update :coupon))
-(def api-success-cart-update-line-item (conj api-success-cart-update :line-item))
-
 (def api-success-update-order (conj api-success :update-order))
+(def api-success-update-order-update-address (conj api-success-update-order :update-address))
+(def api-success-update-order-update-cart-payments (conj api-success-update-order :update-cart-payments))
+(def api-success-update-order-add-promotion-code (conj api-success-update-order :add-promotion-code))
+(def api-success-update-order-place-order (conj api-success-update-order :place-order))
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))
 
+(def api-success-shipping-methods (conj api-success :shipping-methods))
 
 (def api-failure (conj api :failure))
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))
 (def api-failure-bad-server-response (conj api-failure :bad-server-response))
 (def api-failure-validation-errors (conj api-failure :validation-errors))
+
+(def api-handle (conj api :handle))
+(def api-handle-order-not-found (conj api-handle :order-not-found))
 
 (def flash [:flash])
 (def flash-show (conj flash :show))

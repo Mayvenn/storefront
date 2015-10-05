@@ -93,8 +93,7 @@
        "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)
        "/checkout/payment" (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm" (edn->bidi events/navigate-checkout-confirmation)
-       ["/orders/" :order-id "/complete"] (edn->bidi events/navigate-order-complete)
-       ["/orders/" :order-id] (edn->bidi events/navigate-order)}
+       ["/orders/" :number "/complete"] (edn->bidi events/navigate-order-complete)}
    true (edn->bidi events/navigate-not-found)])
 
 (defn install-routes [app-state]

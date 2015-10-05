@@ -4,7 +4,9 @@
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
-            [storefront.state :as state]))
+            [storefront.state :as state]
+            [storefront.utils.combinators :refer [map-values]]
+            [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -36,6 +38,9 @@
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/browse-recently-added-variants []))))
 
+(defmethod transition-state events/navigate-stylist [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 
@@ -44,10 +49,17 @@
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
 
-(defmethod transition-state events/navigate-checkout-address [_ event args app-state]
+(defmethod transition-state events/navigate-checkout [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
+(defmethod transition-state events/navigate-stylist [_ event args app-state]
+  (assoc-in app-state keypaths/return-navigation-event event))
+
+(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
-      (update-in keypaths/checkout-billing-address merge (get-in app-state keypaths/billing-address))
-      (update-in keypaths/checkout-shipping-address merge (get-in app-state keypaths/shipping-address))))
+      (assoc-in keypaths/checkout-selected-shipping-method
+                (merge (first (get-in app-state keypaths/shipping-methods))
+                       (orders/shipping-item (:order app-state))))))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (-> app-state
@@ -55,7 +67,13 @@
                 (pos? (get-in app-state keypaths/user-total-available-store-credit)))))
 
 (defmethod transition-state events/navigate-order [_ event args app-state]
-  (assoc-in app-state keypaths/past-order-id (args :order-id)))
+  (assoc-in app-state keypaths/past-order-id (:number args)))
+
+(defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
+  (assoc-in app-state keypaths/checkout-selected-payment-methods
+            (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                         (get-in app-state keypaths/user-total-available-store-credit)
+                                         (get-in app-state keypaths/checkout-use-store-credits))))
 
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
@@ -177,14 +195,12 @@
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
 (defn sign-in-user
-  [app-state {:keys [email token store_slug id total_available_store_credit order-token order-id]}]
+  [app-state {:keys [email token store_slug id total_available_store_credit]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
       (assoc-in keypaths/user-store-slug store_slug)
-      (assoc-in keypaths/order-token order-token)
-      (assoc-in keypaths/order-number order-id)
       (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]
@@ -211,26 +227,26 @@
                     keypaths/reset-password-token)
       (assoc-in keypaths/sign-in-remember true)))
 
-(defmethod transition-state events/api-success-create-order [_ event {:keys [number token]} app-state]
-  (-> app-state
-      (assoc-in keypaths/order-token token)
-      (assoc-in keypaths/order-number number)))
+(defn updated-cart-quantities [order]
+  (into {} (map (juxt :id :quantity) (orders/product-items order))))
 
-(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [variant variant-quantity]} app-state]
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
+      (update-in keypaths/browse-recently-added-variants conj requested)
       (assoc-in keypaths/browse-variant-quantity 1)
-      (update-in keypaths/browse-recently-added-variants
-                 conj
-                 {:id (variant :id)
-                  :quantity variant-quantity})))
+      (assoc-in keypaths/cart-quantities (updated-cart-quantities order))
+      (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
     (-> app-state
-        (assoc-in keypaths/checkout-selected-shipping-method (get-in order [:shipments 0 :selected_shipping_rate]))
+        (update-in keypaths/checkout-billing-address merge (:billing-address order))
+        (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
         (assoc-in keypaths/order order)
-        (assoc-in keypaths/cart-quantities
-                  (into {} (map (juxt :id :quantity) (order :line_items)))))
+        (assoc-in keypaths/checkout-selected-shipping-method
+                  (merge (first (get-in app-state keypaths/shipping-methods))
+                         (orders/shipping-item order)))
+        (assoc-in keypaths/cart-quantities (updated-cart-quantities order)))
     app-state))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
@@ -249,13 +265,17 @@
                     keypaths/manage-account-password
                     keypaths/manage-account-password-confirmation)))
 
-(defn default-checkout-addresses [app-state billing-address shipping-address]
-  (-> app-state
-      (update-in keypaths/checkout-billing-address merge billing-address)
-      (update-in keypaths/checkout-shipping-address merge shipping-address)))
+(defn default-credit-card-name [app-state {:keys [first-name last-name]}]
+  (if (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
+    (assoc-in app-state keypaths/checkout-credit-card-name (str first-name " " last-name))
+    app-state))
 
-(defn default-credit-card-name [app-state {:keys [firstname lastname]}]
-  (assoc-in app-state keypaths/checkout-credit-card-name (str firstname " " lastname)))
+(defmethod transition-state events/api-success-shipping-methods [_ events {:keys [shipping-methods]} app-state]
+  (-> app-state
+      (assoc-in keypaths/shipping-methods shipping-methods)
+      (assoc-in keypaths/checkout-selected-shipping-method
+                (merge (first shipping-methods)
+                       (orders/shipping-item (:order app-state))))))
 
 (defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
   (-> app-state
@@ -263,8 +283,14 @@
               :shipping-address shipping-address})
       (default-credit-card-name billing-address)))
 
-(defmethod transition-state events/api-success-address [_ event args app-state]
-  (update-account-address app-state args))
+(def vals-empty? (comp (partial every? string/blank?) vals))
+
+(defn default-checkout-addresses [app-state billing-address shipping-address]
+  (if (vals-empty? (get-in app-state keypaths/checkout-billing-address))
+    (-> app-state
+        (assoc-in keypaths/checkout-billing-address billing-address)
+        (assoc-in keypaths/checkout-shipping-address shipping-address))
+    app-state))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state
@@ -272,29 +298,20 @@
       (update-account-address args)
       (default-checkout-addresses billing-address shipping-address)))
 
+(defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
+  (assoc-in app-state keypaths/cart-coupon-code ""))
+
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (if (orders/incomplete? order)
-    (assoc-in app-state keypaths/order order)
-    (-> app-state
-        (assoc-in keypaths/last-order order)
-        (assoc-in keypaths/checkout state/initial-checkout-state)
-        (assoc-in keypaths/order {}))))
-
-(defmethod transition-state events/api-success-cart-update [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/order order))
 
-(defmethod transition-state events/api-success-cart-update-coupon [_ event _ app-state]
-  (assoc-in app-state keypaths/cart-coupon-code ""))
-
-(defmethod transition-state events/api-success-cart-update-line-item [_ event {:keys [order]} app-state]
-  (assoc-in app-state keypaths/cart-quantities (reduce
-                                                (fn [quantities line-item]
-                                                  (merge quantities {(:id line-item) (:quantity line-item)}))
-                                                {}
-                                                (:line_items order))))
+(defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
+  (-> app-state
+      (assoc-in keypaths/last-order order)
+      (assoc-in keypaths/checkout state/initial-checkout-state)
+      (assoc-in keypaths/order {})))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))
@@ -304,6 +321,9 @@
 
 (defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
   (assoc-in app-state keypaths/validation-errors validation-errors))
+
+(defmethod transition-state events/api-handle-order-not-found [_ _ _ app-state]
+  (assoc-in app-state keypaths/order nil))
 
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (assoc-in app-state keypaths/flash-success (select-keys args [:message :navigation])))

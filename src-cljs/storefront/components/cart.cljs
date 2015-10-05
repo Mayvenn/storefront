@@ -4,6 +4,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.taxons :refer [default-nav-taxon-path]]
+            [storefront.accessors.orders :as orders]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
@@ -22,7 +23,7 @@
   (let [request-key-prefix (comp vector first :request-key)]
     (some #(query/get % (get-in data keypaths/api-requests))
           [{:request-key request-keys/checkout-cart}
-           {:request-key request-keys/update-coupon}
+           {:request-key request-keys/add-promotion-code}
            {request-key-prefix request-keys/update-line-item}
            {request-key-prefix request-keys/delete-line-item}])))
 
@@ -47,7 +48,7 @@
               {:type "text"
                :name "coupon-code"})]]
            [:div.primary.button#update-button
-            (let [spinning (query/get {:request-key request-keys/update-coupon}
+            (let [spinning (query/get {:request-key request-keys/add-promotion-code}
                                       (get-in data keypaths/api-requests))]
               {:type "submit"
                :name "update"
@@ -84,11 +85,10 @@
     [:div
      [:div.cart-container
       (let [cart (get-in data keypaths/order)]
-        (if (:number cart)
-          (when (:channel cart)
-            (if (> (-> cart :line_items count) 0)
-              (display-full-cart data owner)
-              (display-empty-cart data)))
+        (if (and (:state cart)
+                 (:number cart)
+                 (-> cart orders/product-items count (> 0)))
+          (display-full-cart data owner)
           (display-empty-cart data)))]
      [:div.home-actions-top
       [:div.guarantee]

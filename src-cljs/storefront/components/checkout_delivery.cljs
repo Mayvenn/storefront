@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.components.utils :as utils]))
 
 (defn shipping-timeframe [rate-name]
@@ -16,8 +17,8 @@
 
 (defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
-   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-id)
-                 (:id shipping-method))
+   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-sku)
+                 (:sku shipping-method))
             {:class "selected"})
           {:on-click (utils/send-event-callback app-state
                                                 events/control-checkout-shipping-method-select
@@ -29,7 +30,7 @@
     [:div.shipping-method-container
      [:div.rate-name (:name shipping-method)]
      [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
-    [:div.rate-cost (:display_cost shipping-method)]]])
+    [:div.rate-cost (as-money (:price shipping-method))]]])
 
 
 (defn checkout-delivery-component [data owner]
@@ -49,7 +50,7 @@
           [:ul.field.radios.shipping-methods
 
            (map (partial display-shipping-method data)
-                (get-in data [:order :shipments 0 :shipping_rates]))]]]
+                (get-in data keypaths/shipping-methods))]]]
         [:div.form-buttons
          [:input.continue.button.primary
           {:type "submit" :value "Continue"}]]]]]])))
