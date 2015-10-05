@@ -11,6 +11,8 @@ var gutil = require('gulp-util');
 var merge = require('merge-stream');
 var gulpIgnore = require('gulp-ignore');
 var debug = require('gulp-debug');
+var runSequence = require('run-sequence');
+var shell = require('gulp-shell')
 
 gulp.task('sass', function () {
   gulp.src('./resources/scss/*.scss')
@@ -26,6 +28,8 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', ['sass']);
+
+gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
 
 gulp.task('copy-release-assets', function () {
   gulp.src(['./target/release/**'])
@@ -63,4 +67,8 @@ gulp.task('cdn', function () {
     .pipe(gulp.dest('./resources/public/cdn'))
     .pipe(revAll.manifestFile())
     .pipe(gulp.dest('./resources'));
+});
+
+gulp.task('compile-assets', function(cb) {
+  runSequence('sass', 'cljs-build', 'copy-release-assets', 'cdn', cb);
 });
