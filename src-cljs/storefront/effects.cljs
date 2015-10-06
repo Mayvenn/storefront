@@ -48,10 +48,15 @@
   (api/get-promotions (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/api-cache))
 
-  (when-let [order-number (get-in app-state keypaths/order-number)]
+  (if-let [order-number (get-in app-state keypaths/order-number)]
     (api/get-order (get-in app-state keypaths/handle-message)
                    order-number
-                   (get-in app-state keypaths/order-token)))
+                   (get-in app-state keypaths/order-token))
+    (when (and (get-in app-state keypaths/user-id)
+               (get-in app-state keypaths/user-token))
+      (api/get-current-order (get-in app-state keypaths/handle-message)
+                             (get-in app-state keypaths/user-id)
+                             (get-in app-state keypaths/user-token))))
   (opengraph/set-site-tags)
   (scroll/scroll-to-top)
 
@@ -414,7 +419,7 @@
                              (get-in app-state keypaths/user-token)
                              (get-in app-state keypaths/user-id))
 
-      (and order-number order-token)
+      (and order-number order-token) 
       (api/get-order handle-message order-number order-token)))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"

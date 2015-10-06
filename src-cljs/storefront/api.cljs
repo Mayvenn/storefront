@@ -523,6 +523,18 @@
     :handler
     #(handle-message events/api-success-get-order %)}))
 
+(defn get-current-order [handle-message user-id user-token]
+  (api-req
+   handle-message
+   GET
+   "/v2/current-order-for-user"
+   request-keys/get-order
+   {:params
+    {:user-id user-id
+     :user-token user-token}
+    :handler
+    #(handle-message events/api-success-get-order %)}))
+
 (defn get-past-order [handle-message order-number user-token]
   (api-req
    handle-message
