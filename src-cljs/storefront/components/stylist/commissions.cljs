@@ -10,10 +10,10 @@
 (defn show-new-order [data new-order]
   [:.loose-table-row
    [:.left-content
-    [:p (new-order :fullname)]
-    [:p.top-pad (f/locale-date (new-order :completed_at))]
+    #_[:p (new-order :fullname)]
+    [:p.top-pad (f/locale-date (new-order :commission_date))]
     [:p.top-pad [:a
-                 (utils/route-to data events/navigate-order {:order-id (new-order :number)})
+                 #_(utils/route-to data events/navigate-order {:order-id (new-order :number)})
                  (new-order :number)]]]
    [:.right-content
     (cond
@@ -36,7 +36,8 @@
                                            keypaths/stylist-commissions-new-orders))]
     (html
      [:.new-order-commissions
-      [:h4.dashboard-details-header "New Orders"]
+      [:h4.dashboard-details-header "Recently shipped orders"]
+      [:p.commission-explanation "Orders that haven't shipped aren't shown."]
       [:p.commission-explanation "Commission is earned when order ships."]
       [:.solid-line-divider]
       [:.loose-table-header
@@ -51,7 +52,7 @@
     [:span.payout-amount (f/as-money (payout :amount))]]])
 
 (defn list-payouts [data]
-  (when-let [paid-total (get-in data keypaths/stylist-commissions-paid-total)] 
+  (when-let [paid-total (get-in data keypaths/stylist-commissions-paid-total)]
     [:.commission-payment-history
      [:h4.dashboard-details-header "Commission Payment History"]
      [:.solid-line-ider]
@@ -69,12 +70,7 @@
       [:h2.header-bar-heading.commissions "Commissions"]
 
       (om/build stylist-dashboard-nav-component data)
-      [:.update-coming
-       [:.update-image]
-       [:h4.update-header "Update Coming"]
-       [:.update-text "'Comissions' is getting a fresh update."]
-       [:.update-help [:a {:href "/help"} "Contact Customer Service"]]]
-      #_[:.dashboard-content
+      [:.dashboard-content
        (when-let [next-commission-amount
                   (get-in data keypaths/stylist-commissions-next-amount)]
          [:#next-commission-summary.dashboard-summary
