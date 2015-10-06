@@ -3,6 +3,8 @@
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.request-keys :as request-keys]
+            [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
@@ -93,9 +95,6 @@
        [:div.row
         [:div.checkout-form-wrapper
          [:form.edit_order
-          {:method "POST"
-           :on-submit (utils/send-event-callback data events/control-checkout-payment-method-submit)}
-
           [:div.checkout-container.payment
            (when (pos? (get-in data keypaths/user-total-available-store-credit))
              (display-use-store-credit-option data))
@@ -115,4 +114,9 @@
                (display-credit-card-form data)]])
 
            [:div.form-buttons
-            [:input.continue.button.primary {:type "submit" :name "Commit" :value "Continue"}]]]]]])])))
+            (let [saving (query/get {:request-key request-keys/update-cart-payments}
+                                    (get-in data keypaths/api-requests))]
+              [:.large.continue.button.primary
+               {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-payment-method-submit))
+                :class (when saving "saving")}
+               "Continue"])]]]]])])))

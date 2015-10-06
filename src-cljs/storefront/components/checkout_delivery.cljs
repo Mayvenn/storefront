@@ -2,6 +2,8 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
+            [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
@@ -41,7 +43,6 @@
      (checkout-step-bar data)
      [:div.checkout-form-wrapper
       [:form.edit_order
-       {:on-submit (utils/send-event-callback data events/control-checkout-shipping-method-submit)}
        [:div.checkout-container.delivery
         [:h2.checkout-header "Delivery Options"]
         [:div#methods
@@ -52,5 +53,9 @@
            (map (partial display-shipping-method data)
                 (get-in data keypaths/shipping-methods))]]]
         [:div.form-buttons
-         [:input.continue.button.primary
-          {:type "submit" :value "Continue"}]]]]]])))
+         (let [saving (query/get {:request-key request-keys/update-shipping-method}
+                                 (get-in data keypaths/api-requests))]
+           [:.large.continue.button.primary
+            {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-shipping-method-submit))
+             :class (when saving "saving")}
+            "Continue"])]]]]])))

@@ -4,6 +4,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.utils :as utils]
+            [storefront.request-keys :as request-keys]
+            [storefront.utils.query :as query]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.messages :refer [send]]
@@ -147,12 +149,12 @@
      [:div.row
       [:div.checkout-form-wrapper
        [:form.edit_order
-        {:method "POST"
-         :on-submit (utils/send-event-callback data events/control-checkout-update-addresses-submit)}
-
         (billing-address-form data owner)
-
         (shipping-address-form data owner)
-
         [:div.form-buttons.checkout.save-and-continue
-         [:input.continue.button.primary {:type "submit" :name "Commit" :value "Save and Continue"}]]]]]])))
+         (let [saving (query/get {:request-key request-keys/update-addresses}
+                                 (get-in data keypaths/api-requests))]
+           [:.large.continue.button.primary
+            {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-update-addresses-submit))
+             :class (when saving "saving")}
+            "Save and Continue"])]]]]])))
