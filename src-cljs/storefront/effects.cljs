@@ -201,7 +201,7 @@
   [_ event {keypath :keypath} app-state]
   (when (#{keypaths/menu-expanded} keypath)
     (set! (.. js/document -body -style -overflow) "auto")))
- 
+
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/handle-message)
                (get-in app-state keypaths/sign-in-email)
@@ -419,7 +419,7 @@
                              (get-in app-state keypaths/user-token)
                              (get-in app-state keypaths/user-id))
 
-      (and order-number order-token) 
+      (and order-number order-token)
       (api/get-order handle-message order-number order-token)))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
