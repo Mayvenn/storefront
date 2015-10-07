@@ -91,32 +91,31 @@
     [:div#checkout
      (om/build validation-errors-component data)
      (checkout-step-bar data)
-     (when (seq (get-in data keypaths/payment-methods))
-       [:div.row
-        [:div.checkout-form-wrapper
-         [:form.edit_order
-          [:div.checkout-container.payment
-           (when (pos? (get-in data keypaths/user-total-available-store-credit))
-             (display-use-store-credit-option data))
-           (when-not (and (get-in data keypaths/checkout-use-store-credits)
-                          (orders/fully-covered-by-store-credit?
-                           (get-in data keypaths/order)
-                           (get-in data keypaths/user)))
-             [:div#cc-form
-              [:div
-               (if (and (get-in data keypaths/checkout-use-store-credits)
-                        (orders/partially-covered-by-store-credit?
+     [:div.row
+      [:div.checkout-form-wrapper
+       [:form.edit_order
+        [:div.checkout-container.payment
+         (when (pos? (get-in data keypaths/user-total-available-store-credit))
+           (display-use-store-credit-option data))
+         (when-not (and (get-in data keypaths/checkout-use-store-credits)
+                        (orders/fully-covered-by-store-credit?
                          (get-in data keypaths/order)
                          (get-in data keypaths/user)))
-                 [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
-                 [:h2.checkout-header "Credit Card Info (Required)"])
+           [:div#cc-form
+            [:div
+             (if (and (get-in data keypaths/checkout-use-store-credits)
+                      (orders/partially-covered-by-store-credit?
+                       (get-in data keypaths/order)
+                       (get-in data keypaths/user)))
+               [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
+               [:h2.checkout-header "Credit Card Info (Required)"])
 
-               (display-credit-card-form data)]])
+             (display-credit-card-form data)]])
 
-           [:div.form-buttons
-            (let [saving (query/get {:request-key request-keys/update-cart-payments}
-                                    (get-in data keypaths/api-requests))]
-              [:.large.continue.button.primary
-               {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-payment-method-submit))
-                :class (when saving "saving")}
-               "Continue"])]]]]])])))
+         [:div.form-buttons
+          (let [saving (query/get {:request-key request-keys/update-cart-payments}
+                                  (get-in data keypaths/api-requests))]
+            [:.large.continue.button.primary
+             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-payment-method-submit))
+              :class (when saving "saving")}
+             "Continue"])]]]]]])))

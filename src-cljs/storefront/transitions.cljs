@@ -156,9 +156,6 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
-(defmethod transition-state events/api-success-payment-methods [_ event {:keys [payment_methods]} app-state]
-  (assoc-in app-state keypaths/payment-methods payment_methods))
-
 (defmethod transition-state events/api-success-stylist-manage-account
   [_ event {:keys [stylist]} app-state]
   (-> app-state

@@ -114,7 +114,6 @@
 (def api-success-products (conj api-success :products))
 (def api-success-product (conj api-success :product))
 (def api-success-states (conj api-success :states))
-(def api-success-payment-methods (conj api-success :payment-methods))
 (def api-success-sign-in (conj api-success :sign-in))
 (def api-success-sign-up (conj api-success :sign-up))
 (def api-success-forgot-password (conj api-success :forgot-password))

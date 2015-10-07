@@ -170,16 +170,6 @@
    {:handler
     #(handle-message events/api-success-states (select-keys % [:states]))}))
 
-(defn get-payment-methods [handle-message cache]
-  (cache-req
-   cache
-   handle-message
-   GET
-   "/payment_methods"
-   request-keys/get-payment-methods
-   {:handler
-    #(handle-message events/api-success-payment-methods (select-keys % [:payment_methods]))}))
-
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
 

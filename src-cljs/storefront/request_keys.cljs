@@ -6,8 +6,6 @@
 (def get-products [:get-products])
 (def get-product [:get-product])
 (def get-states [:get-states])
-(def get-payment-methods [:get-payment-methods])
-
 
 (def sign-in [:sign-in])
 (def sign-up [:sign-up])
