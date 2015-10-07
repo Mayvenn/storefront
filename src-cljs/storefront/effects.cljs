@@ -53,8 +53,7 @@
                    order-number
                    (get-in app-state keypaths/order-token))
     (when (and (get-in app-state keypaths/user-id)
-               (get-in app-state keypaths/user-token)
-               false)
+               (get-in app-state keypaths/user-token))
       (api/get-current-order (get-in app-state keypaths/handle-message)
                              (get-in app-state keypaths/user-id)
                              (get-in app-state keypaths/user-token))))
