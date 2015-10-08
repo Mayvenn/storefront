@@ -2,7 +2,7 @@
   :description "The front of the store"
   :url "https://github.com/Mayvenn/storefront"
   :license {:name "All rights reserved"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
 
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.2.2"]
@@ -10,7 +10,7 @@
                  [clj-honeybadger "0.3.1"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [clj-http "1.0.1" :exclusions [org.clojure/tools.reader]]
-                 [compojure "1.3.2"]
+                 [compojure "1.4.0"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]
                  [ring/ring-defaults "0.1.3"]
@@ -19,7 +19,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
 
-                 [org.clojure/clojurescript "0.0-3211"]
+                 [org.clojure/clojurescript "1.7.48"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "0.8.8"]
@@ -29,7 +29,7 @@
                  [com.cemerick/url "0.1.1"]]
   :plugins [ [lein-cljsbuild "1.0.5"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.3.1" :exclusions [cider/cider-nrepl]]]
+            [lein-figwheel "0.4.1" :exclusions [cider/cider-nrepl]]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
   :main storefront.core
