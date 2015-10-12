@@ -1,6 +1,5 @@
 (ns storefront.browser.cookie-jar
-  (:require [storefront.utils.uuid :refer [random-uuid]]
-            [storefront.config :as config])
+  (:require [storefront.config :as config])
   (:import [goog.net Cookies]))
 
 (defn make-cookie []
