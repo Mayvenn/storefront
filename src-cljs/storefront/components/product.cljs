@@ -129,7 +129,7 @@
                                                          :set-event events/control-counter-set}})]
                [:div#product-price.product-price
                 (let [variant (selected-variant data product)]
-                  (if (= (variant :price) (variant :original_price))
+                  (if (= (:price variant) (:original_price variant))
                     (list
                      [:span.price-label "Price:"]
                      [:span.price.selling {:item-prop "price"}
