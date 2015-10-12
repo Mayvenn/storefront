@@ -6,6 +6,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.state :as state]
             [storefront.utils.combinators :refer [map-values]]
+            [storefront.utils.sequences :refer [index-sequence]]
             [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]
@@ -140,17 +141,17 @@
   (assoc-in app-state keypaths/store args))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
-  (update-in app-state keypaths/products
-             merge
-             (->> products
-                  (mapcat
-                   (fn [idx p] [(:id p) (assoc p :index idx)])
-                   (range))
-                  (apply hash-map))))
+  (let [taxon-paths (index-sequence (map taxon-path-for (get-in app-state keypaths/taxons)))
+        [[idx _]] (filter #(= taxon-path (second %)) taxon-paths)]
+    (-> app-state
+        (update-in (conj keypaths/taxons idx)
+                   assoc :product-order (map :id products))
+        (update-in keypaths/products
+                   merge (into {} (map #(vector (:id %) %) products))))))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
   (-> app-state
-      (assoc-in keypaths/browse-product-query {:slug product-path})
+      
       (assoc-in (conj keypaths/products (:id product)) product)))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
