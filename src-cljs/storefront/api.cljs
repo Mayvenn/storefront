@@ -67,7 +67,7 @@
 (defn api-req
   [handle-message method path req-key request-opts]
   (let [request-opts (update-in request-opts [:params] filter-nil)
-        req-id (random-uuid)
+        req-id (str (random-uuid))
         request
         (method (str api-base-url path)
                 (merge-req-opts handle-message req-key req-id request-opts))]

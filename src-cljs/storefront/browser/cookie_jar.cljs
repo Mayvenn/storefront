@@ -43,7 +43,7 @@
 (defn force-session-id [cookie]
   (if-let [session-id (.get cookie :session-id)]
     session-id
-    (let [created-session-id (random-uuid)]
+    (let [created-session-id (str (random-uuid))]
       (.set cookie :session-id created-session-id session-age "/" nil secure?)
       created-session-id)))
 
