@@ -149,7 +149,7 @@
                (let [adding-to-cart (query/get {:request-key request-keys/add-to-bag}
                                                (get-in data keypaths/api-requests))]
                  [:div.add-to-cart {:style {:clear "both"}}
-                  [:.large.primary#add-to-cart-button
+                  [:a.large.primary#add-to-cart-button
                    {:on-click
                     (when-not adding-to-cart
                       (utils/send-event-callback data events/control-browse-add-to-bag))

@@ -154,7 +154,7 @@
         [:div.form-buttons.checkout.save-and-continue
          (let [saving (query/get {:request-key request-keys/update-addresses}
                                  (get-in data keypaths/api-requests))]
-           [:.large.continue.button.primary
+           [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
             "Save and Continue"])]]]]])))

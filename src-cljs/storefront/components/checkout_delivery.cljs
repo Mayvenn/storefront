@@ -55,7 +55,7 @@
         [:div.form-buttons
          (let [saving (query/get {:request-key request-keys/update-shipping-method}
                                  (get-in data keypaths/api-requests))]
-           [:.large.continue.button.primary
+           [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-shipping-method-submit))
              :class (when saving "saving")}
             "Continue"])]]]]])))
