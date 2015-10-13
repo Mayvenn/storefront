@@ -62,19 +62,13 @@
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
 
-(defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/checkout-use-store-credits
-                (pos? (get-in app-state keypaths/user-total-available-store-credit)))))
-
 (defmethod transition-state events/navigate-order [_ event args app-state]
   (assoc-in app-state keypaths/past-order-id (:number args)))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
             (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                         (get-in app-state keypaths/user-total-available-store-credit)
-                                         (get-in app-state keypaths/checkout-use-store-credits))))
+                                         (get-in app-state keypaths/user-total-available-store-credit))))
 
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]

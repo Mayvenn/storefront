@@ -14,47 +14,18 @@
             [storefront.messages :refer [send]]
             [clojure.string :as string]))
 
-(defn change-radio [app-state keypath value-if-checked]
-  (let [keypath-value (get-in app-state keypath)]
-    {:checked (when (= keypath-value value-if-checked) "checked" "")
-     :value value-if-checked
-     :on-change (fn [e]
-                  (send app-state
-                        events/control-change-state
-                        {:keypath keypath
-                         :value value-if-checked}))}))
-
-(defn display-radio [data keypath value-if-checked text]
-  [:li.store-credit-option
-   (when (= (get-in data keypath) value-if-checked)
-     {:class "selected"})
-   [:label
-    [:input.store-credit-radio
-     (merge {:type "radio"
-             :name "use_store_credits"}
-            (change-radio data keypath value-if-checked))
-     [:div.checkbox-container [:figure.large-checkbox]]
-     [:div.store-credit-container
-      [:div#select_store_credit.use-store-credit-option
-       [:div text]]]]]])
-
-(defn display-use-store-credit-option [data]
-  [:div
-   [:h2.checkout-header "Store credit can be applied for this order!"]
-   [:ul.field.radios.store-credit-options
-    (display-radio
-     data
-     keypaths/checkout-use-store-credits
-     true
-     (str "Use store credit: "
-          (as-money (get-in data keypaths/user-total-available-store-credit))
-          " available"))
-
-    (display-radio
-     data
-     keypaths/checkout-use-store-credits
-     false
-     "Do not use store credit")]])
+(defn display-use-store-credit [data]
+  (let [available-credit (get-in data keypaths/user-total-available-store-credit)
+        credit-to-use (min available-credit (get-in data keypaths/order-total))
+        remaining-credit (- available-credit credit-to-use)]
+    [:div
+     [:h2.checkout-header "Store credit will be applied for this order!"]
+     [:p.store-credit-instructions
+      (as-money credit-to-use) " in store credit will be applied to this order ("
+      (as-money remaining-credit) " remaining)"]
+     (when (zero? remaining-credit)
+       [:p.store-credit-instructions
+        "Please enter an additional payment method below for the remaining total on your order."])]))
 
 (defn field [id name app-state keypath presenter-fn & [text-attrs]]
   [:p.field
@@ -72,7 +43,7 @@
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
-  [:div.credit-card-container
+  [:.credit-card-container
    (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
    (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
           {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber"})
@@ -88,34 +59,28 @@
 (defn checkout-payment-component [data owner]
   (om/component
    (html
-    [:div#checkout
+    [:#checkout
      (om/build validation-errors-component data)
      (checkout-step-bar data)
-     [:div.row
-      [:div.checkout-form-wrapper
+     [:.row
+      [:.checkout-form-wrapper
        [:form.edit_order
-        [:div.checkout-container.payment
+        [:.checkout-container.payment
          (when (pos? (get-in data keypaths/user-total-available-store-credit))
-           (display-use-store-credit-option data))
-         (when-not (and (get-in data keypaths/checkout-use-store-credits)
-                        (orders/fully-covered-by-store-credit?
-                         (get-in data keypaths/order)
-                         (get-in data keypaths/user)))
-           [:div#cc-form
+           (display-use-store-credit data))
+         (when-not (orders/fully-covered-by-store-credit?
+                    (get-in data keypaths/order)
+                    (get-in data keypaths/user))
+           [:#cc-form
             [:div
-             (if (and (get-in data keypaths/checkout-use-store-credits)
-                      (orders/partially-covered-by-store-credit?
-                       (get-in data keypaths/order)
-                       (get-in data keypaths/user)))
-               [:h2.checkout-header "Credit Card Info (Required for remaining balance)"]
-               [:h2.checkout-header "Credit Card Info (Required)"])
-
+             [:h2.checkout-header "Credit Card Info (Required)"]
              (display-credit-card-form data)]])
 
-         [:div.form-buttons
+         [:.form-buttons
           (let [saving (query/get {:request-key request-keys/update-cart-payments}
                                   (get-in data keypaths/api-requests))]
             [:a.large.continue.button.primary
-             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-payment-method-submit))
+             {:on-click (when-not saving
+                          (utils/send-event-callback data events/control-checkout-payment-method-submit))
               :class (when saving "saving")}
              "Continue"])]]]]]])))
