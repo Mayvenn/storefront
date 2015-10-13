@@ -89,6 +89,9 @@ p {
   text-align: center;
   cursor: pointer;
   text-transform:capitalize;
+  -webkit-appearance: none;
+  border-radius: 0;
+  -webkit-border-radius: 0;
 
 
   &.half {
