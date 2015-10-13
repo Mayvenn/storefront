@@ -282,6 +282,8 @@ input.quantity-selector-input {
   width: (56.1em / 16);
   box-sizing: border-box;
   border: solid $medium_blue_grey 1px;
+  opacity: 1.0;
+  color: black;
 }
 
 input.quantity-selector-input.saving {
