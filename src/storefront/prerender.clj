@@ -12,8 +12,7 @@
     "linkedinbot"
     "embedly"
     "bufferbot"
-    "quora link preview"',
-    "showyoubot"
+    "quora link preview" '"showyoubot"
     "outbrain"
     "pinterest"
     "developers.google.com/+/web/snippet"

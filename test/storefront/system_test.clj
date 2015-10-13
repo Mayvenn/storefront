@@ -17,5 +17,5 @@
   [sys & body]
   `(let [unstarted-system# (create-system test-overrides)]
      (with-resource [~sys (component/start unstarted-system#)]
-      component/stop
-      ~@body)))
+       component/stop
+       ~@body)))
