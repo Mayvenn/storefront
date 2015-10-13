@@ -167,7 +167,7 @@
   ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
-                                                "text/plain"))
+                                                    "text/plain"))
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)

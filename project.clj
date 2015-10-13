@@ -27,7 +27,7 @@
                  [cljs-ajax "0.3.11"]
                  [bidi "1.20.3"]
                  [com.cemerick/url "0.1.1"]]
-  :plugins [ [lein-cljsbuild "1.0.5"]
+  :plugins [[lein-cljsbuild "1.0.5"]
             [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.4.1" :exclusions [cider/cider-nrepl]]]
   :figwheel {:nrepl-port 4000
