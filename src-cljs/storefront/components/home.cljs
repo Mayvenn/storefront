@@ -2,7 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.hooks.analytics :as analytics]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for default-nav-taxon-path]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -32,11 +32,7 @@
       [:a.free-shipping-action
        {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
       [:div.shop-now
-       (if (experiments/bundle-builder? data)
-         [:a.full-link (utils/route-to data events/navigate-categories)]
-         (when-let [path (default-nav-taxon-path data)]
-           [:a.full-link (utils/route-to data events/navigate-category
-                                         {:taxon-path path})]))]
+       [:a.full-link (utils/route-to data events/navigate-categories)]]
       [:a.home-30-day-guarantee
        (utils/route-to data events/navigate-guarantee)]
       [:a.home-free-shipping

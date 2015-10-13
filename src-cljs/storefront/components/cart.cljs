@@ -3,7 +3,6 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.accessors.taxons :refer [default-nav-taxon-path]]
             [storefront.accessors.orders :as orders]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
@@ -13,11 +12,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (if (experiments/bundle-builder? data)
-    (utils/route-to data events/navigate-categories)
-    (when-let [path (default-nav-taxon-path data)]
-      (utils/route-to data events/navigate-category
-                      {:taxon-path path}))))
+  (utils/route-to data events/navigate-categories))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]

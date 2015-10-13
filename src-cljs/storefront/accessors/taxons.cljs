@@ -15,14 +15,11 @@
 (defn taxon-name-from [taxon-path]
   (string/replace taxon-path #"-" " "))
 
-(defn- default-taxon-path [filter-fn app-state]
-  (when-let [default-taxon (-> (get-in app-state keypaths/taxons)
-                               filter-fn
-                               first)]
+(defn default-stylist-taxon-path [app-state]
+  (when-let [default-taxon (->> (get-in app-state keypaths/taxons)
+                                (filter :stylist_only?)
+                                first)]
     (taxon-path-for default-taxon)))
-
-(def default-nav-taxon-path (partial default-taxon-path filter-nav-taxons))
-(def default-stylist-taxon-path (partial default-taxon-path filter-stylist-taxons))
 
 (defn current-taxon [app-state]
   (query/get (get-in app-state keypaths/browse-taxon-query)

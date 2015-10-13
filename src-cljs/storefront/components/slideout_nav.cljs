@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.accessors.taxons :refer [taxon-path-for default-nav-taxon-path default-stylist-taxon-path]]
+            [storefront.accessors.taxons :refer [taxon-path-for default-stylist-taxon-path]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.messages :refer [send]]
             [storefront.hooks.experiments :as experiments]))
@@ -49,11 +49,7 @@
   (boolean (get-in data keypaths/user-email)))
 
 (defn shop-now-attrs [data]
-  (if (experiments/bundle-builder? data)
-    (close-and-route data events/navigate-categories)
-    (when-let [path (default-nav-taxon-path data)]
-      (close-and-route data events/navigate-category
-                       {:taxon-path path}))))
+  (close-and-route data events/navigate-categories))
 
 (defn slideout-nav-component [data owner]
   (om/component
