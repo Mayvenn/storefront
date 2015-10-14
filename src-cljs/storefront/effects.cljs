@@ -494,7 +494,6 @@
                         (or (->> variants (filter :can_supply?) first) (first variants))
                         (:master product))}))))
 
-
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)
@@ -503,6 +502,10 @@
       (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
+  (when-not (experiments/bundle-builder? app-state)
+    (doseq [product-id (mapv :product-id (orders/product-items order))]
+      (when-not (get-in app-state (conj keypaths/products product-id))
+        (api/get-product-by-id (get-in app-state keypaths/handle-message) product-id))))
   (if (and (orders/incomplete? order)
            (= (order :number)
               (get-in app-state keypaths/order-number)))

@@ -2,6 +2,7 @@
   (:require [storefront.components.formatters :refer [as-money]]
             [storefront.components.utils :as utils]
             [storefront.accessors.products :as products]
+            [storefront.accessors.taxons :as taxons]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
@@ -47,14 +48,23 @@
 (defn- display-variant-options [{:keys [name value]}]
   (field (str name ": ") (if (= name "Length") (str value "\"") value)))
 
+(defn- product-link [data line-item]
+  (let [product (get-in data (conj keypaths/products (:product-id line-item)))
+        taxon (taxons/taxon-for-permalink data (:category product))]
+    (if product
+      (utils/route-to data events/navigate-product {:product-path (:slug product)
+                                                    :query-params {:taxon-id (:id taxon)}})
+      {})))
+
 (defn- display-line-item [data interactive? {variant-id :id :as line-item}]
   [:div.line-item
-   [:a [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
+   [:a (when-not (experiments/bundle-builder? data) (product-link data line-item))
+    [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
     [:h4
      (if (experiments/bundle-builder? data)
        [:a (products/summary line-item)]
-       [:a (:product-name line-item)])]
+       [:a (product-link data line-item) (:product-name line-item)])]
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
             delete-request (query/get
