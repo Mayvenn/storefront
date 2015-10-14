@@ -141,7 +141,7 @@
       (update-in keypaths/products
                  merge (into {} (map #(vector (:id %) %) products)))))
 
-(defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
+(defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/products (:id product)) product)))
 
