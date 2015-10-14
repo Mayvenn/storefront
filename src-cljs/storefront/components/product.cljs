@@ -86,15 +86,8 @@
               [:div#slides (map display-product-image images)]
               (seq images)
               (display-product-image (first images)))]
-           [:div.product-info
-            (when collection-name
-              [:div.product-collection
-               (when (graded? product)
-                 [:div.product-collection-indicator {:class collection-name}])
-               [:span
-                collection-name]])
-            [:div.product-title {:item-prop "name"}
-             (:name product)]]]
+           [:div.product-title {:item-prop "name"}
+            (:name product)]]
           [:.guarantee-banner
            [:figure.guarantee-banner-image]]
           [:div.cart-form-container
