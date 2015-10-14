@@ -41,26 +41,9 @@
            [:div.corner-ribbon {:class collection-name}
             collection-name])
          [:img {:src first-image}]])
-      [:div.taxon-product-info-container
-       [:div.taxon-product-description-container
-        [:div.taxon-product-collection
-         (when (products/graded? product)
-           [:div.taxon-product-collection-indicator
-            {:class collection-name}])
-         collection-name]
-        [:div.taxon-product-title
-         (:name product)]]
-       [:div.taxon-from-price
-        [:span "From: "]
-        [:br]
-        (let [variant (-> product products/all-variants first)]
-          (if (= (variant :price) (variant :original_price))
-            (as-money-without-cents (variant :price))
-            (list
-             [:span.original-price
-              (as-money-without-cents (variant :original_price))]
-             [:span.current-price
-              (as-money-without-cents (variant :price))])))]]]]))
+      [:div.taxon-product-title-container
+       [:div.taxon-product-title
+        (:name product)]]]]))
 
 (defn original-category-component [data owner]
   (om/component

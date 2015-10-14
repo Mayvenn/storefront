@@ -49,81 +49,25 @@
   margin-bottom: 1rem;
 }
 
-.taxon-product-info-container {
-  background-color: #737373;
-  bottom: 0;
-  color: #ffffff;
-  opacity: 0.90;
-  left: 0;
-  position: absolute;
+.taxon-product-title-container {
   width: 100%;
+  position: absolute;
+  bottom: 0;
+  background-color: #a0a0a0;
+  left: 0;
+  padding: 0.8em;
   @include display(flex);
-  @include flex-direction(row);
   @include align-items(center);
-  @include justify-content(space-between);
-  font-size: 1.56rem;
-  line-height: 1.7rem;
-  padding: 0;
+}
 
-  .taxon-product-description-container {
-    font-family: $primary_font_regular;
-    flex: flex-grow;
-    padding: 0.389rem 1.11rem;
-
-    .taxon-product-collection {
-      font-size: 1rem;
-      font-family: $secondary_font;
-      font-style: italic;
-      padding: 0;
-      text-transform: capitalize;
-      letter-spacing: 0.1rem;
-
-      .taxon-product-collection-indicator {
-        @include stretch-bg;
-        display: inline-block;
-        width: 1.4rem;
-        height: 1.4rem;
-        margin-top: -0.3rem;
-        vertical-align: middle;
-
-        &.ultra {
-          background-image: url("/images/products/squiggle-categories-ultra@2x.png");
-        }
-
-        &.premier {
-          background-image: url("/images/products/squiggle-categories-premier@2x.png");
-        }
-
-        &.deluxe {
-          background-image: url("/images/products/squiggle-categories-deluxe@2x.png");
-        }
-      }
-    }
-    .taxon-product-title {
-      font-size: 1rem;
-      text-align: left;
-      width: 100%;
-    }
-  }
-
-  .taxon-from-price {
-    flex: none;
-    font-size: 1.1rem;
-    margin: 0;
-    padding: 0.3rem 0.2rem;
-    width: 5rem;
-    line-height: 1.6rem;
-    text-transform: uppercase;
-    border-left: 1px solid #a0a0a0;
-
-    span {
-      font-size: 0.9rem;
-    }
-
-    .current-price {
-      text-shadow: 0 0 20px rgba(0,0,0,.5);
-    }
-  }
+.taxon-product-title {
+  color: white;
+  font-weight: normal;
+  font-family: $secondary_font;
+  font-style: italic;
+  font-size: 1.3em;
+  text-align: center;
+  width: 100%;
 }
 
 .original-price {
