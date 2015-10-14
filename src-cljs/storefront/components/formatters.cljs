@@ -13,6 +13,11 @@
         format (if (< amount 0) "-$%1.2f" "$%1.2f")]
     (apply gstring/format format [(js/Math.abs amount)])))
 
+(defn as-money-or-free [amount]
+  (if (zero? amount)
+    "FREE"
+    (as-money amount)))
+
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
         format (if (< amount 0) "-$%1f" "$%1f")]

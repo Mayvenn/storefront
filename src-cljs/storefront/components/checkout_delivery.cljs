@@ -7,7 +7,7 @@
             [storefront.events :as events]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
-            [storefront.components.formatters :refer [as-money]]
+            [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.utils :as utils]))
 
 (defn shipping-timeframe [rate-name]
@@ -32,7 +32,7 @@
     [:div.shipping-method-container
      [:div.rate-name (:name shipping-method)]
      [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
-    [:div.rate-cost (as-money (:price shipping-method))]]])
+    [:div.rate-cost (as-money-or-free (:price shipping-method))]]])
 
 
 (defn checkout-delivery-component [data owner]
@@ -46,7 +46,6 @@
        [:div.checkout-container.delivery
         [:h2.checkout-header "Delivery Options"]
         [:div#methods
-         [:p.warning "Please note: Express shipping cannot deliver to PO boxes."]
          [:div.shipment
           [:ul.field.radios.shipping-methods
 
