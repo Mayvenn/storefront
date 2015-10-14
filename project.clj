@@ -19,7 +19,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
 
-                 [org.clojure/clojurescript "1.7.122"]
+                 [org.clojure/clojurescript "1.7.145"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "0.8.8"]
