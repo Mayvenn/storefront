@@ -166,7 +166,4 @@
                [:h3.sub-header "Description"]
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]]]
 
-         [:div.gold-features
-          [:figure.guarantee-feature]
-          [:figure.free-shipping-feature]
-          [:figure.triple-bundle-feature]]])))))
+         [:div.clear-fix]])))))
