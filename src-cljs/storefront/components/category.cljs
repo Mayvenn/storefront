@@ -75,7 +75,7 @@
                 (filter-nav-taxons (get-in data keypaths/taxons)))
            [:div {:style {:clear "both"}}]])
         [:div.taxon-products-list-container
-         (let [products (map (get-in data keypaths/products {}) (:product-order taxon))]
+         (let [products (map (get-in data keypaths/products {}) ((get-in data keypaths/taxon-product-order) (taxon-path-for taxon)))]
            (if (query/get {:request-key (concat request-keys/get-products
                                                 [(taxon-path-for taxon)])}
                           (get-in data keypaths/api-requests))
