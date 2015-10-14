@@ -47,6 +47,7 @@
 (def shipping-methods [:shipping-methods])
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
+(def taxon-product-order [:taxon-product-order])
 
 (def ui [:ui])
 (def api-requests (conj ui :api-requests))
