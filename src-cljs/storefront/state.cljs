@@ -49,6 +49,7 @@
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
+     :taxon-product-order {}
      :products {}
      :states []
      :shipping-methods []
