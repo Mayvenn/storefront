@@ -23,7 +23,7 @@
                                                                  :event event
                                                                  :args args}})))))
           app-state
-          (reductions conj [] event)))
+          (rest (reductions conj [] event))))
 
 (defn- effects [app-state [event args]]
   (doseq [event-fragment (rest (reductions conj [] event))]
