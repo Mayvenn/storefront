@@ -95,6 +95,8 @@
                 collection-name]])
             [:div.product-title {:item-prop "name"}
              (:name product)]]]
+          [:.guarantee-banner
+           [:figure.guarantee-banner-image]]
           [:div.cart-form-container
            [:div#cart-form
             [:form
