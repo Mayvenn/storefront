@@ -376,7 +376,6 @@
         covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
                                  (get-in app-state keypaths/user))]
-    (prn "!!!" use-store-credit covered-by-store-credit)
     (analytics/track-checkout-option 4 (str (if use-store-credit "creditYes" "creditNo")
                                             "/"
                                             (if covered-by-store-credit "creditCovers" "partialCovers")))
