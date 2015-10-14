@@ -88,7 +88,7 @@
                (merge request-opts
                       {:handler
                        (fn [result]
-                         (handle-message events/api-success-cache {key result})
+                         (handle-message events/api-success-cache {(prn-str key) result})
                          (handler result))})))))
 
 (defn get-taxons [handle-message cache]
