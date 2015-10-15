@@ -86,12 +86,12 @@
   [coll]
   (let [sort-if-map
         #(if (map? %) (into (sorted-map) %) %)]
-    (prn-str
+    (pr-str
      (postwalk sort-if-map coll))))
 
 (defn cache-req
   [cache handle-message method path req-key {:keys [handler params] :as request-opts}]
-  (let [key [path params]
+  (let [key (unique-serialize [path params])
         res (cache key)]
     (if res
       (handler res)
@@ -102,7 +102,7 @@
                (merge request-opts
                       {:handler
                        (fn [result]
-                         (handle-message events/api-success-cache {(unique-serialize key) result})
+                         (handle-message events/api-success-cache {key result})
                          (handler result))})))))
 
 (defn get-taxons [handle-message cache]
