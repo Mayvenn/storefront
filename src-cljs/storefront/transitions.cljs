@@ -140,7 +140,7 @@
 (defmethod transition-state events/api-success-store [_ event args app-state]
   (assoc-in app-state keypaths/store args))
 
-(defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
+(defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-path products]} app-state]
   (-> app-state
       (update-in keypaths/taxon-product-order
                  assoc taxon-path (map :id products))

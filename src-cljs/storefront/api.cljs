@@ -159,8 +159,8 @@
      :taxonomy taxonomy
      :user-token user-token}
     :handler
-    #(handle-message events/api-success-products (merge (select-keys % [:products])
-                                                        {:taxon-path taxon-path}))}))
+    #(handle-message events/api-success-taxon-products (merge (select-keys % [:products])
+                                                              {:taxon-path taxon-path}))}))
 
 (defn get-products-by-ids [handle-message product-ids]
   (api-req

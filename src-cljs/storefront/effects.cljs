@@ -466,7 +466,7 @@
     (send app-state
           events/flash-dismiss-failure)))
 
-(defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
+(defmethod perform-effects events/api-success-taxon-products [_ event {:keys [products]} app-state]
   (let [taxon (taxons/current-taxon app-state)]
     (doseq [product products]
       (analytics/add-impression product {:list (:name taxon)})))

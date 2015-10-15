@@ -111,7 +111,7 @@
 (def api-success-taxons (conj api-success :taxons))
 (def api-success-store (conj api-success :store))
 (def api-success-category (conj api-success :category))
-(def api-success-products (conj api-success :products))
+(def api-success-taxon-products (conj api-success :taxon-products))
 (def api-success-product (conj api-success :product))
 (def api-success-order-products (conj api-success :order-products))
 (def api-success-states (conj api-success :states))
