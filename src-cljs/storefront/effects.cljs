@@ -474,7 +474,8 @@
                                          (get-in app-state keypaths/navigation-message))))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (if (experiments/bundle-builder-included-product? app-state product)
+  (if (and (experiments/bundle-builder-included-product? app-state product)
+           (= events/navigate-product (get-in app-state keypaths/navigation-event)))
     (bundle-builder-redirect app-state product)
     (do
       (analytics/add-product product)
@@ -494,7 +495,6 @@
                         (or (->> variants (filter :can_supply?) first) (first variants))
                         (:master product))}))))
 
-
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)
@@ -503,6 +503,10 @@
       (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
+  (let [product-ids (map :product-id (orders/product-items order))
+        not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
+    (when (seq not-cached)
+      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached)))
   (if (and (orders/incomplete? order)
            (= (order :number)
               (get-in app-state keypaths/order-number)))

@@ -47,10 +47,11 @@
 (defn- display-variant-options [{:keys [name value]}]
   (field (str name ": ") (if (= name "Length") (str value "\"") value)))
 
-(defn- display-line-item [data interactive? {variant-id :id :as line-item}]
+(defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item
    ;; waiter never handled product images; this has never worked.
-   #_[:a [:img {:src (:product-image line-item) :alt (:product-name line-item)}]]
+   [:a [:img {:src (first (products/thumbnail-urls data product-id))
+              :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
     [:h4
      (if (experiments/bundle-builder? data)

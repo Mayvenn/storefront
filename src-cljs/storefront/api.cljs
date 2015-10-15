@@ -162,6 +162,16 @@
     #(handle-message events/api-success-products (merge (select-keys % [:products])
                                                         {:taxon-path taxon-path}))}))
 
+(defn get-products-by-ids [handle-message product-ids]
+  (api-req
+   handle-message
+   GET
+   "/products"
+   request-keys/get-product
+   {:params {:ids product-ids}
+    :handler
+    #(handle-message events/api-success-order-products (select-keys % [:products]))}))
+
 (defn get-product [handle-message product-path]
   (api-req
    handle-message

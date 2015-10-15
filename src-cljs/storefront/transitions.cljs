@@ -5,7 +5,7 @@
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
             [storefront.state :as state]
-            [storefront.utils.combinators :refer [map-values]]
+            [storefront.utils.combinators :refer [map-values key-by]]
             [storefront.utils.sequences :refer [index-sequence]]
             [clojure.string :as string]))
 
@@ -150,6 +150,10 @@
 (defmethod transition-state events/api-success-product [_ event {:keys [product-path product]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/products (:id product)) product)))
+
+(defmethod transition-state events/api-success-order-products [_ event {:keys [products]} app-state]
+  (-> app-state
+      (update-in keypaths/products merge (key-by :id products))))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
