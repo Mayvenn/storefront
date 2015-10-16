@@ -49,7 +49,6 @@
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item
-   ;; waiter never handled product images; this has never worked.
    [:a [:img {:src (first (products/thumbnail-urls data product-id))
               :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
