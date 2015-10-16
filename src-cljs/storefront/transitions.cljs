@@ -99,7 +99,7 @@
   (assoc-in app-state keypath (if (fn? value) (value) value)))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
-  (assoc-in app-state keypaths/browse-variant-query {:id (variant :id)}))
+  (assoc-in app-state keypaths/browse-variant-query {:id (:id variant)}))
 
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
   (update-in app-state (:path args) inc))

@@ -489,11 +489,12 @@
                                                                     first
                                                                     :large_url)]
                                             (str "http:" image-url))})
-      (send app-state
-            events/control-browse-variant-select
-            {:variant (if-let [variants (seq (-> product :variants))]
-                        (or (->> variants (filter :can_supply?) first) (first variants))
-                        (:master product))}))))
+      (when-let [variant (if-let [variants (seq (-> product :variants))]
+                           (or (->> variants (filter :can_supply?) first) (first variants))
+                           (:master product))]
+        (send app-state
+              events/control-browse-variant-select
+              {:variant variant})))))
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
