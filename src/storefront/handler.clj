@@ -65,9 +65,6 @@
                       (:server-port req))
           store (fetch-store storeback-config (last subdomains))]
       (cond
-        (= "jobs" subdomain)
-        (redirect "http://jobs.lever.co/mayvenn")
-
         (= "vistaprint" subdomain)
         (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 

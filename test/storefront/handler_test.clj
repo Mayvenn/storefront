@@ -110,15 +110,6 @@
      (is (= "http://welcome.mayvenn.com:8080/hello?hello=world"
             (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-jobs-to-job-site
-  (assert-request
-   {:server-name "jobs.mayvenn.com"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://jobs.lever.co/mayvenn"
-            (get-in resp [:headers "Location"]))))))
-
 (deftest redirects-vistaprint
   (assert-request
    {:server-name "vistaprint.mayvenn.com"}
