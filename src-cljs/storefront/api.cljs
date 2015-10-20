@@ -218,7 +218,7 @@
    {:params
     {:email email
      :password password
-     :password_confirmation password-confirmation
+     :password-confirmation password-confirmation
      :stylist-id stylist-id
      :order-token order-token}
     :handler
