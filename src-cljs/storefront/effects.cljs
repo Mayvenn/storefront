@@ -185,6 +185,27 @@
              (api/get-my-orders (get-in app-state keypaths/handle-message)
                                 user-token))))
 
+(defn redirect-to-return-navigation [app-state]
+  (apply routes/enqueue-redirect
+         app-state
+         (get-in app-state keypaths/return-navigation-message)))
+
+(defn redirect-when-signed-in [app-state]
+  (when (get-in app-state keypaths/user-email)
+    (send app-state
+          events/flash-show-success {:message "You are already signed in."
+                                     :navigation (get-in app-state keypaths/return-navigation-message)})
+    (redirect-to-return-navigation app-state)))
+
+(defmethod perform-effects events/navigate-sign-in [_ event args app-state]
+  (redirect-when-signed-in app-state))
+(defmethod perform-effects events/navigate-sign-up [_ event args app-state]
+  (redirect-when-signed-in app-state))
+(defmethod perform-effects events/navigate-forgot-password [_ event args app-state]
+  (redirect-when-signed-in app-state))
+(defmethod perform-effects events/navigate-reset-password [_ event args app-state]
+  (redirect-when-signed-in app-state))
+
 (defmethod perform-effects events/navigate-not-found [_ event args app-state]
   (send app-state
         events/flash-show-failure {:message "The page you were looking for could not be found."
@@ -416,24 +437,20 @@
 
       (and order-number order-token)
       (api/get-order handle-message order-number order-token)))
-  (apply routes/enqueue-redirect
-         app-state
-         (get-in app-state keypaths/return-navigation-message))
+  (redirect-to-return-navigation app-state)
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
-  (apply routes/enqueue-redirect
-         app-state
-         (get-in app-state keypaths/return-navigation-message))
   (when (get-in app-state keypaths/order-number)
     (api/add-user-in-order (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/order-token)
                            (get-in app-state keypaths/order-number)
                            (get-in app-state keypaths/user-token)
                            (get-in app-state keypaths/user-id)))
+  (redirect-to-return-navigation app-state)
   (send app-state
         events/flash-show-success {:message "Welcome! You have signed up successfully."
                                    :navigation [events/navigate-home {}]}))
@@ -446,7 +463,7 @@
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (save-cookie app-state true)
-  (routes/enqueue-navigate app-state events/navigate-home)
+  (redirect-to-return-navigation app-state)
   (send app-state
         events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
                                    :navigation [events/navigate-home {}]}))
