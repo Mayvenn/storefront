@@ -88,7 +88,7 @@
      (checkbox "Save my address"
                (merge (utils/change-checkbox
                        data
-                       keypaths/checkout-save-my-addresses)
+                       keypaths/checkout-save-my-addresses-no-op)
                       {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data owner]

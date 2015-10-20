@@ -102,6 +102,7 @@
 
 (def checkout (conj ui :checkout))
 (def checkout-save-my-addresses (conj checkout :save-my-addresses))
+(def checkout-save-my-addresses-no-op (conj checkout :save-my-addresses-no-op))
 (def checkout-ship-to-billing-address (conj checkout :ship-to-billing-address))
 (def checkout-billing-address (conj checkout :billing-address))
 (def checkout-billing-address-first-name (conj checkout-billing-address :first-name))

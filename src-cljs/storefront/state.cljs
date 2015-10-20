@@ -23,7 +23,8 @@
                       :state ""
                       :zipcode ""
                       :phone ""}
-   :save-my-address true
+   :save-my-addresses true
+   :save-my-addresses-no-op false
    :ship-to-billing-address true
    :credit-card-name ""
    :credit-card-number ""
