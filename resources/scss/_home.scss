@@ -5,7 +5,7 @@
 
 .home-large-image {
   height: 18em;
-  background-image: url("/images/home_image_sale.jpg");
+  background-image: url("/images/home_image.jpg");
   @include stretch-bg;
 }
 
@@ -95,7 +95,7 @@
 .featured-product-image {
   width: (640rem / $default-font-size);
   height: (425rem / $default-font-size);
-  background-image: url('/images/desktop_assets/home_new-product-hairtypes.jpg');
+  background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
   @include stretch-bg;
 }
 

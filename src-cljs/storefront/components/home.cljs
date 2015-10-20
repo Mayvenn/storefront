@@ -45,7 +45,7 @@
      [:div.featured-product-content
       [:figure.featured-new]
       [:figure.featured-product-image]
-      [:p.featured-product-banner "Introducing DELUXE and ULTRA hair"]]
+      [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
      [:div.home-sessions-container
       [:p.home-sessions-description
        [:a (utils/route-to data events/navigate-sign-in) "Sign In"]

@@ -4,7 +4,7 @@
   background-color: #fff;
   margin-bottom: 33px;
   @include stretch-bg;
-  background-image: url('/images/desktop_assets/desktop-home-banner-sale.jpg');
+  background-image: url('/images/desktop_assets/desktop-home-banner-flip.jpg');
 }
 
 .header-bar {
@@ -109,7 +109,7 @@
 .featured-product-image {
   width: 100%;
   height: 290px;
-  background-image: url('/images/desktop_assets/home_new-product-hairtypes.jpg');
+  background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
   @include stretch-bg;
 }
 
