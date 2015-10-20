@@ -18,8 +18,20 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
+(def login-events #{events/navigate-sign-in
+                    events/navigate-sign-up
+                    events/navigate-forgot-password
+                    events/navigate-reset-password})
+
+(defn add-return-event [app-state]
+  (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
+    (if (not (login-events return-event))
+      (assoc-in app-state keypaths/return-navigation-message [return-event return-args])
+      app-state)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
+      add-return-event
       (assoc-in keypaths/validation-errors {})
       (assoc-in keypaths/navigation-message [event args])))
 
@@ -39,9 +51,6 @@
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/browse-recently-added-variants []))))
 
-(defmethod transition-state events/navigate-stylist [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
-
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 
@@ -49,12 +58,6 @@
   (assoc-in app-state
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
-
-(defmethod transition-state events/navigate-checkout [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
-
-(defmethod transition-state events/navigate-stylist [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state

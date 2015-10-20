@@ -150,6 +150,7 @@
                                      "/images/style_images/straight/5.png"
                                      "/images/style_images/straight/6.png"]}
           :navigation-message [events/navigate-home {}]
+          :return-navigation-message [events/navigate-home {}]
           :validation-errors {:error-message nil
                               :details {}}
           :browse-taxon-query nil

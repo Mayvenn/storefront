@@ -404,8 +404,6 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
-  (let [after-sign-in-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
-    (routes/enqueue-redirect app-state after-sign-in-event))
   ;; if have-order then tell waiter
   ;; else take the order that waiter, then order-for-token
   (let [handle-message (get-in app-state keypaths/handle-message)]
@@ -419,14 +417,18 @@
 
       (and order-number order-token)
       (api/get-order handle-message order-number order-token)))
+  (apply routes/enqueue-redirect
+         app-state
+         (get-in app-state keypaths/return-navigation-message))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
-  (let [after-sign-up-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
-    (routes/enqueue-redirect app-state after-sign-up-event))
+  (apply routes/enqueue-redirect
+         app-state
+         (get-in app-state keypaths/return-navigation-message))
   (when (get-in app-state keypaths/order-number)
     (api/add-user-in-order (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/order-token)
