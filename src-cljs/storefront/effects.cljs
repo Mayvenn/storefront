@@ -212,8 +212,7 @@
                (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
                (get-in app-state keypaths/sign-up-password-confirmation)
-               (get-in app-state keypaths/store-stylist-id)
-               (get-in app-state keypaths/order-token)))
+               (get-in app-state keypaths/store-stylist-id)))
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))

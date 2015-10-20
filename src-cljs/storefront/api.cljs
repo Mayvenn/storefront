@@ -209,7 +209,7 @@
     :handler
     #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
-(defn sign-up [handle-message email password password-confirmation stylist-id order-token]
+(defn sign-up [handle-message email password password-confirmation stylist-id]
   (api-req
    handle-message
    POST
@@ -219,8 +219,7 @@
     {:email email
      :password password
      :password-confirmation password-confirmation
-     :stylist-id stylist-id
-     :order-token order-token}
+     :stylist-id stylist-id}
     :handler
     #(handle-message events/api-success-sign-up (select-sign-in-keys %))}))
 
