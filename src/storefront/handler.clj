@@ -17,7 +17,8 @@
             [hiccup.element :as element]
             [storefront.assets :refer [asset-path]])
   (:import [java.util Date Locale TimeZone Calendar GregorianCalendar]
-           [java.text SimpleDateFormat]))
+           [java.text SimpleDateFormat]
+           [java.io ByteArrayInputStream]))
 
 (defn storefront-site-defaults
   [env]
@@ -64,9 +65,6 @@
                       (:server-port req))
           store (fetch-store storeback-config (last subdomains))]
       (cond
-        (= "jobs" subdomain)
-        (redirect "http://jobs.lever.co/mayvenn")
-
         (= "vistaprint" subdomain)
         (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
@@ -162,12 +160,24 @@
    (wrap-content-type)
    (wrap-cdn)))
 
+(defn proxy-spree-images [env]
+  (GET "/spree/*" {params :params :as req}
+    (when (config/development? env)
+      (let [response (http/get (str "http://localhost:3000/spree/" (:* params))
+                               {:throw-exceptions false
+                                :query-params params
+                                :as :byte-array})]
+        {:status (:status response)
+         :headers (select-keys (:headers response) ["Content-Type"])
+         :body (java.io.ByteArrayInputStream. (:body response))}))))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
+               (proxy-spree-images environment)
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)

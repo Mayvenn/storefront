@@ -97,3 +97,6 @@
                           :else [(constantly product-name)])
         strs (filter identity ((apply juxt summary-fns) variant-attrs))]
     (clojure.string/join " " strs)))
+
+(defn thumbnail-urls [data product-id]
+  (map :small_url (get-in data (conj keypaths/products product-id :master :images))))

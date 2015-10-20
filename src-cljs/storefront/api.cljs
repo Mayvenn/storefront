@@ -6,6 +6,7 @@
             [storefront.accessors.taxons :refer [taxon-name-from]]
             [storefront.accessors.orders :as orders]
             [clojure.set :refer [rename-keys]]
+            [clojure.walk :refer [postwalk]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
@@ -75,9 +76,22 @@
                                       :request-key req-key
                                       :request-id req-id})))
 
+
+;;  Neccessary for a frustrating bug in Clojurescript that doesn't seem to be
+;;  able to hash a deep map correctly. Feel free to delete this when
+;;  ClojureScript fixes this error.
+(defn unique-serialize
+  "Walks a collection and converts every map within into a sorted map, then
+  serializes the entirity of it into a string."
+  [coll]
+  (let [sort-if-map
+        #(if (map? %) (into (sorted-map) %) %)]
+    (pr-str
+     (postwalk sort-if-map coll))))
+
 (defn cache-req
   [cache handle-message method path req-key {:keys [handler params] :as request-opts}]
-  (let [key [path params]
+  (let [key (unique-serialize [path params])
         res (cache key)]
     (if res
       (handler res)
@@ -145,8 +159,18 @@
      :taxonomy taxonomy
      :user-token user-token}
     :handler
-    #(handle-message events/api-success-products (merge (select-keys % [:products])
-                                                        {:taxon-path taxon-path}))}))
+    #(handle-message events/api-success-taxon-products (merge (select-keys % [:products])
+                                                              {:taxon-path taxon-path}))}))
+
+(defn get-products-by-ids [handle-message product-ids]
+  (api-req
+   handle-message
+   GET
+   "/products"
+   request-keys/get-product
+   {:params {:ids product-ids}
+    :handler
+    #(handle-message events/api-success-order-products (select-keys % [:products]))}))
 
 (defn get-product-by-id [handle-message product-id]
   (api-req
@@ -195,7 +219,7 @@
     :handler
     #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
-(defn sign-up [handle-message email password password-confirmation stylist-id order-token]
+(defn sign-up [handle-message email password password-confirmation stylist-id]
   (api-req
    handle-message
    POST
@@ -204,9 +228,8 @@
    {:params
     {:email email
      :password password
-     :password_confirmation password-confirmation
-     :stylist-id stylist-id
-     :order-token order-token}
+     :password-confirmation password-confirmation
+     :stylist-id stylist-id}
     :handler
     #(handle-message events/api-success-sign-up (select-sign-in-keys %))}))
 

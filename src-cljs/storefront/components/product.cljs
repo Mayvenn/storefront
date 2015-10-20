@@ -140,6 +140,7 @@
 
                (let [adding-to-cart (query/get {:request-key request-keys/add-to-bag}
                                                (get-in data keypaths/api-requests))]
+                 ;; TODO: disable add to bag button until there is a browse-variant-query
                  [:div.add-to-cart {:style {:clear "both"}}
                   [:a.large.primary#add-to-cart-button
                    {:on-click

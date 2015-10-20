@@ -5,7 +5,7 @@
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
             [storefront.state :as state]
-            [storefront.utils.combinators :refer [map-values]]
+            [storefront.utils.combinators :refer [map-values key-by]]
             [storefront.utils.sequences :refer [index-sequence]]
             [clojure.string :as string]))
 
@@ -18,8 +18,20 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
+(def login-events #{events/navigate-sign-in
+                    events/navigate-sign-up
+                    events/navigate-forgot-password
+                    events/navigate-reset-password})
+
+(defn add-return-event [app-state]
+  (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
+    (if (not (login-events return-event))
+      (assoc-in app-state keypaths/return-navigation-message [return-event return-args])
+      app-state)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
+      add-return-event
       (assoc-in keypaths/validation-errors {})
       (assoc-in keypaths/navigation-message [event args])))
 
@@ -39,9 +51,6 @@
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/browse-recently-added-variants []))))
 
-(defmethod transition-state events/navigate-stylist [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
-
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 
@@ -49,12 +58,6 @@
   (assoc-in app-state
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
-
-(defmethod transition-state events/navigate-checkout [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
-
-(defmethod transition-state events/navigate-stylist [_ event args app-state]
-  (assoc-in app-state keypaths/return-navigation-event event))
 
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
@@ -93,7 +96,7 @@
   (assoc-in app-state keypath (if (fn? value) (value) value)))
 
 (defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
-  (assoc-in app-state keypaths/browse-variant-query {:id (variant :id)}))
+  (assoc-in app-state keypaths/browse-variant-query {:id (:id variant)}))
 
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
   (update-in app-state (:path args) inc))
@@ -134,7 +137,7 @@
 (defmethod transition-state events/api-success-store [_ event args app-state]
   (assoc-in app-state keypaths/store args))
 
-(defmethod transition-state events/api-success-products [_ event {:keys [taxon-path products]} app-state]
+(defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-path products]} app-state]
   (-> app-state
       (update-in keypaths/taxon-product-order
                  assoc taxon-path (map :id products))
@@ -144,6 +147,10 @@
 (defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/products (:id product)) product)))
+
+(defmethod transition-state events/api-success-order-products [_ event {:keys [products]} app-state]
+  (-> app-state
+      (update-in keypaths/products merge (key-by :id products))))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))

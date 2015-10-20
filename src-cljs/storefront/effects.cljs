@@ -212,8 +212,7 @@
                (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
                (get-in app-state keypaths/sign-up-password-confirmation)
-               (get-in app-state keypaths/store-stylist-id)
-               (get-in app-state keypaths/order-token)))
+               (get-in app-state keypaths/store-stylist-id)))
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
@@ -404,8 +403,6 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
-  (let [after-sign-in-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
-    (routes/enqueue-redirect app-state after-sign-in-event))
   ;; if have-order then tell waiter
   ;; else take the order that waiter, then order-for-token
   (let [handle-message (get-in app-state keypaths/handle-message)]
@@ -419,14 +416,18 @@
 
       (and order-number order-token)
       (api/get-order handle-message order-number order-token)))
+  (apply routes/enqueue-redirect
+         app-state
+         (get-in app-state keypaths/return-navigation-message))
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state true)
-  (let [after-sign-up-event (get-in app-state keypaths/return-navigation-event events/navigate-home)]
-    (routes/enqueue-redirect app-state after-sign-up-event))
+  (apply routes/enqueue-redirect
+         app-state
+         (get-in app-state keypaths/return-navigation-message))
   (when (get-in app-state keypaths/order-number)
     (api/add-user-in-order (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/order-token)
@@ -466,7 +467,7 @@
     (send app-state
           events/flash-dismiss-failure)))
 
-(defmethod perform-effects events/api-success-products [_ event {:keys [products]} app-state]
+(defmethod perform-effects events/api-success-taxon-products [_ event {:keys [products]} app-state]
   (let [taxon (taxons/current-taxon app-state)]
     (doseq [product products]
       (analytics/add-impression product {:list (:name taxon)})))
@@ -474,7 +475,8 @@
                                          (get-in app-state keypaths/navigation-message))))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (if (experiments/bundle-builder-included-product? app-state product)
+  (if (and (experiments/bundle-builder-included-product? app-state product)
+           (= events/navigate-product (get-in app-state keypaths/navigation-event)))
     (bundle-builder-redirect app-state product)
     (do
       (analytics/add-product product)
@@ -488,11 +490,12 @@
                                                                     first
                                                                     :large_url)]
                                             (str "http:" image-url))})
-      (send app-state
-            events/control-browse-variant-select
-            {:variant (if-let [variants (seq (-> product :variants))]
-                        (or (->> variants (filter :can_supply?) first) (first variants))
-                        (:master product))}))))
+      (when-let [variant (if-let [variants (seq (-> product :variants))]
+                           (or (->> variants (filter :can_supply?) first) (first variants))
+                           (:master product))]
+        (send app-state
+              events/control-browse-variant-select
+              {:variant variant})))))
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -502,10 +505,10 @@
       (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
-  (when-not (experiments/bundle-builder? app-state)
-    (doseq [product-id (mapv :product-id (orders/product-items order))]
-      (when-not (get-in app-state (conj keypaths/products product-id))
-        (api/get-product-by-id (get-in app-state keypaths/handle-message) product-id))))
+  (let [product-ids (map :product-id (orders/product-items order))
+        not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
+    (when (seq not-cached)
+      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached)))
   (if (and (orders/incomplete? order)
            (= (order :number)
               (get-in app-state keypaths/order-number)))
