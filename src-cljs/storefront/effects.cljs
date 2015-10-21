@@ -48,16 +48,10 @@
   (api/get-promotions (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/api-cache))
 
-  (if-let [order-number (get-in app-state keypaths/order-number)]
+  (when-let [order-number (get-in app-state keypaths/order-number)]
     (api/get-order (get-in app-state keypaths/handle-message)
                    order-number
-                   (get-in app-state keypaths/order-token))
-    (when (and (get-in app-state keypaths/user-id)
-               (get-in app-state keypaths/user-token))
-      (api/get-current-order (get-in app-state keypaths/handle-message)
-                             (get-in app-state keypaths/user-id)
-                             (get-in app-state keypaths/user-token)
-                             (get-in app-state keypaths/store-stylist-id))))
+                   (get-in app-state keypaths/order-token)))
   (opengraph/set-site-tags)
   (scroll/scroll-to-top)
 
@@ -518,9 +512,15 @@
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         token (get-in app-state keypaths/user-token)
-        stylist-id (get-in app-state keypaths/store-stylist-id)]
-    (when (and user-id token)
-      (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
+        stylist-id (get-in app-state keypaths/store-stylist-id)
+        order-number (get-in app-state keypaths/order-number)]
+    (when (and user-id token stylist-id)
+      (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id)
+      (when-not order-number
+        (api/get-current-order (get-in app-state keypaths/handle-message)
+                               user-id
+                               token
+                               stylist-id)))))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (let [product-ids (map :product-id (orders/product-items order))
