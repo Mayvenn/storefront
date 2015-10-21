@@ -56,7 +56,8 @@
                (get-in app-state keypaths/user-token))
       (api/get-current-order (get-in app-state keypaths/handle-message)
                              (get-in app-state keypaths/user-id)
-                             (get-in app-state keypaths/user-token))))
+                             (get-in app-state keypaths/user-token)
+                             (get-in app-state keypaths/store-stylist-id))))
   (opengraph/set-site-tags)
   (scroll/scroll-to-top)
 

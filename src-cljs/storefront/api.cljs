@@ -545,7 +545,7 @@
     :handler
     #(handle-message events/api-success-get-order %)}))
 
-(defn get-current-order [handle-message user-id user-token]
+(defn get-current-order [handle-message user-id user-token store-stylist-id]
   (api-req
    handle-message
    GET
@@ -553,7 +553,8 @@
    request-keys/get-order
    {:params
     {:user-id user-id
-     :user-token user-token}
+     :user-token user-token
+     :store-stylist-id store-stylist-id}
     :handler
     #(handle-message events/api-success-get-order %)}))
 
