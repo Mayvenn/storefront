@@ -88,6 +88,7 @@
       (assoc-in keypaths/past-orders {})
       (assoc-in keypaths/my-order-ids nil)
       (assoc-in keypaths/stylist {})
+      (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
       (assoc-in keypaths/shipping-address {})))
 
