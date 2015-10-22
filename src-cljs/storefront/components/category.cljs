@@ -188,7 +188,7 @@
      {:on-click (utils/send-event-callback data events/control-build-add-to-bag)}
      "ADD TO BAG"]))
 
-(def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 5% - Purchase 3 or more bundles"]])
+(def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"]])
 
 (defn summary-section [data variants]
   (if-let [variant (products/selected-variant data)]
