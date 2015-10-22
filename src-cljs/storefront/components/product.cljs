@@ -121,18 +121,10 @@
                                                          :set-event events/control-counter-set}})]
                [:div#product-price.product-price
                 (let [variant (selected-variant data product)]
-                  (if (= (:price variant) (:original_price variant))
-                    (list
-                     [:span.price-label "Price:"]
-                     [:span.price.selling {:item-prop "price"}
-                      (as-money-without-cents (:price variant))])
-                    (list
-                     [:span.price-label "New Price:"]
-                     [:span.price.selling {:item-prop "price"}
-                      [:span.original-price
-                       (as-money-without-cents (:original_price variant))]
-                      [:span.current-price
-                       (as-money-without-cents (:price variant))]])))
+                  (list
+                   [:span.price-label "Price:"]
+                   [:span.price.selling {:item-prop "price"}
+                    (as-money-without-cents (:price variant))]))
                 [:span {:item-prop "priceCurrency" :content (:currency product)}]
                 (if (get-in product [:master :can_supply?])
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
