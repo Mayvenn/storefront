@@ -61,9 +61,7 @@
   (let [taxon-path (taxons/taxon-path-for taxon)
         taxon-product-order (get-in app-state keypaths/taxon-product-order)
         products (get-in app-state keypaths/products {})]
-    (->> (taxon-product-order taxon-path)
-         (map products)
-         (filter #(= "premier" (:collection_name %))))))
+    (map products (taxon-product-order taxon-path))))
 
 (defn filter-variants-by-selections [selections variants]
   (filter (fn [variant]

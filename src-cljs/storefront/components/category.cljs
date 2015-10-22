@@ -79,8 +79,8 @@
   (let [taxon-name (:name (taxons/current-taxon data))]
     (condp = taxon-name
       "closures" '(:style :material :origin :length)
-      "blonde" '(:color :grade :origin :length)
-      '(:grade :origin :length))))
+      "blonde" '(:color :origin :length)
+      '(:origin :length))))
 
 (defn format-step-name [step-name]
   (let [step-name (name step-name)
