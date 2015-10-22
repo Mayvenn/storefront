@@ -90,7 +90,7 @@
 
 (defn next-step [data step-name]
   (if step-name
-    (first (drop-while (partial not= step-name) (selection-flow data)))
+    (second (drop-while (partial not= step-name) (selection-flow data)))
     (first (selection-flow data))))
 
 (defn option-selection-event [data step-name selected-options selected-variants]
