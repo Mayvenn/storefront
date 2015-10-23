@@ -37,10 +37,11 @@
           (range))
      [:div {:style {:clear "both"}}]]]])
 
-(defn single-category [category]
-  (let [class (taxon-path-for category)
-        path (str "categories/" (:permalink category))]
-    [:a.hair-category-link {:href path}
+(defn single-category [data category]
+  (let [class (taxon-path-for category)]
+    [:a.hair-category-link (utils/route-to data
+                                           events/navigate-category
+                                           {:taxon-path class})
      [:.hair-container
       [:.hair-details
        [:.hair-taxon {:class class}
@@ -55,7 +56,7 @@
    (list
     [:.categories-banner]
     [:.hair-categories
-     (map single-category (filter-nav-taxons (:taxons data)))]
+     (map (partial single-category data) (filter-nav-taxons (:taxons data)))]
     [:.gold-features
      [:figure.guarantee-feature]
      [:figure.free-shipping-feature]
