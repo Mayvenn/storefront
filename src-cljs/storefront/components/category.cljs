@@ -176,7 +176,6 @@
         flow (conj (vec (selection-flow data)) :category)]
     (->> flow
          (map variant)
-         (map #(get products/summary-option-mapping % %))
          (string/join " ")
          string/upper-case)))
 

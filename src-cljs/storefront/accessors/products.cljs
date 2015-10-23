@@ -74,14 +74,8 @@
   (when (not= "black" (:color attr))
     (:color attr)))
 
-(def summary-option-mapping
-  {"6a premier collection" "6a premier"
-   "7a deluxe collection" "7a deluxe"
-   "8a ultra collection" "8a ultra"
-   "closures" "closure"})
-
 (def ^:private closure-summary [:style :material :origin :length (constantly "closure")])
-(def ^:private bundle-summary [not-black-color (comp summary-option-mapping :grade) :origin :length :style])
+(def ^:private bundle-summary [not-black-color :origin :length :style])
 
 (defn closure? [variant]
   (= "closures" (get-in variant [:variant-attrs :category])))
