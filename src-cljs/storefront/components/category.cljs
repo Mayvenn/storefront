@@ -83,10 +83,11 @@
       '(:origin :length))))
 
 (defn format-step-name [step-name]
-  (let [step-name (name step-name)
-        vowel? (set "AEIOUaeiou")]
-    (str (if (vowel? (first step-name)) "an " "a ")
-         (string/capitalize step-name))))
+  (when step-name
+    (let [step-name (name step-name)
+          vowel? (set "AEIOUaeiou")]
+      (str (if (vowel? (first step-name)) "an " "a ")
+           (string/capitalize step-name)))))
 
 (defn next-step [data step-name]
   (if step-name
