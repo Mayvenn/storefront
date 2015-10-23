@@ -77,7 +77,7 @@
 
 (defn selection-flow [data]
   (let [taxon-name (:name (taxons/current-taxon data))]
-    (condp = taxon-name
+    (case taxon-name
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :origin :length)
       '(:origin :length))))
@@ -89,10 +89,9 @@
       (str (if (vowel? (first step-name)) "an " "a ")
            (string/capitalize step-name)))))
 
-(defn next-step [data step-name]
-  (if step-name
-    (second (drop-while (partial not= step-name) (selection-flow data)))
-    (first (selection-flow data))))
+(defn next-step [selection-flow selected-options]
+  (let [selected-set (set (keys selected-options))]
+    (first (drop-while selected-set selection-flow))))
 
 (defn option-selection-event [data step-name selected-options selected-variants]
   (utils/send-event-callback data
@@ -202,7 +201,7 @@
      bundle-promotion-notice
      (add-to-bag-button data variants)]
     [:.selected
-     [:div (str "Select " (format-step-name (next-step data (get-in data keypaths/bundle-builder-previous-step))) "!")]
+     [:div (str "Select " (format-step-name (next-step (selection-flow data) (get-in data keypaths/bundle-builder-selected-options))) "!")]
      [:.price "$--.--"]
      bundle-promotion-notice]))
 
