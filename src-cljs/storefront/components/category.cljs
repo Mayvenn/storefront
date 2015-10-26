@@ -275,7 +275,9 @@
           " Hair"]
          [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
 
-       (if-not (seq products)
+       (if (query/get {:request-key (concat request-keys/get-products
+                                            [(taxon-path-for taxon)])}
+                      (get-in data keypaths/api-requests))
          [:.spinner]
          [:div
           [:.reviews-wrapper
