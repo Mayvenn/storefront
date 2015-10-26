@@ -88,7 +88,7 @@
           [:.gold-money-box]
           [:.money-rule-details
            [:p "You earn " commission-rate "% commission on each new order "
-            "shipped from your store excluding tax and shipping."]]])
+            "shipped from your store excluding tax."]]])
 
        (list-new-orders data)
        (list-payouts data)]]])))
