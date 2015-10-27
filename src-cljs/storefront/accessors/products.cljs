@@ -53,8 +53,12 @@
                (dissoc :option_values)))
          variants)))
 
+(defn current-taxon-whitelisted-products [app-state]
+  (filter #(-> % :product_attrs :grade first :name #{"6a premier collection"})
+          (for-taxon app-state (taxons/current-taxon app-state))))
+
 (defn current-taxon-variants [app-state]
-  (let [products (for-taxon app-state (taxons/current-taxon app-state))]
+  (let [products (current-taxon-whitelisted-products app-state)]
     (mapcat build-variants products)))
 
 (defn ordered-products-for-category [app-state taxon]

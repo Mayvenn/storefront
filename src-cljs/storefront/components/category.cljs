@@ -265,7 +265,7 @@
   (om/component
    (html
     (let [taxon (taxons/current-taxon data)
-          products (products/for-taxon data taxon)]
+          products (products/current-taxon-whitelisted-products data)]
       [:.bundle-builder
        [:header
         [:h1
