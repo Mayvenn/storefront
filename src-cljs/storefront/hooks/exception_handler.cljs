@@ -3,7 +3,6 @@
             [storefront.config :as config]))
 
 (def ^:private class-name ".honeybadger-script")
-(def ^:private src "//js.honeybadger.io/v0.2/honeybadger.min.js")
 
 (def ^:private configuration
   (str "Honeybadger.configure({api_key: '"
@@ -26,10 +25,3 @@
     (log "[Honeybadger not loaded when exception occurred]: " error custom-class))
   (throw error))
 
-(defn insert-handler []
-  (when (honeybadger-enabled?)
-    (insert-tag-pair src configuration class-name)))
-
-(defn remove-handler []
-  (when (honeybadger-enabled?)
-    (remove-tag-pair class-name)))
