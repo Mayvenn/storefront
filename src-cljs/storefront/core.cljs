@@ -57,7 +57,6 @@
 
 
 (defn main [app-state]
-  (exception-handler/insert-handler)
   (swap! app-state assoc-in keypaths/handle-message (partial handle-message app-state))
   (routes/install-routes app-state)
   (om/root
@@ -78,7 +77,6 @@
 
 (defn on-jsload []
   (handle-message app-state events/app-stop)
-  (exception-handler/remove-handler)
   (main app-state))
 
 (defn ^:export fail []
