@@ -1,5 +1,6 @@
 (ns storefront.core
-  (:require [storefront.state :as state]
+  (:require [storefront.config :as config]
+            [storefront.state :as state]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
@@ -11,7 +12,8 @@
             [om.core :as om]
             [clojure.data :refer [diff]]))
 
-(enable-console-print!)
+(when config/development?
+  (enable-console-print!))
 
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
