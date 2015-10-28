@@ -92,13 +92,20 @@
       (string/join "\n" ["User-agent: googlebot"
                          "Disallow: /"]))))
 
-(defn index [storeback-config env]
+(defn index [storeback-config honeybadger-cljs-token env]
   (page/html5
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+    [:script.honeybadger-script-src {:type "text/javascript"
+                                     :src "//js.honeybadger.io/v0.2/honeybadger.min.js"}]
+    [:script.honeybadger-script-src {:type "text/javascript"} (str "Honeybadger.configure({api_key: '"
+                                                                   honeybadger-cljs-token
+                                                                   "', environment: '"
+                                                                   env
+                                                                   "'});")]
     (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content]
@@ -142,11 +149,11 @@
        ":" (if development? (:server-port req) 443) (:uri req)))
 
 (defn site-routes
-  [logger storeback-config environment prerender-token]
+  [logger storeback-config honeybadger-cljs-token environment prerender-token]
   (->
    (routes
     (GET "*" req (->
-                  (index storeback-config environment)
+                  (index storeback-config honeybadger-cljs-token environment)
                   response
                   (content-type "text/html"))))
    (wrap-prerender (config/development? environment)
@@ -173,12 +180,12 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
+  ([{:keys [logger exception-handler storeback-config honeybadger-cljs-token environment prerender-token]}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
                (proxy-spree-images environment)
-               (site-routes logger storeback-config environment prerender-token)
+               (site-routes logger storeback-config honeybadger-cljs-token environment prerender-token)
                (route/not-found "Not found"))
        (#(if (config/development? environment)
            (wrap-exceptions %)

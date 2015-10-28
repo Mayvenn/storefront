@@ -15,6 +15,6 @@
     (alter-var-root #'the-system (constantly (system/create-system)))
     (component/start the-system)
     (catch Exception e
-      (do (honeybadger/send-exception! e {:api-key (env :honeybadger-token)
+      (do (honeybadger/send-exception! e {:api-key (env :honeybadger-clj-token)
                                           :env (env :environment)})
           (throw e)))))
