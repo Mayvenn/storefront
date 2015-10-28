@@ -100,7 +100,7 @@
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script.honeybadger-script-src {:type "text/javascript"
-                                     :src "//js.honeybadger.io/v0.2/honeybadger.min.js"}]
+                                     :src "//js.honeybadger.io/v0.3/honeybadger.min.js"}]
     [:script.honeybadger-script-src {:type "text/javascript"} (str "Honeybadger.configure({api_key: '"
                                                                    honeybadger-cljs-token
                                                                    "', environment: '"
