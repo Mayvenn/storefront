@@ -110,13 +110,14 @@
                                                                    "'});")]
     (page/include-css (asset-path "/css/all.css"))]
    [:body
-    [:div#content [:div (list
-                         mayvenn-logo-splash
-                         [:div {:style (str "height: 2em;"
-                                            "margin-top: 2em;"
-                                            "background-image: url('/images/spinner.svg');"
-                                            "background-position: center center;"
-                                            "background-repeat: no-repeat;")}])]]
+    [:div#content
+     [:div {:style "height:100vh;"}
+      [:div {:style "margin:auto; width:50%; position: relative; top: 50%; transform: translateY(-50%);"} mayvenn-logo-splash
+       [:div {:style (str "height: 2em;"
+                          "margin-top: 2em;"
+                          "background-image: url('/images/spinner.svg');"
+                          "background-position: center center;"
+                          "background-repeat: no-repeat;")}]]]]
     (element/javascript-tag (str "var environment=\"" env "\";"
                                  "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
                                  "var apiUrl=\"" (:endpoint storeback-config) "\";"))
