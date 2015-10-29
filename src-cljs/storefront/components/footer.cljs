@@ -43,5 +43,5 @@
          [:a.full-link {:href "https://twitter.com/MayvennHair"}]]]]]
      [:div.legal
       [:div.copyright {:dangerouslySetInnerHTML {:__html (str "&copy; Mayvenn " (.getFullYear (js/Date.)))}}]
-      [:a.terms (utils/route-to data events/navigate-tos) "Terms of Use"]
-      [:a.privacy (utils/route-to data events/navigate-privacy) "Privacy Policy"]]])))
+      [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
+      [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]])))
