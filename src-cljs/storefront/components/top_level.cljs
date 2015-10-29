@@ -13,8 +13,6 @@
             [storefront.components.product :refer [product-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
-            [storefront.components.privacy :refer [privacy-component]]
-            [storefront.components.tos :refer [tos-component]]
             [storefront.components.sign-in :refer [sign-in-component requires-sign-in]]
             [storefront.components.sign-up :refer [sign-up-component]]
             [storefront.components.forgot-password :refer [forgot-password-component]]
@@ -79,8 +77,6 @@
             events/navigate-product product-component
             events/navigate-guarantee thirty-day-guarantee-component
             events/navigate-help help-component
-            events/navigate-privacy privacy-component
-            events/navigate-tos tos-component
             events/navigate-sign-in sign-in-component
             events/navigate-sign-up sign-up-component
             events/navigate-forgot-password forgot-password-component
