@@ -6,13 +6,12 @@
             [ring.component.jetty :refer [jetty-server]]
             [storefront.handler :refer [create-handler]]))
 
-(defrecord AppHandler [logger exception-handler storeback environment prerender-token honeybadger-cljs-token]
+(defrecord AppHandler [logger exception-handler storeback environment prerender-token]
   component/Lifecycle
   (start [c]
     (let [params (merge {:storeback-config storeback
                          :environment environment
-                         :prerender-token prerender-token
-                         :honeybadger-cljs-token honeybadger-cljs-token}
+                         :prerender-token prerender-token}
                         (select-keys c [:logger :exception-handler]))]
       (assoc c :handler (create-handler params))))
   (stop [c] c))
@@ -21,17 +20,17 @@
   (fn [level str]
     (timbre/log logger-config level str)))
 
-(defn exception-handler [honeybadger-clj-token environment]
+(defn exception-handler [honeybadger-token environment]
   (fn [e]
-    (honeybadger/send-exception! e {:api-key honeybadger-clj-token
+    (honeybadger/send-exception! e {:api-key honeybadger-token
                                     :env environment})))
 
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :app-handler (map->AppHandler (select-keys config [:storeback :environment :prerender-token :honeybadger-cljs-token]))
+   :app-handler (map->AppHandler (select-keys config [:storeback :environment :prerender-token]))
    :embedded-server (jetty-server (config :server-opts))
-   :exception-handler (exception-handler (config :honeybadger-clj-token) (config :environment))))
+   :exception-handler (exception-handler (config :honeybadger-token) (config :environment))))
 
 (defn dependency-map []
   {:app-handler [:logger :exception-handler]

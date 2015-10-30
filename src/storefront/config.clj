@@ -13,8 +13,7 @@
                               (get-in timbre/example-config [:appenders :standard-out])}})})
 
 (def env-config {:environment (env :environment)
-                 :honeybadger-clj-token (env :honeybadger-clj-token)
-                 :honeybadger-cljs-token (env :honeybadger-cljs-token)
+                 :honeybadger-token (env :honeybadger-token)
                  :storeback {:endpoint (env :storeback-endpoint)}
                  :prerender-token (env :prerender-token)})
 
