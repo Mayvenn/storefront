@@ -91,7 +91,7 @@
 
 (defn cache-req
   [cache handle-message method path req-key {:keys [handler params] :as request-opts}]
-  (let [key (unique-serialize [path params])
+  (let [key (pr-str (unique-serialize [path params]))
         res (cache key)]
     (if res
       (handler res)
@@ -102,7 +102,7 @@
                (merge request-opts
                       {:handler
                        (fn [result]
-                         (handle-message events/api-success-cache {(prn-str key) result})
+                         (handle-message events/api-success-cache {key result})
                          (handler result))})))))
 
 (defn get-taxons [handle-message cache]
