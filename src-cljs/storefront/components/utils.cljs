@@ -19,14 +19,6 @@
      (.preventDefault e)
      (routes/enqueue-navigate @app-state navigation-event args))})
 
-(defn href-to [app-state navigation-event & [args]]
-  (routes/path-for @app-state navigation-event args))
-
-(defn click-to [app-state click-event & [args]]
-  (fn [e]
-    (.preventDefault e)
-    (send app-state events/control-click-category-product args)))
-
 (defn change-text [app-state owner keypath]
   {:value (get-in app-state keypath)
    :on-change

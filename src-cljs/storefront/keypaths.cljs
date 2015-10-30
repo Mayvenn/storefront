@@ -29,8 +29,6 @@
 (def order-number (conj order :number))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
 
-(def last-order [:last-order])
-
 (def promotions [:promotions])
 
 (def past-orders [:past-orders])
