@@ -25,10 +25,11 @@
      [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
       [:p.hair-taxon-name (:name taxon)]]]))
 
-(defn display-product [data taxon product]
+(defn display-product [data taxon-id product]
   (let [collection-name (:collection_name product)]
-    [:a {:href (utils/href-to data events/navigate-product {:product-path (:slug product) :query-params {:taxon_id (taxon :id)}})
-         :on-click (utils/click-to data events/control-click-category-product {:target product :taxon taxon})}
+    [:a (utils/route-to data events/navigate-product
+                        {:product-path (:slug product)
+                         :query-params {:taxon_id taxon-id}})
      [:div.taxon-product-container
       (when-let [first-image (->> product
                                   :master
@@ -63,7 +64,7 @@
                                                 [(taxon-path-for taxon)])}
                           (get-in data keypaths/api-requests))
              [:.spinner]
-             (map (partial display-product data taxon) products)))]]
+             (map (partial display-product data (:id taxon)) products)))]]
 
        [:div.gold-features
         [:figure.guarantee-feature]
@@ -264,57 +265,57 @@
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
-    (let [taxon (taxons/current-taxon data)
-          products (products/current-taxon-whitelisted-products data)]
-      [:.bundle-builder
-       [:header
-        [:h1
-         [:div
-          "Select Your "
-          (:name taxon)
-          " Hair"]
-         [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
+    (when-let [taxon (taxons/current-taxon data)]
+      (let [products (products/current-taxon-whitelisted-products data)]
+        [:.bundle-builder
+         [:header
+          [:h1
+           [:div
+            "Select Your "
+            (:name taxon)
+            " Hair"]
+           [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
 
-       (if (query/get {:request-key (concat request-keys/get-products
-                                            [(taxon-path-for taxon)])}
-                      (get-in data keypaths/api-requests))
-         [:.spinner]
-         [:div
-          [:.reviews-wrapper
-           [:.reviews-inner-wrapper
-            (when (get-in data keypaths/reviews-loaded)
-              (om/build reviews-summary-component data
-                        {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
-          [:.carousel
-           (if-let [product-url (product-image-url data taxon)]
-             [:.hair-category-image {:style {:background-image (css-url product-url)}}]
-             (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
-                                                       :images-path (conj keypaths/taxon-images
-                                                                          (keyword (:name taxon)))}}))]
-          (let [variants (products/current-taxon-variants data)
-                steps (build-steps (selection-flow data) (map :product_attrs products))]
-            (list
-             (bundle-builder-steps data variants steps)
-             [:#summary
-              [:h3 "Summary"]
-              (summary-section data variants)
-              (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
-                [:div#after-add {:style {:display "block"}}
-                 [:div.added-to-bag-container
-                  (map (partial display-bagged-variant data) bagged-variants)]
-                 [:div.go-to-checkout
-                  [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
-          [:ul.category-description
-           (for [description (category-descriptions taxon)]
-             [:li description])]
-          [:.reviews-wrapper
-           (when (get-in data keypaths/reviews-loaded)
-             (om/build reviews-component data
-                       {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]])
-       [:div.gold-features
-        [:figure.guarantee-feature]
-        [:figure.free-shipping-feature]
-        [:figure.triple-bundle-feature]]]))))
+         (if (query/get {:request-key (concat request-keys/get-products
+                                              [(taxon-path-for taxon)])}
+                        (get-in data keypaths/api-requests))
+           [:.spinner]
+           [:div
+            [:.reviews-wrapper
+             [:.reviews-inner-wrapper
+              (when (get-in data keypaths/reviews-loaded)
+                (om/build reviews-summary-component data
+                          {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
+            [:.carousel
+             (if-let [product-url (product-image-url data taxon)]
+               [:.hair-category-image {:style {:background-image (css-url product-url)}}]
+               (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
+                                                         :images-path (conj keypaths/taxon-images
+                                                                            (keyword (:name taxon)))}}))]
+            (let [variants (products/current-taxon-variants data)
+                  steps (build-steps (selection-flow data) (map :product_attrs products))]
+              (list
+               (bundle-builder-steps data variants steps)
+               [:#summary
+                [:h3 "Summary"]
+                (summary-section data variants)
+                (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
+                  [:div#after-add {:style {:display "block"}}
+                   [:div.added-to-bag-container
+                    (map (partial display-bagged-variant data) bagged-variants)]
+                   [:div.go-to-checkout
+                    [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
+            [:ul.category-description
+             (for [description (category-descriptions taxon)]
+               [:li description])]
+            [:.reviews-wrapper
+             (when (get-in data keypaths/reviews-loaded)
+               (om/build reviews-component data
+                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]])
+         [:div.gold-features
+          [:figure.guarantee-feature]
+          [:figure.free-shipping-feature]
+          [:figure.triple-bundle-feature]]])))))
 
 (defn category-component [data owner]
   (apply (if (experiments/bundle-builder-included-taxon? data (taxons/current-taxon data))

@@ -306,7 +306,6 @@
 
 (defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
   (-> app-state
-      (assoc-in keypaths/last-order order)
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/order {})))
 

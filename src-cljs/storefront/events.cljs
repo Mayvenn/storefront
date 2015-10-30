@@ -61,9 +61,6 @@
 (def control-manage-account (conj control :manage-account))
 (def control-manage-account-submit (conj control-manage-account :submit))
 
-(def control-click (conj control :click))
-(def control-click-category-product (conj control-click :category-product))
-
 (def control-bundle-option-select (conj control :bundle :option-select))
 
 (def control-browse (conj control :browse))
