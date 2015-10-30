@@ -213,7 +213,7 @@
    "/login"
    request-keys/sign-in
    {:params
-    {:email email
+    {:email (.toLowerCase (str email))
      :password password
      :stylist-id stylist-id}
     :handler
@@ -240,7 +240,7 @@
    "/forgot_password"
    request-keys/forgot-password
    {:params
-    {:email email}
+    {:email (.toLowerCase (str email))}
     :handler
     #(handle-message events/api-success-forgot-password)}))
 
