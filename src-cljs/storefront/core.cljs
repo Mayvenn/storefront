@@ -36,7 +36,7 @@
     (when (or (seq deleted) (seq added))
       (js/console.groupCollapsed (clj->js event) (clj->js args))
       (js/console.log "Delta" (clj->js {:deleted deleted
-                                :added added}))
+                                        :added added}))
       (js/console.trace "Stacktrace")
       (js/console.groupEnd)))
   new-app-state)

@@ -362,4 +362,12 @@
      width: 25em;
   }
 
+  .starting-at {
+    text-align: center;
+    padding-top: 1em;
+    font-size: 1.08rem;
+    font-family: $secondary_font;
+    font-style: italic;
+    color: $dark_grey;
+  }
 }

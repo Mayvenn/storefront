@@ -112,9 +112,9 @@
     :grade    [:min-price option-min-price]
     :material [:diff-price option-price-diff]
     :origin   [:diff-price option-price-diff]
-    :style    []
+    :style    [:diff-price option-price-diff]
     :length   [:diff-price option-price-diff]
-    :color    []))
+    :color    [:diff-price option-price-diff]))
 
 (defn format-price [[type price]]
   (str ({:min-price "From " :diff-price "+ "} type) (as-money price)))
@@ -262,6 +262,10 @@
           :closures 28}
          taxon-path)))
 
+(defn starting-at-price [variants]
+  (let [cheapest-price (apply min (map :price variants))]
+    [:div.starting-at (str "Starting at " (as-money cheapest-price))]))
+
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
@@ -295,6 +299,7 @@
             (let [variants (products/current-taxon-variants data)
                   steps (build-steps (selection-flow data) (map :product_attrs products))]
               (list
+               (starting-at-price variants)
                (bundle-builder-steps data variants steps)
                [:#summary
                 [:h3 "Summary"]
