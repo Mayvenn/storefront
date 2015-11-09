@@ -97,7 +97,6 @@
 (defn index [storeback-config env]
   (page/html5
    [:head
-    [:meta {:name "p:domain_verify" :content "40c4b6d92049896f0171e23aecd881df"}]
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
 
