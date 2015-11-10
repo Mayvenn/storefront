@@ -32,3 +32,7 @@
 (def bundle-builder-included-product? bundle-builder-included-stylist-only)
 
 (def bundle-builder-included-taxon? bundle-builder-included-stylist-only)
+
+(defn activate-universal-analytics []
+  (when (.hasOwnProperty js/window "optimizely")
+    (.activateUniversalAnalytics js/optimizely)))

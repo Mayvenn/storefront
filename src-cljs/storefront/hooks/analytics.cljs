@@ -11,11 +11,7 @@
  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
 ga('create', '" config/google-analytics-property "', 'auto');
-ga('require', 'displayfeatures');
-
-// Optimizely Universal Analytics Integration
-window.optimizely = window.optimizely || [];
-window.optimizely.push('activateUniversalAnalytics');")
+ga('require', 'displayfeatures');")
    "analytics")
   (insert-tag-with-text
    "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

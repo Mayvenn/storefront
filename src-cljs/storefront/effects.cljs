@@ -555,5 +555,7 @@
   (send app-state events/flash-dismiss-failure))
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
+  (experiments/activate-universal-analytics)
+  (analytics/track-event "optimizely-experiment" (:variation args))
   (when (= (:variation args) "bundle-builder")
     (apply send app-state (get-in app-state keypaths/navigation-message))))
