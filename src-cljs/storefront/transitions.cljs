@@ -32,6 +32,8 @@
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       add-return-event
+      (assoc-in keypaths/previous-navigation-message
+                (get-in app-state keypaths/navigation-message))
       (assoc-in keypaths/validation-errors {})
       (assoc-in keypaths/navigation-message [event args])))
 

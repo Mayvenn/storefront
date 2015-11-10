@@ -68,8 +68,9 @@
       (send app-state
             events/flash-dismiss-failure)))
 
-  (riskified/track-page (routes/path-for app-state event args))
-  (analytics/track-page (routes/path-for app-state event args)))
+  (when-not (= [event args] (get-in app-state keypaths/previous-navigation-message))
+    (riskified/track-page (routes/path-for app-state event args))
+    (analytics/track-page (routes/path-for app-state event args))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (let [bundle-builder? (experiments/bundle-builder? app-state)]

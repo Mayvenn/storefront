@@ -50,6 +50,7 @@
 (def ui [:ui])
 (def api-requests (conj ui :api-requests))
 (def return-navigation-message (conj ui :return-navigation-message))
+(def previous-navigation-message (conj ui :previous-navigation-message))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))
