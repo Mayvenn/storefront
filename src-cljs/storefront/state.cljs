@@ -152,7 +152,7 @@
                                      "/images/style_images/straight/6.png"]}
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
-          :previous-navigation-message [events/navigate-home {}]
+          :previous-navigation-message []
           :validation-errors {:error-message nil
                               :details {}}
           :browse-taxon-query nil
