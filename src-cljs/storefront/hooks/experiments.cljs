@@ -33,6 +33,9 @@
 
 (def bundle-builder-included-taxon? bundle-builder-included-stylist-only)
 
+(defn paypal? [data]
+  (display-variation data "paypal"))
+
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))

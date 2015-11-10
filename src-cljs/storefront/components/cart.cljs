@@ -61,9 +61,14 @@
              :name "checkout"
              :disabled (when (cart-update-pending? data) "disabled")
              :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]]]]]]]
-     [:div.or-divider [:span "OR"]]
-     [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
-                            :alt "Check out with PayPal"}]]))
+     (if (experiments/paypal? data)
+       (list
+        [:div.or-divider [:span "OR"]]
+        [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
+                               :alt "Check out with PayPal"}])
+       [:a.cart-continue.continue.button.gray
+        (shopping-link-attrs data)
+        "Continue shopping"])]))
 
 (defn display-empty-cart [data]
   [:div
