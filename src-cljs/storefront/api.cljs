@@ -498,7 +498,7 @@
                                    orders/product-items
                                    (orders/line-item-by-id variant-id)
                                    :quantity)})
-    :handler #(handle-message events/api-success-add-to-bag {:order %})}))
+    :handler #(handle-message events/api-success-remove-from-bag {:order %})}))
 
 (defn update-addresses [handle-message order]
   (api-req
