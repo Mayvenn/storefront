@@ -229,9 +229,10 @@
     (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-bundle-option-select
-  [_ event {:keys [step-name]} app-state]
-  (analytics/track-page
-   (str (routes/current-path app-state) "/choose_" (clj->js step-name))))
+  [_ event {:keys [step-name selected-options]} app-state]
+  (when (step-name selected-options)
+    (analytics/track-page
+     (str (routes/current-path app-state) "/choose_" (clj->js step-name)))))
 
 (defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
   (let [product (products/selected-product app-state)
