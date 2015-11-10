@@ -21,8 +21,7 @@
        [:div.product-reviews
         [:div.yotpo.yotpo-main-widget
          {:data-product-id product-id
-          :data-url (apply routes/path-for @data
-                           (get-in data keypaths/navigation-message))}]]))))
+          :data-url (routes/current-path @data)}]]))))
 
 (defn reviews-summary-component [data owner {product-id :product-id}]
   (reify
@@ -36,7 +35,6 @@
        [:div.product-reviews-summary
         [:div.yotpo.bottomLine.star-summary
          {:data-product-id product-id
-          :data-url (apply routes/path-for @data
-                           (get-in data keypaths/navigation-message))}]
+          :data-url (routes/current-path @data)}]
         [:div.yotpo.QABottomLine.question-summary
          {:data-product-id product-id}]]))))

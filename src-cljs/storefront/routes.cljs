@@ -133,3 +133,6 @@
     (.setToken (get-in app-state keypaths/history)
                (-> (path-for app-state navigation-event args)
                    (set-query-string query-params)))))
+
+(defn current-path [app-state]
+  (apply path-for app-state (get-in app-state keypaths/navigation-message)))
