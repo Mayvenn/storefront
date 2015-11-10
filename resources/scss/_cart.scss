@@ -208,3 +208,21 @@ a.button.continue {
   @include stretch-bg;
   margin-bottom: 4rem;
 }
+
+.or-divider {
+    border-top: 1px solid #e0e0e0; 
+    color: #e0e0e0;
+    margin-bottom: 1em;
+    line-height: 0;
+    text-align: center;
+
+    &>span {
+        background: white;
+        padding: 0 0.5rem;
+    }
+}
+
+.paypal-checkout {
+    display: block;
+    margin: 0 auto;  
+}
