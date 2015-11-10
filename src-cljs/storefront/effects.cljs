@@ -228,9 +228,16 @@
                            (products/all-variants product))]
     (api-add-to-bag app-state product variant)))
 
-(defmethod perform-effects events/control-build-add-to-bag [_ event _ app-state]
+(defmethod perform-effects events/control-bundle-option-select
+  [_ event {:keys [step-name]} app-state]
+  (analytics/track-page
+   (str (routes/current-path app-state) "/choose_" (clj->js step-name))))
+
+(defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
   (let [product (products/selected-product app-state)
         variant (products/selected-variant app-state)]
+    (analytics/track-page
+     (str (routes/current-path app-state) "/add_to_bag"))
     (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
