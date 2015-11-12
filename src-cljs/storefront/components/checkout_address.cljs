@@ -52,8 +52,9 @@
   [:div.billing-address-wrapper
    [:fieldset#billing.billing-fieldset
     [:legend {:align "center"} "Billing Address"]
-    [:p.checkout-address-warning
-     "Please note: If your billing address does not match your credit card your order will be delayed."]
+    (when-not (experiments/simplify-funnel? data)
+      [:p.checkout-address-warning
+       "Please note: If your billing address does not match your credit card your order will be delayed."])
 
     [:div.inner
      (textfield "First Name"
