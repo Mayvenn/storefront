@@ -34,9 +34,13 @@
          [:form
           {:on-submit (utils/send-event-callback data events/control-cart-update-coupon)}
           [:div.coupon-cart
-           [:h4 "Have a Coupon Code?"]
+           [:h4 (if (experiments/simplify-funnel? data)
+                  "Have a Promo Code?"
+                  "Have a Coupon Code?")]
            [:div.coupon-container
-            [:label "Enter a coupon code:"]
+            [:label (if (experiments/simplify-funnel? data)
+                      "Enter a promo code:"
+                      "Enter a coupon code:")]
             [:input.coupon-code-input
              (merge
               (utils/change-text data owner keypaths/cart-coupon-code)
@@ -47,17 +51,23 @@
                                       (get-in data keypaths/api-requests))]
               {:type "submit"
                :name "update"
-               :class (when spinning "saving")
+               :class [(when spinning "saving")
+                       (when (experiments/simplify-funnel? data) "bright")]
                :disabled spinning
                :on-click (utils/send-event-callback data events/control-cart-update-coupon)})
-            "Apply Coupon Code"]]]
+            (if (experiments/simplify-funnel? data)
+              "Apply Promo Code"
+              "Apply Coupon Code")]]]
          [:form
           {:on-submit (utils/send-event-callback data events/control-checkout-cart-submit)}
           [:div.order-summary-cart
            (display-order-summary cart)
            [:input.button.checkout.primary#checkout-link
             {:type "submit"
-             :value "Checkout"
+             :value (if (experiments/simplify-funnel? data)
+                      "Check Out"
+                      "Checkout")
+             :class (when (experiments/simplify-funnel? data) "bright")
              :name "checkout"
              :disabled (when (cart-update-pending? data) "disabled")
              :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]
@@ -66,8 +76,12 @@
               [:div.or-divider [:span "OR"]]
               [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
                                      :alt "Check out with PayPal"}])
-             [:a.cart-continue.continue.button.gray
-              (shopping-link-attrs data)
+             [:a.cart-continue
+              (merge
+               (shopping-link-attrs data)
+               {:class (if (experiments/simplify-funnel? data)
+                         "full-link old-school-link"
+                         "continue button gray")})
               "Continue shopping"])]]]]]]]))
 
 (defn display-empty-cart [data]
