@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.components.utils :as utils]
             [storefront.components.slideout-nav :refer [slideout-nav-component]]
             [storefront.components.header :refer [header-component]]
@@ -55,6 +56,8 @@
                         {:keypath keypaths/shop-menu-expanded})}
 
             :else {})
+     (when (experiments/simplify-funnel? data)
+       (om/build promotion-banner-component data))
      [:div.page-wrap
       (om/build header-component data)
       (om/build slideout-nav-component data)
@@ -62,7 +65,8 @@
         [:div.flash.success msg])
       (when-let [msg (get-in data keypaths/flash-failure-message)]
         [:div.flash.error msg])
-      (om/build promotion-banner-component data)
+      (when-not (experiments/simplify-funnel? data)
+       (om/build promotion-banner-component data))
 
       [:main {:role "main"}
        [:div.container
