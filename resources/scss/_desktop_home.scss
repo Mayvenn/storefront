@@ -80,6 +80,7 @@
 
 .text-free-shipping-banner {
   border: 2px $roi_green solid;
+  margin: 1rem 0;
   padding: 1rem;
   color: $roi_green;
   font-family: $primary_font_medium;
@@ -87,6 +88,12 @@
   p {
     text-align: center;
   }
+}
+
+.pick-style {
+  text-align: center;
+  color: $dark_text;
+  margin-bottom: 0.6rem;
 }
 
 .featured-product-content {

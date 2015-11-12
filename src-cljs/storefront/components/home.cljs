@@ -45,6 +45,8 @@
         [:a.home-free-shipping
          {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]])
      [:div.squashed-hair-categories
+      (when (experiments/simplify-funnel? data)
+        [:h3.pick-style "Pick your style"])
       (map (partial category data)
            (filter-nav-taxons (get-in data keypaths/taxons))
            (range))
