@@ -90,8 +90,12 @@
    [:figure.empty-bag]
    [:p
     [:a.button.primary.continue.empty-cart
-     (shopping-link-attrs data)
-     "Let's Fix That"]]])
+     (merge
+      (shopping-link-attrs data)
+      (when (experiments/simplify-funnel? data) {:class "bright"}))
+     (if (experiments/simplify-funnel? data)
+       "Shop Now"
+       "Let's Fix That")]]])
 
 (defn cart-component [data owner]
   (om/component
