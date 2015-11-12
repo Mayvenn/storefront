@@ -522,7 +522,7 @@
                               {:order %
                                :navigate events/navigate-checkout-payment})}))
 
-(defn update-cart-payments [handle-message order]
+(defn update-cart-payments [handle-message {:keys [order] :as args}]
   (api-req
    handle-message
    POST
@@ -530,8 +530,7 @@
    request-keys/update-cart-payments
    {:params (select-keys order [:number :token :cart-payments])
     :handler #(handle-message events/api-success-update-order-update-cart-payments
-                              {:order %
-                               :navigate events/navigate-checkout-confirmation})}))
+                              (merge args {:order %}))}))
 
 (defn get-order [handle-message number token]
   (api-req

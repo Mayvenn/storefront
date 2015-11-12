@@ -21,6 +21,8 @@
 (def order [:order])
 (def order-total (conj order :total))
 (def order-cart-payments (conj order :cart-payments))
+(def order-cart-payments-paypal (conj order-cart-payments :paypal))
+(def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
 (def order-cart-payments-stripe-source (conj order-cart-payments-stripe-source :source))
 (def order-cart-payments-stripe-amount (conj order-cart-payments-stripe-amount :amount))

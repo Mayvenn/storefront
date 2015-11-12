@@ -4,6 +4,9 @@
 (def app-start (conj app :start))
 (def app-stop (conj app :stop))
 
+(def external-redirect [:external-redirect])
+(def external-redirect-paypal-setup (conj external-redirect [:paypal-setup]))
+
 (def navigate [:navigation])
 (def navigate-home (conj navigate :home))
 (def navigate-category (conj navigate :category))
@@ -85,6 +88,7 @@
 
 (def control-checkout (conj control :checkout))
 (def control-checkout-cart-submit (conj control-checkout :cart-submit))
+(def control-checkout-cart-paypal-setup (conj control-checkout :cart-paypal-setup))
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :shipping-method-select))
 (def control-checkout-shipping-method-submit (conj control-checkout :shipping-method-submit))

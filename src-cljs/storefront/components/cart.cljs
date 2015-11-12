@@ -72,8 +72,10 @@
            (if (experiments/paypal? data)
              (list
               [:div.or-divider [:span "OR"]]
-              [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
-                                     :alt "Check out with PayPal"}])
+              [:a {:href "#"
+                   :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
+               [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
+                                      :alt "Check out with PayPal"}]])
              [:a.cart-continue
               (merge
                (shopping-link-attrs data)

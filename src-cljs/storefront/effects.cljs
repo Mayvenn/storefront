@@ -35,6 +35,9 @@
   (riskified/remove-beacon)
   (analytics/remove-tracking))
 
+(defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
+  (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
+
 (defmethod perform-effects events/navigate [_ event args app-state]
   (if (experiments/bundle-builder? app-state)
     (api/get-builder-taxons (get-in app-state keypaths/handle-message)
@@ -299,6 +302,16 @@
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
+(defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
+  (api/update-cart-payments
+   (get-in app-state keypaths/handle-message)
+   {:order (-> app-state
+               (get-in keypaths/order)
+               (select-keys [:token :number])
+               (assoc-in [:cart-payments]
+                         {:paypal {:amount (get-in app-state keypaths/order-total)}}))
+    :event events/external-redirect-paypal-setup}))
+
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
   (let [handle-message (get-in app-state keypaths/handle-message)
         user-token (get-in app-state keypaths/user-token)
@@ -336,11 +349,12 @@
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments
    (get-in app-state keypaths/handle-message)
-   (-> app-state
-       (get-in keypaths/order)
-       (select-keys [:token :number])
-       (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
-       (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))))
+   {:order (-> app-state
+               (get-in keypaths/order)
+               (select-keys [:token :number])
+               (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
+               (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))
+    :navigate events/navigate-checkout-confirmation}))
 
 (defmethod perform-effects events/stripe-failure-create-token [_ _ stripe-response app-state]
   (send app-state
@@ -358,10 +372,11 @@
       ;; command waiter w/ payment methods(success handler navigate to confirm)
       (api/update-cart-payments
        (get-in app-state keypaths/handle-message)
-       (-> app-state
-           (get-in keypaths/order)
-           (select-keys [:token :number])
-           (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))))
+       {:order (-> app-state
+                   (get-in keypaths/order)
+                   (select-keys [:token :number])
+                   (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)}))
+        :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
       (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
         (stripe/create-token app-state
@@ -498,8 +513,10 @@
                                 (:billing-address order)
                                 (:shipping-address order))))
 
-(defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate]} app-state]
+(defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state true)
+  (when event
+    (send app-state event {:order order}))
   (when navigate
     (routes/enqueue-navigate app-state navigate {:number (:number order)})))
 
