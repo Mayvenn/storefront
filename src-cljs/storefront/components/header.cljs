@@ -5,7 +5,8 @@
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
             [storefront.messages :refer [send]]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn header-component [data owner]
   (om/component
@@ -32,7 +33,8 @@
           [:div.stylist-bar-img-container
            [:img.stylist-bar-portrait {:src (store :profile_picture_url)}]]
           [:div.stylist-bar-name (store :store_name)]
-          (when-let [instagram-account (store :instagram_account)]
-            [:div.social-icons
-             [:i.instagram-icon
-              [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]]])])]))))
+          (when-not (experiments/simplify-funnel? data)
+            (when-let [instagram-account (store :instagram_account)]
+              [:div.social-icons
+               [:i.instagram-icon
+                [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]]]))])]))))

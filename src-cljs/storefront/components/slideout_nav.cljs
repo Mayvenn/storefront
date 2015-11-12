@@ -116,10 +116,11 @@
               "Logout"]]])
          [:h2.horizontal-nav-title
           (store :store_name)
-          [:ul.header-social-icons
-           (when-let [instagram-account (store :instagram_account)]
-             [:li.instagram-icon
-              [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]])]]
+          (when-not (experiments/simplify-funnel? data)
+            [:ul.header-social-icons
+             (when-let [instagram-account (store :instagram_account)]
+               [:li.instagram-icon
+                [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]])])]
          [:ul.horizontal-nav-menu
           [:li
            [:a
