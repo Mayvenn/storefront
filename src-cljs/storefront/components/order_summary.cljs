@@ -91,7 +91,8 @@
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
     (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
-    (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal")]
+    (when-not (experiments/simplify-funnel? data)
+      (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal"))]
    [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]
