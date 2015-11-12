@@ -25,7 +25,11 @@
   (om/component
    (html
     [:div#home-content
-     [:div.home-large-image]
+     [:a.home-large-image
+      (when (experiments/simplify-funnel? data)
+        (merge
+         {:class "clickable-image"}
+         (utils/route-to data events/navigate-categories)))]
      [:div.home-actions-top
       [:a.guarantee
        (utils/route-to data events/navigate-guarantee)]

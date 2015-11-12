@@ -7,6 +7,12 @@
   height: 18em;
   background-image: url("/images/home_image.jpg");
   @include stretch-bg;
+  width: 100%;
+  display: block;
+
+  &.clickable-image {
+    background-image: url("/images/home_image_clickable.jpg");
+  }
 }
 
 .home-30-day-guarantee, .home-free-shipping {

@@ -3,8 +3,13 @@
   height: 432px;
   background-color: #fff;
   margin-bottom: 33px;
+  display: block;
   @include stretch-bg;
   background-image: url('/images/desktop_assets/desktop-home-banner-flip.jpg');
+
+  &.clickable-image {
+    background-image: url("/images/desktop_assets/desktop_home_image_clickable.jpg");
+  }
 }
 
 .header-bar {
