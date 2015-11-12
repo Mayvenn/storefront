@@ -327,6 +327,10 @@ a.pm-link {
   background-color: $primary_color;
   position: relative;
   margin-bottom: 3em;
+
+  &.bright {
+    background-color: $main_gradient_dark;
+  }
 }
 
 .checkout-cart {

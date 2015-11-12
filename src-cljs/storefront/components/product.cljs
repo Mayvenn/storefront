@@ -149,6 +149,8 @@
                [:div.added-to-bag-container
                 (map (partial display-bagged-variant data) bagged-variants)]
                [:div.go-to-checkout
+                (when (experiments/simplify-funnel? data)
+                  {:class "bright"})
                 [:a.cart-button
                  (utils/route-to data events/navigate-cart)
                  "Go to Checkout >>"
