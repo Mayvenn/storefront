@@ -83,6 +83,8 @@
   (om/component
    (html
     [:div
+     (when (experiments/simplify-funnel? data)
+       [:div.page-heading "My Cart"])
      [:div.cart-container
       (let [cart (get-in data keypaths/order)]
         (if (and (:state cart)
