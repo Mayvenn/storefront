@@ -9,6 +9,7 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.hooks.experiments :as experiments]
             [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.orders :as orders]
             [storefront.messages :refer [send]]
@@ -82,5 +83,8 @@
             [:a.large.continue.button.primary
              {:on-click (when-not saving
                           (utils/send-event-callback data events/control-checkout-payment-method-submit))
-              :class (when saving "saving")}
-             "Continue"])]]]]]])))
+              :class [(when saving "saving")
+                      (when (experiments/simplify-funnel? data) "bright")]}
+             (if (experiments/simplify-funnel? data)
+               "Go to Review Order"
+               "Continue")])]]]]]])))

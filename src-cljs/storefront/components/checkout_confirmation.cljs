@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
@@ -25,5 +26,8 @@
                                          (get-in data keypaths/api-requests))]
             [:a.large.continue.button.primary
              {:on-click (when-not placing-order (utils/send-event-callback data events/control-checkout-confirmation-submit))
-              :class (when placing-order "saving")}
-             "Pay for order"])]]]]]])))
+              :class [(when placing-order "saving")
+                      (when (experiments/simplify-funnel? data) "bright")]}
+             (if (experiments/simplify-funnel? data)
+               "Complete my Purchase"
+               "Pay for order")])]]]]]])))

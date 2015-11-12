@@ -9,6 +9,7 @@
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.messages :refer [send]]
+            [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
 (defn selected-value [evt]
@@ -156,5 +157,8 @@
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-update-addresses-submit))
-             :class (when saving "saving")}
-            "Save and Continue"])]]]]])))
+             :class [(when saving "saving")
+                     (when (experiments/simplify-funnel? data) "bright")]}
+            (if (experiments/simplify-funnel? data)
+              "Continue to Shipping"
+              "Save and Continue")])]]]]])))

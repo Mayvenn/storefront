@@ -5,6 +5,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.components.formatters :refer [as-money as-money-or-free]]
@@ -56,5 +57,8 @@
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-shipping-method-submit))
-             :class (when saving "saving")}
-            "Continue"])]]]]])))
+             :class [(when saving "saving")
+                     (when (experiments/simplify-funnel? data) "bright") ]}
+            (if (experiments/simplify-funnel? data)
+              "Continue to Payment"
+              "Continue")])]]]]])))
