@@ -66,7 +66,7 @@
       (when-let [msg (get-in data keypaths/flash-failure-message)]
         [:div.flash.error msg])
       (when-not (experiments/simplify-funnel? data)
-       (om/build promotion-banner-component data))
+        (om/build promotion-banner-component data))
 
       [:main {:role "main"}
        [:div.container
@@ -97,5 +97,5 @@
            events/navigate-order (requires-sign-in data order-component)
            events/navigate-my-orders (requires-sign-in data my-orders-component)
            home-component)
-         data)]]]
-     (om/build footer-component data)])))
+         data)]]
+      (om/build footer-component data)]])))

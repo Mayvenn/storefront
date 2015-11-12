@@ -40,11 +40,6 @@ body {
   background-color: white;
 }
 
-.page-wrap:after {
-  content: "";
-  display: block;
-}
-
 a {
   text-decoration: none;
   color: $dark_green;
@@ -209,14 +204,6 @@ p {
     width: 47%;
   }
 
-  .page-wrap {
-    margin-bottom: -104px;
-  }
-
-  .page-wrap:after {
-    height: 104px;
-  }
-
   @import 'desktop_nav';
   @import 'desktop_footer';
   @import 'desktop_home';
@@ -233,14 +220,6 @@ p {
 @media screen and (max-width: 1023px) {
   .line-item-attr.item-form.price {
     display: none;
-  }
-
-  .page-wrap {
-    margin-bottom: (-249rem / $default-font-size);
-  }
-
-  .page-wrap:after {
-    height: (249rem / $default-font-size);
   }
 
   @import 'slideout_nav';
