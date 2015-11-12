@@ -112,3 +112,15 @@
 .home-actions-top {
   height: (145rem / $default-font-size);
 }
+
+.text-free-shipping-banner {
+  border: 2px $roi_green solid;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: $roi_green;
+  font-family: $primary_font_medium;
+
+  p {
+    text-align: center;
+  }
+}

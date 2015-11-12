@@ -78,6 +78,17 @@
   display: none;
 }
 
+.text-free-shipping-banner {
+  border: 2px $roi_green solid;
+  padding: 1rem;
+  color: $roi_green;
+  font-family: $primary_font_medium;
+
+  p {
+    text-align: center;
+  }
+}
+
 .featured-product-content {
   position: relative;
   float: left;

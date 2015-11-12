@@ -30,17 +30,20 @@
         (merge
          {:class "clickable-image"}
          (utils/route-to data events/navigate-categories)))]
-     [:div.home-actions-top
-      [:a.guarantee
-       (utils/route-to data events/navigate-guarantee)]
-      [:a.free-shipping-action
-       {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
-      [:div.shop-now
-       [:a.full-link (utils/route-to data events/navigate-categories)]]
-      [:a.home-30-day-guarantee
-       (utils/route-to data events/navigate-guarantee)]
-      [:a.home-free-shipping
-       {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]]
+     (if (experiments/simplify-funnel? data)
+       [:div.text-free-shipping-banner
+        [:p "Free Shipping + 30 Day Money Back Guarantee"]]
+       [:div.home-actions-top
+        [:a.guarantee
+         (utils/route-to data events/navigate-guarantee)]
+        [:a.free-shipping-action
+         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
+        [:div.shop-now
+         [:a.full-link (utils/route-to data events/navigate-categories)]]
+        [:a.home-30-day-guarantee
+         (utils/route-to data events/navigate-guarantee)]
+        [:a.home-free-shipping
+         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]])
      [:div.squashed-hair-categories
       (map (partial category data)
            (filter-nav-taxons (get-in data keypaths/taxons))
