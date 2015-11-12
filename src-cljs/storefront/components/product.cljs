@@ -138,8 +138,11 @@
                    {:on-click
                     (when-not adding-to-cart
                       (utils/send-event-callback data events/control-browse-add-to-bag))
-                    :class (when adding-to-cart "saving")}
-                   "Add to Bag"]])]]]
+                    :class [(when adding-to-cart "saving")
+                            (when (experiments/simplify-funnel? data) "bright")]}
+                   (if (experiments/simplify-funnel? data)
+                     "Add to Cart"
+                     "Add to Bag")]])]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}

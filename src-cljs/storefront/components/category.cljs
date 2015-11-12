@@ -181,12 +181,15 @@
          string/upper-case)))
 
 (defn add-to-bag-button [data variants]
-  (if (query/get {:request-key request-keys/add-to-bag}
-                 (get-in data keypaths/api-requests))
-    [:button.large.primary#add-to-cart-button.saving]
+  (let [saving (query/get {:request-key request-keys/add-to-bag}
+                          (get-in data keypaths/api-requests))]
     [:button.large.primary#add-to-cart-button
-     {:on-click (utils/send-event-callback data events/control-build-add-to-bag)}
-     "ADD TO BAG"]))
+     {:on-click (when-not saving
+                  (utils/send-event-callback data events/control-build-add-to-bag))
+      :class [(when saving "saving") (when (experiments/simplify-funnel? data) "bright")]}
+     (if (experiments/simplify-funnel? data)
+       "ADD TO CART"
+       "ADD TO BAG")]))
 
 (def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"]])
 
