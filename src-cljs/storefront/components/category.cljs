@@ -281,7 +281,7 @@
             "Select Your "
             (:name taxon)
             " Hair"]
-           [:.category-sub-header "Buy now and get FREE SHIPPING"]]]
+           [:.category-header-sub "Buy now and get FREE SHIPPING"]]]
 
          (if (query/get {:request-key (concat request-keys/get-products
                                               [(taxon-path-for taxon)])}
