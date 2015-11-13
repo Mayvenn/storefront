@@ -78,7 +78,7 @@
               (merge
                (shopping-link-attrs data)
                {:class (if (experiments/simplify-funnel? data)
-                         "full-link old-school-link"
+                         "full-link old-school-link extra-spacing"
                          "continue button gray")})
               "Continue shopping"])]]]]]]]))
 
