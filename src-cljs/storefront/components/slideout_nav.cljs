@@ -7,6 +7,7 @@
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for default-stylist-taxon-path]]
             [storefront.accessors.stylists :refer [own-store?]]
+            [storefront.accessors.navigation :as navigation]
             [storefront.messages :refer [send]]
             [storefront.hooks.experiments :as experiments]))
 
@@ -49,7 +50,7 @@
   (boolean (get-in data keypaths/user-email)))
 
 (defn shop-now-attrs [data]
-  (close-and-route data events/navigate-categories))
+  (apply close-and-route data (navigation/shop-now-navigation-message data)))
 
 (defn slideout-nav-component [data owner]
   (om/component

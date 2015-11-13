@@ -3,6 +3,7 @@
             [storefront.hooks.analytics :as analytics]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for]]
+            [storefront.accessors.navigation :as navigation]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -29,7 +30,7 @@
       (when (experiments/simplify-funnel? data)
         (merge
          {:class "clickable-image"}
-         (utils/route-to data events/navigate-categories)))]
+         (apply utils/route-to data (navigation/shop-now-navigation-message data))))]
      (if (experiments/simplify-funnel? data)
        [:div.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
@@ -39,7 +40,8 @@
         [:a.free-shipping-action
          {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
         [:div.shop-now
-         [:a.full-link (utils/route-to data events/navigate-categories)]]
+         [:a.full-link
+          (apply utils/route-to data (navigation/shop-now-navigation-message data))]]
         [:a.home-30-day-guarantee
          (utils/route-to data events/navigate-guarantee)]
         [:a.home-free-shipping

@@ -4,6 +4,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]
             [storefront.request-keys :as request-keys]
@@ -12,7 +13,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (utils/route-to data events/navigate-categories))
+  (apply utils/route-to data (navigation/shop-now-navigation-message data)))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]
