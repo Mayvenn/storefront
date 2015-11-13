@@ -30,7 +30,7 @@
 
 (defn field [id name app-state keypath presenter-fn & [text-attrs]]
   [:p.field
-   [:label {:for id} name]
+   [:label {:for id :class (:label-class text-attrs)} name]
    [:input (merge {:type "text"
                    :id id
                    :name id
@@ -44,18 +44,19 @@
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
-  [:.credit-card-container
-   (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
-   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
-          {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber"})
-   (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
-          {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
-           :max-length 9})
-   (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
-          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
-           :max-length 4})
-   [:p.review-message
-    "You can review your order on the next page before we charge your credit card"]])
+  (let [label-class (when (experiments/simplify-funnel? data) "straight-text")]
+    [:.credit-card-container
+     (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity {:label-class label-class})
+     (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
+            {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber" :label-class label-class})
+     (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
+            {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
+             :max-length 9 :label-class label-class})
+     (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
+            {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
+             :max-length 4 :label-class label-class})
+     [:p.review-message
+      "You can review your order on the next page before we charge your credit card"]]))
 
 (defn checkout-payment-component [data owner]
   (om/component

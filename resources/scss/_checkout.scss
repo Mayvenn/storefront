@@ -228,6 +228,10 @@
       font-family: $secondary_font;
       font-style: italic;
 
+      &.straight-text {
+        font-style: inherit;
+      }
+
       a#cvv_link {
         color: $primary_color_text;
       }
