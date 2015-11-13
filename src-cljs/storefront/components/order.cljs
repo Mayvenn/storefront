@@ -42,4 +42,4 @@
                   (trackable-shipments order))]])]
         [:div.order-container
          (display-line-items data order)
-         (display-order-summary order)]))])))
+         (display-order-summary data order)]))])))

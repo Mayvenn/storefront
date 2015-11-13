@@ -6,17 +6,11 @@
             [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
+            [storefront.accessors.shipping :as shipping]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.utils :as utils]))
-
-(defn shipping-timeframe [rate-name]
-  (condp = rate-name
-    "Priority Shipping" "3-5 business days"
-    "Express Shipping" "1-2 business days (No Weekends)"
-    "Overnight Shipping" "1 business day (No Weekends)"
-    "?"))
 
 (defn display-shipping-method [app-state shipping-method]
   [:li.shipping-method
@@ -31,8 +25,8 @@
     [:div.checkbox-container
      [:figure.large-checkbox]]
     [:div.shipping-method-container
-     [:div.rate-name (:name shipping-method)]
-     [:div.rate-timeframe (shipping-timeframe (:name shipping-method))]]
+     [:div.rate-name (shipping/display-shipping-method app-state (:name shipping-method))]
+     [:div.rate-timeframe (shipping/timeframe (:name shipping-method))]]
     [:div.rate-cost (as-money-or-free (:price shipping-method))]]])
 
 

@@ -3,6 +3,7 @@
             [storefront.components.utils :as utils]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.shipping :as shipping]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
@@ -26,22 +27,27 @@
   (conj (:adjustments order)
         (tax-adjustment order)))
 
+(defn- display-adjustment-name [data name]
+  (if (and (experiments/simplify-funnel? data) (= name "Bundle Discount"))
+    "10% Bundle Discount"
+    name))
 
-(defn- display-adjustment-row [{:keys [name price]}]
+
+(defn- display-adjustment-row [data {:keys [name price]}]
   (when-not (= price 0)
     [:tr.order-summary-row.adjustment
      [:td
-      [:h5 name]]
+      [:h5 (display-adjustment-name data name)]]
      [:td
       [:h5 (as-money price)]]]))
 
-(defn- display-adjustments [adjustments]
-  (map display-adjustment-row adjustments))
+(defn- display-adjustments [data adjustments]
+  (map (partial display-adjustment-row data) adjustments))
 
-(defn- display-shipment [shipping]
+(defn- display-shipment [data shipping]
   [:tr.order-summary-row
    [:td
-    [:h5 (:options-text shipping)]]
+    [:h5 (shipping/display-shipping-method data (:options-text shipping))]]
    [:td
     [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])
 
@@ -98,7 +104,7 @@
 (defn display-line-items [data order & [interactive?]]
   (map (partial display-line-item data interactive?) (orders/product-items order)))
 
-(defn display-order-summary [order]
+(defn display-order-summary [data order]
   [:div
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
@@ -113,9 +119,9 @@
                       (when (> quantity 1) "s") ")")]]
            [:td
             [:h5 (as-money (orders/products-subtotal order))]]]
-          (display-adjustments adjustments)
+          (display-adjustments data adjustments)
           (when-let [shipping-item (orders/shipping-item order)]
-            (display-shipment shipping-item))))
+            (display-shipment data shipping-item))))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]

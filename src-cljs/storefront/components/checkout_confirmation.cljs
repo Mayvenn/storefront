@@ -20,7 +20,7 @@
        [:form.edit_order
         [:div.checkout-container
          (display-line-items data (get-in data keypaths/order))
-         (display-order-summary (get-in data keypaths/order))
+         (display-order-summary data (get-in data keypaths/order))
          [:div.form-buttons.pay-for-order
           (let [placing-order (query/get {:request-key request-keys/place-order}
                                          (get-in data keypaths/api-requests))]

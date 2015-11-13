@@ -61,7 +61,7 @@
               "Apply Coupon Code")]]]
          [:div
           [:div.order-summary-cart
-           (display-order-summary cart)
+           (display-order-summary data cart)
            [:a.button.checkout.primary#checkout-link
             {:class ["full-link" (when (experiments/simplify-funnel? data) "bright")]
              :on-click (when-not (cart-update-pending? data)
