@@ -59,19 +59,16 @@
             (if (experiments/simplify-funnel? data)
               "Apply Promo Code"
               "Apply Coupon Code")]]]
-         [:form
-          {:on-submit (utils/send-event-callback data events/control-checkout-cart-submit)}
+         [:div
           [:div.order-summary-cart
            (display-order-summary cart)
-           [:input.button.checkout.primary#checkout-link
-            {:type "submit"
-             :value (if (experiments/simplify-funnel? data)
+           [:a.button.checkout.primary#checkout-link
+            {:class ["full-link" (when (experiments/simplify-funnel? data) "bright")]
+             :on-click (when-not (cart-update-pending? data)
+                         (utils/send-event-callback data events/control-checkout-cart-submit))}
+            (if (experiments/simplify-funnel? data)
                       "Check Out"
-                      "Checkout")
-             :class (when (experiments/simplify-funnel? data) "bright")
-             :name "checkout"
-             :disabled (when (cart-update-pending? data) "disabled")
-             :on-click (utils/send-event-callback data events/control-checkout-cart-submit)}]
+                      "Checkout")]
            (if (experiments/paypal? data)
              (list
               [:div.or-divider [:span "OR"]]
