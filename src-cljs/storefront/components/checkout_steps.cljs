@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.components.utils :refer [route-to]]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
 (def steps
@@ -11,6 +12,16 @@
     :name "address"}
    {:event events/navigate-checkout-delivery
     :name "delivery"}
+   {:event events/navigate-checkout-payment
+    :name "payment"}
+   {:event events/navigate-checkout-confirmation
+    :name "confirm"}])
+
+(def simplify-funnel-steps
+  [{:event events/navigate-checkout-address
+    :name "address"}
+   {:event events/navigate-checkout-delivery
+    :name "shipping"}
    {:event events/navigate-checkout-payment
     :name "payment"}
    {:event events/navigate-checkout-confirmation
@@ -29,6 +40,7 @@
    [:span
     (let [text [:div.progress-step-index
                 (str (inc index) " ")
+                (when (experiments/simplify-funnel? app-state) [:br])
                 (string/capitalize step-name)]]
       (if (< index current-index)
         [:a (route-to app-state (get-in steps [index :event])) text]
@@ -43,4 +55,4 @@
      [:div.columns.thirteen.omega
       [:ol {:class (str "progress-steps checkout-step-" (:name current-step))}
        (map-indexed (partial display-progress-step data current-index)
-                    steps)]]]))
+                    (if (experiments/simplify-funnel? data) simplify-funnel-steps steps))]]]))
