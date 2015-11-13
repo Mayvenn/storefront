@@ -4,6 +4,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
 
 (defn sign-up-component [data owner]
@@ -40,4 +41,5 @@
                    :name "password-confirmation"})]]]
         [:p
          [:input.btn.button.primary {:type "submit"
-                                     :value "Create"}]]]]]])))
+                                     :value "Create"
+                                     :class (when (experiments/simplify-funnel? data) "bright")}]]]]]])))

@@ -4,6 +4,7 @@
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.hooks.experiments :as experiments]
             [storefront.components.validation-errors :refer [validation-errors-component]]))
 
 (defn forgot-password-component [data owner]
@@ -23,4 +24,6 @@
          {:type "email"
           :name "email"})]
        [:p
-        [:input.button.primary {:type "submit" :value "Reset my password"}]]]]])))
+        [:input.button.primary {:type "submit"
+                                :value "Reset my password"
+                                :class (when (experiments/simplify-funnel? data) "bright")}]]]]])))

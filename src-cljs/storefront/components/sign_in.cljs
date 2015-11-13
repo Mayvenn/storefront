@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
 
 (defn sign-in-component [data owner]
@@ -38,7 +39,8 @@
        [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Login"}]]]]])))
+                                :value "Login"
+                                :class (when (experiments/simplify-funnel? data) "bright")}]]]]])))
 
 (defn requires-sign-in [app-state authorized-component]
   (if (get-in app-state keypaths/user-id)
