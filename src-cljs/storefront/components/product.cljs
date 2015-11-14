@@ -30,7 +30,9 @@
 
 (defn display-bagged-variant [app-state {:keys [quantity product variant]}]
   [:div.item-added
-   [:strong "Added to Bag: "]
+   (if (experiments/simplify-funnel? app-state)
+     [:strong "Added to Cart: "]
+     [:strong "Added to Bag: "])
    (str (number->words quantity)
         " "
         (-> (:options_text variant)
