@@ -1,10 +1,13 @@
 (ns storefront.hooks.experiments
   (:require [storefront.browser.tags :refer [insert-tag-with-src
+                                             insert-body-bottom
+                                             text-tag
                                              remove-tags]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]))
 
 (defn insert-optimizely []
+  (insert-body-bottom (text-tag "window['optimizely'] = window['optimizely'] || []" "optimizely"))
   (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
 
 (defn remove-optimizely []
