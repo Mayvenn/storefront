@@ -41,4 +41,6 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 (defn track-page [path]
   (when (.hasOwnProperty js/window "ga")
     (js/ga "set" "page" (clj->js path))
-    (js/ga "send" "pageview")))
+    (js/ga "send" "pageview"))
+  (when (.hasOwnProperty js/window "hj")
+    (js/hj "vpv" (clj->js path))))
