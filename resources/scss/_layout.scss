@@ -111,6 +111,11 @@ p {
       background-color: $roi_orange;
       background-image: none;
     }
+
+    &.bright-alternate {
+      background-color: $roi_navy;
+      background-image: none;
+    }
   }
 
   &.saving { // fixme: only works when button is a div

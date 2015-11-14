@@ -141,7 +141,7 @@
                     (when-not adding-to-cart
                       (utils/send-event-callback data events/control-browse-add-to-bag))
                     :class [(when adding-to-cart "saving")
-                            (when (experiments/simplify-funnel? data) "bright")]}
+                            (when (experiments/simplify-funnel? data) "bright-alternate")]}
                    (if (experiments/simplify-funnel? data)
                      "Add to Cart"
                      "Add to Bag")]])]]]

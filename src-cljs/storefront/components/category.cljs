@@ -186,7 +186,7 @@
     [:button.large.primary#add-to-cart-button
      {:on-click (when-not saving
                   (utils/send-event-callback data events/control-build-add-to-bag))
-      :class [(when saving "saving") (when (experiments/simplify-funnel? data) "bright")]}
+      :class [(when saving "saving") (when (experiments/simplify-funnel? data) "bright-alternate")]}
      (if (experiments/simplify-funnel? data)
        "ADD TO CART"
        "ADD TO BAG")]))
