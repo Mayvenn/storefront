@@ -38,44 +38,45 @@
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
-(defmethod perform-effects events/navigate [_ event args app-state]
-  (if (experiments/bundle-builder? app-state)
-    (api/get-builder-taxons (get-in app-state keypaths/handle-message)
-                            (get-in app-state keypaths/api-cache))
-    (api/get-taxons (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/api-cache)))
-  (api/get-store (get-in app-state keypaths/handle-message)
-                 (get-in app-state keypaths/api-cache)
-                 (get-in app-state keypaths/store-slug))
-  (api/get-sms-number (get-in app-state keypaths/handle-message))
-  (api/get-promotions (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/api-cache))
+(defmethod perform-effects events/navigate [_ _ _ app-state]
+  (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
+    (if (experiments/bundle-builder? app-state)
+      (api/get-builder-taxons (get-in app-state keypaths/handle-message)
+                              (get-in app-state keypaths/api-cache))
+      (api/get-taxons (get-in app-state keypaths/handle-message)
+                      (get-in app-state keypaths/api-cache)))
+    (api/get-store (get-in app-state keypaths/handle-message)
+                   (get-in app-state keypaths/api-cache)
+                   (get-in app-state keypaths/store-slug))
+    (api/get-sms-number (get-in app-state keypaths/handle-message))
+    (api/get-promotions (get-in app-state keypaths/handle-message)
+                        (get-in app-state keypaths/api-cache))
 
-  (when-let [order-number (get-in app-state keypaths/order-number)]
-    (api/get-order (get-in app-state keypaths/handle-message)
-                   order-number
-                   (get-in app-state keypaths/order-token)))
-  (opengraph/set-site-tags)
-  (scroll/scroll-to-top)
+    (when-let [order-number (get-in app-state keypaths/order-number)]
+      (api/get-order (get-in app-state keypaths/handle-message)
+                     order-number
+                     (get-in app-state keypaths/order-token)))
+    (opengraph/set-site-tags)
+    (scroll/scroll-to-top)
 
-  (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
-    (when-not (or
-               (empty? (get-in app-state keypaths/flash-success-nav))
-               (= [event (seq args)] [flash-event (seq flash-args)]))
-      (send app-state
-            events/flash-dismiss-success)))
-  (let [[flash-event flash-args] (get-in app-state keypaths/flash-failure-nav)]
-    (when-not (or
-               (empty? (get-in app-state keypaths/flash-failure-nav))
-               (= [event (seq args)] [flash-event (seq flash-args)]))
-      (send app-state
-            events/flash-dismiss-failure)))
+    (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
+      (when-not (or
+                 (empty? (get-in app-state keypaths/flash-success-nav))
+                 (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
+        (send app-state
+              events/flash-dismiss-success)))
+    (let [[flash-event flash-args] (get-in app-state keypaths/flash-failure-nav)]
+      (when-not (or
+                 (empty? (get-in app-state keypaths/flash-failure-nav))
+                 (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
+        (send app-state
+              events/flash-dismiss-failure)))
 
-  (when-not (= [event args] (get-in app-state keypaths/previous-navigation-message))
-    (let [path (routes/path-for app-state event args)]
-      (riskified/track-page path)
-      (analytics/track-page path)
-      (experiments/track-event path))))
+    (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
+      (let [path (routes/current-path app-state)]
+        (riskified/track-page path)
+        (analytics/track-page path)
+        (experiments/track-event path)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (let [bundle-builder? (experiments/bundle-builder? app-state)]

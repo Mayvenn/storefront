@@ -61,6 +61,11 @@
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
 
+(defmethod transition-state events/navigate-checkout-address [_ event args app-state]
+  (when (get-in app-state keypaths/user-email)
+    (assoc-in app-state keypaths/navigation-message
+              [event {:query-params {:loggedin true}}]))) ;; help with analytics of funnel
+
 (defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
