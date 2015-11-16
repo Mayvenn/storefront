@@ -93,7 +93,7 @@
            events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
            events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component)
-           events/navigate-order-complete (requires-sign-in data checkout-complete-component)
+           events/navigate-order-complete checkout-complete-component
            events/navigate-order (requires-sign-in data order-component)
            events/navigate-my-orders (requires-sign-in data my-orders-component)
            home-component)

@@ -1,10 +1,12 @@
 (ns storefront.effects
   (:require [ajax.core :refer [-abort]]
+            [clojure.string :as string]
+            [cemerick.url :refer [url-encode]]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -12,7 +14,6 @@
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.opengraph :as opengraph]
-            [clojure.string :as string]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
@@ -306,14 +307,23 @@
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
-  (api/update-cart-payments
-   (get-in app-state keypaths/handle-message)
-   {:order (-> app-state
-               (get-in keypaths/order)
-               (select-keys [:token :number])
-               (assoc-in [:cart-payments]
-                         {:paypal {:amount (get-in app-state keypaths/order-total)}}))
-    :event events/external-redirect-paypal-setup}))
+  (let [store-url (str (-> js/window .-location .-protocol) "//"
+                       (-> js/window .-location .-host))
+        order (get-in app-state keypaths/order)]
+    (api/update-cart-payments
+     (get-in app-state keypaths/handle-message)
+     {:order (-> app-state
+                 (get-in keypaths/order)
+                 (select-keys [:token :number])
+                 (assoc-in [:cart-payments]
+                           {:paypal {:amount (get-in app-state keypaths/order-total)
+                                     :return-url (str store-url "/orders/" (:number order) "/paypal/"
+                                                      (url-encode (url-encode (:token order)))
+                                                      "?sid="
+                                                      (url-encode (get-in app-state keypaths/session-id)))
+                                     :cancel-url (str store-url "/cart?paypal-cancel=true")}}))
+      :event events/external-redirect-paypal-setup})))
+
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
   (let [handle-message (get-in app-state keypaths/handle-message)

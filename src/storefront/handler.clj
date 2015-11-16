@@ -11,6 +11,7 @@
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.params :refer [wrap-params]]
             [ring-logging.core :refer [make-logger-middleware]]
             [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
@@ -184,15 +185,39 @@
          :headers (select-keys (:headers response) ["Content-Type"])
          :body (java.io.ByteArrayInputStream. (:body response))}))))
 
+(defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
+  (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
+                            {:form-params {:number number
+                                           :token order-token
+                                           :session-id sid}
+                             :headers {"X-Forwarded-For" ip-addr}
+                             :content-type :json
+                             :throw-exceptions false
+                             :socket-timeout 10000
+                             :conn-timeout 10000
+                             :as :json})]
+    (if (<= 200 (:status response) 299)
+      response
+      (throw (Exception. (pr-str response))))))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
+               (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
+                 (verify-paypal-payment storeback-config number order-token
+                                        (let [headers (:headers request)]
+                                          (or (headers "x-forwarded-for")
+                                              (headers "remote-addr")
+                                              "localhost"))
+                                        (:query-params request))
+                 (redirect (str "/orders/" number "/complete")))
                (proxy-spree-images environment)
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))
+       (wrap-params)
        (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
