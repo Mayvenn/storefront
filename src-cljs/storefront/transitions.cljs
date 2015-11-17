@@ -256,7 +256,7 @@
                   (merge (first (get-in app-state keypaths/shipping-methods))
                          (orders/shipping-item order)))
         (assoc-in keypaths/cart-quantities (updated-cart-quantities order)))
-    app-state))
+    (assoc-in app-state keypaths/order {})))
 
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
   (update-in app-state keypaths/past-orders merge {(:number order) order}))
