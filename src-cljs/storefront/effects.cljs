@@ -512,7 +512,7 @@
     (save-cookie app-state true)
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
-(defmethod perform-effects events/api-success-update-order-place-order [_ event order app-state]
+(defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
