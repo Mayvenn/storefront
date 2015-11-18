@@ -2,6 +2,7 @@
   (:require [ajax.core :refer [-abort]]
             [clojure.string :as string]
             [cemerick.url :refer [url-encode]]
+            [storefront.config :as config]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
@@ -321,6 +322,8 @@
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
+                                     :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
+                                                        "&token=" (url-encode (url-encode (:token order))))
                                      :cancel-url (str store-url "/cart?paypal-cancel=true")}}))
       :event events/external-redirect-paypal-setup})))
 
