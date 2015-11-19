@@ -67,12 +67,13 @@
              :on-click (when-not (cart-update-pending? data)
                          (utils/send-event-callback data events/control-checkout-cart-submit))}
             (if (experiments/simplify-funnel? data)
-                      "Check Out"
-                      "Checkout")]
+              "Check Out"
+              "Checkout")]
            (if (experiments/paypal? data)
              (list
               [:div.or-divider [:span "OR"]]
               [:a {:href "#"
+                   :data-test "paypal-checkout"
                    :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
                [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
                                       :alt "Check out with PayPal"}]])
