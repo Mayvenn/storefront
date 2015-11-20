@@ -57,7 +57,11 @@
       (when (experiments/simplify-funnel? data)
         {:class "mobile-hidden"})
       [:figure.featured-new]
-      [:figure.featured-product-image]
+      [:a.featured-product-image
+       (when (experiments/simplify-funnel? data)
+         (merge
+          {:class "clickable-image"}
+          (apply utils/route-to data (navigation/shop-now-navigation-message data))))]
       [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
      (when-not (experiments/simplify-funnel? data)
        [:div.home-sessions-container

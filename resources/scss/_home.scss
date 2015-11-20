@@ -103,6 +103,7 @@
   height: (425rem / $default-font-size);
   background-image: url('/images/desktop_assets/home_new-product-peruvian.jpg');
   @include stretch-bg;
+  display: block;
 }
 
 .guarantee, .free-shipping, .shop-now {
