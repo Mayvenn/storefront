@@ -235,7 +235,7 @@ p {
 
 // Mobile Layout
 @media screen and (max-width: 1023px) {
-  .line-item-attr.item-form.price {
+  .mobile-hidden, .line-item-attr.item-form.price {
     display: none;
   }
 

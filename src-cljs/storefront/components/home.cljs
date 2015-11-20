@@ -53,19 +53,20 @@
            (filter-nav-taxons (get-in data keypaths/taxons))
            (range))
       [:div {:style {:clear "both"}}]]
+     [:div.featured-product-content
+      (when (experiments/simplify-funnel? data)
+        {:class "mobile-hidden"})
+      [:figure.featured-new]
+      [:figure.featured-product-image]
+      [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
      (when-not (experiments/simplify-funnel? data)
-       (list
-        [:div.featured-product-content
-         [:figure.featured-new]
-         [:figure.featured-product-image]
-         [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
-        [:div.home-sessions-container
-         [:p.home-sessions-description
-          [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
-          " or "
-          [:a (utils/route-to data events/navigate-sign-up) "sign up"]
-          " for an account for exclusive promotions, order tracking, and big hair love."]
-         [:a.session-button (utils/route-to data events/navigate-sign-in) "Sign In"]
-         [:a.session-button (utils/route-to data events/navigate-sign-up) "Sign Up"]
-         [:div {:style {:clear "both"}}]]))
+       [:div.home-sessions-container
+        [:p.home-sessions-description
+         [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
+         " or "
+         [:a (utils/route-to data events/navigate-sign-up) "sign up"]
+         " for an account for exclusive promotions, order tracking, and big hair love."]
+        [:a.session-button (utils/route-to data events/navigate-sign-in) "Sign In"]
+        [:a.session-button (utils/route-to data events/navigate-sign-up) "Sign Up"]
+        [:div {:style {:clear "both"}}]])
      [:div {:style {:clear "both"}}]])))
