@@ -316,6 +316,13 @@
      {:order (-> app-state
                  (get-in keypaths/order)
                  (select-keys [:token :number])
+                 ;;; Get ready for some nonsense!
+                 ;;
+                 ;; Paypal requires that urls are *double* url-encoded, such as
+                 ;; the token part of the return url, but that *query
+                 ;; parameters* are only singley encoded.
+                 ;;
+                 ;; Thanks for the /totally sane/ API, PayPal.
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
                                      :return-url (str store-url "/orders/" (:number order) "/paypal/"
@@ -323,7 +330,7 @@
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                        "&token=" (url-encode (url-encode (:token order))))
+                                                        "&token=" (url-encode (:token order)))
                                      :cancel-url (str store-url "/cart?paypal-cancel=true")}}))
       :event events/external-redirect-paypal-setup})))
 
