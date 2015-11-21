@@ -2,6 +2,7 @@
   (:require [storefront.config :as config]
             [clojure.string :as string]
             [clojure.java.io :as io]
+            [cheshire.core :as json]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [clj-http.client :as http]
@@ -185,6 +186,10 @@
          :headers (select-keys (:headers response) ["Content-Type"])
          :body (java.io.ByteArrayInputStream. (:body response))}))))
 
+(defn order-total-error? [response]
+  (and (-> response :status (= 422))
+       (-> response :body :details (contains? :order.total))))
+
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
                             {:form-params {:number number
@@ -195,9 +200,16 @@
                              :throw-exceptions false
                              :socket-timeout 10000
                              :conn-timeout 10000
-                             :as :json})]
-    (if (<= 200 (:status response) 299)
+                             :as :json
+                             :coerce :always})]
+    (cond
+      (<= 200 (:status response) 299)
       response
+
+      (order-total-error? response)
+      (throw (ex-info "Order changed while at PayPal. Return to Mayvenn and try again." response))
+
+      :else
       (throw (Exception. (pr-str response))))))
 
 (defn create-handler
