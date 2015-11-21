@@ -325,6 +325,7 @@
                  ;; Thanks for the /totally sane/ API, PayPal.
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
+                                     :mobile-checkout? (> 480 (.-outerWidth js/window))
                                      :return-url (str store-url "/orders/" (:number order) "/paypal/"
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
