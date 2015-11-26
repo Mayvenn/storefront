@@ -287,6 +287,10 @@
 
 .order-thanks-detail {
   margin-top: 2rem;
+
+  &.emphasis {
+    color: $light_teal;
+  }
 }
 
 .hidden {
