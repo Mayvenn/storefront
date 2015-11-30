@@ -190,7 +190,7 @@
   (and (-> response :status (= 422))
        (-> response :body :details (contains? :order.total))))
 
-(defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
+(defn verify-paypal-payment? [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
                             {:form-params {:number number
                                            :token order-token
@@ -202,15 +202,7 @@
                              :conn-timeout 10000
                              :as :json
                              :coerce :always})]
-    (cond
-      (<= 200 (:status response) 299)
-      response
-
-      (order-total-error? response)
-      (throw (ex-info "Order changed while at PayPal. Return to Mayvenn and try again." response))
-
-      :else
-      (throw (Exception. (pr-str response))))))
+    (<= 200 (:status response) 299)))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -219,13 +211,14 @@
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
                (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-                 (verify-paypal-payment storeback-config number order-token
-                                        (let [headers (:headers request)]
-                                          (or (headers "x-forwarded-for")
-                                              (headers "remote-addr")
-                                              "localhost"))
-                                        (:query-params request))
-                 (redirect (str "/orders/" number "/complete")))
+                 (if (verify-paypal-payment? storeback-config number order-token
+                                             (let [headers (:headers request)]
+                                               (or (headers "x-forwarded-for")
+                                                   (headers "remote-addr")
+                                                   "localhost"))
+                                             (:query-params request))
+                   (redirect (str "/orders/" number "/complete"))
+                   (redirect (str "/cart?error=paypal-incomplete"))))
                (proxy-spree-images environment)
                (site-routes logger storeback-config environment prerender-token)
                (route/not-found "Not found"))

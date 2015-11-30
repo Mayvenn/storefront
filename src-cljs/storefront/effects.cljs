@@ -132,6 +132,16 @@
     (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
                                       user-token)))
 
+(def cart-error-codes
+  {"paypal-incomplete" "We were unable to complete your order with PayPal. Please try again."})
+
+(defmethod perform-effects events/navigate-cart [_ event args app-state]
+  (when-let [error-msg (-> args :query-params :error cart-error-codes)]
+    (send app-state
+          events/flash-show-failure
+          {:message error-msg
+           :navigation (get-in app-state keypaths/navigation-message)})))
+
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
@@ -333,7 +343,7 @@
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
                                                         "&token=" (url-encode (:token order)))
-                                     :cancel-url (str store-url "/cart?paypal-cancel=true")}}))
+                                     :cancel-url (str store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
 
