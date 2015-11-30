@@ -21,7 +21,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [send send-later]]
             [storefront.routes :as routes]
-            [storefront.utils.query :as query]))
+            [storefront.utils.query :as query]
+            [goog.labs.userAgent.device :as device]))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -325,7 +326,7 @@
                  ;; Thanks for the /totally sane/ API, PayPal.
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
-                                     :mobile-checkout? (> 480 (.-outerWidth js/window))
+                                     :mobile-checkout? (not (device/isDesktop))
                                      :return-url (str store-url "/orders/" (:number order) "/paypal/"
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
