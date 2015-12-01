@@ -12,6 +12,14 @@
 
   &.clickable-image {
     background-image: url("/images/home_image_clickable.jpg");
+
+    &.black-friday {
+      background-image: url("/images/home_image_clickable_black_friday.jpg");
+    }
+  }
+
+  &.black-friday {
+    background-image: url('/images/home_image_black_friday.jpg');
   }
 }
 

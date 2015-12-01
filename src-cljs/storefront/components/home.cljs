@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for]]
             [storefront.accessors.navigation :as navigation]
+            [storefront.accessors.black-friday :as bf]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
@@ -27,10 +28,11 @@
    (html
     [:div#home-content
      [:a.home-large-image
-      (when (experiments/simplify-funnel? data)
+      (if (experiments/simplify-funnel? data)
         (merge
-         {:class "clickable-image"}
-         (apply utils/route-to data (navigation/shop-now-navigation-message data))))]
+         {:class ["clickable-image" (when (bf/black-friday-sale?) "black-friday")]}
+         (apply utils/route-to data (navigation/shop-now-navigation-message data)))
+        {:class (when (bf/black-friday-sale?) "black-friday")})]
      (if (experiments/simplify-funnel? data)
        [:div.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]

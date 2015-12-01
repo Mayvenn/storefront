@@ -9,6 +9,14 @@
 
   &.clickable-image {
     background-image: url("/images/desktop_assets/desktop_home_image_clickable.jpg");
+
+    &.black-friday {
+      background-image: url("/images/desktop_assets/desktop_home_image_clickable_black_friday.jpg");
+    }
+  }
+
+  &.black-friday {
+    background-image: url('/images/desktop_assets/desktop-home-banner-black-friday.jpg');
   }
 }
 
