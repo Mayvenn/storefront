@@ -267,61 +267,73 @@
 
 (defn starting-at-price [variants]
   (let [cheapest-price (apply min (map :price variants))]
-    [:div.starting-at (str "Starting at " (as-money cheapest-price))]))
+    (str "Starting at " (as-money cheapest-price))))
 
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
     (when-let [taxon (taxons/current-taxon data)]
-      (let [products (products/current-taxon-whitelisted-products data)]
+      (let [products (products/current-taxon-whitelisted-products data)
+            variants (products/current-taxon-variants data)]
         [:.bundle-builder
-         [:header
-          [:h1
-           [:div
-            "Select Your "
-            (:name taxon)
-            " Hair"]
-           [:.category-header-sub "Buy now and get FREE SHIPPING"]]]
-
-         (if (query/get {:request-key (concat request-keys/get-products
-                                              [(taxon-path-for taxon)])}
-                        (get-in data keypaths/api-requests))
-           [:.spinner]
-           [:div
-            [:.reviews-wrapper
-             [:.reviews-inner-wrapper
-              (when (get-in data keypaths/reviews-loaded)
-                (om/build reviews-summary-component data
-                          {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
-            [:.carousel
-             (if-let [product-url (product-image-url data taxon)]
-               [:.hair-category-image {:style {:background-image (css-url product-url)}}]
-               (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
-                                                         :images-path (conj keypaths/taxon-images
-                                                                            (keyword (:name taxon)))}}))]
-            (let [variants (products/current-taxon-variants data)
-                  steps (build-steps (selection-flow data) (map :product_attrs products))]
-              (list
-               (starting-at-price variants)
-               (bundle-builder-steps data variants steps)
-               [:#summary
-                [:h3 "Summary"]
-                (summary-section data variants)
-                (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
-                  [:div#after-add {:style {:display "block"}}
-                   [:div.added-to-bag-container
-                    (map (partial display-bagged-variant data) bagged-variants)]
-                   [:div.go-to-checkout
-                    (when (experiments/simplify-funnel? data)
-                      {:class "bright"})
-                    [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
-            [:ul.category-description
-             (for [description (category-descriptions taxon)]
-               [:li description])]
-            [:.reviews-wrapper
+         [:.bundle-builder-info
+          [:header.single-column
+           [:h1
+            [:div
+             "Select Your "
+             (:name taxon)
+             " Hair"]
+            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
+           [:.reviews-wrapper
+            [:.reviews-inner-wrapper
              (when (get-in data keypaths/reviews-loaded)
-               (om/build reviews-component data
-                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]])
+               (om/build reviews-summary-component data
+                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]]
+          [:header.two-column
+           [:div.starting-at.floated (starting-at-price variants)]
+           [:h1
+            [:div
+             (:name taxon)
+             " Hair"]]
+           [:.reviews-wrapper
+            [:.reviews-inner-wrapper
+             (when (get-in data keypaths/reviews-loaded)
+               (om/build reviews-summary-component data
+                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
+           [:.category-header-sub "Buy now and get FREE SHIPPING"]]
+          (if (query/get {:request-key (concat request-keys/get-products
+                                               [(taxon-path-for taxon)])}
+                         (get-in data keypaths/api-requests))
+            [:.spinner]
+            [:div
+             [:.carousel
+              (if-let [product-url (product-image-url data taxon)]
+                [:.hair-category-image {:style {:background-image (css-url product-url)}}]
+                (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
+                                                          :images-path (conj keypaths/taxon-images
+                                                                             (keyword (:name taxon)))}}))]
+             (let [steps (build-steps (selection-flow data) (map :product_attrs products))]
+               (list
+                [:div.starting-at.centered (starting-at-price variants)]
+                (bundle-builder-steps data variants steps)
+                [:#summary
+                 [:h3 "Summary"]
+                 (summary-section data variants)
+                 (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
+                   [:div#after-add {:style {:display "block"}}
+                    [:div.added-to-bag-container
+                     (map (partial display-bagged-variant data) bagged-variants)]
+                    [:div.go-to-checkout
+                     (when (experiments/simplify-funnel? data)
+                       {:class "bright"})
+                     [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
+             [:ul.category-description
+              (for [description (category-descriptions taxon)]
+                [:li description])]])]
+         [:.reviews-wrapper
+          (when (get-in data keypaths/reviews-loaded)
+            (om/build reviews-component data
+                      {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]
          [:div.gold-features
           [:figure.guarantee-feature]
           [:figure.free-shipping-feature]

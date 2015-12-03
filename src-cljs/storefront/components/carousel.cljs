@@ -13,7 +13,7 @@
 (defn carousel-component [data owner {:keys [index-path images-path]}]
   (om/component
    (html
-    [:.carousel
+    [:.carousel-component
      (let [idx (get-in data index-path)
            images (get-in data images-path [])]
        (list

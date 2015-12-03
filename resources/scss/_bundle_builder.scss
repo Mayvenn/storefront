@@ -1,5 +1,6 @@
-.carousel {
+.carousel-component {
     position: relative;
+    height: 100%;
 
     .left, .right {
         position: absolute;
@@ -26,18 +27,19 @@
 
 
 .bundle-builder {
+  header.two-column {
+    display: none;
+  }
+
   header {
     color: $darker_text;
 
-    padding: 1em;
+    padding: 1em 1em 0 1em;
     text-align: center;
-
-    div {
-      font-size: 1.8rem;
-    }
 
     h1 {
       text-transform: capitalize;
+      font-size: 1.8rem;
     }
 
     .category-header-sub {
@@ -86,7 +88,7 @@
 
   .reviews-wrapper {
     text-align: center;
-    margin: 0 auto;
+    margin: 0.7rem auto 0 auto;
     @include clearfix;
   }
 
