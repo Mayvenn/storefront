@@ -545,7 +545,8 @@
      :user-token user-token
      :store-stylist-id store-stylist-id}
     :handler
-    #(handle-message events/api-success-get-order %)}))
+    #(handle-message events/api-success-get-order %)
+    :error-handler nil}))
 
 (defn get-past-order [handle-message order-number user-token]
   (api-req
