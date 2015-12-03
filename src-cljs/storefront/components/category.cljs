@@ -264,7 +264,7 @@
          taxon-path)))
 
 (defn starting-at-price [variants]
-  (let [cheapest-price (apply min (map :price variants))]
+  (when-let [cheapest-price (apply min (map :price variants))]
     (str "Starting at " (as-money cheapest-price))))
 
 (defn bundle-builder-category-component [data owner]
