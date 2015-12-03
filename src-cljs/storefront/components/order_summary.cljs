@@ -53,12 +53,11 @@
 (defn- display-variant-options [{:keys [name value]}]
   (field (str name ": ") (if (= name "Length") (str value "\"") value)))
 
-(defn- product-link [data line-item]
+(defn- category-link [data line-item]
   (let [product (get-in data (conj keypaths/products (:product-id line-item)))
         taxon (taxons/taxon-for-permalink data (:category product))]
     (if product
-      (utils/route-to data events/navigate-product {:product-path (:slug product)
-                                                    :query-params {:taxon-id (:id taxon)}})
+      (utils/route-to data events/navigate-category {:taxon-path (taxons/taxon-path-for taxon)})
       {})))
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
@@ -67,9 +66,8 @@
               :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
     [:h4
-     (if (experiments/bundle-builder? data)
-       [:a (products/summary line-item)]
-       [:a (product-link data line-item) (:product-name line-item)])]
+     ;; TODO: ask Ryan, does this category link make sense??
+     [:a (category-link data line-item) (products/summary line-item)]]
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
             delete-request (query/get

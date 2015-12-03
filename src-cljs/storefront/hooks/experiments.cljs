@@ -25,17 +25,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn bundle-builder? [data]
-  (display-variation data "bundle-builder"))
-
-(defn- bundle-builder-included-stylist-only [data stylist-only-map]
-  (and (bundle-builder? data)
-       (not (:stylist_only? stylist-only-map))))
-
-(def bundle-builder-included-product? bundle-builder-included-stylist-only)
-
-(def bundle-builder-included-taxon? bundle-builder-included-stylist-only)
-
 (defn paypal? [data]
   (display-variation data "paypal"))
 

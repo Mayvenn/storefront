@@ -10,7 +10,7 @@
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.hooks.experiments :as experiments]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
@@ -46,7 +46,7 @@
        [:div.taxon-product-title
         (:name product)]]]]))
 
-(defn original-category-component [data owner]
+(defn list-category-component [data owner]
   (om/component
    (html
     (if-let [taxon (taxons/current-taxon data)]
@@ -336,7 +336,7 @@
           [:figure.triple-bundle-feature]]])))))
 
 (defn category-component [data owner]
-  (apply (if (experiments/bundle-builder-included-taxon? data (taxons/current-taxon data))
+  (apply (if (bundle-builder/included-taxon? (taxons/current-taxon data))
            bundle-builder-category-component
-           original-category-component)
+           list-category-component)
          [data owner]))

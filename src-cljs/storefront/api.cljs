@@ -110,16 +110,6 @@
    cache
    handle-message
    GET
-   "/product-nav-taxonomy"
-   request-keys/get-taxons
-   {:handler
-    #(handle-message events/api-success-taxons (select-keys % [:taxons]))}))
-
-(defn get-builder-taxons [handle-message cache]
-  (cache-req
-   cache
-   handle-message
-   GET
    "/bundle-builder-nav-taxonomy"
    request-keys/get-taxons
    {:handler
@@ -147,7 +137,7 @@
    {:handler
     #(handle-message events/api-success-promotions %)}))
 
-(defn get-products [handle-message cache taxon-path taxonomy user-token]
+(defn get-products [handle-message cache taxon-path user-token]
   (cache-req
    cache
    handle-message
@@ -156,7 +146,7 @@
    (conj request-keys/get-products taxon-path)
    {:params
     {:taxon_name (taxon-name-from taxon-path)
-     :taxonomy taxonomy
+     :taxonomy "bundle-builder"
      :user-token user-token}
     :handler
     #(handle-message events/api-success-taxon-products (merge (select-keys % [:products])

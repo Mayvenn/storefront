@@ -8,6 +8,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -43,11 +44,8 @@
 
 (defmethod perform-effects events/navigate [_ _ _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    (if (experiments/bundle-builder? app-state)
-      (api/get-builder-taxons (get-in app-state keypaths/handle-message)
-                              (get-in app-state keypaths/api-cache))
-      (api/get-taxons (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/api-cache)))
+    (api/get-taxons (get-in app-state keypaths/handle-message)
+                    (get-in app-state keypaths/api-cache))
     (api/get-store (get-in app-state keypaths/handle-message)
                    (get-in app-state keypaths/api-cache)
                    (get-in app-state keypaths/store-slug))
@@ -82,15 +80,11 @@
         (experiments/track-event path)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (let [bundle-builder? (experiments/bundle-builder? app-state)]
-    ;; To avoid a race-condition on direct load
-    (when (or bundle-builder? (not= "closures" taxon-path))
-      (reviews/insert-reviews app-state)
-      (api/get-products (get-in app-state keypaths/handle-message)
-                        (get-in app-state keypaths/api-cache)
-                        taxon-path
-                        (if bundle-builder? "bundle-builder" "original")
-                        (get-in app-state keypaths/user-token)))))
+  (reviews/insert-reviews app-state)
+  (api/get-products (get-in app-state keypaths/handle-message)
+                    (get-in app-state keypaths/api-cache)
+                    taxon-path
+                    (get-in app-state keypaths/user-token)))
 
 (defn bundle-builder-redirect [app-state product]
   (routes/enqueue-navigate app-state
@@ -103,7 +97,7 @@
   (reviews/insert-reviews app-state)
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))]
-    (when (and product (experiments/bundle-builder-included-product? app-state product))
+    (when (and product (bundle-builder/included-product? product))
       (bundle-builder-redirect app-state product))))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
@@ -490,7 +484,7 @@
           events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (if (and (experiments/bundle-builder-included-product? app-state product)
+  (if (and (bundle-builder/included-product? product)
            (= events/navigate-product (get-in app-state keypaths/navigation-event)))
     (bundle-builder-redirect app-state product)
     (do
@@ -581,7 +575,7 @@
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
   (let [{:keys [product quantity variant]} requested]
     (save-cookie app-state true)
-    (when (experiments/bundle-builder-included-product? app-state product)
+    (when (bundle-builder/included-product? product)
       (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
         (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
               all-variants (products/current-taxon-variants app-state)
@@ -616,6 +610,4 @@
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" (:variation args))
-  (when (= (:variation args) "bundle-builder")
-    (apply send app-state (get-in app-state keypaths/navigation-message))))
+  (analytics/track-event "optimizely-experiment" (:variation args)))

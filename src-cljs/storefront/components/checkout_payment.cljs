@@ -28,7 +28,7 @@
        [:p.store-credit-instructions
         "Please enter an additional payment method below for the remaining total on your order."])]))
 
-(defn field [id name app-state keypath presenter-fn]
+(defn field [id name app-state keypath presenter-fn & [text-attrs]]
   [:p.field
    [:label {:for id} name]
    [:input (merge {:type "text"
