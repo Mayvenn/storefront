@@ -1,12 +1,10 @@
 (ns storefront.components.categories
   (:require [storefront.components.utils :as utils]
-            ;; [storefront.hooks.analytics :as analytics]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :refer [filter-nav-taxons
                                                  taxon-class-name
                                                  taxon-path-for]]
             [om.core :as om]
-            ;; [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]))
