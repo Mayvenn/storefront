@@ -28,10 +28,9 @@
         (tax-adjustment order)))
 
 (defn- display-adjustment-name [data name]
-  (if (and (experiments/simplify-funnel? data) (= name "Bundle Discount"))
+  (if (= name "Bundle Discount")
     "10% Bundle Discount"
     name))
-
 
 (defn- display-adjustment-row [data {:keys [name price]}]
   (when-not (= price 0)
@@ -96,9 +95,7 @@
     (map display-variant-options (:options line-item))
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
-    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")
-    (when-not (experiments/simplify-funnel? data)
-      (field "Subtotal: " (as-money (orders/line-item-subtotal line-item)) "item-form" "subtotal"))]
+    (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")]
    [:div {:style {:clear "both"}}]])
 
 (defn display-line-items [data order & [interactive?]]

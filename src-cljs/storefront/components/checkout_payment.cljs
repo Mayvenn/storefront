@@ -28,9 +28,9 @@
        [:p.store-credit-instructions
         "Please enter an additional payment method below for the remaining total on your order."])]))
 
-(defn field [id name app-state keypath presenter-fn & [text-attrs]]
+(defn field [id name app-state keypath presenter-fn]
   [:p.field
-   [:label {:for id :class (:label-class text-attrs)} name]
+   [:label {:for id} name]
    [:input (merge {:type "text"
                    :id id
                    :name id
@@ -44,19 +44,18 @@
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
-  (let [label-class (when (experiments/simplify-funnel? data) "straight-text")]
-    [:.credit-card-container
-     (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity {:label-class label-class})
-     (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
-            {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber" :label-class label-class})
-     (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
-            {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
-             :max-length 9 :label-class label-class})
-     (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
-            {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
-             :max-length 4 :label-class label-class})
-     [:p.review-message
-      "You can review your order on the next page before we charge your credit card"]]))
+  [:.credit-card-container
+   (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
+   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
+          {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber"})
+   (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
+          {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
+           :max-length 9})
+   (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
+          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
+           :max-length 4})
+   [:p.review-message
+    "You can review your order on the next page before we charge your credit card"]])
 
 (defn checkout-payment-component [data owner]
   (om/component
@@ -84,8 +83,5 @@
             [:a.large.continue.button.primary
              {:on-click (when-not saving
                           (utils/send-event-callback data events/control-checkout-payment-method-submit))
-              :class [(when saving "saving")
-                      (when (experiments/simplify-funnel? data) "bright")]}
-             (if (experiments/simplify-funnel? data)
-               "Go to Review Order"
-               "Continue")])]]]]]])))
+              :class (when saving "saving")}
+             "Go to Review Order"])]]]]]])))

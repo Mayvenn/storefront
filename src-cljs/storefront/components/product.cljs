@@ -30,9 +30,7 @@
 
 (defn display-bagged-variant [app-state {:keys [quantity product variant]}]
   [:div.item-added
-   (if (experiments/simplify-funnel? app-state)
-     [:strong "Added to Cart: "]
-     [:strong "Added to Bag: "])
+   [:strong "Added to Cart: "]
    (str (number->words quantity)
         " "
         (-> (:options_text variant)
@@ -136,23 +134,18 @@
                                                (get-in data keypaths/api-requests))]
                  ;; TODO: disable add to bag button until there is a browse-variant-query
                  [:a.add-to-cart {:style {:clear "both"}}
-                  [:a.large.primary#add-to-cart-button
+                  [:a.large.primary.alternate#add-to-cart-button
                    {:on-click
                     (when-not adding-to-cart
                       (utils/send-event-callback data events/control-browse-add-to-bag))
-                    :class [(when adding-to-cart "saving")
-                            (when (experiments/simplify-funnel? data) "bright-alternate")]}
-                   (if (experiments/simplify-funnel? data)
-                     "Add to Cart"
-                     "Add to Bag")]])]]]
+                    :class (when adding-to-cart "saving")}
+                   "Add to Cart"]])]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}
                [:div.added-to-bag-container
                 (map (partial display-bagged-variant data) bagged-variants)]
                [:div.go-to-checkout
-                (when (experiments/simplify-funnel? data)
-                  {:class "bright"})
                 [:a.cart-button
                  (utils/route-to data events/navigate-cart)
                  "Go to Checkout >>"

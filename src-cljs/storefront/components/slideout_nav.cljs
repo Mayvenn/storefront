@@ -116,12 +116,7 @@
              [:a (close-and-enqueue data events/control-sign-out)
               "Logout"]]])
          [:h2.horizontal-nav-title
-          (store :store_name)
-          (when-not (experiments/simplify-funnel? data)
-            [:ul.header-social-icons
-             (when-let [instagram-account (store :instagram_account)]
-               [:li.instagram-icon
-                [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]])])]
+          (store :store_name)]
          [:ul.horizontal-nav-menu
           [:li
            [:a

@@ -39,9 +39,6 @@
 (defn paypal? [data]
   (display-variation data "paypal"))
 
-(defn simplify-funnel? [data]
-  (display-variation data "simplify-funnel"))
-
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))

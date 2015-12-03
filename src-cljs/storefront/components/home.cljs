@@ -7,8 +7,7 @@
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
-            [storefront.events :as events]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.events :as events]))
 
 (defn category [data taxon index]
   (let [taxon-name (taxon :name)
@@ -27,50 +26,18 @@
    (html
     [:div#home-content
      [:a.home-large-image
-      (when (experiments/simplify-funnel? data)
-        (merge
-         {:class "clickable-image"}
-         (apply utils/route-to data (navigation/shop-now-navigation-message data))))]
-     (if (experiments/simplify-funnel? data)
-       [:div.text-free-shipping-banner
-        [:p "Free Shipping + 30 Day Money Back Guarantee"]]
-       [:div.home-actions-top
-        [:a.guarantee
-         (utils/route-to data events/navigate-guarantee)]
-        [:a.free-shipping-action
-         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]
-        [:div.shop-now
-         [:a.full-link
-          (apply utils/route-to data (navigation/shop-now-navigation-message data))]]
-        [:a.home-30-day-guarantee
-         (utils/route-to data events/navigate-guarantee)]
-        [:a.home-free-shipping
-         {:href "https://mayvenn.zendesk.com/hc/en-us/articles/205541565-Do-you-offer-free-shipping-" :target "_blank"}]])
+      (apply utils/route-to data (navigation/shop-now-navigation-message data))]
+     [:div.text-free-shipping-banner
+      [:p "Free Shipping + 30 Day Money Back Guarantee"]]
      [:div.squashed-hair-categories
-      (when (experiments/simplify-funnel? data)
-        [:h3.pick-style "Pick your style"])
+      [:h3.pick-style "Pick your style"]
       (map (partial category data)
            (filter-nav-taxons (get-in data keypaths/taxons))
            (range))
       [:div {:style {:clear "both"}}]]
-     [:div.featured-product-content
-      (when (experiments/simplify-funnel? data)
-        {:class "mobile-hidden"})
+     [:div.featured-product-content.mobile-hidden
       [:figure.featured-new]
       [:a.featured-product-image
-       (when (experiments/simplify-funnel? data)
-         (merge
-          {:class "clickable-image"}
-          (apply utils/route-to data (navigation/shop-now-navigation-message data))))]
+       (apply utils/route-to data (navigation/shop-now-navigation-message data))]
       [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
-     (when-not (experiments/simplify-funnel? data)
-       [:div.home-sessions-container
-        [:p.home-sessions-description
-         [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
-         " or "
-         [:a (utils/route-to data events/navigate-sign-up) "sign up"]
-         " for an account for exclusive promotions, order tracking, and big hair love."]
-        [:a.session-button (utils/route-to data events/navigate-sign-in) "Sign In"]
-        [:a.session-button (utils/route-to data events/navigate-sign-up) "Sign Up"]
-        [:div {:style {:clear "both"}}]])
      [:div {:style {:clear "both"}}]])))

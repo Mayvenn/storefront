@@ -2,10 +2,8 @@
   (:require [storefront.hooks.experiments :as experiments]))
 
 (defn display-shipping-method [data rate-name]
-  (if (experiments/simplify-funnel? data)
-    (case rate-name
-      "Priority Shipping" "Free Standard Shipping"
-      rate-name)
+  (case rate-name
+    "Priority Shipping" "Free Standard Shipping"
     rate-name))
 
 (defn timeframe [rate-name]

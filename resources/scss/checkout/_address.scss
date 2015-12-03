@@ -32,19 +32,14 @@
   label {
     font-size: 1.08rem;
     font-family: $secondary_font;
-    font-style: italic;
     color: $dark_grey;
-    &.straight-text {
-      font-style: inherit;
-    }
   }
 }
 
 .checkout-use-billing-address label,
 .checkout-save-address label,
 .checkout-save-address,
-.checkout-use-billing-address,
-.checkout-address-warning {
+.checkout-use-billing-address {
   font-family: $primary_font_regular;
   font-size: 1rem;
   font-style: normal;

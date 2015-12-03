@@ -25,5 +25,4 @@
           :name "email"})]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Reset my password"
-                                :class (when (experiments/simplify-funnel? data) "bright")}]]]]])))
+                                :value "Reset my password"}]]]]])))

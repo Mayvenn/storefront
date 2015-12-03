@@ -18,9 +18,9 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn textfield [label & [{:keys [id value required? type on-change label-class] :or {type "text"}}]]
+(defn textfield [label & [{:keys [id value required? type on-change] :or {type "text"}}]]
   [:p.field
-   [:label {:for id :class label-class} label (when required? [:span.required "*"])]
+   [:label {:for id} label (when required? [:span.required "*"])]
    [:input {:id id
             :name id
             :type type
@@ -28,9 +28,9 @@
             :value value
             :on-change on-change}]])
 
-(defn selectfield [name & [{:keys [id value options required? on-change label-class]}]]
+(defn selectfield [name & [{:keys [id value options required? on-change]}]]
   [:p.field
-   [:label {:for id :class label-class} name (when required? [:span.required "*"])]
+   [:label {:for id} name (when required? [:span.required "*"])]
    [:span
     [:br]
     [:select {:class (if required? "required" "")
@@ -49,109 +49,94 @@
    [:label {:for id} " " label]])
 
 (defn billing-address-form [data owner]
-  (let [label-class (when (experiments/simplify-funnel? data) "straight-text")]
-    [:div.billing-address-wrapper
-     [:fieldset#billing.billing-fieldset
-      [:legend {:align "center"} "Billing Address"]
-      (when-not (experiments/simplify-funnel? data)
-        [:p.checkout-address-warning
-         "Please note: If your billing address does not match your credit card your order will be delayed."])
-
-      [:div.inner
-       (textfield "First Name"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-first-name)
-                         {:id :first-name :required? true :label-class label-class}))
-       (textfield "Last Name"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
-                         {:id :last-name :required? true :label-class label-class}))
-       (textfield "Street Address"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
-                         {:id :address1 :required? true :label-class label-class}))
-       (textfield "Street Address (cont'd)"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
-                         {:id :address2 :label-class label-class}))
-       (textfield "City"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
-                         {:id :city :required? true :label-class label-class}))
-       (selectfield "State"
-                    {:id :state
-                     :required? true
-                     :options (get-in data keypaths/states)
-                     :value (get-in data keypaths/checkout-billing-address-state)
-                     :label-class label-class
-                     :on-change #(send data
-                                       events/control-change-state
-                                       {:keypath keypaths/checkout-billing-address-state
-                                        :value (selected-value %)})})
-       (textfield "Zip"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
-                         {:id :zipcode :required? true :label-class label-class}))
-       (textfield "Mobile Phone"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
-                         {:id :order_bill_address_attributes_phone :required? true :type "tel" :label-class label-class}))
-       (checkbox "Save my address"
-                 (merge (utils/change-checkbox
-                         data
-                         keypaths/checkout-save-my-addresses-no-op)
-                        {:id "save_user_address" :class "checkout-save-address" :label-class label-class}))]]]))
+  [:div.billing-address-wrapper
+   [:fieldset#billing.billing-fieldset
+    [:legend {:align "center"} "Billing Address"]
+    [:div.inner
+     (textfield "First Name"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-first-name)
+                       {:id :first-name :required? true}))
+     (textfield "Last Name"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
+                       {:id :last-name :required? true}))
+     (textfield "Street Address"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
+                       {:id :address1 :required? true}))
+     (textfield "Street Address (cont'd)"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
+                       {:id :address2}))
+     (textfield "City"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
+                       {:id :city :required? true}))
+     (selectfield "State"
+                  {:id :state
+                   :required? true
+                   :options (get-in data keypaths/states)
+                   :value (get-in data keypaths/checkout-billing-address-state)
+                   :on-change #(send data
+                                     events/control-change-state
+                                     {:keypath keypaths/checkout-billing-address-state
+                                      :value (selected-value %)})})
+     (textfield "Zip"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
+                       {:id :zipcode :required? true}))
+     (textfield "Mobile Phone"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
+                       {:id :order_bill_address_attributes_phone :required? true :type "tel"}))
+     (checkbox "Save my address"
+               (merge (utils/change-checkbox
+                       data
+                       keypaths/checkout-save-my-addresses-no-op)
+                      {:id "save_user_address" :class "checkout-save-address"}))]]])
 
 (defn shipping-address-form [data owner]
-  (let [label-class (when (experiments/simplify-funnel? data) "straight-text")]
-    [:div.shipping-address-wrapper
-     [:fieldset#shipping.shipping-fieldset
-      [:legend {:align "center"} "Shipping Address"]
-      (checkbox "Use Billing Address"
-                (merge (utils/change-checkbox
-                        data
-                        keypaths/checkout-ship-to-billing-address)
-                       {:id "use_billing" :class "checkbox checkout-use-billing-address" :label-class label-class}))
+  [:div.shipping-address-wrapper
+   [:fieldset#shipping.shipping-fieldset
+    [:legend {:align "center"} "Shipping Address"]
+    (checkbox "Use Billing Address"
+              (merge (utils/change-checkbox
+                      data
+                      keypaths/checkout-ship-to-billing-address)
+                     {:id "use_billing" :class "checkbox checkout-use-billing-address"}))
 
-      [:div.inner {:class (if (get-in data keypaths/checkout-ship-to-billing-address) "hidden" "")}
-       (textfield "First Name"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-first-name)
-                         {:id :first-name
-                          :required? true
-                          :label-class label-class}))
-       (textfield "Last Name"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
-                         {:id :last-name
-                          :required? true
-                          :label-class label-class}))
-       (textfield "Street Address"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
-                         {:id :address1
-                          :required? true
-                          :label-class label-class}))
-       (textfield "Street Address (cont'd)"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
-                         {:id :address2
-                          :label-class label-class}))
-       (textfield "City"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-city)
-                         {:id :city
-                          :required? true
-                          :label-class label-class}))
-       (selectfield "State"
-                    {:id :state
-                     :required? true
-                     :label-class label-class
-                     :options (get-in data keypaths/states)
-                     :value (get-in data keypaths/checkout-shipping-address-state)
-                     :on-change #(send data
-                                       events/control-change-state
-                                       {:keypath keypaths/checkout-shipping-address-state
-                                        :value (selected-value %)})})
-       (textfield "Zip"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
-                         {:id :zipcode
-                          :required? true
-                          :label-class label-class}))
-       (textfield "Mobile Phone"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
-                         {:id :order_bill_address_attributes_phone
-                          :required? true
-                          :label-class label-class
-                          :type "tel"}))]]]))
+    [:div.inner {:class (if (get-in data keypaths/checkout-ship-to-billing-address) "hidden" "")}
+     (textfield "First Name"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-first-name)
+                       {:id :first-name
+                        :required? true}))
+     (textfield "Last Name"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
+                       {:id :last-name
+                        :required? true}))
+     (textfield "Street Address"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
+                       {:id :address1
+                        :required? true}))
+     (textfield "Street Address (cont'd)"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
+                       {:id :address2}))
+     (textfield "City"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-city)
+                       {:id :city
+                        :required? true}))
+     (selectfield "State"
+                  {:id :state
+                   :required? true
+                   :options (get-in data keypaths/states)
+                   :value (get-in data keypaths/checkout-shipping-address-state)
+                   :on-change #(send data
+                                     events/control-change-state
+                                     {:keypath keypaths/checkout-shipping-address-state
+                                      :value (selected-value %)})})
+     (textfield "Zip"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
+                       {:id :zipcode
+                        :required? true}))
+     (textfield "Mobile Phone"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
+                       {:id :order_bill_address_attributes_phone
+                        :required? true
+                        :type "tel"}))]]])
 
 (defn checkout-address-component [data owner]
   (om/component
@@ -169,8 +154,5 @@
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-update-addresses-submit))
-             :class [(when saving "saving")
-                     (when (experiments/simplify-funnel? data) "bright")]}
-            (if (experiments/simplify-funnel? data)
-              "Continue to Shipping"
-              "Save and Continue")])]]]]])))
+             :class (when saving "saving")}
+            "Continue to Shipping"])]]]]])))

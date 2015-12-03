@@ -34,5 +34,4 @@
            :name "password-confirmation"})]]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Update"
-                                :class (when (experiments/simplify-funnel? data) "bright")}]]]]])))
+                                :value "Update"}]]]]])))

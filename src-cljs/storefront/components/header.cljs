@@ -32,9 +32,4 @@
          [:div.stylist-bar
           [:div.stylist-bar-img-container
            [:img.stylist-bar-portrait {:src (store :profile_picture_url)}]]
-          [:div.stylist-bar-name (store :store_name)]
-          (when-not (experiments/simplify-funnel? data)
-            (when-let [instagram-account (store :instagram_account)]
-              [:div.social-icons
-               [:i.instagram-icon
-                [:a.full-link {:href (str "http://instagram.com/" instagram-account) :target "_blank"}]]]))])]))))
+          [:div.stylist-bar-name (store :store_name)]])]))))

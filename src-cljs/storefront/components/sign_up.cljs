@@ -41,5 +41,4 @@
                    :name "password-confirmation"})]]]
         [:p
          [:input.btn.button.primary {:type "submit"
-                                     :value "Create"
-                                     :class (when (experiments/simplify-funnel? data) "bright")}]]]]]])))
+                                     :value "Create"}]]]]]])))

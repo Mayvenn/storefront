@@ -35,13 +35,9 @@
          [:form
           {:on-submit (utils/send-event-callback data events/control-cart-update-coupon)}
           [:div.coupon-cart
-           [:h4 (if (experiments/simplify-funnel? data)
-                  "Have a Promo Code?"
-                  "Have a Coupon Code?")]
+           [:h4 "Have a Promo Code?"]
            [:div.coupon-container
-            [:label (if (experiments/simplify-funnel? data)
-                      "Enter a promo code:"
-                      "Enter a coupon code:")]
+            [:label "Enter a promo code:"]
             [:input.coupon-code-input
              (merge
               (utils/change-text data owner keypaths/cart-coupon-code)
@@ -52,23 +48,17 @@
                                       (get-in data keypaths/api-requests))]
               {:type "submit"
                :name "update"
-               :class [(when spinning "saving")
-                       (when (experiments/simplify-funnel? data) "bright")]
+               :class (when spinning "saving")
                :disabled spinning
                :on-click (utils/send-event-callback data events/control-cart-update-coupon)})
-            (if (experiments/simplify-funnel? data)
-              "Apply Promo Code"
-              "Apply Coupon Code")]]]
+            "Apply Promo Code"]]]
          [:div
           [:div.order-summary-cart
            (display-order-summary data cart)
-           [:a.button.checkout.primary#checkout-link
-            {:class ["full-link" (when (experiments/simplify-funnel? data) "bright")]
-             :on-click (when-not (cart-update-pending? data)
+           [:a.button.checkout.primary.full-link#checkout-link
+            {:on-click (when-not (cart-update-pending? data)
                          (utils/send-event-callback data events/control-checkout-cart-submit))}
-            (if (experiments/simplify-funnel? data)
-              "Check Out"
-              "Checkout")]
+            "Check Out"]
            (if (experiments/paypal? data)
              (list
               [:div.or-divider [:span "OR"]]
@@ -77,12 +67,8 @@
                    :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
                [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
                                       :alt "Check out with PayPal"}]])
-             [:a.cart-continue
-              (merge
-               (shopping-link-attrs data)
-               {:class (if (experiments/simplify-funnel? data)
-                         "full-link old-school-link extra-spacing"
-                         "continue button gray")})
+             [:a.cart-continue.full-link.old-school-link.extra-spacing
+              (shopping-link-attrs data)
               "Continue shopping"])]]]]]]]))
 
 (defn display-empty-cart [data]
@@ -91,19 +77,14 @@
    [:figure.empty-bag]
    [:p
     [:a.button.primary.continue.empty-cart
-     (merge
-      (shopping-link-attrs data)
-      (when (experiments/simplify-funnel? data) {:class "bright"}))
-     (if (experiments/simplify-funnel? data)
-       "Shop Now"
-       "Let's Fix That")]]])
+     (shopping-link-attrs data)
+     "Shop Now"]]])
 
 (defn cart-component [data owner]
   (om/component
    (html
     [:div
-     (when (experiments/simplify-funnel? data)
-       [:div.page-heading "My Cart"])
+     [:div.page-heading "My Cart"]
      [:div.cart-container
       (let [cart (get-in data keypaths/order)]
         (if (and (:state cart)

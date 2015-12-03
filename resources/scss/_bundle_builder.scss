@@ -289,12 +289,9 @@
       }
 
       .go-to-checkout {
+          background-color: $roi_orange;
           background-color: #444;
           text-transform: uppercase;
-
-          &.bright {
-            background-color: $roi_orange;
-          }
 
           .cart-button {
               padding: 1rem 0;

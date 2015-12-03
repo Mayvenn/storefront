@@ -99,26 +99,9 @@ a.cart {
     }
   }
 
-  .social-icons {
-    border-left: solid white 1px;
-
-    width: (77rem / $default-font-size);
-    height: 100%;
-    @include align-self(stretch);
-  }
-
   .stylist-bar-name {
     @include flex-grow-better(1);
     @include flex-shrink(80);
-  }
-
-  .instagram-icon {
-    display: block;
-    width: 80%;
-    height: 90%;
-    margin: 10%;
-    @include stretch-bg;
-    background-image: url('/images/desktop_assets/nav-instagram.png');
   }
 }
 

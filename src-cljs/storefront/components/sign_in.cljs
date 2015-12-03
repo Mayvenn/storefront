@@ -39,8 +39,7 @@
        [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Login"
-                                :class (when (experiments/simplify-funnel? data) "bright")}]]]]])))
+                                :value "Login"}]]]]])))
 
 (defn requires-sign-in [app-state authorized-component]
   (if (get-in app-state keypaths/user-id)

@@ -51,8 +51,5 @@
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-shipping-method-submit))
-             :class [(when saving "saving")
-                     (when (experiments/simplify-funnel? data) "bright") ]}
-            (if (experiments/simplify-funnel? data)
-              "Continue to Payment"
-              "Continue")])]]]]])))
+             :class (when saving "saving")}
+            "Continue to Payment"])]]]]])))

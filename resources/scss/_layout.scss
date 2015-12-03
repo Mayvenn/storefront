@@ -105,16 +105,10 @@ p {
   }
 
   &.primary {
-    @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
+    background-color: $roi_orange;
 
-    &.bright {
-      background-color: $roi_orange;
-      background-image: none;
-    }
-
-    &.bright-alternate {
+    &.alternate {
       background-color: $roi_navy;
-      background-image: none;
     }
   }
 

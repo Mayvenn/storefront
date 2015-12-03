@@ -324,13 +324,9 @@ a.pm-link {
   height: (44em / 16);
   font-size: (32em / 24);
   color: white;
-  background-color: $primary_color;
+  background-color: $roi_orange;
   position: relative;
   margin-bottom: 3em;
-
-  &.bright {
-    background-color: $roi_orange;
-  }
 }
 
 .checkout-cart {

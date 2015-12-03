@@ -212,23 +212,6 @@ body {
   text-transform: uppercase;
 }
 
-.header-social-icons {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 7px 10px 0 0;
-  padding: 0;
-}
-
-.instagram-icon {
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  margin-left: 5px;
-  @include stretch-bg;
-  background-image: url('/images/desktop_assets/nav-instagram.png');
-}
-
 div.advertised-promo {
   font-size: 12px;
 }

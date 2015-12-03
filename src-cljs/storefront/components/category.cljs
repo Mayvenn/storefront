@@ -183,13 +183,11 @@
 (defn add-to-bag-button [data variants]
   (let [saving (query/get {:request-key request-keys/add-to-bag}
                           (get-in data keypaths/api-requests))]
-    [:button.large.primary#add-to-cart-button
+    [:button.large.primary.alternate#add-to-cart-button
      {:on-click (when-not saving
                   (utils/send-event-callback data events/control-build-add-to-bag))
-      :class [(when saving "saving") (when (experiments/simplify-funnel? data) "bright-alternate")]}
-     (if (experiments/simplify-funnel? data)
-       "ADD TO CART"
-       "ADD TO BAG")]))
+      :class (when saving "saving")}
+     "ADD TO CART"]))
 
 (def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"]])
 
@@ -324,8 +322,6 @@
                     [:div.added-to-bag-container
                      (map (partial display-bagged-variant data) bagged-variants)]
                     [:div.go-to-checkout
-                     (when (experiments/simplify-funnel? data)
-                       {:class "bright"})
                      [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
              [:ul.category-description
               (for [description (category-descriptions taxon)]

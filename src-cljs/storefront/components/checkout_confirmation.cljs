@@ -26,8 +26,5 @@
                                          (get-in data keypaths/api-requests))]
             [:a.large.continue.button.primary
              {:on-click (when-not placing-order (utils/send-event-callback data events/control-checkout-confirmation-submit))
-              :class [(when placing-order "saving")
-                      (when (experiments/simplify-funnel? data) "bright")]}
-             (if (experiments/simplify-funnel? data)
-               "Complete my Purchase"
-               "Pay for order")])]]]]]])))
+              :class (when placing-order "saving")}
+             "Complete my Purchase"])]]]]]])))
