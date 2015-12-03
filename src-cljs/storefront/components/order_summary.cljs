@@ -46,7 +46,7 @@
 (defn- display-shipment [data shipping]
   [:tr.order-summary-row
    [:td
-    [:h5 (shipping/display-shipping-method data (:options-text shipping))]]
+    [:h5 (:options-text shipping)]]
    [:td
     [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])
 

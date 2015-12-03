@@ -25,8 +25,8 @@
     [:div.checkbox-container
      [:figure.large-checkbox]]
     [:div.shipping-method-container
-     [:div.rate-name (shipping/display-shipping-method app-state (:name shipping-method))]
-     [:div.rate-timeframe (shipping/timeframe (:name shipping-method))]]
+     [:div.rate-name (:name shipping-method)]
+     [:div.rate-timeframe (shipping/timeframe (:sku shipping-method))]]
     [:div.rate-cost (as-money-or-free (:price shipping-method))]]])
 
 
