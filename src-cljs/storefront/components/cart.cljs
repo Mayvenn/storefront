@@ -65,8 +65,7 @@
               [:a {:href "#"
                    :data-test "paypal-checkout"
                    :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
-               [:img.paypal-checkout {:src "https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png"
-                                      :alt "Check out with PayPal"}]])
+               [:.paypal-checkout]])
              [:a.cart-continue.full-link.old-school-link.extra-spacing
               (shopping-link-attrs data)
               "Continue shopping"])]]]]]]]))
