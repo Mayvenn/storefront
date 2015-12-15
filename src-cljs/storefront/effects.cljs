@@ -310,9 +310,13 @@
   (modify-cart app-state variant-id api/delete-line-item))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
+  (when (experiments/paypal? app-state)
+    (experiments/track-event "click-checkout-button"))
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
+  (when (experiments/paypal? app-state)
+    (experiments/track-event "click-paypal-button"))
   (let [store-url (str (-> js/window .-location .-protocol) "//"
                        (-> js/window .-location .-host))
         order (get-in app-state keypaths/order)]
