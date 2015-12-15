@@ -105,11 +105,11 @@
             :history history})))
 
 (defn set-query-string [s query-params]
-  (if (seq query-params)
-    (-> (Uri.parse s)
-        (.setQueryData (map->query query-params))
-        .toString)
-    s))
+  (-> (Uri.parse s)
+      (.setQueryData (map->query (if (seq query-params)
+                                   query-params
+                                   {})))
+      .toString))
 
 (defn path-for [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
