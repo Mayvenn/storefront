@@ -217,7 +217,7 @@
                                                    (headers "remote-addr")
                                                    "localhost"))
                                              (:query-params request))
-                   (redirect (str "/orders/" number "/complete"))
+                   (redirect (str "/orders/" number "/complete?paypal=true"))
                    (redirect (str "/cart?error=paypal-incomplete"))))
                (proxy-spree-images environment)
                (site-routes logger storeback-config environment prerender-token)

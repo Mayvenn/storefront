@@ -151,6 +151,11 @@
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
   (api/get-shipping-methods (get-in app-state keypaths/handle-message)))
 
+(defmethod perform-effects events/navigate-order-complete [_ event args app-state]
+  (when (:paypal (:query-params args))
+    (experiments/track-event "place-order")
+    (routes/enqueue-redirect app-state events/navigate-order-complete {:number (:number args)})))
+
 (defmethod perform-effects events/navigate-order [_ event args app-state]
   (api/get-past-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/past-order-id)
