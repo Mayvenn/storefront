@@ -101,6 +101,7 @@
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
+    [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script.honeybadger-script-src {:type "text/javascript"
