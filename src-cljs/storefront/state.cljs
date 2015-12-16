@@ -177,7 +177,8 @@
                            :password ""
                            :password-confirmation ""}
           :cart {:quantities {}
-                 :coupon-code ""}
+                 :coupon-code ""
+                 :paypal-redirecting false}
           :checkout initial-checkout-state
           :flash {:success {:message nil
                             :navigation []}

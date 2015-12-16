@@ -233,5 +233,25 @@ a.button.continue {
     margin: 0 auto;
     height: 43px;
     width: 228px;
-    background-image: (url('/images/PaypalBlueButton.png'))
+    background-image: (url('/images/PaypalBlueButton.png'));
+
+  &.redirecting { // fixme: only works when button is a div
+    color: transparent;
+    position: relative;
+    cursor: default;
+    background-image: none;
+
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("/images/spinner.svg");
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+  }
 }

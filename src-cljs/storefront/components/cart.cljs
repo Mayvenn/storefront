@@ -62,10 +62,11 @@
            (if (experiments/paypal? data)
              (list
               [:div.or-divider [:span "OR"]]
-              [:a {:href "#"
-                   :data-test "paypal-checkout"
-                   :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
-               [:.paypal-checkout]])
+              (let [redirecting (get-in data keypaths/cart-paypal-redirect)]
+                [:a {:href "#"
+                     :data-test "paypal-checkout"
+                     :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
+                 [:.paypal-checkout {:class (when redirecting "redirecting")}]]))
              [:a.cart-continue.full-link.old-school-link.extra-spacing
               (shopping-link-attrs data)
               "Continue shopping"])]]]]]]]))
