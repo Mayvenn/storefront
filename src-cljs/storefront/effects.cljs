@@ -561,7 +561,7 @@
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
   (send app-state
         events/flash-show-failure
-        {:message "Could not connect to the internet. Reload the page and try again."
+        {:message "Something went wrong. Please refresh and try again or contact customer service."
          :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/api-failure-bad-server-response [_ event response app-state]
