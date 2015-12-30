@@ -27,9 +27,16 @@
   width: 100%;
   color: white;
   font-size: 1.25rem;
-  img {
-    vertical-align: middle;
-    margin-right: 1em;
+  .fb-login-wrapper {
+    margin: auto;
+    display: table;
+    img, .fb-login-content {
+      display: table-cell;
+      vertical-align: middle;
+    }
+    img {
+      margin-right: 1em;
+    }
   }
 }
 
