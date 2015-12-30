@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
@@ -13,11 +14,13 @@
     [:div
      (om/build validation-errors-component data)
      [:div.centered-content
-      [:h1.center "Sign Up For An Account"]
-      [:p.center "Already have an account? "
-       [:a (utils/route-to data events/navigate-sign-in) "Log In"]]
-      [:div#existing-customer
-       [:form.new_spree_user.simple_form
+      [:div.page-heading.center "Sign Up For An Account"]
+      [:div#existing-customer.new_spree_user
+       (when (experiments/facebook? data)
+         (list
+          (facebook/button data)
+          [:div.or-divider [:span "or"]]))
+       [:form.simple_form
         {:on-submit (utils/send-event-callback data events/control-sign-up-submit)}
         [:div#password-credentials
          [:div.input.email
@@ -41,4 +44,6 @@
                    :name "password-confirmation"})]]]
         [:p
          [:input.btn.button.primary {:type "submit"
-                                     :value "Create"}]]]]]])))
+                                     :value "Create"}]]]]
+      [:p.center "Already have an account? "
+       [:a (utils/route-to data events/navigate-sign-in) "Log In"]]]])))

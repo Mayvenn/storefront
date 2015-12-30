@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.facebook :as facebook]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
@@ -13,16 +14,20 @@
     [:div
      [:h2.header-bar-heading "Reset Your Forgotten Password"]
      (om/build validation-errors-component data)
-     [:div#forgot-password
-      [:form.new_spree_user
+     [:div#forgot-password.new_spree_user
+      [:form.simple_form
        {:on-submit (utils/send-event-callback data events/control-forgot-password-submit)}
-       [:label {:for "spree_user_email"} "Enter your email:"]
-       [:br]
-       [:input
-        (merge
-         (utils/change-text data owner keypaths/forgot-password-email)
-         {:type "email"
-          :name "email"})]
+       [:div.input.email
+        [:label {:for "email"} "Enter your email:"]
+        [:input.string.email
+         (merge (utils/change-text data owner keypaths/forgot-password-email)
+                {:autofocus "autofocus"
+                 :type "email"
+                 :name "email"})]]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Reset my password"}]]]]])))
+                                :value "Reset my password"}]]]
+      (when (experiments/facebook? data)
+        (list
+         [:div.or-divider [:span "or"]]
+         (facebook/button data)))]])))

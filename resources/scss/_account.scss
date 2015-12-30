@@ -14,7 +14,22 @@
 
     &[type="checkbox"] {
       width: auto;
+      margin-right: 0.5rem;
     }
+  }
+}
+
+.fb-login-button {
+  background: $facebook_blue;
+  border: solid $dark_grey 1px;
+  padding: 0.5rem;
+  margin: 2rem auto;
+  width: 100%;
+  color: white;
+  font-size: 1.25rem;
+  img {
+    vertical-align: middle;
+    margin-right: 1em;
   }
 }
 

@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.facebook :as facebook]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
@@ -10,11 +11,14 @@
   (om/component
    (html
     [:div.centered-content
-     [:h1.center "Sign In to Your Account"]
-     [:p.center "Don't have an account? "
-      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]
-     [:div#existing-customer
-      [:form.new_spree_user.simple_form
+     [:div.page-heading.center "Sign In to Your Account"]
+
+     [:div#existing-customer.new_spree_user
+      (when (experiments/facebook? data)
+        (list
+         (facebook/button data)
+         [:div.or-divider [:span "or"]]))
+      [:form.simple_form
        {:on-submit (utils/send-event-callback data events/control-sign-in-submit)}
        [:div#password-credentials
         [:div.input.email
@@ -39,7 +43,9 @@
        [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
-                                :value "Login"}]]]]])))
+                                :value "Login"}]]]]
+     [:p.center "Don't have an account? "
+      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]])))
 
 (defn requires-sign-in [app-state authorized-component]
   (if (get-in app-state keypaths/user-id)
