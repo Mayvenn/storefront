@@ -66,8 +66,6 @@
 
 (def control-facebook (conj control :facebook))
 (def control-facebook-sign-in (conj control-facebook :sign-in))
-(def facebook-success-sign-in [:facebook-success-sign-in])
-(def facebook-failure-sign-in [:facebook-failure-sign-in])
 
 (def control-bundle-option-select (conj control :bundle :option-select))
 
@@ -168,6 +166,11 @@
 (def flash-dismiss-failure (conj flash-dismiss :failure))
 
 (def added-to-bag [:added-to-bag])
+
+(def facebook [:facebook])
+(def facebook-inserted (conj facebook :inserted))
+(def facebook-success-sign-in (conj facebook :success-sign-in))
+(def facebook-failure-sign-in (conj facebook :failure-sign-in))
 
 (def optimizely [:optimizely])
 

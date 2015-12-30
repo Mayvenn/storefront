@@ -1,39 +1,20 @@
 (ns storefront.hooks.facebook
-  (:require [storefront.browser.tags :refer [text-tag insert-body-top]]
+  (:require [storefront.browser.tags :refer [insert-tag-with-src]]
             [storefront.messages :refer [send]]
             [storefront.events :as events]
             [storefront.config :as config]))
 
-(def ^:private tag-class "facebook-tag")
-(def async-load-sdk-js
-  ;; TODO: fbAsyncInit would be the right place to tell storefront that FB is
-  ;; loaded, and that the login button should be enabled.  It would
-  ;; also be the place to run FB.getLoginStatus if we wanted to show
-  ;; the logged-in experience on app load.
-  (str "
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '" config/facebook-app-id "',
-      xfbml      : false,
-      version    : 'v2.5'
-    });
-  };
+(defn init []
+  (js/FB.init (clj->js {:appId config/facebook-app-id
+                        :xfbml false
+                        :version "v2.5"})))
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = \"//connect.facebook.net/en_US/sdk.js\";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-"))
-
-(defn insert []
-  ;; TODO: could this be insert-body-bottom? Facebook recommends
-  ;; adding it at the top of the page, but that probably only applies
-  ;; if you load it before anything else on the page.  Dynamic
-  ;; insertion, even at the top of the page, happens after page load.
-  (insert-body-top (text-tag async-load-sdk-js tag-class)))
+(defn insert [app-state]
+  (set! (.-fbAsyncInit js/window)
+        (fn []
+          (init)
+          (send app-state events/facebook-inserted)))
+  (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk"))
 
 (defn start-log-in [app-state]
   (js/FB.login (fn [response]

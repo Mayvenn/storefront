@@ -14,7 +14,8 @@
      [:div.page-heading.center "Sign In to Your Account"]
 
      [:div#existing-customer.new_spree_user
-      (when (experiments/facebook? data)
+      (when (and (experiments/facebook? data)
+                 (get-in data keypaths/facebook-loaded))
         (list
          (facebook/button data)
          [:div.or-divider [:span "or"]]))

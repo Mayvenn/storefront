@@ -27,7 +27,8 @@
        [:p
         [:input.button.primary.mb-l {:type "submit"
                                      :value "Reset my password"}]]]
-      (when (experiments/facebook? data)
+      (when (and (experiments/facebook? data)
+                 (get-in data keypaths/facebook-loaded))
         (list
          [:div.or-divider.my-0 [:span "or"]]
          (facebook/button data)))]])))

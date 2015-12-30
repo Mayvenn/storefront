@@ -34,7 +34,7 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
-  (facebook/insert))
+  (facebook/insert app-state))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)

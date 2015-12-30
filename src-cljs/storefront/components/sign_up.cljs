@@ -16,7 +16,8 @@
      [:div.centered-content
       [:div.page-heading.center "Sign Up For An Account"]
       [:div#existing-customer.new_spree_user
-       (when (experiments/facebook? data)
+       (when (and (experiments/facebook? data)
+                  (get-in data keypaths/facebook-loaded))
          (list
           (facebook/button data)
           [:div.or-divider [:span "or"]]))

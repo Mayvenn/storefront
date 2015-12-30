@@ -7,9 +7,6 @@
 
 (def insert-body-bottom (partial insert-before-selector "script"))
 (def insert-in-head (partial insert-before-selector "head link"))
-(defn insert-body-top [tag]
-  (let [body (.-body js/document)]
-    (.insertBefore body tag (aget (.-childNodes body) 0))))
 
 (defn src-tag
   [src class]

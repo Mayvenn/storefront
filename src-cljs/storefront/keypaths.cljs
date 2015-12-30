@@ -40,7 +40,6 @@
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
 
-
 (def taxons [:taxons])
 (def products [:products])
 (def states [:states])
@@ -177,3 +176,5 @@
 (def validation-errors-details (conj validation-errors :details))
 
 (def reviews-loaded (conj ui :reviews-loaded))
+
+(def facebook-loaded (conj ui :facebook-loaded))
