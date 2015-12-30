@@ -25,9 +25,9 @@
                  :type "email"
                  :name "email"})]]
        [:p
-        [:input.button.primary {:type "submit"
-                                :value "Reset my password"}]]]
+        [:input.button.primary.mb-l {:type "submit"
+                                     :value "Reset my password"}]]]
       (when (experiments/facebook? data)
         (list
-         [:div.or-divider [:span "or"]]
+         [:div.or-divider.my-0 [:span "or"]]
          (facebook/button data)))]])))
