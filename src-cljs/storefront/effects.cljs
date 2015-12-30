@@ -224,7 +224,8 @@
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
   (api/facebook-sign-in (get-in app-state keypaths/handle-message)
                         (-> facebook-response :authResponse :userID)
-                        (-> facebook-response :authResponse :accessToken)))
+                        (-> facebook-response :authResponse :accessToken)
+                        (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/facebook-failure-sign-in [_ _ facebook-response app-state]
   (send app-state

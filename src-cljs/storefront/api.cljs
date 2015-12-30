@@ -207,6 +207,19 @@
     :handler
     #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
+(defn facebook-sign-in [handle-message uid access-token stylist-id]
+  (api-req
+   handle-message
+   POST
+   "/facebook_login"
+   request-keys/facebook-sign-in
+   {:params
+    {:uid uid
+     :access-token access-token
+     :stylist-id stylist-id}
+    :handler
+    #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
+
 (defn sign-up [handle-message email password password-confirmation stylist-id]
   (api-req
    handle-message
@@ -244,18 +257,6 @@
      :reset_password_token reset-token}
     :handler
     #(handle-message events/api-success-reset-password (select-sign-in-keys %))}))
-
-(defn facebook-sign-in [handle-message uid access-token]
-  (api-req
-   handle-message
-   POST
-   "/facebook_login"
-   request-keys/facebook-sign-in
-   {:params
-    {:uid uid
-     :access-token access-token}
-    :handler
-    #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
 (defn add-user-in-order [handle-message token number user-token user-id]
   (api-req
