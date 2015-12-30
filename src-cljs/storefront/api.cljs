@@ -45,7 +45,6 @@
     (handle-message events/api-failure-validation-errors
                     (select-keys (:response response) [:error-message :details]))
 
-
     :else
     (handle-message events/api-failure-bad-server-response response)))
 
@@ -75,7 +74,6 @@
     (handle-message events/api-start {:xhr request
                                       :request-key req-key
                                       :request-id req-id})))
-
 
 ;;  Neccessary for a frustrating bug in Clojurescript that doesn't seem to be
 ;;  able to hash a deep map correctly. Feel free to delete this when
@@ -246,6 +244,18 @@
      :reset_password_token reset-token}
     :handler
     #(handle-message events/api-success-reset-password (select-sign-in-keys %))}))
+
+(defn facebook-sign-in [handle-message uid access-token]
+  (api-req
+   handle-message
+   POST
+   "/facebook_login"
+   request-keys/facebook-sign-in
+   {:params
+    {:uid uid
+     :access-token access-token}
+    :handler
+    #(handle-message events/api-success-sign-in (select-sign-in-keys %))}))
 
 (defn add-user-in-order [handle-message token number user-token user-id]
   (api-req
@@ -433,8 +443,8 @@
                          (drop 3 x)
                          x)))
           (callback [resp]
-            (handle-message events/api-success-sms-number
-                            {:number (-> resp :available_number normalize-number)}))]
+                    (handle-message events/api-success-sms-number
+                                    {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
       {:handler callback
        :headers {"Accepts" "application/json"

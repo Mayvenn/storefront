@@ -9,6 +9,7 @@
 
 (def sign-in [:sign-in])
 (def sign-up [:sign-up])
+(def facebook-sign-in [:facebook-sign-in])
 (def forgot-password [:forgot-password])
 (def reset-password [:reset-password])
 (def get-account [:get-account])

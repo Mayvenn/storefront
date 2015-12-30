@@ -15,6 +15,7 @@
             [storefront.events :as events]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
+            [storefront.hooks.facebook :as facebook]
             [storefront.hooks.opengraph :as opengraph]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
@@ -32,7 +33,8 @@
   (stripe/insert)
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
-  (analytics/insert-tracking))
+  (analytics/insert-tracking)
+  (facebook/insert))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)
@@ -216,6 +218,20 @@
                (get-in app-state keypaths/sign-up-password-confirmation)
                (get-in app-state keypaths/store-stylist-id)))
 
+(defmethod perform-effects events/control-facebook-sign-in [_ event args app-state]
+  (facebook/start-log-in app-state))
+
+(defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
+  (api/facebook-sign-in (get-in app-state keypaths/handle-message)
+                        (-> facebook-response :authResponse :userID)
+                        (-> facebook-response :authResponse :accessToken)))
+
+(defmethod perform-effects events/facebook-failure-sign-in [_ _ facebook-response app-state]
+  (send app-state
+        events/flash-show-failure
+        {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."
+         :navigation (get-in app-state keypaths/navigation-message)}))
+
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
 
@@ -349,7 +365,6 @@
                                      :cancel-url (str store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
-
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
   (let [handle-message (get-in app-state keypaths/handle-message)
         user-token (get-in app-state keypaths/user-token)
@@ -375,7 +390,6 @@
                                  {:email (get-in app-state keypaths/user-email)
                                   :billing-address billing-address
                                   :shipping-address shipping-address}))))
-
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-shipping-method (get-in app-state keypaths/handle-message)

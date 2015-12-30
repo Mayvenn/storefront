@@ -29,3 +29,7 @@
 (def stripe-publishable-key (case js/environment
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
                               "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))
+
+(def facebook-app-id (case js/environment
+                       "production" 1536288310021691
+                       1536578859992636))

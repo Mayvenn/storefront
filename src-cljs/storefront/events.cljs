@@ -64,6 +64,11 @@
 (def control-manage-account (conj control :manage-account))
 (def control-manage-account-submit (conj control-manage-account :submit))
 
+(def control-facebook (conj control :facebook))
+(def control-facebook-sign-in (conj control-facebook :sign-in))
+(def facebook-success-sign-in [:facebook-success-sign-in])
+(def facebook-failure-sign-in [:facebook-failure-sign-in])
+
 (def control-bundle-option-select (conj control :bundle :option-select))
 
 (def control-browse (conj control :browse))
