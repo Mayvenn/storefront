@@ -194,7 +194,7 @@
 (defn select-sign-in-keys [args]
   (select-keys args [:email :token :store_slug :id]))
 
-(defn sign-in [handle-message email password stylist-id token]
+(defn sign-in [handle-message email password stylist-id]
   (api-req
    handle-message
    POST
