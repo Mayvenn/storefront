@@ -97,7 +97,8 @@
       (assoc-in keypaths/stylist {})
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
-      (assoc-in keypaths/shipping-address {})))
+      (assoc-in keypaths/shipping-address {})
+      (assoc-in keypaths/facebook-email-denied nil)))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -357,3 +358,12 @@
 
 (defmethod transition-state events/facebook-inserted [_ event args app-state]
   (assoc-in app-state keypaths/facebook-loaded true))
+
+(defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
+  (assoc-in app-state keypaths/facebook-email-denied nil))
+
+(defmethod transition-state events/facebook-failure-sign-in [_ event args app-state]
+  (assoc-in app-state keypaths/facebook-email-denied nil))
+
+(defmethod transition-state events/facebook-email-denied [_ event args app-state]
+  (assoc-in app-state keypaths/facebook-email-denied true))

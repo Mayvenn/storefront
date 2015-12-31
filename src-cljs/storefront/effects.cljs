@@ -226,10 +226,16 @@
                         (-> facebook-response :authResponse :accessToken)
                         (get-in app-state keypaths/store-stylist-id)))
 
-(defmethod perform-effects events/facebook-failure-sign-in [_ _ facebook-response app-state]
+(defmethod perform-effects events/facebook-failure-sign-in [_ _ args app-state]
   (send app-state
         events/flash-show-failure
         {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."
+         :navigation (get-in app-state keypaths/navigation-message)}))
+
+(defmethod perform-effects events/facebook-email-denied [_ _ args app-state]
+  (send app-state
+        events/flash-show-failure
+        {:message "We need your Facebook email address to communicate with you about your orders. Please try again."
          :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defn- abort-pending-requests [requests]

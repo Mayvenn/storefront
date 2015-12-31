@@ -171,6 +171,7 @@
 (def facebook-inserted (conj facebook :inserted))
 (def facebook-success-sign-in (conj facebook :success-sign-in))
 (def facebook-failure-sign-in (conj facebook :failure-sign-in))
+(def facebook-email-denied (conj facebook :email-denied))
 
 (def optimizely [:optimizely])
 
