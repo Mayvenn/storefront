@@ -3,7 +3,6 @@
 (def environment js/environment)
 (def development? (= js/environment "development"))
 (def acceptance? (= js/environment "acceptance"))
-(def production? (= js/environment "production"))
 
 (def api-base-url js/apiUrl)
 
