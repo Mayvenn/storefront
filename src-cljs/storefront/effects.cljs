@@ -220,6 +220,9 @@
 (defmethod perform-effects events/control-facebook-sign-in [_ event args app-state]
   (facebook/start-log-in app-state))
 
+(defmethod perform-effects events/control-facebook-reset [_ event args app-state]
+  (facebook/start-reset app-state))
+
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
   (api/facebook-sign-in (get-in app-state keypaths/handle-message)
                         (-> facebook-response :authResponse :userID)
@@ -294,6 +297,12 @@
                         (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-password-confirmation)
                         (get-in app-state keypaths/reset-password-token))))
+
+(defmethod perform-effects events/facebook-success-reset [_ event facebook-response app-state]
+  (api/facebook-reset-password (get-in app-state keypaths/handle-message)
+                               (-> facebook-response :authResponse :userID)
+                               (-> facebook-response :authResponse :accessToken)
+                               (get-in app-state keypaths/reset-password-token)))
 
 (defn save-cookie [app-state remember?]
   (cookie-jar/save-order (get-in app-state keypaths/cookie)

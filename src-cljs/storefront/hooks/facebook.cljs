@@ -17,7 +17,7 @@
           (send app-state events/facebook-inserted)))
   (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk"))
 
-(defn check-log-in-permissions [app-state login-response]
+(defn- check-fb-permissions [app-state success-event login-response]
   (js/FB.api "/me/permissions"
              (fn [permissions-response]
                (let [permissions-include? (-> permissions-response
@@ -25,16 +25,21 @@
                                               :data
                                               set)]
                  (if (permissions-include? {:permission "email" :status "granted"})
-                   (send app-state events/facebook-success-sign-in login-response)
+                   (send app-state success-event login-response)
                    (send app-state events/facebook-email-denied))))))
 
-(defn start-log-in [app-state]
+(defn- fb-login [app-state success-event]
   (js/FB.login (fn [response]
                  (let [response (js->clj response :keywordize-keys true)]
-                   (if (:authResponse response)
-                     (check-log-in-permissions app-state response)
-                     (send app-state events/facebook-failure-sign-in))))
-               (-> {:scope "public_profile,email"}
-                   (merge (when (get-in app-state keypaths/facebook-email-denied)
-                            {:auth_type "rerequest"}))
-                   clj->js)))
+                   (if-not (:authResponse response)
+                     (send app-state events/facebook-failure-sign-in)
+                     (check-fb-permissions app-state success-event response))))
+               (clj->js (merge {:scope "public_profile,email"}
+                               (when (get-in app-state keypaths/facebook-email-denied)
+                                 {:auth_type "rerequest"})))))
+
+(defn start-log-in [app-state]
+  (fb-login app-state events/facebook-success-sign-in))
+
+(defn start-reset [app-state]
+  (fb-login app-state events/facebook-success-reset))

@@ -66,6 +66,7 @@
 
 (def control-facebook (conj control :facebook))
 (def control-facebook-sign-in (conj control-facebook :sign-in))
+(def control-facebook-reset (conj control-facebook :reset))
 
 (def control-bundle-option-select (conj control :bundle :option-select))
 
@@ -170,6 +171,7 @@
 (def facebook [:facebook])
 (def facebook-inserted (conj facebook :inserted))
 (def facebook-success-sign-in (conj facebook :success-sign-in))
+(def facebook-success-reset (conj facebook :success-reset))
 (def facebook-failure-sign-in (conj facebook :failure-sign-in))
 (def facebook-email-denied (conj facebook :email-denied))
 

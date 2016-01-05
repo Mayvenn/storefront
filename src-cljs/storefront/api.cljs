@@ -258,6 +258,19 @@
     :handler
     #(handle-message events/api-success-reset-password (select-sign-in-keys %))}))
 
+(defn facebook-reset-password [handle-message uid access-token reset-token]
+  (api-req
+   handle-message
+   POST
+   "/reset_facebook"
+   request-keys/reset-facebook
+   {:params
+    {:uid uid
+     :access-token access-token
+     :reset-password-token reset-token}
+    :handler
+    #(handle-message events/api-success-reset-password (select-sign-in-keys %))}))
+
 (defn add-user-in-order [handle-message token number user-token user-id]
   (api-req
    handle-message

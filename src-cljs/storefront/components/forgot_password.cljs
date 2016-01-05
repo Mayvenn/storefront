@@ -31,4 +31,4 @@
                  (get-in data keypaths/facebook-loaded))
         (list
          [:div.or-divider.my-0 [:span "or"]]
-         (facebook/button data)))]])))
+         (facebook/sign-in-button data)))]])))

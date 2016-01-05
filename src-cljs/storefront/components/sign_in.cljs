@@ -17,7 +17,7 @@
       (when (and (experiments/facebook? data)
                  (get-in data keypaths/facebook-loaded))
         (list
-         (facebook/button data)
+         (facebook/sign-in-button data)
          [:div.or-divider [:span "or"]]))
       [:form.simple_form
        {:on-submit (utils/send-event-callback data events/control-sign-in-submit)}

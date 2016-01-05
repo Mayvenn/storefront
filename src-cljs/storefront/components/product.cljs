@@ -10,7 +10,6 @@
             [storefront.accessors.products :refer [graded? all-variants]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
-            [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]))
