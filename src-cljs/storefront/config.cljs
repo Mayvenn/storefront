@@ -34,4 +34,4 @@
 (def facebook-app-id (case js/environment
                        "production" 1536288310021691
                        "acceptance" 1537350883248767
-                       1536578859992636))
+                       1539908182993037))
