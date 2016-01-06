@@ -2,6 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-src]]
             [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
+            [storefront.hooks.experiments :as experiments]
             [storefront.events :as events]
             [storefront.config :as config]))
 
@@ -11,11 +12,12 @@
                         :version "v2.5"})))
 
 (defn insert [app-state]
-  (set! (.-fbAsyncInit js/window)
-        (fn []
-          (init)
-          (send app-state events/facebook-inserted)))
-  (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk"))
+  (when (experiments/facebook? app-state)
+    (set! (.-fbAsyncInit js/window)
+          (fn []
+            (init)
+            (send app-state events/facebook-inserted)))
+    (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk")))
 
 (defn- check-fb-permissions [app-state success-event login-response]
   (js/FB.api "/me/permissions"
