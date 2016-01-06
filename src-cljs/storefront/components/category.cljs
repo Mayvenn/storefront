@@ -249,20 +249,6 @@
       "12\" - 28\" Length Bundles"
       "3.5 ounces")))
 
-(defn representative-product-id-for-taxon
-  "The bundle-builder shows data for many products, but yotpo can show
-  reviews for only one product at a time.  For now, we just pick one product that represents the whole taxon."
-  [taxon]
-  (let [taxon-path (keyword (taxons/taxon-path-for taxon))]
-    (get {:straight 13
-          :loose-wave 1
-          :body-wave 3
-          :deep-wave 11
-          :curly 9
-          :blonde 15
-          :closures 28}
-         taxon-path)))
-
 (defn starting-at-price [variants]
   (when-let [cheapest-price (apply min (map :price variants))]
     (str "Starting at " (as-money cheapest-price))))
@@ -285,8 +271,7 @@
            [:.reviews-wrapper
             [:.reviews-inner-wrapper
              (when (get-in data keypaths/reviews-loaded)
-               (om/build reviews-summary-component data
-                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]]
+               (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]]
           [:header.two-column
            [:div.starting-at.floated (starting-at-price variants)]
            [:h1
@@ -296,8 +281,7 @@
            [:.reviews-wrapper
             [:.reviews-inner-wrapper
              (when (get-in data keypaths/reviews-loaded)
-               (om/build reviews-summary-component data
-                         {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]]
+               (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
           (if (query/get {:request-key (concat request-keys/get-products
                                                [(taxon-path-for taxon)])}
@@ -328,8 +312,7 @@
                 [:li description])]])]
          [:.reviews-wrapper
           (when (get-in data keypaths/reviews-loaded)
-            (om/build reviews-component data
-                      {:opts {:product-id (representative-product-id-for-taxon taxon)}}))]
+            (om/build reviews-component data {:opts {:taxon taxon}}))]
          [:div.gold-features
           [:figure.guarantee-feature]
           [:figure.free-shipping-feature]
