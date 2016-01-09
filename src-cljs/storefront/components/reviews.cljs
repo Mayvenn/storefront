@@ -37,7 +37,7 @@ Lengths: 12\" to 28\""
                 :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6414702/6154338/thumb.jpg"}
    :body-wave  {:data-product-id 3
                 :data-name "Malaysian Body Wave Hair"
-                :data-description "Our Malaysian Body Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. This texture has an "S" shape wave that is soft and bouncy. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored or bleached (consult a licensed cosmetologist)."
+                :data-description "Our Malaysian Body Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. This texture has an \"S\" shape wave that is soft and bouncy. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored or bleached (consult a licensed cosmetologist)."
                 :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6414706/6318976/thumb.jpg"}
    :curly      {:data-product-id 9
                 :data-name "Brazilian Curly Hair"
