@@ -26,6 +26,24 @@
             [storefront.utils.query :as query]
             [goog.labs.userAgent.device :as device]))
 
+(defn refresh-account [app-state]
+  (let [user-id (get-in app-state keypaths/user-id)
+        token (get-in app-state keypaths/user-token)
+        stylist-id (get-in app-state keypaths/store-stylist-id)]
+    (when (and user-id token stylist-id)
+      (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
+
+(defn refresh-current-order [app-state]
+  (let [user-id (get-in app-state keypaths/user-id)
+        token (get-in app-state keypaths/user-token)
+        stylist-id (get-in app-state keypaths/store-stylist-id)
+        order-number (get-in app-state keypaths/order-number)]
+    (when (and user-id token stylist-id (not order-number))
+      (api/get-current-order (get-in app-state keypaths/handle-message)
+                             user-id
+                             token
+                             stylist-id))))
+
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
@@ -34,7 +52,10 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
-  (facebook/insert app-state))
+  (facebook/insert app-state)
+  (api/get-store (get-in app-state keypaths/handle-message)
+                 (get-in app-state keypaths/api-cache)
+                 (get-in app-state keypaths/store-slug)))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)
@@ -48,9 +69,7 @@
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (api/get-taxons (get-in app-state keypaths/handle-message)
                     (get-in app-state keypaths/api-cache))
-    (api/get-store (get-in app-state keypaths/handle-message)
-                   (get-in app-state keypaths/api-cache)
-                   (get-in app-state keypaths/store-slug))
+    (refresh-account app-state)
     (api/get-sms-number (get-in app-state keypaths/handle-message))
     (api/get-promotions (get-in app-state keypaths/handle-message)
                         (get-in app-state keypaths/api-cache))
@@ -132,6 +151,7 @@
   {"paypal-incomplete" "We were unable to complete your order with PayPal. Please try again."})
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
+  (refresh-current-order app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (send app-state
           events/flash-show-failure
@@ -459,21 +479,17 @@
                    (merge (get-in app-state keypaths/order)
                           {:session-id (get-in app-state keypaths/session-id)})))
 
-(defmethod perform-effects events/api-success-sign-in [_ event {:keys [order-number order-token]} app-state]
+(defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
   (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
-  ;; if have-order then tell waiter
-  ;; else take the order that waiter, then order-for-token
-  (let [handle-message (get-in app-state keypaths/handle-message)]
-    (cond
-      (get-in app-state keypaths/order-number)
-      (api/add-user-in-order handle-message
-                             (get-in app-state keypaths/order-token)
-                             (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/user-token)
-                             (get-in app-state keypaths/user-id))
-
-      (and order-number order-token)
-      (api/get-order handle-message order-number order-token)))
+  (if-let [order-number (get-in app-state keypaths/order-number)]
+    ;; Assign guest order to signed-in user
+    (api/add-user-in-order (get-in app-state keypaths/handle-message)
+                           (get-in app-state keypaths/order-token)
+                           order-number
+                           (get-in app-state keypaths/user-token)
+                           (get-in app-state keypaths/user-id))
+    ;; Try to fetch latest cart order
+    (refresh-current-order app-state))
   (redirect-to-return-navigation app-state)
   (send app-state
         events/flash-show-success {:message "Logged in successfully"
@@ -543,17 +559,8 @@
                 {:variant variant}))))))
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
-  (let [user-id (get-in app-state keypaths/user-id)
-        token (get-in app-state keypaths/user-token)
-        stylist-id (get-in app-state keypaths/store-stylist-id)
-        order-number (get-in app-state keypaths/order-number)]
-    (when (and user-id token stylist-id)
-      (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id)
-      (when-not order-number
-        (api/get-current-order (get-in app-state keypaths/handle-message)
-                               user-id
-                               token
-                               stylist-id)))))
+  (refresh-account app-state)
+  (refresh-current-order app-state))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (let [product-ids (map :product-id (orders/product-items order))
