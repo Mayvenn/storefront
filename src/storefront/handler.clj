@@ -157,24 +157,26 @@
        (parse-tld (:server-name req))
        ":" (if development? (:server-port req) 443) (:uri req)))
 
+(defn wrap-site-routes
+  [routes {:keys [logger storeback-config environment prerender-token]}]
+  (-> routes
+      (wrap-prerender (config/development? environment)
+                      prerender-token
+                      (partial prerender-original-request-url
+                               (config/development? environment)))
+      (make-logger-middleware logger)
+      (wrap-defaults (storefront-site-defaults environment))
+      (wrap-redirect storeback-config)
+      (wrap-resource "public")
+      (wrap-content-type)
+      (wrap-cdn)))
+
 (defn site-routes
-  [logger storeback-config environment prerender-token]
-  (->
-   (routes
-    (GET "*" req (->
-                  (index storeback-config environment)
-                  response
-                  (content-type "text/html"))))
-   (wrap-prerender (config/development? environment)
-                   prerender-token
-                   (partial prerender-original-request-url
-                            (config/development? environment)))
-   (make-logger-middleware logger)
-   (wrap-defaults (storefront-site-defaults environment))
-   (wrap-redirect storeback-config)
-   (wrap-resource "public")
-   (wrap-content-type)
-   (wrap-cdn)))
+  [{:keys [storeback-config environment]}]
+  (routes
+   (GET "*" [] (-> (index storeback-config environment)
+                   response
+                   (content-type "text/html")))))
 
 (defn proxy-spree-images [env]
   (GET "/spree/*" {params :params :as req}
@@ -186,10 +188,6 @@
         {:status (:status response)
          :headers (select-keys (:headers response) ["Content-Type"])
          :body (java.io.ByteArrayInputStream. (:body response))}))))
-
-(defn order-total-error? [response]
-  (and (-> response :status (= 422))
-       (-> response :body :details (contains? :order.total))))
 
 (defn verify-paypal-payment? [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
@@ -205,23 +203,27 @@
                              :coerce :always})]
     (<= 200 (:status response) 299)))
 
+(defn paypal-routes [{:keys [storeback-config]}]
+  (routes
+   (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
+     (if (verify-paypal-payment? storeback-config number order-token
+                                 (let [headers (:headers request)]
+                                   (or (headers "x-forwarded-for")
+                                       (headers "remote-addr")
+                                       "localhost"))
+                                 (:query-params request))
+       (redirect (str "/orders/" number "/complete?paypal=true"))
+       (redirect (str "/cart?error=paypal-incomplete"))))))
+
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler storeback-config environment prerender-token]}]
+  ([{:keys [logger exception-handler storeback-config environment prerender-token] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
-               (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-                 (if (verify-paypal-payment? storeback-config number order-token
-                                             (let [headers (:headers request)]
-                                               (or (headers "x-forwarded-for")
-                                                   (headers "remote-addr")
-                                                   "localhost"))
-                                             (:query-params request))
-                   (redirect (str "/orders/" number "/complete?paypal=true"))
-                   (redirect (str "/cart?error=paypal-incomplete"))))
+               (paypal-routes ctx)
                (proxy-spree-images environment)
-               (site-routes logger storeback-config environment prerender-token)
+               (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found "Not found"))
        (wrap-params)
        (#(if (config/development? environment)
