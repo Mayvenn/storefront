@@ -532,7 +532,7 @@
    "/v2/update-shipping-method"
    request-keys/update-shipping-method
    {:params (select-keys order [:number :token :shipping-method-sku])
-    :handler #(handle-message events/api-success-update-order-update-address
+    :handler #(handle-message events/api-success-update-order-update-shipping-method
                               {:order %
                                :navigate events/navigate-checkout-payment})}))
 
