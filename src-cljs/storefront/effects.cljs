@@ -51,7 +51,6 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
-  (facebook/insert app-state)
   (api/get-store (get-in app-state keypaths/handle-message)
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug)))
@@ -203,12 +202,16 @@
     (redirect-to-return-navigation app-state)))
 
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
+  (facebook/insert app-state)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
+  (facebook/insert app-state)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-forgot-password [_ event args app-state]
+  (facebook/insert app-state)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-reset-password [_ event args app-state]
+  (facebook/insert app-state)
   (redirect-when-signed-in app-state))
 
 (defmethod perform-effects events/navigate-not-found [_ event args app-state]
