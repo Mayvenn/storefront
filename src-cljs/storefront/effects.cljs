@@ -48,7 +48,6 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [_ event args app-state]
-  (stripe/insert)
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
@@ -172,6 +171,9 @@
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
   (api/get-shipping-methods (get-in app-state keypaths/handle-message)))
+
+(defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
+  (stripe/insert))
 
 (defmethod perform-effects events/navigate-order-complete [_ event args app-state]
   (when (:paypal (:query-params args))
