@@ -170,6 +170,7 @@
 (def added-to-bag [:added-to-bag])
 
 (def facebook [:facebook])
+(def facebook-enable [:facebook-enable])
 (def facebook-inserted (conj facebook :inserted))
 (def facebook-success-sign-in (conj facebook :success-sign-in))
 (def facebook-success-reset (conj facebook :success-reset))

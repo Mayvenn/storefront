@@ -177,5 +177,6 @@
 
 (def reviews-loaded (conj ui :reviews-loaded))
 
+(def facebook-enabled (conj ui :facebook-enabled))
 (def facebook-loaded (conj ui :facebook-loaded))
 (def facebook-email-denied (conj ui :facebook-email-denied))

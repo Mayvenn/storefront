@@ -55,7 +55,6 @@
        (catch :default e
          (exception-handler/report e))))))
 
-
 (defn main [app-state]
   (swap! app-state assoc-in keypaths/handle-message (partial handle-message app-state))
   (routes/install-routes app-state)

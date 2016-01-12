@@ -201,6 +201,9 @@
                                      :navigation (get-in app-state keypaths/return-navigation-message)})
     (redirect-to-return-navigation app-state)))
 
+(defmethod perform-effects events/facebook-enable [_ event args app-state]
+  (facebook/insert app-state))
+
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert app-state)
   (redirect-when-signed-in app-state))
