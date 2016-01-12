@@ -1,10 +1,11 @@
 (ns storefront.hooks.facebook
-  (:require [storefront.browser.tags :refer [insert-tag-with-src]]
-            [storefront.messages :refer [send]]
-            [storefront.keypaths :as keypaths]
-            [storefront.hooks.experiments :as experiments]
+  (:require [clojure.string :as str]
+            [storefront.browser.tags :refer [insert-tag-with-src]]
+            [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.config :as config]))
+            [storefront.hooks.experiments :as experiments]
+            [storefront.keypaths :as keypaths]
+            [storefront.messages :refer [send]]))
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id
@@ -19,24 +20,19 @@
             (send app-state events/facebook-inserted)))
     (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk")))
 
-(defn- check-fb-permissions [app-state success-event login-response]
-  (js/FB.api "/me/permissions"
-             (fn [permissions-response]
-               (let [permissions-include? (-> permissions-response
-                                              (js->clj :keywordize-keys true)
-                                              :data
-                                              set)]
-                 (if (permissions-include? {:permission "email" :status "granted"})
-                   (send app-state success-event login-response)
-                   (send app-state events/facebook-email-denied))))))
-
 (defn- fb-login [app-state success-event]
   (js/FB.login (fn [response]
-                 (let [response (js->clj response :keywordize-keys true)]
-                   (if-not (:authResponse response)
-                     (send app-state events/facebook-failure-sign-in)
-                     (check-fb-permissions app-state success-event response))))
-               (clj->js (merge {:scope "public_profile,email"}
+                 (let [response (js->clj response :keywordize-keys true)
+                       auth (:authResponse response)
+                       permissions (-> auth :grantedScopes str (str/split #",") set)]
+                   (send app-state
+                         (cond
+                           (not auth)                  events/facebook-failure-sign-in
+                           (not (permissions "email")) events/facebook-email-denied
+                           :else                       success-event)
+                         response)))
+               (clj->js (merge {:scope "public_profile,email"
+                                :return_scopes true}
                                (when (get-in app-state keypaths/facebook-email-denied)
                                  {:auth_type "rerequest"})))))
 
