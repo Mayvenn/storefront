@@ -12,8 +12,7 @@
                         :version "v2.5"})))
 
 (defn insert [app-state]
-  (when (and (experiments/facebook? app-state)
-             (not (.hasOwnProperty js/window "FB")))
+  (when (not (.hasOwnProperty js/window "FB"))
     (set! (.-fbAsyncInit js/window)
           (fn []
             (init)

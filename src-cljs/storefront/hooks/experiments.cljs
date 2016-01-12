@@ -28,9 +28,6 @@
 (defn paypal? [data]
   (display-variation data "paypal"))
 
-(defn facebook? [data]
-  (get-in data keypaths/facebook-enabled))
-
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))
