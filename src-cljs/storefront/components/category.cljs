@@ -236,7 +236,7 @@
       "Silk and Lace Materials"
       "Colors: 1B and #613 Blonde"
       "14\" and 18\" Length Bundles"
-      "3.5 ounces")
+      "1.2 ounces")
 
     "blonde"
     '("100% Human Virgin Hair"
