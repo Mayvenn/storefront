@@ -34,7 +34,5 @@
        [:p
         [:input.button.primary.mb-l {:type "submit"
                                      :value "Update"}]]]
-      (when (get-in data keypaths/facebook-loaded)
-        (list
-         [:div.or-divider.my-0 [:span "or"]]
-         (facebook/reset-button data)))]])))
+      [:div.or-divider.my-0 [:span "or"]]
+      (facebook/reset-button data)]])))

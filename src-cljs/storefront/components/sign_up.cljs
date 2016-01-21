@@ -16,10 +16,8 @@
      [:div.centered-content
       [:div.page-heading.center "Sign Up For An Account"]
       [:div#existing-customer.new_spree_user
-       (when (get-in data keypaths/facebook-loaded)
-         (list
-          (facebook/sign-in-button data)
-          [:div.or-divider [:span "or"]]))
+       (facebook/sign-in-button data)
+       [:div.or-divider [:span "or"]]
        [:form.simple_form
         {:on-submit (utils/send-event-callback data events/control-sign-up-submit)}
         [:div#password-credentials
