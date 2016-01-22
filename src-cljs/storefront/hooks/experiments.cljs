@@ -28,6 +28,9 @@
 (defn paypal? [data]
   (display-variation data "paypal"))
 
+(defn get-sat? [data]
+  (display-variation data "get-sat-button"))
+
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))

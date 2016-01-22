@@ -5,6 +5,7 @@
 (def app-stop (conj app :stop))
 
 (def external-redirect [:external-redirect])
+(def external-redirect-community (conj external-redirect [:community]))
 (def external-redirect-paypal-setup (conj external-redirect [:paypal-setup]))
 
 (def navigate [:navigation])

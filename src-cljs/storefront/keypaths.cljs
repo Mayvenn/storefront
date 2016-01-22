@@ -18,6 +18,8 @@
 (def user-id (conj user :id))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 
+(def community-url [:community-url])
+
 (def order [:order])
 (def order-total (conj order :total))
 (def order-cart-payments (conj order :cart-payments))

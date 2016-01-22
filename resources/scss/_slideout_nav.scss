@@ -167,6 +167,12 @@
     background-image: url("/images/slideout_nav/my_orders.png");
   }
 
+  &.icon-community {
+    width: 3.25rem;
+    height: 3.9167rem;
+    background-image: url("/images/slideout_nav/community.png");
+  }
+
   .slideout-nav-link.half-width & {
     &.icon-stylist-referrals {
       width: 2.625rem;

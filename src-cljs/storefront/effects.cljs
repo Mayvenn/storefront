@@ -60,6 +60,10 @@
   (riskified/remove-beacon)
   (analytics/remove-tracking))
 
+(defmethod perform-effects events/external-redirect-community [_ event args app-state]
+  (js/console.log (get-in app-state keypaths/community-url))
+  (set! (.-location js/window) (get-in app-state keypaths/community-url)))
+
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 

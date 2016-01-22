@@ -41,7 +41,9 @@
 
 (defn slideout-nav-link [data {:keys [href on-click icon-class label full-width?]}]
   [:a.slideout-nav-link
-   {:href href :on-click on-click :class (if full-width? "full-width" "half-width")}
+   (merge
+    {:href href :class (if full-width? "full-width" "half-width")}
+    (when on-click {:on-click on-click}))
    [:div.slideout-nav-link-inner
     [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
     label]])
@@ -112,6 +114,12 @@
                 (close-and-route data events/navigate-stylist-manage-account)
                 (close-and-route data events/navigate-manage-account))
               "Manage Account"]]
+            (when (and (experiments/get-sat? data) (own-store? data))
+              [:li
+               [:a
+                {:href (get-in data keypaths/community-url)
+                 :on-click (utils/send-event-callback data events/external-redirect-community)}
+                "Stylist Community"]])
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
               "Logout"]]])
@@ -170,7 +178,15 @@
              (merge (close-and-route data events/navigate-stylist-manage-account)
                     {:icon-class "edit-profile"
                      :label "Edit Profile"
-                     :full-width? false}))])
+                     :full-width? false}))
+            (when (experiments/get-sat? data)
+              (slideout-nav-link
+               data
+               {:href (get-in data keypaths/community-url)
+                :on-click (utils/send-event-callback data events/external-redirect-community)
+                :icon-class "community"
+                :label "Stylist Community"
+                :full-width? true}))])
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Shop"]
           (slideout-nav-link

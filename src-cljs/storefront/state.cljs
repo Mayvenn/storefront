@@ -41,6 +41,7 @@
      :optimizely {:variations #{}}
 
      :session-id (cookie-jar/force-session-id cookie)
+     :community-url "https://community.mayvenn.com"
 
      :user (cookie-jar/retrieve-login cookie)
      :order (cookie-jar/retrieve-current-order cookie)
