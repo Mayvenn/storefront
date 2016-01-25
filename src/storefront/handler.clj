@@ -1,8 +1,6 @@
 (ns storefront.handler
   (:require [storefront.config :as config]
             [clojure.string :as string]
-            [clojure.java.io :as io]
-            [cheshire.core :as json]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [clj-http.client :as http]
@@ -13,12 +11,12 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring-logging.core :refer [make-logger-middleware]]
+            [ring-logging.core :as ring-logging]
             [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
             [hiccup.element :as element]
             [storefront.assets :refer [asset-path]])
-  (:import [java.util Date Locale TimeZone Calendar GregorianCalendar]
+  (:import [java.util Locale TimeZone Calendar GregorianCalendar]
            [java.text SimpleDateFormat]
            [java.io ByteArrayInputStream]))
 
@@ -157,6 +155,12 @@
        (parse-tld (:server-name req))
        ":" (if development? (:server-port req) 443) (:uri req)))
 
+(defn wrap-logging [handler logger]
+  (-> handler
+      ring-logging/wrap-request-timing
+      (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
+      ring-logging/wrap-trace-request))
+
 (defn wrap-site-routes
   [routes {:keys [logger storeback-config environment prerender-token]}]
   (-> routes
@@ -164,7 +168,7 @@
                       prerender-token
                       (partial prerender-original-request-url
                                (config/development? environment)))
-      (make-logger-middleware logger)
+      (wrap-logging logger)
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-redirect storeback-config)
       (wrap-resource "public")
@@ -217,7 +221,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler storeback-config environment prerender-token] :as ctx}]
+  ([{:keys [logger exception-handler environment] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
