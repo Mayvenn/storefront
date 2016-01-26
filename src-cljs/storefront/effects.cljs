@@ -136,9 +136,12 @@
                              user-token)))
 
 (defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
-                                 user-token)))
+  (let [user-id (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (when (and user-id user-token)
+      (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
+                                   user-id
+                                   user-token))))
 
 (defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]

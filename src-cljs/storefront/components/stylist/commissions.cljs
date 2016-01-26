@@ -1,8 +1,9 @@
 (ns storefront.components.stylist.commissions
-  (:require [om.core :as om]
+  (:require [clojure.string :as str]
+            [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.formatters :as f]
+            [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -10,7 +11,7 @@
 (defn show-new-order [data new-order]
   [:.loose-table-row
    [:.left-content
-    #_[:p (new-order :fullname)]
+    [:p (new-order :full-name)]
     [:p.top-pad (f/locale-date (new-order :commission_date))]
     [:p.top-pad [:a
                  #_(utils/route-to data events/navigate-order {:order-id (new-order :number)})
