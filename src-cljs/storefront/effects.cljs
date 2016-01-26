@@ -20,6 +20,7 @@
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
+            [storefront.hooks.fastpass :as fastpass]
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [send send-later]]
             [storefront.routes :as routes]
@@ -529,6 +530,10 @@
   (send app-state
         events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
                                    :navigation [events/navigate-home {}]}))
+
+(defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
+  (when community-url
+    (fastpass/insert-fastpass community-url)))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state true)

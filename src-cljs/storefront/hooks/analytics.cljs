@@ -1,5 +1,5 @@
 (ns storefront.hooks.analytics
-  (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags remove-tag-by-src]]
+  (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
             [storefront.config :as config]
             [clojure.string :as s]))
 
@@ -22,8 +22,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
    "tag-manager"))
 
 (defn remove-tracking []
-  (remove-tags "analytics")
-  (remove-tags "tag-manager")
+  (remove-tags-by-class "analytics")
+  (remove-tags-by-class "tag-manager")
   ;; ga inserts more tags (as expected); remove them to help prevent so many additional ones in development
   (remove-tag-by-src "//www.google-analytics.com/analytics.js")
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))

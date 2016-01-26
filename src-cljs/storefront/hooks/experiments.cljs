@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-src
                                              insert-body-bottom
                                              text-tag
-                                             remove-tags]]
+                                             remove-tags-by-class]]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]))
 
@@ -11,7 +11,7 @@
   (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
 
 (defn remove-optimizely []
-  (remove-tags "optimizely"))
+  (remove-tags-by-class "optimizely"))
 
 (defn set-dimension [dimension-name value]
   (when (.hasOwnProperty js/window "optimizely")

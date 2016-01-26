@@ -49,7 +49,7 @@
 (defn remove-tag [tag]
   (.removeChild (.-parentNode tag) tag))
 
-(defn remove-tags [class]
+(defn remove-tags-by-class [class]
   (doseq [tag (array-seq (.querySelectorAll js/document (str "." class)))]
     (remove-tag tag)))
 
@@ -58,5 +58,9 @@
     (remove-tag tag)))
 
 (defn remove-tag-pair [class]
-  (remove-tags (str class "-src"))
-  (remove-tags class))
+  (remove-tags-by-class (str class "-src"))
+  (remove-tags-by-class class))
+
+(defn replace-tag-with-src [src class]
+  (remove-tags-by-class class)
+  (insert-tag-with-src src class))

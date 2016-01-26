@@ -54,7 +54,8 @@
                           "externs/yotpo.js"
                           "externs/optimizely.js"
                           "externs/stripe.js"
-                          "externs/facebook.js"]}}
+                          "externs/facebook.js"
+                          "externs/fastpass.js"]}}
     :release
     {:compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
@@ -67,7 +68,8 @@
                           "externs/yotpo.js"
                           "externs/optimizely.js"
                           "externs/stripe.js"
-                          "externs/facebook.js"]
+                          "externs/facebook.js"
+                          "externs/fastpass.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles

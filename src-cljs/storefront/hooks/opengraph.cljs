@@ -22,7 +22,7 @@
           (if image [{:property "og:image" :content image}] [])))
 
 (defn reset-meta-tags [attributes]
-  (tags/remove-tags graph-class)
+  (tags/remove-tags-by-class graph-class)
   (doseq [tag-properties attributes]
     (tags/insert-in-head (tags/meta-tag
                           tag-properties
