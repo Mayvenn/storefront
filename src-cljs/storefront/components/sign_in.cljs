@@ -11,8 +11,8 @@
   (om/component
    (html
     [:div.centered-content
-     [:div.page-heading.center "Sign In to Your Account"]
-
+     (when-not (get-in data keypaths/get-satisfaction-login?)
+       [:div.page-heading.center "Sign In to Your Account"])
      [:div#existing-customer.new_spree_user
       (facebook/sign-in-button data)
       [:div.or-divider [:span "or"]]
@@ -42,8 +42,9 @@
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]
-     [:p.center "Don't have an account? "
-      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]])))
+     (when-not (get-in data keypaths/get-satisfaction-login?)
+       [:p.center "Don't have an account? "
+        [:a (utils/route-to data events/navigate-sign-up) "Register Here"]])])))
 
 (defn requires-sign-in [app-state authorized-component]
   (if (get-in app-state keypaths/user-id)

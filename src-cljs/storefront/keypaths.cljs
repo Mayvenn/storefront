@@ -181,3 +181,5 @@
 
 (def facebook-loaded (conj ui :facebook-loaded))
 (def facebook-email-denied (conj ui :facebook-email-denied))
+
+(def get-satisfaction-login? [:get-satisfaction-login?])

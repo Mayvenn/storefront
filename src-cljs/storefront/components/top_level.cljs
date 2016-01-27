@@ -56,7 +56,8 @@
                         {:keypath keypaths/shop-menu-expanded})}
 
             :else {})
-     (om/build promotion-banner-component data)
+     (when-not (get-in data keypaths/get-satisfaction-login?)
+       (om/build promotion-banner-component data))
      [:div.page-wrap
       (om/build header-component data)
       (om/build slideout-nav-component data)
@@ -64,10 +65,8 @@
         [:div.flash.success msg])
       (when-let [msg (get-in data keypaths/flash-failure-message)]
         [:div.flash.error msg])
-
       [:main {:role "main"}
        [:div.container
-
         (om/build
          (condp = (get-in data keypaths/navigation-event)
            events/navigate-home home-component
@@ -95,4 +94,5 @@
            events/navigate-my-orders (requires-sign-in data my-orders-component)
            home-component)
          data)]]
-      (om/build footer-component data)]])))
+      (when-not (get-in data keypaths/get-satisfaction-login?)
+        (om/build footer-component data))]])))

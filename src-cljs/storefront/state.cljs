@@ -44,6 +44,7 @@
 
      :session-id (cookie-jar/force-session-id cookie)
      :community-url default-community-url
+     :get-satisfaction-login? false
 
      :user (cookie-jar/retrieve-login cookie)
      :order (cookie-jar/retrieve-current-order cookie)

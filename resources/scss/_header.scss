@@ -23,6 +23,9 @@ $logo_height: 2em;
   margin-left: $logo_width / -2;
   width: $logo_width;
   height: $logo_height;
+  &.comm-login {
+      top: 0;
+  }
 }
 
 $cart_width: (88rem / $default-font-size);
