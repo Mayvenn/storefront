@@ -672,4 +672,6 @@
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" (:variation args)))
+  (analytics/track-event "optimizely-experiment" (:variation args))
+  (when (experiments/get-sat? app-state)
+    (fastpass/insert-fastpass (get-in app-state keypaths/community-url))))
