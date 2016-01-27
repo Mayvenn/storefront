@@ -83,11 +83,13 @@
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
                        {:id :order_bill_address_attributes_phone :required? true :type "tel"}))
-     (checkbox "Save my address"
-               (merge (utils/change-checkbox
-                       data
-                       keypaths/checkout-save-my-addresses-no-op)
-                      {:id "save_user_address" :class "checkout-save-address"}))]]])
+     (when-not (experiments/display-variation data "move-checkbox")
+       (checkbox "Save my address"
+                 (merge (utils/change-checkbox
+                         data
+                         keypaths/checkout-save-my-addresses-no-op)
+                        {:id    "save_user_address"
+                         :class "checkout-save-address"})))]]])
 
 (defn shipping-address-form [data owner]
   [:div.shipping-address-wrapper
