@@ -55,6 +55,11 @@ body {
   width: 1024px - $header_height;
   height: ($header_height / 2);
 
+  &.comm-login {
+    height: 44px;
+    margin-bottom: 1em;
+  }
+
   .header-menu {
     display: none;
   }

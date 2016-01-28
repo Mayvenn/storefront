@@ -18,6 +18,7 @@
 (def navigate-privacy (conj navigate :privacy))
 (def navigate-tos (conj navigate :tos))
 (def navigate-sign-in (conj navigate :sign-in))
+(def navigate-sign-in-getsat (conj navigate [:sign-in-getsat]))
 (def navigate-sign-up (conj navigate :sign-up))
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))

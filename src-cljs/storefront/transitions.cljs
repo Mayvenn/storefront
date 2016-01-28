@@ -37,9 +37,10 @@
       (assoc-in keypaths/validation-errors {})
       (assoc-in keypaths/navigation-message [event args])))
 
-(defmethod transition-state events/navigate-sign-in [_ event {:keys [query-params]} app-state]
+(defmethod transition-state events/navigate-sign-in-getsat [_ event args app-state]
   (-> app-state
-    (assoc-in keypaths/get-satisfaction-login? (:getsat query-params))))
+      (assoc-in keypaths/get-satisfaction-login? true)
+      (assoc-in keypaths/return-navigation-message [event args])))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (-> app-state

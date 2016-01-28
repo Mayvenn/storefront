@@ -1,6 +1,13 @@
 $header_height: (45em / 12);
+$logo_width: (94.5em / 12);
+$logo_height: 2em;
+
 header {
   position: relative;
+
+  &.comm-login {
+    height: $logo_height;
+  }
 }
 
 a.header-menu {
@@ -10,9 +17,6 @@ a.header-menu {
   margin-left: (9em / 12);
   line-height: $header_height;
 }
-
-$logo_width: (94.5em / 12);
-$logo_height: 2em;
 
 .logo {
   position: absolute;

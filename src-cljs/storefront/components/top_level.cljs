@@ -14,7 +14,7 @@
             [storefront.components.product :refer [product-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
-            [storefront.components.sign-in :refer [sign-in-component requires-sign-in]]
+            [storefront.components.sign-in :refer [sign-in-component requires-sign-in redirect-getsat-component]]
             [storefront.components.sign-up :refer [sign-up-component]]
             [storefront.components.forgot-password :refer [forgot-password-component]]
             [storefront.components.reset-password :refer [reset-password-component]]
@@ -60,7 +60,8 @@
        (om/build promotion-banner-component data))
      [:div.page-wrap
       (om/build header-component data)
-      (om/build slideout-nav-component data)
+      (when-not (get-in data keypaths/get-satisfaction-login?)
+        (om/build slideout-nav-component data))
       (when-let [msg (get-in data keypaths/flash-success-message)]
         [:div.flash.success msg])
       (when-let [msg (get-in data keypaths/flash-failure-message)]
@@ -77,6 +78,7 @@
            events/navigate-guarantee thirty-day-guarantee-component
            events/navigate-help help-component
            events/navigate-sign-in sign-in-component
+           events/navigate-sign-in-getsat (requires-sign-in data redirect-getsat-component)
            events/navigate-sign-up sign-up-component
            events/navigate-forgot-password forgot-password-component
            events/navigate-reset-password reset-password-component

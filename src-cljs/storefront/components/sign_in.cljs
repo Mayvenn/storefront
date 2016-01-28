@@ -50,3 +50,14 @@
   (if (get-in app-state keypaths/user-id)
     authorized-component
     sign-in-component))
+
+(defn redirect-getsat-component [data owner]
+  (om/component
+   (html
+    [:div.centered-content
+     ;; effects injects GetSat JS that will redirect / close this window as needed
+     (if (or (nil? (get-in data keypaths/user))
+             (get-in data keypaths/user-store-slug))
+       [:div.page-heading.center "Signing in to the Mayvenn Stylist Community..."]
+       [:div.flash.error
+        "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])])))

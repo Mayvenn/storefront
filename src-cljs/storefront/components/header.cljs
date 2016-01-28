@@ -13,8 +13,11 @@
     (om/component
      (html
       (let [store (get-in data keypaths/store)]
-        [:header#header.header (when-not (store :profile_picture_url)
-                                 {:class "no-picture"})
+        [:header#header.header
+         (merge (when-not (store :profile_picture_url)
+                  {:class "no-picture"})
+                (when getsat-login?
+                  {:class "comm-login"}))
          (when-not getsat-login?
            [:a.header-menu {:href "#"
                             :on-click (fn [_]

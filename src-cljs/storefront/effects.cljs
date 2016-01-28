@@ -62,7 +62,6 @@
   (analytics/remove-tracking))
 
 (defmethod perform-effects events/external-redirect-community [_ event args app-state]
-  (js/console.log (get-in app-state keypaths/community-url))
   (set! (.-location js/window) (get-in app-state keypaths/community-url)))
 
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
@@ -220,6 +219,9 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert app-state)
   (redirect-when-signed-in app-state))
+(defmethod perform-effects events/navigate-sign-in-getsat [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-token)
+    (routes/enqueue-redirect app-state events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert app-state)
   (redirect-when-signed-in app-state))

@@ -79,6 +79,7 @@
        "/policy/privacy" (edn->bidi events/navigate-privacy)
        "/policy/tos" (edn->bidi events/navigate-tos)
        "/login" (edn->bidi events/navigate-sign-in)
+       "/login/getsat" (edn->bidi events/navigate-sign-in-getsat)
        "/signup" (edn->bidi events/navigate-sign-up)
        "/password/recover" (edn->bidi events/navigate-forgot-password)
        ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
