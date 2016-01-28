@@ -26,15 +26,16 @@
            [:div.logo.comm-login]
            [:a.logo (utils/route-to data events/navigate-home)])
          (when-not getsat-login?
-           '((let [product-quantity (orders/product-quantity (get-in data keypaths/order))]
-               (if (> product-quantity 0)
-                 [:a.cart.populated
-                  (utils/route-to data events/navigate-cart)
-                  product-quantity]
-                 [:a.cart
-                  (utils/route-to data events/navigate-cart)]))
-             (when (= (get-in data keypaths/navigation-event) events/navigate-home)
-               [:div.stylist-bar
-                [:div.stylist-bar-img-container
-                 [:img.stylist-bar-portrait {:src (store :profile_picture_url)}]]
-                [:div.stylist-bar-name (store :store_name)]])))])))))
+           (list
+            (let [product-quantity (orders/product-quantity (get-in data keypaths/order))]
+              (if (> product-quantity 0)
+                [:a.cart.populated
+                 (utils/route-to data events/navigate-cart)
+                 product-quantity]
+                [:a.cart
+                 (utils/route-to data events/navigate-cart)]))
+            (when (= (get-in data keypaths/navigation-event) events/navigate-home)
+              [:div.stylist-bar
+               [:div.stylist-bar-img-container
+                [:img.stylist-bar-portrait {:src (store :profile_picture_url)}]]
+               [:div.stylist-bar-name (store :store_name)]])))])))))
