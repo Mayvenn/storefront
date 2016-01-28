@@ -14,7 +14,7 @@
     [:p (new-order :full-name)]
     [:p.top-pad (f/locale-date (new-order :commission_date))]
     [:p.top-pad [:a
-                 #_(utils/route-to data events/navigate-order {:order-id (new-order :number)})
+                 (utils/route-to data events/navigate-stylist-order {:number (new-order :number)})
                  (new-order :number)]]]
    [:.right-content
     (cond

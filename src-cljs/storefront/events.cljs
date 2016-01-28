@@ -25,6 +25,10 @@
 (def navigate-account-addresses (conj navigate :account-addresses))
 (def navigate-cart (conj navigate :cart))
 (def navigate-order (conj navigate :order))
+
+(def navigate-stylist-order (conj navigate-order :stylist))
+(def navigate-my-order (conj navigate-order :my-order))
+
 (def navigate-order-complete (conj navigate :order-complete))
 (def navigate-my-orders (conj navigate :my-orders))
 (def navigate-not-found (conj navigate :not-found))

@@ -6,17 +6,19 @@
             [storefront.keypaths :as keypaths]
             [storefront.components.order-summary :refer [display-line-items display-order-summary]]))
 
-(def order-shipped? (comp #{"partial" "shipped"} :shipment_state))
-(def trackable-shipments (comp (partial filter :tracking) :shipments))
+(defn order-shipped? [{:keys [state shipments]}]
+  (and (= state "submitted")
+       (some (comp #{"shipped"} :state) shipments)))
+
+(def trackable-shipments (comp (partial filter :tracking-number) :shipments))
 
 (defn order-label [order]
   (let [order-state (:state order)]
     (cond
-      (and (= order-state "complete")
-           (= (:shipment_state order) "shipped"))
+      (order-shipped? order)
       [:p.order-label.shipped-label.top-pad "Shipped"]
 
-      (= order-state "complete")
+      (= order-state "submitted")
       [:p.order-label.pending-label.top-pad "Pending"]
 
       :else
@@ -38,8 +40,8 @@
            [:div.order-shipment-tracking-container
             [:h6 "Tracking"]
             [:div.tracking
-             (map (comp (partial conj [:span])  :tracking)
-                  (trackable-shipments order))]])]
+             (for [shipment (trackable-shipments order)]
+               [:span (:carrier shipment) " " (:tracking-number shipment)])]])]
         [:div.order-container
          (display-line-items data order)
          (display-order-summary data order)]))])))

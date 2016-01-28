@@ -7,6 +7,7 @@
             [storefront.components.order :refer [order-label]]
             [storefront.keypaths :as keypaths]))
 
+;; TODO: refactor to support waiter orders
 (defn display-order [data order-id]
   (when-let [order ((get-in data keypaths/past-orders) order-id)]
     [:div.loose-table-row
@@ -14,7 +15,7 @@
       [:p (-> order :completed_at locale-date)]
       [:p.top-pad
        [:a.order-link
-        (utils/route-to data events/navigate-order {:order-id order-id})
+        (utils/route-to data events/navigate-my-order {:order-id order-id})
         order-id]]]
      [:div.right-content
       [:p.order-money (:display_order_total_after_store_credit order)]
@@ -31,6 +32,13 @@
           {:class "no-credit"})
         "Available store credit: "
         [:span.store-credit-balance (as-money store-credit)]])
+     #_[:div.account-my-orders
+        [:h4.account-orders-header "My Recent Orders"]
+        (let [order-ids (get-in data keypaths/my-order-ids)]
+          (when order-ids
+            (if (empty? order-ids)
+              [:p "You have no orders yet"]
+              (map (partial display-order data) order-ids))))]
      [:.update-coming
       [:.update-image]
       [:h4.update-header "Update Coming"]
