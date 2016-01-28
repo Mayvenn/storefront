@@ -31,6 +31,9 @@
 (defn get-sat? [data]
   (display-variation data "get-sat-button"))
 
+(defn faq-section? [data]
+  (display-variation data "faq"))
+
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))
