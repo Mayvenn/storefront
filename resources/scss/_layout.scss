@@ -167,6 +167,10 @@ p {
   }
 }
 
+.community-login {
+  font-size: 75%;
+}
+
 @mixin all-layout-css($scale) {
   html {
     font-size: 12px * $scale;

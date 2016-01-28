@@ -36,26 +36,31 @@
 (defn top-level-component [data owner]
   (om/component
    (html
-    [:div (cond
-            (get-in data keypaths/menu-expanded)
-            {:on-click (utils/send-event-callback
-                        data
-                        events/control-menu-collapse
-                        {:keypath keypaths/menu-expanded})}
+    [:div
+     (merge
+      (if (get-in data keypaths/get-satisfaction-login?)
+        {:class "community-login"}
+        {})
+      (cond
+        (get-in data keypaths/menu-expanded)
+        {:on-click (utils/send-event-callback
+                    data
+                    events/control-menu-collapse
+                    {:keypath keypaths/menu-expanded})}
 
-            (get-in data keypaths/account-menu-expanded)
-            {:on-click (utils/send-event-callback
-                        data
-                        events/control-menu-collapse
-                        {:keypath keypaths/account-menu-expanded})}
+        (get-in data keypaths/account-menu-expanded)
+        {:on-click (utils/send-event-callback
+                    data
+                    events/control-menu-collapse
+                    {:keypath keypaths/account-menu-expanded})}
 
-            (get-in data keypaths/shop-menu-expanded)
-            {:on-click (utils/send-event-callback
-                        data
-                        events/control-menu-collapse
-                        {:keypath keypaths/shop-menu-expanded})}
+        (get-in data keypaths/shop-menu-expanded)
+        {:on-click (utils/send-event-callback
+                    data
+                    events/control-menu-collapse
+                    {:keypath keypaths/shop-menu-expanded})}
 
-            :else {})
+        :else {}))
      (when-not (get-in data keypaths/get-satisfaction-login?)
        (om/build promotion-banner-component data))
      [:div.page-wrap
