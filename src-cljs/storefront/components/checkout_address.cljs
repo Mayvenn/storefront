@@ -79,7 +79,7 @@
                                                  :keypath keypaths/checkout-billing-address-address1}}))
        (textfield "Street Address"
                   (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
-                         {:id :billing-address1})))
+                         {:id :address1})))
      (textfield "Street Address (cont'd)"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
                        {:id :address2}))
@@ -134,7 +134,7 @@
                                                  :keypath keypaths/checkout-shipping-address-address1}}))
        (textfield "Street Address"
                   (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
-                         {:id :shipping-address1})))
+                         {:id :address1})))
      (textfield "Street Address (cont'd)"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
                        {:id :address2}))
