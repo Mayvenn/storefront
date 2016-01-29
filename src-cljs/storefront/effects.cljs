@@ -186,18 +186,11 @@
     (experiments/track-event "place-order")
     (routes/enqueue-redirect app-state events/navigate-order-complete {:number (:number args)})))
 
-(defmethod perform-effects events/navigate-my-order [_ event args app-state]
+(defmethod perform-effects events/navigate-order [_ event args app-state]
   (api/get-past-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/past-order-id)
                       (get-in app-state keypaths/user-token)
                       (get-in app-state keypaths/user-id)))
-
-(defmethod perform-effects events/navigate-stylist-order [_ event args app-state]
-  (api/get-past-order (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/past-order-id)
-                      (get-in app-state keypaths/user-token)
-                      (get-in app-state keypaths/user-id)
-                      {:as-stylist? true}))
 
 (defmethod perform-effects events/navigate-my-orders [_ event args app-state]
   (comment (when-let [user-token (get-in app-state keypaths/user-token)]

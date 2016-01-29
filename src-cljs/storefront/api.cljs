@@ -572,20 +572,17 @@
     :error-handler nil}))
 
 (defn get-past-order
-  ([handle-message order-number user-token user-id]
-   (get-past-order handle-message order-number user-token user-id {:as-stylist? false}))
-  ([handle-message order-number user-token user-id {:keys [as-stylist?]}]
-   (api-req
-    handle-message
-    GET
-    (str "/v2/orders/" order-number)
-    request-keys/get-past-order
-    {:params
-     {:user-id user-id
-      :user-token user-token
-      :as-stylist as-stylist?}
-     :handler
-     #(handle-message events/api-success-get-past-order %)})))
+  [handle-message order-number user-token user-id]
+  (api-req
+   handle-message
+   GET
+   (str "/v2/orders/" order-number)
+   request-keys/get-past-order
+   {:params
+    {:user-id user-id
+     :user-token user-token}
+    :handler
+    #(handle-message events/api-success-get-past-order %)}))
 
 (defn get-my-orders [handle-message user-token]
   (api-req

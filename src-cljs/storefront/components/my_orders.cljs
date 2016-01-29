@@ -15,7 +15,7 @@
       [:p (-> order :completed_at locale-date)]
       [:p.top-pad
        [:a.order-link
-        (utils/route-to data events/navigate-my-order {:order-id order-id})
+        (utils/route-to data events/navigate-order {:order-id order-id})
         order-id]]]
      [:div.right-content
       [:p.order-money (:display_order_total_after_store_credit order)]
