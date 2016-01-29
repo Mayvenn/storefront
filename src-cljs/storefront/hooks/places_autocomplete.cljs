@@ -38,7 +38,17 @@
 (defn remove-places-autocomplete []
   (tags/remove-tags-by-class "places-autocomplete"))
 
-(defn attach [ref callback-cons]
+(defn wrapped-callback [app-state autocomplete address-key]
+  (fn [e]
+    (m/send app-state
+          events/autocomplete-update-address
+          (address autocomplete address-key))))
+
+(defn attach [app-state address-key]
   (when (.hasOwnProperty js/window "google")
-    (let [autocomplete (google.maps.places.Autocomplete. (.getElementById js/document ref))]
-      (.addListener autocomplete "place_changed" (callback-cons autocomplete)))))
+    (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
+          elem         (.getElementById js/document (str (name address-key) "1"))
+          autocomplete (google.maps.places.Autocomplete. elem options)]
+      (.addListener autocomplete
+                    "place_changed"
+                    (wrapped-callback app-state autocomplete address-key)))))

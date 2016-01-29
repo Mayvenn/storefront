@@ -18,7 +18,7 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn textfield [label & [{:keys [id value required? type on-change] :or {type "text"}}]]
+(defn textfield [label & [{:keys [id placeholder value required? type on-change] :or {type "text"}}]]
   [:p.field
    [:label {:for id} label (when required? [:span.required "*"])]
    [:input {:id id
@@ -26,6 +26,7 @@
             :type type
             :class (when required? "required")
             :value value
+            :placeholder placeholder
             :on-change on-change}]])
 
 (defn selectfield [name & [{:keys [id value options required? on-change]}]]
@@ -58,6 +59,7 @@
       (html (textfield "Street Address"
                        (merge (utils/change-text data owner keypath)
                               {:id (str (name id) "1")
+                               :placeholder ""
                                :required? true}))))))
 
 (defn billing-address-form [data owner]
