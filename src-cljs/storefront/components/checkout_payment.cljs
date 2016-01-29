@@ -77,11 +77,12 @@
              [:h2.checkout-header "Credit Card Info (Required)"]
              (display-credit-card-form data)]])
 
-         [:.form-buttons
-          (let [saving (query/get {:request-key request-keys/update-cart-payments}
-                                  (get-in data keypaths/api-requests))]
-            [:a.large.continue.button.primary
-             {:on-click (when-not saving
-                          (utils/send-event-callback data events/control-checkout-payment-method-submit))
-              :class (when saving "saving")}
-             "Go to Review Order"])]]]]]])))
+         (when (get-in data keypaths/loaded-stripe)
+           [:.form-buttons
+            (let [saving (query/get {:request-key request-keys/update-cart-payments}
+                                    (get-in data keypaths/api-requests))]
+              [:a.large.continue.button.primary
+               {:on-click (when-not saving
+                            (utils/send-event-callback data events/control-checkout-payment-method-submit))
+                :class (when saving "saving")}
+               "Go to Review Order"])])]]]]])))

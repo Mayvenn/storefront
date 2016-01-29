@@ -179,6 +179,7 @@
 
 (def loaded [:loaded])
 (def loaded-reviews (conj loaded :reviews))
+(def loaded-stripe (conj loaded :stripe))
 (def loaded-places (conj loaded :places))
 (def loaded-facebook (conj loaded :facebook))
 

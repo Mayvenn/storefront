@@ -180,7 +180,7 @@
   (api/get-shipping-methods (get-in app-state keypaths/handle-message)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (stripe/insert))
+  (stripe/insert app-state))
 
 (defmethod perform-effects events/navigate-order-complete [_ event args app-state]
   (when (:paypal (:query-params args))

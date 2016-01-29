@@ -189,5 +189,6 @@
                   :failure {:message nil
                             :navigation []}}
           :loaded-reviews false
+          :loaded-stripe false
           :loaded-facebook false
           :loaded-places false}}))

@@ -371,6 +371,9 @@
 (defmethod transition-state events/inserted-reviews [_ event args app-state]
   (assoc-in app-state keypaths/loaded-reviews true))
 
+(defmethod transition-state events/inserted-stripe [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-stripe true))
+
 (defmethod transition-state events/inserted-facebook [_ event args app-state]
   (assoc-in app-state keypaths/loaded-facebook true))
 

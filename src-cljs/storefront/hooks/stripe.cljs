@@ -7,11 +7,13 @@
             [storefront.hooks.exception-handler :as exception-handler]
             [clojure.set :refer [rename-keys]]))
 
-(defn insert []
+(defn insert [data]
   (when-not (.hasOwnProperty js/window "Stripe")
     (insert-tag-with-callback
      (src-tag "https://js.stripe.com/v2/stripe.js" "stripe")
-     (fn [] (js/Stripe.setPublishableKey config/stripe-publishable-key)))))
+     (fn []
+       (send data events/inserted-stripe)
+       (js/Stripe.setPublishableKey config/stripe-publishable-key)))))
 
 (defn create-token [app-state cardholder-name number cvc exp-month exp-year address]
   (when (.hasOwnProperty js/window "Stripe")

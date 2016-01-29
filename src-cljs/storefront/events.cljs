@@ -187,6 +187,7 @@
 (def inserted [:inserted])
 (def inserted-places (conj inserted :places))
 (def inserted-facebook (conj inserted :facebook))
+(def inserted-stripe (conj inserted :stripe))
 (def inserted-reviews (conj inserted :reviews))
 
 (def autocomplete-update-address [:autocomplete-update-address])
