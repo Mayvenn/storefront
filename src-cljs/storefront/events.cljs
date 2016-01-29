@@ -173,7 +173,6 @@
 (def added-to-bag [:added-to-bag])
 
 (def facebook [:facebook])
-(def facebook-inserted (conj facebook :inserted))
 (def facebook-success-sign-in (conj facebook :success-sign-in))
 (def facebook-success-reset (conj facebook :success-reset))
 (def facebook-failure-sign-in (conj facebook :failure-sign-in))
@@ -182,12 +181,13 @@
 (def optimizely [:optimizely])
 
 (def reviews [:reviews])
-(def reviews-inserted (conj reviews :inserted))
 (def reviews-component-mounted (conj reviews :component-mounted))
 (def reviews-component-will-unmount (conj reviews :component-will-unmount))
 
 (def inserted [:inserted])
 (def inserted-places (conj inserted :places))
+(def inserted-facebook (conj inserted :facebook))
+(def inserted-reviews (conj inserted :reviews))
 
 (def autocomplete-update-address [:autocomplete-update-address])
 

@@ -11,7 +11,7 @@
   (when-not (aget (.getElementsByClassName js/document tag-class) 0)
     (insert-tag-with-callback
      (src-tag config/review-tag-url tag-class)
-     #(send data events/reviews-inserted))))
+     #(send data events/inserted-reviews))))
 
 (defn start []
   (when (.hasOwnProperty js/window "yotpo")

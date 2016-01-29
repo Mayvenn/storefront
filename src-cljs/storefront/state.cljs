@@ -188,4 +188,6 @@
                             :navigation []}
                   :failure {:message nil
                             :navigation []}}
-          :reviews-loaded false}}))
+          :loaded-reviews false
+          :loaded-facebook false
+          :loaded-places false}}))

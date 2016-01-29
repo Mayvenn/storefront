@@ -4,7 +4,7 @@
             [storefront.keypaths :as keypaths]))
 
 (defn- button [data click-event]
-  (if (get-in data keypaths/facebook-loaded)
+  (if (get-in data keypaths/loaded-facebook)
     [:button.fb-login-button
      {:on-click (utils/send-event-callback data click-event)}
      [:div.fb-login-wrapper

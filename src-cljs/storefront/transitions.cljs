@@ -368,11 +368,11 @@
 (defmethod transition-state events/inserted-places [_ event args app-state]
   (assoc-in app-state keypaths/loaded-places true))
 
-(defmethod transition-state events/reviews-inserted [_ event args app-state]
-  (assoc-in app-state keypaths/reviews-loaded true))
+(defmethod transition-state events/inserted-reviews [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-reviews true))
 
-(defmethod transition-state events/facebook-inserted [_ event args app-state]
-  (assoc-in app-state keypaths/facebook-loaded true))
+(defmethod transition-state events/inserted-facebook [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-facebook true))
 
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied nil))

@@ -270,7 +270,7 @@
             [:.category-header-sub "Buy now and get FREE SHIPPING"]]
            [:.reviews-wrapper
             [:.reviews-inner-wrapper
-             (when (get-in data keypaths/reviews-loaded)
+             (when (get-in data keypaths/loaded-reviews)
                (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]]
           [:header.two-column
            [:div.starting-at.floated (starting-at-price variants)]
@@ -280,7 +280,7 @@
              " Hair"]]
            [:.reviews-wrapper
             [:.reviews-inner-wrapper
-             (when (get-in data keypaths/reviews-loaded)
+             (when (get-in data keypaths/loaded-reviews)
                (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
           (if (query/get {:request-key (concat request-keys/get-products
@@ -311,7 +311,7 @@
               (for [description (category-descriptions taxon)]
                 [:li description])]])]
          [:.reviews-wrapper
-          (when (get-in data keypaths/reviews-loaded)
+          (when (get-in data keypaths/loaded-reviews)
             (om/build reviews-component data {:opts {:taxon taxon}}))]
          [:div.gold-features
           [:figure.guarantee-feature]

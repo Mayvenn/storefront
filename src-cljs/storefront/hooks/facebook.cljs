@@ -17,7 +17,7 @@
     (set! (.-fbAsyncInit js/window)
           (fn []
             (init)
-            (send app-state events/facebook-inserted)))
+            (send app-state events/inserted-facebook)))
     (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk")))
 
 (defn- fb-login [app-state success-event]

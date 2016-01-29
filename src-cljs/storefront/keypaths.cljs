@@ -177,10 +177,11 @@
 (def validation-errors-message (conj validation-errors :error-message))
 (def validation-errors-details (conj validation-errors :details))
 
-(def reviews-loaded (conj ui :reviews-loaded))
-(def loaded-places (conj ui :loaded-places))
+(def loaded [:loaded])
+(def loaded-reviews (conj loaded :reviews))
+(def loaded-places (conj loaded :places))
+(def loaded-facebook (conj loaded :facebook))
 
-(def facebook-loaded (conj ui :facebook-loaded))
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
 (def get-satisfaction-login? [:get-satisfaction-login?])
