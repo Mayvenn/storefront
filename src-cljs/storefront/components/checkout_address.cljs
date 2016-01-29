@@ -73,9 +73,13 @@
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
                        {:id :last-name :required? true}))
-     (when (get-in data keypaths/loaded-places)
-       (om/build places-component data {:opts {:id :billing-address
-                                               :keypath keypaths/checkout-billing-address-address1}}))
+     (if (experiments/display-variation data "address-auto-fill")
+       (when (get-in data keypaths/loaded-places)
+         (om/build places-component data {:opts {:id :billing-address
+                                                 :keypath keypaths/checkout-billing-address-address1}}))
+       (textfield "Street Address"
+                  (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
+                         {:id :billing-address1})))
      (textfield "Street Address (cont'd)"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
                        {:id :address2}))
@@ -124,9 +128,13 @@
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
                        {:id :last-name
                         :required? true}))
-     (when (get-in data keypaths/loaded-places)
-       (om/build places-component data {:opts {:id :shipping-address
-                                               :keypath keypaths/checkout-shipping-address-address1}}))
+     (if (experiments/display-variation data "address-auto-fill")
+       (when (get-in data keypaths/loaded-places)
+         (om/build places-component data {:opts {:id :shipping-address
+                                                 :keypath keypaths/checkout-shipping-address-address1}}))
+       (textfield "Street Address"
+                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
+                         {:id :shipping-address1})))
      (textfield "Street Address (cont'd)"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
                        {:id :address2}))

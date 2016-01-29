@@ -676,7 +676,8 @@
 
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-key]} app-state]
-  (places-autocomplete/attach app-state address-key))
+  (when (experiments/display-variation data "address-auto-fill")
+    (places-autocomplete/attach app-state address-key)))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ _ app-state]
   (send app-state
