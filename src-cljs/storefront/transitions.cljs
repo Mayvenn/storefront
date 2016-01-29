@@ -311,6 +311,11 @@
         (assoc-in keypaths/checkout-shipping-address shipping-address))
     app-state))
 
+(defmethod transition-state events/autocomplete-update-address [_ event {:keys [billing-address shipping-address] :as args} app-state]
+  (-> app-state
+      (update-in keypaths/checkout-billing-address merge billing-address)
+      (update-in keypaths/checkout-shipping-address merge shipping-address)))
+
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address community-url] :as args} app-state]
   (-> app-state
       (sign-in-user args)
@@ -359,6 +364,9 @@
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
   (update-in app-state keypaths/optimizely-variations conj variation))
+
+(defmethod transition-state events/inserted-places [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-places true))
 
 (defmethod transition-state events/reviews-inserted [_ event args app-state]
   (assoc-in app-state keypaths/reviews-loaded true))

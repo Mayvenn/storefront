@@ -35,3 +35,9 @@
                        "production" 1536288310021691
                        "acceptance" 1537350883248767
                        1539908182993037))
+
+(def places-api-key
+  (case js/environment
+    "production" "AIzaSyBaMJMMqq4gygvlO9J_BO_mZ9t86XEZ4EA"
+    "acceptance" "AIzaSyA25Ehwf5yqYjAVfzYeAT5VEfqsKZjVbKY"
+    "AIzaSyBF1WsIRs4wIRTEsnNi8Klynxtxqz5RoIA"))

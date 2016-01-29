@@ -185,3 +185,13 @@
 (def reviews-inserted (conj reviews :inserted))
 (def reviews-component-mounted (conj reviews :component-mounted))
 (def reviews-component-will-unmount (conj reviews :component-will-unmount))
+
+(def inserted [:inserted])
+(def inserted-places (conj inserted :places))
+
+(def autocomplete-update-address [:autocomplete-update-address])
+
+(def checkout-address [:checkout-address])
+(def checkout-address-place-changed (conj checkout-address :place-changed))
+(def checkout-address-component-mounted (conj checkout-address :component-mounted))
+(def checkout-address-component-updated (conj checkout-address :component-updated))

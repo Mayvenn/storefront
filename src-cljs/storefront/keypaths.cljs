@@ -178,6 +178,7 @@
 (def validation-errors-details (conj validation-errors :details))
 
 (def reviews-loaded (conj ui :reviews-loaded))
+(def loaded-places (conj ui :loaded-places))
 
 (def facebook-loaded (conj ui :facebook-loaded))
 (def facebook-email-denied (conj ui :facebook-email-denied))

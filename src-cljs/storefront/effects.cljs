@@ -1,31 +1,31 @@
 (ns storefront.effects
   (:require [ajax.core :refer [-abort]]
-            [clojure.string :as string]
             [cemerick.url :refer [url-encode]]
-            [storefront.config :as config]
+            [goog.labs.userAgent.device :as device]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.taxons :refer [taxon-name-from taxon-path-for] :as taxons]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.taxons :as taxons :refer [taxon-path-for]]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
+            [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
+            [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.opengraph :as opengraph]
+            [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
-            [storefront.hooks.fastpass :as fastpass]
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [send send-later]]
             [storefront.routes :as routes]
-            [storefront.utils.query :as query]
-            [goog.labs.userAgent.device :as device]))
+            [storefront.utils.query :as query]))
 
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -172,6 +172,7 @@
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
+  (places-autocomplete/insert-places-autocomplete app-state)
   (api/get-states (get-in app-state keypaths/handle-message)
                   (get-in app-state keypaths/api-cache)))
 
@@ -672,6 +673,15 @@
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
   (reviews/stop))
+
+(defmethod perform-effects events/checkout-address-component-mounted
+  [_ event {:keys [address-key]} app-state]
+  (let [callback-constructor (fn [autocomplete]
+                               (fn [e]
+                                 (send app-state
+                                       events/autocomplete-update-address
+                                       (places-autocomplete/address autocomplete address-key))))]
+    (places-autocomplete/attach (str (name address-key) "1") callback-constructor)))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ _ app-state]
   (send app-state
