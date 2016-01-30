@@ -35,7 +35,7 @@
 (defn list-new-orders [data]
   (when-let [new-orders (->> (get-in data keypaths/stylist-commissions-new-orders)
                              not-empty
-                             (sort :commission_date)
+                             (sort-by :commission_date)
                              reverse)]
     (html
      [:.new-order-commissions
