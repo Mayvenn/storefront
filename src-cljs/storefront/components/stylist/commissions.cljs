@@ -34,9 +34,9 @@
 
 (defn list-new-orders [data]
   (when-let [new-orders (->> (get-in data keypaths/stylist-commissions-new-orders)
-                             not-empty
                              (sort-by :commission_date)
-                             reverse)]
+                             reverse
+                             not-empty)]
     (html
      [:.new-order-commissions
       [:h4.dashboard-details-header "Recently shipped orders"]
