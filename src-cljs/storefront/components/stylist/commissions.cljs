@@ -33,8 +33,10 @@
       [:p.commission-label.refunded-label "Refunded"])]])
 
 (defn list-new-orders [data]
-  (when-let [new-orders (not-empty (get-in data
-                                           keypaths/stylist-commissions-new-orders))]
+  (when-let [new-orders (->> (get-in data keypaths/stylist-commissions-new-orders)
+                             not-empty
+                             (sort :commission_date)
+                             reverse)]
     (html
      [:.new-order-commissions
       [:h4.dashboard-details-header "Recently shipped orders"]
