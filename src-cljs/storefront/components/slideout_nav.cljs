@@ -117,7 +117,7 @@
             (when (and (experiments/get-sat? data) (own-store? data))
               [:li
                [:a
-                {:href (get-in data keypaths/community-url)
+                {:href "https://community.mayvenn.com"
                  :on-click (utils/send-event-callback data events/external-redirect-community)}
                 "Stylist Community"]])
             [:li
@@ -182,7 +182,7 @@
             (when (experiments/get-sat? data)
               (slideout-nav-link
                data
-               {:href (get-in data keypaths/community-url)
+               {:href "https://community.mayvenn.com"
                 :on-click (utils/send-event-callback data events/external-redirect-community)
                 :icon-class "community"
                 :label "Stylist Community"
