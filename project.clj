@@ -65,6 +65,7 @@
                 :source-map-path "/js/out"
                 :pretty-print false
                 :externs ["externs/riskified.js"
+                          "externs/google.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
