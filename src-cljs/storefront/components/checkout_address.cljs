@@ -162,23 +162,21 @@
                         :type "tel"}))]]])
 
 (defn checkout-address-component [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:div#checkout
-        (om/build validation-errors-component @data)
-        (checkout-step-bar @data)
-        [:div.row
-         [:div.checkout-form-wrapper
-          [:form.edit_order
-           (billing-address-form @data owner)
-           (shipping-address-form @data owner)
-           [:div.form-buttons.checkout.save-and-continue
-            (let [saving (query/get {:request-key request-keys/update-addresses}
-                                    (get-in @data keypaths/api-requests))]
-              [:a.large.continue.button.primary
-               {:on-click (when-not saving (utils/send-event-callback @data
-                                                                      events/control-checkout-update-addresses-submit))
-                :class (when saving "saving")}
-               "Continue to Shipping"])]]]]]))))
+  (om/component
+   (html
+    [:div#checkout
+     (om/build validation-errors-component data)
+     (checkout-step-bar data)
+     [:div.row
+      [:div.checkout-form-wrapper
+       [:form.edit_order
+        (billing-address-form data owner)
+        (shipping-address-form data owner)
+        [:div.form-buttons.checkout.save-and-continue
+         (let [saving (query/get {:request-key request-keys/update-addresses}
+                                 (get-in data keypaths/api-requests))]
+           [:a.large.continue.button.primary
+            {:on-click (when-not saving (utils/send-event-callback data
+                                                                   events/control-checkout-update-addresses-submit))
+             :class (when saving "saving")}
+            "Continue to Shipping"])]]]]])))
