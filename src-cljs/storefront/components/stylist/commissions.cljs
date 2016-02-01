@@ -13,7 +13,7 @@
    [:.left-content
     [:p (new-order :full-name)]
     [:p.top-pad (f/locale-date (new-order :commission_date))]
-    [:p.top-pad [:a
+    [:p.top-pad [:a.underline
                  (utils/route-to data events/navigate-order {:number (new-order :number)})
                  (new-order :number)]]]
    [:.right-content
