@@ -49,7 +49,8 @@
                 :output-to "resources/public/js/out/main.js"
                 :pretty-print true
                 :output-dir "resources/public/js/out"
-                :externs ["externs/riskified.js"
+                :externs ["externs/google.js"
+                          "externs/riskified.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
