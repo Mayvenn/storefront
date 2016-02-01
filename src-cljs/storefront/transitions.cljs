@@ -104,7 +104,7 @@
       (assoc-in keypaths/billing-address {})
       (assoc-in keypaths/shipping-address {})
       (assoc-in keypaths/facebook-email-denied nil)
-      (assoc-in keypaths/community-url state/default-community-url)))
+      (assoc-in keypaths/community-url nil)))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -321,7 +321,7 @@
       (sign-in-user args)
       (update-account-address args)
       (default-checkout-addresses billing-address shipping-address)
-      (assoc-in keypaths/community-url state/default-community-url)))
+      (assoc-in keypaths/community-url community-url)))
 
 (defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
   (assoc-in app-state keypaths/cart-coupon-code ""))

@@ -6,8 +6,6 @@
 (defn get-store-subdomain []
   (first (string/split (.-hostname js/location) #"\.")))
 
-(def default-community-url "https://community.mayvenn.com")
-
 (def initial-checkout-state
   {:billing-address {:first-name ""
                      :last-name ""
@@ -43,7 +41,7 @@
      :optimizely {:variations #{}}
 
      :session-id (cookie-jar/force-session-id cookie)
-     :community-url default-community-url
+     :community-url nil
      :get-satisfaction-login? false
 
      :user (cookie-jar/retrieve-login cookie)
