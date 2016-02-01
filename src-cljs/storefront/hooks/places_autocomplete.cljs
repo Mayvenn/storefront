@@ -44,11 +44,11 @@
           events/autocomplete-update-address
           (address autocomplete address-key))))
 
-(defn attach [app-state address-key]
+(defn attach [app-state address-elem]
   (when (.hasOwnProperty js/window "google")
     (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
-          elem         (.getElementById js/document (str (name address-key) "1"))
+          elem         (.getElementById js/document (str (name address-elem) "1"))
           autocomplete (google.maps.places.Autocomplete. elem options)]
       (.addListener autocomplete
                     "place_changed"
-                    (wrapped-callback app-state autocomplete address-key)))))
+                    (wrapped-callback app-state autocomplete address-elem)))))
