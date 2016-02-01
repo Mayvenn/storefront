@@ -20,6 +20,7 @@
  * @externs
  */
 
+var google = {};
 google.maps = {};
 
 /**
