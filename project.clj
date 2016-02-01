@@ -18,7 +18,7 @@
                  [ring-logging "0.2.1"]
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
-
+                 [cljsjs/google-maps "3.18-1"]
                  [org.clojure/clojurescript "1.7.145"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
@@ -49,8 +49,7 @@
                 :output-to "resources/public/js/out/main.js"
                 :pretty-print true
                 :output-dir "resources/public/js/out"
-                :externs ["externs/google.js"
-                          "externs/riskified.js"
+                :externs ["externs/riskified.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
@@ -65,7 +64,6 @@
                 :source-map-path "/js/out"
                 :pretty-print false
                 :externs ["externs/riskified.js"
-                          "externs/google.js"
                           "externs/honeybadger.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
