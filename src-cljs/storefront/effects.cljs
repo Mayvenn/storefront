@@ -677,7 +677,6 @@
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event args app-state]
   (when (experiments/display-variation app-state "address-auto-fill")
-    (js/console.log args)
     (places-autocomplete/attach app-state (:address-key args))))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ _ app-state]
