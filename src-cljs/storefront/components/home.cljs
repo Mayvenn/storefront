@@ -39,5 +39,5 @@
       [:figure.featured-new]
       [:a.featured-product-image
        (apply utils/route-to data (navigation/shop-now-navigation-message data))]
-      [:p.featured-product-banner "Introducing Peruvian: In Straight or Loose Wave"]]
+      [:p.featured-product-banner "Introducing Peruvian In All Textures"]]
      [:div {:style {:clear "both"}}]])))
