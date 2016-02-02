@@ -189,6 +189,7 @@
 (def inserted-facebook (conj inserted :facebook))
 (def inserted-stripe (conj inserted :stripe))
 (def inserted-reviews (conj inserted :reviews))
+(def inserted-fastpass (conj inserted :fastpass))
 
 (def autocomplete-update-address [:autocomplete-update-address])
 

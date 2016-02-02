@@ -103,8 +103,7 @@
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
       (assoc-in keypaths/shipping-address {})
-      (assoc-in keypaths/facebook-email-denied nil)
-      (assoc-in keypaths/community-url nil)))
+      (assoc-in keypaths/facebook-email-denied nil)))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -316,12 +315,11 @@
       (update-in keypaths/checkout-billing-address merge billing-address)
       (update-in keypaths/checkout-shipping-address merge shipping-address)))
 
-(defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address community-url] :as args} app-state]
+(defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state
       (sign-in-user args)
       (update-account-address args)
-      (default-checkout-addresses billing-address shipping-address)
-      (assoc-in keypaths/community-url community-url)))
+      (default-checkout-addresses billing-address shipping-address)))
 
 (defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
   (assoc-in app-state keypaths/cart-coupon-code ""))
@@ -370,6 +368,11 @@
 
 (defmethod transition-state events/inserted-reviews [_ event args app-state]
   (assoc-in app-state keypaths/loaded-reviews true))
+
+(defmethod transition-state events/inserted-fastpass [_ event args app-state]
+  (assoc-in app-state keypaths/community-url
+            (str "https://community.mayvenn.com?fastpass="
+                 (js/encodeURIComponent js/GSFN.fastpass_url))))
 
 (defmethod transition-state events/inserted-stripe [_ event args app-state]
   (assoc-in app-state keypaths/loaded-stripe true))

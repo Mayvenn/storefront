@@ -114,10 +114,10 @@
                 (close-and-route data events/navigate-stylist-manage-account)
                 (close-and-route data events/navigate-manage-account))
               "Manage Account"]]
-            (when (and (experiments/get-sat? data) (own-store? data))
+            (when (own-store? data)
               [:li
                [:a
-                {:href "https://community.mayvenn.com"
+                {:href (get-in data keypaths/community-url)
                  :on-click (utils/send-event-callback data events/external-redirect-community)}
                 "Stylist Community"]])
             [:li
@@ -179,14 +179,13 @@
                     {:icon-class "edit-profile"
                      :label "Edit Profile"
                      :full-width? false}))
-            (when (experiments/get-sat? data)
-              (slideout-nav-link
-               data
-               {:href "https://community.mayvenn.com"
-                :on-click (utils/send-event-callback data events/external-redirect-community)
-                :icon-class "community"
-                :label "Stylist Community"
-                :full-width? true}))])
+            (slideout-nav-link
+             data
+             {:href (get-in data keypaths/community-url)
+              :on-click (utils/send-event-callback data events/external-redirect-community)
+              :icon-class "community"
+              :label "Stylist Community"
+              :full-width? true})])
          [:li.slideout-nav-section
           [:h3.slideout-nav-section-header "Shop"]
           (slideout-nav-link

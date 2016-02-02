@@ -540,7 +540,7 @@
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
   (when community-url
-    (fastpass/insert-fastpass community-url)))
+    (fastpass/insert-fastpass app-state community-url)))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state true)
@@ -687,6 +687,4 @@
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" (:variation args))
-  (when (experiments/get-sat? app-state)
-    (fastpass/insert-fastpass (get-in app-state keypaths/community-url))))
+  (analytics/track-event "optimizely-experiment" (:variation args)))

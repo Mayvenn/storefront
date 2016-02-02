@@ -28,9 +28,6 @@
 (defn paypal? [data]
   (display-variation data "paypal"))
 
-(defn get-sat? [data]
-  (display-variation data "get-sat-button"))
-
 (defn faq-section? [data]
   (display-variation data "faq"))
 
