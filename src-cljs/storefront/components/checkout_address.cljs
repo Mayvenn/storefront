@@ -80,24 +80,27 @@
        (textfield "Street Address"
                   (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
                          {:id :address1})))
-     (textfield "Street Address (cont'd)"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
-                       {:id :address2}))
-     (textfield "City"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
-                       {:id :city :required? true}))
-     (selectfield "State"
-                  {:id :state
-                   :required? true
-                   :options (get-in data keypaths/states)
-                   :value (get-in data keypaths/checkout-billing-address-state)
-                   :on-change #(send data
-                                     events/control-change-state
-                                     {:keypath keypaths/checkout-billing-address-state
-                                      :value (selected-value %)})})
-     (textfield "Zip"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
-                       {:id :zipcode :required? true}))
+     (when (or (not (experiments/display-variation data "hidden-address"))
+               (not (empty? (get-in data keypaths/checkout-billing-address-address1))))
+       (list
+        (textfield "Street Address (cont'd)"
+                   (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
+                          {:id :address2}))
+        (textfield "City"
+                   (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
+                          {:id :city :required? true}))
+        (selectfield "State"
+                     {:id :state
+                      :required? true
+                      :options (get-in data keypaths/states)
+                      :value (get-in data keypaths/checkout-billing-address-state)
+                      :on-change #(send data
+                                        events/control-change-state
+                                        {:keypath keypaths/checkout-billing-address-state
+                                         :value (selected-value %)})})
+        (textfield "Zip"
+                   (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
+                          {:id :zipcode :required? true}))))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
                        {:id :order_bill_address_attributes_phone :required? true :type "tel"}))
@@ -135,26 +138,29 @@
        (textfield "Street Address"
                   (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
                          {:id :address1})))
-     (textfield "Street Address (cont'd)"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
-                       {:id :address2}))
-     (textfield "City"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-city)
-                       {:id :city
-                        :required? true}))
-     (selectfield "State"
-                  {:id :state
-                   :required? true
-                   :options (get-in data keypaths/states)
-                   :value (get-in data keypaths/checkout-shipping-address-state)
-                   :on-change #(send data
-                                     events/control-change-state
-                                     {:keypath keypaths/checkout-shipping-address-state
-                                      :value (selected-value %)})})
-     (textfield "Zip"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
-                       {:id :zipcode
-                        :required? true}))
+     (when (or (not (experiments/display-variation data "hidden-address"))
+               (not (empty? (get-in data keypaths/checkout-shipping-address-address1))))
+       (list
+        (textfield "Street Address (cont'd)"
+                   (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
+                          {:id :address2}))
+        (textfield "City"
+                   (merge (utils/change-text data owner keypaths/checkout-shipping-address-city)
+                          {:id :city
+                           :required? true}))
+        (selectfield "State"
+                     {:id :state
+                      :required? true
+                      :options (get-in data keypaths/states)
+                      :value (get-in data keypaths/checkout-shipping-address-state)
+                      :on-change #(send data
+                                        events/control-change-state
+                                        {:keypath keypaths/checkout-shipping-address-state
+                                         :value (selected-value %)})})
+        (textfield "Zip"
+                   (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
+                          {:id :zipcode
+                           :required? true}))))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
                        {:id :order_bill_address_attributes_phone
