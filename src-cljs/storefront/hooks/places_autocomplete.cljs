@@ -15,7 +15,7 @@
 
 (defn short-names [component]
   (when-let [new-key (some key-map (:types component))]
-    [new-key (:short_name component)]))
+    [new-key (({:city :long_name} new-key :short_name) component)]))
 
 (defn extract-address [place]
   (->> place :address_components (map short-names) (into {})))
