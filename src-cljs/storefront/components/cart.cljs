@@ -59,17 +59,12 @@
             {:on-click (when-not (cart-update-pending? data)
                          (utils/send-event-callback data events/control-checkout-cart-submit))}
             "Check Out"]
-           (if (experiments/paypal? data)
-             (list
-              [:div.or-divider [:span "OR"]]
-              (let [redirecting (get-in data keypaths/cart-paypal-redirect)]
-                [:a {:href "#"
-                     :data-test "paypal-checkout"
-                     :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
-                 [:.paypal-checkout {:class (when redirecting "redirecting")}]]))
-             [:a.cart-continue.full-link.old-school-link.extra-spacing
-              (shopping-link-attrs data)
-              "Continue shopping"])]]]]]]]))
+           [:div.or-divider [:span "OR"]]
+           (let [redirecting (get-in data keypaths/cart-paypal-redirect)]
+             [:a {:href "#"
+                  :data-test "paypal-checkout"
+                  :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
+              [:.paypal-checkout {:class (when redirecting "redirecting")}]])]]]]]]]))
 
 (defn display-empty-cart [data]
   [:div

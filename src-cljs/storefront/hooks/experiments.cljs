@@ -25,9 +25,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn paypal? [data]
-  (display-variation data "paypal"))
-
 (defn faq-section? [data]
   (display-variation data "faq"))
 

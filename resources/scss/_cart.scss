@@ -12,12 +12,6 @@ div[data-hook="cart_container"] {
     text-transform: uppercase;
     font-size: (22rem / $default-font-size);
   }
-
-  a.cart-continue {
-    &.extra-spacing {
-      margin-top: 3rem;
-    }
-  }
 }
 
 a.button.continue {
