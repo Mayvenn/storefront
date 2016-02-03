@@ -5,41 +5,63 @@
 (defn make-cookie []
   (Cookies. js/document))
 
-(def user-attrs [:email :user-token :store-slug :id])
-(def user-req-attrs [:email :user-token :id])
+(def user
+  {:optional-keys [:store-slug]
+   :required-keys [:email :user-token :id]})
 
-(def order-attrs [:token :number])
-(def order-req-attrs order-attrs)
+(def order
+  {:optional-keys []
+   :required-keys [:token :number]})
 
-(def pending-promo-attrs [:pending-promo-code])
-(def pending-promo-req-attrs [:pending-promo-code])
+(def pending-promo
+  {:optional-keys []
+   :required-keys [:pending-promo-code]})
+
+(def all
+  (let [specs [user order pending-promo]]
+    {:optional-keys (apply concat (map :optional-keys specs))
+     :required-keys (apply concat (map :required-keys specs))}))
 
 (def remember-me-age (* 60 60 24 7 4))
 (def session-age (* 60 60 24 7 52))
 (def secure? (not config/development?))
 
-(defn clear-attrs [attrs cookie]
-  (doseq [attr attrs]
-    (.remove cookie attr)))
+(defn all-keys [spec]
+  (concat (:optional-keys spec) (:required-keys spec)))
 
-(def clear-user (partial clear-attrs user-attrs))
-(def clear-order (partial clear-attrs order-attrs))
-(def clear-pending-promo-code (partial clear-attrs pending-promo-attrs))
-(def clear (juxt clear-user clear-order clear-pending-promo-code))
+(defn clear-cookie [spec cookie]
+  (doseq [key (all-keys spec)]
+    (.remove cookie key)))
 
 (defn has-required-attrs? [m req-attrs]
   (every? seq (vals (select-keys m req-attrs))))
 
-(defn retrieve-from-cookie [attr-keys req-attr-keys clear-fn cookie]
-  (let [attrs (zipmap attr-keys
+(defn retrieve [spec cookie]
+  (let [attr-keys (all-keys spec)
+        req-attr-keys (:required-keys spec)
+        attrs (zipmap attr-keys
                       (map #(.get cookie %) attr-keys))]
     (if (has-required-attrs? attrs req-attr-keys)
       attrs
-      (clear-fn cookie))))
+      (clear-cookie spec cookie))))
 
-(def retrieve-login (partial retrieve-from-cookie user-attrs user-req-attrs clear-user))
-(def retrieve-current-order (partial retrieve-from-cookie order-attrs order-req-attrs clear-order))
-(def retrieve-pending-promo-code (partial retrieve-from-cookie pending-promo-attrs pending-promo-req-attrs clear-pending-promo-code))
+(defn save-cookie
+  ([spec cookie attrs] (save-cookie spec cookie attrs true))
+  ([spec cookie attrs remember?]
+   (let [age (if remember? remember-me-age -1)]
+     (doseq [attr (all-keys spec)]
+       (if-let [val (attr attrs)]
+         (.set cookie attr val age "/" nil secure?)
+         (.remove cookie attr))))))
+
+(def clear-user (partial clear-cookie user))
+(def clear-order (partial clear-cookie order))
+(def clear-pending-promo-code (partial clear-cookie pending-promo))
+(def clear (partial clear-cookie all))
+
+(def retrieve-login (partial retrieve user))
+(def retrieve-current-order (partial retrieve order))
+(def retrieve-pending-promo-code (partial retrieve pending-promo))
 
 (defn force-session-id [cookie]
   (if-let [session-id (.get cookie :session-id)]
@@ -48,21 +70,7 @@
       (.set cookie :session-id created-session-id session-age "/" nil secure?)
       created-session-id)))
 
-(defn save-cookie-attrs [cookie attrs attr-keys {:keys [remember?]}]
-  (let [age (if remember? remember-me-age -1)]
-    (doseq [attr attr-keys]
-      (if-let [val (attr attrs)]
-        (.set cookie attr val age "/" nil secure?)
-        (.remove cookie attr)))))
-
-(defn save-user [cookie attrs options]
-  (save-cookie-attrs cookie attrs user-attrs options))
-
-(defn save-order [cookie attrs options]
-  (save-cookie-attrs cookie attrs order-attrs options))
-
+(def save-user (partial save-cookie user))
+(def save-order (partial save-cookie order))
 (defn save-pending-promo-code [cookie pending-promo-code]
-  (save-cookie-attrs cookie
-                     {:pending-promo-code pending-promo-code}
-                     pending-promo-attrs
-                     {:remember? true}))
+  (save-cookie pending-promo-code cookie {:pending-promo-code pending-promo-code}))

@@ -347,18 +347,20 @@
                                (-> facebook-response :authResponse :accessToken)
                                (get-in app-state keypaths/reset-password-token)))
 
-(defn save-cookie [app-state remember?]
-  (cookie-jar/save-order (get-in app-state keypaths/cookie)
-                         (get-in app-state keypaths/order)
-                         {:remember? remember?})
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user)
-                        {:remember? remember?}))
+(defn save-cookie [app-state]
+  ;; bug: previously, we always set this to true. Needs verification with Ryan before we fix this.
+  (let [remember? true #_(get-in app-state keypaths/sign-in-remember)]
+    (cookie-jar/save-order (get-in app-state keypaths/cookie)
+                           (get-in app-state keypaths/order)
+                           remember?)
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user)
+                          remember?)))
 
 (defmethod perform-effects events/api-handle-order-not-found [_ _ _ app-state]
   (cookie-jar/save-order (get-in app-state keypaths/cookie)
                          (get-in app-state keypaths/order)
-                         {:remember? nil}))
+                         false))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
   (api/update-account (get-in app-state keypaths/handle-message)
@@ -500,7 +502,7 @@
                           {:session-id (get-in app-state keypaths/session-id)})))
 
 (defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
-  (save-cookie app-state (get-in app-state keypaths/sign-in-remember))
+  (save-cookie app-state)
   (if-let [order-number (get-in app-state keypaths/order-number)]
     ;; Assign guest order to signed-in user
     (api/add-user-in-order (get-in app-state keypaths/handle-message)
@@ -516,7 +518,7 @@
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
-  (save-cookie app-state true)
+  (save-cookie app-state)
   (when (get-in app-state keypaths/order-number)
     (api/add-user-in-order (get-in app-state keypaths/handle-message)
                            (get-in app-state keypaths/order-token)
@@ -535,7 +537,7 @@
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
-  (save-cookie app-state true)
+  (save-cookie app-state)
   (redirect-to-return-navigation app-state)
   (send app-state
         events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
@@ -546,14 +548,14 @@
     (fastpass/insert-fastpass app-state community-url)))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
-  (save-cookie app-state true)
+  (save-cookie app-state)
   (routes/enqueue-navigate app-state events/navigate-home)
   (send app-state
         events/flash-show-success {:message "Account updated"
                                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
-  (save-cookie app-state true)
+  (save-cookie app-state)
   (when (:updated args)
     (send app-state
           events/flash-show-success {:message "Account updated"
@@ -606,7 +608,7 @@
            (= (:number order)
               (get-in app-state keypaths/order-number)))
     (do
-      (save-cookie app-state true)
+      (save-cookie app-state)
       (add-pending-promo-code app-state order))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
@@ -625,7 +627,7 @@
                                 (:shipping-address order))))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
-  (save-cookie app-state true)
+  (save-cookie app-state)
   (when event
     (send app-state event {:order order}))
   (when navigate
@@ -659,7 +661,7 @@
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
   (let [{:keys [product quantity variant]} requested]
-    (save-cookie app-state true)
+    (save-cookie app-state)
     (add-pending-promo-code app-state (get-in app-state keypaths/order))
     (when (bundle-builder/included-product? product)
       (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
