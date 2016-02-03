@@ -58,7 +58,7 @@
 (defn save-user [cookie attrs options]
   (save-cookie-attrs cookie attrs user-attrs options))
 
-(defn save-order [cookie attrs {:keys [remember?]}]
+(defn save-order [cookie attrs options]
   (save-cookie-attrs cookie attrs order-attrs options))
 
 (defn save-pending-promo-code [cookie pending-promo-code]
