@@ -29,9 +29,16 @@
       (assoc-in app-state keypaths/return-navigation-message [return-event return-args])
       app-state)))
 
+(defn add-pending-promo-code [app-state args]
+  (let [{{sha :sha} :query-params} args]
+    (if sha
+      (assoc-in app-state keypaths/pending-promo-code sha)
+      app-state)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       add-return-event
+      (add-pending-promo-code args)
       (assoc-in keypaths/previous-navigation-message
                 (get-in app-state keypaths/navigation-message))
       (assoc-in keypaths/validation-errors {})
@@ -322,7 +329,9 @@
       (default-checkout-addresses billing-address shipping-address)))
 
 (defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
-  (assoc-in app-state keypaths/cart-coupon-code ""))
+  (-> app-state
+      (assoc-in keypaths/cart-coupon-code "")
+      (assoc-in keypaths/pending-promo-code nil)))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
@@ -343,6 +352,9 @@
 
 (defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
   (assoc-in app-state keypaths/validation-errors validation-errors))
+
+(defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
+  (assoc-in app-state keypaths/pending-promo-code nil))
 
 (defmethod transition-state events/api-handle-order-not-found [_ _ _ app-state]
   (assoc-in app-state keypaths/order nil))

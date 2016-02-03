@@ -158,6 +158,7 @@
 (def api-failure-no-network-connectivity (conj api-failure :no-network-connectivity))
 (def api-failure-bad-server-response (conj api-failure :bad-server-response))
 (def api-failure-validation-errors (conj api-failure :validation-errors))
+(def api-failure-pending-promo-code (conj api-failure :pending-promo-code))
 
 (def api-handle (conj api :handle))
 (def api-handle-order-not-found (conj api-handle :order-not-found))

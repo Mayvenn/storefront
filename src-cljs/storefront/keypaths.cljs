@@ -33,6 +33,7 @@
 (def order-number (conj order :number))
 (def order-total-applicable-store-credit (conj order :total_applicable_store_credit))
 
+(def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
 
 (def past-orders [:past-orders])

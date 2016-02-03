@@ -10,9 +10,7 @@
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
-(defn default-error-handler [handle-message req-key req-id response]
-  (handle-message events/api-end {:request-id req-id
-                                  :request-key req-key})
+(defn default-error-handler [handle-message response]
   (cond
     ;; aborted request
     (#{:aborted} (:failure response))
@@ -55,14 +53,18 @@
                        :format :json
                        :response-format (json-response-format {:keywords? true})})
 
-(defn merge-req-opts [handle-message req-key req-id {:keys [handler] :as request-opts}]
+(defn merge-req-opts [handle-message req-key req-id {:keys [handler error-handler] :as request-opts}]
   (merge default-req-opts
-         {:error-handler (partial default-error-handler handle-message req-key req-id)}
          request-opts
          {:handler (fn [res]
                      (handle-message events/api-end {:request-key req-key
                                                      :request-id req-id})
-                     (handler res))}))
+                     (handler res))
+          :error-handler (fn [response]
+                           (handle-message events/api-end {:request-id req-id
+                                                           :request-key req-key})
+                           ((or error-handler (partial default-error-handler handle-message))
+                            response))}))
 
 (defn api-req
   [handle-message method path req-key request-opts]
@@ -457,8 +459,8 @@
                          (drop 3 x)
                          x)))
           (callback [resp]
-                    (handle-message events/api-success-sms-number
-                                    {:number (-> resp :available_number normalize-number)}))]
+            (handle-message events/api-success-sms-number
+                            {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
       {:handler callback
        :headers {"Accepts" "application/json"
@@ -569,7 +571,7 @@
      :store-stylist-id store-stylist-id}
     :handler
     #(handle-message events/api-success-get-order %)
-    :error-handler nil}))
+    :error-handler (constantly nil)}))
 
 (defn get-past-order
   [handle-message order-number user-token user-id]
@@ -598,7 +600,7 @@
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 
-(defn add-promotion-code [handle-message number token promo-code]
+(defn add-promotion-code [handle-message number token promo-code allow-dormant?]
   (api-req
    handle-message
    POST
@@ -606,11 +608,16 @@
    request-keys/add-promotion-code
    {:params {:number number
              :token token
-             :code promo-code}
+             :code promo-code
+             :allow-dormant allow-dormant?}
     :handler #(handle-message events/api-success-update-order-add-promotion-code
-                              {:order %})}))
+                              {:order %
+                               :allow-dormant? allow-dormant?})
+    :error-handler #(if allow-dormant?
+                      (handle-message events/api-failure-pending-promo-code %)
+                      (default-error-handler handle-message %))}))
 
-(defn add-to-bag [handle-message {:keys [token number variant], :as params}]
+(defn add-to-bag [handle-message {:keys [token number variant] :as params}]
   (api-req
    handle-message
    POST

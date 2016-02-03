@@ -83,6 +83,12 @@
     (opengraph/set-site-tags)
     (scroll/scroll-to-top)
 
+    (when-let [pending-promo-code (-> nav-args :query-params :sha)]
+      (cookie-jar/save-pending-promo-code
+       (get-in app-state keypaths/cookie)
+       pending-promo-code)
+      (routes/enqueue-redirect app-state nav-event (update-in nav-args [:query-params] dissoc :sha)))
+
     (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
       (when-not (or
                  (empty? (get-in app-state keypaths/flash-success-nav))
@@ -366,7 +372,8 @@
   (api/add-promotion-code (get-in app-state keypaths/handle-message)
                           (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)
-                          (get-in app-state keypaths/cart-coupon-code)))
+                          (get-in app-state keypaths/cart-coupon-code)
+                          false))
 
 (defn- modify-cart [app-state args f]
   (f (get-in app-state keypaths/handle-message)
@@ -592,12 +599,19 @@
 (defmethod perform-effects events/api-success-get-past-order [_ event order app-state]
   (ensure-products-for-order order app-state))
 
+(defn add-pending-promo-code [app-state {:keys [number token] :as order}]
+  (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
+    (api/add-promotion-code (get-in app-state keypaths/handle-message)
+                            number token pending-promo-code true)))
+
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (ensure-products-for-order order app-state)
   (if (and (orders/incomplete? order)
-           (= (order :number)
+           (= (:number order)
               (get-in app-state keypaths/order-number)))
-    (save-cookie app-state true)
+    (do
+      (save-cookie app-state true)
+      (add-pending-promo-code app-state order))
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
@@ -644,9 +658,13 @@
         {:message (:error-message validation-errors)
          :navigation (get-in app-state keypaths/navigation-message)}))
 
+(defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
+  (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
+
 (defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
   (let [{:keys [product quantity variant]} requested]
     (save-cookie app-state true)
+    (add-pending-promo-code app-state (get-in app-state keypaths/order))
     (when (bundle-builder/included-product? product)
       (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
         (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
@@ -679,11 +697,13 @@
   (when (experiments/display-variation app-state "address-auto-fill")
     (places-autocomplete/attach app-state (:address-key args))))
 
-(defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ _ app-state]
-  (send app-state
-        events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                   :navigation [events/navigate-cart {}]})
-  (send app-state events/flash-dismiss-failure))
+(defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
+  (send app-state events/flash-dismiss-failure)
+  (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie))
+  (when-not allow-dormant?
+    (send app-state
+          events/flash-show-success {:message "The coupon code was successfully applied to your order."
+                                     :navigation [events/navigate-cart {}]})))
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
