@@ -1,140 +1,185 @@
 footer {
-  position: relative;
-  background-color: #d3d3d3;
+    position: relative;
+    background-color: #d3d3d3;
+
+    &.badges {
+        background-color: transparent;
+    }
+
+    .checkout {
+        hr {
+            width: 90%;
+        }
+
+        height: 200px;
+        .help-phone {
+            text-align: center;
+            padding-top: 10px;
+            padding-bottom: 20px;
+        }
+        .badges {
+            @include display(flex);
+            width: 380px;
+            margin: auto;
+
+            .guarantee {
+                background-image: url('/images/30DaySeal.png');
+                width: 120px;
+                height: 120px;
+                @include stretch-bg
+            }
+
+            .security {
+                margin-left: 20px;
+                width: 215px;
+                height: 120px;
+                @include stretch-bg
+                &.homemade-seal {
+                    background-image: url('/images/SafeSeal.png');
+                }
+                &.norton-seal {
+                    background-image: url('/images/NortonSeal.png');
+                }
+                &.mcafee-seal {
+                    background-image: url('/images/McAfeeSecure.png');
+                }
+            }
+        }
+    }
 }
 
 .legal {
-  padding-right: 22px;
-  border-top: solid #ededed 1px;
-  height: 52px;
-  position: relative;
-  color: white;
-
-  .copyright {
-    position: absolute;
-    font-weight: bold;
-    text-transform: uppercase;
-    top: 16px;
-    right: 260px;
-  }
-
-  a {
+    padding-right: 22px;
+    border-top: solid #ededed 1px;
     height: 52px;
-    line-height: 52px;
-    display: inline-block;
-    margin: 0 8px;
-    font-family: $secondary_font;
+    position: relative;
     color: white;
-    display: block;
-    float: right;
-  }
+
+    .copyright {
+        position: absolute;
+        font-weight: bold;
+        text-transform: uppercase;
+        top: 16px;
+        right: 260px;
+    }
+
+    a {
+        height: 52px;
+        line-height: 52px;
+        display: inline-block;
+        margin: 0 8px;
+        font-family: $secondary_font;
+        color: white;
+        display: block;
+        float: right;
+    }
 }
 
 .icon-facebook {
-  background-image: url('/images/desktop_assets/footer-facebook.png');
+    background-image: url('/images/desktop_assets/footer-facebook.png');
 }
 
 .icon-instagram {
-  background-image: url('/images/desktop_assets/footer-instagram.png');
+    background-image: url('/images/desktop_assets/footer-instagram.png');
 }
 
 .icon-pinterest {
-  background-image: url('/images/desktop_assets/footer-pinterest.png');
+    background-image: url('/images/desktop_assets/footer-pinterest.png');
 }
 
 .icon-twitter {
-  background-image: url('/images/desktop_assets/footer-twitter.png');
+    background-image: url('/images/desktop_assets/footer-twitter.png');
 }
 
 .contact-us {
-  position: relative;
-  height: 52px;
+    position: relative;
+    height: 52px;
 }
 
 .cu-item {
-  position: relative;
-  display: block;
-  height: 52px;
-  line-height: 52px;
-  width: 133px;
-  border-left: solid #ededed 1px;
-  float: right;
+    position: relative;
+    display: block;
+    height: 52px;
+    line-height: 52px;
+    width: 133px;
+    border-left: solid #ededed 1px;
+    float: right;
 
-  i {
-    @include stretch-bg;
-    position: absolute;
-    top: 6px;
-    left: 16px;
-    height: 40px;
-    width: 40px;
-  }
+    i {
+        @include stretch-bg;
+        position: absolute;
+        top: 6px;
+        left: 16px;
+        height: 40px;
+        width: 40px;
+    }
 }
 
 .cu-link {
-  display: block;
-  color: white;
-  width: 100%;
-  height: 100%;
-  padding-left: 40px;
-  text-transform: uppercase;
-  text-align: center;
-  font-size: 12px;
+    display: block;
+    color: white;
+    width: 100%;
+    height: 100%;
+    padding-left: 40px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 12px;
 }
 
 .icon-chat {
-  background-image: url('/images/desktop_assets/footer-text.png');
+    background-image: url('/images/desktop_assets/footer-text.png');
 }
 
 .icon-email {
-  background-image: url('/images/desktop_assets/footer-email.png');
+    background-image: url('/images/desktop_assets/footer-email.png');
 }
 
 .icon-phone {
-  background-image: url('/images/desktop_assets/footer-call.png');
+    background-image: url('/images/desktop_assets/footer-call.png');
 }
 
 .contact-us-menu {
-  position: absolute;
-  right: 0;
-  top: 0;
-  margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 0;
 }
 
 .sm-list {
-  position: absolute;
-  top: 0;
-  left: 106px;
-  margin: 0;
-  padding: 0;
+    position: absolute;
+    top: 0;
+    left: 106px;
+    margin: 0;
+    padding: 0;
 }
 
 .sm-icon {
-  float: left;
-  display: block;
-  height: 52px;
-  width: 52px;
-  @include stretch-bg;
-  background-size: 67%;
-  border-right: solid #eee 1px;
+    float: left;
+    display: block;
+    height: 52px;
+    width: 52px;
+    @include stretch-bg;
+    background-size: 67%;
+    border-right: solid #eee 1px;
 }
 
 .footer-logo-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 105px;
-  height: 104px;
-  background-color: #d3d3d3;
-  z-index: 1;
-  border-right: solid #eee 1px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 105px;
+    height: 104px;
+    background-color: #d3d3d3;
+    z-index: 1;
+    border-right: solid #eee 1px;
 }
 
 .footer-logo {
-  position: absolute;
-  height: 52px;
-  width: 27px;
-  top: 26px;
-  left: 39px;
-  background-image: url('/images/desktop_assets/footer-mayvenn-logo.png');
-  @include stretch-bg;
+    position: absolute;
+    height: 52px;
+    width: 27px;
+    top: 26px;
+    left: 39px;
+    background-image: url('/images/desktop_assets/footer-mayvenn-logo.png');
+    @include stretch-bg;
 }
