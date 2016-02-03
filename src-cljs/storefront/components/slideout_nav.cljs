@@ -101,7 +101,7 @@
             (when (own-store? data)
               [:div
                [:li
-                [:a (close-and-route data events/navigate-stylist-commissions) "Orders & Commissions"]]
+                [:a (close-and-route data events/navigate-stylist-commissions) "Commissions & Payouts"]]
                [:li
                 [:a (close-and-route data events/navigate-stylist-bonus-credit) "Bonus Credit"]]
                [:li
