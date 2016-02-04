@@ -72,5 +72,5 @@
 
 (def save-user (partial save-cookie user))
 (def save-order (partial save-cookie order))
-(defn save-pending-promo-code [cookie pending-promo-code]
-  (save-cookie pending-promo-code cookie {:pending-promo-code pending-promo-code}))
+(defn save-pending-promo-code [cookie promo-code]
+  (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
