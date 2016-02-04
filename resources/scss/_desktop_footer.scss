@@ -33,7 +33,7 @@ footer {
                 margin-left: 20px;
                 width: 215px;
                 height: 120px;
-                @include stretch-bg
+                @include stretch-bg;
                 &.homemade-seal {
                     background-image: url('/images/SafeSeal.png');
                 }
