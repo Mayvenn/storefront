@@ -83,7 +83,6 @@
        "/signup" (edn->bidi events/navigate-sign-up)
        "/password/recover" (edn->bidi events/navigate-forgot-password)
        ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
-       "/account" (edn->bidi events/navigate-my-orders)
        "/account/edit" (edn->bidi events/navigate-manage-account)
        "/cart" (edn->bidi events/navigate-cart)
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)

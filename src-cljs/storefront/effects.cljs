@@ -202,11 +202,6 @@
                       (get-in app-state keypaths/user-token)
                       (get-in app-state keypaths/user-id)))
 
-(defmethod perform-effects events/navigate-my-orders [_ event args app-state]
-  (comment (when-let [user-token (get-in app-state keypaths/user-token)]
-             (api/get-my-orders (get-in app-state keypaths/handle-message)
-                                user-token))))
-
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
          app-state

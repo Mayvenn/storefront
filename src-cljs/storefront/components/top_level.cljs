@@ -30,8 +30,7 @@
             [storefront.components.checkout-confirmation :refer [checkout-confirmation-component]]
             [storefront.components.checkout-complete :refer [checkout-complete-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
-            [storefront.components.order :refer [order-component]]
-            [storefront.components.my-orders :refer [my-orders-component]]))
+            [storefront.components.order :refer [order-component]]))
 
 (defn top-level-component [data owner]
   (om/component
@@ -92,7 +91,6 @@
            events/navigate-stylist-referrals stylist-referrals-component
            events/navigate-stylist-manage-account stylist-manage-account-component
            events/navigate-manage-account (requires-sign-in data manage-account-component)
-           events/navigate-my-orders (requires-sign-in data my-orders-component)
            events/navigate-checkout-address (requires-sign-in data checkout-address-component)
            events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)

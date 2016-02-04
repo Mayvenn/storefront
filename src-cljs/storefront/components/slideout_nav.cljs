@@ -113,8 +113,6 @@
                [:li
                 [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]])
             [:li
-             [:a (close-and-route data events/navigate-my-orders) "My Orders"]]
-            [:li
              [:a
               (if (own-store? data)
                 (close-and-route data events/navigate-stylist-manage-account)
@@ -222,13 +220,6 @@
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)
             [:div
-             (slideout-nav-link
-              data
-              (merge
-               (close-and-route data events/navigate-my-orders)
-               {:icon-class "my-orders"
-                :label "My Orders"
-                :full-width? true}))
              (slideout-nav-link
               data
               (merge (if (own-store? data)
