@@ -458,9 +458,8 @@
             (apply str (if (= "+" (first x))
                          (drop 3 x)
                          x)))
-          (callback [resp]
-            (handle-message events/api-success-sms-number
-                            {:number (-> resp :available_number normalize-number)}))]
+          (callback [resp] (handle-message events/api-success-sms-number
+                                           {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
       {:handler callback
        :headers {"Accepts" "application/json"
