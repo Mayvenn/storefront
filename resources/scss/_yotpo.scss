@@ -143,3 +143,38 @@ div.yotpo {
     }
   }
 }
+
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  div.yotpo {
+    &.yotpo-main-widget .yotpo-bottomline.yotpo-bottomline-2-boxes .yotpo-bottomline-box-2 .yotpo-star-distribution .yotpo-star-distribution-content {
+      .yotpo-distributions-graphs .yotpo-star-distribution-graph {
+        margin-top: (0.8rem / 2) !important;
+        margin-bottom: (0.8rem / 2) !important;
+        height: 0.8333rem;
+        width: (7.0833rem / 2);
+
+        &:first-child {
+          margin-top: (0rem) !important;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .yotpo-star-distribution-score-wrapper .yotpo-star-distribution-graph-score {
+          background-color: $primary_color;
+        }
+      }
+    }
+    .yotpo-star-distribution {
+      margin-left: 0px !important;
+    }
+    .yotpo-star-distribution, .yotpo-stars-and-sum-reviews, .write-question-button {
+      font-size: 0.7rem !important;
+    }
+    .yotpo-default-button.write-question-button {
+      font-size: 0.7rem !important;
+    }
+  }
+}
