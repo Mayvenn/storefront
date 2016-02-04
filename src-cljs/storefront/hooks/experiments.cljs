@@ -28,6 +28,9 @@
 (defn faq-section? [data]
   (display-variation data "faq"))
 
+(defn show-store-credit? [data]
+  (display-variation data "store-credit-view"))
+
 (defn activate-universal-analytics []
   (when (.hasOwnProperty js/window "optimizely")
     (.activateUniversalAnalytics js/optimizely)))

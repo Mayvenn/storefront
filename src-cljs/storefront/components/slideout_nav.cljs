@@ -9,6 +9,7 @@
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.messages :refer [send]]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.hooks.experiments :as experiments]))
 
 (defn close-all-menus [app-state]
@@ -83,6 +84,11 @@
                 (utils/send-event-callback data
                                            events/control-menu-expand
                                            {:keypath keypaths/account-menu-expanded}))}
+             (when (experiments/show-store-credit? data)
+               [:span.stylist-user-label "Store credit:"
+                [:span.store-credit-amount
+                 (when-let [credit (get-in data keypaths/user-total-available-store-credit)]
+                   (as-money credit))]])
              [:span.account-detail-name
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
@@ -152,6 +158,13 @@
                                 {:taxon-path path}))
              "Stylist Only Products"]]])
         [:ul.slideout-nav-list
+         (when (experiments/show-store-credit? data)
+           [:li.slideout-nav-section
+            [:h4.store-credit
+             [:span.label "Available store credit:"]
+             [:span.value
+              (when-let [credit (get-in data keypaths/user-total-available-store-credit)]
+                (as-money credit))]]])
          (when (own-store? data)
            [:li.slideout-nav-section.stylist
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
