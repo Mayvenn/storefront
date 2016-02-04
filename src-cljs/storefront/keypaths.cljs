@@ -22,6 +22,7 @@
 
 (def order [:order])
 (def order-total (conj order :total))
+(def order-promotion-codes (conj order :promotion-codes))
 (def order-cart-payments (conj order :cart-payments))
 (def order-cart-payments-paypal (conj order-cart-payments :paypal))
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))

@@ -74,7 +74,10 @@
     (refresh-account app-state)
     (api/get-sms-number (get-in app-state keypaths/handle-message))
     (api/get-promotions (get-in app-state keypaths/handle-message)
-                        (get-in app-state keypaths/api-cache))
+                        (get-in app-state keypaths/api-cache)
+                        (or
+                         (first (get-in app-state keypaths/order-promotion-codes))
+                         (get-in app-state keypaths/pending-promo-code)))
 
     (when-let [order-number (get-in app-state keypaths/order-number)]
       (api/get-order (get-in app-state keypaths/handle-message)
@@ -701,7 +704,10 @@
   (when-not allow-dormant?
     (send app-state
           events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                     :navigation [events/navigate-cart {}]})))
+                                     :navigation [events/navigate-cart {}]}))
+  (api/get-promotions (get-in app-state keypaths/handle-message)
+                      (get-in app-state keypaths/api-cache)
+                      (first (get-in app-state keypaths/order-promotion-codes))))
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)

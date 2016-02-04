@@ -127,15 +127,15 @@
     :handler
     #(handle-message events/api-success-store %)}))
 
-(defn get-promotions [handle-message cache]
+(defn get-promotions [handle-message cache promo-code]
   (cache-req
    cache
    handle-message
    GET
    "/promotions"
    request-keys/get-promotions
-   {:handler
-    #(handle-message events/api-success-promotions %)}))
+   {:params {:promo-code promo-code}
+    :handler #(handle-message events/api-success-promotions %)}))
 
 (defn get-products [handle-message cache taxon-path user-token]
   (cache-req
