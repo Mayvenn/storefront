@@ -1,171 +1,171 @@
 .footer-logo-container {
-  display: none;
+    display: none;
 }
 
 .fs-envelope {
-  position: absolute;
-  background-image: url('/images/free_shipping_envelope.png');
-  @include stretch-bg;
-  top: 1em;
-  left: 2em;
-  width: (73em / 12);
-  height: (32.5em / 12);
+    position: absolute;
+    background-image: url('/images/free_shipping_envelope.png');
+    @include stretch-bg;
+    top: 1em;
+    left: 2em;
+    width: (73em / 12);
+    height: (32.5em / 12);
 }
 
 .fs-text {
-  position: absolute;
-  background-image: url('/images/free_shipping.png');
-  @include stretch-bg;
-  top: 1em;
-  right: (30em / 12);
-  width: (141.5em / 12);
-  height: (35.5em / 12);
+    position: absolute;
+    background-image: url('/images/free_shipping.png');
+    @include stretch-bg;
+    top: 1em;
+    right: (30em / 12);
+    width: (141.5em / 12);
+    height: (35.5em / 12);
 }
 
 .icon-facebook a {
-  background-image: url('/images/desktop_assets/footer-facebook.png');
+    background-image: url('/images/desktop_assets/footer-facebook.png');
 }
 
 .icon-instagram a {
-  background-image: url('/images/desktop_assets/footer-instagram.png');
+    background-image: url('/images/desktop_assets/footer-instagram.png');
 }
 
 .icon-pinterest a {
-  background-image: url('/images/desktop_assets/footer-pinterest.png');
+    background-image: url('/images/desktop_assets/footer-pinterest.png');
 }
 
 .icon-twitter a {
-  background-image: url('/images/desktop_assets/footer-twitter.png');
+    background-image: url('/images/desktop_assets/footer-twitter.png');
 }
 
 .icon-chat, .icon-email, .icon-phone {
-  position: absolute;
-  top: (8rem / $default-font-size);
-  left: (20rem / $default-font-size);
-  display: block;
-  background-repeat: no-repeat;
-  background-position: center;
-  @include stretch-bg;
-  margin-bottom: 0.25rem;
-  margin-left: auto;
-  margin-right: auto;
-  width: (80rem / $default-font-size);
-  height: (80rem / $default-font-size);
+    position: absolute;
+    top: (8rem / $default-font-size);
+    left: (20rem / $default-font-size);
+    display: block;
+    background-repeat: no-repeat;
+    background-position: center;
+    @include stretch-bg;
+    margin-bottom: 0.25rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: (80rem / $default-font-size);
+    height: (80rem / $default-font-size);
 }
 
 .icon-phone {
-  background-image: url('/images/desktop_assets/footer-call.png');
+    background-image: url('/images/desktop_assets/footer-call.png');
 }
 
 .icon-email {
-  background-image: url('/images/desktop_assets/footer-email.png');
+    background-image: url('/images/desktop_assets/footer-email.png');
 }
 
 .icon-chat {
-  background-image: url('/images/desktop_assets/footer-text.png');
+    background-image: url('/images/desktop_assets/footer-text.png');
 }
 
 .footer-container {
-  position: relative;
-  margin: 0 auto;
-  width: (320em / 12);
+    position: relative;
+    margin: 0 auto;
+    width: (320em / 12);
 }
 
 .contact-us {
-  height: (100rem / $default-font-size);
-  border-top: solid white 1px;
-  border-bottom: solid white 1px;
-  background-color: #ccc;
+    height: (100rem / $default-font-size);
+    border-top: solid white 1px;
+    border-bottom: solid white 1px;
+    background-color: #ccc;
 }
 
 .contact-us-menu {
-  @include display(flex);
-  margin: 0;
-  padding: 0;
-  width: 100%;
+    @include display(flex);
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .cu-item {
-  position: relative;
-  padding-left: (60rem / $default-font-size);
-  width: 33.3333%;
-  height: (100rem / $default-font-size);
-  line-height: (100rem / $default-font-size);
-  border-right: solid white 1px;
-  list-style-type: none;
+    position: relative;
+    padding-left: (60rem / $default-font-size);
+    width: 33.3333%;
+    height: (100rem / $default-font-size);
+    line-height: (100rem / $default-font-size);
+    border-right: solid white 1px;
+    list-style-type: none;
 
-  &:last-child {
-    border-right: none;
-  }
+    &:last-child {
+        border-right: none;
+    }
 }
 
 a.cu-link {
-  color: white;
-  display: block;
-  text-align: center;
-  font-size: (20rem / $default-font-size);
-  font-family: $primary_font_medium;
-  text-transform: uppercase;
+    color: white;
+    display: block;
+    text-align: center;
+    font-size: (20rem / $default-font-size);
+    font-family: $primary_font_medium;
+    text-transform: uppercase;
 }
 
 .sm-icons {
-  background-color: #ccc;
+    background-color: #ccc;
 }
 
 .sm-list {
-  margin: 0 auto;
-  padding: 0;
-  height: (100rem / $default-font-size);
+    margin: 0 auto;
+    padding: 0;
+    height: (100rem / $default-font-size);
 }
 
 .sm-icon {
-  float: left;
-  list-style: none;
-  width: 25%;
-  height: 100%;
-  padding: (10rem / $default-font-size) (40rem / $default-font-size);
-  border-right: solid #ebebeb (2rem / $default-font-size);
+    float: left;
+    list-style: none;
+    width: 25%;
+    height: 100%;
+    padding: (10rem / $default-font-size) (40rem / $default-font-size);
+    border-right: solid #ebebeb (2rem / $default-font-size);
 
-  &:last-child {
-    border-right: none;
-  }
+    &:last-child {
+        border-right: none;
+    }
 
-  a {
-    @include stretch-bg;
-  }
+    a {
+        @include stretch-bg;
+    }
 }
 
 .legal {
-  background-color: #ccc;
-  position: relative;
-  height: (49rem / $default-font-size);
-  line-height: (49rem / $default-font-size);
-  border-top: solid white 1px;
-  font-size: (11em / 12);
-  padding: 0 (8em / 11) (10em / 11) (16rem / $default-font-size);
+    background-color: #ccc;
+    position: relative;
+    height: (49rem / $default-font-size);
+    line-height: (49rem / $default-font-size);
+    border-top: solid white 1px;
+    font-size: (11em / 12);
+    padding: 0 (8em / 11) (10em / 11) (16rem / $default-font-size);
 }
 
 .copyright {
-  position: absolute;
-  color: white;
-  text-transform: uppercase;
-  top: 0;
-  left: (16rem / $default-font-size);
-  height: 100%;
-  line-height: (49rem / $default-font-size);
+    position: absolute;
+    color: white;
+    text-transform: uppercase;
+    top: 0;
+    left: (16rem / $default-font-size);
+    height: 100%;
+    line-height: (49rem / $default-font-size);
 }
 
 .privacy, .terms {
-  float: right;
-  display: inline-block;
-  color: white;
-  font-family: $secondary_font;
-  margin: (15rem / $default-font-size) 0;
-  height: (19rem / $default-font-size);
-  line-height: (19rem / $default-font-size);
-  padding: 0 (8em / 12);
+    float: right;
+    display: inline-block;
+    color: white;
+    font-family: $secondary_font;
+    margin: (15rem / $default-font-size) 0;
+    height: (19rem / $default-font-size);
+    line-height: (19rem / $default-font-size);
+    padding: 0 (8em / 12);
 }
 
 .privacy {
-  border-right: solid white (1em / 12);
+    border-right: solid white (1em / 12);
 }
