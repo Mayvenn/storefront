@@ -35,7 +35,7 @@
         badge-variation (some #(if (experiments/display-variation data %1) %1) checkout-footer-variations)]
     (om/component
      (html
-      [:footer#footer {:class (when badge-variation "badges")}
+      [:footer#footer {:class (when (and badge-variation checkout-footer?) "badges")}
        (list
         (when-not minimal-footer?
           [:div.footer-logo-container [:figure.footer-logo]])
