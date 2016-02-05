@@ -134,7 +134,7 @@
    GET
    "/promotions"
    request-keys/get-promotions
-   {:params {:promo-code promo-code}
+   {:params {:additional-promo-code promo-code}
     :handler #(handle-message events/api-success-promotions %)}))
 
 (defn get-products [handle-message cache taxon-path user-token]
