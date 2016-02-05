@@ -693,17 +693,25 @@
   (when (experiments/display-variation app-state "address-auto-fill")
     (places-autocomplete/attach app-state (:address-key args))))
 
-(defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
+(defn update-cart-flash [app-state msg]
+  (send app-state events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
+
+(defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
   (send app-state events/flash-dismiss-failure)
-  (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie))
-  (when-not allow-dormant?
-    (send app-state
-          events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                     :navigation [events/navigate-cart {}]}))
+  (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
+
+(defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
+  (when-not allow-dormant? (update-cart-flash app-state "The coupon code was successfully applied to your order."))
   (api/get-promotions (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
+(defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
+  (update-cart-flash app-state "The coupon code was successfully removed from your order."))
+
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
   (analytics/track-event "optimizely-experiment" (:variation args)))
+
+(defmethod perform-effects events/remove-promotion [_ _ {:keys [code]} app-state]
+  (api/remove-promotion-code (get-in app-state keypaths/handle-message) (get-in app-state keypaths/order) code))

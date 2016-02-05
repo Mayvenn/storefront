@@ -167,6 +167,12 @@ a.button.continue {
 
   h5 {
     font-size: (20em / $default-font-size);
+    a {
+        margin-left: 1em;
+        font-size: (22em / $default-font-size);
+        text-transform: capitalize;
+        text-decoration: underline;
+    }
   }
 
   &.adjustment {

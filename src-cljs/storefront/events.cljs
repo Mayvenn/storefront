@@ -146,7 +146,9 @@
 (def api-success-update-order-update-address (conj api-success-update-order :update-address))
 (def api-success-update-order-update-cart-payments (conj api-success-update-order :update-cart-payments))
 (def api-success-update-order-update-shipping-method (conj api-success-update-order :update-shipping-method))
-(def api-success-update-order-add-promotion-code (conj api-success-update-order :add-promotion-code))
+(def api-success-update-order-modify-promotion-code (conj api-success-update-order :promotion-code))
+(def api-success-update-order-add-promotion-code (conj api-success-update-order-modify-promotion-code :add))
+(def api-success-update-order-remove-promotion-code (conj api-success-update-order-modify-promotion-code :remove))
 (def api-success-update-order-place-order (conj api-success-update-order :place-order))
 (def api-success-promotions (conj api-success :promotions))
 (def api-success-my-orders (conj api-success :my-orders))
@@ -197,3 +199,5 @@
 (def checkout-address-place-changed (conj checkout-address :place-changed))
 (def checkout-address-component-mounted (conj checkout-address :component-mounted))
 (def checkout-address-component-updated (conj checkout-address :component-updated))
+
+(def remove-promotion [:remove-promotion])

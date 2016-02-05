@@ -32,11 +32,14 @@
     "10% Bundle Discount"
     name))
 
-(defn- display-adjustment-row [data {:keys [name price]}]
+(defn- display-adjustment-row [data {:keys [name price coupon-code]}]
   (when-not (= price 0)
     [:tr.order-summary-row.adjustment
      [:td
-      [:h5 (display-adjustment-name data name)]]
+      [:h5 (display-adjustment-name data name)
+       (when coupon-code
+         (let [on-click (utils/send-event-callback data events/remove-promotion {:code coupon-code})]
+           [:a {:href "" :on-click on-click} "Remove"]))]]
      [:td
       [:h5 (as-money price)]]]))
 

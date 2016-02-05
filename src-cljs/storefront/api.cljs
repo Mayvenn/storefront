@@ -628,3 +628,13 @@
     :handler #(handle-message events/api-success-add-to-bag
                               {:order %
                                :requested (select-keys params [:quantity :product :variant])})}))
+
+(defn remove-promotion-code [handle-message {:keys [token number]} promo-code]
+  (api-req
+   handle-message
+   POST
+   "/v2/remove-promotion-code"
+   request-keys/remove-promotion-code
+   {:params {:number number :token token :code promo-code}
+    :handler #(handle-message events/api-success-update-order-remove-promotion-code
+                              {:order %})})) 
