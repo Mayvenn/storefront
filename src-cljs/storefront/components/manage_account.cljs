@@ -4,6 +4,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.keypaths :as keypaths]))
 
 (defn manage-account-component [data owner]
@@ -38,7 +39,11 @@
          [:input.title#user-password-confirmation
           (merge (utils/change-text data owner keypaths/manage-account-password-confirmation)
                  {:type "password"
-                  :name "password-confirmation"})]]]
-       [:p.user-password-instructions "Leave blank to keep the same password."]
+                  :name "password-confirmation"})]]
+        [:p.user-password-instructions "Leave blank to keep the same password."]]
+
+        [:fieldset.billing-fieldset
+        [:legend {:align "center"} "Store Credit"]
+        [:p.user-password-instructions "Available store credit is " (as-money (get-in data keypaths/user-total-available-store-credit))]]
        [:p
         [:input.button.primary {:type "submit" :value "Update"}]]]]])))

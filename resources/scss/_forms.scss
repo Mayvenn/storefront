@@ -32,3 +32,42 @@
     margin: 0.5em 0;
   }
 }
+
+fieldset {
+  border: none;
+  margin-top: 1em;
+  padding: 0.35em 0 0.75em;
+
+  legend {
+    font-family: $primary_font_medium;
+    font-size: 0.917rem;
+    color: $dark_grey;
+    display: block;
+    width: 100%;
+    text-align: left;
+    text-transform: uppercase;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0.417rem 0;
+  }
+
+  input[type=tel],
+  input[type=text] {
+    border: 1px solid $lighter_blue_grey;
+    width: 100%;
+    padding-left: 0.5rem;
+  }
+
+  select,
+  input[type=tel],
+  input[type=text] {
+    line-height: 2.67rem;
+    height: 2.67rem;
+    margin: 0.2rem 0 0.75rem 0;
+  }
+
+  label {
+    font-size: 1.08rem;
+    font-family: $secondary_font;
+    color: $dark_grey;
+  }
+}
