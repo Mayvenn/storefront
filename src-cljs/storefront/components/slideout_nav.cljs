@@ -12,6 +12,10 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.hooks.experiments :as experiments]))
 
+(defn show-store-credit? [app-state]
+  (when-let [credit (get-in app-state keypaths/user-total-available-store-credit)]
+    (pos? credit)))
+
 (defn close-all-menus [app-state]
   (send app-state
         events/control-menu-collapse
@@ -84,11 +88,11 @@
                 (utils/send-event-callback data
                                            events/control-menu-expand
                                            {:keypath keypaths/account-menu-expanded}))}
-             (when (experiments/show-store-credit? data)
+             (when (and (experiments/show-store-credit? data)
+                        (show-store-credit? data))
                [:span.stylist-user-label "Store credit:"
                 [:span.store-credit-amount
-                 (when-let [credit (get-in data keypaths/user-total-available-store-credit)]
-                   (as-money credit))]])
+                 (as-money (get-in data keypaths/user-total-available-store-credit))]])
              [:span.account-detail-name
               (when (own-store? data)
                 [:span.stylist-user-label "Stylist:"])
@@ -156,13 +160,13 @@
                                 {:taxon-path path}))
              "Stylist Only Products"]]])
         [:ul.slideout-nav-list
-         (when (experiments/show-store-credit? data)
+         (when (and (experiments/show-store-credit? data)
+                    (show-store-credit? data))
            [:li.slideout-nav-section
             [:h4.store-credit
              [:span.label "Available store credit:"]
              [:span.value
-              (when-let [credit (get-in data keypaths/user-total-available-store-credit)]
-                (as-money credit))]]])
+              (as-money (get-in data keypaths/user-total-available-store-credit))]]])
          (when (own-store? data)
            [:li.slideout-nav-section.stylist
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
