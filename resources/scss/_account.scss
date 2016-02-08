@@ -84,42 +84,6 @@ a.forgot-password {
   font-family: $primary_font_regular;
 }
 
-.account-my-orders {
-  padding: 1em;
-}
-
-.update-coming {
-  font-size: 1rem;
-  text-align: center;
-  margin-bottom: 40px;
-
-  .update-image {
-    height:110px;
-    width:110px;
-    margin-left:auto;
-    margin-right:auto;
-    background-repeat: no-repeat;
-    background-image: url("/images/mayvenn_wave_green.png");
-  }
-
-  .update-header {
-    text-align: center;
-    font-size: 1.4rem;
-    margin-top: 1rem;
-    margin-bottom: 0.6rem;
-    text-transform: uppercase;
-    color: $darker_text;
-  }
-
-  .update-help {
-    margin-top: 10px;
-  }
-}
-
-.order-money {
-  text-align: right;
-}
-
 .order-label {
   color: white;
   text-transform: uppercase;
@@ -168,27 +132,5 @@ a.forgot-password {
 
   .user-password-instructions {
     color: $primary_color_text;
-  }
-}
-
-.store-credit-balance-wrapper {
-  margin: 1em;
-  padding: 1rem (20rem / $default-font-size);
-  background-color: #777;
-  color: white;
-
-  &.no-credit {
-    background-color: #ccc;
-  }
-
-  .store-credit-balance {
-    margin-top: -0.5rem;
-    float: right;
-    display: block;
-    background-color: #e6e3e3;
-    font-weight: bold;
-    padding: 0.5rem 0.25rem;
-    color: gray;
-    height: auto;
   }
 }
