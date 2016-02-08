@@ -42,7 +42,7 @@
                   :name "password-confirmation"})]]
         [:p.user-password-instructions "Leave blank to keep the same password."]]
 
-        [:fieldset.billing-fieldset
+       [:fieldset
         [:legend {:align "center"} "Store Credit"]
         [:p.user-password-instructions "Available store credit is " (as-money (get-in data keypaths/user-total-available-store-credit))]]
        [:p
