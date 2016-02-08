@@ -113,6 +113,11 @@ div#next-commission-summary {
     @include flex-wrap(wrap);
     width: 100%;
     margin: 0;
+
+    .select-payout-method, .social-media, #store-credit {
+      margin-top: 0;
+      width: 47%;
+    }
   }
 }
 
@@ -122,11 +127,6 @@ div#next-commission-summary {
 
 .select-payout-method {
   margin-right: 6%;
-}
-
-.select-payout-method, div.social-media {
-  margin-top: 0;
-  width: 47%;
 }
 
 .profile-sections {

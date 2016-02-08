@@ -213,4 +213,12 @@
          (input-field data owner [:styleseat_account]
                       :placeholder "Enter your StyleSeat username")]]
 
+       (when-let [available-credit (get-in data keypaths/user-total-available-store-credit)]
+         [:#store-credit
+          [:h4.dashboard-details-header "Store Credit"]
+          [:.solid-line-divider]
+          [:div.password-reset
+           [:p.password-instructions
+            "Available store credit is " (f/as-money available-credit)]]])
+
        [:input.big-button {:name "commit" :type "submit" :value "Update Account"}]]]])))
