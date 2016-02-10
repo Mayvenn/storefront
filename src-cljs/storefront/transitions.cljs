@@ -278,9 +278,6 @@
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
   (update-in app-state keypaths/past-orders merge {(:number order) order}))
 
-(defmethod transition-state events/api-success-get-completed-order [_ event order app-state]
-  (assoc-in app-state keypaths/pending-talkable-order (talkable/completed-order order)))
-
 (defmethod transition-state events/api-success-my-orders [_ event {orders :orders} app-state]
   (let [order-ids (map :number orders)]
     (-> app-state
@@ -343,7 +340,7 @@
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
   (assoc-in app-state keypaths/order order))
 
-(defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
+(defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/order {})

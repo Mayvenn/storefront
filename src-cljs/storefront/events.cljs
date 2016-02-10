@@ -4,6 +4,9 @@
 (def app-start (conj app :start))
 (def app-stop (conj app :stop))
 
+(def domain [:domain])
+(def order-completed (conj domain :order-completed))
+
 (def external-redirect [:external-redirect])
 (def external-redirect-community (conj external-redirect [:community]))
 (def external-redirect-paypal-setup (conj external-redirect [:paypal-setup]))

@@ -195,7 +195,6 @@
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
   (when paypal
-    (experiments/track-event "place-order")
     (routes/enqueue-redirect app-state events/navigate-order-complete {:number number}))
   (when (and number order-token)
     (api/get-completed-order (get-in app-state keypaths/handle-message) number order-token)))
@@ -207,7 +206,7 @@
                       (get-in app-state keypaths/user-id)))
 
 (defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
-  (talkable/show-pending-offer app-state))
+  (send app-state events/order-completed order))
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
@@ -621,6 +620,9 @@
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
+  (send app-state events/order-completed order))
+
+(defmethod perform-effects events/order-completed [_ event order app-state]
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
