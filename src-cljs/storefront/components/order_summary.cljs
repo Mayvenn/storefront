@@ -38,7 +38,7 @@
      [:td
       [:h5 (display-adjustment-name data name)
        (when coupon-code
-         (let [on-click (utils/send-event-callback data events/remove-promotion {:code coupon-code})]
+         (let [on-click (utils/send-event-callback data events/control-checkout-remove-promotion {:code coupon-code})]
            [:a {:href "" :on-click on-click} "Remove"]))]]
      [:td
       [:h5 (as-money price)]]]))

@@ -501,6 +501,9 @@
                              (last expiry)
                              (get-in app-state (conj keypaths/order :billing-address)))))))
 
+(defmethod perform-effects events/control-checkout-remove-promotion [_ _ {:keys [code]} app-state]
+  (api/remove-promotion-code (get-in app-state keypaths/handle-message) (get-in app-state keypaths/order) code))
+
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
   (api/place-order (get-in app-state keypaths/handle-message)
                    (merge (get-in app-state keypaths/order)
@@ -721,5 +724,3 @@
   (experiments/activate-universal-analytics)
   (analytics/track-event "optimizely-experiment" (:variation args)))
 
-(defmethod perform-effects events/remove-promotion [_ _ {:keys [code]} app-state]
-  (api/remove-promotion-code (get-in app-state keypaths/handle-message) (get-in app-state keypaths/order) code))
