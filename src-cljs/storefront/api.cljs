@@ -558,6 +558,17 @@
     :handler
     #(handle-message events/api-success-get-order %)}))
 
+(defn get-completed-order [handle-message number token]
+  (api-req
+   handle-message
+   GET
+   (str "/v2/orders/" number)
+   request-keys/get-order
+   {:params
+    {:token token}
+    :handler
+    #(handle-message events/api-success-get-completed-order %)}))
+
 (defn get-current-order [handle-message user-id user-token store-stylist-id]
   (api-req
    handle-message
@@ -637,4 +648,4 @@
    request-keys/remove-promotion-code
    {:params {:number number :token token :code promo-code}
     :handler #(handle-message events/api-success-update-order-remove-promotion-code
-                              {:order %})})) 
+                              {:order %})}))

@@ -11,6 +11,7 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.util.codec :as codec]
             [ring-logging.core :as ring-logging]
             [storefront.prerender :refer [wrap-prerender]]
             [hiccup.page :as page]
@@ -216,7 +217,11 @@
                                        (headers "remote-addr")
                                        "localhost"))
                                  (:query-params request))
-       (redirect (str "/orders/" number "/complete?paypal=true"))
+       (redirect (str "/orders/"
+                      number
+                      "/complete?"
+                      (codec/form-encode {:paypal true
+                                          :order-token order-token})))
        (redirect (str "/cart?error=paypal-incomplete"))))))
 
 (defn create-handler

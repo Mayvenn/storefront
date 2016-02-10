@@ -22,6 +22,7 @@
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
+            [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [send send-later]]
             [storefront.routes :as routes]
@@ -52,6 +53,7 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
+  (talkable/insert)
   (api/get-store (get-in app-state keypaths/handle-message)
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug)))
@@ -191,16 +193,21 @@
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
   (stripe/insert app-state))
 
-(defmethod perform-effects events/navigate-order-complete [_ event args app-state]
-  (when (:paypal (:query-params args))
+(defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
+  (when paypal
     (experiments/track-event "place-order")
-    (routes/enqueue-redirect app-state events/navigate-order-complete {:number (:number args)})))
+    (routes/enqueue-redirect app-state events/navigate-order-complete {:number number}))
+  (when (and number order-token)
+    (api/get-completed-order (get-in app-state keypaths/handle-message) number order-token)))
 
 (defmethod perform-effects events/navigate-order [_ event args app-state]
   (api/get-past-order (get-in app-state keypaths/handle-message)
                       (get-in app-state keypaths/past-order-id)
                       (get-in app-state keypaths/user-token)
                       (get-in app-state keypaths/user-id)))
+
+(defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
+  (talkable/order-completed order))
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
@@ -416,7 +423,7 @@
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                        "&token=" (url-encode (:token order)))
+                                                        "&order-token=" (url-encode (:token order)))
                                      :cancel-url (str store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
@@ -614,7 +621,8 @@
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
-  (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
+  (cookie-jar/clear-order (get-in app-state keypaths/cookie))
+  (talkable/order-completed order))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
   (when (get-in app-state keypaths/checkout-save-my-addresses)

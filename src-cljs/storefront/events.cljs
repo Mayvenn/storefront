@@ -139,6 +139,7 @@
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-remove-from-bag (conj api-success :remove-from-bag))
 (def api-success-get-order (conj api-success :order))
+(def api-success-get-completed-order (conj api-success :completed-order))
 (def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 
