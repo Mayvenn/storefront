@@ -46,13 +46,13 @@
 (defn display-credit-card-form [data]
   [:.credit-card-container
    (field "name" "Cardholder's Name" data keypaths/checkout-credit-card-name identity)
-   (field "card_number" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
-          {:size 19 :max-length 19 :auto-complete "off" :data-hook "card_number" :class "required cardNumber" :type "tel"})
+   (field "cardNumber" "Credit Card Number" data keypaths/checkout-credit-card-number cc/format-cc-number
+          {:size 19 :max-length 19 :auto-complete "off" :class "required cardNumber" :type "tel"})
    (field "card_expiry" "Expiration" data keypaths/checkout-credit-card-expiration cc/format-expiration
-          {:data-hook "card_expiration" :class "required cardExpiry" :placeholder "MM / YY"
+          {:class "required cardExpiry" :placeholder "MM / YY"
            :max-length 9 :type "tel"})
    (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
-          {:size 5 :auto-complete "off" :data-hook "card_number" :class "required cardCode"
+          {:size 5 :auto-complete "off" :class "required cardCode"
            :max-length 4 :type "tel"})
    [:p.review-message
     "You can review your order on the next page before we charge your credit card"]])
