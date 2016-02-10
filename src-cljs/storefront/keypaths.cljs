@@ -136,6 +136,8 @@
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))
 
+(def pending-talkable-order (conj ui :pending-talkable-order))
+
 (def flash (conj ui :flash))
 (def flash-success (conj flash :success))
 (def flash-success-message (conj flash-success :message))
@@ -184,6 +186,7 @@
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-places (conj loaded :places))
 (def loaded-facebook (conj loaded :facebook))
+(def loaded-talkable (conj loaded :talkable))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 

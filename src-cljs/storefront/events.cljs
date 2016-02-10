@@ -98,8 +98,8 @@
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :shipping-method-select))
 (def control-checkout-shipping-method-submit (conj control-checkout :shipping-method-submit))
-(def control-checkout-remove-promotion (conj control-checkout :remove-promotion))
 (def control-checkout-payment-method-submit (conj control-checkout :payment-method-submit))
+(def control-checkout-remove-promotion (conj control-checkout :remove-promotion))
 (def control-checkout-confirmation-submit (conj control-checkout :confirmation-submit))
 
 (def control-stylist-profile-picture (conj control :stylist :profile-picture))
@@ -188,12 +188,16 @@
 (def reviews-component-mounted (conj reviews :component-mounted))
 (def reviews-component-will-unmount (conj reviews :component-will-unmount))
 
+(def talkable [:talkable])
+(def talkable-offer-shown (conj talkable [:offer-shown]))
+
 (def inserted [:inserted])
 (def inserted-places (conj inserted :places))
 (def inserted-facebook (conj inserted :facebook))
 (def inserted-stripe (conj inserted :stripe))
 (def inserted-reviews (conj inserted :reviews))
 (def inserted-fastpass (conj inserted :fastpass))
+(def inserted-talkable (conj inserted :talkable))
 
 (def autocomplete-update-address [:autocomplete-update-address])
 

@@ -4,6 +4,7 @@
             [storefront.routes :as routes]
             [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
+            [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.combinators :refer [map-values key-by]]
             [storefront.utils.sequences :refer [index-sequence]]
@@ -277,6 +278,9 @@
 (defmethod transition-state events/api-success-get-past-order [_ event order app-state]
   (update-in app-state keypaths/past-orders merge {(:number order) order}))
 
+(defmethod transition-state events/api-success-get-completed-order [_ event order app-state]
+  (assoc-in app-state keypaths/pending-talkable-order (talkable/completed-order order)))
+
 (defmethod transition-state events/api-success-my-orders [_ event {orders :orders} app-state]
   (let [order-ids (map :number orders)]
     (-> app-state
@@ -342,7 +346,8 @@
 (defmethod transition-state events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
   (-> app-state
       (assoc-in keypaths/checkout state/initial-checkout-state)
-      (assoc-in keypaths/order {})))
+      (assoc-in keypaths/order {})
+      (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (assoc-in app-state keypaths/promotions promotions))
@@ -392,6 +397,9 @@
 (defmethod transition-state events/inserted-facebook [_ event args app-state]
   (assoc-in app-state keypaths/loaded-facebook true))
 
+(defmethod transition-state events/inserted-talkable [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-talkable true))
+
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied nil))
 
@@ -400,3 +408,6 @@
 
 (defmethod transition-state events/facebook-email-denied [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied true))
+
+(defmethod transition-state events/talkable-offer-shown [_ event args app-state]
+  (assoc-in app-state keypaths/pending-talkable-order nil))

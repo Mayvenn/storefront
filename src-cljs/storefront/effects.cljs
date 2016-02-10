@@ -53,7 +53,7 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
-  (talkable/insert)
+  (talkable/insert app-state)
   (api/get-store (get-in app-state keypaths/handle-message)
                  (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug)))
@@ -207,7 +207,7 @@
                       (get-in app-state keypaths/user-id)))
 
 (defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
-  (talkable/order-completed order))
+  (talkable/show-pending-offer app-state))
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
@@ -625,7 +625,7 @@
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
-  (talkable/order-completed order))
+  (talkable/show-pending-offer app-state))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
   (when (get-in app-state keypaths/checkout-save-my-addresses)
@@ -724,3 +724,5 @@
   (experiments/activate-universal-analytics)
   (analytics/track-event "optimizely-experiment" (:variation args)))
 
+(defmethod perform-effects events/inserted-talkable [_ event args app-state]
+  (talkable/show-pending-offer app-state))

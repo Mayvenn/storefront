@@ -190,4 +190,5 @@
           :loaded-reviews false
           :loaded-stripe false
           :loaded-facebook false
-          :loaded-places false}}))
+          :loaded-places false
+          :loaded-talkable false}}))
