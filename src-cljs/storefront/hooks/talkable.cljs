@@ -6,9 +6,7 @@
             [storefront.config :as config]))
 
 (defn insert []
-  (tags/insert-tag-with-src
-   "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js"
-   "talkable-script"))
+  (tags/insert-tag-with-src config/talkable-script "talkable-script"))
 
 (defn discounted-subtotal [order]
   (- (:line-items-total order) (:promotion-discount order)))
