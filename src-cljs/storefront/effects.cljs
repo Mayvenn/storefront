@@ -30,20 +30,20 @@
 
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
-        token (get-in app-state keypaths/user-token)
+        user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)]
-    (when (and user-id token stylist-id)
-      (api/get-account (get-in app-state keypaths/handle-message) user-id token stylist-id))))
+    (when (and user-id user-token stylist-id)
+      (api/get-account (get-in app-state keypaths/handle-message) user-id user-token stylist-id))))
 
 (defn refresh-current-order [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
-        token (get-in app-state keypaths/user-token)
+        user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)
         order-number (get-in app-state keypaths/order-number)]
-    (when (and user-id token stylist-id (not order-number))
+    (when (and user-id user-token stylist-id (not order-number))
       (api/get-current-order (get-in app-state keypaths/handle-message)
                              user-id
-                             token
+                             user-token
                              stylist-id))))
 
 (defmulti perform-effects identity)
