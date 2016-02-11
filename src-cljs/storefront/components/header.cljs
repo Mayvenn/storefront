@@ -20,7 +20,8 @@
                   {:class "comm-login"}))
          (when-not getsat-login?
            [:a.header-menu {:href "#"
-                            :on-click (fn [_]
+                            :on-click (fn [e]
+                                        (.preventDefault e)
                                         (send data
                                               events/control-menu-expand
                                               {:keypath keypaths/menu-expanded}))}
