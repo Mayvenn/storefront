@@ -17,7 +17,7 @@
 
 (defn completed-order [order]
   {:purchase {:order_number (:number order)
-              :subtotal (discounted-subtotal order)
+              :subtotal (.toString (discounted-subtotal order))
               :coupon_code (-> order :promotion-codes first)}
    :customer {:email (-> order :user :email)}})
 
