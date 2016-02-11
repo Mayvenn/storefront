@@ -30,4 +30,4 @@
 (defn show-referrals [data]
   (when (get-in data keypaths/loaded-talkable)
     (js/showSA (clj->js {:affiliate_member
-                         {:email (:email (get-in data keypaths/user-email))}}))))
+                         {:email (get-in data keypaths/user-email)}}))))
