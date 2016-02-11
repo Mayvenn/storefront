@@ -224,12 +224,13 @@
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)
             [:div
-             (slideout-nav-link
-              data
-              (merge (close-and-route data events/navigate-friend-referrals)
-                     {:icon-class "refer-friend"
-                      :label "Refer A Friend"
-                      :full-width? true}))
+             (when-not (own-store? data)
+               (slideout-nav-link
+                data
+                (merge (close-and-route data events/navigate-friend-referrals)
+                       {:icon-class "refer-friend"
+                        :label "Refer A Friend"
+                        :full-width? true})))
              (slideout-nav-link
               data
               (merge (if (own-store? data)
