@@ -134,6 +134,10 @@
     (when (and product (bundle-builder/included-product? product))
       (bundle-builder-redirect app-state product))))
 
+(defmethod perform-effects events/navigate-account [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-token)
+    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
@@ -208,7 +212,7 @@
 (defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
 
-(defmethod perform-effects events/navigate-friend-referrals-dashboard [_ event args app-state]
+(defmethod perform-effects events/navigate-account-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
 
 (defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
@@ -734,6 +738,6 @@
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
-  (when (#{events/navigate-friend-referrals events/navigate-friend-referrals-dashboard}
+  (when (#{events/navigate-friend-referrals events/navigate-account-referrals}
          (get-in app-state keypaths/navigation-event))
     (talkable/show-referrals app-state)))

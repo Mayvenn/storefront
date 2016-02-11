@@ -91,9 +91,9 @@
            events/navigate-stylist-bonus-credit stylist-bonus-credit-component
            events/navigate-stylist-referrals stylist-referrals-component
            events/navigate-stylist-manage-account stylist-manage-account-component
-           events/navigate-manage-account (requires-sign-in data manage-account-component)
+           events/navigate-account-manage (requires-sign-in data manage-account-component)
+           events/navigate-account-referrals (requires-sign-in data friend-referrals-component)
            events/navigate-friend-referrals friend-referrals-component
-           events/navigate-friend-referrals-dashboard (requires-sign-in data friend-referrals-component)
            events/navigate-checkout-address (requires-sign-in data checkout-address-component)
            events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)

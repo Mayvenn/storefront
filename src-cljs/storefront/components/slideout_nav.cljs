@@ -125,9 +125,9 @@
             (when-not (own-store? data)
               (list
                [:li
-                [:a (close-and-route data events/navigate-friend-referrals-dashboard) "Refer A Friend"]]
+                [:a (close-and-route data events/navigate-account-referrals) "Refer A Friend"]]
                [:li
-                [:a (close-and-route data events/navigate-manage-account) "Manage Account"]]))
+                [:a (close-and-route data events/navigate-account-manage) "Manage Account"]]))
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
               "Logout"]]])
@@ -227,7 +227,7 @@
              (when-not (own-store? data)
                (slideout-nav-link
                 data
-                (merge (close-and-route data events/navigate-friend-referrals-dashboard)
+                (merge (close-and-route data events/navigate-account-referrals)
                        {:icon-class "refer-friend"
                         :label "Refer A Friend"
                         :full-width? true})))
@@ -235,7 +235,7 @@
               data
               (merge (if (own-store? data)
                        (close-and-route data events/navigate-stylist-manage-account)
-                       (close-and-route data events/navigate-manage-account))
+                       (close-and-route data events/navigate-account-manage))
                      {:icon-class "manage-account"
                       :label "Manage Account"
                       :full-width? false}))

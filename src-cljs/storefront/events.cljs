@@ -25,8 +25,6 @@
 (def navigate-sign-up (conj navigate :sign-up))
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))
-(def navigate-manage-account (conj navigate :manage-account))
-(def navigate-account-addresses (conj navigate :account-addresses))
 (def navigate-cart (conj navigate :cart))
 (def navigate-order (conj navigate :order))
 
@@ -39,9 +37,12 @@
 (def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
 (def navigate-stylist-manage-account (conj navigate-stylist :manage-account))
 
+(def navigate-account (conj navigate :account))
+(def navigate-account-manage (conj navigate-account :manage))
+(def navigate-account-referrals (conj navigate-account :referrals))
+
 (def navigate-talkable (conj navigate :talkable))
 (def navigate-friend-referrals (conj navigate-talkable :referrals))
-(def navigate-friend-referrals-dashboard (conj navigate-talkable :referrals-dashboard))
 
 (def navigate-checkout (conj navigate :checkout))
 (def navigate-checkout-address (conj navigate-checkout :address))
