@@ -23,6 +23,7 @@
             [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
             [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
+            [storefront.components.friend-referrals :refer [friend-referrals-component]]
             [storefront.components.cart :refer [cart-component]]
             [storefront.components.checkout-address :refer [checkout-address-component]]
             [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
@@ -91,6 +92,7 @@
            events/navigate-stylist-referrals stylist-referrals-component
            events/navigate-stylist-manage-account stylist-manage-account-component
            events/navigate-manage-account (requires-sign-in data manage-account-component)
+           events/navigate-friend-referrals friend-referrals-component
            events/navigate-checkout-address (requires-sign-in data checkout-address-component)
            events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
            events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)

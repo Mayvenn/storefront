@@ -188,6 +188,12 @@
         background-image: url("/images/slideout_nav/community.png");
     }
 
+    &.icon-refer-friend {
+        width: 4.333rem;
+        height: 4.333rem;
+        background-image: url("/images/slideout_nav/refer.png");
+    }
+
     .slideout-nav-link.half-width & {
         &.icon-stylist-referrals {
             width: 2.625rem;

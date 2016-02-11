@@ -89,6 +89,7 @@
        "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)
        "/stylist/referrals" (edn->bidi events/navigate-stylist-referrals)
        "/stylist/edit" (edn->bidi events/navigate-stylist-manage-account)
+       "/share" (edn->bidi events/navigate-friend-referrals)
        ["/orders/" :number] (edn->bidi events/navigate-order)
        "/checkout/address" (edn->bidi events/navigate-checkout-address)
        "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)

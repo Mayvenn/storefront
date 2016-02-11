@@ -26,3 +26,9 @@
     (when-let [order (get-in data keypaths/pending-talkable-order)]
       (js/showPP (clj->js order))
       (m/send data events/talkable-offer-shown))))
+
+(defn show-referrals [user]
+  #_(when-let [email (:email user)]
+      ;; Needed to show dashboard of past referrals, instead of make-a-new-referral.  Maybe?
+      (.push js/_talkableq (clj->js ["authenticate_customer" {:email email}])))
+  (js/showSA (clj->js {:affiliate_member {:email (:email user)}})))

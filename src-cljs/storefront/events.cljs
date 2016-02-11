@@ -39,6 +39,9 @@
 (def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
 (def navigate-stylist-manage-account (conj navigate-stylist :manage-account))
 
+(def navigate-talkable (conj navigate :talkable))
+(def navigate-friend-referrals (conj navigate-talkable :referrals))
+
 (def navigate-checkout (conj navigate :checkout))
 (def navigate-checkout-address (conj navigate-checkout :address))
 (def navigate-checkout-delivery (conj navigate-checkout :delivery))

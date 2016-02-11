@@ -109,25 +109,25 @@
                "open"
                "closed")}
             (when (own-store? data)
-              [:div
+              (list
                [:li
                 [:a (close-and-route data events/navigate-stylist-commissions) "Commissions & Payouts"]]
                [:li
                 [:a (close-and-route data events/navigate-stylist-bonus-credit) "Bonus Credit"]]
                [:li
-                [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]])
-            [:li
-             [:a
-              (if (own-store? data)
-                (close-and-route data events/navigate-stylist-manage-account)
-                (close-and-route data events/navigate-manage-account))
-              "Manage Account"]]
-            (when (own-store? data)
-              [:li
-               [:a
-                {:href (get-in data keypaths/community-url)
-                 :on-click (utils/send-event-callback data events/external-redirect-community)}
-                "Stylist Community"]])
+                [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]
+               [:li
+                [:a (close-and-route data events/navigate-stylist-manage-account) "Manage Account"]]
+               [:li
+                [:a {:href (get-in data keypaths/community-url)
+                     :on-click (utils/send-event-callback data events/external-redirect-community)}
+                 "Stylist Community"]]))
+            (when-not (own-store? data)
+              (list
+               [:li
+                [:a (close-and-route data events/navigate-friend-referrals) "Refer A Friend"]]
+               [:li
+                [:a (close-and-route data events/navigate-manage-account) "Manage Account"]]))
             [:li
              [:a (close-and-enqueue data events/control-sign-out)
               "Logout"]]])
@@ -224,6 +224,12 @@
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)
             [:div
+             (slideout-nav-link
+              data
+              (merge (close-and-route data events/navigate-friend-referrals)
+                     {:icon-class "refer-friend"
+                      :label "Refer A Friend"
+                      :full-width? true}))
              (slideout-nav-link
               data
               (merge (if (own-store? data)
