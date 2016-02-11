@@ -2,6 +2,7 @@
   (:require [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.accessors.orders :refer [subtract-rounded-floats]]
             [clojure.set :as set]
             [storefront.messages :as m]
             [storefront.config :as config]))
@@ -13,7 +14,7 @@
      #(m/send data events/inserted-talkable))))
 
 (defn- discounted-subtotal [order]
-  (- (:line-items-total order) (:promotion-discount order)))
+  (subtract-rounded-floats (:line-items-total order) (:promotion-discount order)))
 
 (defn completed-order [order]
   {:purchase {:order_number (:number order)
