@@ -84,6 +84,7 @@
        "/password/recover" (edn->bidi events/navigate-forgot-password)
        ["/m/" :reset-token] (edn->bidi events/navigate-reset-password)
        "/account/edit" (edn->bidi events/navigate-manage-account)
+       "/account/referrals" (edn->bidi events/navigate-friend-referrals-dashboard)
        "/cart" (edn->bidi events/navigate-cart)
        "/stylist/commissions" (edn->bidi events/navigate-stylist-commissions)
        "/stylist/store_credits" (edn->bidi events/navigate-stylist-bonus-credit)

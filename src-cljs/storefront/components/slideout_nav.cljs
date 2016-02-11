@@ -125,7 +125,7 @@
             (when-not (own-store? data)
               (list
                [:li
-                [:a (close-and-route data events/navigate-friend-referrals) "Refer A Friend"]]
+                [:a (close-and-route data events/navigate-friend-referrals-dashboard) "Refer A Friend"]]
                [:li
                 [:a (close-and-route data events/navigate-manage-account) "Manage Account"]]))
             [:li
@@ -227,7 +227,7 @@
              (when-not (own-store? data)
                (slideout-nav-link
                 data
-                (merge (close-and-route data events/navigate-friend-referrals)
+                (merge (close-and-route data events/navigate-friend-referrals-dashboard)
                        {:icon-class "refer-friend"
                         :label "Refer A Friend"
                         :full-width? true})))

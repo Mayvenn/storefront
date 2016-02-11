@@ -41,6 +41,7 @@
 
 (def navigate-talkable (conj navigate :talkable))
 (def navigate-friend-referrals (conj navigate-talkable :referrals))
+(def navigate-friend-referrals-dashboard (conj navigate-talkable :referrals-dashboard))
 
 (def navigate-checkout (conj navigate :checkout))
 (def navigate-checkout-address (conj navigate-checkout :address))

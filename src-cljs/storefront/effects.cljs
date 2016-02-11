@@ -205,6 +205,12 @@
                       (get-in app-state keypaths/user-token)
                       (get-in app-state keypaths/user-id)))
 
+(defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
+  (talkable/show-referrals app-state))
+
+(defmethod perform-effects events/navigate-friend-referrals-dashboard [_ event args app-state]
+  (talkable/show-referrals app-state))
+
 (defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
   (send app-state events/order-completed order))
 
@@ -727,4 +733,7 @@
   (analytics/track-event "optimizely-experiment" (:variation args)))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
-  (talkable/show-pending-offer app-state))
+  (talkable/show-pending-offer app-state)
+  (when (#{events/navigate-friend-referrals events/navigate-friend-referrals-dashboard}
+         (get-in app-state keypaths/navigation-event))
+    (talkable/show-referrals app-state)))
