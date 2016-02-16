@@ -640,12 +640,11 @@
   (talkable/show-pending-offer app-state))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
-  (when (get-in app-state keypaths/checkout-save-my-addresses)
-    (api/update-account-address (get-in app-state keypaths/handle-message)
-                                (get-in app-state keypaths/states)
-                                (get-in app-state keypaths/user)
-                                (:billing-address order)
-                                (:shipping-address order))))
+  (api/update-account-address (get-in app-state keypaths/handle-message)
+                              (get-in app-state keypaths/states)
+                              (get-in app-state keypaths/user)
+                              (:billing-address order)
+                              (:shipping-address order)))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state)
@@ -713,8 +712,7 @@
 
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event args app-state]
-  (when (experiments/display-variation app-state "address-auto-fill")
-    (places-autocomplete/attach app-state (:address-key args))))
+  (places-autocomplete/attach app-state (:address-key args)))
 
 (defn update-cart-flash [app-state msg]
   (send app-state events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))

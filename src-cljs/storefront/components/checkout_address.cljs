@@ -73,15 +73,10 @@
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
                        {:id :last-name :required? true}))
-     (if (experiments/display-variation data "address-auto-fill")
-       (when (get-in data keypaths/loaded-places)
-         (om/build places-component data {:opts {:id :billing-address
-                                                 :keypath keypaths/checkout-billing-address-address1}}))
-       (textfield "Street Address"
-                  (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
-                         {:id :address1})))
-     (when (or (not (experiments/display-variation data "hidden-address"))
-               (not (empty? (get-in data keypaths/checkout-billing-address-address1))))
+     (when (get-in data keypaths/loaded-places)
+       (om/build places-component data {:opts {:id :billing-address
+                                               :keypath keypaths/checkout-billing-address-address1}}))
+     (when (not (empty? (get-in data keypaths/checkout-billing-address-address1)))
        (list
         (textfield "Street Address (cont'd)"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
@@ -103,14 +98,7 @@
                           {:id :zipcode :required? true}))))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
-                       {:id :order_bill_address_attributes_phone :required? true :type "tel"}))
-     (when-not (experiments/display-variation data "move-checkbox")
-       (checkbox "Save my address"
-                 (merge (utils/change-checkbox
-                         data
-                         keypaths/checkout-save-my-addresses-no-op)
-                        {:id    "save_user_address"
-                         :class "checkout-save-address"})))]]])
+                       {:id :order_bill_address_attributes_phone :required? true :type "tel"}))]]])
 
 (defn shipping-address-form [data owner]
   [:div.shipping-address-wrapper
@@ -131,15 +119,10 @@
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
                        {:id :last-name
                         :required? true}))
-     (if (experiments/display-variation data "address-auto-fill")
-       (when (get-in data keypaths/loaded-places)
-         (om/build places-component data {:opts {:id :shipping-address
-                                                 :keypath keypaths/checkout-shipping-address-address1}}))
-       (textfield "Street Address"
-                  (merge (utils/change-text data owner keypaths/checkout-shipping-address-address1)
-                         {:id :address1})))
-     (when (or (not (experiments/display-variation data "hidden-address"))
-               (not (empty? (get-in data keypaths/checkout-shipping-address-address1))))
+     (when (get-in data keypaths/loaded-places)
+       (om/build places-component data {:opts {:id :shipping-address
+                                               :keypath keypaths/checkout-shipping-address-address1}}))
+     (when (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
        (list
         (textfield "Street Address (cont'd)"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
