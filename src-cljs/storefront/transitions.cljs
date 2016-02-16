@@ -318,10 +318,8 @@
         (assoc-in keypaths/checkout-shipping-address shipping-address))
     app-state))
 
-(defmethod transition-state events/autocomplete-update-address [_ event {:keys [billing-address shipping-address] :as args} app-state]
-  (-> app-state
-      (update-in keypaths/checkout-billing-address merge billing-address)
-      (update-in keypaths/checkout-shipping-address merge shipping-address)))
+(defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath] :as args} app-state]
+  (update-in app-state address-keypath merge address))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state

@@ -49,16 +49,17 @@
    [:input {:type "checkbox" :id id :name id :value value :on-change on-change :checked checked}]
    [:label {:for id} " " label]])
 
-(defn places-component [data owner {:keys [id keypath]}]
+(defn places-component [data owner {:keys [id address-keypath keypath]}]
   (reify
     om/IDidMount
     (did-mount [this]
-      (send data events/checkout-address-component-mounted {:address-key id}))
+      (send data events/checkout-address-component-mounted {:address-elem id
+                                                            :address-keypath address-keypath}))
     om/IRender
     (render [_]
       (html (textfield "Street Address"
                        (merge (utils/change-text data owner keypath)
-                              {:id (str (name id) "1")
+                              {:id id
                                :placeholder ""
                                :required? true}))))))
 
@@ -69,23 +70,24 @@
     [:div.inner
      (textfield "First Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-first-name)
-                       {:id :first-name :required? true}))
+                       {:id :billing-first-name :required? true}))
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
-                       {:id :last-name :required? true}))
+                       {:id :billing-last-name :required? true}))
      (when (get-in data keypaths/loaded-places)
-       (om/build places-component data {:opts {:id :billing-address
+       (om/build places-component data {:opts {:id :billing-address1
+                                               :address-keypath keypaths/checkout-billing-address
                                                :keypath keypaths/checkout-billing-address-address1}}))
      (when (not (empty? (get-in data keypaths/checkout-billing-address-address1)))
        (list
         (textfield "Street Address (cont'd)"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
-                          {:id :address2}))
+                          {:id :billing-address2}))
         (textfield "City"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-city)
-                          {:id :city :required? true}))
+                          {:id :billing-city :required? true}))
         (selectfield "State"
-                     {:id :state
+                     {:id :billing-state
                       :required? true
                       :options (get-in data keypaths/states)
                       :value (get-in data keypaths/checkout-billing-address-state)
@@ -95,10 +97,10 @@
                                          :value (selected-value %)})})
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
-                          {:id :zipcode :required? true}))))
+                          {:id :billing-zipcode :required? true}))))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
-                       {:id :order_bill_address_attributes_phone :required? true :type "tel"}))]]])
+                       {:id :billing-phone :required? true :type "tel"}))]]])
 
 (defn shipping-address-form [data owner]
   [:div.shipping-address-wrapper
@@ -113,26 +115,27 @@
     [:div.inner {:class (if (get-in data keypaths/checkout-ship-to-billing-address) "hidden" "")}
      (textfield "First Name"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-first-name)
-                       {:id :first-name
+                       {:id :shipping-first-name
                         :required? true}))
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
-                       {:id :last-name
+                       {:id :shipping-last-name
                         :required? true}))
      (when (get-in data keypaths/loaded-places)
-       (om/build places-component data {:opts {:id :shipping-address
+       (om/build places-component data {:opts {:id :shipping-address1
+                                               :address-keypath keypaths/checkout-shipping-address
                                                :keypath keypaths/checkout-shipping-address-address1}}))
      (when (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
        (list
         (textfield "Street Address (cont'd)"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-address2)
-                          {:id :address2}))
+                          {:id :shipping-address2}))
         (textfield "City"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-city)
-                          {:id :city
+                          {:id :shipping-city
                            :required? true}))
         (selectfield "State"
-                     {:id :state
+                     {:id :shipping-state
                       :required? true
                       :options (get-in data keypaths/states)
                       :value (get-in data keypaths/checkout-shipping-address-state)
@@ -142,11 +145,11 @@
                                          :value (selected-value %)})})
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
-                          {:id :zipcode
+                          {:id :shipping-zipcode
                            :required? true}))))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
-                       {:id :order_bill_address_attributes_phone
+                       {:id :shipping-phone
                         :required? true
                         :type "tel"}))]]])
 

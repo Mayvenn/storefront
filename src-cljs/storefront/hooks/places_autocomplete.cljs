@@ -20,11 +20,11 @@
 (defn extract-address [place]
   (->> place :address_components (map short-names) (into {})))
 
-(defn address [autocomplete address-type]
+(defn address [autocomplete]
   (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
-    {address-type (-> (extract-address place)
-                      (#(assoc % :address1 (str (:street-number %) " " (:street %))))
-                      (dissoc :street :street-number))}))
+    (-> (extract-address place)
+        (#(assoc % :address1 (str (:street-number %) " " (:street %))))
+        (dissoc :street :street-number))))
 
 (defn insert-places-autocomplete [data]
   (when-not (.hasOwnProperty js/window "google")
@@ -38,17 +38,18 @@
 (defn remove-places-autocomplete []
   (tags/remove-tags-by-class "places-autocomplete"))
 
-(defn wrapped-callback [app-state autocomplete address-key]
+(defn wrapped-callback [app-state autocomplete address-keypath]
   (fn [e]
     (m/send app-state
           events/autocomplete-update-address
-          (address autocomplete address-key))))
+          {:address (address autocomplete)
+           :address-keypath address-keypath})))
 
-(defn attach [app-state address-elem]
+(defn attach [app-state address-elem address-keypath]
   (when (.hasOwnProperty js/window "google")
     (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
-          elem         (.getElementById js/document (str (name address-elem) "1"))
+          elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
       (.addListener autocomplete
                     "place_changed"
-                    (wrapped-callback app-state autocomplete address-elem)))))
+                    (wrapped-callback app-state autocomplete address-keypath)))))

@@ -711,8 +711,8 @@
   (reviews/stop))
 
 (defmethod perform-effects events/checkout-address-component-mounted
-  [_ event args app-state]
-  (places-autocomplete/attach app-state (:address-key args)))
+  [_ event {:keys [address-elem address-keypath]} app-state]
+  (places-autocomplete/attach app-state address-elem address-keypath))
 
 (defn update-cart-flash [app-state msg]
   (send app-state events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
