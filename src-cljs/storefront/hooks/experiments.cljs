@@ -31,6 +31,9 @@
 (defn show-store-credit? [data]
   (display-variation data "store-credit-view"))
 
+(defn talkable? [data]
+  (display-variation data "talkable"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

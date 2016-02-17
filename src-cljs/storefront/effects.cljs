@@ -637,7 +637,8 @@
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
-  (talkable/show-pending-offer app-state))
+  (when (experiments/talkable? data)
+    (talkable/show-pending-offer app-state)))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
   (api/update-account-address (get-in app-state keypaths/handle-message)
