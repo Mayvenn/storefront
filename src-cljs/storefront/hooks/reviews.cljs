@@ -14,11 +14,11 @@
      #(send data events/inserted-reviews))))
 
 (defn start []
-  (when (.hasOwnProperty js/window "yotpo")
+  (when (and (.hasOwnProperty js/window "yotpo") js/yotpo)
     (set! (.-initialized js/yotpo) false)
     (.init js/yotpo)))
 
 (defn stop []
-  (when (.hasOwnProperty js/window "yotpo")
+  (when (and (.hasOwnProperty js/window "yotpo") js/yotpo)
     (.pop (.-widgets js/yotpo))
     (.pop (.. js/yotpo -callbacks -ready))))
