@@ -124,9 +124,8 @@
                  "Stylist Community"]]))
             (when-not (own-store? data)
               (list
-               (when (experiments/talkable? data)
-                 [:li
-                  [:a (close-and-route data events/navigate-account-referrals) "Refer A Friend"]])
+               [:li
+                [:a (close-and-route data events/navigate-account-referrals) "Refer A Friend"]]
                [:li
                 [:a (close-and-route data events/navigate-account-manage) "Manage Account"]]))
             [:li
@@ -225,14 +224,13 @@
           [:h3.slideout-nav-section-header "My Account"]
           (if (logged-in? data)
             [:div
-             (when (experiments/talkable? data)
-               (when-not (own-store? data)
-                 (slideout-nav-link
-                  data
-                  (merge (close-and-route data events/navigate-account-referrals)
-                         {:icon-class "refer-friend"
-                          :label "Refer A Friend"
-                          :full-width? true}))))
+             (when-not (own-store? data)
+               (slideout-nav-link
+                data
+                (merge (close-and-route data events/navigate-account-referrals)
+                       {:icon-class "refer-friend"
+                        :label "Refer A Friend"
+                        :full-width? true})))
              (slideout-nav-link
               data
               (merge (if (own-store? data)
