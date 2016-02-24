@@ -56,7 +56,6 @@
          (exception-handler/report e))))))
 
 (defn main [app-state]
-  (js/React.initializeTouchEvents true)
   (swap! app-state assoc-in keypaths/handle-message (partial handle-message app-state))
   (routes/install-routes app-state)
   (om/root
