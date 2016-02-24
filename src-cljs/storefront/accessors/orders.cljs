@@ -5,13 +5,13 @@
 
 (defn line-items
   "Returns line items from an order hashmap.
-  Storefront should only be concerned about items in the last shipment.
-  Line-items are from last shipment as it is the user created shipment."
+  Storefront should only be concerned about items in the first shipment.
+  Line-items are from first shipment as it is the user created shipment."
   [order]
   (when order
     (->> order
          :shipments
-         (last)
+         first
          :line-items)))
 
 (defn line-item-by-id [variant-id line-items]
@@ -20,16 +20,16 @@
 (defn product-items
   "Returns cart items from an order hashmap.
   Excludes shipping and items added by El Jefe.
-  Cart line-items are added as the last shipment.
-  Line-items are from last shipment as it is the user created shipment."
+  Cart line-items are added as the first shipment.
+  Line-items are from first shipment as it is the user created shipment."
   [order]
   (filter #(not= (:source %) "waiter") (line-items order)))
 
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
   Includes only items added by waiter.
-  Shipping items are added as the last shipment.
-  Line-items are from last shipment as it is the user created shipment."
+  Shipping items are added as the first shipment.
+  Line-items are from first shipment as it is the user created shipment."
   [order]
   (->> (line-items order)
        (filter #(= (:source %) "waiter"))
