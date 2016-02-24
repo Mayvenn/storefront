@@ -15,7 +15,11 @@
          :line-items)))
 
 (defn line-item-by-id [variant-id line-items]
-  (first (filter (comp #{variant-id} :id) line-items)))
+  (->> line-items
+       (filter (comp #{variant-id} :id))
+       first))
+
+(def ^:private shipping-item? (comp #{"waiter"} :source))
 
 (defn product-items
   "Returns cart items from an order hashmap.
@@ -23,7 +27,7 @@
   Cart line-items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (filter #(not= (:source %) "waiter") (line-items order)))
+  (->> order line-items (remove shipping-item?)))
 
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
@@ -31,9 +35,7 @@
   Shipping items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (->> (line-items order)
-       (filter #(= (:source %) "waiter"))
-       first))
+  (->> order line-items (filter shipping-item?) first))
 
 (defn subtract-rounded-floats [a b]
   (/ (.toFixed (- (* 100.0 a) (* 100.0 b)) 0) 100.0))
