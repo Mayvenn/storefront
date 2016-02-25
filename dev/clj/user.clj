@@ -1,7 +1,6 @@
 (ns user
   (:use clojure.test)
   (:require [clojure.pprint :refer (pprint)]
-            [figwheel-sidecar.repl-api :as figwheel]
             [storefront.system :as system]
             [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
@@ -28,6 +27,3 @@
   []
   (stop)
   (refresh :after 'user/go))
-
-(defn cljs []
-  (figwheel/cljs-repl))

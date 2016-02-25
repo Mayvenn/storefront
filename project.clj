@@ -19,7 +19,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.7.145"]
+                 [org.clojure/clojurescript "1.7.228"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "0.8.8"]
@@ -29,7 +29,7 @@
                  [com.cemerick/url "0.1.1"]]
   :plugins [[lein-cljsbuild "1.0.5"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.4.1" :exclusions [cider/cider-nrepl]]]
+            [lein-figwheel "0.5.0-6"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
   :main storefront.core
