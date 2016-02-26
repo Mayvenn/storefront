@@ -7,16 +7,15 @@
 
 (defn stylist-referral-component [referral]
   (html
-   (let [{:keys [stylist-name paid-at percent-complete
-                 commissioned-revenue bonus-due earning-amount]} referral]
+   (let [{:keys [stylist-name paid-at commissioned-revenue bonus-due earning-amount]} referral]
      [:.loose-table-row
       [:.left-content
        [:p.chopped-content stylist-name]
        (if paid-at
-         [:p.referral-paid-time (f/locale-date paid-at)]
+         [:p.referral-paid-time (f/epoch-date paid-at)]
          [:.referral-progress
           [:.progress-bar
-           [:.progress-bar-progress {:style {:width (str percent-complete "%")}}]]
+           [:.progress-bar-progress {:style {:width (str (double (* (/ commissioned-revenue earning-amount) 100)) "%")}}]]
           [:p.progress-text
            "Sales so far: "
            (f/as-money commissioned-revenue)
