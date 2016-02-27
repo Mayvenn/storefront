@@ -88,6 +88,7 @@
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
      :features #{}
+     :effectful? true
 
      :session-id (cookie-jar/force-session-id cookie)
 

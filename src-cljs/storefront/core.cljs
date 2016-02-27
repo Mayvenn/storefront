@@ -1,6 +1,7 @@
 (ns storefront.core
   (:require [storefront.config :as config]
             [storefront.state :as state]
+            [storefront.tee :as tee]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
@@ -52,18 +53,35 @@
 (defn handle-message
   ([app-state event] (handle-message app-state event nil))
   ([app-state event args]
-   (let [message [event args]]
+   (let [message [event args]
+         effectful? (:effectful? @app-state)]
      ;; rename transition to transition-log to log messages
+     (when effectful?
+       (tee/tee message))
      (try
        (let [app-state-before @app-state]
          (om/transact! (om/root-cursor app-state) #(transition % message))
-         (effects app-state-before @app-state message))
-       (track @app-state message)
+         (when effectful?
+           (effects app-state-before @app-state message)))
+       (when effectful?
+         (track @app-state message))
        (catch :default e
          (exception-handler/report e))))))
 
+(defn install-tap [app-state]
+  (if-let [room-id (last (re-find #"listen=(.*)&?" js/window.location.search))]
+    (do
+      (js/console.log "Listening mode active: " room-id)
+      (swap! app-state assoc :effectful? false)
+      (tee/create-listener room-id (fn [msg]
+                                     (js/console.log "handle" (pr-str msg))
+                                     (apply handle-message app-state msg))))
+    (tee/create-producer)))
+
 (defn reload-app [app-state]
+  (install-tap app-state)
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
+  (routes/start-history)
   (handle-message app-state events/app-start)
   (history/set-current-page true))
 
