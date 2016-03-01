@@ -436,9 +436,8 @@
     #(handle-message events/api-success-stylist-bonus-credits
                      (select-keys % [:bonus-amount
                                      :earning-amount
-                                     :commissioned-revenue
-                                     :total-credit
-                                     :available-credit
+                                     :progress-to-next-bonus
+                                     :lifetime-total
                                      :bonuses]))}))
 
 (defn get-stylist-referral-program [handle-message user-token]
