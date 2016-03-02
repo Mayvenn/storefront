@@ -100,7 +100,7 @@
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
-    [:meta {:name "p:domain_verify" :content "2f1c5ec4e625fd9e076a43998d97abc7"}]
+    [:meta {:name "p:domain_verify" :content "bcf7658947ba195cbf3cc44d9463209f"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
