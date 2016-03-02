@@ -35,7 +35,7 @@
    (html
     (let [progress  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
           milestone (get-in data keypaths/stylist-bonuses-milestone-amount)
-          bar-width (/ progress (/ milestone 100.0))]
+          bar-width (min 100 (/ progress (/ milestone 100.0)))]
       [:.progress-container
        [:.progress-bar-limit (f/as-money-without-cents 0)]
        [:.progress-bar-container

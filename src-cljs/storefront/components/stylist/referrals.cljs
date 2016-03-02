@@ -5,28 +5,27 @@
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]))
 
-(defn stylist-referral-component [referral]
+(defn stylist-referral-component [earning-amount {:keys [stylist-name paid-at commissioned-revenue bonus-due]}]
   (html
-   (let [{:keys [stylist-name paid-at commissioned-revenue bonus-due earning-amount]} referral]
-     [:.loose-table-row
-      [:.left-content
-       [:p.chopped-content stylist-name]
-       (if paid-at
-         [:p.referral-paid-time (f/epoch-date paid-at)]
-         [:.referral-progress
-          [:.progress-bar
-           [:.progress-bar-progress {:style {:width (str (double (* (/ commissioned-revenue earning-amount) 100)) "%")}}]]
-          [:p.progress-text
-           "Sales so far: "
-           (f/as-money commissioned-revenue)
-           " of "
-           (f/as-money-without-cents earning-amount)]])]
+   [:.loose-table-row
+    [:.left-content
+     [:p.chopped-content stylist-name]
+     (if paid-at
+       [:p.referral-paid-time (f/epoch-date paid-at)]
+       [:.referral-progress
+        [:.progress-bar
+         [:.progress-bar-progress {:style {:width (str (min 100 (double (* (/ commissioned-revenue earning-amount) 100))) "%")}}]]
+        [:p.progress-text
+         "Sales so far: "
+         (f/as-money commissioned-revenue)
+         " of "
+         (f/as-money-without-cents earning-amount)]])]
 
-      [:.right-content
-       [:p.paid-amount (f/as-money-without-cents bonus-due) " bonus"]
-       (if paid-at
-         [:p.referral-label.paid-label "Paid"]
-         [:p.referral-label.pending-label "Pending"])]])))
+    [:.right-content
+     [:p.paid-amount (f/as-money-without-cents bonus-due) " bonus"]
+     (if paid-at
+       [:p.referral-label.paid-label "Paid"]
+       [:p.referral-label.pending-label "Pending"])]]))
 
 (defn stylist-referrals-component [data owner]
   (om/component
@@ -36,7 +35,7 @@
                                "?Subject=Referral&body=name:%0D%0Aemail:%0D%0Aphone:")
           bonus-amount (get-in data keypaths/stylist-referral-program-bonus-amount)
           earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
-          total-amount (get-in data keypaths/stylist-referral-program-total-amount)
+          lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)
           referrals (get-in data keypaths/stylist-referral-program-referrals)]
       [:div
        [:h2.header-bar-heading.referrals "Referrals"]
@@ -66,6 +65,6 @@
            [:.emphasized-banner
             [:span.emphasized-banner-header "Total Referral Bonuses"]
             [:span.emphasized-banner-value
-             (f/as-money-without-cents total-amount)]]
+             (f/as-money-without-cents lifetime-total)]]
 
-           (map stylist-referral-component referrals)]])]))))
+           (map (partial stylist-referral-component earning-amount) referrals)]])]))))

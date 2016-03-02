@@ -209,11 +209,11 @@
       (assoc-in keypaths/stylist-bonuses-history bonuses)))
 
 (defmethod transition-state events/api-success-stylist-referral-program
-  [_ event {:keys [sales-rep-email bonus-amount earning-amount total-amount referrals]} app-state]
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-referral-program-bonus-amount bonus-amount)
       (assoc-in keypaths/stylist-referral-program-earning-amount earning-amount)
-      (assoc-in keypaths/stylist-referral-program-total-amount total-amount)
+      (assoc-in keypaths/stylist-referral-program-lifetime-total lifetime-total)
       (assoc-in keypaths/stylist-referral-program-referrals referrals)
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
