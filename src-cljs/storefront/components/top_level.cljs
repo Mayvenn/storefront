@@ -25,7 +25,7 @@
             [storefront.components.manage-account :refer [manage-account-component]]
             [storefront.components.friend-referrals :refer [friend-referrals-component]]
             [storefront.components.cart :refer [cart-component]]
-            [storefront.components.checkout-sign-in :refer [checkout-sign-in-component]]
+            [storefront.components.checkout-sign-in :refer [checkout-sign-in-component requires-sign-in-or-guest]]
             [storefront.components.checkout-address :refer [checkout-address-component]]
             [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [storefront.components.checkout-payment :refer [checkout-payment-component]]
@@ -74,35 +74,38 @@
         [:div.flash.error msg])
       [:main {:role "main"}
        [:div.container
-        (om/build
-         (condp = (get-in data keypaths/navigation-event)
-           events/navigate-home home-component
-           events/navigate-cart cart-component
-           events/navigate-categories categories-component
-           events/navigate-category category-component
-           events/navigate-product product-component
-           events/navigate-guarantee thirty-day-guarantee-component
-           events/navigate-help help-component
-           events/navigate-sign-in sign-in-component
-           events/navigate-sign-in-getsat (requires-sign-in data redirect-getsat-component)
-           events/navigate-sign-up sign-up-component
-           events/navigate-forgot-password forgot-password-component
-           events/navigate-reset-password reset-password-component
-           events/navigate-stylist-commissions stylist-commissions-component
-           events/navigate-stylist-bonus-credit stylist-bonus-credit-component
-           events/navigate-stylist-referrals stylist-referrals-component
-           events/navigate-stylist-manage-account stylist-manage-account-component
-           events/navigate-account-manage (requires-sign-in data manage-account-component)
-           events/navigate-account-referrals (requires-sign-in data friend-referrals-component)
-           events/navigate-friend-referrals friend-referrals-component
-           events/navigate-checkout-sign-in checkout-sign-in-component
-           events/navigate-checkout-address (requires-sign-in data checkout-address-component)
-           events/navigate-checkout-delivery (requires-sign-in data checkout-delivery-component)
-           events/navigate-checkout-payment (requires-sign-in data checkout-payment-component)
-           events/navigate-checkout-confirmation (requires-sign-in data checkout-confirmation-component)
-           events/navigate-order-complete checkout-complete-component
-           events/navigate-order (requires-sign-in data order-component)
-           home-component)
-         data)]]
+        (let [requires-checkout-sign-in (if (experiments/guest-checkout? data)
+                                          requires-sign-in-or-guest
+                                          requires-sign-in)]
+          (om/build
+           (condp = (get-in data keypaths/navigation-event)
+             events/navigate-home                   home-component
+             events/navigate-cart                   cart-component
+             events/navigate-categories             categories-component
+             events/navigate-category               category-component
+             events/navigate-product                product-component
+             events/navigate-guarantee              thirty-day-guarantee-component
+             events/navigate-help                   help-component
+             events/navigate-sign-in                sign-in-component
+             events/navigate-sign-in-getsat         (requires-sign-in data redirect-getsat-component)
+             events/navigate-sign-up                sign-up-component
+             events/navigate-forgot-password        forgot-password-component
+             events/navigate-reset-password         reset-password-component
+             events/navigate-stylist-commissions    stylist-commissions-component
+             events/navigate-stylist-bonus-credit   stylist-bonus-credit-component
+             events/navigate-stylist-referrals      stylist-referrals-component
+             events/navigate-stylist-manage-account stylist-manage-account-component
+             events/navigate-account-manage         (requires-sign-in data manage-account-component)
+             events/navigate-account-referrals      (requires-sign-in data friend-referrals-component)
+             events/navigate-friend-referrals       friend-referrals-component
+             events/navigate-checkout-sign-in       checkout-sign-in-component
+             events/navigate-checkout-address       (requires-checkout-sign-in data checkout-address-component)
+             events/navigate-checkout-delivery      (requires-checkout-sign-in data checkout-delivery-component)
+             events/navigate-checkout-payment       (requires-checkout-sign-in data checkout-payment-component)
+             events/navigate-checkout-confirmation  (requires-checkout-sign-in data checkout-confirmation-component)
+             events/navigate-order-complete         checkout-complete-component
+             events/navigate-order                  (requires-sign-in data order-component)
+             home-component)
+           data))]]
       (when-not (get-in data keypaths/get-satisfaction-login?)
         (om/build footer-component data))]])))

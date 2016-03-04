@@ -185,11 +185,16 @@
 
     (and (experiments/guest-checkout? app-state)
          (not (get-in app-state keypaths/user-token))
-         (not= event events/navigate-checkout-sign-in))
+         (not= event events/navigate-checkout-sign-in)
+         (not (get-in app-state keypaths/checkout-guest-checkout)))
     (routes/enqueue-redirect app-state events/navigate-checkout-sign-in)
 
-    (not (get-in app-state keypaths/user-token))
+    (and (not (experiments/guest-checkout? app-state))
+         (not (get-in app-state keypaths/user-token)))
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
+
+(defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
+  (facebook/insert app-state))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (places-autocomplete/insert-places-autocomplete app-state)
@@ -409,6 +414,9 @@
 
 (defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
   (modify-cart app-state variant-id api/delete-line-item))
+
+(defmethod perform-effects events/control-checkout-guest-checkout-submit [_ event _ app-state]
+  (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
   (routes/enqueue-navigate app-state events/navigate-checkout-address))

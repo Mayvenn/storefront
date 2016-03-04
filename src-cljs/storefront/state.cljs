@@ -7,7 +7,8 @@
   (first (string/split (.-hostname js/location) #"\.")))
 
 (def initial-checkout-state
-  {:billing-address {:first-name ""
+  {:guest-checkout false
+   :billing-address {:first-name ""
                      :last-name ""
                      :address1 ""
                      :address2 ""

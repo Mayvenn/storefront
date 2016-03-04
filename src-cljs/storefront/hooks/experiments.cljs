@@ -32,8 +32,7 @@
   (display-variation data "store-credit-view"))
 
 (defn guest-checkout? [data]
-  (display-variation data "guest-checkout")
-  true)
+  (display-variation data "guest-checkout"))
 
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)

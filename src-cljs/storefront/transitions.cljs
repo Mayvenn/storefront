@@ -145,6 +145,9 @@
 (defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
   (assoc-in app-state keypaths/bundle-builder-carousel-index index))
 
+(defmethod transition-state events/control-checkout-guest-checkout-submit [_ event args app-state]
+  (assoc-in app-state keypaths/checkout-guest-checkout true))
+
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
 

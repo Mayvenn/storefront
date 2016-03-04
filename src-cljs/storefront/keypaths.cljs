@@ -107,6 +107,7 @@
 (def cart-paypal-redirect (conj cart :paypal-redirect))
 
 (def checkout (conj ui :checkout))
+(def checkout-guest-checkout (conj checkout :guest-checkout))
 (def checkout-ship-to-billing-address (conj checkout :ship-to-billing-address))
 (def checkout-billing-address (conj checkout :billing-address))
 (def checkout-billing-address-first-name (conj checkout-billing-address :first-name))

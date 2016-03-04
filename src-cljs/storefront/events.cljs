@@ -102,6 +102,7 @@
 (def control-counter-set (conj control-browse-variant :set))
 
 (def control-checkout (conj control :checkout))
+(def control-checkout-guest-checkout-submit (conj control-checkout :guest-checkout-submit))
 (def control-checkout-cart-submit (conj control-checkout :cart-submit))
 (def control-checkout-cart-paypal-setup (conj control-checkout :cart-paypal-setup))
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))

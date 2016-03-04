@@ -49,23 +49,11 @@
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]
-     (when-not (get-in data keypaths/get-satisfaction-login?)
-       [:p.center "Don't have an account? "
-        [:a (utils/route-to data events/navigate-sign-up) "Register Here"]])])))
+     [:p.center "Don't have an account? "
+      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]])))
 
 (defn requires-sign-in-or-guest [app-state authorized-component]
   (if (or (get-in app-state keypaths/user-id)
           (get-in app-state keypaths/checkout-guest-checkout))
     authorized-component
     checkout-sign-in-component))
-
-(defn redirect-getsat-component [data owner]
-  (om/component
-   (html
-    [:div.centered-content
-     ;; effects injects GetSat JS that will redirect / close this window as needed
-     (if (or (nil? (get-in data keypaths/user))
-             (get-in data keypaths/user-store-slug))
-       [:div.page-heading.center "Signing in to the Mayvenn Stylist Community..."]
-       [:div.flash.error
-        "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])])))
