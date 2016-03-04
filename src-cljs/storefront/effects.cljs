@@ -183,6 +183,11 @@
     (not (get-in app-state keypaths/order-number))
     (routes/enqueue-redirect app-state events/navigate-cart)
 
+    (and (experiments/guest-checkout? app-state)
+         (not (get-in app-state keypaths/user-token))
+         (not= event events/navigate-checkout-sign-in))
+    (routes/enqueue-redirect app-state events/navigate-checkout-sign-in)
+
     (not (get-in app-state keypaths/user-token))
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
 
