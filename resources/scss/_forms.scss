@@ -50,6 +50,7 @@ fieldset {
     padding: 0.417rem 0;
   }
 
+  input[type=email],
   input[type=tel],
   input[type=text] {
     border: 1px solid $lighter_blue_grey;
@@ -58,6 +59,7 @@ fieldset {
   }
 
   select,
+  input[type=email],
   input[type=tel],
   input[type=text] {
     line-height: 2.67rem;
