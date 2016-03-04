@@ -50,7 +50,7 @@
    (let [message [event args]]
      ;; rename transition to transition-log to log messages
      (try
-       (om/transact! (om/root-cursor app-state) #(transition-log % message))
+       (om/transact! (om/root-cursor app-state) #(transition % message))
        (effects @app-state message)
        (catch :default e
          (exception-handler/report e))))))
