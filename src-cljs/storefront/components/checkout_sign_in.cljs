@@ -14,7 +14,7 @@
      [:div.guest-checkout
       [:h2.explanation-header.center "I'm new here"]
       [:div.button.primary
-       {:on-click (utils/send-event-callback data events/control-checkout-guest-checkout-submit)}
+       {:on-click (utils/send-event-callback data events/control-checkout-as-guest-submit)}
        "Guest Checkout"]
 
       [:div.short-divider ]
@@ -54,6 +54,6 @@
 
 (defn requires-sign-in-or-guest [app-state authorized-component]
   (if (or (get-in app-state keypaths/user-id)
-          (get-in app-state keypaths/checkout-guest-checkout))
+          (get-in app-state keypaths/checkout-as-guest))
     authorized-component
     checkout-sign-in-component))

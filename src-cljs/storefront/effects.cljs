@@ -186,7 +186,7 @@
     (and (experiments/guest-checkout? app-state)
          (not (get-in app-state keypaths/user-token))
          (not= event events/navigate-checkout-sign-in)
-         (not (get-in app-state keypaths/checkout-guest-checkout)))
+         (not (get-in app-state keypaths/checkout-as-guest)))
     (routes/enqueue-redirect app-state events/navigate-checkout-sign-in)
 
     (and (not (experiments/guest-checkout? app-state))
@@ -415,7 +415,7 @@
 (defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
   (modify-cart app-state variant-id api/delete-line-item))
 
-(defmethod perform-effects events/control-checkout-guest-checkout-submit [_ event _ app-state]
+(defmethod perform-effects events/control-checkout-as-guest-submit [_ event _ app-state]
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
