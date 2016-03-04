@@ -74,6 +74,9 @@
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
                        {:id :billing-last-name :required? true}))
+     (textfield "Mobile Phone"
+                (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
+                       {:id :billing-phone :required? true :type "tel"}))
      (when (get-in data keypaths/loaded-places)
        (om/build places-component data {:opts {:id :billing-address1
                                                :address-keypath keypaths/checkout-billing-address
@@ -97,10 +100,7 @@
                                          :value (selected-value %)})})
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
-                          {:id :billing-zipcode :required? true}))))
-     (textfield "Mobile Phone"
-                (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
-                       {:id :billing-phone :required? true :type "tel"}))]]])
+                          {:id :billing-zipcode :required? true}))))]]])
 
 (defn shipping-address-form [data owner]
   [:div.shipping-address-wrapper
@@ -121,6 +121,11 @@
                 (merge (utils/change-text data owner keypaths/checkout-shipping-address-last-name)
                        {:id :shipping-last-name
                         :required? true}))
+     (textfield "Mobile Phone"
+                (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
+                       {:id :shipping-phone
+                        :required? true
+                        :type "tel"}))
      (when (get-in data keypaths/loaded-places)
        (om/build places-component data {:opts {:id :shipping-address1
                                                :address-keypath keypaths/checkout-shipping-address
@@ -146,12 +151,7 @@
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
                           {:id :shipping-zipcode
-                           :required? true}))))
-     (textfield "Mobile Phone"
-                (merge (utils/change-text data owner keypaths/checkout-shipping-address-phone)
-                       {:id :shipping-phone
-                        :required? true
-                        :type "tel"}))]]])
+                           :required? true}))))]]])
 
 (defn checkout-address-component [data owner]
   (om/component
