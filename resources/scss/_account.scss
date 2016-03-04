@@ -134,3 +134,27 @@ a.forgot-password {
     color: $primary_color_text;
   }
 }
+
+.guest-checkout {
+  width: (600rem / $default-font-size);
+  margin: 0 auto;
+
+  .short-divider {
+    margin: 1.25rem auto;
+    width: 25%;
+    border-bottom: 1px lightgray solid;
+  }
+
+  .explanation {
+    font-size: (20rem / $default-font-size);
+  }
+
+  .explanation-header {
+    font-size: (40rem / $default-font-size);
+    margin: 1.25rem 0;
+  }
+}
+
+.or {
+  color: lightgray;
+}
