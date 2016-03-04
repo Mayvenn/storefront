@@ -11,11 +11,18 @@
   (om/component
    (html
     [:div.centered-content
-     (when-not (get-in data keypaths/get-satisfaction-login?)
-       [:div.page-heading.center "Sign In to Your Account"])
+     [:div.guest-checkout
+      [:h2.explanation-header.center "I'm new here"]
+      [:div.button.primary
+       {:on-click (utils/send-event-callback data events/control-checkout-guest-checkout-submit)}
+       "Guest Checkout"]
+
+      [:div.short-divider ]
+      [:h2.explanation-header.center "Already registered?"]
+      [:p.explanation.center "Sign into your account below, and checkout even faster!"]]
      [:div#existing-customer.new_spree_user
       (facebook/sign-in-button data)
-      [:div.or-divider [:span "or"]]
+      [:h2.center.or "OR"]
       [:form.simple_form
        {:on-submit (utils/send-event-callback data events/control-sign-in-submit)}
        [:div#password-credentials
@@ -46,10 +53,11 @@
        [:p.center "Don't have an account? "
         [:a (utils/route-to data events/navigate-sign-up) "Register Here"]])])))
 
-(defn requires-sign-in [app-state authorized-component]
-  (if (get-in app-state keypaths/user-id)
+(defn requires-sign-in-or-guest [app-state authorized-component]
+  (if (or (get-in app-state keypaths/user-id)
+          (get-in app-state keypaths/checkout-guest-checkout))
     authorized-component
-    sign-in-component))
+    checkout-sign-in-component))
 
 (defn redirect-getsat-component [data owner]
   (om/component
