@@ -69,13 +69,13 @@
                :bonus-credits {:bonus-amount nil
                                :earning-amount nil
                                :commissioned-revenue nil
-                               :total-credit nil
+                               :lifetime-total nil
                                :available-credit nil
                                :bonuses []}
                :referral-program {:bonus-amount nil
                                   :next-amount nil
                                   :earning-amount nil
-                                  :total-amount nil
+                                  :lifetime-total nil
                                   :referrals []}
                :manage-account {:email nil
                                 :id 10

@@ -200,21 +200,20 @@
       (assoc-in keypaths/stylist-commissions-payouts payouts)))
 
 (defmethod transition-state events/api-success-stylist-bonus-credits
-  [_ event {:keys [bonuses bonus-amount earning-amount commissioned-revenue total-credit available-credit]} app-state]
+  [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total]} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-bonus-credit-bonuses bonuses)
-      (assoc-in keypaths/stylist-bonus-credit-bonus-amount bonus-amount)
-      (assoc-in keypaths/stylist-bonus-credit-earning-amount earning-amount)
-      (assoc-in keypaths/stylist-bonus-credit-commissioned-revenue commissioned-revenue)
-      (assoc-in keypaths/stylist-bonus-credit-total-credit total-credit)
-      (assoc-in keypaths/stylist-bonus-credit-available-credit available-credit)))
+      (assoc-in keypaths/stylist-bonuses-award-amount bonus-amount)
+      (assoc-in keypaths/stylist-bonuses-milestone-amount earning-amount)
+      (assoc-in keypaths/stylist-bonuses-progress-to-next-bonus progress-to-next-bonus)
+      (assoc-in keypaths/stylist-bonuses-lifetime-total lifetime-total)
+      (assoc-in keypaths/stylist-bonuses-history bonuses)))
 
 (defmethod transition-state events/api-success-stylist-referral-program
-  [_ event {:keys [sales-rep-email bonus-amount earning-amount total-amount referrals]} app-state]
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-referral-program-bonus-amount bonus-amount)
       (assoc-in keypaths/stylist-referral-program-earning-amount earning-amount)
-      (assoc-in keypaths/stylist-referral-program-total-amount total-amount)
+      (assoc-in keypaths/stylist-referral-program-lifetime-total lifetime-total)
       (assoc-in keypaths/stylist-referral-program-referrals referrals)
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 

@@ -8,6 +8,10 @@
       (js/Date.)
       (.toLocaleDateString)))
 
+(defn epoch-date [epoch]
+  (-> (js/Date. epoch)
+      (.toLocaleDateString)))
+
 (defn as-money [amount]
   (let [amount (js/parseFloat amount)
         format (if (< amount 0) "-$%1.2f" "$%1.2f")]

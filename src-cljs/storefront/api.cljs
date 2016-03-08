@@ -436,9 +436,8 @@
     #(handle-message events/api-success-stylist-bonus-credits
                      (select-keys % [:bonus-amount
                                      :earning-amount
-                                     :commissioned-revenue
-                                     :total-credit
-                                     :available-credit
+                                     :progress-to-next-bonus
+                                     :lifetime-total
                                      :bonuses]))}))
 
 (defn get-stylist-referral-program [handle-message user-token]
@@ -451,7 +450,7 @@
     {:user-token user-token}
     :handler
     #(handle-message events/api-success-stylist-referral-program
-                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :total-amount :referrals]))}))
+                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :lifetime-total :referrals]))}))
 
 (defn get-sms-number [handle-message]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
