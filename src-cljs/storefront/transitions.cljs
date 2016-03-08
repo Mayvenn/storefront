@@ -225,7 +225,8 @@
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
       (assoc-in keypaths/user-store-slug store_slug)
-      (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))))
+      (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))
+      (assoc-in keypaths/checkout-as-guest false)))
 
 (defmethod transition-state events/api-success-sign-in [_ event args app-state]
   (-> app-state

@@ -74,7 +74,8 @@
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
                        {:id :billing-last-name :required? true}))
-     (when (experiments/guest-checkout? data)
+     (when (and (experiments/guest-checkout? data)
+                (get-in data keypaths/checkout-as-guest))
        (textfield "Email"
                   (merge (utils/change-text data owner keypaths/checkout-guest-email)
                          {:id :guest-email
