@@ -13,7 +13,7 @@
     [:div.centered-content
      [:div.guest-checkout
       [:h2.explanation-header.center "I'm new here"]
-      [:div.button.primary
+      [:div.button.primary#guest-checkout-button
        {:on-click (utils/send-event-callback data events/control-checkout-as-guest-submit)}
        "Guest Checkout"]
 
