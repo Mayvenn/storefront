@@ -526,6 +526,17 @@
                               {:order %
                                :navigate events/navigate-checkout-delivery})}))
 
+(defn guest-update-addresses [handle-message order]
+  (api-req
+   handle-message
+   POST
+   "/v2/guest-update-addresses"
+   request-keys/update-addresses
+   {:params (select-keys order [:number :token :email :billing-address :shipping-address])
+    :handler #(handle-message events/api-success-update-order-update-guest-address
+                              {:order %
+                               :navigate events/navigate-checkout-delivery})}))
+
 (defn update-shipping-method [handle-message order]
   (api-req
    handle-message

@@ -469,11 +469,16 @@
         shipping-address (if use-billing
                            billing-address
                            (get-in app-state keypaths/checkout-shipping-address))]
-    (api/update-addresses (get-in app-state keypaths/handle-message)
-                          (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                                 {:email (get-in app-state keypaths/user-email)
-                                  :billing-address billing-address
-                                  :shipping-address shipping-address}))))
+    (if (get-in app-state keypaths/checkout-as-guest)
+      (api/guest-update-addresses (get-in app-state keypaths/handle-message)
+                                  (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+                                         {:email (get-in app-state keypaths/checkout-guest-email)
+                                          :billing-address billing-address
+                                          :shipping-address shipping-address}))
+      (api/update-addresses (get-in app-state keypaths/handle-message)
+                            (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+                                   {:billing-address billing-address
+                                    :shipping-address shipping-address})))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-shipping-method (get-in app-state keypaths/handle-message)

@@ -74,6 +74,12 @@
      (textfield "Last Name"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-last-name)
                        {:id :billing-last-name :required? true}))
+     (when (experiments/guest-checkout? data)
+       (textfield "Email"
+                  (merge (utils/change-text data owner keypaths/checkout-guest-email)
+                         {:id :guest-email
+                          :required? true
+                          :type "email"})))
      (textfield "Mobile Phone"
                 (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
                        {:id :billing-phone :required? true :type "tel"}))

@@ -156,6 +156,7 @@
 
 (def api-success-update-order (conj api-success :update-order))
 (def api-success-update-order-update-address (conj api-success-update-order :update-address))
+(def api-success-update-order-update-guest-address (conj api-success-update-order :update-guest-address))
 (def api-success-update-order-update-cart-payments (conj api-success-update-order :update-cart-payments))
 (def api-success-update-order-update-shipping-method (conj api-success-update-order :update-shipping-method))
 (def api-success-update-order-modify-promotion-code (conj api-success-update-order :promotion-code))
