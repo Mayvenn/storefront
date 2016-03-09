@@ -37,6 +37,9 @@
   [order]
   (->> order line-items (filter shipping-item?) first))
 
+(defn add-rounded-floats [a b]
+  (/ (.toFixed (+ (* 100.0 a) (* 100.0 b)) 0) 100.0))
+
 (defn subtract-rounded-floats [a b]
   (/ (.toFixed (- (* 100.0 a) (* 100.0 b)) 0) 100.0))
 
