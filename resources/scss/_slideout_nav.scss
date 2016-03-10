@@ -195,12 +195,6 @@
     }
 
     .slideout-nav-link.half-width & {
-        &.icon-stylist-referrals {
-            width: 2.625rem;
-            height: 2.625rem;
-            background-image: url("/images/slideout_nav/stylist_referrals.png");
-        }
-
         &.icon-30-day-guarantee {
             width: 2.625rem;
             height: 2.625rem;
@@ -211,18 +205,6 @@
             width: 3.4167rem;
             height: 2.9167rem;
             background-image: url("/images/slideout_nav/customer_service.png");
-        }
-
-        &.icon-sales-bonuses {
-            width: 2.5rem;
-            height: 2.25rem;
-            background-image: url("/images/slideout_nav/sales_bonuses.png");
-        }
-
-        &.icon-commissions-and-payouts {
-            width: 3.4167rem;
-            height: 2.7083rem;
-            background-image: url("/images/slideout_nav/comissions_and_payouts.png");
         }
 
         &.icon-manage-account {
