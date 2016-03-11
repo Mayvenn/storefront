@@ -13,7 +13,7 @@ var debug = require('gulp-debug');
 var runSequence = require('run-sequence');
 var shell = require('gulp-shell');
 var del = require('del');
-var cssnext = require("gulp-cssnext");
+var postcss = require("gulp-postcss");
 
 gulp.task('sass', function () {
   return gulp.src('./resources/scss/*.scss')
@@ -26,7 +26,18 @@ gulp.task('sass', function () {
 
 gulp.task('css', function () {
   return gulp.src(['./resources/css/*.css'])
-    .pipe(cssnext({compress: true}))
+    .pipe(postcss([
+      require('postcss-import')(),
+      require('postcss-custom-media')(),
+      require('postcss-custom-properties')(),
+      require('postcss-calc')(),
+      require('postcss-color-function')(),
+      require('postcss-discard-comments')(),
+      require('autoprefixer')(),
+      /* require('postcss-reporter')(), */
+      /* comment out cssnano to see uncompressed css */
+      require('cssnano')()
+    ]))
     .pipe(gulp.dest('./resources/public/css'));
 });
 

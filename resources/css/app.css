@@ -1,7 +1,47 @@
+/* basscss-basic is a reasonable reset and basic styles, but it interferes with legacy
+ * styles, so disabling for now.
+ * TODO: consider nesting this under .redesign with `postcss-nesting` */
+/* @import 'basscss-basic'; */
+
+/* All common Modules */
 @import 'basscss';
-@import 'basscss-border-colors';
-@import 'basscss-ui-utility-groups';
-@import 'basscss-background-images';
+
+/* Optional Modules (not included in Basscss by default) */
+
+@import 'basscss-addons/modules/responsive-margin';
+@import 'basscss-addons/modules/responsive-padding';
+/* Would like to use this, but .input interferes with existing forms */
+/* @import 'basscss-addons/modules/forms'; */
+@import 'basscss-addons/modules/btn';
+@import 'basscss-addons/modules/btn-primary';
+@import 'basscss-addons/modules/btn-outline';
+@import 'basscss-addons/modules/btn-sizes';
+@import 'basscss-addons/modules/colors';
+@import 'basscss-addons/modules/background-colors';
+@import 'basscss-addons/modules/border-colors';
+@import 'basscss-addons/modules/darken';
+@import 'basscss-addons/modules/lighten';
+@import 'basscss-addons/modules/background-images';
+
+/* More from v8 */
+/*
+@import 'basscss-addons/modules/media-object';
+@import 'basscss-addons/modules/all';
+@import 'basscss-addons/modules/input-range';
+@import 'basscss-addons/modules/progress';
+*/
+/* From basscss v7 */
+/* implemented with flex in v8? */
+/* @import 'basscss-ui-utility-groups'; */
+/* even larger headings */
+/* @import 'basscss-utility-headings'; */
+
+/* Custom media queries */
+/*
+@custom-media --breakpoint-sm (min-width: 40em);
+@custom-media --breakpoint-md (min-width: 52em);
+@custom-media --breakpoint-lg (min-width: 64em);
+*/
 
 .pointer { cursor: pointer; }
 
@@ -11,34 +51,16 @@
 .img-header-logo { background-image: url('/images/header_logo.png'); }
 
 :root {
-  /* font stacks from http://cssfontstack.com */
-  --font-family-graphik: Graphik-Regular,sans-serif;
-  --font-family-fortescue: Fortescue,serif;
+    --font-family-graphik: Graphik-Regular,sans-serif;
+    --font-family-fortescue: Fortescue,serif;
 
-  --serif: var(--font-family-fortescue);
-  --sans-serif: var(--font-family-graphik);
+    --serif: var(--font-family-fortescue);
+    --sans-serif: var(--font-family-graphik);
 
-  --font-family: var(--sans-serif);
-  --heading-font-family: var(--serif);
+    --font-family: var(--sans-serif);
+    --heading-font-family: var(--sans-serif);
 
-  --fuchsia: #da0496;
-  --olive: #1d9b8b;
-  --black: #1d1c1c;
+    --fuchsia: #da0496;
+    --olive: #1d9b8b;
+    --black: #1d1c1c;
 }
-
-/*
-additional optional basscss helpers
-
-button size
-@import 'basscss-btn-sizes';
-
-progress bar
-@import 'basscss-progress';
-@import 'basscss-color-progress';
-
-adjust whitespace on small devices
-@import 'basscss-responsive-white-space';
-
-even larger headings
-@import 'basscss-utility-headings';
-*/
