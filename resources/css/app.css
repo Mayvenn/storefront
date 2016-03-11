@@ -1,0 +1,44 @@
+@import 'basscss';
+@import 'basscss-border-colors';
+@import 'basscss-ui-utility-groups';
+@import 'basscss-background-images';
+
+.pointer { cursor: pointer; }
+
+.serif       { font-family: var(--serif); }
+.sans-serif  { font-family: var(--sans-serif); }
+
+.img-header-logo { background-image: url('/images/header_logo.png'); }
+
+:root {
+  /* font stacks from http://cssfontstack.com */
+  --font-family-graphik: Graphik-Regular,sans-serif;
+  --font-family-fortescue: Fortescue,serif;
+
+  --serif: var(--font-family-fortescue);
+  --sans-serif: var(--font-family-graphik);
+
+  --font-family: var(--sans-serif);
+  --heading-font-family: var(--serif);
+
+  --fuchsia: #da0496;
+  --olive: #1d9b8b;
+  --black: #1d1c1c;
+}
+
+/*
+additional optional basscss helpers
+
+button size
+@import 'basscss-btn-sizes';
+
+progress bar
+@import 'basscss-progress';
+@import 'basscss-color-progress';
+
+adjust whitespace on small devices
+@import 'basscss-responsive-white-space';
+
+even larger headings
+@import 'basscss-utility-headings';
+*/
