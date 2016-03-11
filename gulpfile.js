@@ -13,6 +13,7 @@ var debug = require('gulp-debug');
 var runSequence = require('run-sequence');
 var shell = require('gulp-shell');
 var del = require('del');
+var cssnext = require("gulp-cssnext");
 
 gulp.task('sass', function () {
   return gulp.src('./resources/scss/*.scss')
@@ -23,11 +24,18 @@ gulp.task('sass', function () {
     .pipe(gulp.dest('./resources/public/css'));
 });
 
-gulp.task('watch', function () {
-  return gulp.watch('./resources/scss/*.scss', ['sass']);
+gulp.task('css', function () {
+  return gulp.src(['./resources/css/*.css'])
+    .pipe(cssnext({compress: true}))
+    .pipe(gulp.dest('./resources/public/css'));
 });
 
-gulp.task('default', ['sass']);
+gulp.task('watch', function () {
+  gulp.watch('./resources/scss/*.scss', ['sass']);
+  gulp.watch('./resources/css/*.css', ['css']);
+});
+
+gulp.task('default', ['sass', 'css']);
 
 gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
 
@@ -69,5 +77,5 @@ gulp.task('cdn', function () {
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence('sass', 'cljs-build', 'copy-release-assets', 'cdn', cb);
+  runSequence('sass', 'css', 'cljs-build', 'copy-release-assets', 'cdn', cb);
 });
