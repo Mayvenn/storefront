@@ -107,7 +107,8 @@
                                      :src "//js.honeybadger.io/v0.3/honeybadger.min.js"}]
     [:script.honeybadger-script-src {:type "text/javascript"}
      (str "Honeybadger.configure({api_key: 'b0a4a070', environment: '" env "'});")]
-    (page/include-css (asset-path "/css/all.css"))]
+    (page/include-css (asset-path "/css/all.css"))
+    (page/include-css (asset-path "/css/app.css"))]
    [:body
     [:div#content
      [:div {:style "height:100vh;"}

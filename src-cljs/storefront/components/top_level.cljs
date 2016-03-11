@@ -73,7 +73,7 @@
       (when-let [msg (get-in data keypaths/flash-failure-message)]
         [:div.flash.error msg])
       [:main {:role "main"}
-       [:div.container
+       [:div.legacy-container
         (let [requires-checkout-sign-in (if (experiments/guest-checkout? data)
                                           requires-sign-in-or-guest
                                           requires-sign-in)]

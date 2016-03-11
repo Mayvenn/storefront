@@ -20,7 +20,7 @@ body {
   font-family: $primary_font_regular;
   overflow-x: hidden;
 
-  .container {
+  .legacy-container {
     width: 100%;
   }
 
@@ -178,7 +178,7 @@ p {
 
 // Desktop Layout
 @media screen and (min-width: 1024px) {
-  .container {
+  .legacy-container {
     padding-bottom: 2em;
   }
 

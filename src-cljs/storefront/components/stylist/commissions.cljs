@@ -69,7 +69,7 @@
   (om/component
    (html
     [:main {:role "main"}
-     [:.container
+     [:.legacy-container
       [:h2.header-bar-heading.commissions "Commissions"]
 
       (om/build stylist-dashboard-nav-component data)
