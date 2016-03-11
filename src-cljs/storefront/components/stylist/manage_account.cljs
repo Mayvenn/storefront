@@ -167,18 +167,19 @@
            [:p.password-instructions
             "Leave blank to keep the same password."]]]]]
 
-       [:.select-payout-method
-        [:h4.dashboard-details-header "Commissions"]
-        [:.solid-line-divider]
-        [:span#payout-method-radio
-         [:ul.payout-methods
-          (payout-method-radio data :venmo "Venmo")
-          (payout-method-radio data :paypal "PayPal")
-          (payout-method-radio data :check "Check")
-          (payout-method-radio data :mayvenn_debit "Mayvenn Debit")]]
+       (let [chosen-keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
+             chosen-payout-method (get-in data chosen-keypath)]
+         [:.select-payout-method
+          [:h4.dashboard-details-header "Commissions"]
+          [:.solid-line-divider]
+          [:span#payout-method-radio
+           [:ul.payout-methods
+            (payout-method-radio data :venmo "Venmo")
+            (payout-method-radio data :paypal "PayPal")
+            (payout-method-radio data :check "Check")
+            (when (= chosen-payout-method "mayvenn_debit")
+              (payout-method-radio data :mayvenn_debit "Mayvenn Debit"))]]
 
-        (let [chosen-keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
-              chosen-payout-method (get-in data chosen-keypath)]
           (condp = chosen-payout-method
             "venmo" [:#venmo.payout-method
                      (input-field data owner [:venmo_payout_attributes :phone]
@@ -197,7 +198,7 @@
                              [:p "A prepaid Visa debit card will be mailed to the above address"]]
 
             nil [:#check.payout-method
-                 [:p "Checks will mail to the above address"]]))]
+                 [:p "Checks will mail to the above address"]])])
 
        [:.social-media
         [:h4.dashboard-details-header "Social Media"]
