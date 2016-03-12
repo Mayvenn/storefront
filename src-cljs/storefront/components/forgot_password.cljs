@@ -25,7 +25,7 @@
                  :type "email"
                  :name "email"})]]
        [:p
-        [:input.button.primary.mb-l {:type "submit"
+        [:input.button.primary.mb3 {:type "submit"
                                      :value "Reset my password"}]]]
-      [:div.or-divider.my-0 [:span "or"]]
+      [:div.or-divider.my0 [:span "or"]]
       (facebook/sign-in-button data)]])))
