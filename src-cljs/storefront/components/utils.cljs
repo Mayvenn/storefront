@@ -56,3 +56,5 @@
   (let [navigation-state (get-in data keypaths/navigation-event)
         selected (if (= navigation-state event) {:class "selected"} {})]
     [:a (merge selected (route-to data event)) label]))
+
+(def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])

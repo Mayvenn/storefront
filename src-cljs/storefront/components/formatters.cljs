@@ -26,3 +26,11 @@
   (let [amount (int amount)
         format (if (< amount 0) "-$%s" "$%s")]
     (gstring/format format (.toLocaleString (js/Math.abs amount)))))
+
+(defn as-money-cents-only [amount]
+  (let [amount (-> (js/parseFloat amount)
+                   js/Math.abs
+                   (* 100)
+                   (rem 100)
+                   int)]
+    (gstring/format "%02i" amount)))
