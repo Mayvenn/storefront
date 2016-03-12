@@ -15,7 +15,7 @@
 (defn as-money [amount]
   (let [amount (js/parseFloat amount)
         format (if (< amount 0) "-$%1.2f" "$%1.2f")]
-    (apply gstring/format format [(js/Math.abs amount)])))
+    (gstring/format format (.toLocaleString (js/Math.abs amount)))))
 
 (defn as-money-or-free [amount]
   (if (zero? amount)
@@ -24,5 +24,5 @@
 
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
-        format (if (< amount 0) "-$%1f" "$%1f")]
-    (apply gstring/format format [(js/Math.abs amount)])))
+        format (if (< amount 0) "-$%s" "$%s")]
+    (gstring/format format (.toLocaleString (js/Math.abs amount)))))
