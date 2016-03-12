@@ -7,12 +7,15 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn ^:private circle [idx selected]
+(defn ^:private circle [selected]
   [:div.bg-white.circle
-   {:class (str
-            (when-not (zero? idx) "ml2") " "
-            (when-not (= idx selected) "bg-lighten-4"))
+   {:class (when-not selected "bg-lighten-4")
     :style {:width "8px" :height "8px"}}])
+
+(defn ^:private circle-for-stat [data selected stat]
+  [:div.p1.pointer
+   {:on-click (utils/send-event-callback data events/control-stylist-view-stat stat)}
+   (circle (= selected stat))])
 
 (defn ^:private big-money [amount]
   [:span {:style {:font-size "64px"}} (f/as-money-without-cents amount)])
@@ -22,26 +25,38 @@
    (big-money amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
+(defn ^:private last-payout [amount]
+  [:div.my3
+   [:div.p1 "LAST PAYOUT"]
+   [:div.py2 (big-money-with-cents amount)]
+   [:div "FIXME amount and date"]])
+
 (defn ^:private next-payout [amount]
-  [:div.m3
+  [:div.my3
    [:div.p1 "NEXT PAYOUT"]
-   [:div.p2 (big-money-with-cents amount)]
+   [:div.py2 (big-money-with-cents amount)]
    [:div "Payment in FIXME days"]])
 
 (defn ^:private commissions [amount]
-  [:div.m3
+  [:div.my3
    [:div.p1 "LIFETIME COMMISSIONS"]
-   [:div.p2 (big-money amount)]
+   [:div.py2 (big-money amount)]
    [:div utils/nbsp]])
 
 (defn stylist-dashboard-stats-component [data owner]
   (om/component
    (html
-    [:div.p1.bg-teal.bg-lighten-top-3.white.center.sans-serif
-     (commissions (get-in data keypaths/stylist-commissions-paid-total))
-     (next-payout (get-in data keypaths/stylist-commissions-next-amount))
+    (let [selected (get-in data keypaths/selected-stylist-stat)]
+      [:div.p1.bg-teal.bg-lighten-top-3.white.center.sans-serif
+       (case selected
+         :last-payout
+         (last-payout 10000)
+         :next-payout
+         (next-payout (get-in data keypaths/stylist-commissions-next-amount))
+         :lifetime-commissions
+         (commissions (get-in data keypaths/stylist-commissions-paid-total)))
 
-     [:div.flex.justify-center.p1
-      (circle 0 1)
-      (circle 1 1)
-      (circle 2 1)]])))
+       [:div.flex.justify-center
+        (circle-for-stat data selected :last-payout)
+        (circle-for-stat data selected :next-payout)
+        (circle-for-stat data selected :lifetime-commissions)]]))))

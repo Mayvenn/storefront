@@ -168,6 +168,8 @@
           :past-order-id nil
           :menu-expanded false
           :account-menu-expanded false
+          :selected-stylist-stat :next-payout
+
           :sign-in {:email ""
                     :password ""
                     :remember-me true}

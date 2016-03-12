@@ -58,6 +58,7 @@
 (def control-change-state (conj control :change-state))
 
 (def control-carousel-move (conj control :carousel-move))
+(def control-stylist-view-stat (conj control :stylist-view-stat))
 
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
