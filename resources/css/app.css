@@ -22,6 +22,7 @@
 @import 'basscss-addons/modules/darken';
 @import 'basscss-addons/modules/lighten';
 @import 'basscss-addons/modules/background-images';
+@import 'basscss-addons/modules/legacy/utility-headings';
 
 /* More from v8 */
 /*
@@ -49,6 +50,8 @@
 .sans-serif  { font-family: var(--sans-serif); }
 
 .img-header-logo { background-image: url('/images/header_logo.png'); }
+
+.bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
 
 :root {
     --font-family-graphik: Graphik-Regular,-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;

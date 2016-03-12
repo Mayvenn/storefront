@@ -4,6 +4,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.formatters :as f]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
+            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -70,6 +71,8 @@
    (html
     [:main {:role "main"}
      [:.legacy-container
+      (om/build stylist-dashboard-stats-component data)
+
       [:h2.header-bar-heading.commissions "Commissions"]
 
       (om/build stylist-dashboard-nav-component data)
