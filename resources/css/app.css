@@ -51,7 +51,7 @@
 .img-header-logo { background-image: url('/images/header_logo.png'); }
 
 :root {
-    --font-family-graphik: Graphik-Regular,sans-serif;
+    --font-family-graphik: Graphik-Regular,-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
     --font-family-fortescue: Fortescue,serif;
 
     --serif: var(--font-family-fortescue);
@@ -60,6 +60,8 @@
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
 
+    --teal: #36b4d4;
+    --lime: #7ed321;
     --fuchsia: #da0496;
     --olive: #1d9b8b;
     --black: #1d1c1c;
