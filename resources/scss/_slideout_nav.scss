@@ -207,6 +207,12 @@
             background-image: url("/images/slideout_nav/customer_service.png");
         }
 
+        &.icon-commissions-and-payouts {
+            width: 3.4167rem;
+            height: 2.7083rem;
+            background-image: url("/images/slideout_nav/comissions_and_payouts.png");
+        }
+
         &.icon-manage-account {
             width: 2.2083rem;
             height: 2.2083rem;
@@ -227,8 +233,13 @@
 
         &.icon-join,
         &.icon-sign-in,
-        &.icon-edit-profile {
+        &.icon-edit-profile,
+        &.icon-commissions-and-payouts {
             margin-bottom: 1rem;
+        }
+
+        &.icon-edit-profile {
+            margin-top: 0.625rem;
         }
 
         &.icon-edit-profile {

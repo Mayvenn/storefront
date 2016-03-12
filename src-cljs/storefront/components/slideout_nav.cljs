@@ -169,7 +169,7 @@
             (slideout-nav-link
              data
              (merge (close-and-route data events/navigate-stylist-commissions)
-                    {:icon-class "stylist-dashboard"
+                    {:icon-class "commissions-and-payouts"
                      :label "Dashboard"
                      :full-width? false}))
             (slideout-nav-link
