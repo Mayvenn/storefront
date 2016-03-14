@@ -8,6 +8,6 @@
   (om/component
    (html
     [:nav.stylist-dashboard-nav
-     (utils/link-with-selected data events/navigate-stylist-commissions "Commissions")
-     (utils/link-with-selected data events/navigate-stylist-bonus-credit "Bonus Credit")
-     (utils/link-with-selected data events/navigate-stylist-referrals "Referrals")])))
+     (utils/link-with-selected data events/navigate-stylist-dashboard-commissions "Commissions")
+     (utils/link-with-selected data events/navigate-stylist-dashboard-bonus-credit "Bonus Credit")
+     (utils/link-with-selected data events/navigate-stylist-dashboard-referrals "Referrals")])))

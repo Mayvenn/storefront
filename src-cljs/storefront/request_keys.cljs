@@ -20,6 +20,7 @@
 (def get-stylist-account [:get-stylist-account])
 (def update-stylist-account [:update-stylist-account])
 (def update-stylist-account-profile-picture [:update-stylist-account-profile-picture])
+(def get-stylist-stats [:get-stylist-stats])
 (def get-stylist-commissions [:get-stylist-commissions])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])

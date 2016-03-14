@@ -2,11 +2,38 @@
   (:require [goog.string :as gstring]
             [goog.string.format]))
 
+(defn parse-iso8601 [date-string]
+  (-> date-string
+      (js/Date.parse)
+      (js/Date.)))
+
 (defn locale-date [iso8601-formatted-string]
   (-> iso8601-formatted-string
-      (js/Date.parse)
-      (js/Date.)
+      parse-iso8601
       (.toLocaleDateString)))
+
+(def month-names ["January"
+                  "February"
+                  "March"
+                  "April"
+                  "May"
+                  "June"
+                  "July"
+                  "August"
+                  "September"
+                  "October"
+                  "November"
+                  "December"])
+
+(defn date->month-name [date]
+  ;; This is actually the recommended way to do this in JavaScript.
+  ;; The other option is to use a time library, but goog.i18n adds 500K to the
+  ;; page size.
+  (get month-names (.getMonth date)))
+
+(defn long-date [date-string]
+  (let [date (parse-iso8601 date-string)]
+    (gstring/format "%s %d, %d" (date->month-name date) (.getDate date) (.getFullYear date))))
 
 (defn epoch-date [epoch]
   (-> (js/Date. epoch)

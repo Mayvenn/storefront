@@ -56,10 +56,10 @@
     [:span.payout-amount (f/as-money (payout :amount))]]])
 
 (defn list-payouts [data]
-  (when-let [paid-total (get-in data keypaths/stylist-commissions-paid-total)]
+  (when-let [paid-total (:amount (get-in data keypaths/stylist-stats-lifetime-payouts))]
     [:.commission-payment-history
      [:h4.dashboard-details-header "Commission Payment History"]
-     [:.solid-line-ider]
+     [:.solid-line-divider]
      [:.emphasized-banner
       [:span.emphasized-banner-header "Commissions Paid"]
       [:span.emphasized-banner-value (f/as-money paid-total)]]
@@ -78,7 +78,7 @@
       (om/build stylist-dashboard-nav-component data)
       [:.dashboard-content
        (when-let [next-commission-amount
-                  (get-in data keypaths/stylist-commissions-next-amount)]
+                  (:amount (get-in data keypaths/stylist-stats-next-payout))]
          [:#next-commission-summary.dashboard-summary
 
           [:.next-payout-description

@@ -157,10 +157,13 @@
 
 (def stylist-manage-account (conj stylist :manage-account))
 
+(def stylist-stats (conj stylist :stats))
+(def stylist-stats-previous-payout (conj stylist-stats :previous-payout))
+(def stylist-stats-next-payout (conj stylist-stats :next-payout))
+(def stylist-stats-lifetime-payouts (conj stylist-stats :lifetime-payouts))
+
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))
-(def stylist-commissions-next-amount (conj stylist-commissions :next-amount))
-(def stylist-commissions-paid-total (conj stylist-commissions :paid-total))
 (def stylist-commissions-new-orders (conj stylist-commissions :new-orders))
 (def stylist-commissions-payouts (conj stylist-commissions :payouts))
 

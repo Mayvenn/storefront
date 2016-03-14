@@ -412,6 +412,18 @@
        :response-format (json-response-format {:keywords? true})
        :timeout 10000})))
 
+(defn get-stylist-stats [handle-message user-token]
+  (api-req
+   handle-message
+   GET
+   "/stylist/stats"
+   request-keys/get-stylist-stats
+   {:params
+    {:user-token user-token}
+    :handler
+    #(handle-message events/api-success-stylist-stats
+                     (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
+
 (defn get-stylist-commissions [handle-message user-id user-token]
   (api-req
    handle-message

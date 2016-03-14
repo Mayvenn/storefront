@@ -149,7 +149,11 @@
     (api/get-stylist-account (get-in app-state keypaths/handle-message)
                              user-token)))
 
-(defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
+(defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
+  (api/get-stylist-stats (get-in app-state keypaths/handle-message)
+                         (get-in app-state keypaths/user-token)))
+
+(defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
@@ -157,12 +161,12 @@
                                    user-id
                                    user-token))))
 
-(defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
+(defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
                                    user-token)))
 
-(defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
+(defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
                                       user-token)))

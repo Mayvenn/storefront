@@ -32,9 +32,10 @@
 (def navigate-not-found (conj navigate :not-found))
 
 (def navigate-stylist (conj navigate :stylist))
-(def navigate-stylist-commissions (conj navigate-stylist :commissions))
-(def navigate-stylist-referrals (conj navigate-stylist :referrals))
-(def navigate-stylist-bonus-credit (conj navigate-stylist :bonus-credit))
+(def navigate-stylist-dashboard (conj navigate-stylist :dashboard))
+(def navigate-stylist-dashboard-commissions (conj navigate-stylist-dashboard :commissions))
+(def navigate-stylist-dashboard-referrals (conj navigate-stylist-dashboard :referrals))
+(def navigate-stylist-dashboard-bonus-credit (conj navigate-stylist-dashboard :bonus-credit))
 (def navigate-stylist-manage-account (conj navigate-stylist :manage-account))
 
 (def navigate-account (conj navigate :account))
@@ -144,6 +145,7 @@
 (def api-success-stylist-manage-account (conj api-success :stylist-manage-account))
 (def api-success-stylist-manage-account-profile-picture
   (conj api-success-stylist-manage-account :profile-picture))
+(def api-success-stylist-stats (conj api-success :stylist-stats))
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-stylist-bonus-credits (conj api-success :stylist-bonus-credits))
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))

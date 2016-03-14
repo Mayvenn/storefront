@@ -39,13 +39,13 @@
       1 "tomorrow"
       (str "in " days " days"))))
 
-(defn ^:private last-payout [amount]
+(defn ^:private last-payout [{:keys [amount date]}]
   [:div.my3
    [:div.p1 "LAST PAYOUT"]
    [:div.py2 (big-money-with-cents amount)]
-   [:div "FIXME amount and date"]])
+   [:div (f/long-date date)]])
 
-(defn ^:private next-payout [amount]
+(defn ^:private next-payout [{:keys [amount]}]
   [:div.my3
    [:div.p1 "NEXT PAYOUT"]
    (if (> amount 0)
@@ -56,7 +56,7 @@
       [:div.py2 (big-money 0)]
       [:div utils/nbsp]))])
 
-(defn ^:private commissions [amount]
+(defn ^:private lifetime-payouts [{:keys [amount]}]
   [:div.my3
    [:div.p1 "LIFETIME COMMISSIONS"]
    [:div.py2 (big-money amount)]
@@ -66,16 +66,16 @@
   (om/component
    (html
     (let [selected (get-in data keypaths/selected-stylist-stat)]
-      [:div.p1.bg-teal.bg-lighten-top-3.white.center.sans-serif
+      [:div.py1.bg-teal.bg-lighten-top-3.white.center.sans-serif
        (case selected
          :last-payout
-         (last-payout 10000)
+         (last-payout (get-in data keypaths/stylist-stats-previous-payout))
          :next-payout
-         (next-payout (get-in data keypaths/stylist-commissions-next-amount))
-         :lifetime-commissions
-         (commissions (get-in data keypaths/stylist-commissions-paid-total)))
+         (next-payout (get-in data keypaths/stylist-stats-next-payout))
+         :lifetime-payouts
+         (lifetime-payouts (get-in data keypaths/stylist-stats-lifetime-payouts)))
 
        [:div.flex.justify-center
         (circle-for-stat data selected :last-payout)
         (circle-for-stat data selected :next-payout)
-        (circle-for-stat data selected :lifetime-commissions)]]))))
+        (circle-for-stat data selected :lifetime-payouts)]]))))

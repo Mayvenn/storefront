@@ -61,6 +61,9 @@
      :shipping-methods []
      :sms-number nil
      :stylist {:sales-rep-email nil
+               :stats {:previous-payout {:amount 0 :date nil}
+                       :next-payout {:amount 0}
+                       :lifetime-payouts {:amount 0}}
                :commissions {:rate nil
                              :next-amount nil
                              :paid-total nil

@@ -111,7 +111,7 @@
             (when (own-store? data)
               (list
                [:li
-                [:a (close-and-route data events/navigate-stylist-commissions) "Dashboard"]]
+                [:a (close-and-route data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
                [:li
                 [:a (close-and-route data events/navigate-stylist-manage-account) "Manage Account"]]
                [:li
@@ -168,7 +168,7 @@
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
             (slideout-nav-link
              data
-             (merge (close-and-route data events/navigate-stylist-commissions)
+             (merge (close-and-route data events/navigate-stylist-dashboard-commissions)
                     {:icon-class "commissions-and-payouts"
                      :label "Dashboard"
                      :full-width? false}))

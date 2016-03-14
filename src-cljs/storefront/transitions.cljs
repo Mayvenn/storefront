@@ -193,12 +193,14 @@
       (update-in keypaths/stylist-manage-account merge stylist)
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
 
+(defmethod transition-state events/api-success-stylist-stats [_ events stats app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
+
 (defmethod transition-state events/api-success-stylist-commissions
   [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-commissions-rate rate)
-      (assoc-in keypaths/stylist-commissions-next-amount next-amount)
-      (assoc-in keypaths/stylist-commissions-paid-total paid-total)
       (assoc-in keypaths/stylist-commissions-new-orders new-orders)
       (assoc-in keypaths/stylist-commissions-payouts payouts)))
 
