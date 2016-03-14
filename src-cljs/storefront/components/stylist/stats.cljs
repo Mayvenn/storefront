@@ -25,6 +25,20 @@
    (big-money amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
+(def payday 3) ;; 3 -> Wednesday in JS
+
+(defn days-till-payout []
+  (let [dow (.getDay (js/Date.))]
+    (mod (+ 7 payday (- dow))
+         7)))
+
+(defn in-x-days []
+  (let [days (days-till-payout)]
+    (condp = days
+      0 "today"
+      1 "tomorrow"
+      (str "in " days " days"))))
+
 (defn ^:private last-payout [amount]
   [:div.my3
    [:div.p1 "LAST PAYOUT"]
@@ -34,8 +48,13 @@
 (defn ^:private next-payout [amount]
   [:div.my3
    [:div.p1 "NEXT PAYOUT"]
-   [:div.py2 (big-money-with-cents amount)]
-   [:div "Payment in FIXME days"]])
+   (if (> amount 0)
+     (list
+      [:div.py2 (big-money-with-cents amount)]
+      [:div "Payment " (in-x-days)])
+     (list
+      [:div.py2 (big-money 0)]
+      [:div utils/nbsp]))])
 
 (defn ^:private commissions [amount]
   [:div.my3
