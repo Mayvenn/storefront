@@ -2,7 +2,6 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
-            [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
 (defn display-sms [number]
@@ -25,16 +24,14 @@
       [:h4.dashboard-details-header.no-top-space "Get In Touch"]
       [:div.solid-line-divider]
       [:div#help-methods
-       (when (experiments/faq-section? data)
-         (list
-          [:a.help-link {:href "http://help.mayvenn.com" :target "_blank"}
-           [:div.help-method-row
-            [:div.help-method-icon.faq]
-            [:div.help-method-details-container
-             [:div.help-method-details
-              [:p.help-method "Frequently Asked Questions"]
-              [:p.help-method-means.emphasized "Visit our FAQ and help center"]]]]]
-          [:div.solid-line-divider]))
+       [:a.help-link {:href "http://help.mayvenn.com" :target "_blank"}
+        [:div.help-method-row
+         [:div.help-method-icon.faq]
+         [:div.help-method-details-container
+          [:div.help-method-details
+           [:p.help-method "Frequently Asked Questions"]
+           [:p.help-method-means.emphasized "Visit our FAQ and help center"]]]]]
+       [:div.solid-line-divider]
        [:a.help-link {:href "tel://+18885627952"}
         [:div.help-method-row
          [:div.help-method-icon.call]

@@ -25,9 +25,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn faq-section? [data]
-  (display-variation data "faq"))
-
 (defn show-store-credit? [data]
   (display-variation data "store-credit-view"))
 
