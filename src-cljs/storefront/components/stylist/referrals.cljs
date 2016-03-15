@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
+            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]))
 
@@ -38,6 +39,8 @@
           lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)
           referrals (get-in data keypaths/stylist-referral-program-referrals)]
       [:div
+       (om/build stylist-dashboard-stats-component data)
+
        [:h2.header-bar-heading.referrals "Referrals"]
 
        (om/build stylist-dashboard-nav-component data)

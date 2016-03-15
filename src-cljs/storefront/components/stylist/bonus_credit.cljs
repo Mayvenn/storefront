@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
+            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]))
 
@@ -52,6 +53,8 @@
           milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)]
       [:div
+       (om/build stylist-dashboard-stats-component data)
+
        [:h2.header-bar-heading.bonus-credit "Bonus Credit"]
 
        (om/build stylist-dashboard-nav-component data)
