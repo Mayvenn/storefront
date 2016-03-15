@@ -25,9 +25,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn show-store-credit? [data]
-  (display-variation data "store-credit-view"))
-
 (defn guest-checkout? [data]
   (display-variation data "guest-checkout"))
 

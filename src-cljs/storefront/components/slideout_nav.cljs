@@ -9,8 +9,7 @@
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.messages :refer [send]]
-            [storefront.components.formatters :refer [as-money]]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.components.formatters :refer [as-money]]))
 
 (defn show-store-credit? [app-state]
   (when-let [credit (get-in app-state keypaths/user-total-available-store-credit)]
@@ -88,8 +87,7 @@
                 (utils/send-event-callback data
                                            events/control-menu-expand
                                            {:keypath keypaths/account-menu-expanded}))}
-             (when (and (experiments/show-store-credit? data)
-                        (show-store-credit? data))
+             (when (show-store-credit? data)
                [:span.stylist-user-label "Store credit:"
                 [:span.store-credit-amount
                  (as-money (get-in data keypaths/user-total-available-store-credit))]])
@@ -160,8 +158,7 @@
                                 {:taxon-path path}))
              "Stylist Only Products"]]])
         [:ul.slideout-nav-list
-         (when (and (experiments/show-store-credit? data)
-                    (show-store-credit? data))
+         (when (show-store-credit? data)
            [:li.slideout-nav-section
             [:h4.store-credit
              [:span.label "Available store credit:"]
