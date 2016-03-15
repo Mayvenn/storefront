@@ -15,15 +15,11 @@
 (defn choose-stat-now [data stat]
   (messages/send data events/control-stylist-view-stat stat))
 
-(defn position [pred coll]
-  (first (keep-indexed #(when (pred %2) %1)
-                       coll)))
-
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 (def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
 
 (defn position-by-stat [stat]
-  (position #(= % stat) ordered-stats))
+  (utils/position #(= % stat) ordered-stats))
 
 (defn stat-by-position [idx]
   (get ordered-stats idx default-stat))

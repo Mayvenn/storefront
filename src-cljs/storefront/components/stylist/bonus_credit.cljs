@@ -51,8 +51,6 @@
           milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)]
       [:div
-       [:h2.header-bar-heading.bonus-credit "Bonus Credit"]
-
        (when award-amount
          [:.dashboard-content
           [:.store-credit-detail

@@ -68,8 +68,6 @@
   (om/component
    (html
     [:div
-     [:h2.header-bar-heading.commissions "Commissions"]
-
      [:.dashboard-content
       (when-let [next-commission-amount
                  (:amount (get-in data keypaths/stylist-stats-next-payout))]

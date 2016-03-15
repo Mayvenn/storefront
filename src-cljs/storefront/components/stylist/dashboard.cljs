@@ -10,22 +10,51 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn link-with-selected [data event label]
+(defn link-with-selected [data event ref label]
   (let [navigation-state (get-in data keypaths/navigation-event)]
-    [:a.black.py1.mx3.lg-mt2.border-teal
-     (merge (when (= navigation-state event) {:class "border-bottom"})
-            {:style {:border-width "2px"}}
+    [:a.black.py1.mx3.lg-mt2
+     (merge {:ref ref}
             (utils/route-to data event)) label]))
 
-(defn stylist-dashboard-nav-component [data]
-  (om/component
-   (html
-    [:nav.bg-silver.h5
-     [:div.bg-lighten-4
-      [:div.bg-lighten-4.flex.items-start.justify-center
-       (link-with-selected data events/navigate-stylist-dashboard-bonus-credit "Bonuses")
-       (link-with-selected data events/navigate-stylist-dashboard-commissions "Commissions")
-       (link-with-selected data events/navigate-stylist-dashboard-referrals "Referrals")]]])))
+(def tab-refs ["bonuses" "commissions" "referrals"])
+(def nav-events [events/navigate-stylist-dashboard-bonus-credit events/navigate-stylist-dashboard-commissions events/navigate-stylist-dashboard-referrals])
+(def labels ["Bonuses" "Commissions" "Referrals"])
+
+(defn save-tab-bounds [owner]
+  (om/set-state! owner
+                 {:bounds (vec (for [tab-ref tab-refs]
+                                 (let [parent-rect (.getBoundingClientRect (om/get-node owner "tabs"))
+                                       rect (.getBoundingClientRect (om/get-node owner tab-ref))]
+                                   {:left (- (.-left rect) (.-left parent-rect))
+                                    :width (.-width rect)})))}))
+
+(defn stylist-dashboard-nav-component [data owner]
+  (let [handle-resize-event (fn [e] (save-tab-bounds owner))]
+    (reify
+      om/IDidMount
+      (did-mount [this]
+        (js/window.addEventListener "resize" handle-resize-event)
+        (save-tab-bounds owner))
+      om/IWillUnmount
+      (will-unmount [this]
+        (js/window.removeEventListener "resize" handle-resize-event))
+      om/IRenderState
+      (render-state [this {:keys [bounds]}]
+        (let [navigation-state (get-in data keypaths/navigation-event)
+              tab-position     (utils/position #(= % navigation-state) nav-events)
+              tab-underline    (get bounds tab-position)]
+          (html
+           [:nav.bg-silver.h5 {:ref "tabs"}
+            [:div.bg-lighten-4
+             [:div.bg-lighten-4
+              [:div.flex.justify-center
+               (for [[event ref label] (map vector nav-events tab-refs labels)]
+                 (link-with-selected data event ref label))]
+              [:div.border-teal.border.absolute
+               {:style {:margin-top "-2px"
+                        :transition "all 0.25s ease-in"
+                        :left       (str (:left tab-underline) "px")
+                        :width      (str (:width tab-underline) "px")}}]]]]))))))
 
 (defn stylist-dashboard-component [data owner]
   (om/component
