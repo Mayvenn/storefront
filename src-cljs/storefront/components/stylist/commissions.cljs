@@ -3,8 +3,6 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.formatters :as f]
-            [storefront.components.stylist.nav :refer [stylist-dashboard-nav-component]]
-            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -69,32 +67,28 @@
 (defn stylist-commissions-component [data owner]
   (om/component
    (html
-    [:main {:role "main"}
-     [:.legacy-container
-      (om/build stylist-dashboard-stats-component data)
+    [:div
+     [:h2.header-bar-heading.commissions "Commissions"]
 
-      [:h2.header-bar-heading.commissions "Commissions"]
+     [:.dashboard-content
+      (when-let [next-commission-amount
+                 (:amount (get-in data keypaths/stylist-stats-next-payout))]
+        [:#next-commission-summary.dashboard-summary
 
-      (om/build stylist-dashboard-nav-component data)
-      [:.dashboard-content
-       (when-let [next-commission-amount
-                  (:amount (get-in data keypaths/stylist-stats-next-payout))]
-         [:#next-commission-summary.dashboard-summary
+         [:.next-payout-description
+          [:p "As of today, your next commission payment is:"]
+          [:p.next-commissions-amount (f/as-money next-commission-amount)]]
 
-          [:.next-payout-description
-           [:p "As of today, your next commission payment is:"]
-           [:p.next-commissions-amount (f/as-money next-commission-amount)]]
+         [:.next-payout-date-container
+          [:p.accented-next-pay "W"]
+          [:p.small-payout-description "Commission paid on Wednesdays"]]])
 
-          [:.next-payout-date-container
-           [:p.accented-next-pay "W"]
-           [:p.small-payout-description "Commission paid on Wednesdays"]]])
+      (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
+        [:#money-rules
+         [:.gold-money-box]
+         [:.money-rule-details
+          [:p "You earn " commission-rate "% commission on each new order "
+           "shipped from your store excluding tax."]]])
 
-       (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
-         [:#money-rules
-          [:.gold-money-box]
-          [:.money-rule-details
-           [:p "You earn " commission-rate "% commission on each new order "
-            "shipped from your store excluding tax."]]])
-
-       (list-new-orders data)
-       (list-payouts data)]]])))
+      (list-new-orders data)
+      (list-payouts data)]])))

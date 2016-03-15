@@ -18,9 +18,7 @@
             [storefront.components.sign-up :refer [sign-up-component]]
             [storefront.components.forgot-password :refer [forgot-password-component]]
             [storefront.components.reset-password :refer [reset-password-component]]
-            [storefront.components.stylist.commissions :refer [stylist-commissions-component]]
-            [storefront.components.stylist.bonus-credit :refer [stylist-bonus-credit-component]]
-            [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
+            [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
             [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
             [storefront.components.friend-referrals :refer [friend-referrals-component]]
@@ -91,9 +89,9 @@
              events/navigate-sign-up                        sign-up-component
              events/navigate-forgot-password                forgot-password-component
              events/navigate-reset-password                 reset-password-component
-             events/navigate-stylist-dashboard-commissions  stylist-commissions-component
-             events/navigate-stylist-dashboard-bonus-credit stylist-bonus-credit-component
-             events/navigate-stylist-dashboard-referrals    stylist-referrals-component
+             events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
+             events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
+             events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
              events/navigate-stylist-manage-account         stylist-manage-account-component
              events/navigate-account-manage                 (requires-sign-in data manage-account-component)
              events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
