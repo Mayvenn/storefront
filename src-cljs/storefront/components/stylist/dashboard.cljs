@@ -46,15 +46,14 @@
           (html
            [:nav.bg-silver.h5 {:ref "tabs"}
             [:div.bg-lighten-4
-             [:div.bg-lighten-4
-              [:div.flex.justify-center
-               (for [[event ref label] (map vector nav-events tab-refs labels)]
-                 (link-with-selected data event ref label))]
-              [:div.border-teal.border.absolute
-               {:style {:margin-top "-2px"
-                        :transition "all 0.25s ease-in"
-                        :left       (str (:left tab-underline) "px")
-                        :width      (str (:width tab-underline) "px")}}]]]]))))))
+             [:div.flex.justify-center
+              (for [[event ref label] (map vector nav-events tab-refs labels)]
+                (link-with-selected data event ref label))]
+             [:div.border-teal.border.absolute
+              {:style {:margin-top "-2px"
+                       :transition "all 0.25s ease-in"
+                       :left       (str (:left tab-underline) "px")
+                       :width      (str (:width tab-underline) "px")}}]]]))))))
 
 (defn stylist-dashboard-component [data owner]
   (om/component
