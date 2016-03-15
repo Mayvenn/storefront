@@ -162,7 +162,10 @@
        (let [selected (get-in data keypaths/selected-stylist-stat)
              selected-idx (position-by-stat selected)]
          (when (and swiper selected-idx)
-           (.slide swiper selected-idx))
+           (let [delta (- (.getPos swiper) selected-idx)]
+             (if (pos? delta)
+               (dotimes [_ delta] (.prev swiper))
+               (dotimes [_ (- delta)] (.next swiper)))))
          [:div.py1.bg-teal.bg-lighten-top-3.white.center.sans-serif
           [:div.overflow-hidden.relative
            {:ref "stats"}
