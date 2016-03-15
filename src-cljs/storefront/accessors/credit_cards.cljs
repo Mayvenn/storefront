@@ -1,6 +1,6 @@
 (ns storefront.accessors.credit-cards
   (:require [clojure.string :as string]
-            [goog.string :as gstring]))
+            [goog.string]))
 
 (def digits (into #{} (map str (range 0 10))))
 
@@ -26,10 +26,10 @@
   (let [[month year] (parse-expiration s)]
     (cond
       (and (empty? month) (empty? year)) s
-      (gstring/endsWith s " /") (str month) ;; occurs when the user backspaces through the slash
+      (goog.string/endsWith s " /") (str month) ;; occurs when the user backspaces through the slash
       (and (> month 12) (empty? year)) (str "0" (get s 0) " / " (.substring s 1))
       (and (<= 10 month 12) (empty? year)) (str month " / ")
-      (and (< 1 month 10) (not (gstring/startsWith s "0"))) (str "0" month " / ")
-      (and (= month 1) (gstring/endsWith s " ")) (str "0" month " / ")
+      (and (< 1 month 10) (not (goog.string/startsWith s "0"))) (str "0" month " / ")
+      (and (= month 1) (goog.string/endsWith s " ")) (str "0" month " / ")
       (empty? year) (str month)
       :else (str month " / " year))))

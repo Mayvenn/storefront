@@ -1,6 +1,6 @@
 (ns storefront.components.formatters
-  (:require [goog.string :as gstring]
-            [goog.string.format]))
+  (:require [goog.string.format]
+            [goog.string]))
 
 (defn parse-iso8601 [date-string]
   (-> date-string
@@ -33,7 +33,7 @@
 
 (defn long-date [date-string]
   (let [date (parse-iso8601 date-string)]
-    (gstring/format "%s %d, %d" (date->month-name date) (.getDate date) (.getFullYear date))))
+    (goog.string/format "%s %d, %d" (date->month-name date) (.getDate date) (.getFullYear date))))
 
 (defn epoch-date [epoch]
   (-> (js/Date. epoch)
@@ -42,7 +42,7 @@
 (defn as-money [amount]
   (let [amount (js/parseFloat amount)
         format (if (< amount 0) "-$%1.2f" "$%1.2f")]
-    (gstring/format format (.toLocaleString (js/Math.abs amount)))))
+    (goog.string/format format (.toLocaleString (js/Math.abs amount)))))
 
 (defn as-money-or-free [amount]
   (if (zero? amount)
@@ -52,7 +52,7 @@
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
         format (if (< amount 0) "-$%s" "$%s")]
-    (gstring/format format (.toLocaleString (js/Math.abs amount)))))
+    (goog.string/format format (.toLocaleString (js/Math.abs amount)))))
 
 (defn as-money-cents-only [amount]
   (let [amount (-> (js/parseFloat amount)
@@ -60,4 +60,4 @@
                    (* 100)
                    js/Math.round
                    (rem 100))]
-    (gstring/format "%02i" amount)))
+    (goog.string/format "%02i" amount)))
