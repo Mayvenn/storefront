@@ -58,6 +58,6 @@
   (let [amount (-> (js/parseFloat amount)
                    js/Math.abs
                    (* 100)
-                   (rem 100)
-                   int)]
+                   js/Math.round
+                   (rem 100))]
     (gstring/format "%02i" amount)))
