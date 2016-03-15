@@ -20,13 +20,13 @@
                        coll)))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
-(def default-stat :next-payout)
+(def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
 
 (defn position-by-stat [stat]
   (position #(= % stat) ordered-stats))
 
 (defn stat-by-position [idx]
-  (get ordered-stats idx :previous-payout))
+  (get ordered-stats idx default-stat))
 
 (def default-position (position-by-stat default-stat))
 
@@ -40,12 +40,16 @@
    {:on-click (choose-stat data stat)}
    (circle (= selected stat))])
 
-(defn ^:private big-money [amount]
-  [:span {:style {:font-size "64px"}} (f/as-money-without-cents amount)])
+;; TODO: h00 is 64px when base font-size is 16px, but we need it to be 64 on
+;; small screens, where base font-size is 12px
+(def really-big {:style {:font-size "64px"}})
 
-(defn ^:private big-money-with-cents [amount]
+(defn ^:private money [amount]
+  (f/as-money-without-cents amount))
+
+(defn ^:private money-with-cents [amount]
   [:div.flex.justify-center
-   (big-money amount)
+   (money amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
 (def payday 3) ;; 3 -> Wednesday in JS
@@ -64,31 +68,47 @@
 
 (def stat-card "left col-12 relative")
 
-(defn ^:private previous-payout [{:keys [amount date]}]
-  [:div.my3
-   {:class stat-card}
-   [:div.p1 "LAST PAYOUT"]
-   [:div.py2 (big-money-with-cents amount)]
-   [:div (f/long-date date)]])
 
-(defn ^:private next-payout [{:keys [amount]}]
-  [:div.my3
-   {:class stat-card}
-   [:div.p1 "NEXT PAYOUT"]
-   (if (> amount 0)
-     (list
-      [:div.py2 (big-money-with-cents amount)]
-      [:div "Payment " (in-x-days)])
-     (list
-      [:div.py2 (big-money 0)]
-      [:div utils/nbsp]))])
+(defmulti render-stat (fn [data keypath] keypath))
 
-(defn ^:private lifetime-payouts [{:keys [amount]}]
-  [:div.my3
-   {:class stat-card}
-   [:div.p1 "LIFETIME COMMISSIONS"]
-   [:div.py2 (big-money amount)]
-   [:div utils/nbsp]])
+(defmethod render-stat keypaths/stylist-stats-previous-payout [data keypath]
+  (let [{:keys [amount date]} (get-in data keypath)]
+    [:div.my3
+     {:class stat-card}
+     [:div.p1 "LAST PAYOUT"]
+     (if (> amount 0)
+       (list
+        [:div.py2 really-big (money-with-cents amount)]
+        [:div (f/long-date date)])
+       (list
+        [:div.py2 really-big utils/nbsp]
+        [:div "Tip: Your last payout will show here."]))]))
+
+(defmethod render-stat keypaths/stylist-stats-next-payout [data keypath]
+  (let [{:keys [amount]} (get-in data keypath)]
+    [:div.my3
+     {:class stat-card}
+     [:div.p1 "NEXT PAYOUT"]
+     (if (> amount 0)
+       (list
+        [:div.py2 really-big (money-with-cents amount)]
+        [:div "Payment " (in-x-days)])
+       (list
+        [:div.py2 really-big utils/nbsp]
+        [:div "Tip: Your next payout will show here."]))]))
+
+(defmethod render-stat keypaths/stylist-stats-lifetime-payouts [data keypath]
+  (let [{:keys [amount]} (get-in data keypath)]
+    [:div.my3
+     {:class stat-card}
+     [:div.p1 "LIFETIME COMMISSIONS"]
+     (if (> amount 0)
+       (list
+        [:div.py2 really-big (money amount)]
+        [:div utils/nbsp])
+       (list
+        [:div.py2 really-big utils/nbsp]
+        [:div "Tip: Lifetime commissions will show here."]))]))
 
 (defn stylist-dashboard-stats-component [data owner]
   (reify
@@ -111,18 +131,15 @@
       (html
        (let [selected (get-in data keypaths/selected-stylist-stat)
              selected-idx (position-by-stat selected)]
-         (when (and swiper
-                    (not= (.getPos swiper) selected-idx))
+         (when (and swiper selected-idx)
            (.slide swiper selected-idx))
          [:div.py1.bg-teal.bg-lighten-top-3.white.center.sans-serif
           [:div.overflow-hidden.relative
            {:ref "stats"}
            [:div.overflow-hidden.relative
-            (previous-payout (get-in data keypaths/stylist-stats-previous-payout))
-            (next-payout (get-in data keypaths/stylist-stats-next-payout))
-            (lifetime-payouts (get-in data keypaths/stylist-stats-lifetime-payouts))]]
+            (for [stat ordered-stats]
+              (render-stat data (conj keypaths/stylist-stats stat)))]]
 
           [:div.flex.justify-center
-           (circle-for-stat data selected :previous-payout)
-           (circle-for-stat data selected :next-payout)
-           (circle-for-stat data selected :lifetime-payouts)]])))))
+           (for [stat ordered-stats]
+             (circle-for-stat data selected stat))]])))))
