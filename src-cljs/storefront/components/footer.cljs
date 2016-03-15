@@ -19,52 +19,33 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
-(def checkout-footer-events
-  #{events/navigate-cart
-    events/navigate-checkout-address
-    events/navigate-checkout-delivery
-    events/navigate-checkout-payment
-    events/navigate-checkout-confirmation})
-
-(def checkout-footer-variations
-  #{"homemade-seal" "norton-seal" "mcafee-seal"})
-
 (defn footer-component [data owner]
-  (let [minimal-footer?  (minimal-footer-events (get-in data keypaths/navigation-event))
-        checkout-footer? (checkout-footer-events (get-in data keypaths/navigation-event))
-        badge-variation (some #(if (experiments/display-variation data %1) %1) checkout-footer-variations)]
+  (let [minimal-footer?  (minimal-footer-events (get-in data keypaths/navigation-event))]
     (om/component
      (html
-      [:footer#footer {:class (when (and badge-variation checkout-footer?) "badges")}
+      [:footer#footer
        (list
         (when-not minimal-footer?
           [:div.footer-logo-container [:figure.footer-logo]])
-        (if (and badge-variation checkout-footer?)
-          [:.checkout
-           [:hr]
-           [:.help-phone "Need Help? " [:a {:href "tel://8885627952"} "(888)-562-7952"]]
-           [:.badges
-            [:.guarantee]
-            [:div {:class (goog.string.format "security %s" badge-variation)}]]]
-          [:div.contact-us
-           [:div.footer-container
-            [:ul.contact-us-menu
-             [:li.cu-item
-              [:a.cu-link.send-sonar-dynamic-number-link
-               (when-let [number (get-in data keypaths/sms-number)]
-                 {:href (str "sms://+1" number)})
-               [:i.icon-chat]
-               "text"]]
-             [:li.cu-item
-              [:a.cu-link
-               {:href "mailto:help@mayvenn.com"}
-               [:i.icon-email]
-               "email"]]
-             [:li.cu-item
-              [:a.cu-link
-               {:href "tel://+18885627952"}
-               [:i.icon-phone]
-               "phone"]]]]])
+        [:div.contact-us
+         [:div.footer-container
+          [:ul.contact-us-menu
+           [:li.cu-item
+            [:a.cu-link.send-sonar-dynamic-number-link
+             (when-let [number (get-in data keypaths/sms-number)]
+               {:href (str "sms://+1" number)})
+             [:i.icon-chat]
+             "text"]]
+           [:li.cu-item
+            [:a.cu-link
+             {:href "mailto:help@mayvenn.com"}
+             [:i.icon-email]
+             "email"]]
+           [:li.cu-item
+            [:a.cu-link
+             {:href "tel://+18885627952"}
+             [:i.icon-phone]
+             "phone"]]]]]
         (when-not minimal-footer?
           [:div.sm-icons
            [:div.footer-container
