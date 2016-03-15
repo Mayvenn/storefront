@@ -5,7 +5,30 @@
             [storefront.components.formatters :as f]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.messages :as messages]
+            [swipe :as swipe]))
+
+(defn choose-stat [data stat]
+  (utils/send-event-callback data events/control-stylist-view-stat stat))
+
+(defn choose-stat-now [data stat]
+  (messages/send data events/control-stylist-view-stat stat))
+
+(defn position [pred coll]
+  (first (keep-indexed #(when (pred %2) %1)
+                       coll)))
+
+(def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
+(def default-stat :next-payout)
+
+(defn position-by-stat [stat]
+  (position #(= % stat) ordered-stats))
+
+(defn stat-by-position [idx]
+  (get ordered-stats idx :previous-payout))
+
+(def default-position (position-by-stat default-stat))
 
 (defn ^:private circle [selected]
   [:div.bg-white.circle
@@ -14,7 +37,7 @@
 
 (defn ^:private circle-for-stat [data selected stat]
   [:div.p1.pointer
-   {:on-click (utils/send-event-callback data events/control-stylist-view-stat stat)}
+   {:on-click (choose-stat data stat)}
    (circle (= selected stat))])
 
 (defn ^:private big-money [amount]
@@ -39,14 +62,18 @@
       1 "tomorrow"
       (str "in " days " days"))))
 
-(defn ^:private last-payout [{:keys [amount date]}]
+(def stat-card "left col-12 relative")
+
+(defn ^:private previous-payout [{:keys [amount date]}]
   [:div.my3
+   {:class stat-card}
    [:div.p1 "LAST PAYOUT"]
    [:div.py2 (big-money-with-cents amount)]
    [:div (f/long-date date)]])
 
 (defn ^:private next-payout [{:keys [amount]}]
   [:div.my3
+   {:class stat-card}
    [:div.p1 "NEXT PAYOUT"]
    (if (> amount 0)
      (list
@@ -58,24 +85,44 @@
 
 (defn ^:private lifetime-payouts [{:keys [amount]}]
   [:div.my3
+   {:class stat-card}
    [:div.p1 "LIFETIME COMMISSIONS"]
    [:div.py2 (big-money amount)]
    [:div utils/nbsp]])
 
 (defn stylist-dashboard-stats-component [data owner]
-  (om/component
-   (html
-    (let [selected (get-in data keypaths/selected-stylist-stat)]
-      [:div.py1.bg-teal.bg-lighten-top-3.white.center.sans-serif
-       (case selected
-         :last-payout
-         (last-payout (get-in data keypaths/stylist-stats-previous-payout))
-         :next-payout
-         (next-payout (get-in data keypaths/stylist-stats-next-payout))
-         :lifetime-payouts
-         (lifetime-payouts (get-in data keypaths/stylist-stats-lifetime-payouts)))
+  (reify
+    om/IDidMount
+    (did-mount [this]
+      (om/set-state!
+       owner
+       {:swiper (js/Swipe. (om/get-node owner "stats")
+                           #js {:continuous false
+                                :startSlide (or (position-by-stat (get-in data keypaths/selected-stylist-stat))
+                                                default-position)
+                                :callback (fn [idx _]
+                                            (choose-stat-now data (stat-by-position idx)))})}))
+    om/IWillUnmount
+    (will-unmount [this]
+      (when-let [swiper (:swiper (om/get-state owner))]
+        (.kill swiper)))
+    om/IRenderState
+    (render-state [_ {:keys [swiper]}]
+      (html
+       (let [selected (get-in data keypaths/selected-stylist-stat)
+             selected-idx (position-by-stat selected)]
+         (when (and swiper
+                    (not= (.getPos swiper) selected-idx))
+           (.slide swiper selected-idx))
+         [:div.py1.bg-teal.bg-lighten-top-3.white.center.sans-serif
+          [:div.overflow-hidden.relative
+           {:ref "stats"}
+           [:div.overflow-hidden.relative
+            (previous-payout (get-in data keypaths/stylist-stats-previous-payout))
+            (next-payout (get-in data keypaths/stylist-stats-next-payout))
+            (lifetime-payouts (get-in data keypaths/stylist-stats-lifetime-payouts))]]
 
-       [:div.flex.justify-center
-        (circle-for-stat data selected :last-payout)
-        (circle-for-stat data selected :next-payout)
-        (circle-for-stat data selected :lifetime-payouts)]]))))
+          [:div.flex.justify-center
+           (circle-for-stat data selected :previous-payout)
+           (circle-for-stat data selected :next-payout)
+           (circle-for-stat data selected :lifetime-payouts)]])))))

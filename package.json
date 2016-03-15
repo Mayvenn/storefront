@@ -6,7 +6,8 @@
     "basscss": "^8.0.1",
     "basscss-addons": "^1.0.0-beta4",
     "basscss-basic": "^1.0.0",
-    "node-bourbon": "^4.2.2"
+    "node-bourbon": "^4.2.2",
+    "swipejs": "^2.0.8"
   },
   "devDependencies": {
     "del": "^2.0.2",
