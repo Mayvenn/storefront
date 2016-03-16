@@ -168,7 +168,9 @@
             "Leave blank to keep the same password."]]]]]
 
        (let [chosen-keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
-             chosen-payout-method (get-in data chosen-keypath)]
+             chosen-payout-method (get-in data chosen-keypath)
+             original-keypath (conj keypaths/stylist-manage-account :original_payout_method)
+             original-payout-method (get-in data original-keypath)]
          [:.select-payout-method
           [:h4.dashboard-details-header "Commissions"]
           [:.solid-line-divider]
@@ -177,7 +179,7 @@
             (payout-method-radio data :venmo "Venmo")
             (payout-method-radio data :paypal "PayPal")
             (payout-method-radio data :check "Check")
-            (when (= chosen-payout-method "mayvenn_debit")
+            (when (= original-payout-method "mayvenn_debit")
               (payout-method-radio data :mayvenn_debit "Mayvenn Debit"))]]
 
           (condp = chosen-payout-method

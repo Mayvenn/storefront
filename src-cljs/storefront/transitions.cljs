@@ -187,7 +187,7 @@
   [_ event {:keys [stylist]} app-state]
   (-> app-state
       (assoc-in keypaths/validation-errors {})
-      (update-in keypaths/stylist-manage-account merge stylist)
+      (update-in keypaths/stylist-manage-account merge (assoc stylist :original_payout_method (:chosen_payout_method stylist)))
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
 
 (defmethod transition-state events/api-success-stylist-commissions
