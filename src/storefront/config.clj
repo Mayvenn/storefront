@@ -13,7 +13,7 @@
                               (get-in timbre/example-config [:appenders :standard-out])}})})
 
 (def env-config {:environment (env :environment)
-                 :honeybadger-token (env :honeybadger-token)
+                 :bugsnag-token (env :bugsnag-token)
                  :storeback {:endpoint (env :storeback-endpoint)}
                  :prerender-token (env :prerender-token)})
 

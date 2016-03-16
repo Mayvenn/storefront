@@ -7,7 +7,7 @@
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.2.2"]
                  [environ "1.0.0"]
-                 [clj-honeybadger "0.3.1"]
+                 [tocsin "0.1.0"]
                  [ring/ring-jetty-adapter "1.3.2"]
                  [clj-http "1.0.1" :exclusions [org.clojure/tools.reader]]
                  [compojure "1.4.0"]

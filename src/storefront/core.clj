@@ -1,7 +1,7 @@
 (ns storefront.core
   (:gen-class :main true)
   (:require [com.stuartsierra.component :as component]
-            [clj-honeybadger.core :as honeybadger]
+            [tocsin.core :as tocsin]
             [environ.core :refer [env]]
             [storefront.system :as system]))
 
@@ -15,6 +15,6 @@
     (alter-var-root #'the-system (constantly (system/create-system)))
     (component/start the-system)
     (catch Exception e
-      (do (honeybadger/send-exception! e {:api-key (env :honeybadger-token)
-                                          :env (env :environment)})
+      (do (tocsin/notify e {:api-key (env :bugsnag-token)
+                            :environment (env :environment)})
           (throw e)))))

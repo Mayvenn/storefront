@@ -1,7 +1,7 @@
 (ns storefront.system
   (:require [taoensso.timbre :as timbre]
             [com.stuartsierra.component :as component]
-            [clj-honeybadger.core :as honeybadger]
+            [tocsin.core :as tocsin]
             [storefront.config :as config]
             [ring.component.jetty :refer [jetty-server]]
             [storefront.handler :refer [create-handler]]))
@@ -20,17 +20,17 @@
   (fn [level str]
     (timbre/log logger-config level str)))
 
-(defn exception-handler [honeybadger-token environment]
+(defn exception-handler [bugsnag-token environment]
   (fn [e]
-    (honeybadger/send-exception! e {:api-key honeybadger-token
-                                    :env environment})))
+    (tocsin/notify e {:api-key bugsnag-token
+                      :environment environment})))
 
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
    :app-handler (map->AppHandler (select-keys config [:storeback :environment :prerender-token]))
    :embedded-server (jetty-server (config :server-opts))
-   :exception-handler (exception-handler (config :honeybadger-token) (config :environment))))
+   :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (defn dependency-map []
   {:app-handler [:logger :exception-handler]
