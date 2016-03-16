@@ -5,27 +5,23 @@
             [storefront.keypaths :as keypaths]))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.loose-table-row
-   [:.left-content
-    [:p.chopped-content "Stylist Bonus Credit"]
-    (when revenue-surpassed
-      [:p.extra-credit-info
-       "For reaching " (f/as-money-without-cents revenue-surpassed)])
-    [:p.extra-credit-info (f/epoch-date created-at)]]
-   [:.right-content
-    [:p (f/as-money-without-cents amount)]]])
+  [:div
+   [:p "Stylist Bonus Credit"]
+   (when revenue-surpassed
+     [:p "For reaching " (f/as-money-without-cents revenue-surpassed)])
+   [:p (f/epoch-date created-at)]
+   [:p (f/as-money-without-cents amount)]])
 
 (defn bonus-history-component [data]
   (om/component
    (html
     (let [lifetime-total (get-in data keypaths/stylist-bonuses-lifetime-total)
           bonuses        (get-in data keypaths/stylist-bonuses-history)]
-      [:.bonus-history
-       [:h4.dashboard-details-header "Bonus History"]
-       [:.solid-line-divider]
-       [:.emphasized-banner
-        [:span.emphasized-banner-header "Total Bonuses to Date"]
-        [:span.emphasized-banner-value (f/as-money-without-cents lifetime-total)]]
+      [:div
+       [:h4 "Bonus History"]
+       [:div
+        [:span "Total Bonuses to Date"]
+        [:span (f/as-money-without-cents lifetime-total)]]
 
        (map display-stylist-bonus bonuses)]))))
 
@@ -35,13 +31,11 @@
     (let [progress  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
           milestone (get-in data keypaths/stylist-bonuses-milestone-amount)
           bar-width (min 100 (/ progress (/ milestone 100.0)))]
-      [:.progress-container
-       [:.progress-bar-limit (f/as-money-without-cents 0)]
-       [:.progress-bar-container
-        [:.progress-bar
-         [:.progress-bar-progress {:style {:width (str bar-width "%")}}
-          [:.progress-marker (f/as-money progress)]]]]
-       [:.progress-bar-limit (f/as-money-without-cents milestone)]]))))
+      [:div
+       [:div (f/as-money-without-cents 0)]
+       [:div {:style {:width (str bar-width "%")}}
+        [:div (f/as-money progress)]]
+       [:div (f/as-money-without-cents milestone)]]))))
 
 (defn stylist-bonus-credit-component [data]
   (om/component
@@ -52,29 +46,24 @@
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)]
       [:div {:data-test "bonuses-panel"}
        (when award-amount
-         [:.dashboard-content
-          [:.store-credit-detail
-           [:.available-bonus.emphasized-banner.extra-emphasis
-            [:span.emphasized-banner-header "Available Bonus Credits"]
-            [:span.emphasized-banner-value (f/as-money available-credit)]]
+         [:div
+          [:div
+           [:span "Available Bonus Credits"]
+           [:span (f/as-money available-credit)]]
 
-           [:.dashboard-summary#next-reward-tracker
-            [:p
-             "Sell "
-             (f/as-money (- milestone-amount progress-amount))
-             " more to earn your next "
-             (f/as-money-without-cents award-amount)
-             " bonus credit."]]
+          [:p
+           "Sell "
+           (f/as-money (- milestone-amount progress-amount))
+           " more to earn your next "
+           (f/as-money-without-cents award-amount)
+           " bonus credit."]
 
-           [:#money-rules
-            [:.gold-money-box]
-            [:.money-rule-details
-             [:p
-              "You earn "
-              (f/as-money-without-cents award-amount)
-              " in bonus credit for every "
-              (f/as-money-without-cents milestone-amount)
-              " in sales you make."]]]]
+          [:p
+           "You earn "
+           (f/as-money-without-cents award-amount)
+           " in bonus credit for every "
+           (f/as-money-without-cents milestone-amount)
+           " in sales you make."]
 
           (om/build pending-bonus-progress-component data)
 

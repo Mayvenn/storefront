@@ -4,74 +4,6 @@ div.dashboard-content {
   padding: 0 56px;
 }
 
-.dashboard-summary, #money-rules {
-  width: 100%;
-}
-
-.new-order-commissions, .commission-payment-history, .bonus-history {
-  width: 420px;
-}
-
-.new-order-commissions {
-  margin-right: 72px;
-}
-
-.my-referrals {
-  width: 50%;
-
-  .loose-table-row {
-    width: 100%;
-  }
-}
-
-.store-credit-detail {
-  position: relative;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-div.money-rule-details, .dashboard-summary {
-  min-height: 70px;
-  height: 70px;
-}
-
-div.available-bonus {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 269px;
-  height: 140px;
-  z-index: 1;
-
-  span.emphasized-banner-value {
-    position: absolute;
-    font-size: 36px;
-    display: block;
-    width: 269px;
-    text-align: center;
-    top: 35px;
-    right: 0;
-  }
-
-  span.emphasized-banner-header {
-    position: absolute;
-    font-size: 14px;
-    display: block;
-    width: 269px;
-    text-align: center;
-    bottom: 35px;
-    right: 0;
-
-    &:after {
-      content: '';
-    }
-  }
-}
-
-div#next-commission-summary {
-  height: 135px;
-}
-
 .dashboard-content {
   form.edit_mayvenn_stylist {
     @include display(flex);
@@ -113,16 +45,4 @@ div#next-commission-summary {
 input.update-account {
   width: 47%;
   margin-left: 53%;
-}
-
-div.progress-marker, div.progress-bar-limit {
-  font-size: 14px;
-}
-
-div.progress-bar {
-  height: 9px;
-}
-
-div.progress-bar-container {
-  margin-top: 5px;
 }
