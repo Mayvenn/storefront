@@ -24,41 +24,6 @@ div.dashboard-content {
   }
 }
 
-nav.stylist-dashboard-nav {
-  @include display(flex);
-  margin: 40px 56px;
-  border-top: solid #b2b3b3 1px;
-  border-bottom: solid #b2b3b3 1px;
-  background-color: #f7f7f7;
-
-  a {
-    display: block;
-    width: 33.334%;
-    text-align: center;
-    height: 52px;
-    line-height: 52px;
-    border-right: solid #b2b3b3 1px;
-    text-transform: uppercase;
-    color: #666;
-    font-weight: bold;
-
-    &.selected {
-      @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-      color: white;
-    }
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-}
-
-.header-bar-heading {
-  &.commissions, &.referrals, &.bonus-credit {
-    display: none;
-  }
-}
-
 .store-credit-detail {
   position: relative;
   width: 100%;
