@@ -18,7 +18,7 @@
             (utils/route-to data event)) label]))
 
 (defn sliding-indicator [{:keys [left width]}]
-  [:div.border-teal.border.absolute.transition-all.transition-ease-in.transition-1
+  [:div.border-teal.border.absolute.transition-ease-in.transition-1
    {:style {:margin-top "-2px"
             :left       (str left "px")
             :width      (str width "px")}}])

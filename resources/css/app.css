@@ -51,7 +51,6 @@
 
 .bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
 
-.transition-all { transition-property: all; }
 .transition-ease-in { transition-timing-function: ease-in; }
 .transition-1 { transition-duration: 0.25s; }
 .transition-2 { transition-duration: 0.5s; }
