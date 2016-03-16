@@ -13,7 +13,8 @@
 (defn link-with-selected [data event ref label]
   (let [navigation-state (get-in data keypaths/navigation-event)]
     [:a.black.py1.mx3.lg-mt2
-     (merge {:ref ref}
+     (merge {:ref ref
+             :data-test (str "nav-" ref)}
             (utils/route-to data event)) label]))
 
 (def tab-refs ["bonuses" "commissions" "referrals"])

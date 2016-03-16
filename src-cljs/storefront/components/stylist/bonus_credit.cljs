@@ -50,7 +50,7 @@
           award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
           milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)]
-      [:div
+      [:div {:data-test "bonuses-panel"}
        (when award-amount
          [:.dashboard-content
           [:.store-credit-detail

@@ -67,7 +67,7 @@
 (defn stylist-commissions-component [data owner]
   (om/component
    (html
-    [:div
+    [:div {:data-test "commissions-panel"}
      [:.dashboard-content
       (when-let [next-commission-amount
                  (:amount (get-in data keypaths/stylist-stats-next-payout))]

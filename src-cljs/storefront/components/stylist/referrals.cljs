@@ -36,7 +36,7 @@
           earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
           lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)
           referrals (get-in data keypaths/stylist-referral-program-referrals)]
-      [:div
+      [:div {:data-test "referrals-panel"}
        (when bonus-amount
          [:.dashboard-content
           [:a#email-referral.dashboard-summary {:href sales-rep-email :target "_top"}
