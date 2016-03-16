@@ -22,7 +22,7 @@
        [:p.spaced-help.hours "HOURS: Monday - Friday, 9-5 PST"]
        [:p.spaced-help.shipment-schedule
         "Orders placed before 11am PST ship that day"]]
-      [:h4.dashboard-details-header.no-top-space "Get In Touch"]
+      [:h4.manage-account-header.no-top-space "Get In Touch"]
       [:div.solid-line-divider]
       [:div#help-methods
        (when (experiments/faq-section? data)
