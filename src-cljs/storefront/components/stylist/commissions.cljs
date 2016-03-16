@@ -38,8 +38,6 @@
       [:h4 "Recently shipped orders"]
       [:p "Orders that haven't shipped aren't shown."]
       [:p "Commission is earned when order ships."]
-      [:div "Sale"]
-      [:div "Commission"]
       (map (partial show-new-order data) new-orders)])))
 
 (defn show-payout [data payout]
@@ -48,27 +46,15 @@
    [:span (f/as-money (payout :amount))]])
 
 (defn list-payouts [data]
-  (when-let [paid-total (:amount (get-in data keypaths/stylist-stats-lifetime-payouts))]
-    [:div
-     [:h4 "Commission Payment History"]
-     [:div
-      [:span "Commissions Paid"]
-      [:span (f/as-money paid-total)]]
-     (map (partial show-payout data)
-          (get-in data keypaths/stylist-commissions-payouts))]))
+  (let [payouts (get-in data keypaths/stylist-commissions-payouts)]
+    (when (seq payouts)
+      (for [payout payouts]
+        (show-payout data payout)))))
 
 (defn stylist-commissions-component [data owner]
   (om/component
    (html
     [:div {:data-test "commissions-panel"}
-     (when-let [next-commission-amount
-                (:amount (get-in data keypaths/stylist-stats-next-payout))]
-       [:p "As of today, your next commission payment is:"]
-       [:p (f/as-money next-commission-amount)]
-
-       [:p "W"]
-       [:p "Commission paid on Wednesdays"])
-
      (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
        [:p "You earn " commission-rate "% commission on each new order "
         "shipped from your store excluding tax."])
