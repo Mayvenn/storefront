@@ -21,7 +21,7 @@
 @import 'basscss-addons/modules/border-colors';
 @import 'basscss-addons/modules/darken';
 @import 'basscss-addons/modules/lighten';
-@import 'basscss-addons/modules/background-images';
+@import 'basscss-background-images';
 @import 'basscss-addons/modules/legacy/utility-headings';
 
 /* More from v8 */

@@ -5,6 +5,7 @@
   "dependencies": {
     "basscss": "^8.0.1",
     "basscss-addons": "^1.0.0-beta4",
+    "basscss-background-images": "^0.1.1",
     "basscss-basic": "^1.0.0",
     "node-bourbon": "^4.2.2",
     "swipejs": "^2.0.8"
