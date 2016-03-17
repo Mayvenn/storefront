@@ -71,3 +71,15 @@
    (when (and order user)
      (< (:total-available-store-credit user)
         (:total order)))))
+
+(defn tax-adjustment [order]
+  {:name "Tax" :price (:tax-total order)})
+
+(defn all-order-adjustments [order]
+  (conj (:adjustments order)
+        (tax-adjustment order)))
+
+(defn display-adjustment-name [name]
+  (if (= name "Bundle Discount")
+    "10% Bundle Discount"
+    name))

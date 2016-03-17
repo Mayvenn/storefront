@@ -20,23 +20,11 @@
    [:span.cart-label name]
    [:span.cart-value value]])
 
-(defn- tax-adjustment [order]
-  {:name "Tax" :price (:tax-total order)})
-
-(defn- all-order-adjustments [order]
-  (conj (:adjustments order)
-        (tax-adjustment order)))
-
-(defn- display-adjustment-name [data name]
-  (if (= name "Bundle Discount")
-    "10% Bundle Discount"
-    name))
-
 (defn- display-adjustment-row [data {:keys [name price coupon-code]}]
   (when-not (= price 0)
     [:tr.order-summary-row.adjustment
      [:td
-      [:h5 (display-adjustment-name data name)
+      [:h5 (orders/display-adjustment-name name)
        (when coupon-code
          (let [on-click (utils/send-event-callback data events/control-checkout-remove-promotion {:code coupon-code})]
            [:a {:href "" :on-click on-click} "Remove"]))]]
@@ -98,7 +86,7 @@
   [:div
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
-    (let [adjustments (all-order-adjustments order)
+    (let [adjustments (orders/all-order-adjustments order)
           quantity    (orders/product-quantity order)]
       [:tbody
        (when-not (empty? adjustments)
