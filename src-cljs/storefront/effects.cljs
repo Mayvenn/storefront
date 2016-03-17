@@ -426,9 +426,7 @@
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
-  (let [store-url (str (-> js/window .-location .-protocol) "//"
-                       (-> js/window .-location .-host))
-        order (get-in app-state keypaths/order)]
+  (let [order (get-in app-state keypaths/order)]
     (api/update-cart-payments
      (get-in app-state keypaths/handle-message)
      {:order (-> app-state
@@ -444,13 +442,13 @@
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
                                      :mobile-checkout? (not (device/isDesktop))
-                                     :return-url (str store-url "/orders/" (:number order) "/paypal/"
+                                     :return-url (str stylists/store-url "/orders/" (:number order) "/paypal/"
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
                                                         "&order-token=" (url-encode (:token order)))
-                                     :cancel-url (str store-url "/cart?error=paypal-cancel")}}))
+                                     :cancel-url (str stylists/store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
