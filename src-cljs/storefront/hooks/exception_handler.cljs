@@ -11,7 +11,7 @@
 
 (defn report [error & [custom-context]]
   (if (and (tracking-enabled?) (.hasOwnProperty js/window "Bugsnag"))
-    (do (js/Bugsnag.notifyException error nil (clj->js (merge {:groupingHash (.-message error)} custom-context)) "error")
+    (do (js/Bugsnag.notifyException error nil (clj->js custom-context) "error")
         (log "[Exception occurred, logged to bugsnag]: " error custom-context))
     (log "[Bugsnag not loaded when exception occurred]: " error custom-context))
   (throw error))
