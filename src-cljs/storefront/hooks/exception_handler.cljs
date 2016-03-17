@@ -15,3 +15,7 @@
         (log "[Exception occurred, logged to bugsnag]: " error custom-context))
     (log "[Bugsnag not loaded when exception occurred]: " error custom-context))
   (throw error))
+
+(defn refresh []
+  (when (.hasOwnProperty js/window "Bugsnag")
+    (.refresh js/Bugsnag)))

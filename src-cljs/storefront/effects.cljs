@@ -23,6 +23,7 @@
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.talkable :as talkable]
+            [storefront.hooks.exception-handler :as exception-handler]
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [send send-later]]
             [storefront.routes :as routes]
@@ -111,7 +112,8 @@
       (let [path (routes/current-path app-state)]
         (riskified/track-page path)
         (analytics/track-page path)
-        (experiments/track-event path)))))
+        (experiments/track-event path)
+        (exception-handler/refresh)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (reviews/insert-reviews app-state)
