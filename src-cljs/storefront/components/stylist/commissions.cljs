@@ -2,6 +2,8 @@
   (:require [clojure.string :as str]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.products :as products]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.components.formatters :as f]
             [storefront.components.utils :as utils]
@@ -26,26 +28,57 @@
    [:.col.col-3.px1 d]])
 
 (defn show-commission
-  [data {:keys [number commissionable_amount full-name commission_date] :as commission}]
+  [data {:keys [number commissionable_amount commission_date order] :as commission}]
   (let [state (order-state commission)]
-    [:.p2.border-bottom.border-white
-     [:div
-      (utils/route-to data events/navigate-order {:number number})
-      [:div.mb2
-       [:div.px1.h6.right.border.capped
-        {:style {:padding-top "3px" :padding-bottom "2px"}
-         :class (state-look state)}
-        (when (= state :paid) "+") (f/as-money commissionable_amount)]
-       [:.h2 full-name]]
-      [:div.gray.h5.mb1
-       (four-up "Status" "Ship Date" "Order" [:.black.right.h2.mtn1 "..."])]]
+    (list
+     [:.p2.border-bottom.border-white
+      [:div
+       (utils/route-to data events/navigate-order {:number number})
+       [:div.mb2
+        [:div.px1.h6.right.border.capped
+         {:style {:padding-top "3px" :padding-bottom "2px"}
+          :class (state-look state)}
+         (when (= state :paid) "+") (f/as-money commissionable_amount)]
+        [:.h2 (:full-name order)]]
+       [:div.gray.h5.mb1
+        (four-up "Status" "Ship Date" "Order" [:.black.right.h2.mtn1 "..."])]]
 
-     [:div.medium.h5
-      (four-up
-       [:.titleize {:class (state-look state)} (name state)]
-       (f/locale-date commission_date)
-       number
-       nil)]]))
+
+      [:div.medium.h5
+       (four-up
+        [:.titleize {:class (state-look state)} (name state)]
+        (f/locale-date commission_date)
+        number
+        nil)]]
+
+     (when (= number number)
+       [:.bg-silver.px2
+        (for [{:keys [product-name product-id id unit-price variant-attrs quantity] :as item}
+              (orders/product-items order)]
+          [:.py3.clearfix
+           [:.left
+            [:img.border-top.border-bottom.border-gray.mr3
+             {:style {:width "5rem"}
+              :src   (first (products/thumbnail-urls data product-id))
+              :alt   product-name}]]
+           [:.overflow-hidden
+            [:.h3.medium.titleize (products/product-title item)]
+            [:div.line-height-4.h3
+             [:div.mt1 "Length: " (:length variant-attrs)]
+             [:div "Price: " (f/as-money unit-price)]
+             [:div "Quantity: " quantity]]]])
+
+        (let [{:keys [options-text unit-price]} (orders/shipping-item order)
+              rows (concat [{:name "Subtotal" :price (orders/products-subtotal order)}]
+                           (:adjustments order)
+                           [(orders/tax-adjustment order)]
+                           [{:name options-text :price unit-price}])]
+          (for [{:keys [name price]} rows]
+            [:.clearfix.mxn1.my1
+             [:.px1.col.col-6 name]
+             [:.px1.col.col-6.medium.right-align (f/as-money price)]]))]
+       ))
+    ))
 
 (def empty-commissions
   (html
