@@ -16,5 +16,6 @@
     (component/start the-system)
     (catch Exception e
       (do (tocsin/notify e {:api-key (env :bugsnag-token)
-                            :environment (env :environment)})
+                            :environment (env :environment)
+                            :project-ns "storefront"})
           (throw e)))))

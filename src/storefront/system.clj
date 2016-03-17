@@ -23,7 +23,8 @@
 (defn exception-handler [bugsnag-token environment]
   (fn [e]
     (tocsin/notify e {:api-key bugsnag-token
-                      :environment environment})))
+                      :environment environment
+                      :project-ns "storefront"})))
 
 (defn system-map [config]
   (component/system-map
