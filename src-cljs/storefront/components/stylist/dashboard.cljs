@@ -61,7 +61,7 @@
   (om/component
    (html
     [:main {:role "main"}
-     [:.legacy-container
+     [:.legacy-container.sans-serif.black
       (om/build stylist-dashboard-stats-component data)
 
       (om/build nav-component data)

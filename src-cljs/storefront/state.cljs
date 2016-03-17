@@ -65,10 +65,7 @@
                        :next-payout {:amount 0}
                        :lifetime-payouts {:amount 0}}
                :commissions {:rate nil
-                             :next-amount nil
-                             :paid-total nil
-                             :new-orders []
-                             :payouts []}
+                             :history []}
                :bonus-credits {:bonus-amount nil
                                :earning-amount nil
                                :commissioned-revenue nil

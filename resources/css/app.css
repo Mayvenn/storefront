@@ -99,6 +99,7 @@
 .transition-3 { transition-duration: 1s; }
 .transition-4 { transition-duration: 2s; }
 
+.container { max-width: 640px; }
 .mtn1 { margin-top: -var(--space-1); }
 .mtn2 { margin-top: -var(--space-2); }
 .mtn3 { margin-top: -var(--space-3); }

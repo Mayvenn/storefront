@@ -198,11 +198,10 @@
       (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
 
 (defmethod transition-state events/api-success-stylist-commissions
-  [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
+  [_ event {:keys [rate commissions]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-commissions-rate rate)
-      (assoc-in keypaths/stylist-commissions-new-orders new-orders)
-      (assoc-in keypaths/stylist-commissions-payouts payouts)))
+      (assoc-in keypaths/stylist-commissions-history commissions)))
 
 (defmethod transition-state events/api-success-stylist-bonus-credits
   [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total]} app-state]

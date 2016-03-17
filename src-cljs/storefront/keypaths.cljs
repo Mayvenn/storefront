@@ -164,8 +164,7 @@
 
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))
-(def stylist-commissions-new-orders (conj stylist-commissions :new-orders))
-(def stylist-commissions-payouts (conj stylist-commissions :payouts))
+(def stylist-commissions-history (conj stylist-commissions :history))
 
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))
