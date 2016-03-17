@@ -42,12 +42,54 @@
 @custom-media --breakpoint-lg (min-width: 64em);
 */
 
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Regular-Web.woff') format('woff'),
+       url('/fonts/Graphik-Regular-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Regular-Web.svg#svgFontName') format('svg');
+  font-weight:  400;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Medium-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Medium-Web.woff') format('woff'),
+       url('/fonts/Graphik-Medium-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Medium-Web.svg#svgFontName') format('svg');
+  font-weight:  500;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Bold-Web.eot');
+  src: url('/fonts/Graphik-Bold-Web.eot?#iefix') format('embedded-opentype'),
+     url('/fonts/Graphik-Bold-Web.woff') format('woff'),
+     url('/fonts/Graphik-Bold-Web.ttf') format('truetype'),
+     url('/fonts/Graphik-Bold-Web.svg#Graphik-Bold') format('svg');
+  font-weight:  700;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
 .pointer { cursor: pointer; }
+
+.capped { border-radius: 1000px; }
+
+.titleize { text-transform: capitalize; }
 
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
+.medium      { font-weight: 500;}
 
 .img-header-logo { background-image: url('/images/header_logo.png'); }
+.img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
+
 
 .bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
 
@@ -57,8 +99,13 @@
 .transition-3 { transition-duration: 1s; }
 .transition-4 { transition-duration: 2s; }
 
+.mtn1 { margin-top: -var(--space-1); }
+.mtn2 { margin-top: -var(--space-2); }
+.mtn3 { margin-top: -var(--space-3); }
+.mtn4 { margin-top: -var(--space-4); }
+
 :root {
-    --font-family-graphik: Graphik-Regular,-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
     --font-family-fortescue: Fortescue,serif;
 
     --serif: var(--font-family-fortescue);
@@ -67,10 +114,13 @@
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
 
-    --teal: #36b4d4;
-    --lime: #7ed321;
+    --teal:    #36b4d4;
+    --lime:    #7ed321;
     --fuchsia: #da0496;
-    --olive: #1d9b8b;
+    --olive:   #1d9b8b;
+
+    --white:  #fafafa;
     --silver: #f2f2f2;
-    --black: #4a4a4a;
+    --gray:   #9b9b9b;
+    --black:  #4a4a4a;
 }
