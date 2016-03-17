@@ -50,7 +50,7 @@
                 :pretty-print true
                 :output-dir "resources/public/js/out"
                 :externs ["externs/riskified.js"
-                          "externs/honeybadger.js"
+                          "externs/bugsnag.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
                           "externs/stripe.js"
@@ -65,7 +65,7 @@
                 :source-map-path "/js/out"
                 :pretty-print false
                 :externs ["externs/riskified.js"
-                          "externs/honeybadger.js"
+                          "externs/bugsnag.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
                           "externs/stripe.js"

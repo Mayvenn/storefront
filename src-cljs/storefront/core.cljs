@@ -21,9 +21,9 @@
               (or (transition-state dispatch event args app-state)
                   app-state)
               (catch js/TypeError te
-                (exception-handler/report te (clj->js {:context {:dispatch dispatch
-                                                                 :event event
-                                                                 :args args}})))))
+                (exception-handler/report te {:context {:dispatch dispatch
+                                                        :event event
+                                                        :args args}}))))
           app-state
           (reductions conj [] event)))
 

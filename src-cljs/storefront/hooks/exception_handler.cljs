@@ -2,26 +2,16 @@
   (:require [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
             [storefront.config :as config]))
 
-(def ^:private class-name ".honeybadger-script")
-
-(def ^:private configuration
-  (str "Honeybadger.configure({api_key: '"
-       config/honeybadger-api-key
-       "', environment: '"
-       config/environment
-       "'});"))
-
-(defn honeybadger-enabled? []
+(defn tracking-enabled? []
   (not config/development?))
 
-(defn- log [msg error error-class]
+(defn- log [msg error custom-context]
   (when (and js/console js/console.error)
-    (js/console.error (str msg error error-class))))
+    (js/console.error (str msg error custom-context))))
 
-(defn report [error & [custom-class]]
-  (if (and (honeybadger-enabled?) (.hasOwnProperty js/window "Honeybadger"))
-    (do (js/Honeybadger.notify error custom-class)
-        (log "[Exception occurred, logged to honeybadger]: " error custom-class))
-    (log "[Honeybadger not loaded when exception occurred]: " error custom-class))
+(defn report [error & [custom-context]]
+  (if (and (tracking-enabled?) (.hasOwnProperty js/window "Bugsnag"))
+    (do (js/Bugsnag.notifyException error nil (clj->js (merge {:groupingHash (.-message error)} custom-context)) "error")
+        (log "[Exception occurred, logged to bugsnag]: " error custom-context))
+    (log "[Bugsnag not loaded when exception occurred]: " error custom-context))
   (throw error))
-

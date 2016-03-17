@@ -103,10 +103,12 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    [:script.honeybadger-script-src {:type "text/javascript"
-                                     :src "//js.honeybadger.io/v0.3/honeybadger.min.js"}]
-    [:script.honeybadger-script-src {:type "text/javascript"}
-     (str "Honeybadger.configure({api_key: 'b0a4a070', environment: '" env "'});")]
+    [:script.bugsnag-script-src {:type "text/javascript"
+                                 :src "//d2wy8f7a9ursnm.cloudfront.net/bugsnag-2.min.js"
+                                 :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"
+                                 :data-autonotify "false"}]
+    [:script.bugsnag-script-src {:type "text/javascript"}
+     (str "Bugsnag.releaseStage = \"" env "\";")]
     (page/include-css (asset-path "/css/all.css"))]
    [:body
     [:div#content
