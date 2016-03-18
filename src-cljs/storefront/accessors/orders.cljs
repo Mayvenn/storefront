@@ -40,16 +40,13 @@
 (defn add-rounded-floats [a b]
   (/ (.toFixed (+ (* 100.0 a) (* 100.0 b)) 0) 100.0))
 
-(defn subtract-rounded-floats [a b]
-  (/ (.toFixed (- (* 100.0 a) (* 100.0 b)) 0) 100.0))
-
 (defn form-payment-methods [order-total store-credit]
   (let [store-credit-used (min order-total store-credit)]
     (merge {}
            (when (pos? store-credit-used)
-             {:store-credit {:amount store-credit-used}})
+             {:store-credit {}})
            (when (> order-total store-credit-used)
-             {:stripe {:amount (subtract-rounded-floats order-total store-credit-used)}}))))
+             {:stripe {}}))))
 
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
