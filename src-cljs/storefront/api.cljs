@@ -428,7 +428,7 @@
   (api-req
    handle-message
    GET
-   "/v2/stylist/commissions"
+   "/v3/stylist/commissions"
    request-keys/get-stylist-commissions
    {:params
     {:user-id user-id :user-token user-token}

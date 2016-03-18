@@ -21,69 +21,72 @@
     :paid "green"))
 
 (defn four-up [a b c d]
-  [:div.clearfix.mxn1
+  [:.clearfix.mxn1
    [:.col.col-3.px1 a]
    [:.col.col-3.px1 b]
    [:.col.col-3.px1 c]
    [:.col.col-3.px1 d]])
 
+(defn show-item [data {:keys [product-name product-id id unit-price variant-attrs quantity] :as item}]
+  [:.py3.clearfix
+   [:.left
+    [:img.border-top.border-bottom.border-gray.mr3
+     {:style {:width "5rem"}
+      :src   (first (products/thumbnail-urls data product-id))
+      :alt   product-name}]]
+   [:.overflow-hidden
+    [:.h3.medium.titleize (products/product-title item)]
+    [:.line-height-4.h3
+     [:.mt1 "Length: " (:length variant-attrs)]
+     [:div "Price: " (f/as-money unit-price)]
+     [:div "Quantity: " quantity]]]])
+
+(defn show-order [data order]
+  [:.bg-silver.px2
+   (for [item (orders/product-items order)]
+     (show-item data item))
+
+   (let [{:keys [options-text unit-price]} (orders/shipping-item order)
+         rows (concat [{:name "Subtotal" :price (orders/products-subtotal order)}]
+                      (:adjustments order)
+                      [(orders/tax-adjustment order)]
+                      [{:name options-text :price unit-price}])]
+     (for [{:keys [name price]} rows]
+       [:.clearfix.mxn1.my1
+        [:.px1.col.col-6 name]
+        [:.px1.col.col-6.medium.right-align (f/as-money price)]]))])
+
 (defn show-commission
   [data {:keys [number commissionable_amount commission_date order] :as commission}]
-  (let [state (order-state commission)]
+  (let [state (order-state commission)
+        order-open? true]
     (list
      [:.p2.border-bottom.border-white
       [:div
        (utils/route-to data events/navigate-order {:number number})
-       [:div.mb2
-        [:div.px1.h6.right.border.capped
+       [:.mb2
+        [:.px1.h6.right.border.capped
          {:style {:padding-top "3px" :padding-bottom "2px"}
           :class (state-look state)}
          (when (= state :paid) "+") (f/as-money commissionable_amount)]
         [:.h2 (:full-name order)]]
-       [:div.gray.h5.mb1
-        (four-up "Status" "Ship Date" "Order" [:.black.right.h2.mtn1 "..."])]]
 
+       [:.gray.h5.mb1
+        (four-up "Status" "Ship Date" "Order" [:.right.h2.mtn1 {:class (if order-open? "gray" "black")}"..."])]]
 
-      [:div.medium.h5
+      [:.medium.h5
        (four-up
         [:.titleize {:class (state-look state)} (name state)]
         (f/locale-date commission_date)
         number
         nil)]]
 
-     (when (= number number)
-       [:.bg-silver.px2
-        (for [{:keys [product-name product-id id unit-price variant-attrs quantity] :as item}
-              (orders/product-items order)]
-          [:.py3.clearfix
-           [:.left
-            [:img.border-top.border-bottom.border-gray.mr3
-             {:style {:width "5rem"}
-              :src   (first (products/thumbnail-urls data product-id))
-              :alt   product-name}]]
-           [:.overflow-hidden
-            [:.h3.medium.titleize (products/product-title item)]
-            [:div.line-height-4.h3
-             [:div.mt1 "Length: " (:length variant-attrs)]
-             [:div "Price: " (f/as-money unit-price)]
-             [:div "Quantity: " quantity]]]])
-
-        (let [{:keys [options-text unit-price]} (orders/shipping-item order)
-              rows (concat [{:name "Subtotal" :price (orders/products-subtotal order)}]
-                           (:adjustments order)
-                           [(orders/tax-adjustment order)]
-                           [{:name options-text :price unit-price}])]
-          (for [{:keys [name price]} rows]
-            [:.clearfix.mxn1.my1
-             [:.px1.col.col-6 name]
-             [:.px1.col.col-6.medium.right-align (f/as-money price)]]))]
-       ))
-    ))
+     (when order-open? (show-order data order)))))
 
 (def empty-commissions
   (html
-   [:div.center
-    [:div.p2
+   [:.center
+    [:.p2
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em" }}]
      [:p.h2.gray.muted "Looks like you don't have any commissions yet."]]
     [:hr.border.border-white ]
@@ -102,17 +105,17 @@
    (html
     (let [commissions (get-in data keypaths/stylist-commissions-history)
           commission-rate (get-in data keypaths/stylist-commissions-rate)]
-      [:div.mx-auto.container
-       [:div.clearfix.mxn2 {:data-test "commissions-panel"}
-        [:div.lg-col.lg-col-9.px2
+      [:.mx-auto.container
+       [:.clearfix.mxn2 {:data-test "commissions-panel"}
+        [:.lg-col.lg-col-9.px2
          (if (seq commissions)
            (for [commission commissions]
              (show-commission data commission))
            empty-commissions)]
 
-        [:div.lg-col.lg-col-3.px2
+        [:.lg-col.lg-col-3.px2
          (when commission-rate
            [:.mt3.h6.muted.flex.justify-center.items-center
-            [:div.mr1 micro-dollar-sign]
-            [:div.center
+            [:.mr1 micro-dollar-sign]
+            [:.center
              "Earn " commission-rate "% commission on all sales. (tax and store credit excluded)"]])]]]))))

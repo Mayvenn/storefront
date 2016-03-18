@@ -21,6 +21,8 @@
 @import 'basscss-addons/modules/border-colors';
 @import 'basscss-addons/modules/darken';
 @import 'basscss-addons/modules/lighten';
+/* Addons hasn't released the latest version of bg-images, which we need */
+/* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
 @import 'basscss-addons/modules/legacy/utility-headings';
 
@@ -89,7 +91,6 @@
 
 .img-header-logo { background-image: url('/images/header_logo.png'); }
 .img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
-
 
 .bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
 
