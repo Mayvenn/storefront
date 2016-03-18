@@ -105,8 +105,7 @@
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script.bugsnag-script-src {:type "text/javascript"
                                  :src "//d2wy8f7a9ursnm.cloudfront.net/bugsnag-2.min.js"
-                                 :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"
-                                 :data-autonotify "false"}]
+                                 :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"}]
     [:script.bugsnag-script-src {:type "text/javascript"}
      (str "Bugsnag.releaseStage = \"" env "\";")]
     (page/include-css (asset-path "/css/all.css"))]
