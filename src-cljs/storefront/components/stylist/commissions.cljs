@@ -61,7 +61,7 @@
   (let [state (order-state commission)
         order-open? true]
     (list
-     [:.p2.border-bottom.border-white
+     [:.p2.border-bottom.border-right.border-white
       [:div
        (utils/route-to data events/navigate-order {:number number})
        [:.mb2
@@ -105,7 +105,7 @@
    (html
     (let [commissions (get-in data keypaths/stylist-commissions-history)
           commission-rate (get-in data keypaths/stylist-commissions-rate)]
-      [:.mx-auto.container
+      [:.mx-auto.container.border.border-white
        [:.clearfix.mxn2 {:data-test "commissions-panel"}
         [:.lg-col.lg-col-9.px2
          (if (seq commissions)
