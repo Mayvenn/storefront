@@ -196,7 +196,7 @@
          :headers (select-keys (:headers response) ["Content-Type"])
          :body (java.io.ByteArrayInputStream. (:body response))}))))
 
-(defn verify-paypal-payment? [storeback-config number order-token ip-addr {:strs [sid]}]
+(defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
                             {:form-params {:number number
                                            :token order-token
@@ -208,23 +208,24 @@
                              :conn-timeout 10000
                              :as :json
                              :coerce :always})]
-    (<= 200 (:status response) 299)))
+    (when-not (<= 200 (:status response) 299)
+      (-> response :body :error-code (or "paypal-incomplete")))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-     (if (verify-paypal-payment? storeback-config number order-token
-                                 (let [headers (:headers request)]
-                                   (or (headers "x-forwarded-for")
-                                       (headers "remote-addr")
-                                       "localhost"))
-                                 (:query-params request))
-       (redirect (str "/orders/"
-                      number
-                      "/complete?"
-                      (codec/form-encode {:paypal true
-                                          :order-token order-token})))
-       (redirect (str "/cart?error=paypal-incomplete"))))))
+        (if-let [error-code (verify-paypal-payment storeback-config number order-token
+                                                   (let [headers (:headers request)]
+                                                     (or (headers "x-forwarded-for")
+                                                         (headers "remote-addr")
+                                                         "localhost"))
+                                                   (:query-params request))]
+          (redirect (str "/cart?error=" error-code))
+          (redirect (str "/orders/"
+                         number
+                         "/complete?"
+                         (codec/form-encode {:paypal true
+                                             :order-token order-token})))))))
 
 (defn create-handler
   ([] (create-handler {}))
