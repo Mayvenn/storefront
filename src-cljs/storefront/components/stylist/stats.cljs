@@ -18,13 +18,13 @@
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 (def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
 
-(defn position-by-stat [stat]
+(defn stat->idx [stat]
   (utils/position #(= % stat) ordered-stats))
 
-(defn stat-by-position [idx]
+(defn idx->stat [idx]
   (get ordered-stats idx default-stat))
 
-(def default-position (position-by-stat default-stat))
+(def default-idx (stat->idx default-stat))
 
 (defn ^:private circle [selected]
   [:div.bg-white.circle
@@ -144,10 +144,10 @@
        owner
        {:swiper (js/Swipe. (om/get-node owner "stats")
                            #js {:continuous false
-                                :startSlide (or (position-by-stat (get-in data keypaths/selected-stylist-stat))
-                                                default-position)
+                                :startSlide (or (stat->idx (get-in data keypaths/selected-stylist-stat))
+                                                default-idx)
                                 :callback (fn [idx _]
-                                            (choose-stat-now data (stat-by-position idx)))})}))
+                                            (choose-stat-now data (idx->stat idx)))})}))
     om/IWillUnmount
     (will-unmount [this]
       (when-let [swiper (:swiper (om/get-state owner))]
@@ -156,7 +156,7 @@
     (render-state [_ {:keys [swiper]}]
       (html
        (let [selected (get-in data keypaths/selected-stylist-stat)
-             selected-idx (position-by-stat selected)]
+             selected-idx (stat->idx selected)]
          (when (and swiper selected-idx)
            (let [delta (- (.getPos swiper) selected-idx)]
              (if (pos? delta)
