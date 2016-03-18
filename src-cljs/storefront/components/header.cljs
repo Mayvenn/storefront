@@ -14,7 +14,7 @@
      (html
       (let [store (get-in data keypaths/store)]
         [:header#header.header
-         (merge (when-not (store :profile_picture_url)
+         (merge (when-not (:profile_picture_url store)
                   {:class "no-picture"})
                 (when getsat-login?
                   {:class "comm-login"}))
