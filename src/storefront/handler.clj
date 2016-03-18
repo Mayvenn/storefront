@@ -98,6 +98,7 @@
 (defn index [storeback-config env]
   (page/html5
    [:head
+    [:title "Shop | Mayvenn"]
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
