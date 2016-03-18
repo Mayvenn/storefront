@@ -106,16 +106,21 @@
     (let [commissions (get-in data keypaths/stylist-commissions-history)
           commission-rate (get-in data keypaths/stylist-commissions-rate)]
       [:.mx-auto.container.border.border-white
-       [:.clearfix.mxn2 {:data-test "commissions-panel"}
-        [:.lg-col.lg-col-9.px2
+       [:.clearfix {:data-test "commissions-panel"}
+        [:.lg-col.lg-col-9
          (if (seq commissions)
            (for [commission commissions]
              (show-commission data commission))
            empty-commissions)]
 
-        [:.lg-col.lg-col-3.px2
+        [:.lg-col.lg-col-3
          (when commission-rate
-           [:.mt3.h6.muted.flex.justify-center.items-center
-            [:.mr1 micro-dollar-sign]
-            [:.center
-             "Earn " commission-rate "% commission on all sales. (tax and store credit excluded)"]])]]]))))
+           (let [message (list "Earn " commission-rate "% commission on all sales. (tax and store credit excluded)")]
+             [:.h6.muted
+              ;; TODO: should we have a not-lg-hide?
+              [:.p2.xs-hide.sm-hide.md-hide
+               [:div.mb1.center micro-dollar-sign]
+               [:div message]]
+              [:.mt3.flex.justify-center.items-center.lg-hide
+               [:.mr1 micro-dollar-sign]
+               [:.center message]]]))]]]))))
