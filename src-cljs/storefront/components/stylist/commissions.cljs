@@ -31,7 +31,7 @@
       :alt   product-name}]]
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]
-    [:.line-height-4.h3
+    [:.line-height-4.h4
      [:.mt1 "Length: " (:length variant-attrs)]
      [:div "Price: " (f/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
@@ -49,7 +49,18 @@
      (for [{:keys [name price]} rows]
        [:.clearfix.mxn1.my1
         [:.px1.col.col-6 name]
-        [:.px1.col.col-6.medium.right-align (f/as-money price)]]))])
+        [:.px1.col.col-6.medium.right-align (f/as-money price)]]))
+
+   [:.clearfix.mxn1.h2.py3
+    [:.px1.col.col-6 "Total"]
+    [:.px1.col.col-6.right-align
+     [:span.h4.mr1.gray "USD"]
+     (f/as-money (:total order))]]])
+
+(defn payout-bar [& content]
+  [:.clearfix.bg-lighten-4.px2.py1
+   [:.left "coins"]
+   [:.overflow-hidden.center content]])
 
 (defn show-commission
   [data {:keys [number amount status commission_date payout_date order] :as commission}]
@@ -75,7 +86,17 @@
         number
         nil)]]
 
-     (when order-open? (show-order data order)))))
+     (when order-open?
+       (list
+        (show-order data order)
+        [:.border-dotted-top.border-dotted-bottom.border-gray.h6
+         (if (= status "paid")
+           [:.bg-green
+            (payout-bar
+             (f/as-money amount) " paid on " (f/long-date payout_date))]
+           [:.bg-blue
+            (payout-bar
+             (f/as-money amount) " has been added to your next payout.")])]) ))))
 
 (def empty-commissions
   (html
