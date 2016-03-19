@@ -46,6 +46,11 @@
                              user-token
                              stylist-id))))
 
+(defn ensure-products [app-state product-ids]
+  (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
+    (when (seq not-cached)
+      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
+
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
@@ -160,6 +165,14 @@
       (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
                                    user-id
                                    user-token))))
+
+(defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
+  (ensure-products app-state
+                   (->> (get-in app-state keypaths/stylist-commissions-history)
+                        (map :order)
+                        (mapcat orders/product-items)
+                        (map :product-id)
+                        set)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -619,19 +632,13 @@
   (refresh-account app-state)
   (refresh-current-order app-state))
 
-(defn ensure-products-for-order [order app-state]
-  (let [product-ids (map :product-id (orders/product-items order))
-        not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
-    (when (seq not-cached)
-      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
-
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code (get-in app-state keypaths/handle-message)
                             number token pending-promo-code true)))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
-  (ensure-products-for-order order app-state)
+  (ensure-products app-state (map :product-id (orders/product-items order)))
   (if (and (orders/incomplete? order)
            (= (:number order)
               (get-in app-state keypaths/order-number)))
