@@ -23,7 +23,7 @@
    [:.col.col-3.px1 d]])
 
 (defn show-item [data {:keys [product-name product-id id unit-price variant-attrs quantity] :as item}]
-  [:.py3.clearfix
+  [:.py2.clearfix
    [:.left
     [:img.border-top.border-bottom.border-gray.mr3
      {:style {:width "5rem"}
@@ -36,22 +36,25 @@
      [:div "Price: " (f/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
 
+(defn short-shipping-name [name]
+  (str/replace name #"^Free " ""))
+
 (defn show-order [data order]
   [:.bg-white.px2
    (for [item (orders/product-items order)]
      (show-item data item))
 
-   (let [{:keys [options-text unit-price]} (orders/shipping-item order)
+   (let [{shipping-name :options-text shipping-price :unit-price} (orders/shipping-item order)
          rows (concat [{:name "Subtotal" :price (orders/products-subtotal order)}]
                       (:adjustments order)
-                      [(orders/tax-adjustment order)]
-                      [{:name options-text :price unit-price}])]
+                      [{:name (short-shipping-name shipping-name) :price shipping-price}]
+                      [(orders/tax-adjustment order)])]
      (for [{:keys [name price]} rows]
-       [:.clearfix.mxn1.my1
+       [:.clearfix.mxn1.my2
         [:.px1.col.col-6 name]
         [:.px1.col.col-6.medium.right-align (f/as-money price)]]))
 
-   [:.clearfix.mxn1.h2.py3
+   [:.clearfix.mxn1.h2.mt3.pb2
     [:.px1.col.col-6 "Total"]
     [:.px1.col.col-6.right-align
      [:span.h4.mr1.gray "USD"]
