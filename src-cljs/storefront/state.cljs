@@ -189,8 +189,9 @@
                             :navigation []}
                   :failure {:message nil
                             :navigation []}}
-          :loaded-reviews false
-          :loaded-stripe false
-          :loaded-facebook false
-          :loaded-places false
-          :loaded-talkable false}}))
+          :review-components-count 0
+          :loaded {:reviews false
+                   :stripe false
+                   :facebook false
+                   :places false
+                   :talkable false}}}))

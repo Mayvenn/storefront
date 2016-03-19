@@ -727,10 +727,12 @@
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
-  (reviews/start))
+  (when (= 2 (get-in app-state keypaths/review-components-count))
+    (reviews/start)))
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
-  (reviews/stop))
+  (when (= 0 (get-in app-state keypaths/review-components-count))
+    (reviews/stop)))
 
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} app-state]

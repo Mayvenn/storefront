@@ -180,7 +180,9 @@
 (def validation-errors-message (conj validation-errors :error-message))
 (def validation-errors-details (conj validation-errors :details))
 
-(def loaded [:loaded])
+(def review-components-count (conj ui :review-components-count))
+
+(def loaded (conj ui :loaded))
 (def loaded-reviews (conj loaded :reviews))
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-places (conj loaded :places))

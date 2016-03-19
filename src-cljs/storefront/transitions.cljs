@@ -398,6 +398,12 @@
 (defmethod transition-state events/inserted-talkable [_ event args app-state]
   (assoc-in app-state keypaths/loaded-talkable true))
 
+(defmethod transition-state events/reviews-component-mounted [_ event args app-state]
+  (update-in app-state keypaths/review-components-count inc))
+
+(defmethod transition-state events/reviews-component-will-unmount [_ event args app-state]
+  (update-in app-state keypaths/review-components-count dec))
+
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied nil))
 
