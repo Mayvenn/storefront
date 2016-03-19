@@ -217,12 +217,6 @@
   (when (and number order-token)
     (api/get-completed-order (get-in app-state keypaths/handle-message) number order-token)))
 
-(defmethod perform-effects events/navigate-order [_ event args app-state]
-  (api/get-past-order (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/past-order-id)
-                      (get-in app-state keypaths/user-token)
-                      (get-in app-state keypaths/user-id)))
-
 (defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
 
@@ -630,9 +624,6 @@
         not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
     (when (seq not-cached)
       (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
-
-(defmethod perform-effects events/api-success-get-past-order [_ event order app-state]
-  (ensure-products-for-order order app-state))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]

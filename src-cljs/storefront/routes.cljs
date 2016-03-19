@@ -91,7 +91,6 @@
        "/stylist/referrals" (edn->bidi events/navigate-stylist-dashboard-referrals)
        "/stylist/edit" (edn->bidi events/navigate-stylist-manage-account)
        "/share" (edn->bidi events/navigate-friend-referrals)
-       ["/orders/" :number] (edn->bidi events/navigate-order)
        "/checkout/login" (edn->bidi events/navigate-checkout-sign-in)
        "/checkout/address" (edn->bidi events/navigate-checkout-address)
        "/checkout/delivery" (edn->bidi events/navigate-checkout-delivery)

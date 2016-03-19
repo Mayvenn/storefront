@@ -605,30 +605,6 @@
     #(handle-message events/api-success-get-order %)
     :error-handler (constantly nil)}))
 
-(defn get-past-order
-  [handle-message order-number user-token user-id]
-  (api-req
-   handle-message
-   GET
-   (str "/v2/orders/" order-number)
-   request-keys/get-past-order
-   {:params
-    {:user-id user-id
-     :user-token user-token}
-    :handler
-    #(handle-message events/api-success-get-past-order %)}))
-
-(defn get-my-orders [handle-message user-token]
-  (api-req
-   handle-message
-   GET
-   "/my_orders"
-   request-keys/get-my-orders
-   {:params
-    {:user-token user-token}
-    :handler
-    #(handle-message events/api-success-my-orders %)}))
-
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 

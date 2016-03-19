@@ -26,7 +26,6 @@
 (def navigate-forgot-password (conj navigate :forgot-password))
 (def navigate-reset-password (conj navigate :reset-password))
 (def navigate-cart (conj navigate :cart))
-(def navigate-order (conj navigate :order))
 
 (def navigate-order-complete (conj navigate :order-complete))
 (def navigate-not-found (conj navigate :not-found))
@@ -156,7 +155,6 @@
 (def api-success-remove-from-bag (conj api-success :remove-from-bag))
 (def api-success-get-order (conj api-success :order))
 (def api-success-get-completed-order (conj api-success :completed-order))
-(def api-success-get-past-order (conj api-success :past-order))
 (def api-success-sms-number (conj api-success :sms-number))
 
 (def api-success-update-order (conj api-success :update-order))
@@ -169,7 +167,6 @@
 (def api-success-update-order-remove-promotion-code (conj api-success-update-order-modify-promotion-code :remove))
 (def api-success-update-order-place-order (conj api-success-update-order :place-order))
 (def api-success-promotions (conj api-success :promotions))
-(def api-success-my-orders (conj api-success :my-orders))
 
 (def api-success-shipping-methods (conj api-success :shipping-methods))
 

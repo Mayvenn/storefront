@@ -37,9 +37,6 @@
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
 
-(def past-orders [:past-orders])
-(def my-order-ids [:my-order-ids])
-
 (def store [:store])
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
@@ -64,7 +61,6 @@
 (def browse-variant-query (conj ui :browse-variant-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
-(def past-order-id (conj ui :past-order-id))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))

@@ -88,9 +88,6 @@
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
 
-(defmethod transition-state events/navigate-order [_ event args app-state]
-  (assoc-in app-state keypaths/past-order-id (:number args)))
-
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
             (orders/form-payment-methods (get-in app-state keypaths/order-total)
@@ -108,8 +105,6 @@
   (-> app-state
       (assoc-in keypaths/user {})
       (assoc-in keypaths/order nil)
-      (assoc-in keypaths/past-orders {})
-      (assoc-in keypaths/my-order-ids nil)
       (assoc-in keypaths/stylist {})
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
@@ -284,15 +279,6 @@
                          (orders/shipping-item order)))
         (assoc-in keypaths/cart-quantities (updated-cart-quantities order)))
     (assoc-in app-state keypaths/order {})))
-
-(defmethod transition-state events/api-success-get-past-order [_ event order app-state]
-  (update-in app-state keypaths/past-orders merge {(:number order) order}))
-
-(defmethod transition-state events/api-success-my-orders [_ event {orders :orders} app-state]
-  (let [order-ids (map :number orders)]
-    (-> app-state
-        (assoc-in keypaths/my-order-ids order-ids)
-        (update-in keypaths/past-orders merge (zipmap order-ids orders)))))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state

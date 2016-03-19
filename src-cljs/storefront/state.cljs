@@ -50,8 +50,6 @@
      :order (cookie-jar/retrieve-current-order cookie)
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
-     :past-orders {}
-     :my-order-ids nil
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
@@ -165,7 +163,6 @@
           :browse-variant-query nil
           :browse-variant-quantity 1
           :browse-recently-added-variants []
-          :past-order-id nil
           :menu-expanded false
           :account-menu-expanded false
 
