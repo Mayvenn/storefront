@@ -92,7 +92,10 @@
 .img-header-logo { background-image: url('/images/header_logo.png'); }
 .img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
 
+.bg-lighten-top-1 { background-image: linear-gradient(to bottom, var(--lighten-1), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-2 { background-image: linear-gradient(to bottom, var(--lighten-2), rgba(255, 255, 255, 0)); }
 .bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-4 { background-image: linear-gradient(to bottom, var(--lighten-4), rgba(255, 255, 255, 0)); }
 
 .transition-ease-in { transition-timing-function: ease-in; }
 .transition-1 { transition-duration: 0.25s; }
@@ -125,4 +128,9 @@
     --silver: #f2f2f2;
     --gray:   #9b9b9b;
     --black:  #4a4a4a;
+
+    --lighten-1: rgba(255, 255, 255, .12);
+    --lighten-2: rgba(255, 255, 255, .22);
+    --lighten-3: rgba(255, 255, 255, .44);
+    --lighten-4: rgba(255, 255, 255, .88);
 }

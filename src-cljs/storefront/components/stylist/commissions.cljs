@@ -42,7 +42,7 @@
      [:div "Quantity: " quantity]]]])
 
 (defn show-order [data order]
-  [:.bg-silver.px2
+  [:.bg-white.px2
    (for [item (orders/product-items order)]
      (show-item data item))
 

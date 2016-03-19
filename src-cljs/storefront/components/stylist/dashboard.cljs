@@ -50,12 +50,11 @@
               tab-position     (utils/position #(= % navigation-state) nav-events)
               bounds           (get tab-bounds tab-position)]
           (html
-           [:nav.bg-silver.h5 {:ref "tabs"}
-            [:div.bg-lighten-4
-             [:div.flex.justify-center
-              (for [[event ref label] (map vector nav-events tab-refs labels)]
-                (tab-link data event ref label))]
-             (sliding-indicator bounds)]]))))))
+           [:nav.bg-white.h5 {:ref "tabs"}
+            [:div.flex.justify-center
+             (for [[event ref label] (map vector nav-events tab-refs labels)]
+               (tab-link data event ref label))]
+            (sliding-indicator bounds)]))))))
 
 (defn stylist-dashboard-component [data owner]
   (om/component
