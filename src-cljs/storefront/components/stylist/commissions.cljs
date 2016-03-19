@@ -10,15 +10,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn order-state [order]
-  (if (:shipment order)
-    :paid
-    :pending))
-
-(defn state-look [state]
-  (case state
-    :pending "teal"
-    :paid "green"))
+(defn status-look [status]
+  (case status
+    "pending" "teal"
+    "paid" "green"))
 
 (defn four-up [a b c d]
   [:.clearfix.mxn1
@@ -57,9 +52,8 @@
         [:.px1.col.col-6.medium.right-align (f/as-money price)]]))])
 
 (defn show-commission
-  [data {:keys [number commissionable_amount commission_date order] :as commission}]
-  (let [state (order-state commission)
-        order-open? true]
+  [data {:keys [number amount status commission_date payout_date order] :as commission}]
+  (let [order-open? true]
     (list
      [:.p2.border-bottom.border-right.border-white
       [:div
@@ -67,8 +61,8 @@
        [:.mb2
         [:.px1.h6.right.border.capped
          {:style {:padding-top "3px" :padding-bottom "2px"}
-          :class (state-look state)}
-         (when (= state :paid) "+") (f/as-money commissionable_amount)]
+          :class (status-look status)}
+         (when (= status "paid") "+") (f/as-money amount)]
         [:.h2 (:full-name order)]]
 
        [:.gray.h5.mb1
@@ -76,7 +70,7 @@
 
       [:.medium.h5
        (four-up
-        [:.titleize {:class (state-look state)} (name state)]
+        [:.titleize {:class (status-look status)} status]
         (f/locale-date commission_date)
         number
         nil)]]
