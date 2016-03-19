@@ -45,9 +45,15 @@
      (show-item data item))
 
    (let [{shipping-name :options-text shipping-price :unit-price} (orders/shipping-item order)
-         rows (concat [{:name "Subtotal" :price (orders/products-subtotal order)}]
+         quantity (orders/product-quantity order)
+         rows (concat [{:name (goog.string/format
+                               "Subtotal (%s Item%s)"
+                               quantity
+                               (if (> quantity 1) "s" ""))
+                        :price (orders/products-subtotal order)}]
                       (:adjustments order)
-                      [{:name (short-shipping-name shipping-name) :price shipping-price}]
+                      [{:name (short-shipping-name shipping-name)
+                        :price shipping-price}]
                       [(orders/tax-adjustment order)])]
      (for [{:keys [name price]} rows]
        [:.clearfix.mxn1.my2
