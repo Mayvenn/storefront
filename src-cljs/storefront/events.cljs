@@ -120,6 +120,8 @@
 (def control-stylist-manage-account-change (conj control-stylist-manage-account :change))
 (def control-stylist-manage-account-submit (conj control-stylist-manage-account :submit))
 
+(def control-commission-order-expand (conj control :stylist :commission-order-expand))
+
 (def api [:api])
 (def api-start (conj api :start))
 (def api-end (conj api :end))

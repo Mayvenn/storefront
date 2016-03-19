@@ -88,12 +88,20 @@
       (payout-bar
        (f/as-money amount) " has been added to your next payout.")])])
 
-(defn commission-expanded? [data commission] true)
+(defn commission-expanded? [data number]
+  (= number
+     (get-in data keypaths/expanded-commission-order-id)))
+
+(defn toggle-expanded-commission [data number]
+  (utils/send-event-callback data
+                             events/control-commission-order-expand
+                             {:number (when-not (commission-expanded? data number)
+                                        number)}))
 
 (defn show-collapsed-commission [data
                                  {:keys [number amount status commission_date order] :as commission}]
-  [:.p2.border-bottom.border-right.border-white
-   (utils/route-to data events/navigate-order {:number number})
+  [:.p2.border-bottom.border-right.border-white.pointer
+   {:on-click (toggle-expanded-commission data number)}
    [:.mb2
     [:.px1.h6.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
@@ -104,7 +112,7 @@
    [:.gray.h5.mb1
     (four-up "Status" "Ship Date" "Order"
              [:.right.h2.mtn1
-              {:class (if (commission-expanded? data commission) "gray" "black")}
+              {:class (if (commission-expanded? data number) "gray" "black")}
               "..."])]
 
    [:.medium.h5
@@ -118,10 +126,12 @@
   (list
    (show-collapsed-commission data commission)
 
-   (when (commission-expanded? data commission)
-     (list
-      (show-order data (:order commission))
-      (show-payout commission)) )))
+   [:div.transition-3.transition-ease-in-out.overflow-scroll
+    {:style {:max-height (if (commission-expanded? data (:number commission))
+                           "500px"
+                           "0px")}}
+    (show-order data (:order commission))
+    (show-payout commission) ]))
 
 (def empty-commissions
   (html
