@@ -155,7 +155,7 @@
      [:p.medium stylists/store-url]]]))
 
 (def micro-dollar-sign
-  [:svg {:viewbox "0 0 14 13", :height "13", :width "14"}
+  [:svg {:viewBox "0 0 14 13", :height "13", :width "14"}
    [:g {:stroke-width "1" :stroke "#9B9B9B" :fill "none"}
     [:path {:d "M13 6.5c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6 6 2.7 6 6z"}]
     [:path {:d "M5.7 7.8c0 .72.58 1.3 1.3 1.3.72 0 1.3-.58 1.3-1.3 0-.72-.58-1.3-1.3-1.3-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.72 0 1.3.58 1.3 1.3M7 3.1v6.8"}]]])

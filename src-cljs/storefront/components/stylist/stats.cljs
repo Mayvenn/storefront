@@ -65,7 +65,7 @@
 (def stat-card "left col-12 relative")
 
 (def large-dollar-svg
-  [:svg {:version "1.1" :viewbox "0 0 72 72" :height "72px" :width "72px"}
+  [:svg {:version "1.1" :viewBox "0 0 72 72" :height "72px" :width "72px"}
    [:g {:fill "none" :stroke-width "1" :stroke "#FFFFFF"}
     [:circle {:cx "36" :cy "36" :r "35" }]
     [:g {:transform "translate(1, 1)"}
@@ -73,7 +73,7 @@
      [:path {:d "M35,15.2173913 V54.7826087"}]]]])
 
 (def large-percent-svg
-  [:svg {:version "1.1" :viewbox "0 0 72 72" :height "72px" :width "72px"}
+  [:svg {:version "1.1" :viewBox "0 0 72 72" :height "72px" :width "72px"}
   [:g {:fill "none" :stroke-width "1" :stroke "#FFFFFF"}
    [:g {:transform "translate(1, 1)"}
     [:path {:d "M22.826087,47.173913 L47.173913,22.826087"}]
@@ -83,7 +83,7 @@
      [:path {:d "M70,35 C70,54.3306522 54.3306522,70 35,70 C15.6723913,70 0,54.3306522 0,35 C0,15.6708696 15.6723913,0 35,0 C54.3306522,0 70,15.6708696 70,35 L70,35 Z"}]]]]])
 
 (def large-payout-svg
-  [:svg {:version "1.1" :viewbox "0 0 62 60" :height "60px" :width "62px"}
+  [:svg {:version "1.1" :viewBox "0 0 62 60" :height "60px" :width "62px"}
    [:g {:fill "none" :stroke-width "1" :stroke "#FFFFFF"}
     [:g
      {:transform "translate(1, 1)"}
