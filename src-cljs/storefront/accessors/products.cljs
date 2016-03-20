@@ -94,7 +94,7 @@
         strs (filter identity ((apply juxt summary-fns) variant-attrs))]
     (clojure.string/join " " strs)))
 
-(def ^:private closure-product-title [:style :material :origin (constantly "closure")])
+(def ^:private closure-product-title [:origin :style :material (constantly "closure")])
 (def ^:private bundle-product-title [not-black-color :origin :style])
 
 (defn product-title [{:keys [variant-attrs product-name] :as variant}]
