@@ -182,7 +182,7 @@
       [:.sm-col.sm-col-9
        (let [commissions (get-in data keypaths/stylist-commissions-history)]
          (if (seq commissions)
-           [:div
+           [:div.mb3
             (for [commission commissions]
               (show-commission data commission))
             (fetch-more data)]
