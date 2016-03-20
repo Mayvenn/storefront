@@ -181,14 +181,13 @@
      [:.clearfix
       [:.sm-col.sm-col-9
        (let [commissions (get-in data keypaths/stylist-commissions-history)]
-         (if (seq commissions)
+         (when (seq commissions)
            [:div.mb3
             (for [commission commissions]
               (show-commission data commission))
-            (fetch-more data)]
-           ;; Trick to not render "no commissions" while we're fetching the first page
-           (when (get-in data keypaths/stylist-commissions-pages)
-             empty-commissions)))]
+            (fetch-more data)]))
+       (when (zero? (get-in data keypaths/stylist-commissions-pages))
+         empty-commissions)]
 
       [:.sm-col.sm-col-3
        (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
