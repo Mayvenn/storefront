@@ -221,10 +221,10 @@
 
 /* Custom lighten */
 
-.bg-lighten-top-1 { background-image: linear-gradient(180deg, var(--lighten-1), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-2 { background-image: linear-gradient(180deg, var(--lighten-2), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-3 { background-image: linear-gradient(180deg, var(--lighten-3), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-4 { background-image: linear-gradient(180deg, var(--lighten-4), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-1 { background-image: var(--lighten-top-1); }
+.bg-lighten-top-2 { background-image: var(--lighten-top-2); }
+.bg-lighten-top-3 { background-image: var(--lighten-top-3); }
+.bg-lighten-top-4 { background-image: var(--lighten-top-4); }
 
 /* Custom background-image */
 
@@ -274,16 +274,19 @@
 
     --teal:    #36b4d4;
     --green:   #7ed321;
-    --fuchsia: #da0496;
-    --olive:   #1d9b8b;
 
     --white:  #fafafa;
     --silver: #f2f2f2;
     --gray:   #9b9b9b;
     --black:  #4a4a4a;
 
-    --lighten-1: rgba(255, 255, 255, .12);
-    --lighten-2: rgba(255, 255, 255, .22);
-    --lighten-3: rgba(255, 255, 255, .44);
-    --lighten-4: rgba(255, 255, 255, .88);
+    --lighten-top-1: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-1));
+    --lighten-top-2: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-2));
+    --lighten-top-3: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-3));
+    --lighten-top-4: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-4));
+
+    --lighten-1: rgba(255, 255, 255, .125);
+    --lighten-2: rgba(255, 255, 255, .375);
+    --lighten-3: rgba(255, 255, 255, .625);
+    --lighten-4: rgba(255, 255, 255, .875);
 }
