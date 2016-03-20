@@ -168,12 +168,6 @@ p {
   font-size: 75%;
 }
 
-@mixin all-layout-css($scale) {
-  html {
-    font-size: 12px * $scale;
-  }
-}
-
 @import 'badges';
 
 // Desktop Layout
@@ -238,15 +232,12 @@ p {
   @import 'home';
 }
 
-
-@media screen and (min-width: 640px) and (max-width: 1023px) {
-  @include all-layout-css(2);
+html {
+  font-size: 12px;
 }
 
-@media screen and (min-width: 480px) and (max-width: 639px) {
-  @include all-layout-css(1.5);
-}
-
-@media screen and (max-width: 479px) {
-  @include all-layout-css(1);
+@media screen and (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
 }
