@@ -15,7 +15,7 @@
   (om/component
    (html
     [:div.padded-container
-     [:h2.header-bar-heading.left "Customer Service"]
+     [:h2.header-bar-heading.left-text "Customer Service"]
      [:div#help-content
       [:div#help-summary
        [:div.hours-icon-container [:figure.hours-icon]]

@@ -41,7 +41,7 @@
                   {:type "password"
                    :name "password-confirmation"})]]]
         [:p
-         [:input.btn.button.primary {:type "submit"
-                                     :value "Create"}]]]]
+         [:input.button.primary {:type "submit"
+                                 :value "Create"}]]]]
       [:p.center "Already have an account? "
        [:a (utils/route-to data events/navigate-sign-in) "Log In"]]]])))
