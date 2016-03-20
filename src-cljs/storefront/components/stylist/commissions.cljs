@@ -122,7 +122,7 @@
 
    [:.gray.h5.mb1
     (four-up "Status" "Ship Date" "Order"
-             [:.right.h2.mtn1
+             [:.right.h2.mtn2
               {:class (if (commission-expanded? data number) "gray" "black")}
               "..."])]
 
