@@ -232,16 +232,16 @@
 
 /* Custom background-colors */
 
+.bg-lighten-top-1 { background-image: var(--lighten-top-1); }
+.bg-lighten-top-2 { background-image: var(--lighten-top-2); }
+.bg-lighten-top-3 { background-image: var(--lighten-top-3); }
+.bg-lighten-top-4 { background-image: var(--lighten-top-4); }
+
 /* Custom border-colors */
 
 /* Custom darken */
 
 /* Custom lighten */
-
-.bg-lighten-top-1 { background-image: var(--lighten-top-1); }
-.bg-lighten-top-2 { background-image: var(--lighten-top-2); }
-.bg-lighten-top-3 { background-image: var(--lighten-top-3); }
-.bg-lighten-top-4 { background-image: var(--lighten-top-4); }
 
 /* Custom background-image */
 
@@ -262,7 +262,7 @@
 /* Custom media queries */
 
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
- * with how our fonts change size at different screen widths */
+ * with how our fonts change size at different screen widths. Use px instead: */
 @custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
 @custom-media --breakpoint-sm (min-width: 480px);
 @custom-media --breakpoint-md (min-width: 640px);
