@@ -64,7 +64,7 @@
                        :lifetime-payouts {:amount 0}}
                :commissions {:rate nil
                              :page 0
-                             :pages 0
+                             :pages nil
                              :history (sorted-set-by
                                        (fn [a b]
                                          (let [date-and-id (juxt :commission_date :id)]
