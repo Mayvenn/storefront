@@ -158,11 +158,10 @@
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
     [:.h6.muted
-     ;; TODO: should we have a not-lg-hide?
-     [:.p2.xs-hide.sm-hide.md-hide
+     [:.p2.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:.mt3.flex.justify-center.items-center.lg-hide
+     [:.mt3.flex.justify-center.items-center.sm-up-hide
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
@@ -171,13 +170,13 @@
    (html
     [:.mx-auto.container.border.border-white {:data-test "commissions-panel"}
      [:.clearfix
-      [:.lg-col.lg-col-9
+      [:.sm-col.sm-col-9
        (let [commissions (get-in data keypaths/stylist-commissions-history)]
          (if (seq commissions)
            (for [commission commissions]
              (show-commission data commission))
            empty-commissions))]
 
-      [:.lg-col.lg-col-3
+      [:.sm-col.sm-col-3
        (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
          (show-commission-rate commission-rate))]]])))
