@@ -9,31 +9,50 @@
 /* Optional Modules (not included in Basscss by default) */
 
 @import 'basscss-addons/modules/responsive-margin';
+
 @import 'basscss-addons/modules/responsive-padding';
+
 /* Would like to use this, but .input interferes with existing forms */
 /* @import 'basscss-addons/modules/forms'; */
+
 @import 'basscss-addons/modules/btn';
+
 @import 'basscss-addons/modules/btn-primary';
+
 @import 'basscss-addons/modules/btn-outline';
+
 @import 'basscss-addons/modules/btn-sizes';
+
 @import 'basscss-addons/modules/colors';
+
 @import 'basscss-addons/modules/background-colors';
+
 @import 'basscss-addons/modules/border-colors';
+
 @import 'basscss-addons/modules/darken';
+
 @import 'basscss-addons/modules/lighten';
+
 /* Addons hasn't released the latest version of bg-images, which we need */
 /* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
 
 /* More from v8 */
 /*
-@import 'basscss-addons/modules/media-object';
+
+@import 'basscss-addons/modules/media-object';  flexbox based media-object... for basic cases use .overflow-hidden
+
 @import 'basscss-addons/modules/all';
+
 @import 'basscss-addons/modules/input-range';
+
 @import 'basscss-addons/modules/progress';
+
 @import 'basscss-addons/modules/legacy/utility-headings';
 */
+
 /* From basscss v7 */
+
 /* implemented with flex in v8? */
 /* @import 'basscss-ui-utility-groups'; */
 
@@ -41,9 +60,14 @@
 
 /* Custom typography */
 
+.serif       { font-family: var(--serif); }
+.sans-serif  { font-family: var(--sans-serif); }
+.medium      { font-weight: 500; }
+
+.titleize { text-transform: capitalize; }
+
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
-
 @font-face {
   font-family: 'Graphik';
   src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
@@ -77,12 +101,6 @@
   font-style:   normal;
   font-stretch: normal;
 }
-
-.serif       { font-family: var(--serif); }
-.sans-serif  { font-family: var(--sans-serif); }
-.medium      { font-weight: 500;}
-
-.titleize { text-transform: capitalize; }
 
 /* Custom layout */
 
