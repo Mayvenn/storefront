@@ -28,7 +28,7 @@
 
 (defn ^:private circle [selected]
   [:div.bg-white.circle
-   {:class (when-not selected "bg-lighten-4")
+   {:class (when-not selected "bg-lighten-3")
     :style {:width "8px" :height "8px"}}])
 
 (defn ^:private circle-for-stat [data selected stat]
