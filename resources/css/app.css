@@ -89,7 +89,6 @@
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500;}
 
-.img-header-logo { background-image: url('/images/header_logo.png'); }
 .img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
 
 .bg-lighten-top-1 { background-image: linear-gradient(to bottom, var(--lighten-1), rgba(255, 255, 255, 0)); }
