@@ -199,7 +199,7 @@
   [_ event {:keys [rate commissions]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-commissions-rate rate)
-      (assoc-in keypaths/stylist-commissions-history commissions)))
+      (update-in keypaths/stylist-commissions-history into commissions)))
 
 (defmethod transition-state events/api-success-stylist-bonus-credits
   [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total]} app-state]
