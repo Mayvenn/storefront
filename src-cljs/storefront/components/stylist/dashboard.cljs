@@ -10,22 +10,24 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn tab-link [data event ref label]
-  (let [navigation-state (get-in data keypaths/navigation-event)]
-    [:a.black.py1.mx3.lg-mt2
-     (merge {:ref ref
-             :data-test (str "nav-" ref)}
-            (utils/route-to data event)) label]))
-
-(defn sliding-indicator [{:keys [left width]}]
-  [:div.border-teal.border.absolute.transition-ease-in.transition-1
-   {:style {:margin-top "-2px"
-            :left       (str left "px")
-            :width      (str width "px")}}])
-
 (def tab-refs ["bonuses" "commissions" "referrals"])
 (def nav-events [events/navigate-stylist-dashboard-bonus-credit events/navigate-stylist-dashboard-commissions events/navigate-stylist-dashboard-referrals])
 (def labels ["Bonuses" "Commissions" "Referrals"])
+
+(defn tab-link [data event ref label]
+  [:a.black.py1.mx3.lg-mt2
+   (merge {:ref ref
+           :data-test (str "nav-" ref)}
+          (utils/route-to data event)) label])
+
+(defn sliding-indicator [data tab-bounds]
+  (let [navigation-state     (get-in data keypaths/navigation-event)
+        tab-position         (utils/position #(= % navigation-state) nav-events)
+        {:keys [left width]} (get tab-bounds tab-position)]
+    [:div.border-teal.border.absolute.transition-ease-in.transition-1
+     {:style {:margin-top "-2px"
+              :left       (str left "px")
+              :width      (str width "px")}}]))
 
 (defn get-node
   "A backport of om/get-node, which returns nil instead of raising error when
@@ -62,15 +64,12 @@
         (js/window.removeEventListener "resize" handle-resize-event))
       om/IRenderState
       (render-state [this {:keys [tab-bounds]}]
-        (let [navigation-state (get-in data keypaths/navigation-event)
-              tab-position     (utils/position #(= % navigation-state) nav-events)
-              bounds           (get tab-bounds tab-position)]
-          (html
-           [:nav.bg-white.h5 {:ref "tabs"}
-            [:div.flex.justify-center
-             (for [[event ref label] (map vector nav-events tab-refs labels)]
-               (tab-link data event ref label))]
-            (sliding-indicator bounds)]))))))
+        (html
+         [:nav.bg-white.h5 {:ref "tabs"}
+          [:div.flex.justify-center
+           (for [[event ref label] (map vector nav-events tab-refs labels)]
+             (tab-link data event ref label))]
+          (sliding-indicator data tab-bounds)])))))
 
 (defn stylist-dashboard-component [data owner]
   (om/component
