@@ -33,7 +33,7 @@
 
 @import 'basscss-addons/modules/lighten';
 
-/* Addons hasn't released the latest version of bg-images, which we need */
+/* basscss-addons hasn't released the latest version, so import directly from NPM */
 /* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
 
@@ -48,7 +48,6 @@
 
 @import 'basscss-addons/modules/progress';
 
-@import 'basscss-addons/modules/legacy/utility-headings';
 */
 
 /* From basscss v7 */
@@ -57,6 +56,11 @@
 /* @import 'basscss-ui-utility-groups'; */
 
 /* Custom type-scale */
+
+/* We want h00 to be 64px on small screens. But to have it grow on large screens
+ * we need to specify it in ems. 5.25em is 63px... close enough. */
+
+.h00 { font-size: 5.25em; }
 
 /* Custom typography */
 
@@ -153,6 +157,7 @@
 .capped { border-radius: 1000px; }
 
 /* Custom responsive hide */
+
 /* WARNING: Avoid the basscss helpers (xs-hide sm-hide md-hide lg-hide), they
  * may be removed.
  * They are too hard to remember... these are better.
@@ -255,7 +260,8 @@
 .transition-4 { transition-duration: 2s; }
 
 /* Custom media queries */
-/* Bascss uses em's for breakpoints, which is a nice idea, but doesn't play nice
+
+/* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
  * with how our fonts change size at different screen widths */
 @custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
 @custom-media --breakpoint-sm (min-width: 480px);

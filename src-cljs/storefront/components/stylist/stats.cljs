@@ -37,11 +37,6 @@
    {:on-click (choose-stat data stat)}
    (circle (= selected stat))])
 
-;; TODO: h00 is 64px when base font-size is 16px, but we want it to be 64 on
-;; small screens, where base font-size is 12px. 5.25em is 63px and 84px,
-;; respectively... close enough.
-(def really-big {:style {:font-size "5.25em"}})
-
 (defn ^:private money [amount]
   (f/as-money-without-cents amount))
 
@@ -75,7 +70,7 @@
      [:div.p1 "LAST PAYOUT"]
      (if (> amount 0)
        (list
-        [:div.py2 really-big (money-with-cents amount)]
+        [:div.py2.h00 (money-with-cents amount)]
         [:div (f/long-date date)])
        (list
         [:div.py2 svg/large-payout]
@@ -88,7 +83,7 @@
      [:div.p1 "NEXT PAYOUT"]
      (if (> amount 0)
        (list
-        [:div.py2 really-big (money-with-cents amount)]
+        [:div.py2.h00 (money-with-cents amount)]
         [:div "Payment " (in-x-days)])
        (list
         [:div.py2 svg/large-dollar]
@@ -101,7 +96,7 @@
      [:div.p1 "LIFETIME COMMISSIONS"]
      (if (> amount 0)
        (list
-        [:div.py2 really-big (money amount)]
+        [:div.py2.h00 (money amount)]
         [:div utils/nbsp])
        (list
         [:div.py2 svg/large-percent]
