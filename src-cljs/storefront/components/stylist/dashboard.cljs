@@ -27,13 +27,29 @@
 (def nav-events [events/navigate-stylist-dashboard-bonus-credit events/navigate-stylist-dashboard-commissions events/navigate-stylist-dashboard-referrals])
 (def labels ["Bonuses" "Commissions" "Referrals"])
 
+(defn get-node
+  "A backport of om/get-node, which returns nil instead of raising error when
+  owner doesn't have refs yet"
+  ([owner]
+   (.getDOMNode owner))
+  ([owner name]
+   {:pre [(string? name)]}
+   (some-> (.-refs owner) (aget name) (.getDOMNode))))
+
+(defn get-x-dimension [node]
+  (if node
+    (let [rect (.getBoundingClientRect node)]
+      {:left  (.-left rect)
+       :width (.-width rect)})
+    {:left 0 :width 0}))
+
 (defn nav-component [data owner]
   (letfn [(tab-bounds []
-            (let [parent-rect (.getBoundingClientRect (om/get-node owner "tabs"))]
+            (let [{parent-left :left} (get-x-dimension (get-node owner "tabs"))]
               (vec (for [tab-ref tab-refs]
-                     (let [rect (.getBoundingClientRect (om/get-node owner tab-ref))]
-                       {:left  (- (.-left rect) (.-left parent-rect))
-                        :width (.-width rect)})))))
+                     (let [{:keys [left width]} (get-x-dimension (get-node owner tab-ref))]
+                       {:left  (- left parent-left)
+                        :width width})))))
           (cache-tab-bounds [] (om/set-state! owner {:tab-bounds (tab-bounds)}))
           (handle-resize-event [e] (cache-tab-bounds))]
     (reify
