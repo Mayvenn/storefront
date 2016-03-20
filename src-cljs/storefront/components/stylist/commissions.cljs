@@ -138,7 +138,7 @@
 
    [:div.transition-3.transition-ease-in-out.overflow-scroll
     {:style {:max-height (if (commission-expanded? data (:number commission))
-                           "500px"
+                           "35rem"
                            "0px")}}
     (show-order data (:order commission))
     (show-payout commission) ]))
