@@ -205,7 +205,19 @@
 
 /* Custom btn */
 
+.btn { text-align: center; }
+
 /* Custom btn-primary */
+
+.btn-primary {
+  background-image: var(--lighten-top-2);
+  text-shadow: 0 -1px 0 var(--darken-2);
+}
+
+.btn-primary:active {
+  box-shadow: none; /* override default from basscss */
+  background-image: none;
+}
 
 /* Custom btn-outline */
 
@@ -271,6 +283,11 @@
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
+
+    --button-font-weight: inherit;
+    --button-background-color: var(--teal);
+
+    --border-radius: 2px;
 
     --teal:    #36b4d4;
     --green:   #7ed321;
