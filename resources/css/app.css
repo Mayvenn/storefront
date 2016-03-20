@@ -3,7 +3,7 @@
  * TODO: consider nesting this under .redesign with `postcss-nesting` */
 /* @import 'basscss-basic'; */
 
-/* All common Modules */
+/* All common modules */
 @import 'basscss';
 
 /* Optional Modules (not included in Basscss by default) */
@@ -24,7 +24,6 @@
 /* Addons hasn't released the latest version of bg-images, which we need */
 /* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
-@import 'basscss-addons/modules/legacy/utility-headings';
 
 /* More from v8 */
 /*
@@ -32,18 +31,18 @@
 @import 'basscss-addons/modules/all';
 @import 'basscss-addons/modules/input-range';
 @import 'basscss-addons/modules/progress';
+@import 'basscss-addons/modules/legacy/utility-headings';
 */
 /* From basscss v7 */
 /* implemented with flex in v8? */
 /* @import 'basscss-ui-utility-groups'; */
 
-/* Custom media queries */
-/*
-@custom-media --breakpoint-sm (min-width: 40em);
-@custom-media --breakpoint-md (min-width: 52em);
-@custom-media --breakpoint-lg (min-width: 64em);
-*/
+/* Custom type-scale */
 
+/* Custom typography */
+
+/* Use customized Graphik fonts when applying .medium or .bold */
+/* This was broken in old styles. */
 
 @font-face {
   font-family: 'Graphik';
@@ -79,22 +78,34 @@
   font-stretch: normal;
 }
 
-.pointer { cursor: pointer; }
-
-.capped { border-radius: 1000px; }
-
-.titleize { text-transform: capitalize; }
-
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500;}
 
-.img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
+.titleize { text-transform: capitalize; }
 
-.bg-lighten-top-1 { background-image: linear-gradient(to bottom, var(--lighten-1), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-2 { background-image: linear-gradient(to bottom, var(--lighten-2), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
-.bg-lighten-top-4 { background-image: linear-gradient(to bottom, var(--lighten-4), rgba(255, 255, 255, 0)); }
+/* Custom layout */
+
+.container { max-width: 640px; }
+
+/* Custom align */
+
+/* Custom margin */
+
+.mtn1 { margin-top: -var(--space-1); }
+.mtn2 { margin-top: -var(--space-2); }
+.mtn3 { margin-top: -var(--space-3); }
+.mtn4 { margin-top: -var(--space-4); }
+
+/* Custom padding */
+
+/* Custom grid */
+
+/* Custom flexbox */
+
+/* Custom position */
+
+/* Custom border */
 
 .border-dotted {
   border-style: solid;
@@ -121,6 +132,47 @@
   border-left-width: var(--border-width);
 }
 
+.capped { border-radius: 1000px; }
+
+/* Custom hide */
+
+/* Custom responsive-margin */
+
+/* Custom responsive-padding */
+
+/* Custom forms */
+
+/* Custom btn */
+
+/* Custom btn-primary */
+
+/* Custom btn-outline */
+
+/* Custom btn-sizes */
+
+/* Custom colors */
+
+/* Custom background-colors */
+
+/* Custom border-colors */
+
+/* Custom darken */
+
+/* Custom lighten */
+
+.bg-lighten-top-1 { background-image: linear-gradient(to bottom, var(--lighten-1), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-2 { background-image: linear-gradient(to bottom, var(--lighten-2), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-3 { background-image: linear-gradient(to bottom, var(--lighten-3), rgba(255, 255, 255, 0)); }
+.bg-lighten-top-4 { background-image: linear-gradient(to bottom, var(--lighten-4), rgba(255, 255, 255, 0)); }
+
+/* Custom background-image */
+
+.img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
+
+/* Custom interaction */
+
+.pointer { cursor: pointer; }
+
 .transition-ease        { transition-timing-function: ease; }
 .transition-ease-in     { transition-timing-function: ease-in; }
 .transition-ease-in-out { transition-timing-function: ease-in-out; }
@@ -129,11 +181,14 @@
 .transition-3 { transition-duration: 1s; }
 .transition-4 { transition-duration: 2s; }
 
-.container { max-width: 640px; }
-.mtn1 { margin-top: -var(--space-1); }
-.mtn2 { margin-top: -var(--space-2); }
-.mtn3 { margin-top: -var(--space-3); }
-.mtn4 { margin-top: -var(--space-4); }
+/* Custom media queries */
+/*
+@custom-media --breakpoint-sm (min-width: 40em);
+@custom-media --breakpoint-md (min-width: 52em);
+@custom-media --breakpoint-lg (min-width: 64em);
+*/
+
+/* Custom variables */
 
 :root {
     --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
