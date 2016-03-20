@@ -99,8 +99,8 @@
 
 (defn product-title [{:keys [variant-attrs product-name] :as variant}]
   (let [title-fns (cond (closure? variant) closure-product-title
-                          (bundle? variant)  bundle-product-title
-                          :else [(constantly product-name)])
+                        (bundle? variant)  bundle-product-title
+                        :else [(constantly product-name)])
         strs (filter identity ((apply juxt title-fns) variant-attrs))]
     (clojure.string/join " " strs)))
 
