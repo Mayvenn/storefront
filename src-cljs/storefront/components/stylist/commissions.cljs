@@ -6,6 +6,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.components.formatters :as f]
+            [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -154,21 +155,15 @@
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylists/store-url]]]))
 
-(def micro-dollar-sign
-  [:svg {:viewBox "0 0 14 13", :height "13", :width "14"}
-   [:g {:stroke-width "1" :stroke "#9B9B9B" :fill "none"}
-    [:path {:d "M13 6.5c0 3.3-2.7 6-6 6s-6-2.7-6-6 2.7-6 6-6 6 2.7 6 6z"}]
-    [:path {:d "M5.7 7.8c0 .72.58 1.3 1.3 1.3.72 0 1.3-.58 1.3-1.3 0-.72-.58-1.3-1.3-1.3-.72 0-1.3-.58-1.3-1.3 0-.72.58-1.3 1.3-1.3.72 0 1.3.58 1.3 1.3M7 3.1v6.8"}]]])
-
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
     [:.h6.muted
      ;; TODO: should we have a not-lg-hide?
      [:.p2.xs-hide.sm-hide.md-hide
-      [:.mb1.center micro-dollar-sign]
+      [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
      [:.mt3.flex.justify-center.items-center.lg-hide
-      [:.mr1 micro-dollar-sign]
+      [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
 (defn stylist-commissions-component [data owner]
