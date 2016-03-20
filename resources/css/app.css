@@ -122,7 +122,8 @@
   border-left-width: var(--border-width);
 }
 
-.transition-ease-in { transition-timing-function: ease-in; }
+.transition-ease        { transition-timing-function: ease; }
+.transition-ease-in     { transition-timing-function: ease-in; }
 .transition-ease-in-out { transition-timing-function: ease-in-out; }
 .transition-1 { transition-duration: 0.25s; }
 .transition-2 { transition-duration: 0.5s; }
