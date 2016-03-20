@@ -31,8 +31,8 @@
      :alt   product-name}]
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]
-    [:.line-height-4.h4
-     [:.mt1 "Length: " (:length variant-attrs)]
+    [:.line-height-4.h4.mt1
+     [:div "Length: " (:length variant-attrs)]
      [:div "Price: " (f/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
 
@@ -70,7 +70,7 @@
        [:.px1.col.col-4.medium.right-align (f/as-money price)]])))
 
 (defn show-grand-total [order]
-  [:.clearfix.mxn1.h2.mt3.pb2
+  [:.clearfix.mxn1.h2.mt1.py2
    [:.px1.col.col-6 "Total"]
    [:.px1.col.col-6.right-align
     [:span.h4.mr1.gray "USD"]

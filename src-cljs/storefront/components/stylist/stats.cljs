@@ -37,9 +37,10 @@
    {:on-click (choose-stat data stat)}
    (circle (= selected stat))])
 
-;; TODO: h00 is 64px when base font-size is 16px, but we need it to be 64 on
-;; small screens, where base font-size is 12px
-(def really-big {:style {:font-size "64px"}})
+;; TODO: h00 is 64px when base font-size is 16px, but we want it to be 64 on
+;; small screens, where base font-size is 12px. 5.25em is 63px and 84px,
+;; respectively... close enough.
+(def really-big {:style {:font-size "5.25em"}})
 
 (defn ^:private money [amount]
   (f/as-money-without-cents amount))
