@@ -163,6 +163,8 @@
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))
 (def stylist-commissions-history (conj stylist-commissions :history))
+(def stylist-commissions-page (conj stylist-commissions :page))
+(def stylist-commissions-pages (conj stylist-commissions :pages))
 
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))

@@ -159,12 +159,18 @@
                          (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
+  (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
+    (send app-state events/control-stylist-commissions-fetch)))
+
+(defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
+        user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-commissions-page 0))]
     (when (and user-id user-token)
       (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
                                    user-id
-                                   user-token))))
+                                   user-token
+                                   {:page page}))))
 
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
   (ensure-products app-state

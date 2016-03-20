@@ -424,17 +424,17 @@
     #(handle-message events/api-success-stylist-stats
                      (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
 
-(defn get-stylist-commissions [handle-message user-id user-token]
+(defn get-stylist-commissions [handle-message user-id user-token {:keys [page]}]
   (api-req
    handle-message
    GET
    "/v3/stylist/commissions"
    request-keys/get-stylist-commissions
    {:params
-    {:user-id user-id :user-token user-token}
+    {:user-id user-id :user-token user-token :page page}
     :handler
     #(handle-message events/api-success-stylist-commissions
-                     (select-keys % [:rate :commissions]))}))
+                     (select-keys % [:rate :commissions :current_page :pages]))}))
 
 (defn get-stylist-bonus-credits [handle-message user-token]
   (api-req

@@ -161,9 +161,18 @@
      [:.p2.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:.mt3.flex.justify-center.items-center.sm-up-hide
+     [:.my3.flex.justify-center.items-center.sm-up-hide
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
+
+(defn fetch-more [data]
+  (let [page (get-in data keypaths/stylist-commissions-page 0)
+        pages (get-in data keypaths/stylist-commissions-pages 0)]
+    (when (> pages page)
+      [:.col-5.mx-auto.my3
+       [:.btn.btn-outline.teal.col-12
+        {:on-click (utils/send-event-callback data events/control-stylist-commissions-fetch)}
+        "Load More"]])))
 
 (defn stylist-commissions-component [data owner]
   (om/component
@@ -173,8 +182,10 @@
       [:.sm-col.sm-col-9
        (let [commissions (get-in data keypaths/stylist-commissions-history)]
          (if (seq commissions)
-           (for [commission commissions]
-             (show-commission data commission))
+           [:div
+            (for [commission commissions]
+              (show-commission data commission))
+            (fetch-more data)]
            empty-commissions))]
 
       [:.sm-col.sm-col-3

@@ -63,10 +63,12 @@
                        :next-payout {:amount 0}
                        :lifetime-payouts {:amount 0}}
                :commissions {:rate nil
+                             :page 0
+                             :pages 0
                              :history (sorted-set-by
                                        (fn [a b]
-                                         (let [date-and-number (juxt :commission_date :number)]
-                                           (compare (date-and-number b) (date-and-number a)))))}
+                                         (let [date-and-id (juxt :commission_date :id)]
+                                           (compare (date-and-id b) (date-and-id a)))))}
                :bonus-credits {:bonus-amount nil
                                :earning-amount nil
                                :commissioned-revenue nil
