@@ -76,7 +76,6 @@
                                :available-credit nil
                                :bonuses []}
                :referral-program {:bonus-amount nil
-                                  :next-amount nil
                                   :earning-amount nil
                                   :lifetime-total nil
                                   :referrals []}

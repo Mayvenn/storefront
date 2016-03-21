@@ -174,10 +174,10 @@
 (def stylist-bonuses-history (conj stylist-bonuses :bonuses))
 
 (def stylist-referral-program (conj stylist :referral-program))
-(def stylist-referral-program-bonus-amount (conj stylist-referral-program :referral-program-bonus-amount))
-(def stylist-referral-program-earning-amount (conj stylist-referral-program :referral-program-earning-amount))
-(def stylist-referral-program-lifetime-total (conj stylist-referral-program :referral-program-lifetime-total))
-(def stylist-referral-program-referrals (conj stylist-referral-program :referral-program-referrals))
+(def stylist-referral-program-bonus-amount (conj stylist-referral-program :bonus-amount))
+(def stylist-referral-program-earning-amount (conj stylist-referral-program :earning-amount))
+(def stylist-referral-program-lifetime-total (conj stylist-referral-program :lifetime-total))
+(def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
 
 (def validation-errors (conj ui :validation-errors))
 (def validation-errors-message (conj validation-errors :error-message))

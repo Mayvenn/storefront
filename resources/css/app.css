@@ -129,8 +129,33 @@
 
 /* Custom border */
 
+.border-dashed {
+  border-style: dashed;
+  border-width: var(--border-width);
+}
+
+.border-dashed-top {
+  border-top-style: dashed;
+  border-top-width: var(--border-width);
+}
+
+.border-dashed-right {
+  border-right-style: dashed;
+  border-right-width: var(--border-width);
+}
+
+.border-dashed-bottom {
+  border-bottom-style: dashed;
+  border-bottom-width: var(--border-width);
+}
+
+.border-dashed-left {
+  border-left-style: dashed;
+  border-left-width: var(--border-width);
+}
+
 .border-dotted {
-  border-style: solid;
+  border-style: dotted;
   border-width: var(--border-width);
 }
 
@@ -239,13 +264,20 @@
 
 /* Custom border-colors */
 
+/* Custom svg */
+
+.stroke-teal { stroke: var(--teal); }
+.stroke-silver { stroke: var(--silver); }
+
 /* Custom darken */
 
 /* Custom lighten */
 
 /* Custom background-image */
 
-.img-receipt-icon { background-image: url('/images/receipt_icon.png'); }
+.img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
+.img-mail-icon { background-image: url('/images/icons/mail.png'); }
+.img-earned-icon { background-image: url('/images/icons/earned.png'); }
 
 /* Custom interaction */
 
@@ -292,6 +324,7 @@
 
     --button-font-weight: inherit;
     --button-background-color: var(--teal);
+    --button-big-padding-y: .75rem;
 
     --border-radius: 2px;
 
