@@ -11,7 +11,7 @@
 
 @mixin collection-ribbon {
   position: absolute;
-  overflow: hidden;  
+  overflow: hidden;
   .corner-ribbon {
     @include transform( rotate(45deg) );
     color: #fff;
@@ -26,12 +26,5 @@
     right: -4rem;
     top: 1.5rem;
     width: 13rem;
-
-    &.deluxe {
-      background-color: #75c9bd;
-    }
-    &.ultra {
-      background-color: #34b6d5;
-    }
   }
 }

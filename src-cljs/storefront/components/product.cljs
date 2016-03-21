@@ -7,7 +7,7 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name] :as taxons]
-            [storefront.accessors.products :refer [graded? all-variants]]
+            [storefront.accessors.products :refer [all-variants]]
             [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
             [om.core :as om]
@@ -63,7 +63,6 @@
           product (query/get (get-in data keypaths/browse-product-query)
                              (vals (get-in data keypaths/products)))
           images (->> product :master :images)
-          collection-name (:collection_name product)
           variants (:variants product)]
       (when product
         [:div

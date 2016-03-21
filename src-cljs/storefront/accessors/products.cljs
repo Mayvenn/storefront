@@ -3,12 +3,6 @@
             [storefront.utils.sequences :refer [update-vals]]
             [storefront.accessors.taxons :as taxons]))
 
-(defn graded? [product]
-  (-> product
-      :collection_name
-      #{"premier" "deluxe" "ultra"}
-      boolean))
-
 (defn all-variants [product]
   (conj (:variants product) (:master product)))
 
