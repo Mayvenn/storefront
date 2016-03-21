@@ -170,9 +170,8 @@
                                       user-token)))
 
 (def cart-error-codes
-  {"paypal-incomplete"               "We were unable to complete your order with PayPal. Please try again."
-   "paypal-invalid-address-country"  "Unfortunately, Mayvenn products can only be delivered to addresses in the United States. Please choose a new shipping destination."
-   "paypal-invalid-address-military" "Unfortunately, Mayvenn products cannot be delivered to Military addresses at this time. Please choose a new shipping destination."})
+  {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
+   "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
   (refresh-current-order app-state)
