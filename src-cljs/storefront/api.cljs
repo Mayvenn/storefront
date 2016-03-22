@@ -412,45 +412,61 @@
        :response-format (json-response-format {:keywords? true})
        :timeout 10000})))
 
-(defn get-stylist-commissions [handle-message user-id user-token]
+(defn get-stylist-stats [handle-message user-token]
   (api-req
    handle-message
    GET
-   "/v2/stylist/commissions"
+   "/stylist/stats"
+   request-keys/get-stylist-stats
+   {:params
+    {:user-token user-token}
+    :handler
+    #(handle-message events/api-success-stylist-stats
+                     (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
+
+(defn get-stylist-commissions [handle-message user-id user-token {:keys [page]}]
+  (api-req
+   handle-message
+   GET
+   "/v3/stylist/commissions"
    request-keys/get-stylist-commissions
    {:params
-    {:user-id user-id :user-token user-token}
+    {:user-id user-id :user-token user-token :page page}
     :handler
     #(handle-message events/api-success-stylist-commissions
-                     (select-keys % [:rate :next-amount :paid-total :new-orders :payouts]))}))
+                     (select-keys % [:rate :commissions :current_page :pages]))}))
 
-(defn get-stylist-bonus-credits [handle-message user-token]
+(defn get-stylist-bonus-credits [handle-message user-token {:keys [page]}]
   (api-req
    handle-message
    GET
    "/stylist/bonus-credits"
    request-keys/get-stylist-bonus-credits
    {:params
-    {:user-token user-token}
+    {:user-token user-token
+     :page page}
     :handler
     #(handle-message events/api-success-stylist-bonus-credits
                      (select-keys % [:bonus-amount
                                      :earning-amount
                                      :progress-to-next-bonus
                                      :lifetime-total
-                                     :bonuses]))}))
+                                     :bonuses
+                                     :current-page
+                                     :pages]))}))
 
-(defn get-stylist-referral-program [handle-message user-token]
+(defn get-stylist-referral-program [handle-message user-token {:keys [page]}]
   (api-req
    handle-message
    GET
    "/stylist/referrals"
    request-keys/get-stylist-referral-program
    {:params
-    {:user-token user-token}
+    {:user-token user-token
+     :page page}
     :handler
     #(handle-message events/api-success-stylist-referral-program
-                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :lifetime-total :referrals]))}))
+                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :lifetime-total :referrals :current-page :pages]))}))
 
 (defn get-sms-number [handle-message]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
@@ -592,30 +608,6 @@
     :handler
     #(handle-message events/api-success-get-order %)
     :error-handler (constantly nil)}))
-
-(defn get-past-order
-  [handle-message order-number user-token user-id]
-  (api-req
-   handle-message
-   GET
-   (str "/v2/orders/" order-number)
-   request-keys/get-past-order
-   {:params
-    {:user-id user-id
-     :user-token user-token}
-    :handler
-    #(handle-message events/api-success-get-past-order %)}))
-
-(defn get-my-orders [handle-message user-token]
-  (api-req
-   handle-message
-   GET
-   "/my_orders"
-   request-keys/get-my-orders
-   {:params
-    {:user-token user-token}
-    :handler
-    #(handle-message events/api-success-my-orders %)}))
 
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))

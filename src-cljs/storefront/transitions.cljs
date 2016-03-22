@@ -74,6 +74,9 @@
             keypaths/manage-account-email
             (get-in app-state keypaths/user-email)))
 
+(defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
+  (assoc-in app-state keypaths/expanded-commission-order-id number))
+
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (when (get-in app-state keypaths/user-email)
     (assoc-in app-state keypaths/navigation-message
@@ -84,9 +87,6 @@
       (assoc-in keypaths/checkout-selected-shipping-method
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
-
-(defmethod transition-state events/navigate-order [_ event args app-state]
-  (assoc-in app-state keypaths/past-order-id (:number args)))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
@@ -105,8 +105,6 @@
   (-> app-state
       (assoc-in keypaths/user {})
       (assoc-in keypaths/order nil)
-      (assoc-in keypaths/past-orders {})
-      (assoc-in keypaths/my-order-ids nil)
       (assoc-in keypaths/stylist {})
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
@@ -144,6 +142,9 @@
 
 (defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
   (assoc-in app-state keypaths/bundle-builder-carousel-index index))
+
+(defmethod transition-state events/control-stylist-view-stat [_ _ stat app-state]
+  (assoc-in app-state keypaths/selected-stylist-stat stat))
 
 (defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
   (assoc-in app-state keypaths/checkout-as-guest true))
@@ -190,31 +191,38 @@
       (update-in keypaths/stylist-manage-account merge (assoc stylist :original_payout_method (:chosen_payout_method stylist)))
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
 
+(defmethod transition-state events/api-success-stylist-stats [_ events stats app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
+
 (defmethod transition-state events/api-success-stylist-commissions
-  [_ event {:keys [rate next-amount paid-total new-orders payouts]} app-state]
+  [_ event {:keys [rate commissions pages current_page]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-commissions-rate rate)
-      (assoc-in keypaths/stylist-commissions-next-amount next-amount)
-      (assoc-in keypaths/stylist-commissions-paid-total paid-total)
-      (assoc-in keypaths/stylist-commissions-new-orders new-orders)
-      (assoc-in keypaths/stylist-commissions-payouts payouts)))
+      (assoc-in keypaths/stylist-commissions-pages (or pages 0))
+      (assoc-in keypaths/stylist-commissions-page (or current_page 1))
+      (update-in keypaths/stylist-commissions-history into commissions)))
 
 (defmethod transition-state events/api-success-stylist-bonus-credits
-  [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total]} app-state]
+  [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total current-page pages]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-bonuses-award-amount bonus-amount)
       (assoc-in keypaths/stylist-bonuses-milestone-amount earning-amount)
       (assoc-in keypaths/stylist-bonuses-progress-to-next-bonus progress-to-next-bonus)
       (assoc-in keypaths/stylist-bonuses-lifetime-total lifetime-total)
-      (assoc-in keypaths/stylist-bonuses-history bonuses)))
+      (update-in keypaths/stylist-bonuses-history into bonuses)
+      (assoc-in keypaths/stylist-bonuses-page (or current-page 1))
+      (assoc-in keypaths/stylist-bonuses-pages (or pages 0))))
 
 (defmethod transition-state events/api-success-stylist-referral-program
-  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals]} app-state]
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals current-page pages]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-referral-program-bonus-amount bonus-amount)
       (assoc-in keypaths/stylist-referral-program-earning-amount earning-amount)
       (assoc-in keypaths/stylist-referral-program-lifetime-total lifetime-total)
-      (assoc-in keypaths/stylist-referral-program-referrals referrals)
+      (update-in keypaths/stylist-referral-program-referrals into referrals)
+      (assoc-in keypaths/stylist-referral-program-pages (or pages 0))
+      (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
 (defn sign-in-user
@@ -277,15 +285,6 @@
                          (orders/shipping-item order)))
         (assoc-in keypaths/cart-quantities (updated-cart-quantities order)))
     (assoc-in app-state keypaths/order {})))
-
-(defmethod transition-state events/api-success-get-past-order [_ event order app-state]
-  (update-in app-state keypaths/past-orders merge {(:number order) order}))
-
-(defmethod transition-state events/api-success-my-orders [_ event {orders :orders} app-state]
-  (let [order-ids (map :number orders)]
-    (-> app-state
-        (assoc-in keypaths/my-order-ids order-ids)
-        (update-in keypaths/past-orders merge (zipmap order-ids orders)))))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state

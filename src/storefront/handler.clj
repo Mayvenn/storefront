@@ -109,7 +109,8 @@
                                  :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"}]
     [:script.bugsnag-script-src {:type "text/javascript"}
      (str "Bugsnag.releaseStage = \"" env "\";")]
-    (page/include-css (asset-path "/css/all.css"))]
+    (page/include-css (asset-path "/css/all.css"))
+    (page/include-css (asset-path "/css/app.css"))]
    [:body
     [:div#content
      [:div {:style "height:100vh;"}

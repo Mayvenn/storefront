@@ -1,0 +1,361 @@
+/* basscss-basic is a reasonable reset and basic styles, but it interferes with legacy
+ * styles, so disabling for now.
+ * TODO: consider nesting this under .redesign with `postcss-nesting` */
+/* @import 'basscss-basic'; */
+
+/* All common modules */
+@import 'basscss';
+
+/* Optional Modules (not included in Basscss by default) */
+
+@import 'basscss-addons/modules/responsive-margin';
+
+@import 'basscss-addons/modules/responsive-padding';
+
+/* Would like to use this, but .input interferes with existing forms */
+/* @import 'basscss-addons/modules/forms'; */
+
+@import 'basscss-addons/modules/btn';
+
+@import 'basscss-addons/modules/btn-primary';
+
+@import 'basscss-addons/modules/btn-outline';
+
+@import 'basscss-addons/modules/btn-sizes';
+
+@import 'basscss-addons/modules/colors';
+
+@import 'basscss-addons/modules/background-colors';
+
+@import 'basscss-addons/modules/border-colors';
+
+@import 'basscss-addons/modules/darken';
+
+@import 'basscss-addons/modules/lighten';
+
+/* basscss-addons hasn't released the latest version, so import directly from NPM */
+/* @import 'basscss-addons/modules/background-images'; */
+@import 'basscss-background-images';
+
+/* More from v8 */
+/*
+
+@import 'basscss-addons/modules/media-object';  flexbox based media-object... for basic cases use .overflow-hidden
+
+@import 'basscss-addons/modules/all';
+
+@import 'basscss-addons/modules/input-range';
+
+@import 'basscss-addons/modules/progress';
+
+*/
+
+/* From basscss v7 */
+
+/* implemented with flex in v8? */
+/* @import 'basscss-ui-utility-groups'; */
+
+/* Custom type-scale */
+
+/* We want h00 to be 64px on small screens. But to have it grow on large screens
+ * we need to specify it in ems. 5.25em is 63px... close enough. */
+
+.h00 { font-size: 5.25em; }
+
+/* Custom typography */
+
+.serif       { font-family: var(--serif); }
+.sans-serif  { font-family: var(--sans-serif); }
+.medium      { font-weight: 500; }
+
+.titleize { text-transform: capitalize; }
+.strike { text-decoration: line-through; }
+
+/* Use customized Graphik fonts when applying .medium or .bold */
+/* This was broken in old styles. */
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Regular-Web.woff') format('woff'),
+       url('/fonts/Graphik-Regular-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Regular-Web.svg#svgFontName') format('svg');
+  font-weight:  400;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Medium-Web.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/Graphik-Medium-Web.woff') format('woff'),
+       url('/fonts/Graphik-Medium-Web.ttf')  format('truetype'),
+       url('/fonts/Graphik-Medium-Web.svg#svgFontName') format('svg');
+  font-weight:  500;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Bold-Web.eot');
+  src: url('/fonts/Graphik-Bold-Web.eot?#iefix') format('embedded-opentype'),
+     url('/fonts/Graphik-Bold-Web.woff') format('woff'),
+     url('/fonts/Graphik-Bold-Web.ttf') format('truetype'),
+     url('/fonts/Graphik-Bold-Web.svg#Graphik-Bold') format('svg');
+  font-weight:  700;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
+/* Custom layout */
+
+.container { max-width: 640px; }
+
+/* Custom align */
+
+/* Custom margin */
+
+.mtn1 { margin-top: -var(--space-1); }
+.mtn2 { margin-top: -var(--space-2); }
+.mtn3 { margin-top: -var(--space-3); }
+.mtn4 { margin-top: -var(--space-4); }
+.m-auto { margin: auto; }
+
+/* Custom padding */
+
+/* Custom grid */
+
+/* Custom flexbox */
+
+/* Custom position */
+
+.overlay { top: 0; right: 0; bottom: 0; left: 0; }
+.sticky { position: sticky; } /* only works in FF, Safari and mobile Safari */
+
+/* Custom border */
+
+.border-dashed {
+  border-style: dashed;
+  border-width: var(--border-width);
+}
+
+.border-dashed-top {
+  border-top-style: dashed;
+  border-top-width: var(--border-width);
+}
+
+.border-dashed-right {
+  border-right-style: dashed;
+  border-right-width: var(--border-width);
+}
+
+.border-dashed-bottom {
+  border-bottom-style: dashed;
+  border-bottom-width: var(--border-width);
+}
+
+.border-dashed-left {
+  border-left-style: dashed;
+  border-left-width: var(--border-width);
+}
+
+.border-dotted {
+  border-style: dotted;
+  border-width: var(--border-width);
+}
+
+.border-dotted-top {
+  border-top-style: dotted;
+  border-top-width: var(--border-width);
+}
+
+.border-dotted-right {
+  border-right-style: dotted;
+  border-right-width: var(--border-width);
+}
+
+.border-dotted-bottom {
+  border-bottom-style: dotted;
+  border-bottom-width: var(--border-width);
+}
+
+.border-dotted-left {
+  border-left-style: dotted;
+  border-left-width: var(--border-width);
+}
+
+.capped { border-radius: 1000px; }
+.inset-top-2 { text-shadow: var(--inset-top-2); }
+
+/* Custom responsive hide */
+
+/* WARNING: Avoid the basscss helpers (xs-hide sm-hide md-hide lg-hide), they
+ * may be removed.
+ * They are too hard to remember... these are better.
+
+
+        480px       640px       768px
+  to-sm   |   sm-up
+  to-sm   |   sm-md   |   md-up
+              to-md   |   md-lg   |   lg-up
+                          to-lg   |   lg-up
+
+*/
+@media (--breakpoint-to-sm) {
+  .to-sm-hide { display: none !important }
+}
+
+@media (--breakpoint-to-md) {
+  .to-md-hide { display: none !important }
+}
+
+@media (--breakpoint-to-lg) {
+  .to-lg-hide { display: none !important }
+}
+
+@media (--breakpoint-sm) {
+  .sm-up-hide { display: none !important }
+}
+
+@media (--breakpoint-md-up) {
+  .md-up-hide { display: none !important }
+}
+
+@media (--breakpoint-lg) {
+  .lg-up-hide { display: none !important }
+}
+
+@media (--breakpoint-sm-md) {
+  .sm-md-hide { display: none !important }
+}
+
+@media (--breakpoint-md-lg) {
+  .md-lg-hide { display: none !important }
+}
+
+/* Custom responsive-margin */
+
+/* Custom responsive-padding */
+
+/* Custom forms */
+
+/* Custom btn */
+
+.btn { text-align: center; }
+
+/* Custom btn-primary */
+
+.btn-primary {
+  background-image: var(--lighten-top-2);
+  text-shadow: var(--inset-top-2);
+}
+
+.btn-primary:active {
+  box-shadow: none; /* override default from basscss */
+  background-image: none;
+}
+
+/* Custom btn-outline */
+
+/* Custom btn-sizes */
+
+/* Custom colors */
+
+/* Custom background-colors */
+
+.bg-lighten-top-1 { background-image: var(--lighten-top-1); }
+.bg-lighten-top-2 { background-image: var(--lighten-top-2); }
+.bg-lighten-top-3 { background-image: var(--lighten-top-3); }
+.bg-lighten-top-4 { background-image: var(--lighten-top-4); }
+
+/* Custom border-colors */
+
+/* Custom svg */
+
+.stroke-teal   { stroke: var(--teal); }
+.stroke-green  { stroke: var(--green); }
+.stroke-white  { stroke: var(--white); }
+.stroke-silver { stroke: var(--silver); }
+.stroke-gray   { stroke: var(--gray); }
+.stroke-black  { stroke: var(--black); }
+.rotate-270 { transform: rotate(-90deg); }
+
+/* Custom darken */
+
+/* Custom lighten */
+
+/* Custom background-image */
+
+.img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
+.img-mail-icon { background-image: url('/images/icons/mail.png'); }
+.img-coins-icon { background-image: url('/images/icons/coins.png'); }
+
+/* Custom interaction */
+
+.pointer { cursor: pointer; }
+
+.transition-ease        { transition-timing-function: ease; }
+.transition-ease-in     { transition-timing-function: ease-in; }
+.transition-ease-in-out { transition-timing-function: ease-in-out; }
+.transition-1 { transition-duration: 0.25s; }
+.transition-2 { transition-duration: 0.5s; }
+.transition-3 { transition-duration: 1s; }
+.transition-4 { transition-duration: 2s; }
+
+/* Custom media queries */
+
+/* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
+ * with how our fonts change size at different screen widths. Use px instead: */
+@custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
+@custom-media --breakpoint-sm (min-width: 480px);
+@custom-media --breakpoint-md (min-width: 640px);
+@custom-media --breakpoint-lg (min-width: 768px);
+
+@custom-media --breakpoint-to-sm (max-width: 479px);
+/* sm-up is the same as sm */
+@custom-media --breakpoint-to-md (max-width: 639px);
+@custom-media --breakpoint-md-up (min-width: 640px);
+@custom-media --breakpoint-to-lg (max-width: 767px);
+/* lg-up is the same as lg */
+
+@custom-media --breakpoint-sm-md (min-width: 480px) and (max-width: 639px);
+@custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
+
+/* Custom variables */
+
+:root {
+    --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-fortescue: Fortescue,serif;
+
+    --serif: var(--font-family-fortescue);
+    --sans-serif: var(--font-family-graphik);
+
+    --font-family: var(--sans-serif);
+    --heading-font-family: var(--sans-serif);
+
+    --button-font-weight: inherit;
+    --button-background-color: var(--teal);
+    --button-big-padding-y: .75rem;
+
+    --border-radius: 2px;
+
+    --teal:    #36b4d4;
+    --green:   #7ed321;
+
+    --white:  #fafafa;
+    --silver: #f2f2f2;
+    --gray:   #9b9b9b;
+    --black:  #4a4a4a;
+
+    --inset-top-2: 0 -1px 0 var(--darken-2);
+
+    --lighten-top-1: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-1));
+    --lighten-top-2: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-2));
+    --lighten-top-3: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-3));
+    --lighten-top-4: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-4));
+
+    --lighten-1: rgba(255, 255, 255, .125);
+    --lighten-2: rgba(255, 255, 255, .375);
+    --lighten-3: rgba(255, 255, 255, .625);
+    --lighten-4: rgba(255, 255, 255, .875);
+}

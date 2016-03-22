@@ -37,9 +37,6 @@
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
 
-(def past-orders [:past-orders])
-(def my-order-ids [:my-order-ids])
-
 (def store [:store])
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
@@ -64,10 +61,12 @@
 (def browse-variant-query (conj ui :browse-variant-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
-(def past-order-id (conj ui :past-order-id))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
+
+(def selected-stylist-stat (conj ui :selected-stylist-stat))
+(def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def taxon-images (conj ui :taxon-images))
 
@@ -156,12 +155,16 @@
 
 (def stylist-manage-account (conj stylist :manage-account))
 
+(def stylist-stats (conj stylist :stats))
+(def stylist-stats-previous-payout (conj stylist-stats :previous-payout))
+(def stylist-stats-next-payout (conj stylist-stats :next-payout))
+(def stylist-stats-lifetime-payouts (conj stylist-stats :lifetime-payouts))
+
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))
-(def stylist-commissions-next-amount (conj stylist-commissions :next-amount))
-(def stylist-commissions-paid-total (conj stylist-commissions :paid-total))
-(def stylist-commissions-new-orders (conj stylist-commissions :new-orders))
-(def stylist-commissions-payouts (conj stylist-commissions :payouts))
+(def stylist-commissions-history (conj stylist-commissions :history))
+(def stylist-commissions-page (conj stylist-commissions :page))
+(def stylist-commissions-pages (conj stylist-commissions :pages))
 
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))
@@ -169,12 +172,16 @@
 (def stylist-bonuses-progress-to-next-bonus (conj stylist-bonuses :progress-to-next-bonus))
 (def stylist-bonuses-lifetime-total (conj stylist-bonuses :lifetime-total))
 (def stylist-bonuses-history (conj stylist-bonuses :bonuses))
+(def stylist-bonuses-page (conj stylist-bonuses :page))
+(def stylist-bonuses-pages (conj stylist-bonuses :pages))
 
 (def stylist-referral-program (conj stylist :referral-program))
-(def stylist-referral-program-bonus-amount (conj stylist-referral-program :referral-program-bonus-amount))
-(def stylist-referral-program-earning-amount (conj stylist-referral-program :referral-program-earning-amount))
-(def stylist-referral-program-lifetime-total (conj stylist-referral-program :referral-program-lifetime-total))
-(def stylist-referral-program-referrals (conj stylist-referral-program :referral-program-referrals))
+(def stylist-referral-program-bonus-amount (conj stylist-referral-program :bonus-amount))
+(def stylist-referral-program-earning-amount (conj stylist-referral-program :earning-amount))
+(def stylist-referral-program-lifetime-total (conj stylist-referral-program :lifetime-total))
+(def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
+(def stylist-referral-program-page (conj stylist-referral-program :page))
+(def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
 (def validation-errors (conj ui :validation-errors))
 (def validation-errors-message (conj validation-errors :error-message))

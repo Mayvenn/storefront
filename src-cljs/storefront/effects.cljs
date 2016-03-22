@@ -47,6 +47,11 @@
                              user-token
                              stylist-id))))
 
+(defn ensure-products [app-state product-ids]
+  (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
+    (when (seq not-cached)
+      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
+
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
@@ -151,23 +156,55 @@
     (api/get-stylist-account (get-in app-state keypaths/handle-message)
                              user-token)))
 
-(defmethod perform-effects events/navigate-stylist-commissions [_ event args app-state]
+(defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
+  (api/get-stylist-stats (get-in app-state keypaths/handle-message)
+                         (get-in app-state keypaths/user-token)))
+
+(defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
+  (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
+    (send app-state events/control-stylist-commissions-fetch)))
+
+(defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
+        user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-commissions-page 0))]
     (when (and user-id user-token)
       (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
                                    user-id
-                                   user-token))))
+                                   user-token
+                                   {:page page}))))
 
-(defmethod perform-effects events/navigate-stylist-bonus-credit [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
-                                   user-token)))
+(defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
+  (ensure-products app-state
+                   (->> (get-in app-state keypaths/stylist-commissions-history)
+                        (map :order)
+                        (mapcat orders/product-items)
+                        (map :product-id)
+                        set)))
 
-(defmethod perform-effects events/navigate-stylist-referrals [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
-                                      user-token)))
+(defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
+  (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
+    (send app-state events/control-stylist-bonuses-fetch)))
+
+(defmethod perform-effects events/control-stylist-bonuses-fetch [_ event args app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-bonuses-page 0))]
+    (when user-token
+      (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
+                                     user-token
+                                     {:page page}))))
+
+(defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
+  (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
+    (send app-state events/control-stylist-referrals-fetch)))
+
+(defmethod perform-effects events/control-stylist-referrals-fetch [_ event args app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
+    (when user-token
+      (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
+                                        user-token
+                                        {:page page}))))
 
 (def cart-error-codes
   {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
@@ -216,12 +253,6 @@
     (routes/enqueue-redirect app-state events/navigate-order-complete {:number number}))
   (when (and number order-token)
     (api/get-completed-order (get-in app-state keypaths/handle-message) number order-token)))
-
-(defmethod perform-effects events/navigate-order [_ event args app-state]
-  (api/get-past-order (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/past-order-id)
-                      (get-in app-state keypaths/user-token)
-                      (get-in app-state keypaths/user-id)))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
@@ -426,9 +457,7 @@
   (routes/enqueue-navigate app-state events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
-  (let [store-url (str (-> js/window .-location .-protocol) "//"
-                       (-> js/window .-location .-host))
-        order (get-in app-state keypaths/order)]
+  (let [order (get-in app-state keypaths/order)]
     (api/update-cart-payments
      (get-in app-state keypaths/handle-message)
      {:order (-> app-state
@@ -444,13 +473,13 @@
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
                                      :mobile-checkout? (not (device/isDesktop))
-                                     :return-url (str store-url "/orders/" (:number order) "/paypal/"
+                                     :return-url (str stylists/store-url "/orders/" (:number order) "/paypal/"
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
                                                         "&order-token=" (url-encode (:token order)))
-                                     :cancel-url (str store-url "/cart?error=paypal-cancel")}}))
+                                     :cancel-url (str stylists/store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
@@ -627,22 +656,13 @@
   (refresh-account app-state)
   (refresh-current-order app-state))
 
-(defn ensure-products-for-order [order app-state]
-  (let [product-ids (map :product-id (orders/product-items order))
-        not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
-    (when (seq not-cached)
-      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
-
-(defmethod perform-effects events/api-success-get-past-order [_ event order app-state]
-  (ensure-products-for-order order app-state))
-
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code (get-in app-state keypaths/handle-message)
                             number token pending-promo-code true)))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
-  (ensure-products-for-order order app-state)
+  (ensure-products app-state (map :product-id (orders/product-items order)))
   (if (and (orders/incomplete? order)
            (= (:number order)
               (get-in app-state keypaths/order-number)))

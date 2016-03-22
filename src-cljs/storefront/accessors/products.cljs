@@ -87,5 +87,15 @@
         strs (filter identity ((apply juxt summary-fns) variant-attrs))]
     (clojure.string/join " " strs)))
 
+(def ^:private closure-product-title [:origin :style :material (constantly "closure")])
+(def ^:private bundle-product-title [not-black-color :origin :style])
+
+(defn product-title [{:keys [variant-attrs product-name] :as variant}]
+  (let [title-fns (cond (closure? variant) closure-product-title
+                        (bundle? variant)  bundle-product-title
+                        :else [(constantly product-name)])
+        strs (filter identity ((apply juxt title-fns) variant-attrs))]
+    (clojure.string/join " " strs)))
+
 (defn thumbnail-urls [data product-id]
   (map :small_url (get-in data (conj keypaths/products product-id :master :images))))

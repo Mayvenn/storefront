@@ -85,14 +85,14 @@
 
      (om/build validation-errors-component data)
 
-     [:div.dashboard-content
+     [:div.manage-account-content
       [:form.edit_mayvenn_stylist.simple_form
        {:on-submit
         (utils/send-event-callback data
                                    events/control-stylist-manage-account-submit)}
        [:.profile-info
 
-        [:h4.dashboard-details-header.no-top-space "Profile Info"]
+        [:h4.manage-account-header.no-top-space "Profile Info"]
         [:.solid-line-divider]
         [:.profile-sections
 
@@ -172,7 +172,7 @@
              original-keypath (conj keypaths/stylist-manage-account :original_payout_method)
              original-payout-method (get-in data original-keypath)]
          [:.select-payout-method
-          [:h4.dashboard-details-header "Commissions"]
+          [:h4.manage-account-header "Commissions"]
           [:.solid-line-divider]
           [:span#payout-method-radio
            [:ul.payout-methods
@@ -203,7 +203,7 @@
                  [:p "Checks will mail to the above address"]])])
 
        [:.social-media
-        [:h4.dashboard-details-header "Social Media"]
+        [:h4.manage-account-header "Social Media"]
         [:.solid-line-divider]
 
         [:.social-media-container
@@ -218,7 +218,7 @@
 
        (when-let [available-credit (get-in data keypaths/user-total-available-store-credit)]
          [:#store-credit
-          [:h4.dashboard-details-header "Store Credit"]
+          [:h4.manage-account-header "Store Credit"]
           [:.solid-line-divider]
           [:div.password-reset
            [:p.password-instructions

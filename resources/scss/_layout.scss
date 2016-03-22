@@ -20,7 +20,7 @@ body {
   font-family: $primary_font_regular;
   overflow-x: hidden;
 
-  .container {
+  .legacy-container {
     width: 100%;
   }
 
@@ -168,15 +168,9 @@ p {
   font-size: 75%;
 }
 
-@mixin all-layout-css($scale) {
-  html {
-    font-size: 12px * $scale;
-  }
-}
-
 // Desktop Layout
 @media screen and (min-width: 1024px) {
-  .container {
+  .legacy-container {
     padding-bottom: 2em;
   }
 
@@ -218,7 +212,7 @@ p {
   @import 'desktop_taxons';
   @import 'desktop_product_show';
   @import 'desktop_checkout';
-  @import 'desktop_stylist_dashboard';
+  @import 'desktop_stylist_edit';
   @import 'desktop_static_pages';
   @import 'desktop_account';
   @import 'desktop_banners';
@@ -236,15 +230,12 @@ p {
   @import 'home';
 }
 
-
-@media screen and (min-width: 640px) and (max-width: 1023px) {
-  @include all-layout-css(2);
+html {
+  font-size: 12px;
 }
 
-@media screen and (min-width: 480px) and (max-width: 639px) {
-  @include all-layout-css(1.5);
-}
-
-@media screen and (max-width: 479px) {
-  @include all-layout-css(1);
+@media screen and (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
 }

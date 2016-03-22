@@ -109,11 +109,7 @@
             (when (own-store? data)
               (list
                [:li
-                [:a (close-and-route data events/navigate-stylist-commissions) "Commissions & Payouts"]]
-               [:li
-                [:a (close-and-route data events/navigate-stylist-bonus-credit) "Bonus Credit"]]
-               [:li
-                [:a (close-and-route data events/navigate-stylist-referrals) "Referrals"]]
+                [:a (close-and-route data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
                [:li
                 [:a (close-and-route data events/navigate-stylist-manage-account) "Manage Account"]]
                [:li
@@ -169,21 +165,9 @@
             [:h3.slideout-nav-section-header.highlight "Manage Store"]
             (slideout-nav-link
              data
-             (merge (close-and-route data events/navigate-stylist-commissions)
-                    {:icon-class "commissions-and-payouts"
-                     :label "Commissions & Payouts"
-                     :full-width? false}))
-            (slideout-nav-link
-             data
-             (merge (close-and-route data events/navigate-stylist-bonus-credit)
-                    {:icon-class "sales-bonuses"
-                     :label "Stylist Bonuses"
-                     :full-width? false}))
-            (slideout-nav-link
-             data
-             (merge (close-and-route data events/navigate-stylist-referrals)
-                    {:icon-class "stylist-referrals"
-                     :label "Stylist Referrals"
+             (merge (close-and-route data events/navigate-stylist-dashboard-commissions)
+                    {:icon-class "stylist-dashboard"
+                     :label "Dashboard"
                      :full-width? false}))
             (slideout-nav-link
              data

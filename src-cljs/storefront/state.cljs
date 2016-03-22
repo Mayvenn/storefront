@@ -50,8 +50,6 @@
      :order (cookie-jar/retrieve-current-order cookie)
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
-     :past-orders {}
-     :my-order-ids nil
 
      :store {:store_slug (get-store-subdomain)}
      :taxons []
@@ -61,22 +59,30 @@
      :shipping-methods []
      :sms-number nil
      :stylist {:sales-rep-email nil
+               :stats {:previous-payout {:amount 0 :date nil}
+                       :next-payout {:amount 0}
+                       :lifetime-payouts {:amount 0}}
                :commissions {:rate nil
-                             :next-amount nil
-                             :paid-total nil
-                             :new-orders []
-                             :payouts []}
+                             :page 0
+                             :pages nil
+                             :history (sorted-set-by
+                                       (fn [a b]
+                                         (let [date-and-id (juxt :commission_date :id)]
+                                           (compare (date-and-id b) (date-and-id a)))))}
                :bonus-credits {:bonus-amount nil
                                :earning-amount nil
                                :commissioned-revenue nil
                                :lifetime-total nil
                                :available-credit nil
-                               :bonuses []}
+                               :bonuses []
+                               :page 0
+                               :pages nil}
                :referral-program {:bonus-amount nil
-                                  :next-amount nil
                                   :earning-amount nil
                                   :lifetime-total nil
-                                  :referrals []}
+                                  :referrals []
+                                  :page 0
+                                  :pages nil}
                :manage-account {:email nil
                                 :id 10
                                 :birth-date-1i nil
@@ -165,9 +171,12 @@
           :browse-variant-query nil
           :browse-variant-quantity 1
           :browse-recently-added-variants []
-          :past-order-id nil
           :menu-expanded false
           :account-menu-expanded false
+
+          :selected-stylist-stat :next-payout
+          :expanded-commission-order-id nil
+
           :sign-in {:email ""
                     :password ""
                     :remember-me true}
