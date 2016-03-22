@@ -69,6 +69,7 @@
 .medium      { font-weight: 500; }
 
 .titleize { text-transform: capitalize; }
+.strike { text-decoration: line-through; }
 
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
@@ -183,6 +184,7 @@
 }
 
 .capped { border-radius: 1000px; }
+.inset-top-2 { text-shadow: var(--inset-top-2); }
 
 /* Custom responsive hide */
 
@@ -244,7 +246,7 @@
 
 .btn-primary {
   background-image: var(--lighten-top-2);
-  text-shadow: 0 -1px 0 var(--darken-2);
+  text-shadow: var(--inset-top-2);
 }
 
 .btn-primary:active {
@@ -342,6 +344,8 @@
     --silver: #f2f2f2;
     --gray:   #9b9b9b;
     --black:  #4a4a4a;
+
+    --inset-top-2: 0 -1px 0 var(--darken-2);
 
     --lighten-top-1: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-1));
     --lighten-top-2: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-2));

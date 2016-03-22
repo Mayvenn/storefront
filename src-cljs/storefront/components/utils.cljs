@@ -53,6 +53,7 @@
                                                  first)}))})
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
+(def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
