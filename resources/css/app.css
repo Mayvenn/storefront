@@ -118,6 +118,7 @@
 .mtn2 { margin-top: -var(--space-2); }
 .mtn3 { margin-top: -var(--space-3); }
 .mtn4 { margin-top: -var(--space-4); }
+.m-auto { margin: auto; }
 
 /* Custom padding */
 
@@ -126,6 +127,8 @@
 /* Custom flexbox */
 
 /* Custom position */
+
+.overlay { top: 0; right: 0; bottom: 0; left: 0; }
 
 /* Custom border */
 
@@ -268,6 +271,7 @@
 
 .stroke-teal { stroke: var(--teal); }
 .stroke-silver { stroke: var(--silver); }
+.rotate-270 { transform: rotate(-90deg); }
 
 /* Custom darken */
 
