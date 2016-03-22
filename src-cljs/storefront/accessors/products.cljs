@@ -38,13 +38,12 @@
     (map (fn [variant]
            (-> variant
                (merge product-attrs)
-               ;; Variants have one specific length, stored in option_values.
+               ;; Variants have one specific length, stored in variant_attrs.
                ;; We need to overwrite the product length, which includes all
                ;; possible lengths.
-               (assoc :length (some-> variant :option_values first :name (str "\""))
+               (assoc :length (some-> variant :variant_attrs :length)
                       :price (js/parseFloat (:price variant))
-                      :sold-out? (not (:can_supply? variant)))
-               (dissoc :option_values)))
+                      :sold-out? (not (:can_supply? variant)))))
          variants)))
 
 (defn current-taxon-whitelisted-products [app-state]

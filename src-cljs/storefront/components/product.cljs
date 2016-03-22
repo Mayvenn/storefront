@@ -30,29 +30,11 @@
   [:div.item-added
    [:strong "Added to Cart: "]
    (str (number->words quantity)
-        " "
-        (-> (:options_text variant)
-            (string/replace #"Length: " "")
-            (string/replace #"''" " inch"))
-        " "
+        (some-> variant
+            :variant_attrs
+            :length
+            (string/replace #".+" #(str " " %1 " ")))
         (:name product))])
-
-(defn display-variant [app-state variant checked?]
-  [:li.keypad-item
-   [:input.keypad-input {:type "radio"
-                         :id (str "variant_id_" (:id variant))
-                         :checked checked?
-                         :on-change (utils/send-event-callback app-state
-                                                               events/control-browse-variant-select
-                                                               {:variant variant})}]
-   [:label.keypad-label {:for (str "variant_id_" (:id variant))}
-    (if (variant :can_supply?)
-      [:div.variant-description
-       (string/join "," (map :presentation (variant :option_values)))]
-      [:div.variant-description.out-of-stock
-       (string/join "," (map :presentation (variant :option_values)))
-       [:br]
-       "sold out"])]])
 
 (defn product-component [data owner]
   (om/component
