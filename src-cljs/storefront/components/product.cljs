@@ -8,7 +8,6 @@
             [storefront.utils.query :as query]
             [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name] :as taxons]
             [storefront.accessors.products :refer [all-variants]]
-            [storefront.components.breadcrumbs :refer [breadcrumbs]]
             [storefront.components.counter :refer [counter-component]]
             [om.core :as om]
             [clojure.string :as string]
@@ -66,16 +65,6 @@
           variants (:variants product)]
       (when product
         [:div
-         (when taxon-path
-           [:div
-            [:div.taxon-products-banner
-             {:class (if taxon-path (taxon-class-name taxon) "unknown")}]
-
-            (breadcrumbs
-             data
-             ["Categories" [events/navigate-category {:taxon-path taxon-path}]]
-             [(:name taxon) [events/navigate-category {:taxon-path taxon-path}]])])
-
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
            [:div#main-image
