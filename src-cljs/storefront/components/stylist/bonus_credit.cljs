@@ -4,6 +4,7 @@
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]))
 
@@ -23,7 +24,13 @@
       [:div.border-top.border-white.mx2.py2
        [:.h6.gray.mb1 "Sales Goals"]
 
-       (map display-stylist-bonus bonuses)]))))
+       (map display-stylist-bonus bonuses)
+
+       (pagination/fetch-more
+        data
+        events/control-stylist-bonuses-fetch
+        (get-in data keypaths/stylist-bonuses-page)
+        (get-in data keypaths/stylist-bonuses-pages))]))))
 
 (defn pending-bonus-progress-component [data]
   (om/component

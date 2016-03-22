@@ -436,21 +436,24 @@
     #(handle-message events/api-success-stylist-commissions
                      (select-keys % [:rate :commissions :current_page :pages]))}))
 
-(defn get-stylist-bonus-credits [handle-message user-token]
+(defn get-stylist-bonus-credits [handle-message user-token {:keys [page]}]
   (api-req
    handle-message
    GET
    "/stylist/bonus-credits"
    request-keys/get-stylist-bonus-credits
    {:params
-    {:user-token user-token}
+    {:user-token user-token
+     :page page}
     :handler
     #(handle-message events/api-success-stylist-bonus-credits
                      (select-keys % [:bonus-amount
                                      :earning-amount
                                      :progress-to-next-bonus
                                      :lifetime-total
-                                     :bonuses]))}))
+                                     :bonuses
+                                     :current-page
+                                     :pages]))}))
 
 (defn get-stylist-referral-program [handle-message user-token {:keys [page]}]
   (api-req

@@ -181,9 +181,16 @@
                         set)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
-                                   user-token)))
+  (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
+    (send app-state events/control-stylist-bonuses-fetch)))
+
+(defmethod perform-effects events/control-stylist-bonuses-fetch [_ event args app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-bonuses-page 0))]
+    (when user-token
+      (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
+                                     user-token
+                                     {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
   (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))

@@ -61,6 +61,7 @@
 (def control-stylist-view-stat (conj control :stylist-view-stat))
 (def control-stylist-commissions-fetch (conj control :stylist-commissions-fetch))
 (def control-stylist-referrals-fetch (conj control :stylist-referrals-fetch))
+(def control-stylist-bonuses-fetch (conj control :stylist-bonuses-fetch))
 
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))

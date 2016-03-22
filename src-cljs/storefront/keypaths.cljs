@@ -172,6 +172,8 @@
 (def stylist-bonuses-progress-to-next-bonus (conj stylist-bonuses :progress-to-next-bonus))
 (def stylist-bonuses-lifetime-total (conj stylist-bonuses :lifetime-total))
 (def stylist-bonuses-history (conj stylist-bonuses :bonuses))
+(def stylist-bonuses-page (conj stylist-bonuses :page))
+(def stylist-bonuses-pages (conj stylist-bonuses :pages))
 
 (def stylist-referral-program (conj stylist :referral-program))
 (def stylist-referral-program-bonus-amount (conj stylist-referral-program :bonus-amount))

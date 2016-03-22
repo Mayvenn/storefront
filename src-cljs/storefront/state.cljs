@@ -74,7 +74,9 @@
                                :commissioned-revenue nil
                                :lifetime-total nil
                                :available-credit nil
-                               :bonuses []}
+                               :bonuses []
+                               :page 0
+                               :pages nil}
                :referral-program {:bonus-amount nil
                                   :earning-amount nil
                                   :lifetime-total nil
