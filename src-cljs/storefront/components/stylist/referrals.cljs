@@ -22,14 +22,17 @@
 
 (def state-radius 36)
 (def state-diameter (* 2 state-radius))
-(def state-circle-size {:style {:width (str state-diameter "px") :height (str state-diameter "px")}})
+(def state-circle-size {:width (str state-diameter "px") :height (str state-diameter "px")})
 (def no-sales-icon
   (html
    ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
    [:.relative
     [:.h6.gray.muted.center.absolute.overlay.m-auto {:style {:height "18%"}} "No Sales"]
-    [:.border-dashed.border-gray.circle state-circle-size]]))
-(def paid-icon (html [:.img-earned-icon state-circle-size]))
+    [:.border-dashed.border-gray.circle {:style state-circle-size}]]))
+(def paid-icon
+  (html
+   (svg/adjustable-check (merge state-circle-size
+                                {:class "stroke-teal"}))))
 
 (defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
 (defmethod state-icon :referred [_ _ _] no-sales-icon)

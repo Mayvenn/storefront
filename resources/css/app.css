@@ -269,8 +269,12 @@
 
 /* Custom svg */
 
-.stroke-teal { stroke: var(--teal); }
+.stroke-teal   { stroke: var(--teal); }
+.stroke-green  { stroke: var(--green); }
+.stroke-white  { stroke: var(--white); }
 .stroke-silver { stroke: var(--silver); }
+.stroke-gray   { stroke: var(--gray); }
+.stroke-black  { stroke: var(--black); }
 .rotate-270 { transform: rotate(-90deg); }
 
 /* Custom darken */
@@ -281,7 +285,6 @@
 
 .img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
 .img-mail-icon { background-image: url('/images/icons/mail.png'); }
-.img-earned-icon { background-image: url('/images/icons/earned.png'); }
 
 /* Custom interaction */
 
