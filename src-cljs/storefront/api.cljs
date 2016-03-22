@@ -452,17 +452,18 @@
                                      :lifetime-total
                                      :bonuses]))}))
 
-(defn get-stylist-referral-program [handle-message user-token]
+(defn get-stylist-referral-program [handle-message user-token {:keys [page]}]
   (api-req
    handle-message
    GET
    "/stylist/referrals"
    request-keys/get-stylist-referral-program
    {:params
-    {:user-token user-token}
+    {:user-token user-token
+     :page page}
     :handler
     #(handle-message events/api-success-stylist-referral-program
-                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :lifetime-total :referrals]))}))
+                     (select-keys % [:sales-rep-email :bonus-amount :earning-amount :lifetime-total :referrals :current-page :pages]))}))
 
 (defn get-sms-number [handle-message]
   (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats

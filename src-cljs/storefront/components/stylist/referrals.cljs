@@ -3,6 +3,9 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
+            [storefront.components.utils :as utils]
+            [storefront.components.stylist.pagination :as pagination]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
 (defn circular-progress [{:keys [radius stroke-width fraction-filled]}]
@@ -56,7 +59,7 @@
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
-     [:.flex.items-center.justify-between.border-right.border-white.p2
+     [:.flex.items-center.justify-between.border-bottom.border-right.border-white.p2
       [:.mr1 (profile-picture-circle profile-picture-url)]
       [:.flex-auto
        [:.h2 name]
@@ -97,7 +100,7 @@
   (om/component
    (html
     [:.mx-auto.container.border.border-white {:data-test "referrals-panel"}
-     [:.clearfix
+     [:.clearfix.mb3
       [:.sm-col-right.sm-col-4
        (show-refer-ad
         (get-in data keypaths/stylist-sales-rep-email)
@@ -105,9 +108,17 @@
         (get-in data keypaths/stylist-referral-program-earning-amount))]
 
       [:.sm-col.sm-col-8
-       (let [earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)]
-         (for [referral (get-in data keypaths/stylist-referral-program-referrals)]
-           (show-referral earning-amount referral)))]
+       (let [earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
+             referrals (get-in data keypaths/stylist-referral-program-referrals)]
+         (when (seq referrals)
+           [:div
+            (for [referral referrals]
+              (show-referral earning-amount referral))
+            (pagination/fetch-more
+             data
+             events/control-stylist-referrals-fetch
+             (get-in data keypaths/stylist-referral-program-page)
+             (get-in data keypaths/stylist-referral-program-pages))]))]
       [:.sm-col-right.sm-col-4.clearfix
        (when-let [lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)]
          (show-lifetime-total lifetime-total))]]])))

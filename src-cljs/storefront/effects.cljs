@@ -186,9 +186,16 @@
                                    user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
-                                      user-token)))
+  (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
+    (send app-state events/control-stylist-referrals-fetch)))
+
+(defmethod perform-effects events/control-stylist-referrals-fetch [_ event args app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
+    (when user-token
+      (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
+                                        user-token
+                                        {:page page}))))
 
 (def cart-error-codes
   {"paypal-incomplete" "We were unable to complete your order with PayPal. Please try again."})

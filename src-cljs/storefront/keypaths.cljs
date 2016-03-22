@@ -178,6 +178,8 @@
 (def stylist-referral-program-earning-amount (conj stylist-referral-program :earning-amount))
 (def stylist-referral-program-lifetime-total (conj stylist-referral-program :lifetime-total))
 (def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
+(def stylist-referral-program-page (conj stylist-referral-program :page))
+(def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
 (def validation-errors (conj ui :validation-errors))
 (def validation-errors-message (conj validation-errors :error-message))

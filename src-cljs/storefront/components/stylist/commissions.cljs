@@ -5,6 +5,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
+            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
@@ -165,15 +166,6 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn fetch-more [data]
-  (let [page (get-in data keypaths/stylist-commissions-page 0)
-        pages (get-in data keypaths/stylist-commissions-pages 0)]
-    (when (> pages page)
-      [:.col-5.mx-auto.my3
-       [:.btn.btn-outline.teal.col-12
-        {:on-click (utils/send-event-callback data events/control-stylist-commissions-fetch)}
-        "Load More"]])))
-
 (defn stylist-commissions-component [data owner]
   (om/component
    (html
@@ -185,7 +177,11 @@
            [:div.mb3
             (for [commission commissions]
               (show-commission data commission))
-            (fetch-more data)]))
+            (pagination/fetch-more
+             data
+             events/control-stylist-commissions-fetch
+             (get-in data keypaths/stylist-commissions-page)
+             (get-in data keypaths/stylist-commissions-pages))]))
        (when (zero? (get-in data keypaths/stylist-commissions-pages))
          empty-commissions)]
 

@@ -78,7 +78,9 @@
                :referral-program {:bonus-amount nil
                                   :earning-amount nil
                                   :lifetime-total nil
-                                  :referrals []}
+                                  :referrals []
+                                  :page 0
+                                  :pages nil}
                :manage-account {:email nil
                                 :id 10
                                 :birth-date-1i nil
