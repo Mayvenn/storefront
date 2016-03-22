@@ -130,6 +130,7 @@
 /* Custom position */
 
 .overlay { top: 0; right: 0; bottom: 0; left: 0; }
+.sticky { position: sticky; } /* only works in FF, Safari and mobile Safari */
 
 /* Custom border */
 
