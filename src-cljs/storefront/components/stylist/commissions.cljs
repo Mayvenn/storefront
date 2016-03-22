@@ -86,9 +86,9 @@
    (show-grand-total order)])
 
 (defn payout-bar [& content]
-  [:.clearfix.bg-lighten-4.px2.py1
-   [:.left "coins"]
-   [:.overflow-hidden.center content]])
+  [:.bg-lighten-4.flex.items-center.px2.py1
+   [:.img-coins-icon.bg-no-repeat {:style {:width "18px" :height "12px"}}]
+   [:.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout_date]}]
   [:.border-dotted-top.border-dotted-bottom.border-gray.h6
