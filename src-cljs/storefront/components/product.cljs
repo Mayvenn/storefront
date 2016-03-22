@@ -83,22 +83,8 @@
              [:div#inside-product-cart-form {:item-prop "offers"
                                              :item-scope ""
                                              :item-type "http://schema.org/Offer"}
-              (if (seq variants)
-                [:div#product-variants
-                 [:h6.ui-descriptor "Select a hair length in inches:"]
-                 [:ul.keypad
-                  (->> variants
-                       (filter (comp seq :option_values))
-                       (map-indexed
-                        (fn [index variant]
-                          (display-variant data
-                                           variant
-                                           (if-let [variant-query (get-in data keypaths/browse-variant-query)]
-                                             (query/matches? variant-query variant)
-                                             (= index 0))))))
-                  [:div {:style {:clear "both"}}]]]
-                [:input {:type "hidden"
-                         :id (get-in product [:master :id])}])
+              [:input {:type "hidden"
+                       :id (get-in product [:master :id])}]
               [:div.price-container
                [:div.quantity
                 [:h4.quantity-label "Quantity"]
