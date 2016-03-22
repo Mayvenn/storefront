@@ -8,23 +8,3 @@
   @include flex-grow($n);
   -webkit-box-flex: $n;
 }
-
-@mixin collection-ribbon {
-  position: absolute;
-  overflow: hidden;
-  .corner-ribbon {
-    @include transform( rotate(45deg) );
-    color: #fff;
-    font-size: 0.9rem;
-    font-family: $secondary_font;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    line-height: 2.3rem;
-    opacity: 0.90;
-    position: absolute;
-    text-align: center;
-    right: -4rem;
-    top: 1.5rem;
-    width: 13rem;
-  }
-}
