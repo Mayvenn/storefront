@@ -90,12 +90,12 @@
    [:.img-coins-icon.bg-no-repeat {:style {:width "18px" :height "12px"}}]
    [:.center.flex-auto content]])
 
-(defn show-payout [{:keys [amount status payout_date]}]
+(defn show-payout [{:keys [amount status payout-date]}]
   [:.border-dotted-top.border-dotted-bottom.border-gray.h6
    (if (= status "paid")
      [:.bg-green
       (payout-bar
-       (f/as-money amount) " paid on " (f/long-date payout_date))]
+       (f/as-money amount) " paid on " (f/long-date payout-date))]
      [:.bg-blue
       (payout-bar
        (f/as-money amount) " has been added to your next payout.")])])
@@ -111,7 +111,7 @@
                                         number)}))
 
 (defn show-collapsed-commission [data
-                                 {:keys [number amount status commission_date order] :as commission}]
+                                 {:keys [number amount status commission-date order] :as commission}]
   [:.p2.border-bottom.border-right.border-white.pointer
    {:on-click (toggle-expanded-commission data number)}
    [:.mb2
@@ -130,7 +130,7 @@
    [:.medium.h5
     (four-up
      [:.titleize {:class (status-look status)} status]
-     (f/locale-date commission_date)
+     (f/locale-date commission-date)
      number
      nil)]])
 
