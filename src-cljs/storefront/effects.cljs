@@ -175,6 +175,7 @@
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
   (refresh-current-order app-state)
+  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (send app-state
           events/flash-show-failure

@@ -47,11 +47,14 @@
   (map (partial display-adjustment-row data) adjustments))
 
 (defn- display-shipment [data shipping]
-  [:tr.order-summary-row
-   [:td
-    [:h5 (:options-text shipping)]]
-   [:td
-    [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])
+  (let [shipping-method (->> (get-in data keypaths/shipping-methods)
+                             (filter #(= (:sku shipping) (:sku %)))
+                             first)]
+    [:tr.order-summary-row
+     [:td
+      [:h5 (:name shipping-method)]]
+     [:td
+      [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]]))
 
 (defn- display-variant-options [{:keys [name value]}]
   (field (str name ": ") (if (= name "Length") (str value "\"") value)))
