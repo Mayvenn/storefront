@@ -5,11 +5,11 @@
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]))
 
-(defn circular-progress [{:keys [radius stroke-width percent-filled]}]
+(defn circular-progress [{:keys [radius stroke-width fraction-filled]}]
   (let [inner-radius    (- radius stroke-width)
         diameter        (* 2 radius)
         circumference   (* 2 js/Math.PI inner-radius)
-        arc-length      (* circumference (- 1 percent-filled))
+        arc-length      (* circumference (- 1 fraction-filled))
         svg-circle-size {:r inner-radius :cy radius :cx radius :stroke-width stroke-width :fill "none"}]
     [:svg.rotate-270 {:width diameter :height diameter :xmlns "http://www.w3.org/2000/svg"}
      [:circle.stroke-silver svg-circle-size]
@@ -20,26 +20,30 @@
     [:.circle.bg-silver.overflow-hidden {:style {:width width :height width}}
      [:img {:src profile-picture-url :style {:width width}}]]))
 
-(defn state-icon [state earning-amount commissioned-revenue]
-  (let [revenue     (min earning-amount commissioned-revenue) ;; BUG: backend should never show commissioned-revenue past earning-amount, though it does
-        radius      36
-        diameter    (* 2 radius)
-        circle-size {:style {:width (str diameter "px") :height (str diameter "px")}}]
-    (case state
-      :referred    [:div.relative
-                    ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
-                    [:.h6.gray.muted.center.absolute.overlay.m-auto {:style {:height "10%"}} "No Sales"]
-                    [:.border-dashed.border-gray.circle circle-size]]
-      :paid        [:.img-earned-icon circle-size]
-      :in-progress [:div.relative
-                    ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
-                    [:.center.absolute.overlay.m-auto {:style {:height "38%"}}
-                     ;; Explicit font size because font-scaling breaks the circular progress
-                     [:.h2.teal {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor revenue))]
-                     [:.h6.gray.line-height-4 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
-                    (circular-progress {:radius         radius
-                                        :stroke-width   5
-                                        :percent-filled (/ revenue earning-amount)})])))
+(def state-radius 36)
+(def state-diameter (* 2 state-radius))
+(def state-circle-size {:style {:width (str state-diameter "px") :height (str state-diameter "px")}})
+(def no-sales-icon
+  (html
+   ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
+   [:.relative
+    [:.h6.gray.muted.center.absolute.overlay.m-auto {:style {:height "18%"}} "No Sales"]
+    [:.border-dashed.border-gray.circle state-circle-size]]))
+(def paid-icon (html [:.img-earned-icon state-circle-size]))
+
+(defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
+(defmethod state-icon :referred [_ _ _] no-sales-icon)
+(defmethod state-icon :paid [_ _ _] paid-icon)
+(defmethod state-icon :in-progress [_ earning-amount commissioned-revenue]
+  ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
+  [:.relative
+   [:.center.absolute.overlay.m-auto {:style {:height "38%"}}
+    ;; Explicit font size because font-scaling breaks the circular progress
+    [:.h2.teal {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:.h6.gray.line-height-4 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
+   (circular-progress {:radius         state-radius
+                       :stroke-width   5
+                       :fraction-filled (/ commissioned-revenue earning-amount)})])
 
 (defn show-referral [earning-amount {:keys [referred-stylist paid-at commissioned-revenue bonus-due]}]
   (html
@@ -77,7 +81,7 @@
       [:p.py1.h5.muted.overflow-hidden.line-height-3 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.border-teal {:href mailto :target "_top"} "Refer"]]]
 
-     [:div.p2.clearfix.sm-up-hide
+     [:.p2.clearfix.sm-up-hide
       [:.left.mx1.img-mail-icon.bg-no-repeat {:style {:height "4em" :width "4em"}}]
       [:.right.ml2.m1.h2.col-4 [:a.col-12.btn.btn-primary.btn-big.border-teal {:href mailto :target "_top"} "Refer"]]
       [:p.py1.h5.muted.overflow-hidden.line-height-3 message]] ]))
