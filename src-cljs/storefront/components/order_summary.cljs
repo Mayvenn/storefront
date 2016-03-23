@@ -45,7 +45,7 @@
       [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]]))
 
 (defn- display-variant-options [variant-attrs]
-  (field (str "Length: " (:length variant-attrs))))
+  (field "Length:" (:length variant-attrs)))
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item
