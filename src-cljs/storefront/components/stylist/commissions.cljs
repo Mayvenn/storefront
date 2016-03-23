@@ -138,7 +138,7 @@
   (list
    (show-collapsed-commission data commission)
 
-   [:div.transition-3.transition-ease.overflow-auto
+   [:div.transition-2.transition-ease.overflow-auto
     {:style {:max-height (if (commission-expanded? data (:number commission))
                            "35rem"
                            "0px")}}
