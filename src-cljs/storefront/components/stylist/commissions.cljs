@@ -43,6 +43,17 @@
       :name
       (str/replace #"^Free " "")))
 
+(defn store-credit-subtotals [order]
+  (let [subtotal (->> order
+                      :payments
+                      (filter #(and (= (:payment-type %) "store-credit")
+                                    (= (:shipment-number %) "S1")))
+                      (map :amount)
+                      (reduce + 0))]
+    (when (pos? subtotal)
+      [{:name "Store Credit"
+        :price (- subtotal)}])))
+
 (defn show-subtotals [shipping-methods order]
   (when (seq shipping-methods)
     (let [shipping-item      (orders/shipping-item order)
@@ -64,29 +75,27 @@
                                   (apply merge-with +)
                                   (map (fn [[name amount]]
                                          {:name name :price amount})))
-          tax-subtotal       (orders/tax-adjustment order)]
-      (for [{:keys [name price]} (concat [product-subtotal]
-                                         discount-subtotals
-                                         [shipping-subtotal]
-                                         [tax-subtotal])]
+          store-credit-subtotals (store-credit-subtotals order)]
+      (for [{:keys [name price]} (remove nil? (concat [product-subtotal]
+                                                      discount-subtotals
+                                                      [shipping-subtotal]
+                                                      store-credit-subtotals))]
         [:.clearfix.mxn1.my2
          [:.px1.col.col-8 name]
          [:.px1.col.col-4.medium.right-align (f/as-money price)]]))))
 
-(defn show-grand-total [order]
-  [:.clearfix.mxn1.h2.mt1.py2
-   [:.px1.col.col-6 "Total"]
-   [:.px1.col.col-6.right-align
-    [:span.h4.mr1.gray "USD"]
-    (f/as-money (:total order))]])
+(defn show-grand-total [commissionable-amount]
+  [:.h2.mt1.py2.col-12.right-align
+   [:span.h4.mr1.gray "USD"]
+   (f/as-money commissionable-amount)])
 
-(defn show-order [data order]
+(defn show-order [data {:keys [order commissionable-amount]}]
   [:.bg-white.px2
    (for [item (orders/product-items order)]
      (show-item data item))
 
    (show-subtotals (get-in data keypaths/shipping-methods) order)
-   (show-grand-total order)])
+   (show-grand-total commissionable-amount)])
 
 (defn payout-bar [& content]
   [:.bg-lighten-4.flex.items-center.px2.py1
@@ -145,7 +154,7 @@
     {:style {:max-height (if (commission-expanded? data (:number commission))
                            "35rem"
                            "0px")}}
-    (show-order data (:order commission))
+    (show-order data commission)
     (show-payout commission) ]))
 
 (def empty-commissions
