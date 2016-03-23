@@ -1,7 +1,6 @@
 (ns storefront.components.formatters
   (:require [goog.string.format]
-            [goog.string]
-            [clojure.string :as str]))
+            [goog.string]))
 
 (defn parse-iso8601 [date-string]
   (-> date-string
@@ -39,12 +38,10 @@
   (-> (js/Date. epoch)
       (.toLocaleDateString)))
 
-(defn ^:private number-with-commas [n]
+(defn number-with-commas [n]
   (->> (str n)
        reverse
-       (partition-all 3)
-       (interpose ",")
-       flatten
+       (interleave (cycle ["" "" "" ","]))
        reverse
        (apply str)))
 
