@@ -161,6 +161,7 @@
                          (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
+  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
     (send app-state events/control-stylist-commissions-fetch)))
 
