@@ -54,35 +54,40 @@
       [{:name "Store Credit"
         :price (- subtotal)}])))
 
-(defn show-subtotals [shipping-methods order]
+(defn product-subtotals [order]
+  (let [quantity (orders/product-quantity order)]
+    [{:name  (goog.string/format
+              "Subtotal (%s Item%s)"
+              quantity
+              (if (> quantity 1) "s" ""))
+      :price (orders/products-subtotal order)}]))
+
+(defn shipping-subtotals [shipping-methods order]
   (when (seq shipping-methods)
-    (let [shipping-item      (orders/shipping-item order)
-          shipping-subtotal  {:name  (short-shipping-name shipping-methods shipping-item)
-                              :price (:unit-price shipping-item)}
-          quantity           (orders/product-quantity order)
-          product-subtotal   {:name  (goog.string/format
-                                      "Subtotal (%s Item%s)"
-                                      quantity
-                                      (if (> quantity 1) "s" ""))
-                              :price (orders/products-subtotal order)}
-          ;; Can't use (:adjustments order) because stylists cannot see
-          ;; adjustments on their customer's orders
-          discount-subtotals (->> order
-                                  orders/line-items
-                                  (mapcat :applied-promotions)
-                                  (map (fn [{:keys [amount promotion]}]
-                                         {(:name promotion) amount}))
-                                  (apply merge-with +)
-                                  (map (fn [[name amount]]
-                                         {:name name :price amount})))
-          store-credit-subtotals (store-credit-subtotals order)]
-      (for [{:keys [name price]} (remove nil? (concat [product-subtotal]
-                                                      discount-subtotals
-                                                      [shipping-subtotal]
-                                                      store-credit-subtotals))]
-        [:.clearfix.mxn1.my2
-         [:.px1.col.col-8 name]
-         [:.px1.col.col-4.medium.right-align (f/as-money price)]]))))
+    (let [shipping-item (orders/shipping-item order)]
+      [{:name  (short-shipping-name shipping-methods shipping-item)
+        :price (:unit-price shipping-item)}])))
+
+(defn discount-subtotals [order]
+  ;; Can't use (:adjustments order) because stylists cannot see
+  ;; adjustments on their customer's orders
+  (->> order
+       orders/line-items
+       (mapcat :applied-promotions)
+       (map (fn [{:keys [amount promotion]}]
+              {(:name promotion) amount}))
+       (apply merge-with +)
+       (map (fn [[name amount]]
+              {:name name :price amount}))))
+
+(defn show-subtotals [shipping-methods order]
+  (for [{:keys [name price]} (remove nil? (concat (product-subtotals order)
+                                                  (discount-subtotals order)
+                                                  (shipping-subtotals shipping-methods order)
+                                                  (store-credit-subtotals order)))]
+    [:.clearfix.mxn1.my2
+     [:.px1.col.col-8 name]
+     [:.px1.col.col-4.medium.right-align (f/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
   [:.h2.mt1.py2.col-12.right-align
