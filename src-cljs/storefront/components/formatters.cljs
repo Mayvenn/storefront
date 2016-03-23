@@ -7,10 +7,9 @@
       (js/Date.parse)
       (js/Date.)))
 
-(defn locale-date [iso8601-formatted-string]
-  (-> iso8601-formatted-string
-      parse-iso8601
-      (.toLocaleDateString)))
+(defn short-date [iso8601-formatted-string]
+  (let [date (parse-iso8601 iso8601-formatted-string)]
+    (goog.string/format "%d/%d/%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
 
 (def month-names ["January"
                   "February"

@@ -66,7 +66,7 @@
        [:.h6.gray.line-height-4
         [:div "Joined " (f/long-date join-date)]
         (when (= state :paid)
-          [:div "Credit Earned: " [:span.black (f/as-money-without-cents bonus-due) " on " (f/locale-date paid-at)]])]]
+          [:div "Credit Earned: " [:span.black (f/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
       [:.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
 
 (defn show-lifetime-total [lifetime-total]

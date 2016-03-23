@@ -130,7 +130,7 @@
    [:.medium.h5
     (four-up
      [:.titleize {:class (status-look status)} status]
-     (f/locale-date commission-date)
+     (f/short-date commission-date)
      number
      nil)]])
 
