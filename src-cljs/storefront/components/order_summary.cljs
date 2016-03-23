@@ -73,7 +73,8 @@
                                                   events/control-cart-remove
                                                   variant-id))}
           "Remove"]]))
-    (field "Length:" (-> line-item :variant-attrs :length))
+    (when-let [length (-> line-item :variant-attrs :length)]
+      (field "Length: " length))
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
     (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")]
