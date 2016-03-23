@@ -44,8 +44,8 @@
      [:td
       [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]]))
 
-(defn- display-variant-options [{:keys [name value]}]
-  (field (str name ": ") (if (= name "Length") (str value "\"") value)))
+(defn- display-variant-options [variant-attrs]
+  (field (str "Length: " (:length variant-attrs))))
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item
@@ -76,7 +76,7 @@
                                                   events/control-cart-remove
                                                   variant-id))}
           "Remove"]]))
-    (map display-variant-options (:options line-item))
+    (map display-variant-options (:variant-attrs line-item))
     (when (not interactive?)
       (field "Quantity:" (:quantity line-item)))
     (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")]
