@@ -38,16 +38,6 @@
   (-> (js/Date. epoch)
       (.toLocaleDateString)))
 
-(defn as-money [amount]
-  (let [amount (js/parseFloat amount)
-        format (if (< amount 0) "-$%1.2f" "$%1.2f")]
-    (goog.string/format format (js/Math.abs amount))))
-
-(defn as-money-or-free [amount]
-  (if (zero? amount)
-    "FREE"
-    (as-money amount)))
-
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
         format (if (< amount 0) "-$%s" "$%s")]
@@ -60,3 +50,11 @@
                    js/Math.round
                    (rem 100))]
     (goog.string/format "%02i" amount)))
+
+(defn as-money [amount]
+  (str (as-money-without-cents amount) "." (as-money-cents-only amount)))
+
+(defn as-money-or-free [amount]
+  (if (zero? amount)
+    "FREE"
+    (as-money amount)))
