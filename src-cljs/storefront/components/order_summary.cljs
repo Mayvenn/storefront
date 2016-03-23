@@ -35,14 +35,13 @@
   (map (partial display-adjustment-row data) adjustments))
 
 (defn- display-shipment [data shipping]
-  (let [shipping-method (->> (get-in data keypaths/shipping-methods)
-                             (filter #(= (:sku shipping) (:sku %)))
-                             first)]
-    [:tr.order-summary-row
-     [:td
-      [:h5 (:name shipping-method)]]
-     [:td
-      [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]]))
+  (when-let [shipping-methods (get-in data keypaths/shipping-methods)]
+    (let [shipping-method (orders/shipping-method-details shipping-methods shipping)]
+      [:tr.order-summary-row
+       [:td
+        [:h5 (:name shipping-method)]]
+       [:td
+        [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])))
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item
