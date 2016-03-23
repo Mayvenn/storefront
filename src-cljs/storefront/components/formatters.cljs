@@ -1,6 +1,7 @@
 (ns storefront.components.formatters
   (:require [goog.string.format]
-            [goog.string]))
+            [goog.string]
+            [clojure.string :as str]))
 
 (defn parse-iso8601 [date-string]
   (-> date-string
@@ -38,10 +39,19 @@
   (-> (js/Date. epoch)
       (.toLocaleDateString)))
 
+(defn ^:private number-with-commas [n]
+  (->> (str n)
+       reverse
+       (partition-all 3)
+       (interpose ",")
+       flatten
+       reverse
+       (apply str)))
+
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
         format (if (< amount 0) "-$%s" "$%s")]
-    (goog.string/format format (.toLocaleString (js/Math.abs amount)))))
+    (goog.string/format format (number-with-commas (js/Math.abs amount)))))
 
 (defn as-money-cents-only [amount]
   (let [amount (-> (js/parseFloat amount)
