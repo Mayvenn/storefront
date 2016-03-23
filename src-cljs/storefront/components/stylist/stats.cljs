@@ -61,46 +61,43 @@
 
 (def stat-card "left col-12 relative")
 
-(defmulti render-stat (fn [data keypath] keypath))
+(defmulti render-stat (fn [keypath stat] keypath))
 
-(defmethod render-stat keypaths/stylist-stats-previous-payout [data keypath]
-  (let [{:keys [amount date]} (get-in data keypath)]
-    [:div.my3
-     {:class stat-card}
-     [:div.p1 "LAST PAYOUT"]
-     (if (> amount 0)
-       (list
-        [:div.py2.h00 (money-with-cents amount)]
-        [:div (f/long-date date)])
-       (list
-        [:div.py2 svg/large-payout]
-        [:div "Tip: Your last payout will show here."]))]))
+(defmethod render-stat keypaths/stylist-stats-previous-payout [_ {:keys [amount date]}]
+  [:div.my3
+   {:class stat-card}
+   [:div.p1 "LAST PAYOUT"]
+   (if (> amount 0)
+     (list
+      [:div.py2.h00 (money-with-cents amount)]
+      [:div (f/long-date date)])
+     (list
+      [:div.py2 svg/large-payout]
+      [:div "Tip: Your last payout will show here."]))])
 
-(defmethod render-stat keypaths/stylist-stats-next-payout [data keypath]
-  (let [{:keys [amount]} (get-in data keypath)]
-    [:div.my3
-     {:class stat-card}
-     [:div.p1 "NEXT PAYOUT"]
-     (if (> amount 0)
-       (list
-        [:div.py2.h00 (money-with-cents amount)]
-        [:div "Payment " (in-x-days)])
-       (list
-        [:div.py2 svg/large-dollar]
-        [:div "Tip: Your next payout will show here."]))]))
+(defmethod render-stat keypaths/stylist-stats-next-payout [_ {:keys [amount]}]
+  [:div.my3
+   {:class stat-card}
+   [:div.p1 "NEXT PAYOUT"]
+   (if (> amount 0)
+     (list
+      [:div.py2.h00 (money-with-cents amount)]
+      [:div "Payment " (in-x-days)])
+     (list
+      [:div.py2 svg/large-dollar]
+      [:div "Tip: Your next payout will show here."]))])
 
-(defmethod render-stat keypaths/stylist-stats-lifetime-payouts [data keypath]
-  (let [{:keys [amount]} (get-in data keypath)]
-    [:div.my3
-     {:class stat-card}
-     [:div.p1 "LIFETIME COMMISSIONS"]
-     (if (> amount 0)
-       (list
-        [:div.py2.h00 (money amount)]
-        [:div utils/nbsp])
-       (list
-        [:div.py2 svg/large-percent]
-        [:div "Tip: Lifetime commissions will show here."]))]))
+(defmethod render-stat keypaths/stylist-stats-lifetime-payouts [_ {:keys [amount]}]
+  [:div.my3
+   {:class stat-card}
+   [:div.p1 "LIFETIME COMMISSIONS"]
+   (if (> amount 0)
+     (list
+      [:div.py2.h00 (money amount)]
+      [:div utils/nbsp])
+     (list
+      [:div.py2 svg/large-percent]
+      [:div "Tip: Lifetime commissions will show here."]))])
 
 (defn stylist-dashboard-stats-component [data owner]
   (reify
@@ -133,7 +130,8 @@
            {:ref "stats"}
            [:div.overflow-hidden.relative
             (for [stat ordered-stats]
-              (render-stat data (conj keypaths/stylist-stats stat)))]]
+              (let [keypath (conj keypaths/stylist-stats stat)]
+                (render-stat keypath (get-in data keypath))))]]
 
           [:div.flex.justify-center
            (for [stat ordered-stats]
