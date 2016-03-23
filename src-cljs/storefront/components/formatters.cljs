@@ -41,7 +41,7 @@
 (defn number-with-commas [n]
   (->> (str n)
        reverse
-       (interleave (cycle ["" "" "" ","]))
+       (interleave (concat [""] (cycle ["" "" ","])))
        reverse
        (apply str)))
 
