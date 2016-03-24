@@ -87,12 +87,12 @@
                                     (f/as-money-without-cents earning-amount))]
     [:.border-bottom.border-white
      [:.py2.px3.to-sm-hide.border-bottom.border-white
-      [:.img-mail-icon.bg-no-repeat.bg-center {:style {:height "4em"}}]
+      [:.center svg/large-mail]
       [:p.py1.h5.muted.line-height-3 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.border-teal {:href mailto :target "_top"} "Refer"]]]
 
      [:.p2.clearfix.sm-up-hide
-      [:.left.mx1.img-mail-icon.bg-no-repeat {:style {:height "4em" :width "4em"}}]
+      [:.left.mx1 svg/large-mail]
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.border-teal {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-3 message]] ]))
 
