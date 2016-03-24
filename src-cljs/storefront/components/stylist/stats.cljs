@@ -69,7 +69,7 @@
    [:div.p1 "LAST PAYOUT"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 (money-with-cents amount)]
+      [:div.py2.h00 {:style {:margin-left "-5px"}} (money-with-cents amount)]
       [:div (f/long-date date)])
      (list
       [:div {:style {:padding "18px"}} svg/large-payout]
@@ -81,7 +81,7 @@
    [:div.p1 "NEXT PAYOUT"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 (money-with-cents amount)]
+      [:div.py2.h00 {:style {:margin-left "-5px"}}(money-with-cents amount)]
       [:div "Payment " (in-x-days)])
      (list
       [:div.py2 svg/large-dollar]
@@ -93,7 +93,7 @@
    [:div.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 (money amount)]
+      [:div.py2.h00 {:style {:margin-left "-5px"}} (money amount)]
       [:div utils/nbsp])
      (list
       [:div.py2 svg/large-percent]
