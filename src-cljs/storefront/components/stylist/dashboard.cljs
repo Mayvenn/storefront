@@ -15,10 +15,11 @@
 (def labels ["Bonuses" "Commissions" "Referrals"])
 
 (defn tab-link [data event ref label]
-  [:a.black.py1.mx3.mt2
-   (merge {:ref ref
-           :data-test (str "nav-" ref)}
-          (utils/route-to data event)) label])
+  [:a.black.center.px3.pt2
+   (utils/route-to data event)
+   [:.py1 {:ref ref
+               :data-test (str "nav-" ref)}
+    label]])
 
 (defn sliding-indicator [data tab-bounds]
   (let [navigation-state     (get-in data keypaths/navigation-event)
