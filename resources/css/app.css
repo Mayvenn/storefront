@@ -357,4 +357,9 @@
     --lighten-2: rgba(255, 255, 255, .375);
     --lighten-3: rgba(255, 255, 255, .625);
     --lighten-4: rgba(255, 255, 255, .875);
+
+    --line-height-1: 1;
+    --line-height-2: 1.3333;
+    --line-height-3: 1.6666;
+    --line-height-4: 2;
 }

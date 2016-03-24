@@ -32,7 +32,7 @@
      :alt   product-name}]
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]
-    [:.line-height-4.h4.mt1
+    [:.line-height-3.h4.mt1
      [:div "Length: " (:length variant-attrs)]
      [:div "Price: " (f/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
@@ -144,7 +144,7 @@
               {:class (if (commission-expanded? data number) "gray" "black")}
               "..."])]
 
-   [:.medium.h5.line-height-4
+   [:.medium.h5.line-height-3
     (four-up
      [:.titleize {:class (status-look status)} status]
      (f/short-date commission-date)

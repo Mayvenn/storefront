@@ -47,7 +47,7 @@
    [:.center.absolute.overlay.m-auto {:style {:height "38%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
     [:.h2.teal {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:.h6.gray.line-height-4 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
+    [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
@@ -88,13 +88,13 @@
     [:.border-bottom.border-white
      [:.py2.px3.to-sm-hide.border-bottom.border-white
       [:.center svg/large-mail]
-      [:p.py1.h5.muted.line-height-3 message]
+      [:p.py1.h5.muted.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.border-teal {:href mailto :target "_top"} "Refer"]]]
 
      [:.p2.clearfix.sm-up-hide
       [:.left.mx1 svg/large-mail]
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.border-teal {:href mailto :target "_top"} "Refer"]]
-      [:p.overflow-hidden.py1.h5.muted.line-height-3 message]] ]))
+      [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
 (defn stylist-referrals-component [data owner]
   (om/component

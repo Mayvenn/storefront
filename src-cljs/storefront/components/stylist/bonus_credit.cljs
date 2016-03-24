@@ -89,7 +89,7 @@
            (om/build bonus-history-component data)
 
            (when (pos? available-credit)
-             [:.center.bg-white.p2.line-height-3
+             [:.center.bg-white.p2.line-height-2
               [:p
                "Bonus credits available " [:span.green (f/as-money available-credit)]
                [:br]
