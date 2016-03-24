@@ -138,13 +138,13 @@
      (when (= status "paid") "+") (f/as-money amount)]
     [:.h2 (:full-name order)]]
 
-   [:.gray.h5.mb1
+   [:.gray.h5
     (four-up "Status" "Ship Date" "Order"
              [:.right.h1.mtn2.mr1
               {:class (if (commission-expanded? data number) "gray" "black")}
               "..."])]
 
-   [:.medium.h5
+   [:.medium.h5.line-height-4
     (four-up
      [:.titleize {:class (status-look status)} status]
      (f/short-date commission-date)

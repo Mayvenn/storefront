@@ -15,7 +15,7 @@
 (def labels ["Bonuses" "Commissions" "Referrals"])
 
 (defn tab-link [data event ref label]
-  [:a.black.py1.mx3.lg-mt2
+  [:a.black.py1.mx3.mt2
    (merge {:ref ref
            :data-test (str "nav-" ref)}
           (utils/route-to data event)) label])

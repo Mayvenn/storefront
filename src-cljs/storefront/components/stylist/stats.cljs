@@ -72,7 +72,7 @@
       [:div.py2.h00 (money-with-cents amount)]
       [:div (f/long-date date)])
      (list
-      [:div.py2 svg/large-payout]
+      [:div {:style {:padding "18px"}} svg/large-payout]
       [:div "Tip: Your last payout will show here."]))])
 
 (defmethod render-stat keypaths/stylist-stats-next-payout [_ {:keys [amount]}]
