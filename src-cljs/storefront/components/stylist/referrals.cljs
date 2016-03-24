@@ -99,18 +99,18 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    [:.mx-auto.container.border.border-white {:data-test "referrals-panel"}
-     [:.clearfix.mb3
-      [:.sm-col-right.sm-col-4
-       (show-refer-ad
-        (get-in data keypaths/stylist-sales-rep-email)
-        (get-in data keypaths/stylist-referral-program-bonus-amount)
-        (get-in data keypaths/stylist-referral-program-earning-amount))]
+    (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
+          referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
+          sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+          bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
+          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
+      [:.mx-auto.container.border.border-white {:data-test "referrals-panel"}
+       [:.clearfix.mb3
+        [:.sm-col-right.sm-col-4
+         (show-refer-ad sales-rep-email bonus-amount earning-amount)]
 
-      [:.sm-col.sm-col-8
-       (let [earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
-             referrals (get-in data keypaths/stylist-referral-program-referrals)]
-         (when (seq referrals)
+        [:.sm-col.sm-col-8
+         (when referrals
            [:div
             (for [referral referrals]
               (show-referral earning-amount referral))
@@ -118,7 +118,7 @@
              data
              events/control-stylist-referrals-fetch
              (get-in data keypaths/stylist-referral-program-page)
-             (get-in data keypaths/stylist-referral-program-pages))]))]
-      [:.sm-col-right.sm-col-4.clearfix
-       (when-let [lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)]
-         (show-lifetime-total lifetime-total))]]])))
+             (get-in data keypaths/stylist-referral-program-pages))])]
+        [:.sm-col-right.sm-col-4.clearfix
+         (when (and referrals (pos? lifetime-total))
+           (show-lifetime-total lifetime-total))]]]))))

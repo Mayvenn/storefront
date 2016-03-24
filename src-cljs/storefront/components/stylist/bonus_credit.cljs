@@ -66,17 +66,16 @@
           award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
           milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-          lifetime-total (get-in data keypaths/stylist-bonuses-lifetime-total)]
-
+          lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
+          history          (seq (get-in data keypaths/stylist-bonuses-history))]
       [:.mx-auto.container.border.border-white {:data-test "bonuses-panel"}
        (when award-amount
          [:.clearfix.mb3
           [:.sm-col.sm-col-8.p1
            [:.center.px1.py2
-            [:.h3
-             "Sell "
-             (f/as-money (- milestone-amount progress-amount))
-             " more to earn your next bonus!"]
+            (if history
+              [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+              [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
             (om/build pending-bonus-progress-component data)
 
@@ -92,14 +91,13 @@
            (when (pos? available-credit)
              [:.center.bg-white.p2.line-height-3
               [:p
-               "Bonus credits available "
-               [:span.green (f/as-money available-credit)]
+               "Bonus credits available " [:span.green (f/as-money available-credit)]
                [:br]
-               " why not treat yourself?"]
+               "why not treat yourself?"]
 
               [:p [:a.btn.teal (utils/route-to data events/navigate-cart) "Shop now " utils/rarr]]])]
 
 
           [:.sm-col-right.sm-col-4
-           (when lifetime-total
+           (when (and history (pos? lifetime-total))
              (show-lifetime-total lifetime-total))]])]))))
