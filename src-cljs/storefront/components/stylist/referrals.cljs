@@ -93,7 +93,7 @@
 
      [:.p2.clearfix.sm-up-hide
       [:.left.mx1.img-mail-icon.bg-no-repeat {:style {:height "4em" :width "4em"}}]
-      [:.right.ml2.m1.h2.col-4 [:a.col-12.btn.btn-primary.btn-big.border-teal {:href mailto :target "_top"} "Refer"]]
+      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.border-teal {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-3 message]] ]))
 
 (defn stylist-referrals-component [data owner]

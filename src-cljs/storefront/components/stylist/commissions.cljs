@@ -132,7 +132,7 @@
   [:.p2.border-bottom.border-right.border-white.pointer
    {:on-click (toggle-expanded-commission data number)}
    [:.mb2
-    [:.px1.h6.right.border.capped
+    [:.px1.h5.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
      (when (= status "paid") "+") (f/as-money amount)]
@@ -140,7 +140,7 @@
 
    [:.gray.h5.mb1
     (four-up "Status" "Ship Date" "Order"
-             [:.right.h2.mtn2
+             [:.right.h1.mtn2.mr1
               {:class (if (commission-expanded? data number) "gray" "black")}
               "..."])]
 

@@ -65,7 +65,7 @@
       om/IRenderState
       (render-state [this {:keys [tab-bounds]}]
         (html
-         [:nav.bg-white.h5.sticky.z1.top-0 {:ref "tabs"}
+         [:nav.bg-white.sticky.z1.top-0 {:ref "tabs"}
           [:div.flex.justify-center
            (for [[event ref label] (map vector nav-events tab-refs labels)]
              (tab-link data event ref label))]
