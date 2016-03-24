@@ -128,7 +128,7 @@
          [:div.py1.bg-teal.bg-lighten-top-2.white.center.sans-serif
           [:div.overflow-hidden.relative
            {:ref "stats"}
-           [:div.overflow-hidden.relative
+           [:div.overflow-hidden.relative.engrave-2
             (for [stat ordered-stats]
               (let [keypath (conj keypaths/stylist-stats stat)]
                 (render-stat keypath (get-in data keypath))))]]
