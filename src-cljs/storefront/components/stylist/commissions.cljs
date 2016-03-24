@@ -26,7 +26,7 @@
 
 (defn show-item [data {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
   [:.py2.clearfix
-   [:img.left.border-top.border-bottom.border-gray.mr3
+   [:img.left.border.border-silver.mr3
     {:style {:width "5rem"}
      :src   (first (products/thumbnail-urls data product-id))
      :alt   product-name}]
