@@ -44,7 +44,7 @@
       [:div.my2.border.border-silver.capped
        (if (zero? progress)
          [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
-         [:div.bg-teal.white.right-align.px2.bg-lighten-top-2.capped.engrave-2
+         [:div.bg-teal-gradient.white.right-align.px2.capped.engrave-2
           {:style (merge bar-padding-y {:width bar-width})}
           (str (.toFixed bar-value 0) "%")])]))))
 

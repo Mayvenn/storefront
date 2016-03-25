@@ -125,7 +125,7 @@
              (if (pos? delta)
                (dotimes [_ delta] (.prev swiper))
                (dotimes [_ (- delta)] (.next swiper)))))
-         [:div.py1.bg-teal.bg-lighten-top-2.white.center.sans-serif
+         [:div.py1.bg-teal-gradient.white.center.sans-serif
           [:div.overflow-hidden.relative
            {:ref "stats"}
            [:div.overflow-hidden.relative.engrave-2

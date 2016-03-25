@@ -248,11 +248,18 @@
 .btn-primary {
   background-image: var(--lighten-top-2);
   text-shadow: var(--inset-top-2);
+  box-shadow: inset 0 1px 0 0 var(--lighten-1);
 }
 
 .btn-primary:active {
   box-shadow: none; /* override default from basscss */
   background-image: none;
+}
+
+.btn-teal-gradient {
+  border-color: var(--dark-teal);
+  /* gets background-color from btn-primary */
+  background-image: var(--teal-gradient);
 }
 
 /* Custom btn-outline */
@@ -267,6 +274,8 @@
 .bg-lighten-top-2 { background-image: var(--lighten-top-2); }
 .bg-lighten-top-3 { background-image: var(--lighten-top-3); }
 .bg-lighten-top-4 { background-image: var(--lighten-top-4); }
+
+.bg-teal-gradient { background-color: var(--teal); background-image: var(--teal-gradient); }
 
 /* Custom border-colors */
 
@@ -338,7 +347,11 @@
 
     --border-radius: 2px;
 
+    --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal)); /* use sparingly */
+
+    --light-teal: #3edbf2; /* use sparingly */
     --teal:    #36b4d4;
+    --dark-teal: #0092b7; /* use sparingly */
     --green:   #7ed321;
 
     --white:  #fafafa;
