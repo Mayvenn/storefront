@@ -315,6 +315,11 @@ html { line-height: 1.2; }
 .transition-3 { transition-duration: 1s; }
 .transition-4 { transition-duration: 2s; }
 
+.commission-order-enter                               { max-height: 0px; }
+.commission-order-enter.commission-order-enter-active { max-height: 35rem; }
+.commission-order-leave                               { max-height: 35rem; }
+.commission-order-leave.commission-order-leave-active { max-height: 0px; }
+
 /* Custom media queries */
 
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice

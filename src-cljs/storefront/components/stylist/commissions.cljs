@@ -151,16 +151,18 @@
      number
      nil)]])
 
+(defn transition-group [options & children]
+  (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
+
 (defn show-commission [data commission]
   [:div {:key (:id commission)}
    (show-collapsed-commission data commission)
-
-   [:div.transition-2.transition-ease.overflow-auto
-    {:style {:max-height (if (commission-expanded? data (:number commission))
-                           "35rem"
-                           "0px")}}
-    (show-order data commission)
-    (show-payout commission)]])
+   (transition-group {:transitionName "commission-order"
+                      :component "div"}
+                     (when (commission-expanded? data (:number commission))
+                       [:div.transition-2.transition-ease.overflow-auto
+                        (show-order data commission)
+                        (show-payout commission)]))])
 
 (def empty-commissions
   (html
