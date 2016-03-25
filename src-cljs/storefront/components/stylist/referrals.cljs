@@ -107,7 +107,8 @@
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
         [:.sm-col-right.sm-col-4
-         (show-refer-ad sales-rep-email bonus-amount earning-amount)]
+         (when bonus-amount
+           (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
         [:.sm-col.sm-col-8
          (when referrals
