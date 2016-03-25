@@ -188,16 +188,15 @@
     [:.mx-auto.container {:data-test "commissions-panel"}
      [:.clearfix
       [:.sm-col.sm-col-9
-       (let [commissions (get-in data keypaths/stylist-commissions-history)]
-         (when (seq commissions)
-           [:div.mb3
-            (for [commission commissions]
-              (show-commission data commission))
-            (pagination/fetch-more
-             data
-             events/control-stylist-commissions-fetch
-             (get-in data keypaths/stylist-commissions-page)
-             (get-in data keypaths/stylist-commissions-pages))]))
+       (when-let [commissions (seq (get-in data keypaths/stylist-commissions-history))]
+         [:div.mb3
+          (for [commission commissions]
+            (show-commission data commission))
+          (pagination/fetch-more
+           data
+           events/control-stylist-commissions-fetch
+           (get-in data keypaths/stylist-commissions-page)
+           (get-in data keypaths/stylist-commissions-pages))])
        (when (zero? (get-in data keypaths/stylist-commissions-pages))
          empty-commissions)]
 
