@@ -152,7 +152,7 @@
      nil)]])
 
 (defn show-commission [data commission]
-  (list
+  [:div {:key (:id commission)}
    (show-collapsed-commission data commission)
 
    [:div.transition-2.transition-ease.overflow-auto
@@ -160,7 +160,7 @@
                            "35rem"
                            "0px")}}
     (show-order data commission)
-    (show-payout commission) ]))
+    (show-payout commission)]])
 
 (def empty-commissions
   (html
