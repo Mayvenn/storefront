@@ -104,7 +104,7 @@
 
 (defn payout-bar [& content]
   [:.bg-lighten-4.flex.items-center.px2.py1
-   [:.img-coins-icon.bg-no-repeat {:style {:width "18px" :height "12px"}}]
+   [:.img-coins-icon.bg-no-repeat.bg-contain {:style {:width "18px" :height "12px"}}]
    [:.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
