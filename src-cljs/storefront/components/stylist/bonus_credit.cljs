@@ -95,8 +95,7 @@
                [:br]
                "why not treat yo self?"]
 
-              [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-cart) "Shop now " utils/rarr]]])]
-
+              [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-categories) "Shop now " utils/rarr]]])]
 
           [:.sm-col-right.sm-col-4
            (when (and history (pos? lifetime-total))
