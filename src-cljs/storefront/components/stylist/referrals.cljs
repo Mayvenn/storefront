@@ -59,7 +59,7 @@
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
-     [:.flex.items-center.justify-between.border-bottom.border-right.border-white.p2
+     [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-silver.p2
       [:.mr1 (profile-picture-circle profile-picture-url)]
       [:.flex-auto
        [:.h2 name]
@@ -85,13 +85,13 @@
         message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
                                     (f/as-money-without-cents bonus-amount)
                                     (f/as-money-without-cents earning-amount))]
-    [:.border-bottom.border-white
-     [:.py2.px3.to-sm-hide.border-bottom.border-white
+    [:div
+     [:.py2.px3.to-sm-hide
       [:.center svg/large-mail]
       [:p.py1.h5.muted.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.btn-teal-gradient {:href mailto :target "_top"} "Refer"]]]
 
-     [:.p2.clearfix.sm-up-hide
+     [:.p2.clearfix.sm-up-hide.border-bottom.border-silver
       [:.left.mx1 svg/large-mail]
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.btn-teal-gradient {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
@@ -104,7 +104,7 @@
           sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
           bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
           lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
-      [:.mx-auto.container.border.border-white {:data-test "referrals-panel"}
+      [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
         [:.sm-col-right.sm-col-4
          (show-refer-ad sales-rep-email bonus-amount earning-amount)]

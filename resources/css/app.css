@@ -60,6 +60,8 @@
 /* We want h00 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in ems. 5.25em is 63px... close enough. */
 
+html { line-height: 1.2; }
+
 .h00 { font-size: 5.25em; }
 
 /* Custom typography */

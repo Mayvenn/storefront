@@ -12,7 +12,7 @@
   [:.gray.border-bottom.border-white.flex.items-center.justify-between.py1
    [:.mr1
     (svg/adjustable-check {:width "12px" :height "12px" :class "stroke-green"})]
-   [:.flex-auto.h6
+   [:.flex-auto.h5
     "Credit Earned: " (f/as-money-without-cents amount)
     " on " (f/epoch-date created-at)]
    [:.h3.ml1.mr1.strike (f/as-money-without-cents revenue-surpassed)]])
@@ -22,7 +22,7 @@
    (html
     (when-let [bonuses (seq (get-in data keypaths/stylist-bonuses-history))]
       [:div.border-top.border-white.mx2.py2
-       [:.h6.gray.mb1 "Sales Goals"]
+       [:.h5.gray.mb1 "Sales Goals"]
 
        (map display-stylist-bonus bonuses)
 
@@ -44,7 +44,7 @@
       [:div.my2.border.border-silver.capped
        (if (zero? progress)
          [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
-         [:div.bg-teal-gradient.white.right-align.px2.capped.engrave-2
+         [:div.btn-teal-gradient.border.white.right-align.px2.capped.engrave-2
           {:style (merge bar-padding-y {:width bar-width})}
           (str (.toFixed bar-value 0) "%")])]))))
 
@@ -68,10 +68,10 @@
           progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
           lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
           history          (seq (get-in data keypaths/stylist-bonuses-history))]
-      [:.mx-auto.container.border.border-white {:data-test "bonuses-panel"}
+      [:.mx-auto.container {:data-test "bonuses-panel"}
        (when award-amount
          [:.clearfix.mb3
-          [:.sm-col.sm-col-8.p1
+          [:.sm-col.sm-col-8
            [:.center.px1.py2
             (if history
               [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
@@ -93,9 +93,9 @@
               [:p
                "Bonus credits available " [:span.green (f/as-money available-credit)]
                [:br]
-               "why not treat yourself?"]
+               "why not treat yo self?"]
 
-              [:p [:a.btn.teal (utils/route-to data events/navigate-cart) "Shop now " utils/rarr]]])]
+              [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-cart) "Shop now " utils/rarr]]])]
 
 
           [:.sm-col-right.sm-col-4

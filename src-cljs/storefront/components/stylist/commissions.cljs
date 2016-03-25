@@ -108,12 +108,12 @@
    [:.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:.border-dotted-top.border-dotted-bottom.border-gray.h6
+  [:.border-dotted-top.border-dotted-bottom.border-gray.h5
    (if (= status "paid")
      [:.bg-green
       (payout-bar
        (f/as-money amount) " paid on " (f/long-date payout-date))]
-     [:.bg-blue
+     [:.bg-teal
       (payout-bar
        (f/as-money amount) " has been added to your next payout.")])])
 
@@ -129,7 +129,7 @@
 
 (defn show-collapsed-commission [data
                                  {:keys [number amount status commission-date order] :as commission}]
-  [:.p2.border-bottom.border-right.border-white.pointer
+  [:.p2.border-bottom.border-right.border-left.border-silver.pointer
    {:on-click (toggle-expanded-commission data number)}
    [:.mb2
     [:.px1.h5.right.border.capped
@@ -165,10 +165,9 @@
 (def empty-commissions
   (html
    [:.center
-    [:.p2
+    [:.p2.border-bottom.border-silver
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em" }}]
      [:p.h2.gray.muted "Looks like you don't have any commissions yet."]]
-    [:hr.border.border-white ]
     [:.py3.h3
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylists/store-url]]]))
@@ -186,7 +185,7 @@
 (defn stylist-commissions-component [data owner]
   (om/component
    (html
-    [:.mx-auto.container.border.border-white {:data-test "commissions-panel"}
+    [:.mx-auto.container {:data-test "commissions-panel"}
      [:.clearfix
       [:.sm-col.sm-col-9
        (let [commissions (get-in data keypaths/stylist-commissions-history)]
