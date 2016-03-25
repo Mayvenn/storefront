@@ -40,11 +40,11 @@
           bar-value (min 100 (/ progress (/ milestone 100.0)))
           bar-width (str (max 15 bar-value) "%")
           bar-padding-y {:padding-top ".25em"
-                         :padding-bottom ".25em"}]
+                         :padding-bottom ".2em"}]
       [:div.my2.border.border-silver.capped
        (if (zero? progress)
          [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
-         [:div.btn-teal-gradient.border.white.right-align.px2.capped.engrave-2
+         [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.right-align.px2.capped.engrave-2.line-height-1
           {:style (merge bar-padding-y {:width bar-width})}
           (str (.toFixed bar-value 0) "%")])]))))
 
