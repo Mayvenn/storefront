@@ -45,7 +45,7 @@
 (def large-mail
   (html
    [:svg
-    {:viewbox "0 0 44 44" :height "44px" :width "44px"}
+    {:viewBox "0 0 44 44" :height "44px" :width "44px"}
     [:defs [:path#path-1 {:d "M0,44 L44,44 L44,0 L0,0 L0,44 Z"}]]
     [:g {:fill-rule "evenodd" :fill "none" :stroke-width "1" :stroke "none"}
      [:path
