@@ -73,9 +73,10 @@
          [:.clearfix.mb3
           [:.sm-col.sm-col-8
            [:.center.px1.py2
-            (if (or history (pos? progress-amount))
-              [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
-              [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
+            (cond
+              history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+              (pos? progress-amount) [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
+              :else                  [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
             (om/build pending-bonus-progress-component data)
 
