@@ -99,6 +99,7 @@
              "Logout"]]])])])))
 
 (defn secondary-and-invasive-primary-nav-component [data owner]
+  ;; WAT: This is invisible on small screens
   (om/component
    (html
     [:div.horizontal-nav-list
@@ -256,11 +257,11 @@
 (defn slideout-nav-component [data owner]
   (om/component
    (html
-    [:div.slideout-nav-wrapper
-     {:class (when (get-in data keypaths/menu-expanded)
-               "slideout-nav-open")}
-     (let [store (get-in data keypaths/store)
-           store-photo (store :profile_picture_url)]
+    (let [store (get-in data keypaths/store)
+          store-photo (:profile_picture_url store)
+          slid-out? (get-in data keypaths/menu-expanded)]
+      [:div.slideout-nav-wrapper
+       {:class (when slid-out? "slideout-nav-open")}
        [:nav.slideout-nav (when-not store-photo {:class "no-picture"})
         ;; Everything in .slideout-nav-header is only visible on small screens
         ;; WAT: except non-missing .slideout-nav-portrait, which is visible on
@@ -272,5 +273,5 @@
             [:div.slideout-nav-portrait.missing-picture])]
          [:h2.slideout-nav-title (store :store_name)]]
         (om/build secondary-and-invasive-primary-nav-component data)
-        (when (get-in data keypaths/menu-expanded)
-          (om/build slideout-nav-component-really data))])])))
+        (when slid-out?
+          (om/build slideout-nav-component-really data))]]))))
