@@ -1,18 +1,18 @@
 .slideout-nav {
     display: none;
+}
 
-    .slideout-nav-open & {
-        z-index: 1000;
-        display: block;
-        position: fixed;
-        bottom: 0;
-        height: 100%;
-        width: 20.75rem;
-        background-color: #b8b9b9;
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-        @include backface-visibility(hidden);
-    }
+.slideout-nav-open .slideout-nav {
+    z-index: 1000;
+    display: block;
+    position: fixed;
+    bottom: 0;
+    height: 100%;
+    width: 20.75rem;
+    background-color: #b8b9b9;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    @include backface-visibility(hidden);
 }
 
 .slideout-nav-header {

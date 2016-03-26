@@ -188,7 +188,7 @@ body {
     width: 100%;
     height: 45px;
     line-height: 45px;
-    border-top: solid white 1px;
+    border-bottom: solid white 1px;
     display: block;
 
     a {
@@ -203,10 +203,6 @@ body {
         color: white;
       }
     }
-  }
-
-  &.closed {
-    display: none;
   }
 }
 
@@ -234,24 +230,6 @@ div.advertised-promo {
   width: 10px;
   height: 10px;
   @include stretch-bg;
-}
-
-#shop-nav-menu-item {
-  &.open {
-    background-color: #e2e2e2;
-    color: $dark_grey;
-    font-weight: bold;
-
-    .down-arrow {
-      background-image: url('/images/desktop_assets/down-arrow-dark-grey.png');
-    }
-  }
-
-  &.closed {
-    .down-arrow {
-      background-image: url('/images/desktop_assets/down-arrow-light-grey.png');
-    }
-  }
 }
 
 div.stylist-bar {
