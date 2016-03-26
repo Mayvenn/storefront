@@ -272,4 +272,5 @@
             [:div.slideout-nav-portrait.missing-picture])]
          [:h2.slideout-nav-title (store :store_name)]]
         (om/build secondary-and-invasive-primary-nav-component data)
-        (om/build slideout-nav-component-really data)])])))
+        (when (get-in data keypaths/menu-expanded)
+          (om/build slideout-nav-component-really data))])])))
