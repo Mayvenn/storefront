@@ -51,7 +51,7 @@
 
 (defn invasive-primary-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
-  ;; WAT 2: It is part of the secondary nav, and through positioning hacks overlays primary nav
+  ;; WAT 2: It is part of the secondary nav, but overlays primary nav through positioning hacks
   (om/component
    (html
     [:div.account-detail
