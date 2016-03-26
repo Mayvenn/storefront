@@ -106,24 +106,22 @@
      (om/build invasive-primary-nav-component data)
      [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
      [:ul.horizontal-nav-menu
-      [:li.relative.z1
-       (if (own-store? data)
+      (if-not (own-store? data)
+        [:li [:a (shop-now-attrs data) "Shop"]]
+        [:li.relative.z1
          [:a
           (close-and-enqueue data events/control-menu-expand {:keypath keypaths/shop-menu-expanded})
           "Shop " [:figure.down-arrow]]
-         [:a
-          (shop-now-attrs data)
-          "Shop"])
-       (when (get-in data keypaths/shop-menu-expanded)
-         [:ul.shop-menu-expanded.top-0
-          [:li
-           [:a (shop-now-attrs data) "Hair Extensions"]]
-          [:li
-           [:a
-            (when-let [path (default-stylist-taxon-path data)]
-              (close-and-route data events/navigate-category
-                               {:taxon-path path}))
-            "Stylist Only Products"]]])]
+         (when (get-in data keypaths/shop-menu-expanded)
+           [:ul.shop-menu-expanded.top-0
+            [:li
+             [:a (shop-now-attrs data) "Hair Extensions"]]
+            [:li
+             [:a
+              (when-let [path (default-stylist-taxon-path data)]
+                (close-and-route data events/navigate-category
+                                 {:taxon-path path}))
+              "Stylist Only Products"]]])])
       [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]])))
 
