@@ -184,7 +184,7 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn stylist-commissions-component [data owner]
+(defn stylist-commissions-component [data]
   (om/component
    (html
     [:.mx-auto.container {:data-test "commissions-panel"}

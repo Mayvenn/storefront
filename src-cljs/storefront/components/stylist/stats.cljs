@@ -32,9 +32,9 @@
    {:class (when-not selected "bg-lighten-2")
     :style {:width "8px" :height "8px"}}])
 
-(defn ^:private circle-for-stat [data selected stat]
+(defn ^:private circle-for-stat [stat selected on-click]
   [:div.p1.pointer
-   {:on-click (choose-stat data stat)}
+   {:on-click (on-click stat)}
    (circle (= selected stat))])
 
 (defn ^:private money [amount]
@@ -61,9 +61,9 @@
 
 (def stat-card "left col-12 relative")
 
-(defmulti render-stat (fn [keypath stat] keypath))
+(defmulti render-stat (fn [name stat] name))
 
-(defmethod render-stat keypaths/stylist-stats-previous-payout [_ {:keys [amount date]}]
+(defmethod render-stat :previous-payout [_ {:keys [amount date]}]
   [:div.my3
    {:class stat-card}
    [:div.p1 "LAST PAYOUT"]
@@ -75,19 +75,19 @@
       [:div {:style {:padding "18px"}} svg/large-payout]
       [:div "Tip: Your last payout will show here."]))])
 
-(defmethod render-stat keypaths/stylist-stats-next-payout [_ {:keys [amount]}]
+(defmethod render-stat :next-payout [_ {:keys [amount]}]
   [:div.my3
    {:class stat-card}
    [:div.p1 "NEXT PAYOUT"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 {:style {:margin-left "-5px"}}(money-with-cents amount)]
+      [:div.py2.h00 {:style {:margin-left "-5px"}} (money-with-cents amount)]
       [:div "Payment " (in-x-days)])
      (list
       [:div.py2 svg/large-dollar]
       [:div "Tip: Your next payout will show here."]))])
 
-(defmethod render-stat keypaths/stylist-stats-lifetime-payouts [_ {:keys [amount]}]
+(defmethod render-stat :lifetime-payouts [_ {:keys [amount]}]
   [:div.my3
    {:class stat-card}
    [:div.p1 "LIFETIME COMMISSIONS"]
@@ -98,6 +98,13 @@
      (list
       [:div.py2 svg/large-percent]
       [:div "Tip: Lifetime commissions will show here."]))])
+
+(defn stats-details-component [stats]
+  (om/component
+   (html
+    [:div.overflow-hidden.relative.engrave-2
+     (for [stat ordered-stats]
+       (render-stat stat (get stats stat)))])))
 
 (defn stylist-dashboard-stats-component [data owner]
   (reify
@@ -117,22 +124,20 @@
         (.kill swiper)))
     om/IRenderState
     (render-state [_ {:keys [swiper]}]
-      (html
-       (let [selected (get-in data keypaths/selected-stylist-stat)
-             selected-idx (stat->idx selected)]
-         (when (and swiper selected-idx)
-           (let [delta (- (.getPos swiper) selected-idx)]
-             (if (pos? delta)
-               (dotimes [_ delta] (.prev swiper))
-               (dotimes [_ (- delta)] (.next swiper)))))
+      (let [selected (get-in data keypaths/selected-stylist-stat)
+            selected-idx (stat->idx selected)]
+        (when (and swiper selected-idx)
+          (let [delta (- (.getPos swiper) selected-idx)]
+            (if (pos? delta)
+              (dotimes [_ delta] (.prev swiper))
+              (dotimes [_ (- delta)] (.next swiper)))))
+        (html
          [:div.py1.bg-teal-gradient.white.center.sans-serif
           [:div.overflow-hidden.relative
            {:ref "stats"}
-           [:div.overflow-hidden.relative.engrave-2
-            (for [stat ordered-stats]
-              (let [keypath (conj keypaths/stylist-stats stat)]
-                (render-stat keypath (get-in data keypath))))]]
+           (om/build stats-details-component (get-in data keypaths/stylist-stats))]
 
           [:div.flex.justify-center
-           (for [stat ordered-stats]
-             (circle-for-stat data selected stat))]])))))
+           (let [on-circle-click (partial choose-stat data)]
+             (for [stat ordered-stats]
+               (circle-for-stat stat selected on-circle-click)))]])))))
