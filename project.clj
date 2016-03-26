@@ -24,7 +24,7 @@
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "0.9.0" :exclusions [cljsjs/react]]
                  [cljsjs/react-with-addons "0.13.3-0"]
-                 [sablono "0.3.6"]
+                 [sablono "0.3.6" :exclusions [cljsjs/react]]
                  [cljs-ajax "0.3.11"]
                  [bidi "1.20.3"]
                  [com.cemerick/url "0.1.1"]]
