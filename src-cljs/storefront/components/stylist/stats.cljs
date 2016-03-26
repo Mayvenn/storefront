@@ -28,12 +28,12 @@
 (def default-idx (stat->idx default-stat))
 
 (defn ^:private circle [selected]
-  [:div.bg-white.circle
+  [:.bg-white.circle
    {:class (when-not selected "bg-lighten-2")
     :style {:width "8px" :height "8px"}}])
 
 (defn ^:private circle-for-stat [stat selected on-click]
-  [:div.p1.pointer
+  [:.p1.pointer
    {:on-click (on-click stat)}
    (circle (= selected stat))])
 
@@ -41,7 +41,7 @@
   (f/as-money-without-cents amount))
 
 (defn ^:private money-with-cents [amount]
-  [:div.flex.justify-center
+  [:.flex.justify-center
    (money amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
@@ -60,49 +60,50 @@
       (str "in " days " days"))))
 
 (def stat-card "left col-12 relative")
+(def re-center-money {:style {:margin-left "-5px"}})
 
 (defmulti render-stat (fn [name stat] name))
 
 (defmethod render-stat :previous-payout [_ {:keys [amount date]}]
-  [:div.my3
+  [:.my3
    {:class stat-card}
-   [:div.p1 "LAST PAYOUT"]
+   [:.p1 "LAST PAYOUT"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 {:style {:margin-left "-5px"}} (money-with-cents amount)]
+      [:.py2.h00 re-center-money (money-with-cents amount)]
       [:div (f/long-date date)])
      (list
       [:div {:style {:padding "18px"}} svg/large-payout]
       [:div "Tip: Your last payout will show here."]))])
 
 (defmethod render-stat :next-payout [_ {:keys [amount]}]
-  [:div.my3
+  [:.my3
    {:class stat-card}
-   [:div.p1 "NEXT PAYOUT"]
+   [:.p1 "NEXT PAYOUT"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 {:style {:margin-left "-5px"}} (money-with-cents amount)]
+      [:.py2.h00 re-center-money (money-with-cents amount)]
       [:div "Payment " (in-x-days)])
      (list
-      [:div.py2 svg/large-dollar]
+      [:.py2 svg/large-dollar]
       [:div "Tip: Your next payout will show here."]))])
 
 (defmethod render-stat :lifetime-payouts [_ {:keys [amount]}]
-  [:div.my3
+  [:.my3
    {:class stat-card}
-   [:div.p1 "LIFETIME COMMISSIONS"]
+   [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      (list
-      [:div.py2.h00 {:style {:margin-left "-5px"}} (money amount)]
+      [:.py2.h00 re-center-money (money amount)]
       [:div utils/nbsp])
      (list
-      [:div.py2 svg/large-percent]
+      [:.py2 svg/large-percent]
       [:div "Tip: Lifetime commissions will show here."]))])
 
 (defn stats-details-component [stats]
   (om/component
    (html
-    [:div.overflow-hidden.relative.engrave-2
+    [:.overflow-hidden.relative.engrave-2
      (for [stat ordered-stats]
        (render-stat stat (get stats stat)))])))
 
@@ -132,12 +133,12 @@
               (dotimes [_ delta] (.prev swiper))
               (dotimes [_ (- delta)] (.next swiper)))))
         (html
-         [:div.py1.bg-teal-gradient.white.center.sans-serif
-          [:div.overflow-hidden.relative
+         [:.py1.bg-teal-gradient.white.center.sans-serif
+          [:.overflow-hidden.relative
            {:ref "stats"}
            (om/build stats-details-component (get-in data keypaths/stylist-stats))]
 
-          [:div.flex.justify-center
+          [:.flex.justify-center
            (let [on-circle-click (partial choose-stat data)]
              (for [stat ordered-stats]
                (circle-for-stat stat selected on-circle-click)))]])))))
