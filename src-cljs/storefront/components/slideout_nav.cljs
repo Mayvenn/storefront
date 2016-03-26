@@ -127,67 +127,65 @@
       [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]])))
 
-(defn slideout-nav-link [{:keys [href on-click icon-class label full-width?]}]
+(defn slideout-nav-link [behavior {:keys [icon-class label full-width?]}]
   [:a.slideout-nav-link
-   (merge
-    {:href href :class (if full-width? "full-width" "half-width")}
-    (when on-click {:on-click on-click}))
+   (merge behavior
+          {:class (if full-width? "full-width" "half-width")})
    [:div.slideout-nav-link-inner
     [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
     label]])
 
 (defn shop-hair-link [data]
   (slideout-nav-link
-   (merge (shop-now-attrs data)
-          {:icon-class "hair-extensions"
-           :label "Hair Extensions"
-           :full-width? true})))
+   (shop-now-attrs data)
+   {:icon-class "hair-extensions"
+    :label "Hair Extensions"
+    :full-width? true}))
 
 (defn logout-link [data]
   (slideout-nav-link
-   (merge (close-and-enqueue data events/control-sign-out)
-          {:icon-class "logout"
-           :label "Logout"
-           :full-width? false})))
+   (close-and-enqueue data events/control-sign-out)
+   {:icon-class "logout"
+    :label "Logout"
+    :full-width? false}))
 
 (defn slideout-stylist-nav [data]
   (list
    [:li.slideout-nav-section.stylist
     [:h3.slideout-nav-section-header.highlight "Manage Store"]
     (slideout-nav-link
-     (merge (close-and-route data events/navigate-stylist-dashboard-commissions)
-            {:icon-class "stylist-dashboard"
-             :label "Dashboard"
-             :full-width? false}))
+     (close-and-route data events/navigate-stylist-dashboard-commissions)
+     {:icon-class "stylist-dashboard"
+      :label "Dashboard"
+      :full-width? false})
     (slideout-nav-link
-     (merge (close-and-route data events/navigate-stylist-manage-account)
-            {:icon-class "edit-profile"
-             :label "Edit Profile"
-             :full-width? false}))
+     (close-and-route data events/navigate-stylist-manage-account)
+     {:icon-class "edit-profile"
+      :label "Edit Profile"
+      :full-width? false})
     (slideout-nav-link
      {:href (get-in data keypaths/community-url)
-      :on-click (utils/send-event-callback data events/external-redirect-community)
-      :icon-class "community"
+      :on-click (utils/send-event-callback data events/external-redirect-community)}
+     {:icon-class "community"
       :label "Stylist Community"
       :full-width? true})]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (shop-hair-link data)
     (slideout-nav-link
-     (merge
-      (when-let [path (default-stylist-taxon-path data)]
-        (close-and-route data events/navigate-category
-                         {:taxon-path path}))
-      {:icon-class "stylist-products"
-       :label "Stylist Products"
-       :full-width? true}))]
+     (when-let [path (default-stylist-taxon-path data)]
+       (close-and-route data events/navigate-category
+                        {:taxon-path path}))
+     {:icon-class "stylist-products"
+      :label "Stylist Products"
+      :full-width? true})]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (slideout-nav-link
-     (merge (close-and-route data events/navigate-stylist-manage-account)
-            {:icon-class "manage-account"
-             :label "Manage Account"
-             :full-width? false}))
+     (close-and-route data events/navigate-stylist-manage-account)
+     {:icon-class "manage-account"
+      :label "Manage Account"
+      :full-width? false})
     (logout-link data)]))
 
 (defn slideout-customer-nav [data]
@@ -198,15 +196,15 @@
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (slideout-nav-link
-     (merge (close-and-route data events/navigate-account-referrals)
-            {:icon-class "refer-friend"
-             :label "Refer A Friend"
-             :full-width? true}))
+     (close-and-route data events/navigate-account-referrals)
+     {:icon-class "refer-friend"
+      :label "Refer A Friend"
+      :full-width? true})
     (slideout-nav-link
-     (merge (close-and-route data events/navigate-account-manage)
-            {:icon-class "manage-account"
-             :label "Manage Account"
-             :full-width? false}))
+     (close-and-route data events/navigate-account-manage)
+     {:icon-class "manage-account"
+      :label "Manage Account"
+      :full-width? false})
     (logout-link data)]))
 
 (defn slideout-guest-nav [data]
@@ -216,16 +214,14 @@
     (shop-hair-link data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
-    (slideout-nav-link
-     (merge (close-and-route data events/navigate-sign-in)
-            {:icon-class "sign-in"
-             :label "Sign In"
-             :full-width? false}))
-    (slideout-nav-link
-     (merge (close-and-route data events/navigate-sign-up)
-            {:icon-class "join"
-             :label "Join"
-             :full-width? false}))]))
+    (slideout-nav-link (close-and-route data events/navigate-sign-in)
+     {:icon-class "sign-in"
+      :label "Sign In"
+      :full-width? false})
+    (slideout-nav-link (close-and-route data events/navigate-sign-up)
+     {:icon-class "join"
+      :label "Join"
+      :full-width? false})]))
 
 (defn slideout-nav-component-really [data owner]
   (om/component
@@ -244,15 +240,15 @@
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "Help"]
       (slideout-nav-link
-       (merge (close-and-route data events/navigate-help)
-              {:icon-class "customer-service"
-               :label "Customer Service"
-               :full-width? false}))
+       (close-and-route data events/navigate-help)
+       {:icon-class "customer-service"
+        :label "Customer Service"
+        :full-width? false})
       (slideout-nav-link
-       (merge (close-and-route data events/navigate-guarantee)
-              {:icon-class "30-day-guarantee"
-               :label "30 Day Guarantee"
-               :full-width? false}))]])))
+       (close-and-route data events/navigate-guarantee)
+       {:icon-class "30-day-guarantee"
+        :label "30 Day Guarantee"
+        :full-width? false})]])))
 
 (defn slideout-nav-component [data owner]
   (om/component
