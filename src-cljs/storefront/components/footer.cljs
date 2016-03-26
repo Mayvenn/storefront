@@ -20,9 +20,9 @@
     events/navigate-checkout-confirmation})
 
 (defn footer-component [data owner]
-  (let [minimal-footer?  (minimal-footer-events (get-in data keypaths/navigation-event))]
-    (om/component
-     (html
+  (om/component
+   (html
+    (let [minimal-footer? (minimal-footer-events (get-in data keypaths/navigation-event))]
       [:footer#footer
        (list
         (when-not minimal-footer?
