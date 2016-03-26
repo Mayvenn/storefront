@@ -112,7 +112,7 @@ body {
   @include display(flex);
   position: right;
 
-  li {
+  & > li {
     text-align: center;
     display: block;
     line-height: ($header_height / 2);
@@ -146,9 +146,8 @@ body {
 }
 
 .account-detail {
-  z-index: 4;
   position: absolute;
-  top: -32px;
+  top: -44px;
   right: 90px;
   color: $dark_grey;
   font-family: $secondary_font;
@@ -157,6 +156,8 @@ body {
     color: $dark_grey;
     display: inline-block;
     padding: 0 5px;
+    line-height: 44px;
+    height: 44px;
   }
 }
 
@@ -176,13 +177,11 @@ body {
   position: absolute;
   width: 208px;
   background-color: #e2e2e2;
-  top: 0;
-  right: 90px;
+  right: 0;
   margin: 0;
   padding: 0;
   font-family: $primary_font_medium;
   font-style: normal;
-  z-index: 1000;
 
   li {
     width: 100%;
@@ -204,11 +203,6 @@ body {
       }
     }
   }
-}
-
-.shop-menu-expanded {
-  top: 44px;
-  right: 419px;
 }
 
 .stylist-user-label {

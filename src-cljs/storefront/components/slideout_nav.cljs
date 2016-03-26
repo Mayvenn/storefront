@@ -54,13 +54,13 @@
   ;; WAT 2: It is part of the secondary nav, and through positioning hacks overlays primary nav
   (om/component
    (html
-    [:div
-     [:div.account-detail
-      (if-not (logged-in? data)
-        [:span
-         [:a (close-and-route data events/navigate-sign-in) "Sign In"]
-         " | "
-         [:a (close-and-route data events/navigate-sign-up) "Sign Up"]]
+    [:div.account-detail
+     (if-not (logged-in? data)
+       [:span
+        [:a (close-and-route data events/navigate-sign-in) "Sign In"]
+        " | "
+        [:a (close-and-route data events/navigate-sign-up) "Sign Up"]]
+       [:.relative.z1
         [:a.account-menu-link
          {:href "#"
           :on-click
@@ -76,58 +76,55 @@
          [:span.account-detail-name
           (when (own-store? data) [:span.stylist-user-label "Stylist:"])
           (get-in data keypaths/user-email)]
-         [:figure.down-arrow]])]
-     ;; WAT: why isn't this part of .account-menu-link? Because we like difficult positioning problems?
-     (when (get-in data keypaths/account-menu-expanded)
-       [:ul.account-detail-expanded
-        (if (own-store? data)
-          (list
+         [:figure.down-arrow]]
+        (when (get-in data keypaths/account-menu-expanded)
+          [:ul.account-detail-expanded
+           (if (own-store? data)
+             (list
+              [:li
+               [:a (close-and-route data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+              [:li
+               [:a (close-and-route data events/navigate-stylist-manage-account) "Manage Account"]]
+              [:li
+               [:a {:href (get-in data keypaths/community-url)
+                    :on-click (utils/send-event-callback data events/external-redirect-community)}
+                "Stylist Community"]])
+             (list
+              [:li
+               [:a (close-and-route data events/navigate-account-referrals) "Refer A Friend"]]
+              [:li
+               [:a (close-and-route data events/navigate-account-manage) "Manage Account"]]))
            [:li
-            [:a (close-and-route data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-           [:li
-            [:a (close-and-route data events/navigate-stylist-manage-account) "Manage Account"]]
-           [:li
-            [:a {:href (get-in data keypaths/community-url)
-                 :on-click (utils/send-event-callback data events/external-redirect-community)}
-             "Stylist Community"]])
-          (list
-           [:li
-            [:a (close-and-route data events/navigate-account-referrals) "Refer A Friend"]]
-           [:li
-            [:a (close-and-route data events/navigate-account-manage) "Manage Account"]]))
-        [:li
-         [:a (close-and-enqueue data events/control-sign-out)
-          "Logout"]]])])))
+            [:a (close-and-enqueue data events/control-sign-out)
+             "Logout"]]])])])))
 
 (defn secondary-and-invasive-primary-nav-component [data owner]
   (om/component
    (html
-    [:div
-     [:div.horizontal-nav-list
-      (om/build invasive-primary-nav-component data)
-      [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
-      [:ul.horizontal-nav-menu
-       [:li
-        (if (own-store? data)
-          [:a
-           (close-and-enqueue data events/control-menu-expand {:keypath keypaths/shop-menu-expanded})
-           "Shop " [:figure.down-arrow]]
-          [:a
-           (shop-now-attrs data)
-           "Shop"])]
-       [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
-       [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]]
-     ;; WAT: why isn't this part of the shop menu?
-     (when (get-in data keypaths/shop-menu-expanded)
-       [:ul.shop-menu-expanded
-        [:li
-         [:a (shop-now-attrs data) "Hair Extensions"]]
-        [:li
+    [:div.horizontal-nav-list
+     (om/build invasive-primary-nav-component data)
+     [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
+     [:ul.horizontal-nav-menu
+      [:li.relative.z1
+       (if (own-store? data)
          [:a
-          (when-let [path (default-stylist-taxon-path data)]
-            (close-and-route data events/navigate-category
-                             {:taxon-path path}))
-          "Stylist Only Products"]]])])))
+          (close-and-enqueue data events/control-menu-expand {:keypath keypaths/shop-menu-expanded})
+          "Shop " [:figure.down-arrow]]
+         [:a
+          (shop-now-attrs data)
+          "Shop"])
+       (when (get-in data keypaths/shop-menu-expanded)
+         [:ul.shop-menu-expanded.top-0
+          [:li
+           [:a (shop-now-attrs data) "Hair Extensions"]]
+          [:li
+           [:a
+            (when-let [path (default-stylist-taxon-path data)]
+              (close-and-route data events/navigate-category
+                               {:taxon-path path}))
+            "Stylist Only Products"]]])]
+      [:li [:a (close-and-route data events/navigate-guarantee) "30 Day Guarantee"]]
+      [:li [:a (close-and-route data events/navigate-help) "Customer Service"]]]])))
 
 (defn slideout-nav-link [{:keys [href on-click icon-class label full-width?]}]
   [:a.slideout-nav-link
