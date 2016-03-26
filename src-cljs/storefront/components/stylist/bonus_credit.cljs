@@ -69,9 +69,9 @@
           lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
           history          (seq (get-in data keypaths/stylist-bonuses-history))]
       [:.mx-auto.container {:data-test "bonuses-panel"}
-       (when award-amount
-         [:.clearfix.mb3
-          [:.sm-col.sm-col-8
+       [:.clearfix.mb3
+        [:.sm-col.sm-col-8
+         (when award-amount
            [:.center.px1.py2
             (cond
               history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
@@ -85,19 +85,19 @@
              (f/as-money-without-cents award-amount)
              " in credit for every "
              (f/as-money-without-cents milestone-amount)
-             " in sales you make."]]
+             " in sales you make."]])
 
-           (om/build bonus-history-component data)
+         (om/build bonus-history-component data)
 
-           (when (pos? available-credit)
-             [:.center.bg-white.p2.line-height-2
-              [:p
-               "Bonus credits available " [:span.green (f/as-money available-credit)]
-               [:br]
-               "why not treat yo self?"]
+         (when (pos? available-credit)
+           [:.center.bg-white.p2.line-height-2
+            [:p
+             "Bonus credits available " [:span.green (f/as-money available-credit)]
+             [:br]
+             "why not treat yo self?"]
 
-              [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-categories) "Shop now " utils/rarr]]])]
+            [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-categories) "Shop now " utils/rarr]]])]
 
-          [:.sm-col-right.sm-col-4
-           (when (and history (pos? lifetime-total))
-             (show-lifetime-total lifetime-total))]])]))))
+        [:.sm-col-right.sm-col-4
+         (when (pos? lifetime-total)
+           (show-lifetime-total lifetime-total))]]]))))
