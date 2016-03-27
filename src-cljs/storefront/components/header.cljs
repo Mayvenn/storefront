@@ -20,11 +20,10 @@
                   {:class "comm-login"}))
          (when-not getsat-login?
            [:a.header-menu {:href "#"
-                            :on-click (fn [e]
-                                        (.preventDefault e)
-                                        (send data
-                                              events/control-menu-expand
-                                              {:keypath keypaths/menu-expanded}))}
+                            :on-click
+                            (utils/send-event-callback data
+                                                       events/control-menu-expand
+                                                       {:keypath keypaths/menu-expanded})}
             "Menu"])
          (if getsat-login?
            [:div.logo.comm-login]
