@@ -32,21 +32,19 @@
         (get-in data keypaths/stylist-bonuses-page)
         (get-in data keypaths/stylist-bonuses-pages))]))))
 
-(defn pending-bonus-progress-component [data]
-  (om/component
-   (html
-    (let [progress  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-          milestone (get-in data keypaths/stylist-bonuses-milestone-amount)
-          bar-value (min 100 (/ progress (/ milestone 100.0)))
-          bar-width (str (max 15 bar-value) "%")
-          bar-padding-y {:padding-top ".25em"
-                         :padding-bottom ".2em"}]
-      [:div.my2.border.border-silver.capped
-       (if (zero? progress)
-         [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
-         [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.right-align.px2.capped.engrave-2.line-height-1
-          {:style (merge bar-padding-y {:width bar-width})}
-          (str (.toFixed bar-value 0) "%")])]))))
+(defn pending-bonus-progress [data]
+  (let [progress  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
+        milestone (get-in data keypaths/stylist-bonuses-milestone-amount)
+        bar-value (min 100 (/ progress (/ milestone 100.0)))
+        bar-width (str (max 15 bar-value) "%")
+        bar-padding-y {:padding-top ".25em"
+                       :padding-bottom ".2em"}]
+    [:div.my2.border.border-silver.capped
+     (if (zero? progress)
+       [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
+       [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.right-align.px2.capped.engrave-2.line-height-1
+        {:style (merge bar-padding-y {:width bar-width})}
+        (str (.toFixed bar-value 0) "%")])]))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
@@ -79,7 +77,7 @@
                (pos? progress-amount) [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
                :else                  [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
-             (om/build pending-bonus-progress-component data)
+             (pending-bonus-progress data)
 
              [:.h6.gray
               "You earn "
