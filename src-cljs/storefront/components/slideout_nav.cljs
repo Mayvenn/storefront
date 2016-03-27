@@ -22,8 +22,13 @@
 (defn logged-in? [data]
   (boolean (get-in data keypaths/user-email)))
 
-(defn shop-now-attrs [data]
+(defn navigate-hair [data]
   (apply utils/route-to data (navigation/shop-now-navigation-message data)))
+
+(defn navigate-kits [data]
+  (when-let [path (default-stylist-taxon-path data)]
+    (utils/route-to data events/navigate-category
+                    {:taxon-path path})))
 
 (defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
   [:.relative.z1
@@ -95,19 +100,14 @@
      [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
      [:ul.horizontal-nav-menu
       (if-not (own-store? data)
-        [:li [:a (shop-now-attrs data) "Shop"]]
+        [:li [:a (navigate-hair data) "Shop"]]
         [:li
          (drop-down
           data keypaths/shop-menu-expanded
           [:a "Shop " [:figure.down-arrow]]
           [:ul.shop-menu-expanded.top-0
-           [:li [:a (shop-now-attrs data) "Hair Extensions"]]
-           [:li
-            [:a
-             (when-let [path (default-stylist-taxon-path data)]
-               (utils/route-to data events/navigate-category
-                               {:taxon-path path}))
-             "Stylist Only Products"]]])])
+           [:li [:a (navigate-hair data) "Hair Extensions"]]
+           [:li [:a (navigate-kits data) "Stylist Only Products"]]])])
       [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]])))
 
@@ -121,18 +121,15 @@
      [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
      label]]))
 
-(defn shop-hair-box [data]
-  (nav-box "hair-extensions" "Hair Extensions" (shop-now-attrs data) {:full-width? true}))
+(defn nav-hair-box [data]
+  (nav-box "hair-extensions" "Hair Extensions" (navigate-hair data) {:full-width? true}))
 
 (defn logout-box [data]
   (nav-box "logout" "Logout" (fake-href data events/control-sign-out)))
 
 (defn slideout-stylist-nav [data]
   (let [navigate-community {:href (get-in data keypaths/community-url)
-                            :on-click (utils/send-event-callback data events/external-redirect-community)}
-        navigate-kits (when-let [path (default-stylist-taxon-path data)]
-                        (utils/route-to data events/navigate-category
-                                        {:taxon-path path}))]
+                            :on-click (utils/send-event-callback data events/external-redirect-community)}]
     (list
      [:li.slideout-nav-section.stylist
       [:h3.slideout-nav-section-header.highlight "Manage Store"]
@@ -141,8 +138,8 @@
       (nav-box "community" "Stylist Community" navigate-community {:full-width? true})]
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "Shop"]
-      (shop-hair-box data)
-      (nav-box "stylist-products" "Stylist Products" navigate-kits {:full-width? true})]
+      (nav-hair-box data)
+      (nav-box "stylist-products" "Stylist Products" (navigate-kits data) {:full-width? true})]
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "My Account"]
       (nav-box "manage-account" "Manage Account" (utils/route-to data events/navigate-stylist-manage-account))
@@ -152,7 +149,7 @@
   (list
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
-    (shop-hair-box data)]
+    (nav-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (nav-box "refer-friend" "Refer A Friend" (utils/route-to data events/navigate-account-referrals) {:full-width? true})
@@ -163,7 +160,7 @@
   (list
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
-    (shop-hair-box data)]
+    (nav-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (nav-box "sign-in" "Sign In" (utils/route-to data events/navigate-sign-in))
