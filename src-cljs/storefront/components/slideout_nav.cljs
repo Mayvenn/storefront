@@ -36,47 +36,55 @@
       [:.fixed.overlay]
       menu])])
 
+(defn account-store-credit [data]
+  (when (show-store-credit? data)
+    [:span.stylist-user-label
+     "Store credit:"
+     [:span.store-credit-amount (as-money (get-in data keypaths/user-total-available-store-credit))]]))
+
+(defn guest-account-menu [data]
+  [:span
+   [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
+   " | "
+   [:a (utils/route-to data events/navigate-sign-up) "Sign Up"]])
+
+(defn stylist-account-menu [data]
+  (let [navigate-to-community {:href (get-in data keypaths/community-url)
+                               :on-click (utils/send-event-callback data events/external-redirect-community)}]
+    (drop-down
+     data keypaths/account-menu-expanded
+     [:a.account-menu-link
+      (account-store-credit data)
+      [:span.account-detail-name [:span.stylist-user-label "Stylist:"] (get-in data keypaths/user-email)]
+      [:figure.down-arrow]]
+     [:ul.account-detail-expanded
+      [:li [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+      [:li [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
+      [:li [:a navigate-to-community "Stylist Community"]]
+      [:li [:a (enqueue data events/control-sign-out) "Logout"]]])))
+
+(defn customer-account-menu [data]
+  (drop-down
+   data keypaths/account-menu-expanded
+   [:a.account-menu-link
+    (account-store-credit data)
+    [:span.account-detail-name (get-in data keypaths/user-email)]
+    [:figure.down-arrow]]
+   [:ul.account-detail-expanded
+    [:li [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
+    [:li [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]
+    [:li [:a (enqueue data events/control-sign-out) "Logout"]]]))
+
 (defn invasive-primary-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
   ;; WAT 2: It is part of the secondary nav, but overlays primary nav through positioning hacks
   (om/component
    (html
     [:div.account-detail
-     (if-not (logged-in? data)
-       [:span
-        [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
-        " | "
-        [:a (utils/route-to data events/navigate-sign-up) "Sign Up"]]
-       (drop-down
-        data keypaths/account-menu-expanded
-        [:a.account-menu-link
-         (when (show-store-credit? data)
-           [:span.stylist-user-label
-            "Store credit:"
-            [:span.store-credit-amount (as-money (get-in data keypaths/user-total-available-store-credit))]])
-         [:span.account-detail-name
-          (when (own-store? data) [:span.stylist-user-label "Stylist:"])
-          (get-in data keypaths/user-email)]
-         [:figure.down-arrow]]
-        [:ul.account-detail-expanded
-         (if (own-store? data)
-           (list
-            [:li
-             [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-            [:li
-             [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
-            [:li
-             [:a {:href (get-in data keypaths/community-url)
-                  :on-click (utils/send-event-callback data events/external-redirect-community)}
-              "Stylist Community"]])
-           (list
-            [:li
-             [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
-            [:li
-             [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]))
-         [:li
-          [:a (enqueue data events/control-sign-out)
-           "Logout"]]]))])))
+     (cond
+       (own-store? data) (stylist-account-menu data)
+       (logged-in? data) (customer-account-menu data)
+       :else             (guest-account-menu data))])))
 
 (defn secondary-and-invasive-primary-nav-component [data owner]
   ;; WAT: This is invisible on small screens
