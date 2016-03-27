@@ -25,6 +25,17 @@
 (defn shop-now-attrs [data]
   (apply utils/route-to data (navigation/shop-now-navigation-message data)))
 
+(defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
+  [:.relative.z1
+   (into [link-tag
+          (enqueue data events/control-menu-expand {:keypath expanded-keypath})]
+         link-contents)
+   (when (get-in data expanded-keypath)
+     [:div
+      {:on-click (utils/send-event-callback data events/control-menu-collapse {:keypath expanded-keypath})}
+      [:.fixed.overlay]
+      menu])])
+
 (defn invasive-primary-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
   ;; WAT 2: It is part of the secondary nav, but overlays primary nav through positioning hacks
@@ -36,9 +47,9 @@
         [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
         " | "
         [:a (utils/route-to data events/navigate-sign-up) "Sign Up"]]
-       [:.relative.z1
+       (drop-down
+        data keypaths/account-menu-expanded
         [:a.account-menu-link
-         (enqueue data events/control-menu-expand {:keypath keypaths/account-menu-expanded})
          (when (show-store-credit? data)
            [:span.stylist-user-label
             "Store credit:"
@@ -47,31 +58,25 @@
           (when (own-store? data) [:span.stylist-user-label "Stylist:"])
           (get-in data keypaths/user-email)]
          [:figure.down-arrow]]
-        (when (get-in data keypaths/account-menu-expanded)
-          [:div
-           {:on-click (utils/send-event-callback data
-                                                 events/control-menu-collapse
-                                                 {:keypath keypaths/account-menu-expanded})}
-           [:.fixed.overlay]
-           [:ul.account-detail-expanded
-            (if (own-store? data)
-              (list
-               [:li
-                [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-               [:li
-                [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
-               [:li
-                [:a {:href (get-in data keypaths/community-url)
-                     :on-click (utils/send-event-callback data events/external-redirect-community)}
-                 "Stylist Community"]])
-              (list
-               [:li
-                [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
-               [:li
-                [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]))
+        [:ul.account-detail-expanded
+         (if (own-store? data)
+           (list
             [:li
-             [:a (enqueue data events/control-sign-out)
-              "Logout"]]]])])])))
+             [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+            [:li
+             [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
+            [:li
+             [:a {:href (get-in data keypaths/community-url)
+                  :on-click (utils/send-event-callback data events/external-redirect-community)}
+              "Stylist Community"]])
+           (list
+            [:li
+             [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
+            [:li
+             [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]))
+         [:li
+          [:a (enqueue data events/control-sign-out)
+           "Logout"]]]))])))
 
 (defn secondary-and-invasive-primary-nav-component [data owner]
   ;; WAT: This is invisible on small screens
@@ -83,25 +88,19 @@
      [:ul.horizontal-nav-menu
       (if-not (own-store? data)
         [:li [:a (shop-now-attrs data) "Shop"]]
-        [:li.relative.z1
-         [:a
-          (enqueue data events/control-menu-expand {:keypath keypaths/shop-menu-expanded})
-          "Shop " [:figure.down-arrow]]
-         (when (get-in data keypaths/shop-menu-expanded)
-           [:div
-            {:on-click (utils/send-event-callback data
-                                                  events/control-menu-collapse
-                                                  {:keypath keypaths/shop-menu-expanded})}
-            [:.fixed.overlay]
-            [:ul.shop-menu-expanded.top-0
-             [:li
-              [:a (shop-now-attrs data) "Hair Extensions"]]
-             [:li
-              [:a
-               (when-let [path (default-stylist-taxon-path data)]
-                 (utils/route-to data events/navigate-category
-                                  {:taxon-path path}))
-               "Stylist Only Products"]]]])])
+        [:li
+         (drop-down
+          data keypaths/shop-menu-expanded
+          [:a "Shop " [:figure.down-arrow]]
+          [:ul.shop-menu-expanded.top-0
+           [:li
+            [:a (shop-now-attrs data) "Hair Extensions"]]
+           [:li
+            [:a
+             (when-let [path (default-stylist-taxon-path data)]
+               (utils/route-to data events/navigate-category
+                               {:taxon-path path}))
+             "Stylist Only Products"]]])])
       [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]])))
 
