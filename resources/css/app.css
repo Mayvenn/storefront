@@ -301,6 +301,7 @@ html { line-height: 1.2; }
 /* Custom background-image */
 
 .img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
+.img-no-chat-icon { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon { background-image: url('/images/icons/coins.png'); }
 
 /* Custom interaction */

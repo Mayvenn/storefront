@@ -96,6 +96,12 @@
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.btn-teal-gradient {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
+(def empty-referrals
+  (html
+   [:.center.p3.to-sm-hide
+    [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
+    [:p.h2.gray.muted "Looks like you haven't" [:br] "referred anyone yet."]]))
+
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
@@ -119,7 +125,9 @@
              data
              events/control-stylist-referrals-fetch
              (get-in data keypaths/stylist-referral-program-page)
-             (get-in data keypaths/stylist-referral-program-pages))])]
+             (get-in data keypaths/stylist-referral-program-pages))])
+         (when (zero? (get-in data keypaths/stylist-referral-program-pages))
+           empty-referrals)]
         [:.sm-col-right.sm-col-4.clearfix
          (when (and referrals (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
