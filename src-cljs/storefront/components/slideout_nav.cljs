@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.accessors.taxons :refer [taxon-path-for default-stylist-taxon-path]]
+            [storefront.accessors.taxons :refer [default-stylist-taxon-path]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.messages :refer [send]]
