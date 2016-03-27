@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.bonus-credit
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
@@ -95,7 +96,10 @@
                 [:br]
                 "why not treat yo self?"]
 
-               [:p.btn.mt1 [:a.teal (utils/route-to data events/navigate-categories) "Shop now " utils/rarr]]])))]
+               [:p.btn.mt1
+                [:a.teal
+                 (apply utils/route-to data (navigation/shop-now-navigation-message data))
+                 "Shop now " utils/rarr]]])))]
 
         [:.sm-col-right.sm-col-4
          (when (pos? lifetime-total)
