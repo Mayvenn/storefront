@@ -15,7 +15,7 @@
   (when-let [credit (get-in app-state keypaths/user-total-available-store-credit)]
     (pos? credit)))
 
-(defn enqueue [app-state event & [args]]
+(defn fake-href [app-state event & [args]]
   {:href "#"
    :on-click (utils/send-event-callback app-state event args)})
 
@@ -28,7 +28,7 @@
 (defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
   [:.relative.z1
    (into [link-tag
-          (enqueue data events/control-menu-expand {:keypath expanded-keypath})]
+          (fake-href data events/control-menu-expand {:keypath expanded-keypath})]
          link-contents)
    (when (get-in data expanded-keypath)
      [:div
@@ -61,7 +61,7 @@
       [:li [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
       [:li [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
       [:li [:a navigate-to-community "Stylist Community"]]
-      [:li [:a (enqueue data events/control-sign-out) "Logout"]]])))
+      [:li [:a (fake-href data events/control-sign-out) "Logout"]]])))
 
 (defn customer-account-menu [data]
   (drop-down
@@ -73,7 +73,7 @@
    [:ul.account-detail-expanded
     [:li [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
     [:li [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]
-    [:li [:a (enqueue data events/control-sign-out) "Logout"]]]))
+    [:li [:a (fake-href data events/control-sign-out) "Logout"]]]))
 
 (defn invasive-primary-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
@@ -101,8 +101,7 @@
           data keypaths/shop-menu-expanded
           [:a "Shop " [:figure.down-arrow]]
           [:ul.shop-menu-expanded.top-0
-           [:li
-            [:a (shop-now-attrs data) "Hair Extensions"]]
+           [:li [:a (shop-now-attrs data) "Hair Extensions"]]
            [:li
             [:a
              (when-let [path (default-stylist-taxon-path data)]
@@ -112,94 +111,63 @@
       [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]])))
 
-(defn slideout-nav-link [behavior {:keys [icon-class label full-width?]}]
-  [:a.slideout-nav-link
-   (merge behavior
-          {:class (if full-width? "full-width" "half-width")})
-   [:div.slideout-nav-link-inner
-    [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
-    label]])
+(defn nav-box
+  ([icon-class label behavior] (nav-box icon-class label behavior {:full-width? false}))
+  ([icon-class label behavior {:keys [full-width?]}]
+   [:a.slideout-nav-link
+    (merge behavior
+           {:class (if full-width? "full-width" "half-width")})
+    [:div.slideout-nav-link-inner
+     [:div.slideout-nav-link-icon {:class (str "icon-" icon-class)}]
+     label]]))
 
-(defn shop-hair-link [data]
-  (slideout-nav-link
-   (shop-now-attrs data)
-   {:icon-class "hair-extensions"
-    :label "Hair Extensions"
-    :full-width? true}))
+(defn shop-hair-box [data]
+  (nav-box "hair-extensions" "Hair Extensions" (shop-now-attrs data) {:full-width? true}))
 
-(defn logout-link [data]
-  (slideout-nav-link
-   (enqueue data events/control-sign-out)
-   {:icon-class "logout"
-    :label "Logout"
-    :full-width? false}))
+(defn logout-box [data]
+  (nav-box "logout" "Logout" (fake-href data events/control-sign-out)))
 
 (defn slideout-stylist-nav [data]
-  (list
-   [:li.slideout-nav-section.stylist
-    [:h3.slideout-nav-section-header.highlight "Manage Store"]
-    (slideout-nav-link (utils/route-to data events/navigate-stylist-dashboard-commissions)
-                       {:icon-class "stylist-dashboard"
-                        :label "Dashboard"
-                        :full-width? false})
-    (slideout-nav-link (utils/route-to data events/navigate-stylist-manage-account)
-                       {:icon-class "edit-profile"
-                        :label "Edit Profile"
-                        :full-width? false})
-    (slideout-nav-link {:href (get-in data keypaths/community-url)
-                        :on-click (utils/send-event-callback data events/external-redirect-community)}
-                       {:icon-class "community"
-                        :label "Stylist Community"
-                        :full-width? true})]
-   [:li.slideout-nav-section
-    [:h3.slideout-nav-section-header "Shop"]
-    (shop-hair-link data)
-    (slideout-nav-link (when-let [path (default-stylist-taxon-path data)]
-                         (utils/route-to data events/navigate-category
-                                         {:taxon-path path}))
-                       {:icon-class "stylist-products"
-                        :label "Stylist Products"
-                        :full-width? true})]
-   [:li.slideout-nav-section
-    [:h3.slideout-nav-section-header "My Account"]
-    (slideout-nav-link (utils/route-to data events/navigate-stylist-manage-account)
-                       {:icon-class "manage-account"
-                        :label "Manage Account"
-                        :full-width? false})
-    (logout-link data)]))
+  (let [navigate-community {:href (get-in data keypaths/community-url)
+                            :on-click (utils/send-event-callback data events/external-redirect-community)}
+        navigate-kits (when-let [path (default-stylist-taxon-path data)]
+                        (utils/route-to data events/navigate-category
+                                        {:taxon-path path}))]
+    (list
+     [:li.slideout-nav-section.stylist
+      [:h3.slideout-nav-section-header.highlight "Manage Store"]
+      (nav-box "stylist-dashboard" "Dashboard" (utils/route-to data events/navigate-stylist-dashboard-commissions))
+      (nav-box "edit-profile" "Edit Profile" (utils/route-to data events/navigate-stylist-manage-account))
+      (nav-box "community" "Stylist Community" navigate-community {:full-width? true})]
+     [:li.slideout-nav-section
+      [:h3.slideout-nav-section-header "Shop"]
+      (shop-hair-box data)
+      (nav-box "stylist-products" "Stylist Products" navigate-kits {:full-width? true})]
+     [:li.slideout-nav-section
+      [:h3.slideout-nav-section-header "My Account"]
+      (nav-box "manage-account" "Manage Account" (utils/route-to data events/navigate-stylist-manage-account))
+      (logout-box data)])))
 
 (defn slideout-customer-nav [data]
   (list
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
-    (shop-hair-link data)]
+    (shop-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
-    (slideout-nav-link (utils/route-to data events/navigate-account-referrals)
-                       {:icon-class "refer-friend"
-                        :label "Refer A Friend"
-                        :full-width? true})
-    (slideout-nav-link (utils/route-to data events/navigate-account-manage)
-                       {:icon-class "manage-account"
-                        :label "Manage Account"
-                        :full-width? false})
-    (logout-link data)]))
+    (nav-box "refer-friend" "Refer A Friend" (utils/route-to data events/navigate-account-referrals) {:full-width? true})
+    (nav-box "manage-account" "Manage Account" (utils/route-to data events/navigate-account-manage))
+    (logout-box data)]))
 
 (defn slideout-guest-nav [data]
   (list
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
-    (shop-hair-link data)]
+    (shop-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
-    (slideout-nav-link (utils/route-to data events/navigate-sign-in)
-                       {:icon-class "sign-in"
-                        :label "Sign In"
-                        :full-width? false})
-    (slideout-nav-link (utils/route-to data events/navigate-sign-up)
-                       {:icon-class "join"
-                        :label "Join"
-                        :full-width? false})]))
+    (nav-box "sign-in" "Sign In" (utils/route-to data events/navigate-sign-in))
+    (nav-box "join" "Join" (utils/route-to data events/navigate-sign-up))]))
 
 (defn slideout-nav-component-really [data owner]
   (om/component
@@ -209,22 +177,15 @@
        [:li.slideout-nav-section
         [:h4.store-credit
          [:span.label "Available store credit:"]
-         [:span.value
-          (as-money (get-in data keypaths/user-total-available-store-credit))]]])
+         [:span.value (as-money (get-in data keypaths/user-total-available-store-credit))]]])
      (cond
        (own-store? data) (slideout-stylist-nav data)
        (logged-in? data) (slideout-customer-nav data)
        :else             (slideout-guest-nav data))
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "Help"]
-      (slideout-nav-link (utils/route-to data events/navigate-help)
-                         {:icon-class "customer-service"
-                          :label "Customer Service"
-                          :full-width? false})
-      (slideout-nav-link (utils/route-to data events/navigate-guarantee)
-                         {:icon-class "30-day-guarantee"
-                          :label "30 Day Guarantee"
-                          :full-width? false})]])))
+      (nav-box "customer-service" "Customer Service" (utils/route-to data events/navigate-help))
+      (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to data events/navigate-guarantee))]])))
 
 (defn slideout-nav-component [data owner]
   (om/component
