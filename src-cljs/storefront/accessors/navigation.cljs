@@ -3,9 +3,11 @@
             [storefront.events :as events]))
 
 (defn shop-now-navigation-message [data]
-  (let [[nav-event nav-args :as previous-navigation-message]
-        (get-in data keypaths/previous-navigation-message)]
-    (if (and (= nav-event events/navigate-category)
-             (not= previous-navigation-message (get-in data keypaths/navigation-message)))
-      previous-navigation-message
+  ;; If the last page was an individual product page, return there.
+  ;; Otherwise go to the categories page.
+  (let [[prev-nav-event _ :as product-page] (get-in data keypaths/previous-navigation-message)
+        current-page (get-in data keypaths/navigation-message)]
+    (if (and (= prev-nav-event events/navigate-category)
+             (not= product-page current-page))
+      product-page
       [events/navigate-categories {}])))
