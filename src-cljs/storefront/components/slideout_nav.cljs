@@ -80,7 +80,7 @@
     [:li [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]
     [:li [:a (fake-href data events/control-sign-out) "Logout"]]]))
 
-(defn invasive-primary-nav-component [data owner]
+(defn invasive-top-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
   ;; WAT 2: It is part of the secondary nav, but overlays primary nav through positioning hacks
   (om/component
@@ -91,23 +91,24 @@
        (logged-in? data) (customer-account-menu data)
        :else             (guest-account-menu data))])))
 
-(defn secondary-and-invasive-primary-nav-component [data owner]
-  ;; WAT: This is invisible on small screens
+(defn stylist-shop-link [data]
+  (drop-down
+   data keypaths/shop-menu-expanded
+   [:a "Shop " [:figure.down-arrow]]
+   [:ul.shop-menu-expanded.top-0
+    [:li [:a (navigate-hair data) "Hair Extensions"]]
+    [:li [:a (navigate-kits data) "Stylist Only Products"]]]))
+
+(defn non-stylist-shop-link [data]
+  [:a (navigate-hair data) "Shop"])
+
+(defn middle-nav-component [data owner]
   (om/component
    (html
-    [:div.horizontal-nav-list
-     (om/build invasive-primary-nav-component data)
+    [:div
      [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
      [:ul.horizontal-nav-menu
-      (if-not (own-store? data)
-        [:li [:a (navigate-hair data) "Shop"]]
-        [:li
-         (drop-down
-          data keypaths/shop-menu-expanded
-          [:a "Shop " [:figure.down-arrow]]
-          [:ul.shop-menu-expanded.top-0
-           [:li [:a (navigate-hair data) "Hair Extensions"]]
-           [:li [:a (navigate-kits data) "Stylist Only Products"]]])])
+      [:li (if (own-store? data) (stylist-shop-link data) (non-stylist-shop-link data))]
       [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
       [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]])))
 
@@ -202,7 +203,10 @@
             [:img.slideout-nav-portrait {:src store-photo}]
             [:div.slideout-nav-portrait.missing-picture])]
          [:h2.slideout-nav-title (store :store_name)]]
-        (om/build secondary-and-invasive-primary-nav-component data)
+        ;; WAT: This is invisible on small screens
+        [:div.horizontal-nav-list
+         (om/build invasive-top-nav-component data)
+         (om/build middle-nav-component data)]
         (when slid-out?
           [:div
            {:on-click (utils/send-event-callback data
