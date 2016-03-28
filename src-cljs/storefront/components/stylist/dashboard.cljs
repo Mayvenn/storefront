@@ -79,7 +79,9 @@
    (html
     [:main {:role "main"}
      [:.legacy-container.sans-serif.black
-      (om/build stylist-dashboard-stats-component data)
+      (om/build stylist-dashboard-stats-component
+                {:stats    (get-in data keypaths/stylist-stats)
+                 :selected (get-in data keypaths/selected-stylist-stat)})
 
       (om/build nav-component (get-in data keypaths/navigation-event))
       (om/build
