@@ -1,5 +1,7 @@
 (ns storefront.tee
-  (:require [cljs.reader :refer [read-string]]))
+  (:require [cljs.reader :refer [read-string]]
+            [storefront.events :as events]
+            [storefront.config :as config]))
 
 (defprotocol IConnection
   (send-command [connection command]
@@ -28,7 +30,7 @@
         connection (->WebSocketConnection socket buffer reconnect-on-disconnect)
         attach-to (fn attach-to [socket]
                     (set! (.-onmessage @socket) (fn [event]
-                                                  (js/console.log event)
+                                                  (js/console.log "event" event)
                                                   (on-message connection event)))
                     (set! (.-onopen @socket)
                           (fn [event]
@@ -38,7 +40,7 @@
                             (swap! buffer empty)
                             (on-open connection event)))
                     (set! (.-onerror @socket) (fn [event]
-                                                (js/console.log event)
+                                                (js/console.error event)
                                                 (on-error connection connection)))
                     (set! (.-onclose @socket)
                           (fn [event]
@@ -55,10 +57,10 @@
   (js/console.log "Tap Response" (pr-str (.-data event))))
 
 (defn create-producer []
-  (open-websocket "ws://localhost:3012" {:on-message log-message}))
+  (open-websocket config/tee-url {:on-message log-message}))
 
 (defn create-listener [room-id handler]
-  (open-websocket "ws://localhost:3013"
+  (open-websocket config/listen-url
                   {:on-open (fn [c _] (send-command c [:join-room room-id]))
                    :on-message (fn [c event]
                                  (let [command (read-string (str (.-data event)))
@@ -68,8 +70,9 @@
                                      (let [[source-cmd storefront-data] body]
                                        (condp = source-cmd
                                          :event (apply handler storefront-data)
-                                         :snapshot (apply handler :sync storefront-data)
-                                         :connect (js/console.log "Source Reconnected"))))))}))
+                                         :snapshot (apply handler events/listener-sync storefront-data)
+                                         :disconnect (js/console.log "Source Disconnected")
+                                         :connect (js/console.log "Source Connected"))))))}))
 
 (defn install-tap [app-state handle-message listener-handle-message]
   (if-let [room-id (last (re-find #"listen=(.*)&?" js/window.location.search))]

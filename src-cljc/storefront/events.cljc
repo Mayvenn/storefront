@@ -297,3 +297,6 @@
 (defpath portrait-component-will-unmount)
 
 (defpath sign-out)
+
+(defpath listener)
+(defpath listener-sync)

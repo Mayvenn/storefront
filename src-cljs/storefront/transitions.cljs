@@ -40,7 +40,7 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(defmethod transition-state :sync [_ _ changes app-state]
+(defmethod transition-state events/listener-sync [_ _ changes app-state]
   (merge app-state changes))
 
 (defn add-return-event [app-state]
