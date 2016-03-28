@@ -17,16 +17,16 @@
             [storefront.utils.query :as query]
             [storefront.utils.sequences :refer [update-vals]]))
 
-(defn display-taxon [data selected-taxon taxon]
+(defn display-taxon [selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)
         selected-class (if (= selected-taxon taxon) "selected" nil)
         taxon-classes (string/join " " (conj [taxon-path] selected-class))]
     [:div.hair-taxon.decorated.small-width {:class taxon-classes}
-     [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
+     [:a.taxon-link (utils/route-to events/navigate-category {:taxon-path taxon-path})
       [:p.hair-taxon-name (:name taxon)]]]))
 
-(defn display-product [data taxon-id product]
-  [:a (utils/route-to data events/navigate-product
+(defn display-product [taxon-id product]
+  [:a (utils/route-to events/navigate-product
                       {:product-path (:slug product)
                        :query-params {:taxon_id taxon-id}})
    [:div.taxon-product-container
@@ -51,7 +51,7 @@
        [:div.taxon-products-container
         (when-not (:stylist_only? taxon)
           [:div.taxon-nav
-           (map (partial display-taxon data taxon)
+           (map (partial display-taxon taxon)
                 (filter-nav-taxons (get-in data keypaths/taxons)))
            [:div {:style {:clear "both"}}]])
         [:div.taxon-products-list-container
@@ -60,7 +60,7 @@
                                                 [(taxon-path-for taxon)])}
                           (get-in data keypaths/api-requests))
              [:.spinner]
-             (map (partial display-product data (:id taxon)) products)))]]
+             (map (partial display-product (:id taxon)) products)))]]
 
        [:div.gold-features
         [:figure.guarantee-feature]
@@ -300,7 +300,7 @@
                     [:div.added-to-bag-container
                      (map (partial display-bagged-variant data) bagged-variants)]
                     [:div.go-to-checkout
-                     [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
+                     [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]))
              [:ul.category-description
               (for [description (category-descriptions taxon)]
                 [:li description])]])]

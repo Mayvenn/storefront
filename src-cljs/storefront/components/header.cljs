@@ -25,16 +25,16 @@
             "Menu"])
          (if getsat-login?
            [:div.logo.comm-login]
-           [:a.logo (utils/route-to data events/navigate-home)])
+           [:a.logo (utils/route-to events/navigate-home)])
          (when-not getsat-login?
            (list
             (let [product-quantity (orders/product-quantity (get-in data keypaths/order))]
               (if (> product-quantity 0)
                 [:a.cart.populated
-                 (utils/route-to data events/navigate-cart)
+                 (utils/route-to events/navigate-cart)
                  product-quantity]
                 [:a.cart
-                 (utils/route-to data events/navigate-cart)]))
+                 (utils/route-to events/navigate-cart)]))
             (when (= (get-in data keypaths/navigation-event) events/navigate-home)
               [:div.stylist-bar
                [:div.stylist-bar-img-container

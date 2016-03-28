@@ -93,7 +93,7 @@
       (cookie-jar/save-pending-promo-code
        (get-in app-state keypaths/cookie)
        pending-promo-code)
-      (routes/enqueue-redirect app-state nav-event (update-in nav-args [:query-params] dissoc :sha)))
+      (routes/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
 
     (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
       (when-not (or
@@ -120,8 +120,7 @@
                     (get-in app-state keypaths/user-token)))
 
 (defn bundle-builder-redirect [app-state product]
-  (routes/enqueue-navigate app-state
-                           events/navigate-category
+  (routes/enqueue-navigate events/navigate-category
                            {:taxon-path (-> product :product_attrs :category first taxon-path-for)}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
@@ -134,11 +133,11 @@
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+    (routes/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+    (routes/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -207,17 +206,17 @@
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
-    (routes/enqueue-redirect app-state events/navigate-cart)
+    (routes/enqueue-redirect events/navigate-cart)
 
     (and (experiments/guest-checkout? app-state)
          (not (get-in app-state keypaths/user-token))
          (not= event events/navigate-checkout-sign-in)
          (not (get-in app-state keypaths/checkout-as-guest)))
-    (routes/enqueue-redirect app-state events/navigate-checkout-sign-in)
+    (routes/enqueue-redirect events/navigate-checkout-sign-in)
 
     (and (not (experiments/guest-checkout? app-state))
          (not (get-in app-state keypaths/user-token)))
-    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+    (routes/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
@@ -234,7 +233,7 @@
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
   (when paypal
-    (routes/enqueue-redirect app-state events/navigate-order-complete {:number number}))
+    (routes/enqueue-redirect events/navigate-order-complete {:number number}))
   (when (and number order-token)
     (api/get-completed-order number order-token)))
 
@@ -249,7 +248,6 @@
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
-         app-state
          (get-in app-state keypaths/return-navigation-message)))
 
 (defn redirect-when-signed-in [app-state]
@@ -264,7 +262,7 @@
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-sign-in-getsat [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect app-state events/navigate-sign-in)))
+    (routes/enqueue-redirect events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -331,7 +329,7 @@
                   {:message "Logged out successfully"
                    :navigation [events/navigate-home {}]})
   (abort-pending-requests (get-in app-state keypaths/api-requests))
-  (routes/enqueue-navigate app-state events/navigate-home))
+  (routes/enqueue-navigate events/navigate-home))
 
 (defn api-add-to-bag [app-state product variant]
   (api/add-to-bag
@@ -426,7 +424,7 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
-  (routes/enqueue-navigate app-state events/navigate-checkout-address))
+  (routes/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
   (let [order (get-in app-state keypaths/order)]
@@ -559,7 +557,7 @@
                    :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
-  (routes/enqueue-navigate app-state events/navigate-home)
+  (routes/enqueue-navigate events/navigate-home)
   (handle-message events/flash-show-success
                   {:message "You will receive an email with instructions on how to reset your password in a few minutes."
                    :navigation [events/navigate-home {}]}))
@@ -577,7 +575,7 @@
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state)
-  (routes/enqueue-navigate app-state events/navigate-home)
+  (routes/enqueue-navigate events/navigate-home)
   (handle-message events/flash-show-success
                   {:message "Account updated"
                    :navigation [events/navigate-home {}]}))
@@ -649,7 +647,7 @@
   (when event
     (handle-message event {:order order}))
   (when navigate
-    (routes/enqueue-navigate app-state navigate {:number (:number order)})))
+    (routes/enqueue-navigate navigate {:number (:number order)})))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
   (handle-message events/flash-show-failure

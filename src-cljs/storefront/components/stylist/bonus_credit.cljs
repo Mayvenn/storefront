@@ -97,7 +97,7 @@
 
                [:p.btn.mt1
                 [:a.teal
-                 (apply utils/route-to data (navigation/shop-now-navigation-message data))
+                 (apply utils/route-to (navigation/shop-now-navigation-message data))
                  "Shop now " utils/rarr]]])))]
 
         [:.sm-col-right.sm-col-4

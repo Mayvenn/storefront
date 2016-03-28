@@ -1,6 +1,5 @@
 (ns storefront.keypaths)
 
-(def history [:history])
 (def cookie [:cookie])
 
 (def optimizely [:optimizely])

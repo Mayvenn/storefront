@@ -8,13 +8,12 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn category [data taxon index]
+(defn category [taxon index]
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
     [:a.hair-category-container
      (merge
-      (utils/route-to data
-                      events/navigate-category
+      (utils/route-to events/navigate-category
                       {:taxon-path taxon-path})
       (when (> index 5)
         {:class "extra-wide"}))
@@ -31,7 +30,7 @@
        [:.category-header-sub "Mayvenn hair is available in six" [:br] "different styles for every occasion"]]]
      [:div
       [:div.category-list
-       (map (partial category data)
+       (map category
             (filter-nav-taxons (get-in data keypaths/taxons))
             (range))
        [:div {:style {:clear "both"}}]]]])))

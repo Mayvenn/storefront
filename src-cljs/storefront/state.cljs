@@ -37,8 +37,7 @@
 
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
-    {:history nil
-     :cookie cookie
+    {:cookie cookie
      :optimizely {:variations #{}}
 
      :session-id (cookie-jar/force-session-id cookie)

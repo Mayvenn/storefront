@@ -22,11 +22,11 @@
   (boolean (get-in data keypaths/user-email)))
 
 (defn navigate-hair [data]
-  (apply utils/route-to data (navigation/shop-now-navigation-message data)))
+  (apply utils/route-to (navigation/shop-now-navigation-message data)))
 
 (defn navigate-kits [data]
   (when-let [path (default-stylist-taxon-path data)]
-    (utils/route-to data events/navigate-category
+    (utils/route-to events/navigate-category
                     {:taxon-path path})))
 
 (defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
@@ -46,11 +46,11 @@
      "Store credit:"
      [:span.store-credit-amount (as-money (get-in data keypaths/user-total-available-store-credit))]]))
 
-(defn guest-account-menu [data]
+(def guest-account-menu
   [:span
-   [:a (utils/route-to data events/navigate-sign-in) "Sign In"]
+   [:a (utils/route-to events/navigate-sign-in) "Sign In"]
    " | "
-   [:a (utils/route-to data events/navigate-sign-up) "Sign Up"]])
+   [:a (utils/route-to events/navigate-sign-up) "Sign Up"]])
 
 (defn stylist-account-menu [data]
   (let [navigate-to-community {:href (get-in data keypaths/community-url)
@@ -62,10 +62,10 @@
       [:span.account-detail-name [:span.stylist-user-label "Stylist:"] (get-in data keypaths/user-email)]
       [:figure.down-arrow]]
      [:ul.account-detail-expanded
-      [:li [:a (utils/route-to data events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-      [:li [:a (utils/route-to data events/navigate-stylist-manage-account) "Manage Account"]]
+      [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+      [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
       [:li [:a navigate-to-community "Stylist Community"]]
-      [:li [:a (fake-href data events/control-sign-out) "Logout"]]])))
+      [:li [:a (fake-href events/control-sign-out) "Logout"]]])))
 
 (defn customer-account-menu [data]
   (drop-down
@@ -75,9 +75,9 @@
     [:span.account-detail-name (get-in data keypaths/user-email)]
     [:figure.down-arrow]]
    [:ul.account-detail-expanded
-    [:li [:a (utils/route-to data events/navigate-account-referrals) "Refer A Friend"]]
-    [:li [:a (utils/route-to data events/navigate-account-manage) "Manage Account"]]
-    [:li [:a (fake-href data events/control-sign-out) "Logout"]]]))
+    [:li [:a (utils/route-to events/navigate-account-referrals) "Refer A Friend"]]
+    [:li [:a (utils/route-to events/navigate-account-manage) "Manage Account"]]
+    [:li [:a (fake-href events/control-sign-out) "Logout"]]]))
 
 (defn invasive-top-nav-component [data owner]
   ;; WAT 1: This is within the slideout nav, but is invisible on small screens
@@ -88,7 +88,7 @@
      (cond
        (own-store? data) (stylist-account-menu data)
        (logged-in? data) (customer-account-menu data)
-       :else             (guest-account-menu data))])))
+       :else             guest-account-menu)])))
 
 (defn stylist-shop-link [data]
   (drop-down
@@ -108,8 +108,8 @@
      [:h2.horizontal-nav-title (:store_name (get-in data keypaths/store))]
      [:ul.horizontal-nav-menu
       [:li (if (own-store? data) (stylist-shop-link data) (non-stylist-shop-link data))]
-      [:li [:a (utils/route-to data events/navigate-guarantee) "30 Day Guarantee"]]
-      [:li [:a (utils/route-to data events/navigate-help) "Customer Service"]]]])))
+      [:li [:a (utils/route-to events/navigate-guarantee) "30 Day Guarantee"]]
+      [:li [:a (utils/route-to events/navigate-help) "Customer Service"]]]])))
 
 (defn nav-box
   ([icon-class label behavior] (nav-box icon-class label behavior {:full-width? false}))
@@ -124,8 +124,8 @@
 (defn nav-hair-box [data]
   (nav-box "hair-extensions" "Hair Extensions" (navigate-hair data) {:full-width? true}))
 
-(defn logout-box [data]
-  (nav-box "logout" "Logout" (fake-href data events/control-sign-out)))
+(defn logout-box []
+  (nav-box "logout" "Logout" (fake-href events/control-sign-out)))
 
 (defn slideout-stylist-nav [data]
   (let [navigate-community {:href (get-in data keypaths/community-url)
@@ -133,8 +133,8 @@
     (list
      [:li.slideout-nav-section.stylist
       [:h3.slideout-nav-section-header.highlight "Manage Store"]
-      (nav-box "stylist-dashboard" "Dashboard" (utils/route-to data events/navigate-stylist-dashboard-commissions))
-      (nav-box "edit-profile" "Edit Profile" (utils/route-to data events/navigate-stylist-manage-account))
+      (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
+      (nav-box "edit-profile" "Edit Profile" (utils/route-to events/navigate-stylist-manage-account))
       (nav-box "community" "Stylist Community" navigate-community {:full-width? true})]
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "Shop"]
@@ -142,8 +142,8 @@
       (nav-box "stylist-products" "Stylist Products" (navigate-kits data) {:full-width? true})]
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "My Account"]
-      (nav-box "manage-account" "Manage Account" (utils/route-to data events/navigate-stylist-manage-account))
-      (logout-box data)])))
+      (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-stylist-manage-account))
+      (logout-box)])))
 
 (defn slideout-customer-nav [data]
   (list
@@ -152,9 +152,9 @@
     (nav-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
-    (nav-box "refer-friend" "Refer A Friend" (utils/route-to data events/navigate-account-referrals) {:full-width? true})
-    (nav-box "manage-account" "Manage Account" (utils/route-to data events/navigate-account-manage))
-    (logout-box data)]))
+    (nav-box "refer-friend" "Refer A Friend" (utils/route-to events/navigate-account-referrals) {:full-width? true})
+    (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-account-manage))
+    (logout-box)]))
 
 (defn slideout-guest-nav [data]
   (list
@@ -163,8 +163,8 @@
     (nav-hair-box data)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
-    (nav-box "sign-in" "Sign In" (utils/route-to data events/navigate-sign-in))
-    (nav-box "join" "Join" (utils/route-to data events/navigate-sign-up))]))
+    (nav-box "sign-in" "Sign In" (utils/route-to events/navigate-sign-in))
+    (nav-box "join" "Join" (utils/route-to events/navigate-sign-up))]))
 
 (defn slideout-nav-component-really [data owner]
   (om/component
@@ -181,8 +181,8 @@
        :else             (slideout-guest-nav data))
      [:li.slideout-nav-section
       [:h3.slideout-nav-section-header "Help"]
-      (nav-box "customer-service" "Customer Service" (utils/route-to data events/navigate-help))
-      (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to data events/navigate-guarantee))]])))
+      (nav-box "customer-service" "Customer Service" (utils/route-to events/navigate-help))
+      (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to events/navigate-guarantee))]])))
 
 (defn slideout-nav-component [data owner]
   (om/component

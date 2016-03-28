@@ -13,7 +13,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (apply utils/route-to data (navigation/shop-now-navigation-message data)))
+  (apply utils/route-to (navigation/shop-now-navigation-message data)))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]

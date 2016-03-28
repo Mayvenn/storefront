@@ -45,12 +45,12 @@
                 {:type "checkbox"
                  :name "remember-me"})]
         [:label {:for "remember-me"} "Remember me"]]
-       [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
+       [:a.forgot-password (utils/route-to events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]
      [:p.center "Don't have an account? "
-      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]])))
+      [:a (utils/route-to events/navigate-sign-up) "Register Here"]]])))
 
 (defn requires-sign-in-or-guest [app-state authorized-component]
   (if (or (get-in app-state keypaths/user-id)

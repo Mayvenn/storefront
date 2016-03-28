@@ -44,4 +44,4 @@
          [:input.button.primary {:type "submit"
                                  :value "Create"}]]]]
       [:p.center "Already have an account? "
-       [:a (utils/route-to data events/navigate-sign-in) "Log In"]]]])))
+       [:a (utils/route-to events/navigate-sign-in) "Log In"]]]])))

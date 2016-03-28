@@ -14,21 +14,22 @@
 (def nav-events [events/navigate-stylist-dashboard-bonus-credit events/navigate-stylist-dashboard-commissions events/navigate-stylist-dashboard-referrals])
 (def labels ["Bonuses" "Commissions" "Referrals"])
 
-(defn tab-link [data event ref label]
+(defn tab-link [event ref label]
   [:a.black.center.px3.pt2
-   (utils/route-to data event)
+   (utils/route-to event)
    [:.py1 {:ref ref
                :data-test (str "nav-" ref)}
     label]])
 
-(defn sliding-indicator [data tab-bounds]
-  (let [navigation-state     (get-in data keypaths/navigation-event)
-        tab-position         (utils/position #(= % navigation-state) nav-events)
-        {:keys [left width]} (get tab-bounds tab-position)]
-    [:div.border-teal.border.absolute.transition-ease-in.transition-1
-     {:style {:margin-top "-2px"
-              :left       (str left "px")
-              :width      (str width "px")}}]))
+(defn sliding-indicator [{:keys [navigation-state tab-bounds]}]
+  (om/component
+   (html
+    (let [tab-position         (utils/position #(= % navigation-state) nav-events)
+          {:keys [left width]} (get tab-bounds tab-position)]
+      [:div.border-teal.border.absolute.transition-ease-in.transition-1
+       {:style {:margin-top "-2px"
+                :left       (str left "px")
+                :width      (str width "px")}}]))))
 
 (defn get-node
   "A backport of om/get-node, which returns nil instead of raising error when
@@ -46,7 +47,7 @@
        :width (.-width rect)})
     {:left 0 :width 0}))
 
-(defn nav-component [data owner]
+(defn nav-component [nav-state owner]
   (letfn [(tab-bounds []
             (let [{parent-left :left} (get-x-dimension (get-node owner "tabs"))]
               (vec (for [tab-ref tab-refs]
@@ -69,8 +70,9 @@
          [:nav.bg-white.sticky.z1.top-0 {:ref "tabs"}
           [:div.flex.justify-center
            (for [[event ref label] (map vector nav-events tab-refs labels)]
-             (tab-link data event ref label))]
-          (sliding-indicator data tab-bounds)])))))
+             (tab-link event ref label))]
+          (om/build sliding-indicator {:navigation-state nav-state
+                                       :tab-bounds       tab-bounds})])))))
 
 (defn stylist-dashboard-component [data owner]
   (om/component
@@ -79,7 +81,7 @@
      [:.legacy-container.sans-serif.black
       (om/build stylist-dashboard-stats-component data)
 
-      (om/build nav-component data)
+      (om/build nav-component (get-in data keypaths/navigation-event))
       (om/build
        (condp = (get-in data keypaths/navigation-event)
          events/navigate-stylist-dashboard-commissions  stylist-commissions-component

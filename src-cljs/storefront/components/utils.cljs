@@ -12,12 +12,12 @@
     (handle-message event args)
     nil))
 
-(defn route-to [app-state navigation-event & [args]]
+(defn route-to [navigation-event & [args]]
   {:href (routes/path-for navigation-event args)
    :on-click
    (fn [e]
      (.preventDefault e)
-     (routes/enqueue-navigate @app-state navigation-event args))})
+     (routes/enqueue-navigate navigation-event args))})
 
 (defn change-text [app-state owner keypath]
   {:value (get-in app-state keypath)
