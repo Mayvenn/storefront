@@ -57,14 +57,14 @@
 
 (defn main [app-state]
   (set! messages/handle-message (partial handle-message app-state))
-  (routes/install-routes app-state)
+  (routes/install-routes)
   (om/root
    top-level-component
    app-state
    {:target (.getElementById js/document "content")})
 
   (handle-message app-state events/app-start)
-  (routes/set-current-page @app-state))
+  (routes/set-current-page))
 
 (defonce app-state (atom (state/initial-state)))
 

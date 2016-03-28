@@ -13,7 +13,7 @@
     nil))
 
 (defn route-to [app-state navigation-event & [args]]
-  {:href (routes/path-for @app-state navigation-event args)
+  {:href (routes/path-for navigation-event args)
    :on-click
    (fn [e]
      (.preventDefault e)

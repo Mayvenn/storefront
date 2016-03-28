@@ -33,42 +33,7 @@
 (defn bidi->edn [value]
   (read-string (name value)))
 
-(defn set-current-page [app-state]
-  (let [uri (.getToken (get-in app-state keypaths/history))
-
-        {nav-event :handler params :route-params}
-        (bidi/match-route (get-in app-state keypaths/routes) uri)
-
-        query-params (:query (url js/location.href))]
-    (handle-message (if nav-event (bidi->edn nav-event) events/navigate-not-found)
-                    (-> params
-                        (merge (when query-params {:query-params query-params}))
-                        keywordize-keys))))
-
-(defn history-callback [app-state]
-  (fn [e]
-    (set-current-page @app-state)))
-
-;; Html5History transformer defaults to always appending location.search
-;; to any token we give it.
-;;
-;; This allows us to override it to never append location.search
-(def non-search-preserving-history-transformer
-  (let [opts #js {}]
-    (set! (.-createUrl opts) (fn [pathPrefix location]
-                               (str pathPrefix)))
-    (set! (.-retrieveToken opts) (fn [pathPrefix location]
-                                   (.-pathname location)))
-    opts))
-
-(defn make-history [callback]
-  (doto (Html5History. nil non-search-preserving-history-transformer)
-    (.setUseFragment false)
-    (.setPathPrefix "")
-    (.setEnabled true)
-    (goog.events/listen EventType/NAVIGATE callback)))
-
-(defn routes []
+(def app-routes
   ["" {"/" (edn->bidi events/navigate-home)
        "/categories" (edn->bidi events/navigate-categories)
        ["/categories/hair/" :taxon-path] (edn->bidi events/navigate-category)
@@ -98,13 +63,40 @@
        ["/orders/" :number "/complete"] (edn->bidi events/navigate-order-complete)}
    true (edn->bidi events/navigate-not-found)])
 
-(defn install-routes [app-state]
-  (let [history (or (get-in @app-state keypaths/history)
-                    (make-history (history-callback app-state)))]
-    (swap! app-state
-           merge
-           {:routes (routes)
-            :history history})))
+;; Html5History transformer defaults to always appending location.search
+;; to any token we give it.
+;;
+;; This allows us to override it to never append location.search
+(def non-search-preserving-history-transformer
+  (let [opts #js {}]
+    (set! (.-createUrl opts) (fn [pathPrefix location]
+                               (str pathPrefix)))
+    (set! (.-retrieveToken opts) (fn [pathPrefix location]
+                                   (.-pathname location)))
+    opts))
+
+(defn make-history [callback]
+  (doto (Html5History. nil non-search-preserving-history-transformer)
+    (.setUseFragment false)
+    (.setPathPrefix "")
+    (.setEnabled true)
+    (goog.events/listen EventType/NAVIGATE (fn [e] (callback)))))
+
+(def app-history)
+
+(defn set-current-page []
+  (let [uri (.getToken app-history)
+        {nav-event :handler params :route-params}
+        (bidi/match-route app-routes uri)
+
+        query-params (:query (url js/location.href))]
+    (handle-message (if nav-event (bidi->edn nav-event) events/navigate-not-found)
+                    (-> params
+                        (merge (when query-params {:query-params query-params}))
+                        keywordize-keys))))
+
+(defn install-routes []
+  (set! app-history (make-history set-current-page)))
 
 (defn set-query-string [s query-params]
   (-> (Uri.parse s)
@@ -113,11 +105,11 @@
                                    {})))
       .toString))
 
-(defn path-for [app-state navigation-event & [args]]
+(defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
     (-> (apply bidi/path-for
-               (get-in app-state keypaths/routes)
+               app-routes
                (edn->bidi navigation-event)
                (apply concat (seq args)))
         (set-query-string query-params))))
@@ -125,16 +117,16 @@
 (defn enqueue-redirect [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
-    (.replaceToken (get-in app-state keypaths/history)
-                   (-> (path-for app-state navigation-event args)
+    (.replaceToken app-history
+                   (-> (path-for navigation-event args)
                        (set-query-string query-params)))))
 
 (defn enqueue-navigate [app-state navigation-event & [args]]
   (let [query-params (:query-params args)
         args (dissoc args :query-params)]
-    (.setToken (get-in app-state keypaths/history)
-               (-> (path-for app-state navigation-event args)
+    (.setToken app-history
+               (-> (path-for navigation-event args)
                    (set-query-string query-params)))))
 
 (defn current-path [app-state]
-  (apply path-for app-state (get-in app-state keypaths/navigation-message)))
+  (apply path-for (get-in app-state keypaths/navigation-message)))

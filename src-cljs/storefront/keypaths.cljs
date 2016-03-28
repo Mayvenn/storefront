@@ -2,7 +2,6 @@
 
 (def history [:history])
 (def cookie [:cookie])
-(def routes [:routes])
 
 (def optimizely [:optimizely])
 (def optimizely-variations [:optimizely :variations])
