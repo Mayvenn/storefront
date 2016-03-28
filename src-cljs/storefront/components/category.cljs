@@ -229,6 +229,7 @@
   (case (:name taxon)
     "closures"
     '("100% Human Virgin Hair"
+      "4\" x 4\" size"
       "Silk and Lace Materials"
       "Colors: 1B and #613 Blonde"
       "14\" and 18\" Length Bundles"
