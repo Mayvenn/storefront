@@ -1,7 +1,6 @@
 (ns storefront.components.carousel
   (:require [storefront.events :as events]
             [storefront.components.utils :as utils]
-            [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]

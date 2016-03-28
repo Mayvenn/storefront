@@ -2,7 +2,7 @@
   (:require [bidi.bidi :as bidi]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [handle-message]]
             [cljs.reader :refer [read-string]]
             [clojure.walk :refer [keywordize-keys]]
             [goog.events]
@@ -40,11 +40,10 @@
         (bidi/match-route (get-in app-state keypaths/routes) uri)
 
         query-params (:query (url js/location.href))]
-    (send app-state
-          (if nav-event (bidi->edn nav-event) events/navigate-not-found)
-          (-> params
-              (merge (when query-params {:query-params query-params}))
-              keywordize-keys))))
+    (handle-message (if nav-event (bidi->edn nav-event) events/navigate-not-found)
+                    (-> params
+                        (merge (when query-params {:query-params query-params}))
+                        keywordize-keys))))
 
 (defn history-callback [app-state]
   (fn [e]

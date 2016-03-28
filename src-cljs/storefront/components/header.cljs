@@ -4,7 +4,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
-            [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]))
 

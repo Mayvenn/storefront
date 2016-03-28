@@ -109,7 +109,7 @@
             [:span#filename "Change photo"]
 
             [:input.file-picker#mayvenn_stylist_profile_picture
-             (merge (utils/change-file data events/control-stylist-profile-picture)
+             (merge (utils/change-file events/control-stylist-profile-picture)
                     {:name "mayvenn_stylist[profile_picture]" :type "file"})]]]
 
           (input-field data owner [:user :email] :field-type "email")

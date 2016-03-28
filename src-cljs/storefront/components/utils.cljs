@@ -2,14 +2,15 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [send]]))
+            [storefront.messages :refer [handle-message]]))
 
 (defn noop-callback [e] (.preventDefault e))
 
-(defn send-event-callback [app-state event & [args]]
+;; TODO: handle-message remove arg
+(defn send-event-callback [_ event & [args]]
   (fn [e]
     (.preventDefault e)
-    (send app-state event args)
+    (handle-message event args)
     nil))
 
 (defn route-to [app-state navigation-event & [args]]
@@ -23,9 +24,9 @@
   {:value (get-in app-state keypath)
    :on-change
    (fn [e]
-     (send app-state
-           events/control-change-state {:keypath keypath
-                                        :value (.. e -target -value)}))})
+     (handle-message events/control-change-state
+                     {:keypath keypath
+                      :value (.. e -target -value)}))})
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
@@ -33,9 +34,9 @@
      :value checked-val
      :on-change
      (fn [e]
-       (send app-state
-             events/control-change-state {:keypath keypath
-                                          :value (.. e -target -checked)}))}))
+       (handle-message events/control-change-state
+                       {:keypath keypath
+                        :value (.. e -target -checked)}))}))
 
 (defn change-radio [app-state keypath value]
   (let [keypath-val (get-in app-state keypath)
@@ -43,14 +44,16 @@
     {:checked checked-val
      :on-change
      (fn [e]
-       (send app-state
-             events/control-change-state {:keypath keypath
-                                          :value value}))}))
-(defn change-file [app-state event]
+       (handle-message events/control-change-state
+                       {:keypath keypath
+                        :value value}))}))
+
+(defn change-file [event]
   {:on-change (fn [e]
-                (send app-state event {:file (-> (.. e -target -files)
-                                                 array-seq
-                                                 first)}))})
+                (handle-message event
+                                {:file (-> (.. e -target -files)
+                                           array-seq
+                                           first)}))})
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])

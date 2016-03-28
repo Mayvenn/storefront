@@ -8,7 +8,6 @@
             [storefront.accessors.taxons :refer [default-stylist-taxon-path]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
-            [storefront.messages :refer [send]]
             [storefront.components.formatters :refer [as-money]]))
 
 (defn show-store-credit? [app-state]

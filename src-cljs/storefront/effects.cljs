@@ -25,7 +25,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [send send-later]]
+            [storefront.messages :refer [handle-message handle-later]]
             [storefront.routes :as routes]
             [storefront.utils.query :as query]))
 
@@ -58,7 +58,7 @@
   (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
-  (talkable/insert app-state)
+  (talkable/insert)
   (api/get-store (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug)))
 
@@ -99,14 +99,12 @@
       (when-not (or
                  (empty? (get-in app-state keypaths/flash-success-nav))
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
-        (send app-state
-              events/flash-dismiss-success)))
+        (handle-message events/flash-dismiss-success)))
     (let [[flash-event flash-args] (get-in app-state keypaths/flash-failure-nav)]
       (when-not (or
                  (empty? (get-in app-state keypaths/flash-failure-nav))
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
-        (send app-state
-              events/flash-dismiss-failure)))
+        (handle-message events/flash-dismiss-failure)))
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (let [path (routes/current-path app-state)]
@@ -116,7 +114,7 @@
         (exception-handler/refresh)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (reviews/insert-reviews app-state)
+  (reviews/insert-reviews)
   (api/get-products (get-in app-state keypaths/api-cache)
                     taxon-path
                     (get-in app-state keypaths/user-token)))
@@ -128,7 +126,7 @@
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product product-path)
-  (reviews/insert-reviews app-state)
+  (reviews/insert-reviews)
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))]
     (when (and product (bundle-builder/included-product? product))
@@ -153,7 +151,7 @@
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
   (api/get-shipping-methods)
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
-    (send app-state events/control-stylist-commissions-fetch)))
+    (handle-message events/control-stylist-commissions-fetch)))
 
 (defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -174,7 +172,7 @@
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
   (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
-    (send app-state events/control-stylist-bonuses-fetch)))
+    (handle-message events/control-stylist-bonuses-fetch)))
 
 (defmethod perform-effects events/control-stylist-bonuses-fetch [_ event args app-state]
   (let [user-token (get-in app-state keypaths/user-token)
@@ -185,7 +183,7 @@
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
   (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
-    (send app-state events/control-stylist-referrals-fetch)))
+    (handle-message events/control-stylist-referrals-fetch)))
 
 (defmethod perform-effects events/control-stylist-referrals-fetch [_ event args app-state]
   (let [user-token (get-in app-state keypaths/user-token)
@@ -202,10 +200,9 @@
   (refresh-current-order app-state)
   (api/get-shipping-methods)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
-    (send app-state
-          events/flash-show-failure
-          {:message error-msg
-           :navigation (get-in app-state keypaths/navigation-message)})))
+    (handle-message events/flash-show-failure
+                    {:message error-msg
+                     :navigation (get-in app-state keypaths/navigation-message)})))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
@@ -223,17 +220,17 @@
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
-  (facebook/insert app-state))
+  (facebook/insert))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (places-autocomplete/insert-places-autocomplete app-state)
+  (places-autocomplete/insert-places-autocomplete)
   (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
   (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (stripe/insert app-state))
+  (stripe/insert))
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
   (when paypal
@@ -248,7 +245,7 @@
   (talkable/show-referrals app-state))
 
 (defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
-  (send app-state events/order-completed order))
+  (handle-message events/order-completed order))
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
@@ -257,31 +254,31 @@
 
 (defn redirect-when-signed-in [app-state]
   (when (get-in app-state keypaths/user-email)
-    (send app-state
-          events/flash-show-success {:message "You are already signed in."
-                                     :navigation (get-in app-state keypaths/return-navigation-message)})
+    (handle-message events/flash-show-success
+                    {:message "You are already signed in."
+                     :navigation (get-in app-state keypaths/return-navigation-message)})
     (redirect-to-return-navigation app-state)))
 
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
-  (facebook/insert app-state)
+  (facebook/insert)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-sign-in-getsat [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect app-state events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
-  (facebook/insert app-state)
+  (facebook/insert)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-forgot-password [_ event args app-state]
-  (facebook/insert app-state)
+  (facebook/insert)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-reset-password [_ event args app-state]
-  (facebook/insert app-state)
+  (facebook/insert)
   (redirect-when-signed-in app-state))
 
 (defmethod perform-effects events/navigate-not-found [_ event args app-state]
-  (send app-state
-        events/flash-show-failure {:message "The page you were looking for could not be found."
-                                   :navigation [event args]}))
+  (handle-message events/flash-show-failure
+                  {:message "The page you were looking for could not be found."
+                   :navigation [event args]}))
 
 (defmethod perform-effects events/control-menu-expand
   [_ event {keypath :keypath} app-state]
@@ -316,25 +313,23 @@
                         (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/facebook-failure-sign-in [_ _ args app-state]
-  (send app-state
-        events/flash-show-failure
-        {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/facebook-email-denied [_ _ args app-state]
-  (send app-state
-        events/flash-show-failure
-        {:message "We need your Facebook email address to communicate with you about your orders. Please try again."
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
-  (send app-state
-        events/flash-show-success {:message "Logged out successfully"
-                                   :navigation [events/navigate-home {}]})
+  (handle-message events/flash-show-success
+                  {:message "Logged out successfully"
+                   :navigation [events/navigate-home {}]})
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate app-state events/navigate-home))
 
@@ -374,9 +369,9 @@
 
 (defmethod perform-effects events/control-reset-password-submit [_ event args app-state]
   (if (empty? (get-in app-state keypaths/reset-password-password))
-    (send app-state
-          events/flash-show-failure {:message "Your password cannot be blank."
-                                     :navigation (get-in app-state keypaths/navigation-message)})
+    (handle-message events/flash-show-failure
+                    {:message "Your password cannot be blank."
+                     :navigation (get-in app-state keypaths/navigation-message)})
     (api/reset-password (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-password-confirmation)
                         (get-in app-state keypaths/reset-password-token))))
@@ -501,13 +496,12 @@
     :navigate events/navigate-checkout-confirmation}))
 
 (defmethod perform-effects events/stripe-failure-create-token [_ _ stripe-response app-state]
-  (send app-state
-        events/flash-show-failure
-        {:message (get-in stripe-response [:error :message])
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message (get-in stripe-response [:error :message])
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
-  (send app-state events/flash-dismiss-failure)
+  (handle-message events/flash-dismiss-failure)
   (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))
         covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
@@ -548,9 +542,9 @@
     ;; Try to fetch latest cart order
     (refresh-current-order app-state))
   (redirect-to-return-navigation app-state)
-  (send app-state
-        events/flash-show-success {:message "Logged in successfully"
-                                   :navigation [events/navigate-home {}]}))
+  (handle-message events/flash-show-success
+                  {:message "Logged in successfully"
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state)
@@ -560,42 +554,41 @@
                            (get-in app-state keypaths/user-token)
                            (get-in app-state keypaths/user-id)))
   (redirect-to-return-navigation app-state)
-  (send app-state
-        events/flash-show-success {:message "Welcome! You have signed up successfully."
-                                   :navigation [events/navigate-home {}]}))
+  (handle-message events/flash-show-success
+                  {:message "Welcome! You have signed up successfully."
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate app-state events/navigate-home)
-  (send app-state
-        events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."
-                                   :navigation [events/navigate-home {}]}))
+  (handle-message events/flash-show-success
+                  {:message "You will receive an email with instructions on how to reset your password in a few minutes."
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-reset-password [_ event args app-state]
   (save-cookie app-state)
   (redirect-to-return-navigation app-state)
-  (send app-state
-        events/flash-show-success {:message "Your password was changed successfully. You are now signed in."
-                                   :navigation [events/navigate-home {}]}))
+  (handle-message events/flash-show-success
+                  {:message "Your password was changed successfully. You are now signed in."
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
   (when community-url
-    (fastpass/insert-fastpass app-state community-url)))
+    (fastpass/insert-fastpass community-url)))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state)
   (routes/enqueue-navigate app-state events/navigate-home)
-  (send app-state
-        events/flash-show-success {:message "Account updated"
-                                   :navigation [events/navigate-home {}]}))
+  (handle-message events/flash-show-success
+                  {:message "Account updated"
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
   (save-cookie app-state)
   (when (:updated args)
-    (send app-state
-          events/flash-show-success {:message "Account updated"
-                                     :navigation [events/navigate-stylist-manage-account {}]})
-    (send app-state
-          events/flash-dismiss-failure)))
+    (handle-message events/flash-show-success
+                    {:message "Account updated"
+                     :navigation [events/navigate-stylist-manage-account {}]})
+    (handle-message events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
   (if (and (bundle-builder/included-product? product)
@@ -614,9 +607,8 @@
         (when-let [variant (if-let [variants (seq (-> product :variants))]
                              (or (->> variants (filter :can_supply?) first) (first variants))
                              (:master product))]
-          (send app-state
-                events/control-browse-variant-select
-                {:variant variant}))))))
+          (handle-message events/control-browse-variant-select
+                          {:variant variant}))))))
 
 (defmethod perform-effects events/api-success-store [_ event order app-state]
   (refresh-account app-state)
@@ -637,7 +629,7 @@
     (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
-  (send app-state events/order-completed order))
+  (handle-message events/order-completed order))
 
 (defmethod perform-effects events/order-completed [_ event order app-state]
   (when (stylists/own-store? app-state)
@@ -655,32 +647,29 @@
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state)
   (when event
-    (send app-state event {:order order}))
+    (handle-message event {:order order}))
   (when navigate
     (routes/enqueue-navigate app-state navigate {:number (:number order)})))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
-  (send app-state
-        events/flash-show-failure
-        {:message "Something went wrong. Please refresh and try again or contact customer service."
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message "Something went wrong. Please refresh and try again or contact customer service."
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/api-failure-bad-server-response [_ event response app-state]
-  (send app-state
-        events/flash-show-failure
-        {:message "Uh oh, an error occurred. Reload the page and try again."
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message "Uh oh, an error occurred. Reload the page and try again."
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/flash-show [_ event args app-state]
   (scroll/scroll-to-top))
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
-  (send app-state events/flash-dismiss-success)
+  (handle-message events/flash-dismiss-success)
   (scroll/scroll-to-top)
-  (send app-state
-        events/flash-show-failure
-        {:message (:error-message validation-errors)
-         :navigation (get-in app-state keypaths/navigation-message)}))
+  (handle-message events/flash-show-failure
+                  {:message (:error-message validation-errors)
+                   :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
@@ -696,15 +685,14 @@
               previous-variants (products/filter-variants-by-selections
                                  previous-options
                                  all-variants)]
-          (send app-state
-                events/control-bundle-option-select
-                {:step-name step
-                 :selected-options previous-options
-                 :selected-variants previous-variants}))))
+          (handle-message events/control-bundle-option-select
+                          {:step-name step
+                           :selected-options previous-options
+                           :selected-variants previous-variants}))))
     (when (stylists/own-store? app-state)
       (experiments/set-dimension "stylist-own-store" "stylists"))
     (experiments/track-event "add-to-bag")
-    (send-later app-state events/added-to-bag)))
+    (handle-later events/added-to-bag)))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
   (when-let [el (.querySelector js/document ".cart-button")]
@@ -720,13 +708,13 @@
 
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} app-state]
-  (places-autocomplete/attach app-state address-elem address-keypath))
+  (places-autocomplete/attach address-elem address-keypath))
 
 (defn update-cart-flash [app-state msg]
-  (send app-state events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
+  (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
 
 (defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
-  (send app-state events/flash-dismiss-failure)
+  (handle-message events/flash-dismiss-failure)
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]

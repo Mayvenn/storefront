@@ -5,19 +5,19 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [send]]))
+            [storefront.messages :refer [handle-message]]))
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id
                         :xfbml false
                         :version "v2.5"})))
 
-(defn insert [app-state]
+(defn insert []
   (when (not (.hasOwnProperty js/window "FB"))
     (set! (.-fbAsyncInit js/window)
           (fn []
             (init)
-            (send app-state events/inserted-facebook)))
+            (handle-message events/inserted-facebook)))
     (insert-tag-with-src "//connect.facebook.net/en_US/sdk.js" "facebook-jssdk")))
 
 (defn- fb-login [app-state success-event]
@@ -25,12 +25,11 @@
                  (let [response (js->clj response :keywordize-keys true)
                        auth (:authResponse response)
                        permissions (-> auth :grantedScopes str (str/split #",") set)]
-                   (send app-state
-                         (cond
-                           (not auth)                  events/facebook-failure-sign-in
-                           (not (permissions "email")) events/facebook-email-denied
-                           :else                       success-event)
-                         response)))
+                   (handle-message (cond
+                                     (not auth)                  events/facebook-failure-sign-in
+                                     (not (permissions "email")) events/facebook-email-denied
+                                     :else                       success-event)
+                                   response)))
                (clj->js (merge {:scope "public_profile,email"
                                 :return_scopes true}
                                (when (get-in app-state keypaths/facebook-email-denied)

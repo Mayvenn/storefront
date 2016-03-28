@@ -13,8 +13,8 @@
 (defn choose-stat [data stat]
   (utils/send-event-callback data events/control-stylist-view-stat stat))
 
-(defn choose-stat-now [data stat]
-  (messages/send data events/control-stylist-view-stat stat))
+(defn choose-stat-now [stat]
+  (messages/handle-message events/control-stylist-view-stat stat))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 (def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
@@ -118,7 +118,7 @@
                                 :startSlide (or (stat->idx (get-in data keypaths/selected-stylist-stat))
                                                 default-idx)
                                 :callback (fn [idx _]
-                                            (choose-stat-now data (idx->stat idx)))})}))
+                                            (choose-stat-now (idx->stat idx)))})}))
     om/IWillUnmount
     (will-unmount [this]
       (when-let [swiper (:swiper (om/get-state owner))]
