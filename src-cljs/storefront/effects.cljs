@@ -157,8 +157,8 @@
                              user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
-  (api/get-stylist-stats (get-in app-state keypaths/handle-message)
-                         (get-in app-state keypaths/user-token)))
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-stylist-stats (get-in app-state keypaths/handle-message) user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
   (api/get-shipping-methods (get-in app-state keypaths/handle-message))
