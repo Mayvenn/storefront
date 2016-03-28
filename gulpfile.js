@@ -41,7 +41,7 @@ gulp.task('css', function () {
     .pipe(gulp.dest('./resources/public/css'));
 });
 
-gulp.task('watch', function () {
+gulp.task('watch', ['sass', 'css'], function () {
   gulp.watch('./resources/scss/*.scss', ['sass']);
   gulp.watch('./resources/css/*.css', ['css']);
 });
