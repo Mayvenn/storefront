@@ -29,6 +29,10 @@
     (utils/route-to events/navigate-category
                     {:taxon-path path})))
 
+(defn navigate-community [data]
+  {:href (or (get-in data keypaths/community-url) "#")
+   :on-click (utils/send-event-callback events/external-redirect-community)})
+
 (defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
   [:.relative.z1
    (into [link-tag
@@ -53,19 +57,17 @@
    [:a (utils/route-to events/navigate-sign-up) "Sign Up"]])
 
 (defn stylist-account-menu [data]
-  (let [navigate-to-community {:href (get-in data keypaths/community-url)
-                               :on-click (utils/send-event-callback events/external-redirect-community)}]
-    (drop-down
-     data keypaths/account-menu-expanded
-     [:a.account-menu-link
-      (account-store-credit data)
-      [:span.account-detail-name [:span.stylist-user-label "Stylist:"] (get-in data keypaths/user-email)]
-      [:figure.down-arrow]]
-     [:ul.account-detail-expanded
-      [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-      [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
-      [:li [:a navigate-to-community "Stylist Community"]]
-      [:li [:a (fake-href events/control-sign-out) "Logout"]]])))
+  (drop-down
+   data keypaths/account-menu-expanded
+   [:a.account-menu-link
+    (account-store-credit data)
+    [:span.account-detail-name [:span.stylist-user-label "Stylist:"] (get-in data keypaths/user-email)]
+    [:figure.down-arrow]]
+   [:ul.account-detail-expanded
+    [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+    [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
+    [:li [:a (navigate-community data) "Stylist Community"]]
+    [:li [:a (fake-href events/control-sign-out) "Logout"]]]))
 
 (defn customer-account-menu [data]
   (drop-down
@@ -128,22 +130,20 @@
   (nav-box "logout" "Logout" (fake-href events/control-sign-out)))
 
 (defn slideout-stylist-nav [data]
-  (let [navigate-community {:href (get-in data keypaths/community-url)
-                            :on-click (utils/send-event-callback events/external-redirect-community)}]
-    (list
-     [:li.slideout-nav-section.stylist
-      [:h3.slideout-nav-section-header.highlight "Manage Store"]
-      (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
-      (nav-box "edit-profile" "Edit Profile" (utils/route-to events/navigate-stylist-manage-account))
-      (nav-box "community" "Stylist Community" navigate-community {:full-width? true})]
-     [:li.slideout-nav-section
-      [:h3.slideout-nav-section-header "Shop"]
-      (nav-hair-box data)
-      (nav-box "stylist-products" "Stylist Products" (navigate-kits data) {:full-width? true})]
-     [:li.slideout-nav-section
-      [:h3.slideout-nav-section-header "My Account"]
-      (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-stylist-manage-account))
-      (logout-box)])))
+  (list
+   [:li.slideout-nav-section.stylist
+    [:h3.slideout-nav-section-header.highlight "Manage Store"]
+    (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
+    (nav-box "edit-profile" "Edit Profile" (utils/route-to events/navigate-stylist-manage-account))
+    (nav-box "community" "Stylist Community" (navigate-community data) {:full-width? true})]
+   [:li.slideout-nav-section
+    [:h3.slideout-nav-section-header "Shop"]
+    (nav-hair-box data)
+    (nav-box "stylist-products" "Stylist Products" (navigate-kits data) {:full-width? true})]
+   [:li.slideout-nav-section
+    [:h3.slideout-nav-section-header "My Account"]
+    (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-stylist-manage-account))
+    (logout-box)]))
 
 (defn slideout-customer-nav [data]
   (list
