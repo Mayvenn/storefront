@@ -4,7 +4,9 @@
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :as f]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [storefront.events :as events]
+            [storefront.utils.query :as query]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]))
@@ -61,46 +63,48 @@
 (defn stylist-bonus-credit-component [data]
   (om/component
    (html
-    (let [available-credit (get-in data keypaths/user-total-available-store-credit)
-          award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
-          milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
-          progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-          lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
-          history          (seq (get-in data keypaths/stylist-bonuses-history))]
-      [:.mx-auto.container {:data-test "bonuses-panel"}
-       [:.clearfix.mb3
-        [:.sm-col.sm-col-8
-         (when award-amount
-           (list
-            [:.center.px1.py2
-             (cond
-               history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
-               (pos? progress-amount) [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
-               :else                  [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
+    (if (query/get {:request-key request-keys/get-stylist-bonus-credits} (get-in data keypaths/api-requests))
+      (utils/spinner)
+      (let [available-credit (get-in data keypaths/user-total-available-store-credit)
+            award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
+            milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
+            progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
+            lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
+            history          (seq (get-in data keypaths/stylist-bonuses-history))]
+        [:.mx-auto.container {:data-test "bonuses-panel"}
+         [:.clearfix.mb3
+          [:.sm-col.sm-col-8
+           (when award-amount
+             (list
+              [:.center.px1.py2
+               (cond
+                 history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+                 (pos? progress-amount) [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
+                 :else                  [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
-             (pending-bonus-progress data)
+               (pending-bonus-progress data)
 
-             [:.h6.gray
-              "You earn "
-              (f/as-money-without-cents award-amount)
-              " in credit for every "
-              (f/as-money-without-cents milestone-amount)
-              " in sales you make."]]
+               [:.h6.gray
+                "You earn "
+                (f/as-money-without-cents award-amount)
+                " in credit for every "
+                (f/as-money-without-cents milestone-amount)
+                " in sales you make."]]
 
-            (om/build bonus-history-component data)
+              (om/build bonus-history-component data)
 
-            (when (pos? available-credit)
-              [:.center.bg-white.p2.line-height-2
-               [:p
-                "Bonus credits available " [:span.green (f/as-money available-credit)]
-                [:br]
-                "why not treat yo self?"]
+              (when (pos? available-credit)
+                [:.center.bg-white.p2.line-height-2
+                 [:p
+                  "Bonus credits available " [:span.green (f/as-money available-credit)]
+                  [:br]
+                  "why not treat yo self?"]
 
-               [:p.btn.mt1
-                [:a.teal
-                 (apply utils/route-to data (navigation/shop-now-navigation-message data))
-                 "Shop now " utils/rarr]]])))]
+                 [:p.btn.mt1
+                  [:a.teal
+                   (apply utils/route-to data (navigation/shop-now-navigation-message data))
+                   "Shop now " utils/rarr]]])))]
 
-        [:.sm-col-right.sm-col-4
-         (when (pos? lifetime-total)
-           (show-lifetime-total lifetime-total))]]]))))
+          [:.sm-col-right.sm-col-4
+           (when (pos? lifetime-total)
+             (show-lifetime-total lifetime-total))]]])))))

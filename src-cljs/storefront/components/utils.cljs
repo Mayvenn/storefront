@@ -55,6 +55,10 @@
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
 
+(defn spinner
+  ([] (spinner {:width "100%" :height "100px"}))
+  ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
+
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
                        coll)))

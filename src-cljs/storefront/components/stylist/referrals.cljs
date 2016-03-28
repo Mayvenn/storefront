@@ -5,6 +5,8 @@
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
             [storefront.components.stylist.pagination :as pagination]
+            [storefront.utils.query :as query]
+            [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -106,29 +108,31 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
-          referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
-          sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
-          bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
-          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
-      [:.mx-auto.container {:data-test "referrals-panel"}
-       [:.clearfix.mb3
-        [:.sm-col-right.sm-col-4
-         (when bonus-amount
-           (show-refer-ad sales-rep-email bonus-amount earning-amount))]
+    (if (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests))
+      (utils/spinner)
+      (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
+            referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
+            sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+            bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
+            lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
+        [:.mx-auto.container {:data-test "referrals-panel"}
+         [:.clearfix.mb3
+          [:.sm-col-right.sm-col-4
+           (when bonus-amount
+             (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
-        [:.sm-col.sm-col-8
-         (when referrals
-           [:div
-            (for [referral referrals]
-              (show-referral earning-amount referral))
-            (pagination/fetch-more
-             data
-             events/control-stylist-referrals-fetch
-             (get-in data keypaths/stylist-referral-program-page)
-             (get-in data keypaths/stylist-referral-program-pages))])
-         (when (zero? (get-in data keypaths/stylist-referral-program-pages))
-           empty-referrals)]
-        [:.sm-col-right.sm-col-4.clearfix
-         (when (and referrals (pos? lifetime-total))
-           (show-lifetime-total lifetime-total))]]]))))
+          [:.sm-col.sm-col-8
+           (when referrals
+             [:div
+              (for [referral referrals]
+                (show-referral earning-amount referral))
+              (pagination/fetch-more
+               data
+               events/control-stylist-referrals-fetch
+               (get-in data keypaths/stylist-referral-program-page)
+               (get-in data keypaths/stylist-referral-program-pages))])
+           (when (zero? (get-in data keypaths/stylist-referral-program-pages))
+             empty-referrals)]
+          [:.sm-col-right.sm-col-4.clearfix
+           (when (and referrals (pos? lifetime-total))
+             (show-lifetime-total lifetime-total))]]])))))
