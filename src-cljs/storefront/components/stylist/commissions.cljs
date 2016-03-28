@@ -24,11 +24,11 @@
    [:.col.col-3.px1 c]
    [:.col.col-3.px1 d]])
 
-(defn show-item [data {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
+(defn show-item [products {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
   [:.py2.clearfix
    [:img.left.border.border-silver.mr3
     {:style {:width "5rem"}
-     :src   (first (products/thumbnail-urls data product-id))
+     :src   (first (products/simple-thumbnail-urls products product-id))
      :alt   product-name}]
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]
@@ -94,13 +94,12 @@
    [:span.h4.mr1.gray "USD"]
    (f/as-money commissionable-amount)])
 
-(defn show-order [data {:keys [order commissionable-amount]}]
-  [:.bg-white.px2
+(defn show-order [products shipping-methods order]
+  (list
    (for [item (orders/product-items order)]
-     (show-item data item))
+     (show-item products item))
 
-   (show-subtotals (get-in data keypaths/shipping-methods) order)
-   (show-grand-total commissionable-amount)])
+   (show-subtotals shipping-methods order)))
 
 (defn payout-bar [& content]
   [:.bg-lighten-4.flex.items-center.px2.py1
@@ -117,19 +116,15 @@
       (payout-bar
        (f/as-money amount) " has been added to your next payout.")])])
 
-(defn commission-expanded? [data number]
-  (= number
-     (get-in data keypaths/expanded-commission-order-id)))
-
-(defn toggle-expanded-commission [data number]
+(defn toggle-expanded-commission [expanded? number]
   (utils/send-event-callback events/control-commission-order-expand
-                             {:number (when-not (commission-expanded? data number)
+                             {:number (when-not (expanded? number)
                                         number)}))
 
-(defn show-collapsed-commission [data
-                                 {:keys [number amount status commission-date order] :as commission}]
+(defn show-collapsed-commission [expanded?
+                                 {:keys [number amount status commission-date order]}]
   [:.p2.border-bottom.border-right.border-left.border-silver.pointer
-   {:on-click (toggle-expanded-commission data number)}
+   {:on-click (toggle-expanded-commission expanded? number)}
    [:.mb2
     [:.px1.h5.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
@@ -140,7 +135,7 @@
    [:.gray.h5
     (four-up "Status" "Ship Date" "Order"
              [:.right.h1.mtn2.mr1
-              {:class (if (commission-expanded? data number) "gray" "black")}
+              {:class (if (expanded? number) "gray" "black")}
               "..."])]
 
    [:.medium.h5.line-height-3
@@ -153,14 +148,19 @@
 (defn transition-group [options & children]
   (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
 
-(defn show-commission [data commission]
-  [:div {:key (:id commission)}
-   (show-collapsed-commission data commission)
+(defn show-commission [{:keys [id number order commissionable-amount] :as commission}
+                       expanded?
+                       shipping-methods
+                       products]
+  [:div {:key id}
+   (show-collapsed-commission expanded? commission)
    (transition-group {:transitionName "commission-order"
                       :component "div"}
-                     (when (commission-expanded? data (:number commission))
+                     (when (expanded? number)
                        [:div.transition-2.transition-ease.overflow-auto
-                        (show-order data commission)
+                        [:.bg-white.px2
+                         (show-order products shipping-methods order)
+                         (show-grand-total commissionable-amount)]
                         (show-payout commission)]))])
 
 (def empty-commissions
@@ -183,23 +183,30 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
+(defn cached-stylist-commissions-component [{:keys [commissions expanded? shipping-methods products]}]
+  (om/component
+   (html
+    (let [{:keys [history page pages rate]} commissions]
+      [:.mx-auto.container {:data-test "commissions-panel"}
+       [:.clearfix
+        [:.sm-col.sm-col-9
+         (when-let [history (seq history)]
+           [:.mb3
+            (for [commission history]
+              (show-commission commission expanded? shipping-methods products))
+            (pagination/fetch-more events/control-stylist-commissions-fetch
+                                   page
+                                   pages)])
+         (when (zero? pages) empty-commissions)]
+
+        [:.sm-col.sm-col-3
+         (when rate (show-commission-rate rate))]]]))))
+
 (defn stylist-commissions-component [data]
   (om/component
    (html
-    [:.mx-auto.container {:data-test "commissions-panel"}
-     [:.clearfix
-      [:.sm-col.sm-col-9
-       (when-let [commissions (seq (get-in data keypaths/stylist-commissions-history))]
-         [:div.mb3
-          (for [commission commissions]
-            (show-commission data commission))
-          (pagination/fetch-more
-           events/control-stylist-commissions-fetch
-           (get-in data keypaths/stylist-commissions-page)
-           (get-in data keypaths/stylist-commissions-pages))])
-       (when (zero? (get-in data keypaths/stylist-commissions-pages))
-         empty-commissions)]
-
-      [:.sm-col.sm-col-3
-       (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
-         (show-commission-rate commission-rate))]]])))
+    (om/build cached-stylist-commissions-component
+              {:commissions      (get-in data keypaths/stylist-commissions)
+               :expanded?        (get-in data keypaths/expanded-commission-order-id)
+               :shipping-methods (get-in data keypaths/shipping-methods)
+               :products         (get-in data keypaths/products)}))))

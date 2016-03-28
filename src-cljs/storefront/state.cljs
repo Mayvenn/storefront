@@ -175,7 +175,7 @@
           :account-menu-expanded false
 
           :selected-stylist-stat :next-payout
-          :expanded-commission-order-id nil
+          :expanded-commission-order-id #{nil}
 
           :sign-in {:email ""
                     :password ""

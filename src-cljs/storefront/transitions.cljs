@@ -75,7 +75,7 @@
             (get-in app-state keypaths/user-email)))
 
 (defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
-  (assoc-in app-state keypaths/expanded-commission-order-id number))
+  (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (when (get-in app-state keypaths/user-email)
