@@ -8,7 +8,8 @@
             [storefront.accessors.taxons :refer [default-stylist-taxon-path]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
-            [storefront.components.formatters :refer [as-money]]))
+            [storefront.components.formatters :refer [as-money]]
+            [storefront.hooks.fastpass :as fastpass]))
 
 (defn fake-href [event & [args]]
   {:href "#"
@@ -22,8 +23,8 @@
     (utils/route-to events/navigate-category
                     {:taxon-path kits-path})))
 
-(defn navigate-community [community-url]
-  {:href (or community-url "#")
+(defn navigate-community []
+  {:href (or (fastpass/community-url) "#")
    :on-click (utils/send-event-callback events/external-redirect-community)})
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
@@ -49,7 +50,7 @@
    " | "
    [:a (utils/route-to events/navigate-sign-up) "Sign Up"]])
 
-(defn stylist-account-menu [{:keys [expanded? available-store-credit user-email community-url]}]
+(defn stylist-account-menu [{:keys [expanded? available-store-credit user-email]}]
   (drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -60,7 +61,7 @@
    [:ul.account-detail-expanded
     [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
     [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
-    [:li [:a (navigate-community community-url) "Stylist Community"]]
+    [:li [:a (navigate-community) "Stylist Community"]]
     [:li [:a (fake-href events/control-sign-out) "Logout"]]]))
 
 (defn customer-account-menu [{:keys [expanded? available-store-credit user-email]}]
@@ -99,7 +100,7 @@
 (defn non-stylist-shop-link [{:keys [navigate-hair-message]}]
   [:a (navigate-hair navigate-hair-message) "Shop"])
 
-(defn middle-nav-component [{:keys [navigate-hair-message expanded? stylist-kits-path own-store? store-name]} _]
+(defn middle-nav-component [{:keys [navigate-hair-message expanded? stylist-kits-path own-store? store-name] :as cursors} _]
   (om/component
    (html
     [:div
@@ -129,13 +130,13 @@
 (defn logout-box []
   (nav-box "logout" "Logout" (fake-href events/control-sign-out)))
 
-(defn slideout-stylist-nav [{:keys [navigate-hair-message community-url stylist-kits-path]}]
+(defn slideout-stylist-nav [{:keys [navigate-hair-message stylist-kits-path]}]
   (list
    [:li.slideout-nav-section.stylist
     [:h3.slideout-nav-section-header.highlight "Manage Store"]
     (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
     (nav-box "edit-profile" "Edit Profile" (utils/route-to events/navigate-stylist-manage-account))
-    (nav-box "community" "Stylist Community" (navigate-community community-url) {:full-width? true})]
+    (nav-box "community" "Stylist Community" (navigate-community) {:full-width? true})]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (nav-hair-box navigate-hair-message)
@@ -166,7 +167,7 @@
     (nav-box "sign-in" "Sign In" (utils/route-to events/navigate-sign-in))
     (nav-box "join" "Join" (utils/route-to events/navigate-sign-up))]))
 
-(defn slideout-nav-component-really [{:keys [available-store-credit user-email navigate-hair-message community-url stylist-kits-path own-store?]} _]
+(defn slideout-nav-component-really [{:keys [available-store-credit user-email navigate-hair-message stylist-kits-path own-store?]} _]
   (om/component
    (html
     [:ul.slideout-nav-list
@@ -177,7 +178,6 @@
          [:span.value (as-money available-store-credit)]]])
      (cond
        own-store?           (slideout-stylist-nav {:navigate-hair-message navigate-hair-message
-                                                   :community-url         community-url
                                                    :stylist-kits-path     stylist-kits-path})
        (boolean user-email) (slideout-customer-nav navigate-hair-message)
        :else                (slideout-guest-nav navigate-hair-message))
@@ -195,7 +195,6 @@
           account-menu-expanded?    (get-in data keypaths/account-menu-expanded)
           shop-menu-expanded?       (get-in data keypaths/shop-menu-expanded)
           available-store-credit    (get-in data keypaths/user-total-available-store-credit)
-          community-url             (get-in data keypaths/community-url)
           user-email                (get-in data keypaths/user-email)
           own-store?                (own-store? data)
           navigate-hair-message     (navigation/shop-now-navigation-message data)
@@ -218,8 +217,7 @@
                    {:own-store?             own-store?
                     :expanded?              account-menu-expanded?
                     :available-store-credit available-store-credit
-                    :user-email             user-email
-                    :community-url          community-url})
+                    :user-email             user-email})
          (om/build middle-nav-component
                    {:navigate-hair-message navigate-hair-message
                     :expanded?             shop-menu-expanded?
@@ -233,8 +231,7 @@
            [:.fixed.overlay]
            (om/build slideout-nav-component-really
                      {:available-store-credit available-store-credit
-                      :user-email                  user-email
+                      :user-email             user-email
                       :own-store?             own-store?
                       :navigate-hair-message  navigate-hair-message
-                      :stylist-kits-path      stylist-kits-path
-                      :community-url          community-url})])]]))))
+                      :stylist-kits-path      stylist-kits-path})])]]))))

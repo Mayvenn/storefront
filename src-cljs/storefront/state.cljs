@@ -41,7 +41,6 @@
      :optimizely {:variations #{}}
 
      :session-id (cookie-jar/force-session-id cookie)
-     :community-url nil
      :get-satisfaction-login? false
 
      :user (cookie-jar/retrieve-login cookie)
