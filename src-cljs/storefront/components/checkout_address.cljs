@@ -173,7 +173,6 @@
          (let [saving (query/get {:request-key request-keys/update-addresses}
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
-            {:on-click (when-not saving (utils/send-event-callback data
-                                                                   events/control-checkout-update-addresses-submit))
+            {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
             "Continue to Shipping"])]]]]])))

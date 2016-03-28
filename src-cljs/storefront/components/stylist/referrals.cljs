@@ -122,7 +122,6 @@
             (for [referral referrals]
               (show-referral earning-amount referral))
             (pagination/fetch-more
-             data
              events/control-stylist-referrals-fetch
              (get-in data keypaths/stylist-referral-program-page)
              (get-in data keypaths/stylist-referral-program-pages))])

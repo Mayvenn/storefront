@@ -14,7 +14,7 @@
      (om/build validation-errors-component data)
      [:div#edit-account
       [:form
-       {:on-submit (utils/send-event-callback data events/control-manage-account-submit)}
+       {:on-submit (utils/send-event-callback events/control-manage-account-submit)}
        [:label {:for "user-email"} "Email"]
        [:br]
        [:input.title#user-email

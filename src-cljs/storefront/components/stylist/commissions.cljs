@@ -122,8 +122,7 @@
      (get-in data keypaths/expanded-commission-order-id)))
 
 (defn toggle-expanded-commission [data number]
-  (utils/send-event-callback data
-                             events/control-commission-order-expand
+  (utils/send-event-callback events/control-commission-order-expand
                              {:number (when-not (commission-expanded? data number)
                                         number)}))
 
@@ -195,7 +194,6 @@
           (for [commission commissions]
             (show-commission data commission))
           (pagination/fetch-more
-           data
            events/control-stylist-commissions-fetch
            (get-in data keypaths/stylist-commissions-page)
            (get-in data keypaths/stylist-commissions-pages))])

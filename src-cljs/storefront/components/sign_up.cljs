@@ -19,7 +19,7 @@
        (facebook/sign-in-button data)
        [:div.or-divider [:span "or"]]
        [:form.simple_form
-        {:on-submit (utils/send-event-callback data events/control-sign-up-submit)}
+        {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
         [:div#password-credentials
          [:div.input.email
           [:label.email "Email"]

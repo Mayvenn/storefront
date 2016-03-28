@@ -6,8 +6,7 @@
 
 (defn noop-callback [e] (.preventDefault e))
 
-;; TODO: handle-message remove arg
-(defn send-event-callback [_ event & [args]]
+(defn send-event-callback [event & [args]]
   (fn [e]
     (.preventDefault e)
     (handle-message event args)

@@ -92,7 +92,7 @@
                   [:a.large.primary.alternate#add-to-cart-button
                    {:on-click
                     (when-not adding-to-cart
-                      (utils/send-event-callback data events/control-browse-add-to-bag))
+                      (utils/send-event-callback events/control-browse-add-to-bag))
                     :class (when adding-to-cart "saving")}
                    "Add to Cart"]])]]]
 

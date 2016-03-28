@@ -16,7 +16,7 @@
      (om/build validation-errors-component data)
      [:div#forgot-password.new_spree_user
       [:form.simple_form
-       {:on-submit (utils/send-event-callback data events/control-forgot-password-submit)}
+       {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
        [:div.input.email
         [:label {:for "email"} "Enter your email:"]
         [:input.string.email

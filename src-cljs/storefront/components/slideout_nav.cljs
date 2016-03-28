@@ -14,9 +14,9 @@
   (when-let [credit (get-in app-state keypaths/user-total-available-store-credit)]
     (pos? credit)))
 
-(defn fake-href [app-state event & [args]]
+(defn fake-href [event & [args]]
   {:href "#"
-   :on-click (utils/send-event-callback app-state event args)})
+   :on-click (utils/send-event-callback event args)})
 
 (defn logged-in? [data]
   (boolean (get-in data keypaths/user-email)))
@@ -32,11 +32,11 @@
 (defn drop-down [data expanded-keypath [link-tag & link-contents] menu]
   [:.relative.z1
    (into [link-tag
-          (fake-href data events/control-menu-expand {:keypath expanded-keypath})]
+          (fake-href events/control-menu-expand {:keypath expanded-keypath})]
          link-contents)
    (when (get-in data expanded-keypath)
      [:div
-      {:on-click (utils/send-event-callback data events/control-menu-collapse {:keypath expanded-keypath})}
+      {:on-click (utils/send-event-callback events/control-menu-collapse {:keypath expanded-keypath})}
       [:.fixed.overlay]
       menu])])
 
@@ -54,7 +54,7 @@
 
 (defn stylist-account-menu [data]
   (let [navigate-to-community {:href (get-in data keypaths/community-url)
-                               :on-click (utils/send-event-callback data events/external-redirect-community)}]
+                               :on-click (utils/send-event-callback events/external-redirect-community)}]
     (drop-down
      data keypaths/account-menu-expanded
      [:a.account-menu-link
@@ -129,7 +129,7 @@
 
 (defn slideout-stylist-nav [data]
   (let [navigate-community {:href (get-in data keypaths/community-url)
-                            :on-click (utils/send-event-callback data events/external-redirect-community)}]
+                            :on-click (utils/send-event-callback events/external-redirect-community)}]
     (list
      [:li.slideout-nav-section.stylist
       [:h3.slideout-nav-section-header.highlight "Manage Store"]
@@ -208,8 +208,7 @@
          (om/build middle-nav-component data)]
         (when slid-out?
           [:div
-           {:on-click (utils/send-event-callback data
-                                                 events/control-menu-collapse
+           {:on-click (utils/send-event-callback events/control-menu-collapse
                                                  {:keypath keypaths/menu-expanded})}
            [:.fixed.overlay]
            (om/build slideout-nav-component-really data)])]]))))

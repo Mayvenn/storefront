@@ -88,8 +88,7 @@
      [:div.manage-account-content
       [:form.edit_mayvenn_stylist.simple_form
        {:on-submit
-        (utils/send-event-callback data
-                                   events/control-stylist-manage-account-submit)}
+        (utils/send-event-callback events/control-stylist-manage-account-submit)}
        [:.profile-info
 
         [:h4.manage-account-header.no-top-space "Profile Info"]

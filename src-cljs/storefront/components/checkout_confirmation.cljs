@@ -25,6 +25,6 @@
           (let [placing-order (query/get {:request-key request-keys/place-order}
                                          (get-in data keypaths/api-requests))]
             [:a.large.continue.button.primary
-             {:on-click (when-not placing-order (utils/send-event-callback data events/control-checkout-confirmation-submit))
+             {:on-click (when-not placing-order (utils/send-event-callback events/control-checkout-confirmation-submit))
               :class (when placing-order "saving")}
              "Complete my Purchase"])]]]]]])))

@@ -14,7 +14,7 @@
      [:div.guest-checkout
       [:h2.explanation-header.center "I'm new here"]
       [:div.button.primary#guest-checkout-button
-       {:on-click (utils/send-event-callback data events/control-checkout-as-guest-submit)}
+       {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}
        "Guest Checkout"]
 
       [:div.short-divider ]
@@ -24,7 +24,7 @@
       (facebook/sign-in-button data)
       [:h2.center.or "OR"]
       [:form.simple_form
-       {:on-submit (utils/send-event-callback data events/control-sign-in-submit)}
+       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
        [:div#password-credentials
         [:div.input.email
          [:label.email "Email"]

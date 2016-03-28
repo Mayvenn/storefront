@@ -28,7 +28,6 @@
        (map display-stylist-bonus bonuses)
 
        (pagination/fetch-more
-        data
         events/control-stylist-bonuses-fetch
         (get-in data keypaths/stylist-bonuses-page)
         (get-in data keypaths/stylist-bonuses-pages))]))))

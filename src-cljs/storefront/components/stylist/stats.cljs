@@ -10,8 +10,8 @@
             [storefront.messages :as messages]
             [swipe :as swipe]))
 
-(defn choose-stat [data stat]
-  (utils/send-event-callback data events/control-stylist-view-stat stat))
+(defn choose-stat [stat]
+  (utils/send-event-callback events/control-stylist-view-stat stat))
 
 (defn choose-stat-now [stat]
   (messages/handle-message events/control-stylist-view-stat stat))
@@ -32,9 +32,9 @@
    {:class (when-not selected "bg-lighten-2")
     :style {:width "8px" :height "8px"}}])
 
-(defn ^:private circle-for-stat [stat selected on-click]
+(defn ^:private circle-for-stat [stat selected]
   [:.p1.pointer
-   {:on-click (on-click stat)}
+   {:on-click (choose-stat stat)}
    (circle (= selected stat))])
 
 (defn ^:private money [amount]
@@ -139,6 +139,5 @@
            (om/build stats-details-component (get-in data keypaths/stylist-stats))]
 
           [:.flex.justify-center
-           (let [on-circle-click (partial choose-stat data)]
-             (for [stat ordered-stats]
-               (circle-for-stat stat selected on-circle-click)))]])))))
+           (for [stat ordered-stats]
+             (circle-for-stat stat selected))]])))))

@@ -90,9 +90,8 @@
   (let [selected-set (set (keys selected-options))]
     (first (drop-while selected-set selection-flow))))
 
-(defn option-selection-event [data step-name selected-options selected-variants]
-  (utils/send-event-callback data
-                             events/control-bundle-option-select
+(defn option-selection-event [step-name selected-options selected-variants]
+  (utils/send-event-callback events/control-bundle-option-select
                              {:step-name step-name
                               :selected-options selected-options
                               :selected-variants selected-variants}))
@@ -136,8 +135,7 @@
          :represented represented?
          :checked (= (get all-selections step-name nil) option-name)
          :sold-out sold-out?
-         :on-change (option-selection-event data
-                                            step-name
+         :on-change (option-selection-event step-name
                                             (assoc prior-selections step-name option-name)
                                             option-variants)}))))
 
@@ -181,7 +179,7 @@
                           (get-in data keypaths/api-requests))]
     [:button.large.primary.alternate#add-to-cart-button
      {:on-click (when-not saving
-                  (utils/send-event-callback data events/control-build-add-to-bag))
+                  (utils/send-event-callback events/control-build-add-to-bag))
       :class (when saving "saving")}
      "ADD TO CART"]))
 

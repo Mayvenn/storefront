@@ -20,7 +20,7 @@
           {:href "#"
            :disabled request
            :on-click (if (not request)
-                       (utils/send-event-callback data dec-event {:path path})
+                       (utils/send-event-callback dec-event {:path path})
                        utils/noop-callback)}
           "-"]]
         [:input#quantity.quantity-selector-input
@@ -39,6 +39,6 @@
           {:href "#"
            :disabled request
            :on-click (if (not request)
-                       (utils/send-event-callback data inc-event {:path path})
+                       (utils/send-event-callback inc-event {:path path})
                        utils/noop-callback)}
           "+"]]]]))))

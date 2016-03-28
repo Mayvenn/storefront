@@ -20,8 +20,7 @@
          (when-not getsat-login?
            [:a.header-menu {:href "#"
                             :on-click
-                            (utils/send-event-callback data
-                                                       events/control-menu-expand
+                            (utils/send-event-callback events/control-menu-expand
                                                        {:keypath keypaths/menu-expanded})}
             "Menu"])
          (if getsat-login?

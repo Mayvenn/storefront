@@ -82,6 +82,6 @@
                                     (get-in data keypaths/api-requests))]
               [:a.large.continue.button.primary
                {:on-click (when-not saving
-                            (utils/send-event-callback data events/control-checkout-payment-method-submit))
+                            (utils/send-event-callback events/control-checkout-payment-method-submit))
                 :class (when saving "saving")}
                "Go to Review Order"])])]]]]])))
