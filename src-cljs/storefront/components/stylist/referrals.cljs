@@ -105,11 +105,13 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
-          referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
-          sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+    (let [sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+          earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
           bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
-          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
+          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)
+          referrals       (get-in data keypaths/stylist-referral-program-referrals)
+          page            (get-in data keypaths/stylist-referral-program-page)
+          pages           (get-in data keypaths/stylist-referral-program-pages)]
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
         [:.sm-col-right.sm-col-4
@@ -117,16 +119,15 @@
            (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
         [:.sm-col.sm-col-8
-         (when referrals
+         (when (seq referrals)
            [:div
             (for [referral referrals]
               (show-referral earning-amount referral))
             (pagination/fetch-more
              events/control-stylist-referrals-fetch
-             (get-in data keypaths/stylist-referral-program-page)
-             (get-in data keypaths/stylist-referral-program-pages))])
-         (when (zero? (get-in data keypaths/stylist-referral-program-pages))
-           empty-referrals)]
+             page
+             pages)])
+         (when (zero? pages) empty-referrals)]
         [:.sm-col-right.sm-col-4.clearfix
-         (when (and referrals (pos? lifetime-total))
+         (when (and (seq referrals) (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
