@@ -95,7 +95,7 @@
                         (merge (when query-params {:query-params query-params}))
                         keywordize-keys))))
 
-(defn install-routes []
+(defn start-history []
   (set! app-history (make-history set-current-page)))
 
 (defn set-query-string [s query-params]

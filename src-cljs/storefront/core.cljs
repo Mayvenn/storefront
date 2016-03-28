@@ -57,7 +57,7 @@
 
 (defn main [app-state]
   (set! messages/handle-message (partial handle-message app-state))
-  (routes/install-routes)
+  (routes/start-history)
   (om/root
    top-level-component
    app-state
