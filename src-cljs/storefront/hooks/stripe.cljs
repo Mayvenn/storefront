@@ -15,7 +15,7 @@
        (handle-message events/inserted-stripe)
        (js/Stripe.setPublishableKey config/stripe-publishable-key)))))
 
-(defn create-token [app-state cardholder-name number cvc exp-month exp-year address]
+(defn create-token [cardholder-name number cvc exp-month exp-year address]
   (when (.hasOwnProperty js/window "Stripe")
     (js/Stripe.card.createToken (clj->js (merge
                                           {:number number

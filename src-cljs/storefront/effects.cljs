@@ -514,8 +514,7 @@
         :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
       (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
-        (stripe/create-token app-state
-                             (get-in app-state keypaths/checkout-credit-card-name)
+        (stripe/create-token (get-in app-state keypaths/checkout-credit-card-name)
                              (get-in app-state keypaths/checkout-credit-card-number)
                              (get-in app-state keypaths/checkout-credit-card-ccv)
                              (first expiry)
