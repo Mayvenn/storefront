@@ -1,7 +1,5 @@
 (ns storefront.keypaths)
 
-(def handle-message [:handle-message])
-
 (def history [:history])
 (def cookie [:cookie])
 (def routes [:routes])
