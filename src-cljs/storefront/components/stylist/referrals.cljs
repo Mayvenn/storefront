@@ -14,10 +14,11 @@
         circumference   (* 2 js/Math.PI inner-radius)
         arc-length      (* circumference (- 1 fraction-filled))
         svg-circle-size {:r inner-radius :cy radius :cx radius :stroke-width stroke-width :fill "none"}]
-    [:svg.rotate-270 {:width diameter :height diameter}
-     [:circle.stroke-silver svg-circle-size]
-     [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray circumference
-                                                          :stroke-dashoffset arc-length}})]]))
+    [:svg {:width diameter :height diameter}
+     [:g {:transform (str "rotate(-90 " radius " " radius ")")}
+      [:circle.stroke-silver svg-circle-size]
+      [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray circumference
+                                                           :stroke-dashoffset arc-length}})]]]))
 
 (defn profile-picture-circle [profile-picture-url]
   (let [width "4em"]

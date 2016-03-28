@@ -292,7 +292,6 @@ html { line-height: 1.2; }
 .stroke-silver { stroke: var(--silver); }
 .stroke-gray   { stroke: var(--gray); }
 .stroke-black  { stroke: var(--black); }
-.rotate-270 { transform: rotate(-90deg); }
 
 /* Custom darken */
 
