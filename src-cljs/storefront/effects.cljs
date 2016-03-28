@@ -34,7 +34,7 @@
         user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (when (and user-id user-token stylist-id)
-      (api/get-account (get-in app-state keypaths/handle-message) user-id user-token stylist-id))))
+      (api/get-account user-id user-token stylist-id))))
 
 (defn refresh-current-order [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -42,15 +42,14 @@
         stylist-id (get-in app-state keypaths/store-stylist-id)
         order-number (get-in app-state keypaths/order-number)]
     (when (and user-id user-token stylist-id (not order-number))
-      (api/get-current-order (get-in app-state keypaths/handle-message)
-                             user-id
+      (api/get-current-order user-id
                              user-token
                              stylist-id))))
 
 (defn ensure-products [app-state product-ids]
   (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
     (when (seq not-cached)
-      (api/get-products-by-ids (get-in app-state keypaths/handle-message) not-cached))))
+      (api/get-products-by-ids not-cached))))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -60,8 +59,7 @@
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
   (talkable/insert app-state)
-  (api/get-store (get-in app-state keypaths/handle-message)
-                 (get-in app-state keypaths/api-cache)
+  (api/get-store (get-in app-state keypaths/api-cache)
                  (get-in app-state keypaths/store-slug)))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
@@ -77,19 +75,16 @@
 
 (defmethod perform-effects events/navigate [_ _ _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    (api/get-taxons (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/api-cache))
+    (api/get-taxons (get-in app-state keypaths/api-cache))
     (refresh-account app-state)
-    (api/get-sms-number (get-in app-state keypaths/handle-message))
-    (api/get-promotions (get-in app-state keypaths/handle-message)
-                        (get-in app-state keypaths/api-cache)
+    (api/get-sms-number)
+    (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
                          (first (get-in app-state keypaths/order-promotion-codes))
                          (get-in app-state keypaths/pending-promo-code)))
 
     (when-let [order-number (get-in app-state keypaths/order-number)]
-      (api/get-order (get-in app-state keypaths/handle-message)
-                     order-number
+      (api/get-order order-number
                      (get-in app-state keypaths/order-token)))
     (opengraph/set-site-tags)
     (scroll/scroll-to-top)
@@ -122,8 +117,7 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
   (reviews/insert-reviews app-state)
-  (api/get-products (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/api-cache)
+  (api/get-products (get-in app-state keypaths/api-cache)
                     taxon-path
                     (get-in app-state keypaths/user-token)))
 
@@ -133,8 +127,7 @@
                            {:taxon-path (-> product :product_attrs :category first taxon-path-for)}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
-  (api/get-product (get-in app-state keypaths/handle-message)
-                   product-path)
+  (api/get-product product-path)
   (reviews/insert-reviews app-state)
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))]
@@ -151,17 +144,14 @@
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-states (get-in app-state keypaths/handle-message)
-                    (get-in app-state keypaths/api-cache))
-    (api/get-stylist-account (get-in app-state keypaths/handle-message)
-                             user-token)))
+    (api/get-states (get-in app-state keypaths/api-cache))
+    (api/get-stylist-account user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
-  (api/get-stylist-stats (get-in app-state keypaths/handle-message)
-                         (get-in app-state keypaths/user-token)))
+  (api/get-stylist-stats (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
-  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
+  (api/get-shipping-methods)
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
     (send app-state events/control-stylist-commissions-fetch)))
 
@@ -170,8 +160,7 @@
         user-token (get-in app-state keypaths/user-token)
         page (inc (get-in app-state keypaths/stylist-commissions-page 0))]
     (when (and user-id user-token)
-      (api/get-stylist-commissions (get-in app-state keypaths/handle-message)
-                                   user-id
+      (api/get-stylist-commissions user-id
                                    user-token
                                    {:page page}))))
 
@@ -191,8 +180,7 @@
   (let [user-token (get-in app-state keypaths/user-token)
         page (inc (get-in app-state keypaths/stylist-bonuses-page 0))]
     (when user-token
-      (api/get-stylist-bonus-credits (get-in app-state keypaths/handle-message)
-                                     user-token
+      (api/get-stylist-bonus-credits user-token
                                      {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args app-state]
@@ -203,8 +191,7 @@
   (let [user-token (get-in app-state keypaths/user-token)
         page (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
     (when user-token
-      (api/get-stylist-referral-program (get-in app-state keypaths/handle-message)
-                                        user-token
+      (api/get-stylist-referral-program user-token
                                         {:page page}))))
 
 (def cart-error-codes
@@ -213,7 +200,7 @@
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
   (refresh-current-order app-state)
-  (api/get-shipping-methods (get-in app-state keypaths/handle-message))
+  (api/get-shipping-methods)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (send app-state
           events/flash-show-failure
@@ -240,11 +227,10 @@
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (places-autocomplete/insert-places-autocomplete app-state)
-  (api/get-states (get-in app-state keypaths/handle-message)
-                  (get-in app-state keypaths/api-cache)))
+  (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
-  (api/get-shipping-methods (get-in app-state keypaths/handle-message)))
+  (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
   (stripe/insert app-state))
@@ -253,7 +239,7 @@
   (when paypal
     (routes/enqueue-redirect app-state events/navigate-order-complete {:number number}))
   (when (and number order-token)
-    (api/get-completed-order (get-in app-state keypaths/handle-message) number order-token)))
+    (api/get-completed-order number order-token)))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
@@ -308,14 +294,12 @@
     (set! (.. js/document -body -style -overflow) "auto")))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
-  (api/sign-in (get-in app-state keypaths/handle-message)
-               (get-in app-state keypaths/sign-in-email)
+  (api/sign-in (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
                (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
-  (api/sign-up (get-in app-state keypaths/handle-message)
-               (get-in app-state keypaths/sign-up-email)
+  (api/sign-up (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
                (get-in app-state keypaths/sign-up-password-confirmation)
                (get-in app-state keypaths/store-stylist-id)))
@@ -327,8 +311,7 @@
   (facebook/start-reset app-state))
 
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
-  (api/facebook-sign-in (get-in app-state keypaths/handle-message)
-                        (-> facebook-response :authResponse :userID)
+  (api/facebook-sign-in (-> facebook-response :authResponse :userID)
                         (-> facebook-response :authResponse :accessToken)
                         (get-in app-state keypaths/store-stylist-id)))
 
@@ -357,7 +340,6 @@
 
 (defn api-add-to-bag [app-state product variant]
   (api/add-to-bag
-   (get-in app-state keypaths/handle-message)
    {:variant variant
     :product product
     :quantity (get-in app-state keypaths/browse-variant-quantity)
@@ -388,22 +370,19 @@
     (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
-  (api/forgot-password (get-in app-state keypaths/handle-message)
-                       (get-in app-state keypaths/forgot-password-email)))
+  (api/forgot-password (get-in app-state keypaths/forgot-password-email)))
 
 (defmethod perform-effects events/control-reset-password-submit [_ event args app-state]
   (if (empty? (get-in app-state keypaths/reset-password-password))
     (send app-state
           events/flash-show-failure {:message "Your password cannot be blank."
                                      :navigation (get-in app-state keypaths/navigation-message)})
-    (api/reset-password (get-in app-state keypaths/handle-message)
-                        (get-in app-state keypaths/reset-password-password)
+    (api/reset-password (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-password-confirmation)
                         (get-in app-state keypaths/reset-password-token))))
 
 (defmethod perform-effects events/facebook-success-reset [_ event facebook-response app-state]
-  (api/facebook-reset-password (get-in app-state keypaths/handle-message)
-                               (-> facebook-response :authResponse :userID)
+  (api/facebook-reset-password (-> facebook-response :authResponse :userID)
                                (-> facebook-response :authResponse :accessToken)
                                (get-in app-state keypaths/reset-password-token)))
 
@@ -423,23 +402,20 @@
                          false))
 
 (defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
-  (api/update-account (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/user-id)
+  (api/update-account (get-in app-state keypaths/user-id)
                       (get-in app-state keypaths/manage-account-email)
                       (get-in app-state keypaths/manage-account-password)
                       (get-in app-state keypaths/manage-account-password-confirmation)
                       (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
-  (api/add-promotion-code (get-in app-state keypaths/handle-message)
-                          (get-in app-state keypaths/order-number)
+  (api/add-promotion-code (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)
                           (get-in app-state keypaths/cart-coupon-code)
                           false))
 
 (defn- modify-cart [app-state args f]
-  (f (get-in app-state keypaths/handle-message)
-     (get-in app-state keypaths/order)
+  (f (get-in app-state keypaths/order)
      args))
 
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [path]} app-state]
@@ -460,7 +436,6 @@
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
   (let [order (get-in app-state keypaths/order)]
     (api/update-cart-payments
-     (get-in app-state keypaths/handle-message)
      {:order (-> app-state
                  (get-in keypaths/order)
                  (select-keys [:token :number])
@@ -484,18 +459,16 @@
       :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
-  (let [handle-message (get-in app-state keypaths/handle-message)
-        user-token (get-in app-state keypaths/user-token)
+  (let [user-token (get-in app-state keypaths/user-token)
         profile-picture (:file args)]
-    (api/update-stylist-account-profile-picture handle-message user-token profile-picture)))
+    (api/update-stylist-account-profile-picture user-token profile-picture)))
 
 (defmethod perform-effects events/control-stylist-manage-account-submit [_ events args app-state]
-  (let [handle-message (get-in app-state keypaths/handle-message)
-        user-token (get-in app-state keypaths/user-token)
+  (let [user-token (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account handle-message user-token stylist-account)
+    (api/update-stylist-account user-token stylist-account)
     (when (stylist-account :profile-picture)
-      (api/update-stylist-account-profile-picture handle-message user-token stylist-account))))
+      (api/update-stylist-account-profile-picture user-token stylist-account))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [use-billing  (get-in app-state keypaths/checkout-ship-to-billing-address)
@@ -504,26 +477,22 @@
                            billing-address
                            (get-in app-state keypaths/checkout-shipping-address))]
     (if (get-in app-state keypaths/checkout-as-guest)
-      (api/guest-update-addresses (get-in app-state keypaths/handle-message)
-                                  (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+      (api/guest-update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                          {:email (get-in app-state keypaths/checkout-guest-email)
                                           :billing-address billing-address
                                           :shipping-address shipping-address}))
-      (api/update-addresses (get-in app-state keypaths/handle-message)
-                            (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+      (api/update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                    {:billing-address billing-address
                                     :shipping-address shipping-address})))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
-  (api/update-shipping-method (get-in app-state keypaths/handle-message)
-                              (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+  (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                      {:shipping-method-sku (get-in
                                                             app-state
                                                             keypaths/checkout-selected-shipping-method-sku)})))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments
-   (get-in app-state keypaths/handle-message)
    {:order (-> app-state
                (get-in keypaths/order)
                (select-keys [:token :number])
@@ -546,7 +515,6 @@
     (if (and use-store-credit covered-by-store-credit)
       ;; command waiter w/ payment methods(success handler navigate to confirm)
       (api/update-cart-payments
-       (get-in app-state keypaths/handle-message)
        {:order (-> app-state
                    (get-in keypaths/order)
                    (select-keys [:token :number])
@@ -563,19 +531,17 @@
                              (get-in app-state (conj keypaths/order :billing-address)))))))
 
 (defmethod perform-effects events/control-checkout-remove-promotion [_ _ {:keys [code]} app-state]
-  (api/remove-promotion-code (get-in app-state keypaths/handle-message) (get-in app-state keypaths/order) code))
+  (api/remove-promotion-code (get-in app-state keypaths/order) code))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
-  (api/place-order (get-in app-state keypaths/handle-message)
-                   (merge (get-in app-state keypaths/order)
+  (api/place-order (merge (get-in app-state keypaths/order)
                           {:session-id (get-in app-state keypaths/session-id)})))
 
 (defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
   (save-cookie app-state)
   (if-let [order-number (get-in app-state keypaths/order-number)]
     ;; Assign guest order to signed-in user
-    (api/add-user-in-order (get-in app-state keypaths/handle-message)
-                           (get-in app-state keypaths/order-token)
+    (api/add-user-in-order (get-in app-state keypaths/order-token)
                            order-number
                            (get-in app-state keypaths/user-token)
                            (get-in app-state keypaths/user-id))
@@ -589,8 +555,7 @@
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state)
   (when (get-in app-state keypaths/order-number)
-    (api/add-user-in-order (get-in app-state keypaths/handle-message)
-                           (get-in app-state keypaths/order-token)
+    (api/add-user-in-order (get-in app-state keypaths/order-token)
                            (get-in app-state keypaths/order-number)
                            (get-in app-state keypaths/user-token)
                            (get-in app-state keypaths/user-id)))
@@ -659,8 +624,7 @@
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
-    (api/add-promotion-code (get-in app-state keypaths/handle-message)
-                            number token pending-promo-code true)))
+    (api/add-promotion-code number token pending-promo-code true)))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (ensure-products app-state (map :product-id (orders/product-items order)))
@@ -683,8 +647,7 @@
   (talkable/show-pending-offer app-state))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
-  (api/update-account-address (get-in app-state keypaths/handle-message)
-                              (get-in app-state keypaths/states)
+  (api/update-account-address (get-in app-state keypaths/states)
                               (get-in app-state keypaths/user)
                               (:billing-address order)
                               (:shipping-address order)))
@@ -768,8 +731,7 @@
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
   (when-not allow-dormant? (update-cart-flash app-state "The coupon code was successfully applied to your order."))
-  (api/get-promotions (get-in app-state keypaths/handle-message)
-                      (get-in app-state keypaths/api-cache)
+  (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
