@@ -108,7 +108,8 @@
                                  :src "//d2wy8f7a9ursnm.cloudfront.net/bugsnag-2.min.js"
                                  :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"}]
     [:script.bugsnag-script-src {:type "text/javascript"}
-     (str "Bugsnag.releaseStage = \"" env "\";")]
+     (str "Bugsnag.releaseStage = \"" env "\";"
+          "Bugsnag.notifyReleaseStages = ['acceptance', 'production'];")]
     (page/include-css (asset-path "/css/all.css"))
     (page/include-css (asset-path "/css/app.css"))]
    [:body
