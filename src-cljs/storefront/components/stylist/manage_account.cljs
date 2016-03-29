@@ -44,25 +44,28 @@
 
 (defn- state-options [data]
   (let [states (get-in data keypaths/states)]
-    (map (fn [state]
-           [:option {:value (state :id)} (state :name)])
+    (map (fn [{:keys [id name]}]
+           [:option {:key id :value id} name])
          states)))
 
 (defn- year-options []
   (map (fn [year]
-         [:option {:value year} year])
+         [:option {:key year :value year} year])
        (range 1900 (inc (.getFullYear (js/Date.))))))
 
-(defn- month-options []
+(def ^:private month-options
   (let [names [:January :February :March :April :May :June :July
                :August :September :October :November :December]]
-    (map (fn [month]
-           [:option {:value (inc month)} (name (names month))])
-         (range 0 12))))
+    (map-indexed
+     (fn [idx month]
+       (let [month-name (name month)]
+         [:option {:key month-name :value (inc idx)}
+          month-name]))
+     names)))
 
-(defn- day-options []
+(def ^:private day-options
   (map (fn [day]
-         [:option {:value day} day])
+         [:option {:key day :value day} day])
        (range 1 (inc 31))))
 
 (defn- payout-method-radio [data payout-method payout-label]
@@ -119,11 +122,11 @@
             [:abbr {:title "required"} "*"] " Birth Date"]
            [:select#mayvenn_stylist_birth_date_2i.date.required
             (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_2i))
-            (month-options)]
+            month-options]
            " "
            [:select#mayvenn_stylist_birth_date_3i.date.required
             (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_3i))
-            (day-options)]
+            day-options]
            " "
            [:select#mayvenn_stylist_birth_date_1i.date.required
             (utils/change-text data owner (conj keypaths/stylist-manage-account :birth_date_1i))
