@@ -140,13 +140,13 @@
                                             option-variants)}))))
 
 (defn step-html [step-name idx options]
-  [:.step
+  [:.step {:key idx}
    [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
    [:.options
     (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
       (when represented
         (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
-          (list
+          [:.option-container {:key option-id}
            [:input {:type "radio"
                     :id option-id
                     :disabled disabled
@@ -157,7 +157,7 @@
             (cond
               sold-out [:.subtext "Sold Out"]
               (seq price) [:.subtext (format-price price)])
-            [:label {:for option-id}]]))))]])
+            [:label {:for option-id}]]])))]])
 
 (defn bundle-builder-steps [data variants steps]
   (map-indexed (fn [idx {:keys [step-name] :as step}]
@@ -289,22 +289,21 @@
                 (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
                                                           :images-path (conj keypaths/taxon-images
                                                                              (keyword (:name taxon)))}}))]
+             [:div.starting-at.centered (starting-at-price variants)]
              (let [steps (build-steps (selection-flow data) (map :product_attrs products))]
-               (list
-                [:div.starting-at.centered (starting-at-price variants)]
-                (bundle-builder-steps data variants steps)
-                [:#summary
-                 [:h3 "Summary"]
-                 (summary-section data variants)
-                 (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
-                   [:div#after-add {:style {:display "block"}}
-                    [:div.added-to-bag-container
-                     (map (partial display-bagged-variant data) bagged-variants)]
-                    [:div.go-to-checkout
-                     [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]))
-             [:ul.category-description
-              (for [description (category-descriptions taxon)]
-                [:li description])]])]
+               (bundle-builder-steps data variants steps))
+             [:#summary
+              [:h3 "Summary"]
+              (summary-section data variants)
+              (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
+                [:div#after-add {:style {:display "block"}}
+                 [:div.added-to-bag-container
+                  (map (partial display-bagged-variant data) bagged-variants)]
+                 [:div.go-to-checkout
+                  [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]
+             (into [:ul.category-description]
+                   (for [description (category-descriptions taxon)]
+                     [:li description]))])]
          [:.reviews-wrapper
           (when (get-in data keypaths/loaded-reviews)
             (om/build reviews-component data {:opts {:taxon taxon}}))]

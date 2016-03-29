@@ -12,16 +12,15 @@
 (defn carousel-component [data owner {:keys [index-path images-path]}]
   (om/component
    (html
-    [:.carousel-component
-     (let [idx (get-in data index-path)
-           images (get-in data images-path [])]
-       (list
-        [:.hair-category-image {:style {:background-image (css-url (get images idx))}}]
-        [:.left {:on-click
+    (let [idx (get-in data index-path)
+          images (get-in data images-path [])]
+      [:.carousel-component
+       [:.hair-category-image {:style {:background-image (css-url (get images idx))}}]
+       [:.left {:on-click
+                (utils/send-event-callback events/control-carousel-move
+                                           {:index-path index-path
+                                            :index (mod (dec idx) (count images))})}]
+       [:.right {:on-click
                  (utils/send-event-callback events/control-carousel-move
                                             {:index-path index-path
-                                             :index (mod (dec idx) (count images))})}]
-        [:.right {:on-click
-                  (utils/send-event-callback events/control-carousel-move
-                                             {:index-path index-path
-                                              :index (mod (inc idx) (count images))})}]))])))
+                                             :index (mod (inc idx) (count images))})}]]))))
