@@ -14,6 +14,7 @@
         taxon-path (taxon-path-for taxon)]
     [:a.col.mn1.p1
      (merge
+      {:key taxon-path}
       (utils/route-to events/navigate-category
                       {:taxon-path taxon-path})
       (if (> index 5)
