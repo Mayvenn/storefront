@@ -314,7 +314,9 @@
           [:figure.triple-bundle-feature]]])))))
 
 (defn category-component [data owner]
-  (apply (if (bundle-builder/included-taxon? (taxons/current-taxon data))
-           bundle-builder-category-component
-           list-category-component)
-         [data owner]))
+  (om/component
+   (html
+    (om/build (if (bundle-builder/included-taxon? (taxons/current-taxon data))
+                bundle-builder-category-component
+                list-category-component)
+              data))))
