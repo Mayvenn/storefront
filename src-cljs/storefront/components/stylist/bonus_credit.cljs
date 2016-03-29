@@ -53,7 +53,8 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn stylist-bonuses-component [{:keys [available-credit
+(defn stylist-bonuses-component [{:keys [navigate-hair-message
+                                         available-credit
                                          award-amount
                                          milestone-amount
                                          progress-amount
@@ -102,7 +103,7 @@
 
                [:p.btn.mt1
                 [:a.teal
-                 (apply utils/route-to (navigation/shop-now-navigation-message data))
+                 (apply utils/route-to navigate-hair-message)
                  "Shop now " utils/rarr]]])))]
 
         [:.sm-col-right.sm-col-4
@@ -110,13 +111,14 @@
            (show-lifetime-total lifetime-total))]]]))))
 
 (defn stylist-bonuses-query [data]
-  {:available-credit (get-in data keypaths/user-total-available-store-credit)
-   :award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
-   :milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
-   :progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-   :lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
-   :page             (get-in data keypaths/stylist-bonuses-page)
-   :pages            (get-in data keypaths/stylist-bonuses-pages)
-   :history          (seq (get-in data keypaths/stylist-bonuses-history))
-   :fetching?        (query/get {:request-key request-keys/get-stylist-bonus-credits}
-                                (get-in data keypaths/api-requests))})
+  {:navigate-hair-message (navigation/shop-now-navigation-message data)
+   :available-credit      (get-in data keypaths/user-total-available-store-credit)
+   :award-amount          (get-in data keypaths/stylist-bonuses-award-amount)
+   :milestone-amount      (get-in data keypaths/stylist-bonuses-milestone-amount)
+   :progress-amount       (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
+   :lifetime-total        (get-in data keypaths/stylist-bonuses-lifetime-total)
+   :page                  (get-in data keypaths/stylist-bonuses-page)
+   :pages                 (get-in data keypaths/stylist-bonuses-pages)
+   :history               (seq (get-in data keypaths/stylist-bonuses-history))
+   :fetching?             (query/get {:request-key request-keys/get-stylist-bonus-credits}
+                                     (get-in data keypaths/api-requests))})
