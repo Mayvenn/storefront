@@ -186,19 +186,19 @@
       (nav-box "customer-service" "Customer Service" (utils/route-to events/navigate-help))
       (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to events/navigate-guarantee))]])))
 
-(defn slideout-nav-component [data owner]
-  (om/component
-   (html
-    (let [{store-photo :profile_picture_url
-           store-name  :store_name} (get-in data keypaths/store)
-          slid-out?                 (get-in data keypaths/menu-expanded)
-          account-menu-expanded?    (get-in data keypaths/account-menu-expanded)
-          shop-menu-expanded?       (get-in data keypaths/shop-menu-expanded)
-          available-store-credit    (get-in data keypaths/user-total-available-store-credit)
-          user-email                (get-in data keypaths/user-email)
-          own-store?                (own-store? data)
-          navigate-hair-message     (navigation/shop-now-navigation-message data)
-          stylist-kits-path         (default-stylist-taxon-path data)]
+(defn slideout-nav-component [{:keys [store
+                                      slid-out?
+                                      account-menu-expanded?
+                                      shop-menu-expanded?
+                                      available-store-credit
+                                      user-email
+                                      own-store?
+                                      navigate-hair-message
+                                      stylist-kits-path]} _]
+  (let [{store-photo :profile_picture_url
+         store-name  :store_name} store]
+    (om/component
+     (html
       [:div.slideout-nav-wrapper
        {:class (when slid-out? "slideout-nav-open")}
        [:nav.slideout-nav (when-not store-photo {:class "no-picture"})
@@ -235,3 +235,14 @@
                       :own-store?             own-store?
                       :navigate-hair-message  navigate-hair-message
                       :stylist-kits-path      stylist-kits-path})])]]))))
+
+(defn slideout-nav-query [data]
+  {:store                  (get-in data keypaths/store)
+   :slid-out?              (get-in data keypaths/menu-expanded)
+   :account-menu-expanded? (get-in data keypaths/account-menu-expanded)
+   :shop-menu-expanded?    (get-in data keypaths/shop-menu-expanded)
+   :available-store-credit (get-in data keypaths/user-total-available-store-credit)
+   :user-email             (get-in data keypaths/user-email)
+   :own-store?             (own-store? data)
+   :navigate-hair-message  (navigation/shop-now-navigation-message data)
+   :stylist-kits-path      (default-stylist-taxon-path data)})

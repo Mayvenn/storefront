@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.components.utils :as utils]
-            [storefront.components.slideout-nav :refer [slideout-nav-component]]
+            [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
@@ -79,7 +79,7 @@
        (om/build promotion-banner-component data)
        [:div.page-wrap
         (om/build header/header-component (header/header-query data))
-        (om/build slideout-nav-component data)
+        (om/build slideout-nav/slideout-nav-component (slideout-nav/slideout-nav-query data))
         (om/build flash-component {:success (get-in data keypaths/flash-success-message)
                                    :failure (get-in data keypaths/flash-failure-message)})
         [:main {:role "main"}
