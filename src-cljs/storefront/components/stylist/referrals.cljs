@@ -47,7 +47,7 @@
 (defmethod state-icon :in-progress [_ earning-amount commissioned-revenue]
   ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
   [:.relative
-   [:.center.absolute.overlay.m-auto {:style {:height "38%"}}
+   [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
     [:.h2.teal {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
     [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
