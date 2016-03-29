@@ -7,12 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]))
 
-(def getsat-header
-  (html
-   [:header#header.header.comm-login
-    [:div.logo.comm-login]]))
-
-(defn topnav-component [{:keys [store order home-page?]} _]
+(defn header-component [{:keys [store order home-page?]} _]
   (om/component
    (html
     (let [product-quantity (orders/product-quantity order)
@@ -35,12 +30,7 @@
            [:img.stylist-bar-portrait {:src store-photo-url}]]
           [:div.stylist-bar-name store-name]])]))))
 
-(defn header-component [data owner]
-  (om/component
-   (html
-    (if (get-in data keypaths/get-satisfaction-login?)
-      getsat-header
-      (om/build topnav-component
-                {:store      (get-in data keypaths/store)
-                 :home-page? (= (get-in data keypaths/navigation-event) events/navigate-home)
-                 :order      (get-in data keypaths/order)})))))
+(defn header-query [data]
+  {:store      (get-in data keypaths/store)
+   :home-page? (= (get-in data keypaths/navigation-event) events/navigate-home)
+   :order      (get-in data keypaths/order)})
