@@ -189,7 +189,7 @@
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
-      (if (and (empty? commissions) fetching?)
+      (if (and (empty? (seq history)) fetching?)
         (utils/spinner {:height "100px"})
         [:.mx-auto.container {:data-test "commissions-panel"}
          [:.clearfix
