@@ -49,7 +49,7 @@
     [:footer#footer
      (if minimal?
        (contact-us sms-number)
-       (list
+       [:div
         [:div.footer-logo-container [:figure.footer-logo]]
         (contact-us sms-number)
         [:div.sm-icons
@@ -66,7 +66,7 @@
         [:div.legal
          [:div.copyright copy " Mayvenn " (.getFullYear (js/Date.))]
          [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
-         [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]))])))
+         [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]])])))
 
 (defn footer-query [data]
   {:minimal? (minimal-footer-events (get-in data keypaths/navigation-event))
