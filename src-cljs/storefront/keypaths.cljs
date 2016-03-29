@@ -1,10 +1,6 @@
 (ns storefront.keypaths)
 
-(def handle-message [:handle-message])
-
-(def history [:history])
 (def cookie [:cookie])
-(def routes [:routes])
 
 (def optimizely [:optimizely])
 (def optimizely-variations [:optimizely :variations])
@@ -17,8 +13,6 @@
 (def user-store-slug (conj user :store-slug))
 (def user-id (conj user :id))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
-
-(def community-url [:community-url])
 
 (def order [:order])
 (def order-total (conj order :total))

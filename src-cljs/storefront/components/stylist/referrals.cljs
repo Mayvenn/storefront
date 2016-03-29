@@ -108,13 +108,15 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
-          referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
-          sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+    (let [sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+          earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
           bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
-          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
-      (if (and (empty? referrals)
-               (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests)))
+          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)
+          referrals       (get-in data keypaths/stylist-referral-program-referrals)
+          page            (get-in data keypaths/stylist-referral-program-page)
+          pages           (get-in data keypaths/stylist-referral-program-pages)
+          fetching?       (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests))]
+      (if (and (empty? (seq referrals)) fetching?)
         (utils/spinner {:height "100px"})
         [:.mx-auto.container {:data-test "referrals-panel"}
          [:.clearfix.mb3
@@ -123,18 +125,15 @@
              (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
           [:.sm-col.sm-col-8
-           (when referrals
+           (when (seq referrals)
              [:div
               (for [referral referrals]
                 (show-referral earning-amount referral))
-              (pagination/fetch-more
-               data
-               events/control-stylist-referrals-fetch
-               request-keys/get-stylist-referral-program
-               (get-in data keypaths/stylist-referral-program-page)
-               (get-in data keypaths/stylist-referral-program-pages))])
-           (when (zero? (get-in data keypaths/stylist-referral-program-pages))
-             empty-referrals)]
+              (pagination/fetch-more events/control-stylist-referrals-fetch
+                                     fetching?
+                                     page
+                                     pages)])
+           (when (zero? pages) empty-referrals)]
           [:.sm-col-right.sm-col-4.clearfix
-           (when (and referrals (pos? lifetime-total))
+           (when (and (seq referrals) (pos? lifetime-total))
              (show-lifetime-total lifetime-total))]]])))))

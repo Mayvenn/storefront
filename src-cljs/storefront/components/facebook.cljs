@@ -6,7 +6,7 @@
 (defn- button [data click-event]
   (if (get-in data keypaths/loaded-facebook)
     [:button.fb-login-button
-     {:on-click (utils/send-event-callback data click-event)}
+     {:on-click (utils/send-event-callback click-event)}
      [:div.fb-login-wrapper
       [:img {:src "/images/FacebookWhite.png" :width 29 :height 29}]
       [:div.fb-login-content "Sign in with Facebook"]]]

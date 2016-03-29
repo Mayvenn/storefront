@@ -26,30 +26,29 @@
         (#(assoc % :address1 (str (:street-number %) " " (:street %))))
         (dissoc :street :street-number))))
 
-(defn insert-places-autocomplete [data]
+(defn insert-places-autocomplete []
   (when-not (.hasOwnProperty js/window "google")
     (tags/insert-tag-with-callback
      (tags/src-tag (str "https://maps.googleapis.com/maps/api/js?key="
                         config/places-api-key
                         "&libraries=places")
                    "places-autocomplete")
-     #(m/send data events/inserted-places))))
+     #(m/handle-message events/inserted-places))))
 
 (defn remove-places-autocomplete []
   (tags/remove-tags-by-class "places-autocomplete"))
 
-(defn wrapped-callback [app-state autocomplete address-keypath]
+(defn- wrapped-callback [autocomplete address-keypath]
   (fn [e]
-    (m/send app-state
-          events/autocomplete-update-address
-          {:address (address autocomplete)
-           :address-keypath address-keypath})))
+    (m/handle-message events/autocomplete-update-address
+                      {:address (address autocomplete)
+                       :address-keypath address-keypath})))
 
-(defn attach [app-state address-elem address-keypath]
+(defn attach [address-elem address-keypath]
   (when (.hasOwnProperty js/window "google")
     (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
           elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
       (.addListener autocomplete
                     "place_changed"
-                    (wrapped-callback app-state autocomplete address-keypath)))))
+                    (wrapped-callback autocomplete address-keypath)))))

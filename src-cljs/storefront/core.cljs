@@ -6,7 +6,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
             [storefront.hooks.exception-handler :as exception-handler]
-            [storefront.messages :refer [send]]
+            [storefront.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [om.core :as om]
@@ -56,15 +56,15 @@
          (exception-handler/report e))))))
 
 (defn main [app-state]
-  (swap! app-state assoc-in keypaths/handle-message (partial handle-message app-state))
-  (routes/install-routes app-state)
+  (set! messages/handle-message (partial handle-message app-state))
+  (routes/start-history)
   (om/root
    top-level-component
    app-state
    {:target (.getElementById js/document "content")})
 
   (handle-message app-state events/app-start)
-  (routes/set-current-page @app-state))
+  (routes/set-current-page))
 
 (defonce app-state (atom (state/initial-state)))
 

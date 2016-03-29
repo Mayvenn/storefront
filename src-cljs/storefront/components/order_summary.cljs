@@ -26,7 +26,7 @@
      [:td
       [:h5 (orders/display-adjustment-name name)
        (when coupon-code
-         (let [on-click (utils/send-event-callback data events/control-checkout-remove-promotion {:code coupon-code})]
+         (let [on-click (utils/send-event-callback events/control-checkout-remove-promotion {:code coupon-code})]
            [:a {:href "" :on-click on-click} "Remove"]))]]
      [:td
       [:h5 (as-money price)]]]))
@@ -68,8 +68,7 @@
            :class (when delete-request "saving")
            :on-click (if delete-request
                        utils/noop-callback
-                       (utils/send-event-callback data
-                                                  events/control-cart-remove
+                       (utils/send-event-callback events/control-cart-remove
                                                   variant-id))}
           "Remove"]]))
     (when-let [length (-> line-item :variant-attrs :length)]

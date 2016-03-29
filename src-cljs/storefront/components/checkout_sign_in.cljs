@@ -14,7 +14,7 @@
      [:div.guest-checkout
       [:h2.explanation-header.center "I'm new here"]
       [:div.button.primary#guest-checkout-button
-       {:on-click (utils/send-event-callback data events/control-checkout-as-guest-submit)}
+       {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}
        "Guest Checkout"]
 
       [:div.short-divider ]
@@ -24,7 +24,7 @@
       (facebook/sign-in-button data)
       [:h2.center.or "OR"]
       [:form.simple_form
-       {:on-submit (utils/send-event-callback data events/control-sign-in-submit)}
+       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
        [:div#password-credentials
         [:div.input.email
          [:label.email "Email"]
@@ -45,12 +45,12 @@
                 {:type "checkbox"
                  :name "remember-me"})]
         [:label {:for "remember-me"} "Remember me"]]
-       [:a.forgot-password (utils/route-to data events/navigate-forgot-password) "Forgot Password?"]
+       [:a.forgot-password (utils/route-to events/navigate-forgot-password) "Forgot Password?"]
        [:p
         [:input.button.primary {:type "submit"
                                 :value "Login"}]]]]
      [:p.center "Don't have an account? "
-      [:a (utils/route-to data events/navigate-sign-up) "Register Here"]]])))
+      [:a (utils/route-to events/navigate-sign-up) "Register Here"]]])))
 
 (defn requires-sign-in-or-guest [app-state authorized-component]
   (if (or (get-in app-state keypaths/user-id)

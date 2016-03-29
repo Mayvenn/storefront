@@ -13,7 +13,7 @@
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
-  (apply utils/route-to data (navigation/shop-now-navigation-message data)))
+  (apply utils/route-to (navigation/shop-now-navigation-message data)))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]
@@ -33,7 +33,7 @@
          (display-line-items data cart true)]
         [:div.cart-bottom
          [:form
-          {:on-submit (utils/send-event-callback data events/control-cart-update-coupon)}
+          {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
           [:div.coupon-cart
            [:h4 "Have a Promo Code?"]
            [:div.coupon-container
@@ -50,20 +50,20 @@
                :name "update"
                :class (when spinning "saving")
                :disabled spinning
-               :on-click (utils/send-event-callback data events/control-cart-update-coupon)})
+               :on-click (utils/send-event-callback events/control-cart-update-coupon)})
             "Apply Promo Code"]]]
          [:div
           [:div.order-summary-cart
            (display-order-summary data cart)
            [:a.button.checkout.primary.full-link#checkout-link
             {:on-click (when-not (cart-update-pending? data)
-                         (utils/send-event-callback data events/control-checkout-cart-submit))}
+                         (utils/send-event-callback events/control-checkout-cart-submit))}
             "Check Out"]
            [:div.or-divider [:span "OR"]]
            (let [redirecting (get-in data keypaths/cart-paypal-redirect)]
              [:a {:href "#"
                   :data-test "paypal-checkout"
-                  :on-click (utils/send-event-callback data events/control-checkout-cart-paypal-setup)}
+                  :on-click (utils/send-event-callback events/control-checkout-cart-paypal-setup)}
               [:.paypal-checkout {:class (when redirecting "redirecting")}]])]]]]]]]))
 
 (defn display-empty-cart [data]

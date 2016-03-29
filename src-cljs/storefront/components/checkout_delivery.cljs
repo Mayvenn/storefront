@@ -17,8 +17,7 @@
    (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-sku)
                  (:sku shipping-method))
             {:class "selected"})
-          {:on-click (utils/send-event-callback app-state
-                                                events/control-checkout-shipping-method-select
+          {:on-click (utils/send-event-callback events/control-checkout-shipping-method-select
                                                 shipping-method)})
    [:label
     [:input.ship-method-radio {:type "radio"}]
@@ -50,6 +49,6 @@
          (let [saving (query/get {:request-key request-keys/update-shipping-method}
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
-            {:on-click (when-not saving (utils/send-event-callback data events/control-checkout-shipping-method-submit))
+            {:on-click (when-not saving (utils/send-event-callback events/control-checkout-shipping-method-submit))
              :class (when saving "saving")}
             "Continue to Payment"])]]]]])))

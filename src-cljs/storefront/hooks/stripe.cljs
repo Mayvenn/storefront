@@ -1,21 +1,21 @@
 (ns storefront.hooks.stripe
   (:require [storefront.browser.tags :refer [insert-tag-with-callback
                                              src-tag]]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [handle-message]]
             [storefront.events :as events]
             [storefront.config :as config]
             [storefront.hooks.exception-handler :as exception-handler]
             [clojure.set :refer [rename-keys]]))
 
-(defn insert [data]
+(defn insert []
   (when-not (.hasOwnProperty js/window "Stripe")
     (insert-tag-with-callback
      (src-tag "https://js.stripe.com/v2/stripe.js" "stripe")
      (fn []
-       (send data events/inserted-stripe)
+       (handle-message events/inserted-stripe)
        (js/Stripe.setPublishableKey config/stripe-publishable-key)))))
 
-(defn create-token [app-state cardholder-name number cvc exp-month exp-year address]
+(defn create-token [cardholder-name number cvc exp-month exp-year address]
   (when (.hasOwnProperty js/window "Stripe")
     (js/Stripe.card.createToken (clj->js (merge
                                           {:number number
@@ -30,9 +30,7 @@
                                                                 :zipcode :address_zip})))
                                 (fn [status response]
                                   (if (= 200 status)
-                                    (send app-state
-                                          events/stripe-success-create-token
-                                          (js->clj response :keywordize-keys true))
-                                    (send app-state
-                                          events/stripe-failure-create-token
-                                          (js->clj response :keywordize-keys true)))))))
+                                    (handle-message events/stripe-success-create-token
+                                                    (js->clj response :keywordize-keys true))
+                                    (handle-message events/stripe-failure-create-token
+                                                    (js->clj response :keywordize-keys true)))))))

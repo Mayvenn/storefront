@@ -10,11 +10,11 @@
             [storefront.messages :as messages]
             [swipe :as swipe]))
 
-(defn choose-stat [data stat]
-  (utils/send-event-callback data events/control-stylist-view-stat stat))
+(defn choose-stat [stat]
+  (utils/send-event-callback events/control-stylist-view-stat stat))
 
-(defn choose-stat-now [data stat]
-  (messages/send data events/control-stylist-view-stat stat))
+(defn choose-stat-now [stat]
+  (messages/handle-message events/control-stylist-view-stat stat))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 (def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
@@ -32,9 +32,9 @@
    {:class (when-not selected "bg-lighten-2")
     :style {:width "8px" :height "8px"}}])
 
-(defn ^:private circle-for-stat [stat selected on-click]
+(defn ^:private circle-for-stat [stat selected]
   [:.p1.pointer
-   {:on-click (on-click stat)}
+   {:on-click (choose-stat stat)}
    (circle (= selected stat))])
 
 (defn ^:private money [amount]
@@ -107,7 +107,7 @@
      (for [stat ordered-stats]
        (render-stat stat (get stats stat)))])))
 
-(defn stylist-dashboard-stats-component [data owner]
+(defn stylist-dashboard-stats-component [{:keys [selected stats]} owner]
   (reify
     om/IDidMount
     (did-mount [this]
@@ -115,18 +115,17 @@
        owner
        {:swiper (js/Swipe. (om/get-node owner "stats")
                            #js {:continuous false
-                                :startSlide (or (stat->idx (get-in data keypaths/selected-stylist-stat))
+                                :startSlide (or (stat->idx selected)
                                                 default-idx)
                                 :callback (fn [idx _]
-                                            (choose-stat-now data (idx->stat idx)))})}))
+                                            (choose-stat-now (idx->stat idx)))})}))
     om/IWillUnmount
     (will-unmount [this]
       (when-let [swiper (:swiper (om/get-state owner))]
         (.kill swiper)))
     om/IRenderState
     (render-state [_ {:keys [swiper]}]
-      (let [selected (get-in data keypaths/selected-stylist-stat)
-            selected-idx (stat->idx selected)]
+      (let [selected-idx (stat->idx selected)]
         (when (and swiper selected-idx)
           (let [delta (- (.getPos swiper) selected-idx)]
             (if (pos? delta)
@@ -136,9 +135,8 @@
          [:.py1.bg-teal-gradient.white.center.sans-serif
           [:.overflow-hidden.relative
            {:ref "stats"}
-           (om/build stats-details-component (get-in data keypaths/stylist-stats))]
+           (om/build stats-details-component stats)]
 
           [:.flex.justify-center
-           (let [on-circle-click (partial choose-stat data)]
-             (for [stat ordered-stats]
-               (circle-for-stat stat selected on-circle-click)))]])))))
+           (for [stat ordered-stats]
+             (circle-for-stat stat selected))]])))))

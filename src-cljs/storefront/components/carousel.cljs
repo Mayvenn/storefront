@@ -1,7 +1,6 @@
 (ns storefront.components.carousel
   (:require [storefront.events :as events]
             [storefront.components.utils :as utils]
-            [storefront.messages :refer [send]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
@@ -19,12 +18,10 @@
        (list
         [:.hair-category-image {:style {:background-image (css-url (get images idx))}}]
         [:.left {:on-click
-                 (utils/send-event-callback data
-                                            events/control-carousel-move
+                 (utils/send-event-callback events/control-carousel-move
                                             {:index-path index-path
                                              :index (mod (dec idx) (count images))})}]
         [:.right {:on-click
-                  (utils/send-event-callback data
-                                             events/control-carousel-move
+                  (utils/send-event-callback events/control-carousel-move
                                              {:index-path index-path
                                               :index (mod (inc idx) (count images))})}]))])))

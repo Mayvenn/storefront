@@ -19,7 +19,7 @@
        (facebook/sign-in-button data)
        [:div.or-divider [:span "or"]]
        [:form.simple_form
-        {:on-submit (utils/send-event-callback data events/control-sign-up-submit)}
+        {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
         [:div#password-credentials
          [:div.input.email
           [:label.email "Email"]
@@ -44,4 +44,4 @@
          [:input.button.primary {:type "submit"
                                  :value "Create"}]]]]
       [:p.center "Already have an account? "
-       [:a (utils/route-to data events/navigate-sign-in) "Log In"]]]])))
+       [:a (utils/route-to events/navigate-sign-in) "Log In"]]]])))

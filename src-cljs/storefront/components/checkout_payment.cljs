@@ -12,7 +12,7 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.orders :as orders]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [handle-message]]
             [clojure.string :as string]))
 
 (defn display-use-store-credit [data]
@@ -37,10 +37,9 @@
                    :value (presenter-fn (get-in app-state keypath))
                    :required true
                    :on-change (fn [e]
-                                (send app-state
-                                      events/control-change-state
-                                      {:keypath keypath
-                                       :value (.. e -target -value)}))}
+                                (handle-message events/control-change-state
+                                                {:keypath keypath
+                                                 :value (.. e -target -value)}))}
                   text-attrs)]])
 
 (defn display-credit-card-form [data]
@@ -83,6 +82,6 @@
                                     (get-in data keypaths/api-requests))]
               [:a.large.continue.button.primary
                {:on-click (when-not saving
-                            (utils/send-event-callback data events/control-checkout-payment-method-submit))
+                            (utils/send-event-callback events/control-checkout-payment-method-submit))
                 :class (when saving "saving")}
                "Go to Review Order"])])]]]]])))

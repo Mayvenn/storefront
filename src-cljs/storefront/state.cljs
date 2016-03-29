@@ -37,13 +37,10 @@
 
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
-    {:history nil
-     :cookie cookie
-     :routes []
+    {:cookie cookie
      :optimizely {:variations #{}}
 
      :session-id (cookie-jar/force-session-id cookie)
-     :community-url nil
      :get-satisfaction-login? false
 
      :user (cookie-jar/retrieve-login cookie)
@@ -175,7 +172,7 @@
           :account-menu-expanded false
 
           :selected-stylist-stat :next-payout
-          :expanded-commission-order-id nil
+          :expanded-commission-order-id #{nil}
 
           :sign-in {:email ""
                     :password ""

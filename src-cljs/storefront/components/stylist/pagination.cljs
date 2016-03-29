@@ -7,11 +7,11 @@
 (defn at-end? [page pages]
   (> (or pages 0) (or page 0)))
 
-(defn fetch-more [data event request-key page pages]
+(defn fetch-more [event fetching? page pages]
   (when (at-end? page pages)
     [:.col-5.mx-auto.my3
-     (if (query/get {:request-key request-key} (get-in data keypaths/api-requests))
+     (if fetching?
        (utils/spinner)
        [:.btn.btn-outline.teal.col-12
-        {:on-click (utils/send-event-callback data event)}
+        {:on-click (utils/send-event-callback event)}
         "Load More"])]))

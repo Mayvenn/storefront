@@ -19,47 +19,57 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
+(defn contact-us [number]
+  [:div.contact-us
+   [:div.footer-container
+    [:ul.contact-us-menu
+     [:li.cu-item
+      [:a.cu-link.send-sonar-dynamic-number-link
+       (when number
+         {:href (str "sms://+1" number)})
+       [:i.icon-chat]
+       "text"]]
+     [:li.cu-item
+      [:a.cu-link
+       {:href "mailto:help@mayvenn.com"}
+       [:i.icon-email]
+       "email"]]
+     [:li.cu-item
+      [:a.cu-link
+       {:href "tel://+18885627952"}
+       [:i.icon-phone]
+       "phone"]]]]])
+
+(def copy
+  (html [:span {:dangerouslySetInnerHTML {:__html "&copy;"}}]))
+
+(defn cached-footer-component [{:keys [nav-event sms-number]} _]
+  (om/component
+   (html
+    [:footer#footer
+     (if (minimal-footer-events nav-event)
+       (contact-us sms-number)
+       (list
+        [:div.footer-logo-container [:figure.footer-logo]]
+        (contact-us sms-number)
+        [:div.sm-icons
+         [:div.footer-container
+          [:ul.sm-list
+           [:li.sm-icon.icon-facebook
+            [:a.full-link {:href "https://www.facebook.com/MayvennHair"}]]
+           [:li.sm-icon.icon-instagram
+            [:a.full-link {:href "http://instagram.com/mayvennhair"}]]
+           [:li.sm-icon.icon-pinterest
+            [:a.full-link {:href "http://www.pinterest.com/mayvennhair/"}]]
+           [:li.sm-icon.icon-twitter
+            [:a.full-link {:href "https://twitter.com/MayvennHair"}]]]]]
+        [:div.legal
+         [:div.copyright copy " Mayvenn " (.getFullYear (js/Date.))]
+         [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
+         [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]))])))
+
 (defn footer-component [data owner]
   (om/component
    (html
-    (let [minimal-footer? (minimal-footer-events (get-in data keypaths/navigation-event))]
-      [:footer#footer
-       (list
-        (when-not minimal-footer?
-          [:div.footer-logo-container [:figure.footer-logo]])
-        [:div.contact-us
-         [:div.footer-container
-          [:ul.contact-us-menu
-           [:li.cu-item
-            [:a.cu-link.send-sonar-dynamic-number-link
-             (when-let [number (get-in data keypaths/sms-number)]
-               {:href (str "sms://+1" number)})
-             [:i.icon-chat]
-             "text"]]
-           [:li.cu-item
-            [:a.cu-link
-             {:href "mailto:help@mayvenn.com"}
-             [:i.icon-email]
-             "email"]]
-           [:li.cu-item
-            [:a.cu-link
-             {:href "tel://+18885627952"}
-             [:i.icon-phone]
-             "phone"]]]]]
-        (when-not minimal-footer?
-          [:div.sm-icons
-           [:div.footer-container
-            [:ul.sm-list
-             [:li.sm-icon.icon-facebook
-              [:a.full-link {:href "https://www.facebook.com/MayvennHair"}]]
-             [:li.sm-icon.icon-instagram
-              [:a.full-link {:href "http://instagram.com/mayvennhair"}]]
-             [:li.sm-icon.icon-pinterest
-              [:a.full-link {:href "http://www.pinterest.com/mayvennhair/"}]]
-             [:li.sm-icon.icon-twitter
-              [:a.full-link {:href "https://twitter.com/MayvennHair"}]]]]])
-        (when-not minimal-footer?
-          [:div.legal
-           [:div.copyright {:dangerouslySetInnerHTML {:__html (str "&copy; Mayvenn " (.getFullYear (js/Date.)))}}]
-           [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
-           [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]))]))))
+    (om/build cached-footer-component {:nav-event (get-in data keypaths/navigation-event)
+                                       :sms-number (get-in data keypaths/sms-number)}))))

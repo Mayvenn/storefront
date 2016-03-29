@@ -4,7 +4,7 @@
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.utils.query :as query]))
@@ -79,9 +79,9 @@ Lengths: 14\" to 26\""
 (defn reviews-component [data owner {taxon :taxon}]
   (reify
     om/IDidMount
-    (did-mount [_] (send data events/reviews-component-mounted))
+    (did-mount [_] (handle-message events/reviews-component-mounted))
     om/IWillUnmount
-    (will-unmount [_] (send data events/reviews-component-will-unmount))
+    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
     om/IRender
     (render [_]
       (html
@@ -94,9 +94,9 @@ Lengths: 14\" to 26\""
 (defn reviews-summary-component [data owner {taxon :taxon}]
   (reify
     om/IDidMount
-    (did-mount [_] (send data events/reviews-component-mounted))
+    (did-mount [_] (handle-message events/reviews-component-mounted))
     om/IWillUnmount
-    (will-unmount [_] (send data events/reviews-component-will-unmount))
+    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
     om/IRender
     (render [_]
       (html

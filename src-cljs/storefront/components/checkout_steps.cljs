@@ -33,7 +33,7 @@
                 [:br]
                 (string/capitalize step-name)]]
       (if (< index current-index)
-        [:a (route-to app-state (get-in steps [index :event])) text]
+        [:a (route-to (get-in steps [index :event])) text]
         text))]])
 
 (defn checkout-step-bar [data]

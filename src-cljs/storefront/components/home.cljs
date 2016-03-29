@@ -9,11 +9,10 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn category [data taxon index]
+(defn category [taxon index]
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
-    [:a.hair-category-link (utils/route-to data
-                                           events/navigate-category
+    [:a.hair-category-link (utils/route-to events/navigate-category
                                            {:taxon-path taxon-path})
      [:div.hair-container.not-decorated.no-margin
       (when (> index 5)
@@ -26,18 +25,18 @@
    (html
     [:div#home-content
      [:a.home-large-image
-      (apply utils/route-to data (navigation/shop-now-navigation-message data))]
+      (apply utils/route-to (navigation/shop-now-navigation-message data))]
      [:div.text-free-shipping-banner
       [:p "Free Shipping + 30 Day Money Back Guarantee"]]
      [:div.squashed-hair-categories
       [:h3.pick-style "Pick your style"]
-      (map (partial category data)
+      (map category
            (filter-nav-taxons (get-in data keypaths/taxons))
            (range))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content.mobile-hidden
       [:figure.featured-new]
       [:a.featured-product-image
-       (apply utils/route-to data (navigation/shop-now-navigation-message data))]
+       (apply utils/route-to (navigation/shop-now-navigation-message data))]
       [:p.featured-product-banner "Introducing Peruvian In All Textures"]]
      [:div {:style {:clear "both"}}]])))

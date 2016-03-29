@@ -7,11 +7,11 @@
             [storefront.messages :as m]
             [storefront.config :as config]))
 
-(defn insert [data]
+(defn insert []
   (when-not (.hasOwnProperty js/window "showPP")
     (tags/insert-tag-with-callback
      (tags/src-tag config/talkable-script "talkable-script")
-     #(m/send data events/inserted-talkable))))
+     #(m/handle-message events/inserted-talkable))))
 
 (defn- discounted-subtotal [order]
   (add-rounded-floats (:line-items-total order) (:promotion-discount order)))
@@ -26,7 +26,7 @@
   (when (get-in data keypaths/loaded-talkable)
     (when-let [order (get-in data keypaths/pending-talkable-order)]
       (js/showPP (clj->js order))
-      (m/send data events/talkable-offer-shown))))
+      (m/handle-message events/talkable-offer-shown))))
 
 (defn show-referrals [data]
   (when (get-in data keypaths/loaded-talkable)

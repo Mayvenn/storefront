@@ -8,7 +8,7 @@
             [storefront.utils.query :as query]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
             [storefront.components.validation-errors :refer [validation-errors-component]]
-            [storefront.messages :refer [send]]
+            [storefront.messages :refer [handle-message]]
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
@@ -53,8 +53,8 @@
   (reify
     om/IDidMount
     (did-mount [this]
-      (send data events/checkout-address-component-mounted {:address-elem id
-                                                            :address-keypath address-keypath}))
+      (handle-message events/checkout-address-component-mounted {:address-elem id
+                                                                 :address-keypath address-keypath}))
     om/IRender
     (render [_]
       (html (textfield "Street Address"
@@ -101,10 +101,9 @@
                       :required? true
                       :options (get-in data keypaths/states)
                       :value (get-in data keypaths/checkout-billing-address-state)
-                      :on-change #(send data
-                                        events/control-change-state
-                                        {:keypath keypaths/checkout-billing-address-state
-                                         :value (selected-value %)})})
+                      :on-change #(handle-message events/control-change-state
+                                                  {:keypath keypaths/checkout-billing-address-state
+                                                   :value (selected-value %)})})
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-billing-address-zip)
                           {:id :billing-zipcode :required? true}))))]]])
@@ -151,10 +150,9 @@
                       :required? true
                       :options (get-in data keypaths/states)
                       :value (get-in data keypaths/checkout-shipping-address-state)
-                      :on-change #(send data
-                                        events/control-change-state
-                                        {:keypath keypaths/checkout-shipping-address-state
-                                         :value (selected-value %)})})
+                      :on-change #(handle-message events/control-change-state
+                                                  {:keypath keypaths/checkout-shipping-address-state
+                                                   :value (selected-value %)})})
         (textfield "Zip"
                    (merge (utils/change-text data owner keypaths/checkout-shipping-address-zip)
                           {:id :shipping-zipcode
@@ -175,7 +173,6 @@
          (let [saving (query/get {:request-key request-keys/update-addresses}
                                  (get-in data keypaths/api-requests))]
            [:a.large.continue.button.primary
-            {:on-click (when-not saving (utils/send-event-callback data
-                                                                   events/control-checkout-update-addresses-submit))
+            {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
             "Continue to Shipping"])]]]]])))

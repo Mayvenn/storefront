@@ -17,16 +17,16 @@
             [storefront.utils.query :as query]
             [storefront.utils.sequences :refer [update-vals]]))
 
-(defn display-taxon [data selected-taxon taxon]
+(defn display-taxon [selected-taxon taxon]
   (let [taxon-path (taxon-path-for taxon)
         selected-class (if (= selected-taxon taxon) "selected" nil)
         taxon-classes (string/join " " (conj [taxon-path] selected-class))]
     [:div.hair-taxon.decorated.small-width {:class taxon-classes}
-     [:a.taxon-link (utils/route-to data events/navigate-category {:taxon-path taxon-path})
+     [:a.taxon-link (utils/route-to events/navigate-category {:taxon-path taxon-path})
       [:p.hair-taxon-name (:name taxon)]]]))
 
-(defn display-product [data taxon-id product]
-  [:a (utils/route-to data events/navigate-product
+(defn display-product [taxon-id product]
+  [:a (utils/route-to events/navigate-product
                       {:product-path (:slug product)
                        :query-params {:taxon_id taxon-id}})
    [:div.taxon-product-container
@@ -51,7 +51,7 @@
        [:div.taxon-products-container
         (when-not (:stylist_only? taxon)
           [:div.taxon-nav
-           (map (partial display-taxon data taxon)
+           (map (partial display-taxon taxon)
                 (filter-nav-taxons (get-in data keypaths/taxons)))
            [:div {:style {:clear "both"}}]])
         [:div.taxon-products-list-container
@@ -60,7 +60,7 @@
                                                 [(taxon-path-for taxon)])}
                           (get-in data keypaths/api-requests))
              [:.spinner]
-             (map (partial display-product data (:id taxon)) products)))]]
+             (map (partial display-product (:id taxon)) products)))]]
 
        [:div.gold-features
         [:figure.guarantee-feature]
@@ -90,9 +90,8 @@
   (let [selected-set (set (keys selected-options))]
     (first (drop-while selected-set selection-flow))))
 
-(defn option-selection-event [data step-name selected-options selected-variants]
-  (utils/send-event-callback data
-                             events/control-bundle-option-select
+(defn option-selection-event [step-name selected-options selected-variants]
+  (utils/send-event-callback events/control-bundle-option-select
                              {:step-name step-name
                               :selected-options selected-options
                               :selected-variants selected-variants}))
@@ -136,8 +135,7 @@
          :represented represented?
          :checked (= (get all-selections step-name nil) option-name)
          :sold-out sold-out?
-         :on-change (option-selection-event data
-                                            step-name
+         :on-change (option-selection-event step-name
                                             (assoc prior-selections step-name option-name)
                                             option-variants)}))))
 
@@ -181,7 +179,7 @@
                           (get-in data keypaths/api-requests))]
     [:button.large.primary.alternate#add-to-cart-button
      {:on-click (when-not saving
-                  (utils/send-event-callback data events/control-build-add-to-bag))
+                  (utils/send-event-callback events/control-build-add-to-bag))
       :class (when saving "saving")}
      "ADD TO CART"]))
 
@@ -303,7 +301,7 @@
                     [:div.added-to-bag-container
                      (map (partial display-bagged-variant data) bagged-variants)]
                     [:div.go-to-checkout
-                     [:a.cart-button (utils/route-to data events/navigate-cart) "Checkout"]]])]))
+                     [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]))
              [:ul.category-description
               (for [description (category-descriptions taxon)]
                 [:li description])]])]

@@ -88,8 +88,7 @@
      [:div.manage-account-content
       [:form.edit_mayvenn_stylist.simple_form
        {:on-submit
-        (utils/send-event-callback data
-                                   events/control-stylist-manage-account-submit)}
+        (utils/send-event-callback events/control-stylist-manage-account-submit)}
        [:.profile-info
 
         [:h4.manage-account-header.no-top-space "Profile Info"]
@@ -109,7 +108,7 @@
             [:span#filename "Change photo"]
 
             [:input.file-picker#mayvenn_stylist_profile_picture
-             (merge (utils/change-file data events/control-stylist-profile-picture)
+             (merge (utils/change-file events/control-stylist-profile-picture)
                     {:name "mayvenn_stylist[profile_picture]" :type "file"})]]]
 
           (input-field data owner [:user :email] :field-type "email")
