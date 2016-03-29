@@ -129,10 +129,7 @@
              [:div
               (for [referral referrals]
                 (show-referral earning-amount referral))
-              (pagination/fetch-more events/control-stylist-referrals-fetch
-                                     fetching?
-                                     page
-                                     pages)])
+              (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
            (when (zero? pages) empty-referrals)]
           [:.sm-col-right.sm-col-4.clearfix
            (when (and (seq referrals) (pos? lifetime-total))

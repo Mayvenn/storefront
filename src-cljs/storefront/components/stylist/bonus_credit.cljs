@@ -16,8 +16,7 @@
    [:.mr1
     (svg/adjustable-check {:width "12px" :height "12px" :class "stroke-green"})]
    [:.flex-auto.h5
-    "Credit Earned: " (f/as-money-without-cents amount)
-    " on " (f/epoch-date created-at)]
+    "Credit Earned: " (f/as-money-without-cents amount) " on " (f/epoch-date created-at)]
    [:.h3.ml1.mr1.strike (f/as-money-without-cents revenue-surpassed)]])
 
 (defn bonus-history-component [{:keys [history page pages fetching?]}]
@@ -29,10 +28,7 @@
 
        (map display-stylist-bonus history)
 
-       (pagination/fetch-more events/control-stylist-bonuses-fetch
-                              fetching?
-                              page
-                              pages)]))))
+       (pagination/fetch-more events/control-stylist-bonuses-fetch fetching? page pages)]))))
 
 (defn pending-bonus-progress [{:keys [progress milestone]}]
   (let [bar-value (min 100 (/ progress (/ milestone 100.0)))

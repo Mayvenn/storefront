@@ -198,10 +198,7 @@
              [:.mb3
               (for [commission history]
                 (show-commission commission expanded? shipping-methods products))
-              (pagination/fetch-more events/control-stylist-commissions-fetch
-                                     fetching?
-                                     page
-                                     pages)])
+              (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
            (when (zero? pages) empty-commissions)]
 
           [:.sm-col.sm-col-3

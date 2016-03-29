@@ -4,11 +4,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.utils.query :as query]))
 
-(defn at-end? [page pages]
+(defn more-pages? [page pages]
   (> (or pages 0) (or page 0)))
 
 (defn fetch-more [event fetching? page pages]
-  (when (at-end? page pages)
+  (when (more-pages? page pages)
     [:.col-5.mx-auto.my3
      (if fetching?
        (utils/spinner)
