@@ -33,14 +33,15 @@
 (defn pending-bonus-progress [{:keys [progress milestone]}]
   (let [bar-value (min 100 (/ progress (/ milestone 100.0)))
         bar-width (str (max 15 bar-value) "%")
-        bar-padding-y {:padding-top ".25em"
-                       :padding-bottom ".2em"}]
+        bar-padding-y {:height "1.5em"}]
     [:div.my2.border.border-silver.capped
      (if (zero? progress)
-       [:div.gray.left-align.px1 {:style bar-padding-y} "0%"]
-       [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.right-align.px2.capped.engrave-2.line-height-1
+       [:div.gray.left-align.px1.self-center.flex.items-center {:style bar-padding-y}
+        [:div.flex-auto "0%"]]
+       [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.px2.capped.engrave-2.flex.items-center
         {:style (merge bar-padding-y {:width bar-width})}
-        (str (.toFixed bar-value 0) "%")])]))
+        [:div.right-align.flex-auto
+         (str (.toFixed bar-value 0) "%")]])]))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
