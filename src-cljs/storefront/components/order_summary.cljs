@@ -20,9 +20,9 @@
    [:span.cart-label name]
    [:span.cart-value value]])
 
-(defn- display-adjustment-row [data {:keys [name price coupon-code]}]
+(defn- display-adjustment-row [{:keys [name price coupon-code]}]
   (when-not (= price 0)
-    [:tr.order-summary-row.adjustment
+    [:tr.order-summary-row.adjustment {:key name}
      [:td
       [:h5 (orders/display-adjustment-name name)
        (when coupon-code
@@ -31,8 +31,8 @@
      [:td
       [:h5 (as-money price)]]]))
 
-(defn- display-adjustments [data adjustments]
-  (map (partial display-adjustment-row data) adjustments))
+(defn- display-adjustments [adjustments]
+  (map display-adjustment-row adjustments))
 
 (defn- display-shipment [data shipping]
   (when-let [shipping-methods (get-in data keypaths/shipping-methods)]
@@ -86,27 +86,27 @@
    [:h4.order-summary-header "Order Summary"]
    [:table.order-summary-total
     (let [adjustments (orders/all-order-adjustments order)
-          quantity    (orders/product-quantity order)]
+          quantity    (orders/product-quantity order)
+          shipping-item (orders/shipping-item order)
+          store-credit (-> order :cart-payments :store-credit)]
       [:tbody
-       (when-not (empty? adjustments)
-         (list
-          [:tr.cart-subtotal.order-summary-row
-           [:td
-            [:h5 (str "Subtotal (" quantity " Item"
-                      (when (> quantity 1) "s") ")")]]
-           [:td
-            [:h5 (as-money (orders/products-subtotal order))]]]
-          (display-adjustments data adjustments)
-          (when-let [shipping-item (orders/shipping-item order)]
-            (display-shipment data shipping-item))))
+       [:tr.cart-subtotal.order-summary-row
+        [:td
+         [:h5 (str "Subtotal (" quantity " Item"
+                   (when (> quantity 1) "s") ")")]]
+        [:td
+         [:h5 (as-money (orders/products-subtotal order))]]]
+       (display-adjustments adjustments)
+       (when shipping-item
+         (display-shipment data shipping-item))
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]
-       (when-let [store-credit (-> order :cart-payments :store-credit)]
-         (list
-          [:tr.store-credit-used.order-summary-row.adjustment
-           [:td [:h5 "Store Credit"]]
-           [:td [:h5 (as-money (- (:amount store-credit)))]]]
-          [:tr.balance-due.order-summary-row.cart-total
-           [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
-           [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]]))])]])
+       (when store-credit
+         [:tr.store-credit-used.order-summary-row.adjustment
+          [:td [:h5 "Store Credit"]]
+          [:td [:h5 (as-money (- (:amount store-credit)))]]])
+       (when store-credit
+         [:tr.balance-due.order-summary-row.cart-total
+          [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
+          [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]])])]])
