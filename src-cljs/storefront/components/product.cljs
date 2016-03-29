@@ -26,14 +26,15 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-variant [app-state {:keys [quantity product variant]}]
+(defn display-bagged-variant [{:keys [quantity product variant]}]
   [:div.item-added
    [:strong "Added to Cart: "]
    (str (number->words quantity)
+        " "
         (some-> variant
-            :variant_attrs
-            :length
-            (string/replace #".+" #(str " " %1 " ")))
+                :variant_attrs
+                :length)
+        " "
         (:name product))])
 
 (defn product-component [data owner]
@@ -75,11 +76,10 @@
                                                          :dec-event events/control-counter-dec
                                                          :set-event events/control-counter-set}})]
                [:div#product-price.product-price
+                [:span.price-label "Price:"]
                 (let [variant (selected-variant data product)]
-                  (list
-                   [:span.price-label "Price:"]
-                   [:span.price.selling {:item-prop "price"}
-                    (as-money-without-cents (:price variant))]))
+                  [:span.price.selling {:item-prop "price"}
+                   (as-money-without-cents (:price variant))])
                 [:span {:item-prop "priceCurrency" :content (:currency product)}]
                 (if (get-in product [:master :can_supply?])
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
@@ -88,18 +88,17 @@
                (let [adding-to-cart (query/get {:request-key request-keys/add-to-bag}
                                                (get-in data keypaths/api-requests))]
                  ;; TODO: disable add to bag button until there is a browse-variant-query
-                 [:a.add-to-cart {:style {:clear "both"}}
-                  [:a.large.primary.alternate#add-to-cart-button
-                   {:on-click
-                    (when-not adding-to-cart
-                      (utils/send-event-callback events/control-browse-add-to-bag))
-                    :class (when adding-to-cart "saving")}
-                   "Add to Cart"]])]]]
+                 [:a.large.primary.alternate#add-to-cart-button
+                  {:on-click
+                   (when-not adding-to-cart
+                     (utils/send-event-callback events/control-browse-add-to-bag))
+                   :class (when adding-to-cart "saving")}
+                  "Add to Cart"])]]]
 
             (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
               [:div#after-add {:style {:display "block"}}
                [:div.added-to-bag-container
-                (map (partial display-bagged-variant data) bagged-variants)]
+                (map display-bagged-variant bagged-variants)]
                [:div.go-to-checkout
                 [:a.cart-button
                  (utils/route-to events/navigate-cart)

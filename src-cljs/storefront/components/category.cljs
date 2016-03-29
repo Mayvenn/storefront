@@ -298,7 +298,7 @@
               (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
                 [:div#after-add {:style {:display "block"}}
                  [:div.added-to-bag-container
-                  (map (partial display-bagged-variant data) bagged-variants)]
+                  (map display-bagged-variant bagged-variants)]
                  [:div.go-to-checkout
                   [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]
              (into [:ul.category-description]
