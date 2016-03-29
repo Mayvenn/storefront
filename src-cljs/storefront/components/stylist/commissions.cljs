@@ -189,23 +189,26 @@
 (defn stylist-commissions-component [data]
   (om/component
    (html
-    (if (query/get {:request-key request-keys/get-stylist-commissions} (get-in data keypaths/api-requests))
-      (utils/spinner)
-      [:.mx-auto.container {:data-test "commissions-panel"}
-       [:.clearfix
-        [:.sm-col.sm-col-9
-         (when-let [commissions (seq (get-in data keypaths/stylist-commissions-history))]
-           [:div.mb3
-            (for [commission commissions]
-              (show-commission data commission))
-            (pagination/fetch-more
-             data
-             events/control-stylist-commissions-fetch
-             (get-in data keypaths/stylist-commissions-page)
-             (get-in data keypaths/stylist-commissions-pages))])
-         (when (zero? (get-in data keypaths/stylist-commissions-pages))
-           empty-commissions)]
+    (let [commissions (seq (get-in data keypaths/stylist-commissions-history))]
+      (if (and (empty? commissions)
+               (query/get {:request-key request-keys/get-stylist-commissions} (get-in data keypaths/api-requests)))
+        (utils/spinner {:height "100px"})
+        [:.mx-auto.container {:data-test "commissions-panel"}
+         [:.clearfix
+          [:.sm-col.sm-col-9
+           (when commissions
+             [:div.mb3
+              (for [commission commissions]
+                (show-commission data commission))
+              (pagination/fetch-more
+               data
+               events/control-stylist-commissions-fetch
+               request-keys/get-stylist-commissions
+               (get-in data keypaths/stylist-commissions-page)
+               (get-in data keypaths/stylist-commissions-pages))])
+           (when (zero? (get-in data keypaths/stylist-commissions-pages))
+             empty-commissions)]
 
-        [:.sm-col.sm-col-3
-         (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
-           (show-commission-rate commission-rate))]]]))))
+          [:.sm-col.sm-col-3
+           (when-let [commission-rate (get-in data keypaths/stylist-commissions-rate)]
+             (show-commission-rate commission-rate))]]])))))

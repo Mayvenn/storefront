@@ -56,7 +56,7 @@
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
 
 (defn spinner
-  ([] (spinner {:width "100%" :height "100px"}))
+  ([] (spinner {:width "100%" :height "32px"}))
   ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
 
 (defn position [pred coll]

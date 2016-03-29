@@ -108,13 +108,14 @@
 (defn stylist-referrals-component [data owner]
   (om/component
    (html
-    (if (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests))
-      (utils/spinner)
-      (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
-            referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
-            sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
-            bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
-            lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
+    (let [earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
+          referrals       (seq (get-in data keypaths/stylist-referral-program-referrals))
+          sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
+          bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
+          lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)]
+      (if (and (empty? referrals)
+               (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests)))
+        (utils/spinner {:height "100px"})
         [:.mx-auto.container {:data-test "referrals-panel"}
          [:.clearfix.mb3
           [:.sm-col-right.sm-col-4
@@ -129,6 +130,7 @@
               (pagination/fetch-more
                data
                events/control-stylist-referrals-fetch
+               request-keys/get-stylist-referral-program
                (get-in data keypaths/stylist-referral-program-page)
                (get-in data keypaths/stylist-referral-program-pages))])
            (when (zero? (get-in data keypaths/stylist-referral-program-pages))

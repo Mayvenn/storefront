@@ -32,6 +32,7 @@
        (pagination/fetch-more
         data
         events/control-stylist-bonuses-fetch
+        request-keys/get-stylist-bonus-credits
         (get-in data keypaths/stylist-bonuses-page)
         (get-in data keypaths/stylist-bonuses-pages))]))))
 
@@ -63,14 +64,15 @@
 (defn stylist-bonus-credit-component [data]
   (om/component
    (html
-    (if (query/get {:request-key request-keys/get-stylist-bonus-credits} (get-in data keypaths/api-requests))
-      (utils/spinner)
-      (let [available-credit (get-in data keypaths/user-total-available-store-credit)
-            award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
-            milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
-            progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-            lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
-            history          (seq (get-in data keypaths/stylist-bonuses-history))]
+    (let [available-credit (get-in data keypaths/user-total-available-store-credit)
+          award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
+          milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
+          progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
+          lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
+          history          (seq (get-in data keypaths/stylist-bonuses-history))]
+      (if (and (empty? history)
+               (query/get {:request-key request-keys/get-stylist-bonus-credits} (get-in data keypaths/api-requests)))
+        (utils/spinner {:height "100px"})
         [:.mx-auto.container {:data-test "bonuses-panel"}
          [:.clearfix.mb3
           [:.sm-col.sm-col-8
@@ -98,7 +100,7 @@
                  [:p
                   "Bonus credits available " [:span.green (f/as-money available-credit)]
                   [:br]
-                  "why not treat yo self?"]
+                  "Why not treat yourself?"]
 
                  [:p.btn.mt1
                   [:a.teal
