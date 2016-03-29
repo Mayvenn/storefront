@@ -159,7 +159,7 @@
    (transition-group {:transitionName "commission-order"
                       :component "div"}
                      (when (expanded? number)
-                       [:div.transition-2.transition-ease.overflow-auto
+                       [:div.transition-3.transition-ease.overflow-auto.commission-order
                         [:.bg-white.px2
                          (show-order products shipping-methods order)
                          (show-grand-total commissionable-amount)]
