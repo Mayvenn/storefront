@@ -12,21 +12,21 @@
             [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.utils :as utils]))
 
-(defn display-shipping-method [app-state shipping-method]
+(defn display-shipping-method [selected-sku {:keys [sku name price] :as shipping-method}]
   [:li.shipping-method
-   (merge (if (= (get-in app-state keypaths/checkout-selected-shipping-method-sku)
-                 (:sku shipping-method))
-            {:class "selected"})
-          {:on-click (utils/send-event-callback events/control-checkout-shipping-method-select
-                                                shipping-method)})
+   (merge {:key sku
+           :on-click (utils/send-event-callback events/control-checkout-shipping-method-select
+                                                shipping-method)}
+          (when (= selected-sku sku)
+            {:class "selected"}))
    [:label
     [:input.ship-method-radio {:type "radio"}]
     [:div.checkbox-container
      [:figure.large-checkbox]]
     [:div.shipping-method-container
-     [:div.rate-name (:name shipping-method)]
-     [:div.rate-timeframe (shipping/timeframe (:sku shipping-method))]]
-    [:div.rate-cost (as-money-or-free (:price shipping-method))]]])
+     [:div.rate-name name]
+     [:div.rate-timeframe (shipping/timeframe sku)]]
+    [:div.rate-cost (as-money-or-free price)]]])
 
 
 (defn checkout-delivery-component [data owner]
@@ -43,7 +43,7 @@
          [:div.shipment
           [:ul.field.radios.shipping-methods
 
-           (map (partial display-shipping-method data)
+           (map (partial display-shipping-method (get-in data keypaths/checkout-selected-shipping-method-sku))
                 (get-in data keypaths/shipping-methods))]]]
         [:div.form-buttons
          (let [saving (query/get {:request-key request-keys/update-shipping-method}
