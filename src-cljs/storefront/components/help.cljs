@@ -20,7 +20,7 @@
        [:div.hours-icon-container [:figure.hours-icon]]
        [:p.spaced-help.hours "HOURS: Monday - Friday, 9-5 PST"]
        [:p.spaced-help.shipment-schedule
-        "Orders placed before 11am PST ship that day"]]
+        "Orders placed before 10am PST ship that day"]]
       [:h4.manage-account-header.no-top-space "Get In Touch"]
       [:div.solid-line-divider]
       [:div#help-methods
