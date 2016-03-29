@@ -185,7 +185,7 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn cached-stylist-commissions-component [{:keys [commissions expanded? shipping-methods products fetching?]}]
+(defn stylist-commissions-component [{:keys [commissions expanded? shipping-methods products fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
@@ -204,12 +204,9 @@
           [:.sm-col.sm-col-3
            (when rate (show-commission-rate rate))]]])))))
 
-(defn stylist-commissions-component [data]
-  (om/component
-   (html
-    (om/build cached-stylist-commissions-component
-              {:commissions      (get-in data keypaths/stylist-commissions)
-               :expanded?        (get-in data keypaths/expanded-commission-order-id)
-               :shipping-methods (get-in data keypaths/shipping-methods)
-               :products         (get-in data keypaths/products)
-               :fetching?        (query/get {:request-key request-keys/get-stylist-commissions} (get-in data keypaths/api-requests))}))))
+(defn stylist-commissions-query [data]
+  {:commissions      (get-in data keypaths/stylist-commissions)
+   :expanded?        (get-in data keypaths/expanded-commission-order-id)
+   :shipping-methods (get-in data keypaths/shipping-methods)
+   :products         (get-in data keypaths/products)
+   :fetching?        (query/get {:request-key request-keys/get-stylist-commissions} (get-in data keypaths/api-requests))})

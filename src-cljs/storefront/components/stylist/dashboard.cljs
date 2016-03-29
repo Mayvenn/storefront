@@ -3,9 +3,9 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.formatters :as f]
             [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
-            [storefront.components.stylist.commissions :refer [stylist-commissions-component]]
-            [storefront.components.stylist.bonus-credit :refer [stylist-bonus-credit-component]]
-            [storefront.components.stylist.referrals :refer [stylist-referrals-component]]
+            [storefront.components.stylist.commissions :as commissions]
+            [storefront.components.stylist.bonus-credit :as bonuses]
+            [storefront.components.stylist.referrals :as referrals]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -84,9 +84,13 @@
                  :selected (get-in data keypaths/selected-stylist-stat)})
 
       (om/build nav-component (get-in data keypaths/navigation-event))
-      (om/build
-       (condp = (get-in data keypaths/navigation-event)
-         events/navigate-stylist-dashboard-commissions  stylist-commissions-component
-         events/navigate-stylist-dashboard-bonus-credit stylist-bonus-credit-component
-         events/navigate-stylist-dashboard-referrals    stylist-referrals-component)
-       data)]])))
+      (condp = (get-in data keypaths/navigation-event)
+
+        events/navigate-stylist-dashboard-commissions
+        (om/build commissions/stylist-commissions-component (commissions/stylist-commissions-query data))
+
+        events/navigate-stylist-dashboard-bonus-credit
+        (om/build bonuses/stylist-bonuses-component (bonuses/stylist-bonuses-query data))
+
+        events/navigate-stylist-dashboard-referrals
+        (om/build referrals/stylist-referrals-component (referrals/stylist-referrals-query data)))]])))
