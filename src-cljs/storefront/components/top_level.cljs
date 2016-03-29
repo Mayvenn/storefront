@@ -7,7 +7,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.slideout-nav :refer [slideout-nav-component]]
             [storefront.components.header :refer [header-component]]
-            [storefront.components.footer :refer [footer-component]]
+            [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
             [storefront.components.category :refer [category-component]]
             [storefront.components.categories :refer [categories-component]]
@@ -102,4 +102,4 @@
              home-component)
            data))]]
       (when-not (get-in data keypaths/get-satisfaction-login?)
-        (om/build footer-component data))]])))
+        (om/build footer/footer-component (footer/footer-query data)))]])))

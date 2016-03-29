@@ -43,11 +43,11 @@
 (def copy
   (html [:span {:dangerouslySetInnerHTML {:__html "&copy;"}}]))
 
-(defn cached-footer-component [{:keys [nav-event sms-number]} _]
+(defn footer-component [{:keys [minimal? sms-number]} _]
   (om/component
    (html
     [:footer#footer
-     (if (minimal-footer-events nav-event)
+     (if minimal?
        (contact-us sms-number)
        (list
         [:div.footer-logo-container [:figure.footer-logo]]
@@ -68,8 +68,6 @@
          [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
          [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]))])))
 
-(defn footer-component [data owner]
-  (om/component
-   (html
-    (om/build cached-footer-component {:nav-event (get-in data keypaths/navigation-event)
-                                       :sms-number (get-in data keypaths/sms-number)}))))
+(defn footer-query [data]
+  {:minimal? (minimal-footer-events (get-in data keypaths/navigation-event))
+   :sms-number (get-in data keypaths/sms-number)})
