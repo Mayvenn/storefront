@@ -434,7 +434,7 @@
     {:user-id user-id :user-token user-token :page page}
     :handler
     #(handle-message events/api-success-stylist-commissions
-                     (select-keys % [:rate :commissions :current_page :pages]))}))
+                     (select-keys % [:rate :commissions :current-page :pages]))}))
 
 (defn get-stylist-bonus-credits [handle-message user-token {:keys [page]}]
   (api-req
