@@ -44,7 +44,7 @@
         [:h5 (as-money (* (:quantity shipping) (:unit-price shipping)))]]])))
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
-  [:div.line-item
+  [:div.line-item {:key variant-id}
    [:a [:img {:src (first (products/thumbnail-urls data product-id))
               :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
