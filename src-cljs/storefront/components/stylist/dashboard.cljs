@@ -31,15 +31,6 @@
                 :left       (str left "px")
                 :width      (str width "px")}}]))))
 
-(defn get-node
-  "A backport of om/get-node, which returns nil instead of raising error when
-  owner doesn't have refs yet"
-  ([owner]
-   (.getDOMNode owner))
-  ([owner name]
-   {:pre [(string? name)]}
-   (some-> (.-refs owner) (aget name) (.getDOMNode))))
-
 (defn get-x-dimension [node]
   (if node
     (let [rect (.getBoundingClientRect node)]
@@ -49,9 +40,9 @@
 
 (defn nav-component [nav-state owner]
   (letfn [(tab-bounds []
-            (let [{parent-left :left} (get-x-dimension (get-node owner "tabs"))]
+            (let [{parent-left :left} (get-x-dimension (om/get-ref owner "tabs"))]
               (vec (for [tab-ref tab-refs]
-                     (let [{:keys [left width]} (get-x-dimension (get-node owner tab-ref))]
+                     (let [{:keys [left width]} (get-x-dimension (om/get-ref owner tab-ref))]
                        {:left  (- left parent-left)
                         :width width})))))
           (cache-tab-bounds [] (om/set-state! owner {:tab-bounds (tab-bounds)}))
