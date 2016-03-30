@@ -62,17 +62,18 @@
 (defn products-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-items order))))
 
+(defn non-store-credit-payment-amount [order]
+  (->> order
+       :payments
+       (remove (comp #{"store-credit"} :payment-type))
+       (map :amount)
+       (apply +)))
+
 (defn fully-covered-by-store-credit? [order user]
   (boolean
    (when (and order user)
      (>= (:total-available-store-credit user)
          (:total order)))))
-
-(defn partially-covered-by-store-credit? [order user]
-  (boolean
-   (when (and order user)
-     (< (:total-available-store-credit user)
-        (:total order)))))
 
 (defn tax-adjustment [order]
   {:name "Tax" :price (:tax-total order)})

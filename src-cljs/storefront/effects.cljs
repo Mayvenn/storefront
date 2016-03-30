@@ -637,6 +637,7 @@
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
   (analytics/track-event "orders" "placed_total" nil (int (:total order)))
+  (analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
   (talkable/show-pending-offer app-state))
 
