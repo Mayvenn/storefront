@@ -23,7 +23,9 @@
     (utils/route-to events/navigate-category
                     {:taxon-path kits-path})))
 
-(defn navigate-community []
+(defn navigate-community
+  "Can't be a def because (fastpass/community-url) is impure."
+  []
   {:href (or (fastpass/community-url) "#")
    :on-click (utils/send-event-callback events/external-redirect-community)})
 
