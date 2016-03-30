@@ -337,7 +337,7 @@ html { line-height: 1.2; }
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
  * with how our fonts change size at different screen widths. Use px instead: */
 @custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
-@custom-media --breakpoint-sm (min-width: 0px);
+@custom-media --breakpoint-sm (min-width: 480px);
 @custom-media --breakpoint-md (min-width: 640px);
 @custom-media --breakpoint-lg (min-width: 768px);
 
