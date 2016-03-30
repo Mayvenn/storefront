@@ -140,7 +140,7 @@
                                             option-variants)}))))
 
 (defn step-html [step-name idx options]
-  [:.step {:key idx}
+  [:.step {:key step-name}
    [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
    [:.options
     (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
