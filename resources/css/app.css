@@ -73,6 +73,7 @@ html { line-height: 1.2; }
 .titleize { text-transform: capitalize; }
 .strike { text-decoration: line-through; }
 
+.shadow { text-shadow: 1px 1px #000; }
 .engrave-2 { text-shadow: var(--inset-top-2); }
 
 /* Use customized Graphik fonts when applying .medium or .bold */
@@ -304,6 +305,15 @@ html { line-height: 1.2; }
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
 .img-spinner      { background-image: url("/images/spinner.svg"); }
 
+.img-straight { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
+.img-blonde { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
+.img-curly { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
+.img-deep-wave { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }
+.img-loose-wave { background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png'); }
+.img-body-wave { background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png'); }
+.img-closures { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.png'); }
+.img-frontals { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.png'); }
+
 /* Custom interaction */
 
 .pointer { cursor: pointer; }
@@ -327,7 +337,7 @@ html { line-height: 1.2; }
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
  * with how our fonts change size at different screen widths. Use px instead: */
 @custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
-@custom-media --breakpoint-sm (min-width: 480px);
+@custom-media --breakpoint-sm (min-width: 0px);
 @custom-media --breakpoint-md (min-width: 640px);
 @custom-media --breakpoint-lg (min-width: 768px);
 

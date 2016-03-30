@@ -1,6 +1,7 @@
 (ns storefront.components.categories
   (:require [storefront.components.utils :as utils]
             [storefront.keypaths :as keypaths]
+            [storefront.hooks.experiments :as experiments]
             [storefront.accessors.taxons :refer [filter-nav-taxons
                                                  taxon-class-name
                                                  taxon-path-for]]
@@ -11,26 +12,46 @@
 (defn category [taxon index]
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
-    [:a.hair-category-container
+    [:a.col.mn1.p1
      (merge
       (utils/route-to events/navigate-category
                       {:taxon-path taxon-path})
-      (when (> index 5)
-        {:class "extra-wide"}))
-     [:p.hair-category-label taxon-name]
-     [:div.hair-category-image {:class taxon-path}]]))
+      (if (> index 5)
+        {:class "col-12"}
+        {:class "sm-col-6 md-col-6 lg-col-4"}))
+     [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
+      {:class (str "img-" taxon-path)
+       :style {:width "100%"
+               :height "200px"}}
+      [:.h1.white.center.col-12.titleize.shadow
+       taxon-name]]]))
+
+(defn frontal-category [taxon index]
+  (let [taxon-name (taxon :name)
+        taxon-path (taxon-path-for taxon)]
+    [:a.col.mn1.p1
+     (merge
+      (utils/route-to events/navigate-category
+                      {:taxon-path taxon-path})
+      (if (> index 5)
+        {:class "sm-col-12 lg-col-6"}
+        {:class "sm-col-6 md-col-6 lg-col-4"}))
+     [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
+      {:class (str "img-" taxon-path)
+       :style {:width "100%"
+               :height "200px"}}
+      [:.h1.white.center.col-12.titleize.shadow
+       taxon-name]]]))
 
 (defn categories-component [data owner]
   (om/component
    (html
     [:div.bundle-builder
-     [:header
-      [:h1
-       [:div "Select Your Favorite Style"]
-       [:.category-header-sub "Mayvenn hair is available in six" [:br] "different styles for every occasion"]]]
-     [:div
-      [:div.category-list
-       (map category
-            (filter-nav-taxons (get-in data keypaths/taxons))
-            (range))
-       [:div {:style {:clear "both"}}]]]])))
+     [:.center.black
+      [:h1.regular
+       [:div "Select your favorite style"]]]
+     [:div.clearfix.px2.py1.category-grid
+      (if (experiments/frontals? data)
+        (map frontal-category (filter-nav-taxons (get-in data keypaths/taxons)) (range))
+        (drop-last (map category (filter-nav-taxons (get-in data keypaths/taxons)) (range))))
+      [:div {:style {:clear "both"}}]]])))

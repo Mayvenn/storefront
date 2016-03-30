@@ -28,6 +28,9 @@
 (defn guest-checkout? [data]
   (display-variation data "guest-checkout"))
 
+(defn frontals? [data]
+  (display-variation data "frontals"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))
