@@ -114,10 +114,14 @@
         (exception-handler/refresh)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (reviews/insert-reviews)
-  (api/get-products (get-in app-state keypaths/api-cache)
-                    taxon-path
-                    (get-in app-state keypaths/user-token)))
+  (if (and (= taxon-path "frontals")
+           (not (experiments/frontals? app-state)))
+    (routes/enqueue-redirect events/navigate-categories)
+    (do
+      (reviews/insert-reviews)
+      (api/get-products (get-in app-state keypaths/api-cache)
+                        taxon-path
+                        (get-in app-state keypaths/user-token)))))
 
 (defn bundle-builder-redirect [app-state product]
   (routes/enqueue-navigate events/navigate-category
