@@ -10,7 +10,7 @@
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
             [storefront.components.category :refer [category-component]]
-            [storefront.components.categories :refer [categories-component]]
+            [storefront.components.categories :refer [categories-page-component]]
             [storefront.components.product :refer [product-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
@@ -91,7 +91,7 @@
              (condp = (get-in data keypaths/navigation-event)
                events/navigate-home                           home-component
                events/navigate-cart                           cart-component
-               events/navigate-categories                     categories-component
+               events/navigate-categories                     categories-page-component
                events/navigate-category                       category-component
                events/navigate-product                        product-component
                events/navigate-guarantee                      thirty-day-guarantee-component

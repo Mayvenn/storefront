@@ -1,6 +1,8 @@
 (ns storefront.components.home
   (:require [storefront.components.utils :as utils]
+            [storefront.components.categories :refer [categories-component]]
             [storefront.hooks.analytics :as analytics]
+            [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for]]
             [storefront.accessors.navigation :as navigation]
@@ -22,7 +24,7 @@
       [:div.hair-taxon {:class taxon-path}]
       [:div.hair-image.image-cover {:class taxon-path}]]]))
 
-(defn home-component [data owner]
+(defn non-frontal-home-component [data owner]
   (om/component
    (html
     [:div#home-content
@@ -42,3 +44,20 @@
        (apply utils/route-to (navigation/shop-now-navigation-message data))]
       [:p.featured-product-banner "Introducing Peruvian In All Textures"]]
      [:div {:style {:clear "both"}}]])))
+
+(defn frontal-home-component [data owner]
+  (om/component
+   (html
+    [:div
+     [:a.img-home.block.bg-no-repeat.bg-contain.bg-center.col-12
+      (apply utils/route-to (navigation/shop-now-navigation-message data))]
+     [:div.m2
+      [:div.text-free-shipping-banner.col-12
+       [:p "Free Shipping + 30 Day Money Back Guarantee"]]
+      (om/build categories-component data)]])))
+
+
+(defn home-component [data owner]
+  (if (experiments/frontals? data)
+    (frontal-home-component data owner)
+    (non-frontal-home-component data owner)))

@@ -12,7 +12,7 @@
 (defn category [frontals? index taxon]
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
-    [:a.col.mn1.p1
+    [:a.col.p1
      (merge
       {:key taxon-path}
       (utils/route-to events/navigate-category
@@ -29,14 +29,20 @@
 (defn categories-component [data owner]
   (om/component
    (html
-    [:div.mt2
+    [:div
      [:.center.black
-      [:h1.regular
+      [:h1.regular.py2
        [:div "Select your favorite style"]]]
-     [:div.clearfix.px2.py1.category-grid
+     [:div.clearfix.mxn1.category-grid
       (let [frontals? (experiments/frontals? data)
             taxons (map-indexed (partial category frontals?) (filter-nav-taxons (get-in data keypaths/taxons)))]
         (if frontals?
           taxons
           (drop-last taxons)))
       [:div {:style {:clear "both"}}]]])))
+
+(defn categories-page-component [data owner]
+  (om/component
+   (html
+    [:.m2
+     (om/build categories-component data)])))
