@@ -157,6 +157,8 @@
   [:div {:key id}
    (show-collapsed-commission expanded? commission)
    (transition-group {:transitionName "commission-order"
+                      :transitionEnterTimeout 1000
+                      :transitionLeaveTimeout 1000
                       :component "div"}
                      (when (expanded? number)
                        [:div.transition-3.transition-ease.overflow-auto.commission-order

@@ -55,17 +55,20 @@
        (catch :default e
          (exception-handler/report e))))))
 
-(defn main [app-state]
+(defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state))
   (routes/start-history)
+  (handle-message app-state events/app-start)
+  (routes/set-current-page))
+
+(defn main- [app-state]
   (om/root
    top-level-component
    app-state
    {:target (.getElementById js/document "content")})
+  (reload-app app-state))
 
-  (handle-message app-state events/app-start)
-  (routes/set-current-page))
-
+(defonce main (memoize main-))
 (defonce app-state (atom (state/initial-state)))
 
 (defn debug-force-token [token]
@@ -76,7 +79,7 @@
 
 (defn on-jsload []
   (handle-message app-state events/app-stop)
-  (main app-state))
+  (reload-app app-state))
 
 (defn ^:export fail []
   (try
