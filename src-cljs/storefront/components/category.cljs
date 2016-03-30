@@ -3,7 +3,7 @@
             [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for taxon-class-name] :as taxons]
+            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for] :as taxons]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
@@ -47,7 +47,7 @@
    (html
     (if-let [taxon (taxons/current-taxon data)]
       [:div
-       [:div.taxon-products-banner {:class (taxon-class-name taxon)}]
+       [:div.taxon-products-banner.stylist-products]
        [:div.taxon-products-container
         (when-not (:stylist_only? taxon)
           [:div.taxon-nav
@@ -70,11 +70,12 @@
 
 ;; Bundle builder below
 
-(def display-product-images-for-taxons #{"blonde" "closures"})
+(def display-product-images-for-taxons #{"blonde" "closures" "frontal"})
 
 (defn selection-flow [data]
   (let [taxon-name (:name (taxons/current-taxon data))]
     (case taxon-name
+      "frontal" '(:style :material :origin :length)
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :origin :length)
       '(:origin :length))))
@@ -225,6 +226,14 @@
 
 (defn category-descriptions [taxon]
   (case (:name taxon)
+    "frontal"
+    '("100% Human Virgin Hair"
+      "13\" x 4\" size"
+      "Lace Material"
+      "Colors: 1B and #613 Blonde"
+      "14\" and 18\" Length Bundles"
+      "2.5 ounces")
+
     "closures"
     '("100% Human Virgin Hair"
       "4\" x 4\" size"

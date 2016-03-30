@@ -3,7 +3,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
             [storefront.accessors.taxons :refer [filter-nav-taxons
-                                                 taxon-class-name
                                                  taxon-path-for]]
             [om.core :as om]
             [sablono.core :refer-macros [html]]

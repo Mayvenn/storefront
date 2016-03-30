@@ -10,7 +10,7 @@
   (partial filter :stylist_only?))
 
 (defn taxon-path-for [taxon]
-  (string/replace (:name taxon) #" " "-"))
+  (:slug taxon))
 
 (defn taxon-name-from [taxon-path]
   (string/replace taxon-path #"-" " "))
@@ -21,12 +21,6 @@
                                 first)]
     (taxon-path-for default-taxon)))
 
-(defn taxon-for-permalink [app-state taxon-permalink]
-  (first (filter #(= taxon-permalink (:permalink %)) (get-in app-state keypaths/taxons))))
-
 (defn current-taxon [app-state]
   (query/get (get-in app-state keypaths/browse-taxon-query)
              (get-in app-state keypaths/taxons)))
-
-(defn taxon-class-name [taxon]
-  (string/replace (:permalink taxon) #"/" "-"))

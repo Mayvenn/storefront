@@ -6,7 +6,7 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
-            [storefront.accessors.taxons :refer [taxon-path-for taxon-class-name] :as taxons]
+            [storefront.accessors.taxons :refer [taxon-path-for] :as taxons]
             [storefront.accessors.products :refer [all-variants]]
             [storefront.components.counter :refer [counter-component]]
             [om.core :as om]

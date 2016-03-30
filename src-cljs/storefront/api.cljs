@@ -141,7 +141,7 @@
    "/products"
    (conj request-keys/get-products taxon-path)
    {:params
-    {:taxon_name (taxon-name-from taxon-path)
+    {:taxon-slug taxon-path
      :taxonomy "bundle-builder"
      :user-token user-token}
     :handler
