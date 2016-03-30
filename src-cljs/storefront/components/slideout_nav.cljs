@@ -130,8 +130,22 @@
 (defn logout-box []
   (nav-box "logout" "Logout" (fake-href events/control-sign-out)))
 
-(defn slideout-stylist-nav [{:keys [navigate-hair-message stylist-kits-path]}]
-  (list
+(defn slideout-store-credit [available-store-credit]
+  (when (pos? available-store-credit)
+    [:li.slideout-nav-section
+     [:h4.store-credit
+      [:span.label "Available store credit:"]
+      [:span.value (as-money available-store-credit)]]]))
+
+(def slideout-help
+  [:li.slideout-nav-section
+   [:h3.slideout-nav-section-header "Help"]
+   (nav-box "customer-service" "Customer Service" (utils/route-to events/navigate-help))
+   (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to events/navigate-guarantee))])
+
+(defn slideout-stylist-nav [{:keys [navigate-hair-message stylist-kits-path available-store-credit]}]
+  [:ul.slideout-nav-list
+   (slideout-store-credit available-store-credit)
    [:li.slideout-nav-section.stylist
     [:h3.slideout-nav-section-header.highlight "Manage Store"]
     (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
@@ -144,10 +158,12 @@
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-stylist-manage-account))
-    (logout-box)]))
+    (logout-box)]
+   slideout-help])
 
-(defn slideout-customer-nav [navigate-hair-message]
-  (list
+(defn slideout-customer-nav [{:keys [navigate-hair-message available-store-credit]}]
+  [:ul.slideout-nav-list
+   (slideout-store-credit available-store-credit)
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (nav-hair-box navigate-hair-message)]
@@ -155,36 +171,20 @@
     [:h3.slideout-nav-section-header "My Account"]
     (nav-box "refer-friend" "Refer A Friend" (utils/route-to events/navigate-account-referrals) {:full-width? true})
     (nav-box "manage-account" "Manage Account" (utils/route-to events/navigate-account-manage))
-    (logout-box)]))
+    (logout-box)]
+   slideout-help])
 
-(defn slideout-guest-nav [navigate-hair-message]
-  (list
+(defn slideout-guest-nav [{:keys [navigate-hair-message available-store-credit]}]
+  [:ul.slideout-nav-list
+   (slideout-store-credit available-store-credit)
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (nav-hair-box navigate-hair-message)]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "My Account"]
     (nav-box "sign-in" "Sign In" (utils/route-to events/navigate-sign-in))
-    (nav-box "join" "Join" (utils/route-to events/navigate-sign-up))]))
-
-(defn slideout-nav-component-really [{:keys [available-store-credit user-email navigate-hair-message stylist-kits-path own-store?]} _]
-  (om/component
-   (html
-    [:ul.slideout-nav-list
-     (when (pos? available-store-credit)
-       [:li.slideout-nav-section
-        [:h4.store-credit
-         [:span.label "Available store credit:"]
-         [:span.value (as-money available-store-credit)]]])
-     (cond
-       own-store?           (slideout-stylist-nav {:navigate-hair-message navigate-hair-message
-                                                   :stylist-kits-path     stylist-kits-path})
-       (boolean user-email) (slideout-customer-nav navigate-hair-message)
-       :else                (slideout-guest-nav navigate-hair-message))
-     [:li.slideout-nav-section
-      [:h3.slideout-nav-section-header "Help"]
-      (nav-box "customer-service" "Customer Service" (utils/route-to events/navigate-help))
-      (nav-box "30-day-guarantee" "30 Day Guarantee" (utils/route-to events/navigate-guarantee))]])))
+    (nav-box "join" "Join" (utils/route-to events/navigate-sign-up))]
+   slideout-help])
 
 (defn slideout-nav-component [{:keys [store
                                       slid-out?
@@ -225,16 +225,17 @@
                     :own-store?            own-store?
                     :store-name            store-name})]
         (when slid-out?
-          [:div
-           {:on-click (utils/send-event-callback events/control-menu-collapse
-                                                 {:keypath keypaths/menu-expanded})}
-           [:.fixed.overlay]
-           (om/build slideout-nav-component-really
-                     {:available-store-credit available-store-credit
-                      :user-email             user-email
-                      :own-store?             own-store?
-                      :navigate-hair-message  navigate-hair-message
-                      :stylist-kits-path      stylist-kits-path})])]]))))
+          (let [slideout-query {:available-store-credit available-store-credit
+                                :navigate-hair-message  navigate-hair-message
+                                :stylist-kits-path      stylist-kits-path}]
+            [:div
+             {:on-click (utils/send-event-callback events/control-menu-collapse
+                                                   {:keypath keypaths/menu-expanded})}
+             [:.fixed.overlay]
+             (cond
+               own-store?           (slideout-stylist-nav slideout-query)
+               (boolean user-email) (slideout-customer-nav slideout-query)
+               :else                (slideout-guest-nav slideout-query))]))]]))))
 
 (defn slideout-nav-query [data]
   {:store                  (get-in data keypaths/store)
