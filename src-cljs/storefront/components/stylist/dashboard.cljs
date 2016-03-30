@@ -16,9 +16,9 @@
 
 (defn tab-link [event ref label]
   [:a.black.center.px3.pt2
-   (utils/route-to event)
+   (merge (utils/route-to event) {:key ref})
    [:.py1 {:ref ref
-               :data-test (str "nav-" ref)}
+           :data-test (str "nav-" ref)}
     label]])
 
 (defn sliding-indicator [{:keys [navigation-state tab-bounds]}]

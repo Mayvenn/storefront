@@ -33,8 +33,7 @@
     :style {:width "8px" :height "8px"}}])
 
 (defn ^:private circle-for-stat [stat selected]
-  [:.p1.pointer
-   {:on-click (choose-stat stat)}
+  [:.p1.pointer {:key stat :on-click (choose-stat stat)}
    (circle (= selected stat))])
 
 (defn ^:private money [amount]
@@ -66,39 +65,39 @@
 
 (defmethod render-stat :previous-payout [_ {:keys [amount date]}]
   [:.my3
-   {:class stat-card}
+   {:key "previous-payout" :class stat-card}
    [:.p1 "LAST PAYOUT"]
    (if (> amount 0)
-     (list
+     [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
-      [:div (f/long-date date)])
-     (list
+      [:div (f/long-date date)]]
+     [:div
       [:div {:style {:padding "18px"}} svg/large-payout]
-      [:div "Tip: Your last payout will show here."]))])
+      [:div "Tip: Your last payout will show here."]])])
 
 (defmethod render-stat :next-payout [_ {:keys [amount]}]
   [:.my3
-   {:class stat-card}
+   {:key "next-payout" :class stat-card}
    [:.p1 "NEXT PAYOUT"]
    (if (> amount 0)
-     (list
+     [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
-      [:div "Payment " (in-x-days)])
-     (list
+      [:div "Payment " (in-x-days)]]
+     [:div
       [:.py2 svg/large-dollar]
-      [:div "Tip: Your next payout will show here."]))])
+      [:div "Tip: Your next payout will show here."]])])
 
 (defmethod render-stat :lifetime-payouts [_ {:keys [amount]}]
   [:.my3
-   {:class stat-card}
+   {:class stat-card :key "render-stat"}
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
-     (list
+     [:div
       [:.py2.h00 re-center-money (money amount)]
-      [:div utils/nbsp])
-     (list
+      [:div utils/nbsp]]
+     [:div
       [:.py2 svg/large-percent]
-      [:div "Tip: Lifetime commissions will show here."]))])
+      [:div "Tip: Lifetime commissions will show here."]])])
 
 (defn stats-details-component [stats]
   (om/component
@@ -113,7 +112,7 @@
     (did-mount [this]
       (om/set-state!
        owner
-       {:swiper (js/Swipe. (om/get-node owner "stats")
+       {:swiper (js/Swipe. (om/get-ref owner "stats")
                            #js {:continuous false
                                 :startSlide (or (stat->idx selected)
                                                 default-idx)

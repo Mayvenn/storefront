@@ -63,6 +63,7 @@
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
      [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-silver.p2
+      {:key (str name join-date)}
       [:.mr1 (profile-picture-circle profile-picture-url)]
       [:.flex-auto
        [:.h2 name]

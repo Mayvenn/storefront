@@ -13,6 +13,7 @@
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.border-bottom.border-white.flex.items-center.justify-between.py1
+   {:key revenue-surpassed}
    [:.mr1
     (svg/adjustable-check {:width "12px" :height "12px" :class "stroke-green"})]
    [:.flex-auto.h5
@@ -72,7 +73,7 @@
        [:.clearfix.mb3
         [:.sm-col.sm-col-8
          (when award-amount
-           (list
+           [:div
             [:.center.px1.py2
              (cond
                history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
@@ -105,7 +106,7 @@
                [:p.btn.mt1
                 [:a.teal
                  (apply utils/route-to navigate-hair-message)
-                 "Shop now " utils/rarr]]])))]
+                 "Shop now " utils/rarr]]])])]
 
         [:.sm-col-right.sm-col-4
          (when (pos? lifetime-total)
