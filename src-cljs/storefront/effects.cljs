@@ -232,6 +232,9 @@
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
   (stripe/insert))
 
+(defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
+  (api/get-shipping-methods))
+
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
   (when paypal
     (routes/enqueue-redirect events/navigate-order-complete {:number number}))
