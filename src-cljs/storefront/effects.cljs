@@ -636,6 +636,7 @@
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
+  (analytics/track-event "orders" "placed_total" nil (int (:total order)))
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
   (talkable/show-pending-offer app-state))
 

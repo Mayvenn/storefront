@@ -28,15 +28,14 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag-by-src "//www.google-analytics.com/analytics.js")
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
-(defn track-event [category action & [label value non-interaction]]
+(defn track-event [category action & [label value]]
   (when (.hasOwnProperty js/window "ga")
     (js/ga "send"
-           "event"
-           category
-           action
-           label
-           value
-           (when non-interaction (clj->js {"nonInteraction" (str non-interaction)})))))
+           (clj->js {"hitType" "event"
+                     "eventCategory" category
+                     "eventAction" action
+                     "eventLabel" label
+                     "eventValue" value}))))
 
 (defn track-page [path]
   (when (.hasOwnProperty js/window "ga")
