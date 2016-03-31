@@ -71,6 +71,10 @@ Lengths: 14\" to 26\""
    :closures   {:data-product-id 90
                 :data-name "Brazilian Natural Straight Lace Closure"
                 :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
+                :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
+   :frontals   {:data-product-id 90
+                :data-name "Brazilian Natural Straight Lace Closure"
+                :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
                 :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
 
 (defn product-options-for [taxon]
