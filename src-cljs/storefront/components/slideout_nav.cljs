@@ -36,7 +36,7 @@
          link-contents)
    (when expanded?
      [:div
-      {:on-click (utils/send-event-callback events/control-menu-collapse {:keypath menu-keypath})}
+      {:on-click (utils/send-event-callback events/control-menu-collapse-all)}
       [:.fixed.overlay]
       menu])])
 
@@ -228,8 +228,7 @@
                                 :navigate-hair-message  navigate-hair-message
                                 :stylist-kits-path      stylist-kits-path}]
             [:div
-             {:on-click (utils/send-event-callback events/control-menu-collapse
-                                                   {:keypath keypaths/menu-expanded})}
+             {:on-click (utils/send-event-callback events/control-menu-collapse-all)}
              [:.fixed.overlay]
              (cond
                own-store?           (slideout-stylist-nav slideout-query)

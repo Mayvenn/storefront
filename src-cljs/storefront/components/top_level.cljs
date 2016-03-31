@@ -58,24 +58,6 @@
     (if (get-in data keypaths/get-satisfaction-login?)
       (om/build getsat-top-level-component data)
       [:div
-       ;; TODO: can this be replaced with menu collapsing in slideout-nav? Or vice-versa?
-       (cond
-         (get-in data keypaths/menu-expanded)
-         {:on-click (utils/send-event-callback
-                     events/control-menu-collapse
-                     {:keypath keypaths/menu-expanded})}
-
-         (get-in data keypaths/account-menu-expanded)
-         {:on-click (utils/send-event-callback
-                     events/control-menu-collapse
-                     {:keypath keypaths/account-menu-expanded})}
-
-         (get-in data keypaths/shop-menu-expanded)
-         {:on-click (utils/send-event-callback
-                     events/control-menu-collapse
-                     {:keypath keypaths/shop-menu-expanded})}
-
-         :else {})
        (om/build promotion-banner-component data)
        [:div.page-wrap
         (om/build header/header-component (header/header-query data))

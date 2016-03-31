@@ -291,10 +291,9 @@
   (when (#{keypaths/menu-expanded} keypath)
     (set! (.. js/document -body -style -overflow) "hidden")))
 
-(defmethod perform-effects events/control-menu-collapse
-  [_ event {keypath :keypath} app-state]
-  (when (#{keypaths/menu-expanded} keypath)
-    (set! (.. js/document -body -style -overflow) "auto")))
+(defmethod perform-effects events/control-menu-collapse-all
+  [_ _ _ _]
+  (set! (.. js/document -body -style -overflow) "auto"))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/sign-in-email)

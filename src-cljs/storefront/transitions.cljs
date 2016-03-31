@@ -93,13 +93,21 @@
             (orders/form-payment-methods (get-in app-state keypaths/order-total)
                                          (get-in app-state keypaths/user-total-available-store-credit))))
 
+(def menus #{keypaths/menu-expanded
+             keypaths/account-menu-expanded
+             keypaths/shop-menu-expanded})
+
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
-  (assoc-in app-state keypath true))
+  (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))
+          app-state
+          menus))
 
-(defmethod transition-state events/control-menu-collapse
+(defmethod transition-state events/control-menu-collapse-all
   [_ event {keypath :keypath} app-state]
-  (assoc-in app-state keypath false))
+  (reduce (fn [state menu] (assoc-in state menu false))
+          app-state
+          menus))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   (-> app-state
