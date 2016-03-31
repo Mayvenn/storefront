@@ -285,6 +285,8 @@ html { line-height: 1.2; }
 
 .border-dark-teal { border-color: var(--dark-teal); }
 
+.debug * { outline: 1px solid gold; }
+
 /* Custom svg */
 
 .stroke-teal   { stroke: var(--teal); }
