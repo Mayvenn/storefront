@@ -70,12 +70,12 @@
 
 ;; Bundle builder below
 
-(def display-product-images-for-taxons #{"blonde" "closures" "frontal"})
+(def display-product-images-for-taxons #{"blonde" "closures" "frontals"})
 
 (defn selection-flow [data]
   (let [taxon-name (:name (taxons/current-taxon data))]
     (case taxon-name
-      "frontal" '(:style :material :origin :length)
+      "frontals" '(:style :material :origin :length)
       "closures" '(:style :material :origin :length)
       "blonde" '(:color :origin :length)
       '(:origin :length))))
