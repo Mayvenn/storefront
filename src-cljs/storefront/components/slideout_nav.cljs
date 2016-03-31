@@ -47,48 +47,42 @@
      [:span.store-credit-amount (as-money available-store-credit)]]))
 
 (def guest-account-menu
-  [:span
-   [:a (utils/route-to events/navigate-sign-in) "Sign In"]
-   " | "
-   [:a (utils/route-to events/navigate-sign-up) "Sign Up"]])
+  (html
+   [:span
+    [:a (utils/route-to events/navigate-sign-in) "Sign In"]
+    " | "
+    [:a (utils/route-to events/navigate-sign-up) "Sign Up"]]))
 
-(defn stylist-account-menu [{:keys [expanded? available-store-credit user-email]}]
-  (drop-down
-   expanded?
-   keypaths/account-menu-expanded
-   [:a.account-menu-link
-    (account-store-credit available-store-credit)
-    [:span.account-detail-name [:span.stylist-user-label "Stylist:"] user-email]
-    [:figure.down-arrow]]
-   [:ul.account-detail-expanded
-    [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
-    [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
-    [:li [:a (navigate-community) "Stylist Community"]]
-    [:li [:a (fake-href events/control-sign-out) "Logout"]]]))
-
-(defn customer-account-menu [{:keys [expanded? available-store-credit user-email]}]
-  (drop-down
-   expanded?
-   keypaths/account-menu-expanded
-   [:a.account-menu-link
-    (account-store-credit available-store-credit)
-    [:span.account-detail-name user-email]
-    [:figure.down-arrow]]
-   [:ul.account-detail-expanded
-    [:li [:a (utils/route-to events/navigate-account-referrals) "Refer A Friend"]]
-    [:li [:a (utils/route-to events/navigate-account-manage) "Manage Account"]]
-    [:li [:a (fake-href events/control-sign-out) "Logout"]]]))
-
-(defn invasive-top-nav-component [{:keys [own-store? user-email] :as cursors} _]
-  ;; WAT 1: This is within the slideout nav, but is invisible on small screens
-  ;; WAT 2: It is part of the secondary nav, but overlays primary nav through positioning hacks
+(defn stylist-account-menu [{:keys [expanded? available-store-credit user-email]} _]
   (om/component
    (html
-    [:div.account-detail
-     (cond
-       own-store?           (stylist-account-menu cursors)
-       (boolean user-email) (customer-account-menu cursors)
-       :else                guest-account-menu)])))
+    (drop-down
+     expanded?
+     keypaths/account-menu-expanded
+     [:a.account-menu-link
+      (account-store-credit available-store-credit)
+      [:span.account-detail-name [:span.stylist-user-label "Stylist:"] user-email]
+      [:figure.down-arrow]]
+     [:ul.account-detail-expanded
+      [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
+      [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
+      [:li [:a (navigate-community) "Stylist Community"]]
+      [:li [:a (fake-href events/control-sign-out) "Logout"]]]))))
+
+(defn customer-account-menu [{:keys [expanded? available-store-credit user-email]} _]
+  (om/component
+   (html
+    (drop-down
+     expanded?
+     keypaths/account-menu-expanded
+     [:a.account-menu-link
+      (account-store-credit available-store-credit)
+      [:span.account-detail-name user-email]
+      [:figure.down-arrow]]
+     [:ul.account-detail-expanded
+      [:li [:a (utils/route-to events/navigate-account-referrals) "Refer A Friend"]]
+      [:li [:a (utils/route-to events/navigate-account-manage) "Manage Account"]]
+      [:li [:a (fake-href events/control-sign-out) "Logout"]]]))))
 
 (defn stylist-shop-link [{:keys [expanded? navigate-hair-message stylist-kits-path]}]
   (drop-down
@@ -214,11 +208,15 @@
          [:h2.slideout-nav-title store-name]]
         ;; WAT: This is invisible on small screens
         [:div.horizontal-nav-list
-         (om/build invasive-top-nav-component
-                   {:own-store?             own-store?
-                    :expanded?              account-menu-expanded?
-                    :available-store-credit available-store-credit
-                    :user-email             user-email})
+         ;; WAT: This is part of the secondary nav bar, but overlays primary nav through positioning hacks
+         [:div.account-detail
+          (let [account-menu-query {:expanded?              account-menu-expanded?
+                                    :available-store-credit available-store-credit
+                                    :user-email             user-email}]
+            (cond
+              own-store?           (om/build stylist-account-menu account-menu-query)
+              (boolean user-email) (om/build customer-account-menu account-menu-query)
+              :else                guest-account-menu))]
          (om/build middle-nav-component
                    {:navigate-hair-message navigate-hair-message
                     :expanded?             shop-menu-expanded?
