@@ -2,11 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.components.utils :as utils]
-            [storefront.components.checkout-steps :refer [checkout-step-bar]]
-            [clojure.string :as string]
-            [clojure.set :as sets]))
+            [clojure.string :as string]))
 
 (defn- field->human-name [key]
   (get {"billing-address" "Billing Address"
