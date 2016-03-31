@@ -35,7 +35,7 @@
      [:div.squashed-hair-categories
       [:h3.pick-style "Pick your style"]
       (map category
-           (filter-nav-taxons (get-in data keypaths/taxons))
+           (drop-last (filter-nav-taxons (get-in data keypaths/taxons)))
            (range))
       [:div {:style {:clear "both"}}]]
      [:div.featured-product-content.mobile-hidden
