@@ -40,7 +40,7 @@
   (f/as-money-without-cents amount))
 
 (defn ^:private money-with-cents [amount]
-  [:.flex.justify-center
+  [:.flex.justify-center.line-height-1
    (money amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
