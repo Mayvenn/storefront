@@ -176,9 +176,8 @@
     (logout-box)]
    slideout-help])
 
-(defn slideout-guest-nav [{:keys [navigate-hair-message available-store-credit]}]
+(defn slideout-guest-nav [{:keys [navigate-hair-message]}]
   [:ul.slideout-nav-list
-   (slideout-store-credit available-store-credit)
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (nav-hair-box navigate-hair-message)]
