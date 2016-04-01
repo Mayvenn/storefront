@@ -34,5 +34,6 @@
              (merge
               {:on-click (when-not saving?
                            (utils/send-event-callback events/control-checkout-confirmation-submit))
-               :class (when saving? "saving")})
+               :class (str (when placing-order? "saving") " "
+                           (when updating-shipping? "disabled"))})
              "Complete my Purchase"]]]]]]]))))

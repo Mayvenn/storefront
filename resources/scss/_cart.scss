@@ -32,6 +32,10 @@ a.button.continue {
   &.primary {
     background-color: $roi_orange;
   }
+
+  &.disabled {
+    background-color: $medium_grey;
+  }
 }
 
 .line-item img {
