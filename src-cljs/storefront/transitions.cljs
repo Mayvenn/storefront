@@ -22,7 +22,8 @@
 (def login-events #{events/navigate-sign-in
                     events/navigate-sign-up
                     events/navigate-forgot-password
-                    events/navigate-reset-password})
+                    events/navigate-reset-password
+                    events/navigate-checkout-sign-in})
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
