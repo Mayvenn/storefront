@@ -17,7 +17,7 @@
        {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}
        "Guest Checkout"]
 
-      [:div.short-divider ]
+      [:div.short-divider]
       [:h2.explanation-header.center "Already registered?"]
       [:p.explanation.center "Sign into your account below, and checkout even faster!"]]
      [:div#existing-customer.new_spree_user

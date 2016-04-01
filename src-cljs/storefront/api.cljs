@@ -396,13 +396,13 @@
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
-         {:handler #(messages/handle-message events/api-success-stylist-manage-account-profile-picture
-                                             (merge {:updated true}
-                                                    {:stylist (select-keys % [:profile_picture_url])}))
-          :error-handler default-error-handler
-          :params form-data
-          :response-format (json-response-format {:keywords? true})
-          :timeout 10000})))
+      {:handler #(messages/handle-message events/api-success-stylist-manage-account-profile-picture
+                                          (merge {:updated true}
+                                                 {:stylist (select-keys % [:profile_picture_url])}))
+       :error-handler default-error-handler
+       :params form-data
+       :response-format (json-response-format {:keywords? true})
+       :timeout 10000})))
 
 (defn get-stylist-stats [user-token]
   (api-req
@@ -470,11 +470,11 @@
           (callback [resp] (messages/handle-message events/api-success-sms-number
                                                     {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
-         {:handler callback
-          :headers {"Accepts" "application/json"
-                    "X-Publishable-Key" send-sonar-publishable-key}
-          :format :json
-          :response-format (json-response-format {:keywords? true})})))
+      {:handler callback
+       :headers {"Accepts" "application/json"
+                 "X-Publishable-Key" send-sonar-publishable-key}
+       :format :json
+       :response-format (json-response-format {:keywords? true})})))
 
 (defn place-order [order]
   (api-req

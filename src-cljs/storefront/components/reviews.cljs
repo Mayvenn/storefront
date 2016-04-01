@@ -110,4 +110,4 @@ Lengths: 14\" to 26\""
           (product-options-for taxon)
           {:data-url (routes/current-path @data)})]
         [:div.yotpo.QABottomLine.question-summary
-          (product-options-for taxon)]]))))
+         (product-options-for taxon)]]))))

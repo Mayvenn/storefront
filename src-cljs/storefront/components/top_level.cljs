@@ -31,7 +31,6 @@
             [storefront.components.checkout-complete :refer [checkout-complete-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]))
 
-
 (defn flash-component [{:keys [success failure]}]
   (om/component
    (html

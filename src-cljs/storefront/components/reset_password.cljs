@@ -33,6 +33,6 @@
            :name "password-confirmation"})]]
        [:p
         [:input.button.primary.mb3 {:type "submit"
-                                     :value "Update"}]]]
+                                    :value "Update"}]]]
       [:div.or-divider.my0 [:span "or"]]
       (facebook/reset-button data)]])))

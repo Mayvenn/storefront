@@ -171,7 +171,7 @@
   (html
    [:.center
     [:.p2.border-bottom.border-silver
-     [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em" }}]
+     [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
      [:p.h2.gray.muted "Looks like you don't have any commissions yet."]]
     [:.py3.h3
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
