@@ -7,37 +7,26 @@
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
-(def ^:private address-step
-  {:event events/navigate-checkout-address
-   :name "address"})
-
-(def ^:private delivery-step
-  {:event events/navigate-checkout-delivery
-   :name "shipping"})
-
-(def ^:private payment-step
-  {:event events/navigate-checkout-payment
-   :name "payment"})
-
-(def ^:private confirm-step
-  {:event events/navigate-checkout-confirmation
-   :name "confirm"})
-
 (defn ^:private steps [three-steps?]
   (if three-steps?
-    [address-step               payment-step confirm-step]
-    [address-step delivery-step payment-step confirm-step]))
+    [{:event events/navigate-checkout-address :name "your details"}
+     {:event events/navigate-checkout-payment :name "payment"}
+     {:event events/navigate-checkout-confirmation :name "review"}]
+    [{:event events/navigate-checkout-address :name "address"}
+     {:event events/navigate-checkout-delivery :name "shipping"}
+     {:event events/navigate-checkout-payment :name "payment"}
+     {:event events/navigate-checkout-confirmation :name "confirm"}]))
 
-(defn ^:private display-progress-step [steps current-index index {step-name :name}]
+(defn ^:private display-progress-step [steps current-index index {step-name :name event :event}]
   [:li.progress-step
    {:class (->> [step-name
                  (str "col-" (/ 12 (count steps)))
-                 (if (< index current-index) "completed")
-                 (if (= index (inc current-index)) "next")
-                 (if (= index current-index) "current")
-                 (if (zero? index) "first")
-                 (if (= index (dec (count steps))) "last")]
-                (filter seq)
+                 (when (< index current-index) "completed")
+                 (when (= index (inc current-index)) "next")
+                 (when (= index current-index) "current")
+                 (when (zero? index) "first")
+                 (when (= index (dec (count steps))) "last")]
+                (filter identity)
                 (string/join " "))}
    [:span
     (let [text [:div.progress-step-index
@@ -45,7 +34,7 @@
                 [:br]
                 (string/capitalize step-name)]]
       (if (< index current-index)
-        [:a (route-to (get-in steps [index :event])) text]
+        [:a (route-to event) text]
         text))]])
 
 (defn checkout-step-bar [data]
