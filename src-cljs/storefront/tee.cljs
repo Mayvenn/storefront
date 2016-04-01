@@ -54,7 +54,7 @@
     connection))
 
 (defn ^:private log-message [_ event]
-  (js/console.log "Tap Response" (pr-str (.-data event))))
+  (js/console.log (str "Connected (sid=" (read-string (.-data event)) ")")))
 
 (defn create-producer []
   (open-websocket config/tee-url {:on-message log-message}))

@@ -75,17 +75,15 @@
   (if-let [room-id (last (re-find #"listen=(.*)&?" js/window.location.search))]
     (do
       (js/console.log "Listening mode active: " room-id)
-      (swap! app-state assoc :effectful? false)
-      (tee/create-listener room-id (fn [msg]
-                                     (js/console.log "handle" (pr-str msg))
-                                     (apply handle-message app-state msg))))
+      (set! messages/handle-message (partial listener-handle-message app-state))
+      (tee/create-listener room-id (fn [msg] (apply messages/handle-message msg))))
     (tee/create-producer)))
 
 (defn reload-app [app-state]
+  (set! messages/handle-message (partial handle-message app-state))
   (install-tap app-state)
-  (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (routes/start-history)
-  (messages/handle-message app-state events/app-start)
+  (handle-message app-state events/app-start)
   (history/set-current-page true))
 
 (defn dom-ready [f]
