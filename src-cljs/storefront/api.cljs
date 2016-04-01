@@ -523,7 +523,7 @@
     :handler #(messages/handle-message events/api-success-remove-from-bag
                                        {:order %})}))
 
-(defn update-addresses [order]
+(defn update-addresses [order three-steps?]
   (api-req
    POST
    "/v2/update-addresses"
@@ -531,9 +531,9 @@
    {:params (select-keys order [:number :token :billing-address :shipping-address])
     :handler #(messages/handle-message events/api-success-update-order-update-address
                                        {:order %
-                                        :navigate events/navigate-checkout-delivery})}))
+                                        :navigate (if three-steps? events/navigate-checkout-payment events/navigate-checkout-delivery)})}))
 
-(defn guest-update-addresses [order]
+(defn guest-update-addresses [order three-steps?]
   (api-req
    POST
    "/v2/guest-update-addresses"
@@ -541,17 +541,18 @@
    {:params (select-keys order [:number :token :email :billing-address :shipping-address])
     :handler #(messages/handle-message events/api-success-update-order-update-guest-address
                                        {:order %
-                                        :navigate events/navigate-checkout-delivery})}))
+                                        :navigate (if three-steps? events/navigate-checkout-payment events/navigate-checkout-delivery)})}))
 
-(defn update-shipping-method [order]
+(defn update-shipping-method [order three-steps?]
   (api-req
    POST
    "/v2/update-shipping-method"
    request-keys/update-shipping-method
    {:params (select-keys order [:number :token :shipping-method-sku])
     :handler #(messages/handle-message events/api-success-update-order-update-shipping-method
-                                       {:order %
-                                        :navigate events/navigate-checkout-payment})}))
+                                       (merge {:order %}
+                                              (when-not three-steps?
+                                                {:navigate events/navigate-checkout-payment})))}))
 
 (defn update-cart-payments [{:keys [order] :as args}]
   (api-req

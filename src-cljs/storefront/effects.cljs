@@ -480,16 +480,19 @@
       (api/guest-update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                          {:email (get-in app-state keypaths/checkout-guest-email)
                                           :billing-address billing-address
-                                          :shipping-address shipping-address}))
+                                          :shipping-address shipping-address})
+                                  (experiments/three-steps? app-state))
       (api/update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                    {:billing-address billing-address
-                                    :shipping-address shipping-address})))))
+                                    :shipping-address shipping-address})
+                            (experiments/three-steps? app-state)))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                      {:shipping-method-sku (get-in
                                                             app-state
-                                                            keypaths/checkout-selected-shipping-method-sku)})))
+                                                            keypaths/checkout-selected-shipping-method-sku)})
+                              (experiments/three-steps? app-state)))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments

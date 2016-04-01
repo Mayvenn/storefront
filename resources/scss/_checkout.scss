@@ -10,7 +10,6 @@
 
 .progress-step {
   display: block;
-  width: 25%;
   float: left;
   height: 4.2rem;
   padding: 0.7rem;
@@ -107,6 +106,14 @@
         height: (44rem / $default-font-size);
         background-image: url('/images/delivery_checkmark.png');
         @include stretch-bg;
+      }
+    }
+  }
+
+  &.saving {
+    .checkbox-container {
+      .large-checkbox {
+        background-image: url("/images/spinner.svg");
       }
     }
   }

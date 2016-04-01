@@ -182,4 +182,6 @@
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
-            "Continue to Shipping"])]]]]])))
+            (if (experiments/three-steps? data)
+              "Continue to Payment"
+              "Continue to Shipping")])]]]]])))

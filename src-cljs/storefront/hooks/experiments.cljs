@@ -31,6 +31,9 @@
 (defn frontals? [data]
   (display-variation data "frontals"))
 
+(defn three-steps? [data]
+  (display-variation data "three-steps"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

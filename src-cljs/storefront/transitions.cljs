@@ -82,11 +82,17 @@
     (assoc-in app-state keypaths/navigation-message
               [event {:query-params {:loggedin true}}]))) ;; help with analytics of funnel
 
-(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
+(defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
+
+(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
+  (ensure-cart-has-shipping-method app-state))
+
+(defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
+  (ensure-cart-has-shipping-method app-state))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
