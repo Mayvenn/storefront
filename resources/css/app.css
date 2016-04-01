@@ -313,8 +313,8 @@ html { line-height: 1.2; }
 .img-deep-wave  { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }
 .img-loose-wave { background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png'); }
 .img-body-wave  { background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png'); }
-.img-closures   { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.png'); }
-.img-frontals   { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.png'); }
+.img-closures   { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.jpg'); }
+.img-frontals   { background-image: url('/images/style_images/category_images/FrontalsCategoryImage.jpg'); }
 
 .img-home {
     background-image: url("/images/home_image_clickable.jpg");
