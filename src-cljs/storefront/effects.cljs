@@ -213,15 +213,10 @@
     (not (get-in app-state keypaths/order-number))
     (routes/enqueue-redirect events/navigate-cart)
 
-    (and (experiments/guest-checkout? app-state)
-         (not (get-in app-state keypaths/user-token))
-         (not= event events/navigate-checkout-sign-in)
-         (not (get-in app-state keypaths/checkout-as-guest)))
-    (routes/enqueue-redirect events/navigate-checkout-sign-in)
-
-    (and (not (experiments/guest-checkout? app-state))
-         (not (get-in app-state keypaths/user-token)))
-    (routes/enqueue-redirect events/navigate-sign-in)))
+    (not (or (= event events/navigate-checkout-sign-in)
+             (get-in app-state keypaths/user-token)
+             (get-in app-state keypaths/checkout-as-guest)))
+    (routes/enqueue-redirect events/navigate-checkout-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))

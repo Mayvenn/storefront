@@ -66,35 +66,32 @@
                                    :failure (get-in data keypaths/flash-failure-message)})
         [:main {:role "main"}
          [:div.legacy-container
-          (let [requires-checkout-sign-in (if (experiments/guest-checkout? data)
-                                            requires-sign-in-or-guest
-                                            requires-sign-in)]
-            (om/build
-             (condp = (get-in data keypaths/navigation-event)
-               events/navigate-home                           home-component
-               events/navigate-cart                           cart-component
-               events/navigate-categories                     categories-page-component
-               events/navigate-category                       category-component
-               events/navigate-product                        product-component
-               events/navigate-guarantee                      thirty-day-guarantee-component
-               events/navigate-help                           help-component
-               events/navigate-sign-in                        sign-in-component
-               events/navigate-sign-up                        sign-up-component
-               events/navigate-forgot-password                forgot-password-component
-               events/navigate-reset-password                 reset-password-component
-               events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
-               events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
-               events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-               events/navigate-stylist-manage-account         stylist-manage-account-component
-               events/navigate-account-manage                 (requires-sign-in data manage-account-component)
-               events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
-               events/navigate-friend-referrals               friend-referrals-component
-               events/navigate-checkout-sign-in               checkout-sign-in-component
-               events/navigate-checkout-address               (requires-checkout-sign-in data checkout-address-component)
-               events/navigate-checkout-delivery              (requires-checkout-sign-in data checkout-delivery-component)
-               events/navigate-checkout-payment               (requires-checkout-sign-in data checkout-payment-component)
-               events/navigate-checkout-confirmation          (requires-checkout-sign-in data checkout-confirmation-component)
-               events/navigate-order-complete                 checkout-complete-component
-               home-component)
-             data))]]
+          (om/build
+           (condp = (get-in data keypaths/navigation-event)
+             events/navigate-home                           home-component
+             events/navigate-cart                           cart-component
+             events/navigate-categories                     categories-page-component
+             events/navigate-category                       category-component
+             events/navigate-product                        product-component
+             events/navigate-guarantee                      thirty-day-guarantee-component
+             events/navigate-help                           help-component
+             events/navigate-sign-in                        sign-in-component
+             events/navigate-sign-up                        sign-up-component
+             events/navigate-forgot-password                forgot-password-component
+             events/navigate-reset-password                 reset-password-component
+             events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
+             events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
+             events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
+             events/navigate-stylist-manage-account         stylist-manage-account-component
+             events/navigate-account-manage                 (requires-sign-in data manage-account-component)
+             events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
+             events/navigate-friend-referrals               friend-referrals-component
+             events/navigate-checkout-sign-in               checkout-sign-in-component
+             events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address-component)
+             events/navigate-checkout-delivery              (requires-sign-in-or-guest data checkout-delivery-component)
+             events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment-component)
+             events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation-component)
+             events/navigate-order-complete                 checkout-complete-component
+             home-component)
+           data)]]
         (om/build footer/footer-component (footer/footer-query data))]]))))

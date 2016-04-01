@@ -25,9 +25,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn guest-checkout? [data]
-  (display-variation data "guest-checkout"))
-
 (defn frontals? [data]
   (display-variation data "frontals"))
 
