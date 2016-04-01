@@ -226,7 +226,7 @@
 
 (defn category-descriptions [taxon]
   (case (:name taxon)
-    "frontal"
+    "frontals"
     '("100% Human Virgin Hair"
       "13\" x 4\" size"
       "Lace Material"
