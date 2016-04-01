@@ -7,7 +7,7 @@
 
 (defn- log [msg error custom-context]
   (when (and js/console js/console.error)
-    (js/console.error (str msg error custom-context))))
+    (js/console.error msg error (clj->js custom-context))))
 
 (defn report [error & [custom-context]]
   (if (and (tracking-enabled?) (.hasOwnProperty js/window "Bugsnag"))

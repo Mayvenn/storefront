@@ -60,9 +60,9 @@
                return-message (get-in data keypaths/return-navigation-message)
                previous-message (get-in data keypaths/previous-navigation-message)]
            (exception-handler/report e {:context {:navigation
-                                                  {:navigation-message nav-message
-                                                   :return-navigation-message return-message
-                                                   :previous-navigation-message previous-message}}})))))))
+                                                  {:navigation-message (pr-str nav-message)
+                                                   :return-navigation-message (pr-str return-message)
+                                                   :previous-navigation-message (pr-str previous-message)}}})))))))
 
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state))
