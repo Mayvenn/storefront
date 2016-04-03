@@ -53,16 +53,7 @@
        (om/transact! (om/root-cursor app-state) #(transition % message))
        (effects @app-state message)
        (catch :default e
-         ;; TODO: All this context is for debugging login redirect stack
-         ;; overflows... remove when no longer needed
-         (let [data @app-state
-               nav-message (get-in data keypaths/navigation-message)
-               return-message (get-in data keypaths/return-navigation-message)
-               previous-message (get-in data keypaths/previous-navigation-message)]
-           (exception-handler/report e {:context {:navigation
-                                                  {:navigation-message (pr-str nav-message)
-                                                   :return-navigation-message (pr-str return-message)
-                                                   :previous-navigation-message (pr-str previous-message)}}})))))))
+         (exception-handler/report e))))))
 
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state))

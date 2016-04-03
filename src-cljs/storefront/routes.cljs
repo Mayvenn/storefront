@@ -98,7 +98,7 @@
 (defn start-history []
   (set! app-history (make-history set-current-page)))
 
-(defn set-query-string [s query-params]
+(defn- set-query-string [s query-params]
   (-> (Uri.parse s)
       (.setQueryData (map->query (if (seq query-params)
                                    query-params
@@ -107,26 +107,21 @@
 
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)
-        args (dissoc args :query-params)]
-    (-> (apply bidi/path-for
-               app-routes
-               (edn->bidi navigation-event)
-               (apply concat (seq args)))
-        (set-query-string query-params))))
+        args (dissoc args :query-params)
+        path (apply bidi/path-for
+                    app-routes
+                    (edn->bidi navigation-event)
+                    (apply concat (seq args)))]
+    (when path
+      (set-query-string path query-params))))
 
 (defn enqueue-redirect [navigation-event & [args]]
-  (let [query-params (:query-params args)
-        args (dissoc args :query-params)]
-    (.replaceToken app-history
-                   (-> (path-for navigation-event args)
-                       (set-query-string query-params)))))
+  (when-let [path (path-for navigation-event args)]
+    (.replaceToken app-history path)))
 
 (defn enqueue-navigate [navigation-event & [args]]
-  (let [query-params (:query-params args)
-        args (dissoc args :query-params)]
-    (.setToken app-history
-               (-> (path-for navigation-event args)
-                   (set-query-string query-params)))))
+  (when-let [path (path-for navigation-event args)]
+    (.setToken app-history path)))
 
 (defn current-path [app-state]
   (apply path-for (get-in app-state keypaths/navigation-message)))
