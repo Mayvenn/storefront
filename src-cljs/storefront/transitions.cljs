@@ -19,17 +19,19 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(def login-events #{events/navigate-sign-in
-                    events/navigate-sign-up
-                    events/navigate-forgot-password
-                    events/navigate-reset-password
-                    events/navigate-checkout-sign-in})
+(def return-event-blacklisted? #{events/navigate-not-found
+                                 events/navigate-sign-in
+                                 events/navigate-sign-up
+                                 events/navigate-forgot-password
+                                 events/navigate-reset-password
+                                 events/navigate-checkout-sign-in
+                                 events/navigate-sign-in-getsat})
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
-    (if (not (login-events return-event))
-      (assoc-in app-state keypaths/return-navigation-message [return-event return-args])
-      app-state)))
+    (if (return-event-blacklisted? return-event)
+      app-state
+      (assoc-in app-state keypaths/return-navigation-message [return-event return-args]))))
 
 (defn add-pending-promo-code [app-state args]
   (let [{{sha :sha} :query-params} args]
