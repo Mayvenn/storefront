@@ -30,7 +30,7 @@
   [:.py2.clearfix
    [:img.left.border.border-silver.mr3
     {:style {:width "5rem"}
-     :src   (first (products/simple-thumbnail-urls products product-id))
+     :src   (products/thumbnail-url products product-id)
      :alt   product-name}]
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]

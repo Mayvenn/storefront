@@ -45,7 +45,7 @@
 
 (defn- display-line-item [data interactive? {product-id :product-id variant-id :id :as line-item}]
   [:div.line-item {:key variant-id}
-   [:a [:img {:src (first (products/thumbnail-urls data product-id))
+   [:a [:img {:src (products/thumbnail-url (get-in data keypaths/products) product-id)
               :alt (:product-name line-item)}]]
    [:div.line-item-detail.interactive
     [:h4

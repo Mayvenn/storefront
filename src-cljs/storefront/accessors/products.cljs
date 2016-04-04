@@ -104,10 +104,5 @@
         strs (filter identity ((apply juxt title-fns) variant-attrs))]
     (clojure.string/join " " strs)))
 
-(defn simple-thumbnail-urls [products product-id]
-  (map :small_url (get-in products [product-id :master :images])))
-
-;; TODO: replace this with simple-thumbnail-urls
-;; Accesors shouldn't get entire app state... makes it hard to optimize cursors
-(defn thumbnail-urls [data product-id]
-  (simple-thumbnail-urls (get-in data keypaths/products) product-id))
+(defn thumbnail-url [products product-id]
+  (get-in products [product-id :master :images 0 :small_url]))
