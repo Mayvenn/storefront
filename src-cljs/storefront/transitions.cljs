@@ -39,6 +39,9 @@
       (assoc-in app-state keypaths/pending-promo-code sha)
       app-state)))
 
+(defmethod transition-state events/app-start [_ event args app-state]
+  (assoc-in app-state keypaths/store (js->clj js/store :keywordize-keys true)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       add-return-event
@@ -179,9 +182,6 @@
 
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))
-
-(defmethod transition-state events/api-success-store [_ event args app-state]
-  (assoc-in app-state keypaths/store args))
 
 (defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-path products]} app-state]
   (-> app-state

@@ -114,17 +114,6 @@
    {:handler
     #(messages/handle-message events/api-success-taxons (select-keys % [:taxons]))}))
 
-(defn get-store [cache store-slug]
-  (cache-req
-   cache
-   GET
-   "/store"
-   request-keys/get-store
-   {:params
-    {:store_slug store-slug}
-    :handler
-    #(messages/handle-message events/api-success-store %)}))
-
 (defn get-promotions [cache promo-code]
   (cache-req
    cache

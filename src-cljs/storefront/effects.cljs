@@ -59,8 +59,8 @@
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
   (talkable/insert)
-  (api/get-store (get-in app-state keypaths/api-cache)
-                 (get-in app-state keypaths/store-slug)))
+  (refresh-account app-state)
+  (refresh-current-order app-state))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)
@@ -611,10 +611,6 @@
                              (:master product))]
           (handle-message events/control-browse-variant-select
                           {:variant variant}))))))
-
-(defmethod perform-effects events/api-success-store [_ event order app-state]
-  (refresh-account app-state)
-  (refresh-current-order app-state))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
