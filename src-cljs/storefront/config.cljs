@@ -1,6 +1,7 @@
 (ns storefront.config)
 
 (def environment js/environment)
+(def production? (= js/environment "production"))
 (def development? (= js/environment "development"))
 (def acceptance? (= js/environment "acceptance"))
 

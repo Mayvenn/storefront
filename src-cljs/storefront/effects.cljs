@@ -55,7 +55,7 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [_ event args app-state]
-  (experiments/insert-optimizely)
+  (experiments/insert-optimizely (:store app-state))
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (analytics/insert-tracking)
   (talkable/insert)

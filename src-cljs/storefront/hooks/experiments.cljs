@@ -6,8 +6,30 @@
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]))
 
-(defn insert-optimizely []
-  (insert-body-bottom (text-tag "window['optimizely'] = window['optimizely'] || []" "optimizely"))
+(def experiment->buckets
+  (if config/production?
+    {5490150509 [[(comp odd? :stylist_id) 5467272676]
+                 [(comp even? :stylist_id) 5469762231]
+                 [(comp #{"shop" "store"} :store_slug) 5484490640]]}
+    {5486980194 [[(comp odd? :stylist_id) 5483790215]
+                 [(comp even? :stylist_id) 5485630510]
+                 [(comp #{"shop" "store"} :store_slug) 5486970170]]}))
+
+(defn bucketeer [experiment-id store]
+  (when-let [buckets (experiment->buckets experiment-id)]
+    (when-let [variation-id (->> buckets
+                                 (filter (fn [[pred bucket-variation-id]]
+                                           (when (pred store) bucket-variation-id)))
+                                 vals
+                                 first)]
+      variation-id)))
+
+(defn calls [experiment-id store]
+  (when-let [variation-id (bucketeer experiment-id store)]
+    (clj->js [["bucketVisitor" experiment-id variation-id]])))
+
+(defn insert-optimizely [store]
+  (set! (.-optimizely js/window) (calls (first (keys experiment->buckets)) store))
   (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
 
 (defn remove-optimizely []
