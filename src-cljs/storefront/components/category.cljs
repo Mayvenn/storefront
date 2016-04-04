@@ -70,7 +70,7 @@
 
 ;; Bundle builder below
 
-(def display-product-images-for-taxons #{"blonde" "closures" "frontals"})
+(def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
 
 (defn selection-flow [data]
   (let [taxon-name (:name (taxons/current-taxon data))]
@@ -219,10 +219,14 @@
 
 (defn css-url [url] (str "url(" url ")"))
 
-(defn product-image-url [data taxon]
-  (when-let [product (products/selected-product data)]
-    (when (contains? display-product-images-for-taxons (:name taxon))
-      (get-in product [:master :images 0 :large_url]))))
+(defn representative-image-url [data taxon]
+  (when (display-product-images-for-taxon? (:name taxon))
+    (let [products (vals (products/selected-products data))
+          images (->> products
+                      (map #(get-in % [:master :images 0 :large_url]))
+                      set)]
+      (when (= 1 (count images))
+        (first images)))))
 
 (defn category-descriptions [taxon]
   (case (:name taxon)
@@ -293,8 +297,8 @@
             [:.spinner]
             [:div
              [:.carousel
-              (if-let [product-url (product-image-url data taxon)]
-                [:.hair-category-image {:style {:background-image (css-url product-url)}}]
+              (if-let [image-url (representative-image-url data taxon)]
+                [:.hair-category-image {:style {:background-image (css-url image-url)}}]
                 (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
                                                           :images-path (conj keypaths/taxon-images
                                                                              (keyword (:name taxon)))}}))]
