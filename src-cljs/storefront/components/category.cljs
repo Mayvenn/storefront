@@ -230,7 +230,7 @@
     '("100% Human Virgin Hair"
       "13\" x 4\" size"
       "Lace Material"
-      "Colors: 1B and #613 Blonde"
+      "Color 1B"
       "14\" and 18\" Length Bundles"
       "2.5 ounces")
 
