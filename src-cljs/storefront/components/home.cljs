@@ -15,7 +15,8 @@
   (let [taxon-name (taxon :name)
         taxon-path (taxon-path-for taxon)]
     [:a.hair-category-link
-     (merge {:key taxon-path}
+     (merge {:key taxon-path
+             :data-test (str "taxon-" taxon-path)}
             (utils/route-to events/navigate-category
                             {:taxon-path taxon-path}))
      [:div.hair-container.not-decorated.no-margin

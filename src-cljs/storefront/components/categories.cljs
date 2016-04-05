@@ -13,7 +13,8 @@
         taxon-path (taxon-path-for taxon)]
     [:a.p1.inline-block
      (merge
-      {:key taxon-path}
+      {:key taxon-path
+       :data-test (str "taxon-" taxon-path)}
       (utils/route-to events/navigate-category
                       {:taxon-path taxon-path})
       (if (> index 5)
@@ -34,13 +35,11 @@
      [:.center.black
       [:h1.regular.py2
        [:div "Select your favorite style"]]]
-     [:div.mxn1.category-grid.center
+     [:.clearfix.mxn1.center
       (let [frontals? (experiments/frontals? data)
-            taxons (map-indexed (partial category frontals?) (filter-nav-taxons (get-in data keypaths/taxons)))]
-        (if frontals?
-          taxons
-          (drop-last taxons)))
-      [:div {:style {:clear "both"}}]]])))
+            taxons (filter-nav-taxons (get-in data keypaths/taxons))
+            taxons (if frontals? taxons (drop-last taxons))]
+        (map-indexed (partial category frontals?) taxons))]])))
 
 (defn categories-page-component [data owner]
   (om/component
