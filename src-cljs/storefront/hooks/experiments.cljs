@@ -33,7 +33,8 @@
   (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
                                  (fn []
-                                   (doseq [variation-id (flatten (vals (js->clj js/optimizely.data.state.variationIdsMap)))]
+                                   (doseq [variation-id (flatten (vals (filter (comp (set (js->clj js/optimizely.data.state.activeExperiments)) first)
+                                                                               (js->clj js/optimizely.data.state.variationIdsMap))))]
                                      (when-let [variation-name (variation-id->name variation-id)]
                                        (m/handle-message events/optimizely {:variation variation-name})))
                                    (m/handle-message events/inserted-optimizely)))
