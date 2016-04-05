@@ -1,13 +1,14 @@
 (ns storefront.effects
   (:require [ajax.core :refer [-abort]]
             [cemerick.url :refer [url-encode]]
+            [clojure.string :as str]
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.taxons :as taxons :refer [taxon-path-for]]
+            [storefront.accessors.taxons :as taxons]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -113,19 +114,19 @@
         (experiments/track-event path)
         (exception-handler/refresh)))))
 
-(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-path]} app-state]
-  (if (and (= taxon-path "frontals")
+(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
+  (if (and (= taxon-slug "frontals")
            (not (experiments/frontals? app-state)))
     (routes/enqueue-redirect events/navigate-categories)
     (do
       (reviews/insert-reviews)
       (api/get-products (get-in app-state keypaths/api-cache)
-                        taxon-path
+                        taxon-slug
                         (get-in app-state keypaths/user-token)))))
 
 (defn bundle-builder-redirect [app-state product]
   (routes/enqueue-navigate events/navigate-category
-                           {:taxon-path (-> product :product_attrs :category first taxon-path-for)}))
+                           {:taxon-slug (-> product :product_attrs :category first :name (str/replace #" " "-"))}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product product-path)

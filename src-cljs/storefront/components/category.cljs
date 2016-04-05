@@ -3,7 +3,7 @@
             [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for] :as taxons]
+            [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
@@ -42,8 +42,8 @@
        [:div.taxon-products-container
         [:div.taxon-products-list-container
          (let [products (products/ordered-products-for-category data taxon)]
-           (if (query/get {:request-key (concat request-keys/get-products
-                                                [(taxon-path-for taxon)])}
+           (if (query/get {:request-key (conj request-keys/get-products
+                                              (:slug taxon))}
                           (get-in data keypaths/api-requests))
              [:.spinner]
              (map display-product products)))]]
@@ -277,8 +277,7 @@
              (when (get-in data keypaths/loaded-reviews)
                (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
-          (if (query/get {:request-key (concat request-keys/get-products
-                                               [(taxon-path-for taxon)])}
+          (if (query/get {:request-key (conj request-keys/get-products (:slug taxon))}
                          (get-in data keypaths/api-requests))
             [:.spinner]
             [:div

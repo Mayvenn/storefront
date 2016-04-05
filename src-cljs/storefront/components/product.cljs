@@ -6,7 +6,7 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
-            [storefront.accessors.taxons :refer [taxon-path-for] :as taxons]
+            [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :refer [all-variants]]
             [storefront.components.counter :refer [counter-component]]
             [om.core :as om]
@@ -35,9 +35,7 @@
 (defn product-component [data owner]
   (om/component
    (html
-    (let [taxon (taxons/current-taxon data)
-          taxon-path (if taxon (taxon-path-for taxon))
-          product (query/get (get-in data keypaths/browse-product-query)
+    (let [product (query/get (get-in data keypaths/browse-product-query)
                              (vals (get-in data keypaths/products)))
           image (->> product :master :images first :product_url)
           variants (:variants product)]

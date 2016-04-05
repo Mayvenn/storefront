@@ -54,11 +54,10 @@
   (let [products (current-taxon-whitelisted-products app-state)]
     (mapcat build-variants products)))
 
-(defn ordered-products-for-category [app-state taxon]
-  (let [taxon-path (taxons/taxon-path-for taxon)
-        taxon-product-order (get-in app-state keypaths/taxon-product-order)
-        products (get-in app-state keypaths/products {})]
-    (map products (taxon-product-order taxon-path))))
+(defn ordered-products-for-category [app-state {:keys [slug]}]
+  (let [product-order-by-taxon-slug (get-in app-state keypaths/taxon-product-order)]
+    (map (get-in app-state keypaths/products {})
+         (product-order-by-taxon-slug slug))))
 
 (defn filter-variants-by-selections [selections variants]
   (filter (fn [variant]

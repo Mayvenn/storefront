@@ -9,17 +9,11 @@
 (def filter-stylist-taxons
   (partial filter :stylist_only?))
 
-(defn taxon-path-for [taxon]
-  (:slug taxon))
-
-(defn taxon-name-from [taxon-path]
-  (string/replace taxon-path #"-" " "))
-
-(defn default-stylist-taxon-path [app-state]
-  (when-let [default-taxon (->> (get-in app-state keypaths/taxons)
-                                (filter :stylist_only?)
-                                first)]
-    (taxon-path-for default-taxon)))
+(defn default-stylist-taxon-slug [app-state]
+  (->> (get-in app-state keypaths/taxons)
+       filter-stylist-taxons
+       first
+       :slug))
 
 (defn current-taxon [app-state]
   (query/get (get-in app-state keypaths/browse-taxon-query)

@@ -77,8 +77,8 @@ Lengths: 14\" to 26\""
                 :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
                 :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
 
-(defn product-options-for [taxon]
-  (get product-options-by-taxon (keyword (taxons/taxon-path-for taxon))))
+(defn product-options-for [{:keys [slug]}]
+  (get product-options-by-taxon (keyword slug)))
 
 (defn reviews-component [data owner {taxon :taxon}]
   (reify

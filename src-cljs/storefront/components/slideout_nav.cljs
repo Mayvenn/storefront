@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.accessors.taxons :refer [default-stylist-taxon-path]]
+            [storefront.accessors.taxons :refer [default-stylist-taxon-slug]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
@@ -21,7 +21,7 @@
 (defn navigate-kits [kits-path]
   (when kits-path
     (utils/route-to events/navigate-category
-                    {:taxon-path kits-path})))
+                    {:taxon-slug kits-path})))
 
 (defn navigate-community
   "Can't be a def because (fastpass/community-url) is impure."
@@ -244,4 +244,4 @@
    :user-email             (get-in data keypaths/user-email)
    :own-store?             (own-store? data)
    :navigate-hair-message  (navigation/shop-now-navigation-message data)
-   :stylist-kits-path      (default-stylist-taxon-path data)})
+   :stylist-kits-path      (default-stylist-taxon-slug data)})

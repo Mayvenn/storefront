@@ -2,7 +2,6 @@
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.accessors.taxons :refer [taxon-path-for]]
             [storefront.accessors.orders :as orders]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
@@ -53,9 +52,9 @@
       (assoc-in keypaths/get-satisfaction-login? true)
       (assoc-in keypaths/return-navigation-message [event args])))
 
-(defmethod transition-state events/navigate-category [_ event {:keys [taxon-path]} app-state]
+(defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (-> app-state
-      (assoc-in keypaths/browse-taxon-query {taxon-path-for taxon-path})
+      (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
       (assoc-in keypaths/browse-recently-added-variants [])
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
@@ -180,10 +179,10 @@
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))
 
-(defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-path products]} app-state]
+(defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-slug products]} app-state]
   (-> app-state
       (update-in keypaths/taxon-product-order
-                 assoc taxon-path (map :id products))
+                 assoc taxon-slug (map :id products))
       (update-in keypaths/products
                  merge (into {} (map #(vector (:id %) %) products)))))
 

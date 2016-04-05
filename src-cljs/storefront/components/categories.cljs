@@ -2,31 +2,28 @@
   (:require [storefront.components.utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
-            [storefront.accessors.taxons :refer [filter-nav-taxons
-                                                 taxon-path-for]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons]]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn category [frontals? index taxon]
-  (let [taxon-name (taxon :name)
-        taxon-path (taxon-path-for taxon)]
-    [:a.p1.inline-block
-     (merge
-      {:key taxon-path
-       :data-test (str "taxon-" taxon-path)}
-      (utils/route-to events/navigate-category
-                      {:taxon-path taxon-path})
-      (if (> index 5)
-        {:class (if frontals?
-                  "col-6"
-                  "col-12 lg-col-6")}
-        {:class "col-6 lg-col-4"}))
-     [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
-      {:class (str "img-" taxon-path)
-       :style {:height "200px"}}
-      [:.h1.white.center.col-12.titleize.shadow.nowrap
-       taxon-name]]]))
+(defn category [frontals? index {:keys [name slug]}]
+  [:a.p1.inline-block
+   (merge
+    {:key slug
+     :data-test (str "taxon-" slug)}
+    (utils/route-to events/navigate-category
+                   {:taxon-slug slug})
+    (if (> index 5)
+      {:class (if frontals?
+                "col-6"
+                "col-12 lg-col-6")}
+      {:class "col-6 lg-col-4"}))
+   [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
+    {:class (str "img-" slug)
+     :style {:height "200px"}}
+    [:.h1.white.center.col-12.titleize.shadow.nowrap
+     name]]])
 
 (defn categories-component [data owner]
   (om/component

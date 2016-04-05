@@ -4,26 +4,24 @@
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.taxons :refer [filter-nav-taxons taxon-path-for]]
+            [storefront.accessors.taxons :refer [filter-nav-taxons]]
             [storefront.accessors.navigation :as navigation]
             [om.core :as om]
             [clojure.string :as string]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn category [taxon index]
-  (let [taxon-name (taxon :name)
-        taxon-path (taxon-path-for taxon)]
-    [:a.hair-category-link
-     (merge {:key taxon-path
-             :data-test (str "taxon-" taxon-path)}
-            (utils/route-to events/navigate-category
-                            {:taxon-path taxon-path}))
-     [:div.hair-container.not-decorated.no-margin
-      (when (> index 5)
-        {:class "extra-wide"})
-      [:div.hair-taxon {:class taxon-path}]
-      [:div.hair-image.image-cover {:class taxon-path}]]]))
+(defn category [{:keys [slug]} index]
+  [:a.hair-category-link
+   (merge {:key slug
+           :data-test (str "taxon-" slug)}
+          (utils/route-to events/navigate-category
+                          {:taxon-slug slug}))
+   [:div.hair-container.not-decorated.no-margin
+    (when (> index 5)
+      {:class "extra-wide"})
+    [:div.hair-taxon {:class slug}]
+    [:div.hair-image.image-cover {:class slug}]]])
 
 (defn non-frontal-home-component [data owner]
   (om/component

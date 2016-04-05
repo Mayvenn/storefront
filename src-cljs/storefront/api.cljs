@@ -4,7 +4,6 @@
             [storefront.events :as events]
             [storefront.messages :as messages]
             [storefront.accessors.states :as states]
-            [storefront.accessors.taxons :refer [taxon-name-from]]
             [storefront.accessors.orders :as orders]
             [clojure.set :refer [rename-keys]]
             [clojure.walk :refer [postwalk]]
@@ -123,20 +122,20 @@
    {:params {:additional-promo-code promo-code}
     :handler #(messages/handle-message events/api-success-promotions %)}))
 
-(defn get-products [cache taxon-path user-token]
+(defn get-products [cache taxon-slug user-token]
   (cache-req
    cache
    GET
    "/products"
-   (conj request-keys/get-products taxon-path)
+   (conj request-keys/get-products taxon-slug)
    {:params
-    {:taxon-slug taxon-path
+    {:taxon-slug taxon-slug
      :taxonomy "bundle-builder"
      :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-taxon-products
                               (merge (select-keys % [:products])
-                                     {:taxon-path taxon-path}))}))
+                                     {:taxon-slug taxon-slug}))}))
 
 (defn get-products-by-ids [product-ids]
   (api-req
