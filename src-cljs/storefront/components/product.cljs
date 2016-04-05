@@ -19,9 +19,6 @@
          all-variants
          (query/get variant-query))))
 
-(defn display-product-image [image]
-  [:img {:src (:product_url image)}])
-
 (defn number->words [n]
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
@@ -44,18 +41,14 @@
           taxon-path (if taxon (taxon-path-for taxon))
           product (query/get (get-in data keypaths/browse-product-query)
                              (vals (get-in data keypaths/products)))
-          images (->> product :master :images)
+          image (->> product :master :images first :product_url)
           variants (:variants product)]
       (when product
         [:div
          [:div.product-show {:item-type "http://schema.org/Product"}
           [:div#product-images
            [:div#main-image
-            (cond
-              (> (count images) 1)
-              [:div#slides (map display-product-image images)]
-              (seq images)
-              (display-product-image (first images)))]
+            [:img {:src image}]]
            [:div.product-title {:item-prop "name"}
             (:name product)]]
           [:.guarantee-banner
