@@ -15,14 +15,14 @@
                  [(comp even? :stylist_id) 5485630510]
                  [(comp #{"shop" "store"} :store_slug) 5486970170]]}))
 
-(defn bucketeer [experiment-id store]
+(defn- bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
     (->> buckets
          (filter (fn [[pred bucket-variation-id]]
                    (when (pred store) bucket-variation-id)))
          first)))
 
-(defn calls [store experiment-id]
+(defn- calls [store experiment-id]
   (when-let [[_ variation-id] (bucketeer experiment-id store)]
     [["bucketVisitor" experiment-id variation-id]]))
 
