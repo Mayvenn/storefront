@@ -17,19 +17,18 @@
             [storefront.utils.query :as query]
             [storefront.utils.sequences :refer [update-vals]]))
 
-(defn display-product [taxon-id product]
+(defn display-product [product]
   [:a (utils/route-to events/navigate-product
-                      {:product-path (:slug product)
-                       :query-params {:taxon_id taxon-id}})
+                      {:product-path (:slug product)})
    [:div.taxon-product-container
-    (when-let [first-image (->> product
-                                :master
-                                :images
-                                first
-                                :product_url)]
+    (when-let [medium-image (->> product
+                                 :master
+                                 :images
+                                 first
+                                 :product_url)]
       [:div.taxon-product-image-container
-       {:style {:background-image (str "url('" first-image "')")}}
-       [:img {:src first-image}]])
+       {:style {:background-image (str "url('" medium-image "')")}}
+       [:img {:src medium-image}]])
     [:div.taxon-product-title-container
      [:div.taxon-product-title
       (:name product)]]]])
@@ -37,7 +36,7 @@
 (defn list-category-component [data owner]
   (om/component
    (html
-    (if-let [taxon (taxons/current-taxon data)]
+    (when-let [taxon (taxons/current-taxon data)]
       [:div
        [:div.taxon-products-banner.stylist-products]
        [:div.taxon-products-container
@@ -47,7 +46,7 @@
                                                 [(taxon-path-for taxon)])}
                           (get-in data keypaths/api-requests))
              [:.spinner]
-             (map (partial display-product (:id taxon)) products)))]]
+             (map display-product products)))]]
 
        [:div.gold-features
         [:figure.guarantee-feature]
