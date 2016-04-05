@@ -111,7 +111,12 @@
                         :phone ""}
 
      :ui {:api-requests []
-          :taxon-images {:closures  ["/images/style_images/closures/1.png"
+          :taxon-images {:frontals ["/images/style_images/frontals/1.jpg"
+                                    "/images/style_images/frontals/2.jpg"
+                                    "/images/style_images/frontals/3.jpg"
+                                    "/images/style_images/frontals/4.jpg"
+                                    "/images/style_images/frontals/5.jpg"]
+                         :closures  ["/images/style_images/closures/1.png"
                                      "/images/style_images/closures/2.png"
                                      "/images/style_images/closures/3.png"
                                      "/images/style_images/closures/4.png"
