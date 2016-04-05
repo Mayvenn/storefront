@@ -188,20 +188,13 @@
      [:.price "$--.--"]
      bundle-promotion-notice]))
 
-(defn build-steps [flow redundant-attributes]
-  (let [options (->> redundant-attributes
-                     (apply merge-with concat)
-                     (update-vals set)
-                     (update-vals (fn [opts] (->> opts
-                                                  (sort-by :position)
-                                                  (map :name)))))
-        dependent-steps (vec (reductions #(conj %1 %2) [] flow))]
-    (map (fn [step step-dependencies]
-           {:step-name step
-            :option-names (step options)
-            :dependent-steps step-dependencies})
-         flow
-         dependent-steps)))
+(defn build-steps [flow options]
+  (map (fn [step dependent-steps]
+         {:step-name step
+          :option-names (step options)
+          :dependent-steps dependent-steps})
+       flow
+       (vec (reductions #(conj %1 %2) [] flow))))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -288,7 +281,7 @@
                                                           :images-path (conj keypaths/taxon-images
                                                                              (keyword (:name taxon)))}}))]
              [:div.starting-at.centered (starting-at-price variants)]
-             (let [steps (build-steps (selection-flow data) (map :product_attrs products))]
+             (let [steps (build-steps (selection-flow data) (:product_facets taxon))]
                (bundle-builder-steps data variants steps))
              [:#summary
               [:h3 "Summary"]
