@@ -17,19 +17,17 @@
 
 (defn bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
-    (when-let [variation-id (->> buckets
-                                 (filter (fn [[pred bucket-variation-id]]
-                                           (when (pred store) bucket-variation-id)))
-                                 vals
-                                 first)]
-      variation-id)))
+    (->> buckets
+         (filter (fn [[pred bucket-variation-id]]
+                   (when (pred store) bucket-variation-id)))
+         first)))
 
-(defn calls [experiment-id store]
-  (when-let [variation-id (bucketeer experiment-id store)]
-    (clj->js [["bucketVisitor" experiment-id variation-id]])))
+(defn calls [store experiment-id]
+  (when-let [[_ variation-id] (bucketeer experiment-id store)]
+    [["bucketVisitor" experiment-id variation-id]]))
 
 (defn insert-optimizely [store]
-  (set! (.-optimizely js/window) (calls (first (keys experiment->buckets)) store))
+  (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
   (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
 
 (defn remove-optimizely []
@@ -47,8 +45,9 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn frontals? [data]
-  (display-variation data "frontals"))
+(defn frontals? [{:keys [store]}]
+  (when-first [display-variation? (bucketeer (if config/production? 5490150509 5486980194) store)]
+    (display-variation? store)))
 
 (defn three-steps? [data]
   (display-variation data "three-steps"))
