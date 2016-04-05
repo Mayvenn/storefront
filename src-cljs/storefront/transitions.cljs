@@ -39,9 +39,6 @@
       (assoc-in app-state keypaths/pending-promo-code sha)
       app-state)))
 
-(defmethod transition-state events/app-start [_ event args app-state]
-  (assoc-in app-state keypaths/store (js->clj js/store :keywordize-keys true)))
-
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       add-return-event

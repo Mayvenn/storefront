@@ -3,9 +3,6 @@
             [clojure.string :as string]
             [storefront.browser.cookie-jar :as cookie-jar]))
 
-(defn get-store-subdomain []
-  (first (string/split (.-hostname js/location) #"\.")))
-
 (def initial-checkout-state
   {:as-guest false
    :guest-email ""
@@ -48,7 +45,7 @@
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
 
-     :store {:store_slug (get-store-subdomain)}
+     :store (js->clj js/store :keywordize-keys true)
      :taxons []
      :taxon-product-order {}
      :products {}
