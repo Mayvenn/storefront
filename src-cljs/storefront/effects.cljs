@@ -126,7 +126,7 @@
 
 (defn bundle-builder-redirect [app-state product]
   (routes/enqueue-navigate events/navigate-category
-                           {:taxon-slug (-> product :product_attrs :category first :name (str/replace #" " "-"))}))
+                           {:taxon-slug (-> product :master :variant_attrs :category (str/replace #" " "-"))}))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product product-path)

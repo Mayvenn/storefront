@@ -27,27 +27,16 @@
     (when (= 1 (count selected))
       (last (first selected)))))
 
-(defn build-variants
-  "We wish the API gave us a list of variants.  Instead, variants are nested
-  inside products.
-
-  So, this explodes them out into the data structure we'd prefer."
-  [product]
-  (let [product-attrs (update-vals (comp :name first) (:product_attrs product))
-        variants (:variants product)]
-    (map (fn [variant]
-           (-> variant
-               (merge product-attrs)
-               ;; Variants have one specific length, stored in variant_attrs.
-               ;; We need to overwrite the product length, which includes all
-               ;; possible lengths.
-               (assoc :length (some-> variant :variant_attrs :length)
-                      :price (js/parseFloat (:price variant))
-                      :sold-out? (not (:can_supply? variant)))))
-         variants)))
+(defn build-variants [product]
+  (map (fn [variant]
+         (-> variant
+             (merge (:variant_attrs variant))
+             (assoc :price (js/parseFloat (:price variant))
+                    :sold-out? (not (:can_supply? variant)))))
+       (:variants product)))
 
 (defn current-taxon-whitelisted-products [app-state]
-  (filter #(-> % :product_attrs :grade first :name #{"6a premier collection"})
+  (filter #(-> % :master :variant_attrs :grade #{"6a premier collection"})
           (for-taxon app-state (taxons/current-taxon app-state))))
 
 (defn current-taxon-variants [app-state]
