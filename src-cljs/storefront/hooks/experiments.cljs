@@ -1,8 +1,5 @@
 (ns storefront.hooks.experiments
-  (:require [storefront.browser.tags :refer [insert-tag-with-src
-                                             insert-body-bottom
-                                             text-tag
-                                             remove-tags-by-class]]
+  (:require [storefront.browser.tags :as tags]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.messages :as m]
@@ -30,11 +27,12 @@
 
 (defn insert-optimizely [store]
   (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
-  (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
+  (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
+                                 #(m/handle-message events/inserted-optimizely))
   (js/setTimeout #(m/handle-message events/inserted-optimizely) 15000))
 
 (defn remove-optimizely []
-  (remove-tags-by-class "optimizely"))
+  (tags/remove-tags-by-class "optimizely"))
 
 (defn set-dimension [dimension-name value]
   (when (.hasOwnProperty js/window "optimizely")
