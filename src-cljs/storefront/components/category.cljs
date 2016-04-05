@@ -17,14 +17,6 @@
             [storefront.utils.query :as query]
             [storefront.utils.sequences :refer [update-vals]]))
 
-(defn display-taxon [selected-taxon taxon]
-  (let [taxon-path (taxon-path-for taxon)
-        selected-class (if (= selected-taxon taxon) "selected" nil)
-        taxon-classes (string/join " " (conj [taxon-path] selected-class))]
-    [:div.hair-taxon.decorated.small-width {:class taxon-classes}
-     [:a.taxon-link (utils/route-to events/navigate-category {:taxon-path taxon-path})
-      [:p.hair-taxon-name (:name taxon)]]]))
-
 (defn display-product [taxon-id product]
   [:a (utils/route-to events/navigate-product
                       {:product-path (:slug product)
@@ -49,11 +41,6 @@
       [:div
        [:div.taxon-products-banner.stylist-products]
        [:div.taxon-products-container
-        (when-not (:stylist_only? taxon)
-          [:div.taxon-nav
-           (map (partial display-taxon taxon)
-                (filter-nav-taxons (get-in data keypaths/taxons)))
-           [:div {:style {:clear "both"}}]])
         [:div.taxon-products-list-container
          (let [products (products/ordered-products-for-category data taxon)]
            (if (query/get {:request-key (concat request-keys/get-products
