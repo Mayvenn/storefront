@@ -26,13 +26,11 @@
 (defn display-bagged-variant [{:keys [quantity product variant]}]
   [:div.item-added
    [:strong "Added to Cart: "]
-   (str (number->words quantity)
-        " "
-        (some-> variant
-                :variant_attrs
-                :length)
-        " "
-        (:name product))])
+   (number->words quantity)
+   " "
+   (some-> variant :variant_attrs :length)
+   " "
+   (:name product)])
 
 (defn product-component [data owner]
   (om/component
