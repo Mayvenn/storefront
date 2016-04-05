@@ -137,6 +137,7 @@
       (bundle-builder-redirect app-state product))))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
+  (facebook/insert)
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect events/navigate-sign-in)))
 
@@ -145,6 +146,7 @@
     (routes/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
+  (facebook/insert)
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account user-token)))
