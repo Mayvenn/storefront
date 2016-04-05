@@ -189,6 +189,7 @@
 (def loaded-places (conj loaded :places))
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
+(def loaded-optimizely (conj loaded :optimizely))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 

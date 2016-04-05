@@ -4,6 +4,8 @@
                                              text-tag
                                              remove-tags-by-class]]
             [storefront.keypaths :as keypaths]
+            [storefront.events :as events]
+            [storefront.messages :as m]
             [storefront.config :as config]))
 
 (def experiment->buckets
@@ -45,9 +47,8 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn frontals? [{:keys [store]}]
-  (when-first [display-variation? (bucketeer (if config/production? 5490150509 5486980194) store)]
-    (display-variation? store)))
+(defn frontals? [data]
+  (display-variation data "frontals"))
 
 (defn three-steps? [data]
   (display-variation data "three-steps"))

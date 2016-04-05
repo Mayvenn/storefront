@@ -214,6 +214,7 @@
 (def inserted-reviews (conj inserted :reviews))
 (def inserted-fastpass (conj inserted :fastpass))
 (def inserted-talkable (conj inserted :talkable))
+(def inserted-optimizely (conj inserted :optimizely))
 
 (def autocomplete-update-address [:autocomplete-update-address])
 

@@ -202,4 +202,5 @@
                    :stripe false
                    :facebook false
                    :places false
-                   :talkable false}}}))
+                   :talkable false
+                   :optimizely false}}}))

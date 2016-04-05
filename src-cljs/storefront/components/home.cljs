@@ -56,6 +56,8 @@
       (om/build categories-component data)]])))
 
 (defn home-component [data owner]
-  (if (experiments/frontals? data)
-    (frontal-home-component data owner)
-    (non-frontal-home-component data owner)))
+  (if (get-in data keypaths/loaded-optimizely)
+    (if (experiments/frontals? data)
+      (frontal-home-component data owner)
+      (non-frontal-home-component data owner))
+    (om/component (html [:div]))))
