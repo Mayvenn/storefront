@@ -116,7 +116,7 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (if (and (= taxon-slug "frontals")
-           (not (experiments/frontals? app-state)))
+           (not (experiments/predict-frontals? app-state)))
     (routes/enqueue-redirect events/navigate-categories)
     (do
       (reviews/insert-reviews)
