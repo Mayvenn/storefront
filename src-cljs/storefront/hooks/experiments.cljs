@@ -55,7 +55,7 @@
   (if (get-in data keypaths/loaded-optimizely)
     (frontals? data)
     (and (-> data (get-in keypaths/store) :stylist_id odd?)
-         (not (-> data (get-in keypaths/store) :store_slug #{"shop" "store"}))))
+         (not (-> data (get-in keypaths/store) :store_slug #{"shop" "store"})))))
 
 (defn three-steps? [data]
   (display-variation data "three-steps"))
