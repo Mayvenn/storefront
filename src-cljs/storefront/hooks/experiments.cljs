@@ -30,7 +30,8 @@
 
 (defn insert-optimizely [store]
   (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
-  (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely"))
+  (insert-tag-with-src (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
+  (js/setTimeout #(m/handle-message events/inserted-optimizely) 15000))
 
 (defn remove-optimizely []
   (remove-tags-by-class "optimizely"))
