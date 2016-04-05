@@ -8,12 +8,12 @@
 
 (def experiment->buckets
   (if config/production?
-    {5490150509 [[(comp odd? :stylist_id) 5467272676]
-                 [(comp even? :stylist_id) 5469762231]
-                 [(comp #{"shop" "store"} :store_slug) 5484490640]]}
-    {5486980194 [[(comp odd? :stylist_id) 5483790215]
-                 [(comp even? :stylist_id) 5485630510]
-                 [(comp #{"shop" "store"} :store_slug) 5486970170]]}))
+    {5490150509 [[(comp #{"shop" "store"} :store_slug) 5484490640]
+                 [(comp odd? :stylist_id) 5467272676]
+                 [(comp even? :stylist_id) 5469762231]]}
+    {5486980194 [[(comp #{"shop" "store"} :store_slug) 5486970170]
+                 [(comp odd? :stylist_id) 5483790215]
+                 [(comp even? :stylist_id) 5485630510]]}))
 
 (defn- bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
