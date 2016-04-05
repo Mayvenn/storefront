@@ -14,6 +14,10 @@
                  [(comp odd? :stylist_id) 5483790215]
                  [(comp even? :stylist_id) 5485630510]]}))
 
+(def variation-id->name
+  {"5469762231" "frontals"
+   "5485630510" "frontals"})
+
 (defn- bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
     (->> buckets
@@ -28,7 +32,11 @@
 (defn insert-optimizely [store]
   (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
-                                 #(m/handle-message events/inserted-optimizely))
+                                 (fn []
+                                   (doseq [variation-id (flatten (vals (js->clj js/optimizely.data.state.variationIdsMap)))]
+                                     (when-let [variation-name (variation-id->name variation-id)]
+                                       (m/handle-message events/optimizely {:variation variation-name})))
+                                   (m/handle-message events/inserted-optimizely)))
   (js/setTimeout #(m/handle-message events/inserted-optimizely) 15000))
 
 (defn remove-optimizely []

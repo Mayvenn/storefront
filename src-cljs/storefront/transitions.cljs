@@ -389,7 +389,6 @@
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
   (-> app-state
-      (assoc-in keypaths/loaded-optimizely true)
       (update-in keypaths/optimizely-variations conj variation)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
