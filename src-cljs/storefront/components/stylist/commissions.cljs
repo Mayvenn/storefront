@@ -35,7 +35,8 @@
    [:.overflow-hidden
     [:.h3.medium.titleize (products/product-title item)]
     [:.line-height-3.h4.mt1
-     [:div "Length: " (:length variant-attrs)]
+     (when-let [length (:length variant-attrs)]
+       [:div "Length: " length])
      [:div "Price: " (f/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
 
