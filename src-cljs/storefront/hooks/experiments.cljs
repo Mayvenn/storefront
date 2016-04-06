@@ -14,9 +14,22 @@
                  [(comp odd? :stylist_id) 5483790215]
                  [(comp even? :stylist_id) 5485630510]]}))
 
-(def variation-id->name
+(def old-experiment-variation-id->name
   {"5469762231" "frontals"
    "5485630510" "frontals"})
+
+;; optimizely.data.experiments = {experiment-id -> {name -> String, variation_ids -> [Int], ...}}
+(defn- variation-id->name [variation-id]
+  (let [experiment (->> js/optimizely.data.experiments
+                        js->clj
+                        vals
+                        (filter (fn [experiment] (-> experiment
+                                                    (get "variation_ids")
+                                                    set
+                                                    (get (str variation-id)))))
+                        first)]
+    (or (old-experiment-variation-id->name variation-id)
+        (str (experiment "name") "/" (get-in (js->clj js/optimizely.data.variations) [(str variation-id) "name"])))))
 
 (defn- bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
@@ -29,14 +42,16 @@
   (when-let [[_ variation-id] (bucketeer experiment-id store)]
     [["bucketVisitor" experiment-id variation-id]]))
 
+(defn- active-variation-ids []
+  (flatten (vals (filter (comp (set (js->clj js/optimizely.data.state.activeExperiments)) first)
+                         (js->clj js/optimizely.data.state.variationIdsMap)))))
+
 (defn insert-optimizely [store]
   (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
                                  (fn []
-                                   (doseq [variation-id (flatten (vals (filter (comp (set (js->clj js/optimizely.data.state.activeExperiments)) first)
-                                                                               (js->clj js/optimizely.data.state.variationIdsMap))))]
-                                     (when-let [variation-name (variation-id->name variation-id)]
-                                       (m/handle-message events/optimizely {:variation variation-name})))
+                                   (doseq [variation-id (active-variation-ids)]
+                                     (m/handle-message events/optimizely {:variation (variation-id->name variation-id)}))
                                    (m/handle-message events/inserted-optimizely)))
   (js/setTimeout #(m/handle-message events/inserted-optimizely) 15000))
 
