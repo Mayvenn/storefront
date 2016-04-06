@@ -193,17 +193,6 @@
             response
             (content-type "text/html")))))
 
-(defn proxy-spree-images [env]
-  (GET "/spree/*" {params :params :as req}
-    (when (config/development? env)
-      (let [response (http/get (str "http://localhost:3000/spree/" (:* params))
-                               {:throw-exceptions false
-                                :query-params params
-                                :as :byte-array})]
-        {:status (:status response)
-         :headers (select-keys (:headers response) ["Content-Type"])
-         :body (java.io.ByteArrayInputStream. (:body response))}))))
-
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
                             {:form-params {:number number
@@ -242,7 +231,6 @@
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
                (paypal-routes ctx)
-               (proxy-spree-images environment)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found "Not found"))
        (wrap-params)
