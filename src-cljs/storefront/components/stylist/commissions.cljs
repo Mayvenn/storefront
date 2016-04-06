@@ -84,10 +84,10 @@
               {:name name :price amount}))))
 
 (defn show-subtotals [shipping-methods order]
-  (for [{:keys [name price]} (remove nil? (concat (product-subtotals order)
-                                                  (discount-subtotals order)
-                                                  (shipping-subtotals shipping-methods order)
-                                                  (store-credit-subtotals order)))]
+  (for [{:keys [name price]} (concat (product-subtotals order)
+                                     (discount-subtotals order)
+                                     (shipping-subtotals shipping-methods order)
+                                     (store-credit-subtotals order))]
     [:.clearfix.mxn1.my2
      [:.px1.col.col-8 name]
      [:.px1.col.col-4.medium.right-align (f/as-money price)]]))
