@@ -155,18 +155,6 @@
   (.getTime (doto (GregorianCalendar.)
               (.add Calendar/YEAR 10))))
 
-(defn wrap-cdn [f]
-  (fn [req]
-    (let [resp (f req)]
-      (if (.startsWith (:uri req) "/cdn/")
-        (-> resp
-            (header "Content-Encoding" "gzip")
-            (header "Access-Control-Allow-Origin" "*")
-            (header "Access-Control-Allow-Methods" "GET")
-            (header "Cache-Control" (str "max-age=" (* 10 365 24 60 60)))
-            (header "Expires" (.format (make-http-format) (years-from-now))))
-        resp))))
-
 (defn request-scheme [req]
   (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
     (keyword forwarded-proto)
@@ -195,8 +183,7 @@
       (wrap-redirect)
       (wrap-fetch-store storeback-config)
       (wrap-resource "public")
-      (wrap-content-type)
-      (wrap-cdn)))
+      (wrap-content-type)))
 
 (defn site-routes
   [{:keys [storeback-config environment]}]
