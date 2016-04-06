@@ -5,18 +5,20 @@
             [storefront.messages :as m]
             [storefront.config :as config]))
 
-(def experiment->buckets
-  (if config/production?
-    {5490150509 [[(comp #{"shop" "store"} :store_slug) 5484490640]
-                 [(comp odd? :stylist_id) 5467272676]
-                 [(comp even? :stylist_id) 5469762231]]}
-    {5486980194 [[(comp #{"shop" "store"} :store_slug) 5486970170]
-                 [(comp odd? :stylist_id) 5483790215]
-                 [(comp even? :stylist_id) 5485630510]]}))
 
-(def old-experiment-variation-id->name
-  {"5469762231" "frontals"
-   "5485630510" "frontals"})
+(def stylist-odd?  (comp odd? :stylist_id))
+(def stylist-even? (comp even? :stylist_id))
+(def no-stylist?   (comp #{"shop" "store"} :store_slug))
+
+(def frontals-experiment (if config/production? 5490150509 5486980194))
+(def frontals-original   (if config/production? 5467272676 5483790215))
+(def frontals-variation  (if config/production? 5469762231 5485630510))
+(def frontals-exclude    (if config/production? 5484490640 5486970170))
+
+(def experiment->buckets
+  {frontals-experiment [[no-stylist? frontals-exclude]
+                        [stylist-odd? frontals-original]
+                        [stylist-even? frontals-variation]]})
 
 ;; optimizely.data.experiments = {experiment-id -> {name -> String, variation_ids -> [Int], ...}}
 (defn- variation-id->name [variation-id]
@@ -28,8 +30,7 @@
                                                     set
                                                     (get (str variation-id)))))
                         first)]
-    (or (old-experiment-variation-id->name variation-id)
-        (str (experiment "name") "/" (get-in (js->clj js/optimizely.data.variations) [(str variation-id) "name"])))))
+    (str (experiment "name") "/" (get-in (js->clj js/optimizely.data.variations) [(str variation-id) "name"]))))
 
 (defn- bucketeer [experiment-id store]
   (when-let [buckets (experiment->buckets experiment-id)]
@@ -39,15 +40,18 @@
          first)))
 
 (defn- calls [store experiment-id]
-  (when-let [[_ variation-id] (bucketeer experiment-id store)]
-    [["bucketVisitor" experiment-id variation-id]]))
+  (if-let [[_ variation-id] (bucketeer experiment-id store)]
+    [["bucketVisitor" experiment-id variation-id]]
+    []))
 
 (defn- active-variation-ids []
-  (flatten (vals (filter (comp (set (js->clj js/optimizely.data.state.activeExperiments)) first)
-                         (js->clj js/optimizely.data.state.variationIdsMap)))))
+  (let [active-experiments            (set (js->clj js/optimizely.data.state.activeExperiments))
+        experiment->active-variations (js->clj js/optimizely.data.state.variationIdsMap)]
+    (mapcat #(get experiment->active-variations %) active-experiments)))
 
 (defn insert-optimizely [store]
-  (set! (.-optimizely js/window) (clj->js (reduce concat [] (map (partial calls store) (keys experiment->buckets)))))
+  (set! (.-optimizely js/window)
+        (clj->js (mapcat (partial calls store) (keys experiment->buckets))))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
                                  (fn []
                                    (doseq [variation-id (active-variation-ids)]
@@ -71,13 +75,14 @@
              variation))
 
 (defn frontals? [data]
-  (display-variation data "frontals"))
+  (display-variation data "Frontal Closure/Variation #1 - Even Numbers"))
 
 (defn predict-frontals? [data]
   (if (get-in data keypaths/loaded-optimizely)
     (frontals? data)
-    (and (-> data (get-in keypaths/store) :stylist_id odd?)
-         (not (-> data (get-in keypaths/store) :store_slug #{"shop" "store"})))))
+    (let [store (get-in data keypaths/store)]
+      (and (stylist-even? store)
+           (not (no-stylist? store))))))
 
 (defn three-steps? [data]
   (display-variation data "three-steps"))

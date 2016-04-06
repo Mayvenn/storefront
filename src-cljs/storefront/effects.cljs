@@ -728,7 +728,10 @@
 
 (defmethod perform-effects events/optimizely [_ event args app-state]
   (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" (:variation args)))
+  (let [variation-name (:variation args)]
+    (analytics/track-event "optimizely-experiment"
+                           (if (= variation-name "Frontal Closure/Variation #1 - Even Numbers")
+                             "frontals" variation-name))))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
