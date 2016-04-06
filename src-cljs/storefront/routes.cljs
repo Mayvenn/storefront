@@ -84,20 +84,6 @@
 
 (def app-history)
 
-(defn set-current-page []
-  (let [uri (.getToken app-history)
-        {nav-event :handler params :route-params}
-        (bidi/match-route app-routes uri)
-
-        query-params (:query (url js/location.href))]
-    (handle-message (if nav-event (bidi->edn nav-event) events/navigate-not-found)
-                    (-> params
-                        (merge (when query-params {:query-params query-params}))
-                        keywordize-keys))))
-
-(defn start-history []
-  (set! app-history (make-history set-current-page)))
-
 (defn- set-query-string [s query-params]
   (-> (Uri.parse s)
       (.setQueryData (map->query (if (seq query-params)
@@ -105,15 +91,33 @@
                                    {})))
       .toString))
 
+(defn navigation-message-for
+  ([uri] (navigation-message-for uri nil))
+  ([uri query-params]
+   (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+     [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
+      (-> params
+          (merge (when query-params {:query-params query-params}))
+          keywordize-keys)])))
+
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)
-        args (dissoc args :query-params)
-        path (apply bidi/path-for
-                    app-routes
-                    (edn->bidi navigation-event)
-                    (apply concat (seq args)))]
+        args         (dissoc args :query-params)
+        path         (apply bidi/path-for
+                            app-routes
+                            (edn->bidi navigation-event)
+                            (apply concat (seq args)))]
     (when path
       (set-query-string path query-params))))
+
+(defn set-current-page []
+  (let [uri          (.getToken app-history)
+        query-params (:query (url js/location.href))]
+    (apply handle-message
+           (navigation-message-for uri query-params))))
+
+(defn start-history []
+  (set! app-history (make-history set-current-page)))
 
 (defn enqueue-redirect [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]

@@ -125,8 +125,8 @@
                         (get-in app-state keypaths/user-token)))))
 
 (defn bundle-builder-redirect [app-state product]
-  (routes/enqueue-navigate events/navigate-category
-                           {:taxon-slug (-> product :master :variant_attrs :category (str/replace #" " "-"))}))
+  (apply routes/enqueue-redirect
+         (routes/navigation-message-for (:url-path product))))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
   (api/get-product product-path)
