@@ -9,7 +9,7 @@
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id
-                        :xfbml false
+                        :xfbml true
                         :version "v2.5"})))
 
 (defn insert []
@@ -40,3 +40,6 @@
 
 (defn start-reset [app-state]
   (fb-login app-state events/facebook-success-reset))
+
+(defn reparse-xfbml []
+  (js/FB.XFBML.parse))

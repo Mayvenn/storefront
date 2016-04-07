@@ -307,6 +307,17 @@
     #(messages/handle-message events/api-success-account
                               (spree->mayvenn-addresses %))}))
 
+(defn get-messenger-token [id token]
+  (api-req
+   GET
+   "/v2/users/tokens"
+   request-keys/get-messenger-token
+   {:params
+    {:id id
+     :token token}
+    :handler
+    #(messages/handle-message events/api-success-messenger-token (select-keys % [:messenger_token]))}))
+
 (defn update-account [id email password password-confirmation token]
   (api-req
    PUT

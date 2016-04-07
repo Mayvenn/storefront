@@ -2,8 +2,10 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
+            [storefront.config :as config]
             [storefront.components.formatters :refer [as-money]]
             [storefront.keypaths :as keypaths]))
 
@@ -42,9 +44,16 @@
                   :name "password-confirmation"})]]
         [:p.user-password-instructions "Leave blank to keep the same password."]]
 
-       (when-let [available-credit (get-in data keypaths/user-total-available-store-credit)]
-         [:fieldset
-          [:legend {:align "center"} "Store Credit"]
-          [:p.user-password-instructions "Available store credit is " (as-money available-credit)]])
        [:p
-        [:input.button.primary {:type "submit" :value "Update"}]]]]])))
+        [:input.button.primary {:type "submit" :value "Update"}]]]
+
+      (when-let [available-credit (get-in data keypaths/user-total-available-store-credit)]
+        [:fieldset
+         [:legend {:align "center"} "Store Credit"]
+         [:p.user-password-instructions "Available store credit is " (as-money available-credit)]])
+
+      [:div.my2
+       (om/build facebook/messenger-business-opt-in
+                 {:user-id (get-in data keypaths/user-id)
+                  :messenger-token (get-in data keypaths/user-messenger-token)
+                  :loaded-facebook? (get-in data keypaths/loaded-facebook)})]]])))

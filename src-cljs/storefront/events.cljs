@@ -153,6 +153,7 @@
 (def api-success-stylist-commissions (conj api-success :stylist-commissions))
 (def api-success-stylist-bonus-credits (conj api-success :stylist-bonus-credits))
 (def api-success-stylist-referral-program (conj api-success :stylist-referral-program))
+(def api-success-messenger-token (conj api-success :messenger-token))
 
 (def api-success-add-to-bag (conj api-success :add-to-bag))
 (def api-success-remove-from-bag (conj api-success :remove-from-bag))
