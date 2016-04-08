@@ -553,7 +553,7 @@
                                               (when-not three-steps?
                                                 {:navigate events/navigate-checkout-payment})))}))
 
-(defn update-cart-payments [{:keys [order] :as args}]
+(defn update-cart-payments [{:keys [order place-order?] :as args}]
   (api-req
    POST
    "/v2/update-cart-payments"

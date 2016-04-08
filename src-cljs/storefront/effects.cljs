@@ -502,7 +502,8 @@
                (select-keys [:token :number])
                (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
                (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))
-    :navigate events/navigate-checkout-confirmation}))
+    :navigate events/navigate-checkout-confirmation
+    :place-order? (:place-order? stripe-response)}))
 
 (defmethod perform-effects events/stripe-failure-create-token [_ _ stripe-response app-state]
   (handle-message events/flash-show-failure
@@ -530,7 +531,8 @@
                              (get-in app-state keypaths/checkout-credit-card-ccv)
                              (first expiry)
                              (last expiry)
-                             (get-in app-state (conj keypaths/order :billing-address)))))))
+                             (get-in app-state (conj keypaths/order :billing-address))
+                             {:place-order? (:place-order? args)})))))
 
 (defmethod perform-effects events/control-checkout-remove-promotion [_ _ {:keys [code]} app-state]
   (api/remove-promotion-code (get-in app-state keypaths/order) code))
@@ -649,6 +651,10 @@
                               (get-in app-state keypaths/user)
                               (:billing-address order)
                               (:shipping-address order)))
+
+(defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} app-state]
+  (when place-order?
+    (api/place-order (merge order {:session-id (get-in app-state keypaths/session-id)}))))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state)

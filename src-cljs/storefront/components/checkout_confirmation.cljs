@@ -12,6 +12,12 @@
             [storefront.components.checkout-delivery :refer [checkout-confirm-delivery-component]]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]))
 
+(defn requires-additional-payment? [data]
+  (and (experiments/three-steps? data)
+       (nil? (get-in data keypaths/order-cart-payments-stripe))
+       (> (get-in data keypaths/order-total)
+          (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
+
 (defn checkout-confirmation-component [data owner]
   (let [placing-order? (query/get {:request-key request-keys/place-order}
                                   (get-in data keypaths/api-requests))
@@ -29,10 +35,7 @@
            (display-line-items data (get-in data keypaths/order))
            (when (experiments/three-steps? data)
              (om/build checkout-confirm-delivery-component data))
-           (when (and (experiments/three-steps? data)
-                      (nil? (get-in data keypaths/order-cart-payments-stripe))
-                      (> (get-in data keypaths/order-total)
-                         (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0)))
+           (when (requires-additional-payment? data)
              [:div
               [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
               (om/build checkout-payment-credit-card-component data)])
@@ -41,7 +44,9 @@
             [:a.large.continue.button.primary
              (merge
               {:on-click (when-not saving?
-                           (utils/send-event-callback events/control-checkout-confirmation-submit))
+                           (if (requires-additional-payment? data)
+                             (utils/send-event-callback events/control-checkout-payment-method-submit {:place-order? true})
+                             (utils/send-event-callback events/control-checkout-confirmation-submit)))
                :class (str (when placing-order? "saving") " "
                            (when updating-shipping? "disabled"))})
              "Complete my Purchase"]]]]]]]))))

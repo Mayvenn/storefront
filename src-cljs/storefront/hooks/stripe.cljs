@@ -15,7 +15,7 @@
        (handle-message events/inserted-stripe)
        (js/Stripe.setPublishableKey config/stripe-publishable-key)))))
 
-(defn create-token [cardholder-name number cvc exp-month exp-year address]
+(defn create-token [cardholder-name number cvc exp-month exp-year address & [args]]
   (when (.hasOwnProperty js/window "Stripe")
     (js/Stripe.card.createToken (clj->js (merge
                                           {:number number
@@ -31,6 +31,6 @@
                                 (fn [status response]
                                   (if (= 200 status)
                                     (handle-message events/stripe-success-create-token
-                                                    (js->clj response :keywordize-keys true))
+                                                    (assoc (js->clj response :keywordize-keys true) :place-order? (:place-order? args) ))
                                     (handle-message events/stripe-failure-create-token
                                                     (js->clj response :keywordize-keys true)))))))
