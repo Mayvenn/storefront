@@ -53,7 +53,4 @@
          [:p.user-password-instructions "Available store credit is " (as-money available-credit)]])
 
       [:div.my2
-       (om/build facebook/messenger-business-opt-in
-                 {:user-id (get-in data keypaths/user-id)
-                  :messenger-token (get-in data keypaths/user-messenger-token)
-                  :loaded-facebook? (get-in data keypaths/loaded-facebook)})]]])))
+       (om/build facebook/messenger-business-opt-in-component (facebook/query data))]]])))

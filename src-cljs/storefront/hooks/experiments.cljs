@@ -56,6 +56,9 @@
 (defn three-steps? [data]
   (display-variation data "three-steps"))
 
+(defn fb-messenger? [data]
+  (get-in data keypaths/fb-messenger-experiment-enabled))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

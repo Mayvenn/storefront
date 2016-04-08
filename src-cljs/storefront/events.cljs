@@ -223,3 +223,5 @@
 (def checkout-address-place-changed (conj checkout-address :place-changed))
 (def checkout-address-component-mounted (conj checkout-address :component-mounted))
 (def checkout-address-component-updated (conj checkout-address :component-updated))
+
+(def fb-messenger-experiment-enabled [:fb-messenger-experiment-enabled])

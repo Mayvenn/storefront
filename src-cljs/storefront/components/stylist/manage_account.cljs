@@ -4,6 +4,7 @@
             [clojure.string :refer [join capitalize]]
             [storefront.components.formatters :as f]
             [storefront.components.utils :as utils]
+            [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -226,4 +227,7 @@
            [:p.password-instructions
             "Available store credit is " (f/as-money available-credit)]]])
 
-       [:input.big-button {:name "commit" :type "submit" :value "Update Account"}]]]])))
+       [:input.big-button {:name "commit" :type "submit" :value "Update Account"}]]]
+
+     [:div.my2
+      (om/build facebook/messenger-business-opt-in-component (facebook/query data))]])))

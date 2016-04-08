@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
             [storefront.config :as config]
             [storefront.keypaths :as keypaths]))
@@ -33,11 +34,10 @@
       (html
        [:div
         ;; Sablono only supports known attributes, but FB insists on using their own.
-        [:div
-         {:dangerouslySetInnerHTML {:__html (goog.string/format
-                                             "<div class='fb-messengerbusinesslink' messenger_app_id='%s' state=\"{'data': {'user_id': %d}}\"></div>"
-                                             config/sonar-facebook-app-id
-                                             user-id)}}]]))))
+        {:dangerouslySetInnerHTML {:__html (goog.string/format
+                                            "<div class='fb-messengerbusinesslink' messenger_app_id='%s' state=\"{'data': {'user_id': %d}}\"></div>"
+                                            config/sonar-facebook-app-id
+                                            user-id)}}]))))
 
 (defn opt-out-component [{:keys [messenger-token loaded-facebook?]} _]
   (reify
@@ -50,17 +50,24 @@
       (html
        [:div
         ;; Sablono only supports known attributes, but FB insists on using their own.
-        [:div
-         {:dangerouslySetInnerHTML {:__html (goog.string/format
-                                             "<div class='fb-messengertoggle' messenger_app_id='%s' token='%s'></div>"
-                                             config/sonar-facebook-app-id
-                                             messenger-token)}}]]))))
+        {:dangerouslySetInnerHTML {:__html (goog.string/format
+                                            "<div class='fb-messengertoggle' messenger_app_id='%s' token='%s'></div>"
+                                            config/sonar-facebook-app-id
+                                            messenger-token)}}]))))
 
-(defn messenger-business-opt-in [{:keys [user-id messenger-token loaded-facebook?]} _]
+(defn messenger-business-opt-in-component [{:keys [enabled? user-id messenger-token loaded-facebook?]} _]
   (om/component
    (html
-    [:div
-     (om/build opt-out-component {:messenger-token messenger-token
-                                  :loaded-facebook? loaded-facebook?})
-     (om/build opt-in-component {:user-id user-id
-                                 :loaded-facebook? loaded-facebook?})])))
+    (when enabled?
+      [:div
+       (when messenger-token
+         (om/build opt-out-component {:messenger-token messenger-token
+                                      :loaded-facebook? loaded-facebook?}))
+       (om/build opt-in-component {:user-id user-id
+                                   :loaded-facebook? loaded-facebook?})]))))
+
+(defn query [data]
+  {:user-id (get-in data keypaths/user-id)
+   :messenger-token (get-in data keypaths/user-messenger-token)
+   :loaded-facebook? (get-in data keypaths/loaded-facebook)
+   :enabled? (experiments/fb-messenger? data)})
