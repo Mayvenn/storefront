@@ -8,6 +8,7 @@
             [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.checkout-payment :refer [checkout-payment-credit-card-component]]
             [storefront.components.checkout-delivery :refer [checkout-confirm-delivery-component]]
             [storefront.components.order-summary :refer [display-order-summary display-line-items]]))
 
@@ -28,6 +29,13 @@
            (display-line-items data (get-in data keypaths/order))
            (when (experiments/three-steps? data)
              (om/build checkout-confirm-delivery-component data))
+           (when (and (experiments/three-steps? data)
+                      (nil? (get-in data keypaths/order-cart-payments-stripe))
+                      (> (get-in data keypaths/order-total)
+                         (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0)))
+             [:div
+              [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
+              (om/build checkout-payment-credit-card-component data)])
            (display-order-summary data (get-in data keypaths/order))
            [:div.form-buttons.pay-for-order
             [:a.large.continue.button.primary

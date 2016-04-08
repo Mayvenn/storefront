@@ -52,9 +52,15 @@
            :max-length 9 :type "tel"})
    (field "card_code" "3 digit number on back of card" data keypaths/checkout-credit-card-ccv identity
           {:size 5 :auto-complete "off" :class "required cardCode"
-           :max-length 4 :type "tel"})
-   [:p.review-message
-    "You can review your order on the next page before we charge your credit card"]])
+           :max-length 4 :type "tel"})])
+
+(defn checkout-payment-credit-card-component [data owner]
+  (om/component
+   (html
+    [:#cc-form
+     [:div
+      [:h2.checkout-header "Credit Card Info (Required)"]
+      (display-credit-card-form data)]])))
 
 (defn checkout-payment-component [data owner]
   (om/component
@@ -71,10 +77,10 @@
          (when-not (orders/fully-covered-by-store-credit?
                     (get-in data keypaths/order)
                     (get-in data keypaths/user))
-           [:#cc-form
-            [:div
-             [:h2.checkout-header "Credit Card Info (Required)"]
-             (display-credit-card-form data)]])
+           [:div
+            (om/build checkout-payment-credit-card-component data)
+            [:p.review-message
+             "You can review your order on the next page before we charge your credit card"]])
 
          (when (get-in data keypaths/loaded-stripe)
            [:.form-buttons
