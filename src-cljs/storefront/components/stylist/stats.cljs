@@ -66,26 +66,26 @@
 (defmethod render-stat :previous-payout [_ {:keys [amount date]}]
   [:.my3
    {:key "previous-payout" :class stat-card}
-   [:.p1 "LAST PAYOUT"]
+   [:.p1 "LAST WEEK'S PAYMENT"]
    (if (> amount 0)
      [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
-      [:div (f/long-date date)]]
+      [:div (str "On " (f/long-date date))]]
      [:div
       [:div {:style {:padding "18px"}} svg/large-payout]
-      [:div "Tip: Your last payout will show here."]])])
+      [:div "Your last payment will show here."]])])
 
 (defmethod render-stat :next-payout [_ {:keys [amount]}]
   [:.my3
-   {:key "next-payout" :class stat-card}
-   [:.p1 "NEXT PAYOUT"]
+   {:key "next-payment" :class stat-card}
+   [:.p1 "NEXT PAYMENT"]
    (if (> amount 0)
      [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
       [:div "Payment " (in-x-days)]]
      [:div
       [:.py2 svg/large-dollar]
-      [:div "Tip: Your next payout will show here."]])])
+      [:div "See your next payment amount here."]])])
 
 (defmethod render-stat :lifetime-payouts [_ {:keys [amount]}]
   [:.my3
@@ -94,10 +94,10 @@
    (if (> amount 0)
      [:div
       [:.py2.h00 re-center-money (money amount)]
-      [:div utils/nbsp]]
+      [:div "Sales since you joined Mayvenn"]]
      [:div
       [:.py2 svg/large-percent]
-      [:div "Tip: Lifetime commissions will show here."]])])
+      [:div "All sales since you joined Mayvenn."]])])
 
 (defn stats-details-component [stats]
   (om/component

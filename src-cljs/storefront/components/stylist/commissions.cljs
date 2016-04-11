@@ -117,7 +117,7 @@
        (f/as-money amount) " paid on " (f/long-date payout-date))]
      [:.bg-teal
       (payout-bar
-       (f/as-money amount) " has been added to your next payout.")])])
+       (f/as-money amount) " has been added to your next payment.")])])
 
 (defn toggle-expanded-commission [expanded? number]
   (utils/send-event-callback events/control-commission-order-expand
