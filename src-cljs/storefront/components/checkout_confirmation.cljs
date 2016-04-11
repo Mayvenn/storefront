@@ -52,5 +52,6 @@
                                                       {:place-order? (requires-additional-payment? data)}))
                :class (str (when (or creating-stripe-token? updating-payments? placing-order?)
                              "saving") " "
-                           (when updating-shipping? "disabled"))})
+                           (when updating-shipping? "disabled"))}
+             (when saving? {:disabled "disabled"}))
              "Complete my Purchase"]]]]]]]))))
