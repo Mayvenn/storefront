@@ -36,7 +36,6 @@
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
      :optimizely {:variations #{}}
-     :fb-messenger-enabled false
 
      :session-id (cookie-jar/force-session-id cookie)
      :get-satisfaction-login? false

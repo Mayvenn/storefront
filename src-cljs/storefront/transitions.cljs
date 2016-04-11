@@ -429,6 +429,3 @@
 
 (defmethod transition-state events/talkable-offer-shown [_ event args app-state]
   (assoc-in app-state keypaths/pending-talkable-order nil))
-
-(defmethod transition-state events/fb-messenger-experiment-enabled [_ _ _ app-state]
-  (assoc-in app-state keypaths/fb-messenger-experiment-enabled true))

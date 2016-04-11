@@ -3,7 +3,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
-            [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
             [storefront.config :as config]
             [storefront.keypaths :as keypaths]))
@@ -55,19 +54,17 @@
                                             config/sonar-facebook-app-id
                                             messenger-token)}}]))))
 
-(defn messenger-business-opt-in-component [{:keys [enabled? user-id messenger-token loaded-facebook?]} _]
+(defn messenger-business-opt-in-component [{:keys [user-id messenger-token loaded-facebook?]} _]
   (om/component
    (html
-    (when enabled?
-      [:div
-       (when messenger-token
-         (om/build opt-out-component {:messenger-token messenger-token
-                                      :loaded-facebook? loaded-facebook?}))
-       (om/build opt-in-component {:user-id user-id
-                                   :loaded-facebook? loaded-facebook?})]))))
+    [:div
+     (when messenger-token
+       (om/build opt-out-component {:messenger-token messenger-token
+                                    :loaded-facebook? loaded-facebook?}))
+     (om/build opt-in-component {:user-id user-id
+                                 :loaded-facebook? loaded-facebook?})])))
 
 (defn query [data]
   {:user-id (get-in data keypaths/user-id)
    :messenger-token (get-in data keypaths/user-messenger-token)
-   :loaded-facebook? (get-in data keypaths/loaded-facebook)
-   :enabled? (experiments/fb-messenger? data)})
+   :loaded-facebook? (get-in data keypaths/loaded-facebook)})

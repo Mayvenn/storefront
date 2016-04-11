@@ -8,7 +8,6 @@ div.manage-account-content {
   form.edit_mayvenn_stylist {
     @include display(flex);
     @include flex-wrap(wrap);
-    width: 100%;
     margin: 0;
 
     .select-payout-method, .social-media, #store-credit {

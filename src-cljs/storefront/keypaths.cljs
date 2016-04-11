@@ -197,5 +197,3 @@
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
 (def get-satisfaction-login? [:get-satisfaction-login?])
-
-(def fb-messenger-experiment-enabled [:fb-messenger-experiment-enabled])
