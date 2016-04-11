@@ -238,6 +238,7 @@
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
+  (stripe/insert)
   (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
