@@ -23,6 +23,8 @@
                                   (get-in data keypaths/api-requests))
         updating-shipping? (query/get {:request-key request-keys/update-shipping-method}
                                       (get-in data keypaths/api-requests))
+        updating-payments? (query/get {:request-key request-keys/update-cart-payments}
+                                      (get-in data keypaths/api-requests))
         saving? (or placing-order? updating-shipping?)]
     (om/component
      (html
@@ -44,9 +46,9 @@
             [:a.large.continue.button.primary
              (merge
               {:on-click (when-not saving?
-                           (if (requires-additional-payment? data)
-                             (utils/send-event-callback events/control-checkout-payment-method-submit {:place-order? true})
-                             (utils/send-event-callback events/control-checkout-confirmation-submit)))
-               :class (str (when placing-order? "saving") " "
+                           (utils/send-event-callback events/control-checkout-confirmation-submit
+                                                      {:place-order? (requires-additional-payment? data)}))
+               :class (str (when (or placing-order? updating-payments?)
+                             "saving") " "
                            (when updating-shipping? "disabled"))})
              "Complete my Purchase"]]]]]]]))))

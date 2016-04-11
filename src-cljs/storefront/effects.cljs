@@ -511,6 +511,17 @@
                   {:message (get-in stripe-response [:error :message])
                    :navigation (get-in app-state keypaths/navigation-message)}))
 
+(defn create-stripe-token [app-state args]
+  ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
+  (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
+    (stripe/create-token (get-in app-state keypaths/checkout-credit-card-name)
+                         (get-in app-state keypaths/checkout-credit-card-number)
+                         (get-in app-state keypaths/checkout-credit-card-ccv)
+                         (first expiry)
+                         (last expiry)
+                         (get-in app-state (conj keypaths/order :billing-address))
+                         args)))
+
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
   (handle-message events/flash-dismiss-failure)
   (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))
@@ -526,21 +537,16 @@
                    (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)}))
         :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-      (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
-        (stripe/create-token (get-in app-state keypaths/checkout-credit-card-name)
-                             (get-in app-state keypaths/checkout-credit-card-number)
-                             (get-in app-state keypaths/checkout-credit-card-ccv)
-                             (first expiry)
-                             (last expiry)
-                             (get-in app-state (conj keypaths/order :billing-address))
-                             {:place-order? (:place-order? args)})))))
+      (create-stripe-token app-state args))))
 
 (defmethod perform-effects events/control-checkout-remove-promotion [_ _ {:keys [code]} app-state]
   (api/remove-promotion-code (get-in app-state keypaths/order) code))
 
-(defmethod perform-effects events/control-checkout-confirmation-submit [_ event args app-state]
-  (api/place-order (merge (get-in app-state keypaths/order)
-                          {:session-id (get-in app-state keypaths/session-id)})))
+(defmethod perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} app-state]
+  (if place-order?
+    (create-stripe-token app-state args)
+    (api/place-order (merge (get-in app-state keypaths/order)
+                            {:session-id (get-in app-state keypaths/session-id)}))))
 
 (defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
   (save-cookie app-state)
