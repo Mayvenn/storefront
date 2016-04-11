@@ -84,8 +84,10 @@
 
          (when (get-in data keypaths/loaded-stripe)
            [:.form-buttons
-            (let [saving (query/get {:request-key request-keys/update-cart-payments}
-                                    (get-in data keypaths/api-requests))]
+            (let [saving (or (query/get {:request-key request-keys/stripe-create-token}
+                                        (get-in data keypaths/api-requests))
+                             (query/get {:request-key request-keys/update-cart-payments}
+                                        (get-in data keypaths/api-requests)))]
               [:a.large.continue.button.primary
                {:on-click (when-not saving
                             (utils/send-event-callback events/control-checkout-payment-method-submit))

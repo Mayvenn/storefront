@@ -48,3 +48,5 @@
 (def add-to-bag [:add-to-bag])
 (def add-user-in-order [:add-user-in-order])
 (def place-order [:place-order])
+
+(def stripe-create-token [:stripe-create-token])

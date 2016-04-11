@@ -25,7 +25,9 @@
                                       (get-in data keypaths/api-requests))
         updating-payments? (query/get {:request-key request-keys/update-cart-payments}
                                       (get-in data keypaths/api-requests))
-        saving? (or placing-order? updating-shipping?)]
+        creating-stripe-token? (query/get {:request-key request-keys/stripe-create-token}
+                                          (get-in data keypaths/api-requests))
+        saving? (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
     (om/component
      (html
       [:div#checkout
@@ -48,7 +50,7 @@
               {:on-click (when-not saving?
                            (utils/send-event-callback events/control-checkout-confirmation-submit
                                                       {:place-order? (requires-additional-payment? data)}))
-               :class (str (when (or placing-order? updating-payments?)
+               :class (str (when (or creating-stripe-token? updating-payments? placing-order?)
                              "saving") " "
                            (when updating-shipping? "disabled"))})
              "Complete my Purchase"]]]]]]]))))
