@@ -31,7 +31,7 @@
 
 (defn clear-cookie [spec cookie]
   (doseq [key (all-keys spec)]
-    (.remove cookie key)))
+    (.remove cookie key "/")))
 
 (defn has-required-attrs? [m req-attrs]
   (every? seq (vals (select-keys m req-attrs))))
