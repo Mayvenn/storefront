@@ -31,9 +31,10 @@
 
 (defn current-taxon-variants [data]
   (let [taxon    (taxons/current-taxon data)
-        products (vals (get-in data keypaths/products))]
-    (->> products
-         (filter #(contains? (set (:taxon_ids %)) (:id taxon)))
+        products (get-in data keypaths/products)]
+    (->> taxon
+         :product-ids
+         (map products)
          (mapcat build-variants))))
 
 (defn ordered-products-for-category [app-state {:keys [slug]}]
