@@ -4,7 +4,7 @@
             [storefront.keypaths :as keypaths]))
 
 (def filter-nav-taxons
-  (partial filter (complement :stylist_only?)))
+  (partial remove :stylist_only?))
 
 (def filter-stylist-taxons
   (partial filter :stylist_only?))
