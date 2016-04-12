@@ -130,7 +130,6 @@
    (conj request-keys/get-products taxon-slug)
    {:params
     {:taxon-slug taxon-slug
-     :taxonomy "bundle-builder"
      :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-taxon-products
@@ -147,15 +146,6 @@
     #(messages/handle-message events/api-success-order-products
                               (select-keys % [:products]))}))
 
-(defn get-product-by-id [product-id]
-  (api-req
-   GET
-   "/products"
-   request-keys/get-product
-   {:params {:id product-id}
-    :handler
-    #(messages/handle-message events/api-success-product {:product %})}))
-
 (defn get-product [product-path]
   (api-req
    GET
@@ -164,8 +154,7 @@
    {:params {:slug product-path}
     :handler
     #(messages/handle-message events/api-success-product
-                              {:product-path product-path
-                               :product %})}))
+                              {:product %})}))
 
 (defn get-states [cache]
   (cache-req
