@@ -47,7 +47,6 @@
 
      :store (js->clj js/store :keywordize-keys true)
      :taxons []
-     :taxon-product-order {}
      :products {}
      :states []
      :shipping-methods []

@@ -132,7 +132,7 @@
     {:taxon-slug taxon-slug
      :user-token user-token}
     :handler
-    #(messages/handle-message events/api-success-taxon-products
+    #(messages/handle-message events/api-success-products
                               (merge (select-keys % [:products])
                                      {:taxon-slug taxon-slug}))}))
 
@@ -143,7 +143,7 @@
    request-keys/get-product
    {:params {:ids product-ids}
     :handler
-    #(messages/handle-message events/api-success-order-products
+    #(messages/handle-message events/api-success-products
                               (select-keys % [:products]))}))
 
 (defn get-product [product-slug]

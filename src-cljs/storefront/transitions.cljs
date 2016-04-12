@@ -179,18 +179,11 @@
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))
 
-(defmethod transition-state events/api-success-taxon-products [_ event {:keys [taxon-slug products]} app-state]
-  (-> app-state
-      (update-in keypaths/taxon-product-order
-                 assoc taxon-slug (map :id products))
-      (update-in keypaths/products
-                 merge (into {} (map #(vector (:id %) %) products)))))
-
 (defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/products (:id product)) product)))
 
-(defmethod transition-state events/api-success-order-products [_ event {:keys [products]} app-state]
+(defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
       (update-in keypaths/products merge (key-by :id products))))
 

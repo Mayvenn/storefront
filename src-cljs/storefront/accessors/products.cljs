@@ -29,18 +29,13 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(defn current-taxon-variants [data]
-  (let [taxon    (taxons/current-taxon data)
-        products (get-in data keypaths/products)]
-    (->> taxon
-         :product-ids
-         (map products)
-         (mapcat build-variants))))
+(defn ordered-products-for-category [app-state {:keys [product-ids]}]
+  (map (get-in app-state keypaths/products) product-ids))
 
-(defn ordered-products-for-category [app-state {:keys [slug]}]
-  (let [product-order-by-taxon-slug (get-in app-state keypaths/taxon-product-order)]
-    (map (get-in app-state keypaths/products {})
-         (product-order-by-taxon-slug slug))))
+(defn current-taxon-variants [data]
+  (->> (taxons/current-taxon data)
+       (ordered-products-for-category data)
+       (mapcat build-variants)))
 
 (defn filter-variants-by-selections [selections variants]
   (filter (fn [variant]
