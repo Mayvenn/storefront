@@ -66,7 +66,7 @@
 (defmethod render-stat :previous-payout [_ {:keys [amount date]}]
   [:.my3
    {:key "previous-payout" :class stat-card}
-   [:.p1 "LAST WEEK'S PAYMENT"]
+   [:.p1 "LAST PAYMENT"]
    (if (> amount 0)
      [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
