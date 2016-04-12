@@ -89,18 +89,6 @@
          (map :price)
          (apply min))))
 
-(defn price-for-option [step-name option-min-price option-price-diff]
-  (case step-name
-    :grade    [:min-price option-min-price]
-    :material [:diff-price option-price-diff]
-    :origin   [:diff-price option-price-diff]
-    :style    [:diff-price option-price-diff]
-    :length   [:diff-price option-price-diff]
-    :color    [:diff-price option-price-diff]))
-
-(defn format-price [[type price]]
-  (str ({:min-price "From " :diff-price "+ "} type) (as-money price)))
-
 (defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
   (let [all-selections   (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a" :source "malaysia"}
         prior-selections (select-keys all-selections dependent-steps)
@@ -115,7 +103,7 @@
                                   (every? :sold-out? option-variants))]
         {:option-name option-name
          :price (when (and (not step-disabled?) represented?)
-                  (price-for-option step-name option-min-price (- option-min-price step-min-price)))
+                  (- option-min-price step-min-price))
          :disabled (or step-disabled?
                        sold-out?
                        (not represented?))
@@ -143,7 +131,7 @@
             [:.option-name option-name]
             (cond
               sold-out [:.subtext "Sold Out"]
-              (seq price) [:.subtext (format-price price)])
+              price [:.subtext "+ " (as-money price)])
             [:label {:for option-id}]]])))]])
 
 (defn bundle-builder-steps [data variants steps]
