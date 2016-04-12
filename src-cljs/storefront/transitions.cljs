@@ -80,9 +80,13 @@
   (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
-  (when (get-in app-state keypaths/user-email)
-    (assoc-in app-state keypaths/navigation-message
-              [event {:query-params {:loggedin true}}]))) ;; help with analytics of funnel
+  (cond-> app-state
+    (get-in app-state keypaths/user-email)
+    ;; help with analytics of funnel
+    (assoc-in keypaths/navigation-message [event {:query-params {:loggedin true}}])
+
+    true
+    (assoc-in keypaths/places-enabled true)))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
@@ -330,7 +334,9 @@
     app-state))
 
 (defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath] :as args} app-state]
-  (update-in app-state address-keypath merge address))
+  (-> app-state
+      (update-in address-keypath merge address)
+      (assoc-in keypaths/places-enabled false)))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state

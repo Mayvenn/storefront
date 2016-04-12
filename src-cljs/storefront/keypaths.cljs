@@ -60,6 +60,7 @@
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
+(def places-enabled (conj ui :places-enabled))
 
 (def selected-stylist-stat (conj ui :selected-stylist-stat))
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))

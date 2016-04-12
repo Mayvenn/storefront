@@ -197,6 +197,7 @@
                   :failure {:message nil
                             :navigation []}}
           :review-components-count 0
+          :places-enabled true
           :loaded {:reviews false
                    :stripe false
                    :facebook false

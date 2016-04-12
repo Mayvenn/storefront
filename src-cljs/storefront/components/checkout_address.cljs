@@ -84,10 +84,14 @@
        (textfield "Mobile Phone"
                   (merge (utils/change-text data owner keypaths/checkout-billing-address-phone)
                          {:id :billing-phone :required? true :type "tel"}))
-       (when (get-in data keypaths/loaded-places)
+       (if (and (get-in data keypaths/loaded-places)
+                (get-in data keypaths/places-enabled))
          (om/build places-component data {:opts {:id :billing-address1
                                                  :address-keypath keypaths/checkout-billing-address
-                                                 :keypath keypaths/checkout-billing-address-address1}}))
+                                                 :keypath keypaths/checkout-billing-address-address1}})
+         (textfield "Street Address"
+                    (merge (utils/change-text data owner keypaths/checkout-billing-address-address1)
+                           {:id :billing-address1})))
        (when expanded?
          (textfield "Street Address (cont'd)"
                     (merge (utils/change-text data owner keypaths/checkout-billing-address-address2)
