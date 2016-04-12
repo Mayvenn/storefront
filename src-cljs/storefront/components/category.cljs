@@ -244,8 +244,7 @@
   (om/component
    (html
     (when-let [taxon (taxons/current-taxon data)]
-      (let [products (products/current-taxon-whitelisted-products data)
-            variants (products/current-taxon-variants data)]
+      (let [variants (products/current-taxon-variants data)]
         [:.bundle-builder
          [:.bundle-builder-info
           [:header.single-column

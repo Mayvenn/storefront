@@ -6,12 +6,6 @@
 (defn all-variants [product]
   (conj (:variants product) (:master product)))
 
-(defn for-taxon [data taxon]
-  (->> (get-in data keypaths/products)
-       vals
-       (sort-by :index)
-       (filter #(contains? (set (:taxon_ids %)) (:id taxon)))))
-
 (defn selected-variant [data]
   (let [variants (get-in data keypaths/bundle-builder-selected-variants)]
     (when (= 1 (count variants))
@@ -35,13 +29,12 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(defn current-taxon-whitelisted-products [app-state]
-  (filter #(-> % :master :variant_attrs :grade #{"6a premier collection"})
-          (for-taxon app-state (taxons/current-taxon app-state))))
-
-(defn current-taxon-variants [app-state]
-  (let [products (current-taxon-whitelisted-products app-state)]
-    (mapcat build-variants products)))
+(defn current-taxon-variants [data]
+  (let [taxon    (taxons/current-taxon data)
+        products (vals (get-in data keypaths/products))]
+    (->> products
+         (filter #(contains? (set (:taxon_ids %)) (:id taxon)))
+         (mapcat build-variants))))
 
 (defn ordered-products-for-category [app-state {:keys [slug]}]
   (let [product-order-by-taxon-slug (get-in app-state keypaths/taxon-product-order)]
