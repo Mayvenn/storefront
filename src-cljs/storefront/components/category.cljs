@@ -19,7 +19,7 @@
 
 (defn display-product [product]
   [:a (utils/route-to events/navigate-product
-                      {:product-path (:slug product)})
+                      {:product-slug (:slug product)})
    [:div.taxon-product-container
     (when-let [medium-image (->> product
                                  :master

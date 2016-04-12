@@ -59,11 +59,11 @@
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
 
-(defmethod transition-state events/navigate-product [_ event {:keys [product-path query-params]} app-state]
+(defmethod transition-state events/navigate-product [_ event {:keys [product-slug query-params]} app-state]
   (let [taxon-id (js/parseInt (:taxon-id query-params))]
     (-> app-state
         (assoc-in keypaths/browse-taxon-query {:id taxon-id})
-        (assoc-in keypaths/browse-product-query {:slug product-path})
+        (assoc-in keypaths/browse-product-query {:slug product-slug})
         (assoc-in keypaths/browse-variant-query nil)
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/browse-recently-added-variants []))))

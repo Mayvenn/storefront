@@ -128,8 +128,8 @@
   (apply routes/enqueue-redirect
          (routes/navigation-message-for (:url-path product))))
 
-(defmethod perform-effects events/navigate-product [_ event {:keys [product-path]} app-state]
-  (api/get-product product-path)
+(defmethod perform-effects events/navigate-product [_ event {:keys [product-slug]} app-state]
+  (api/get-product product-slug)
   (reviews/insert-reviews)
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))]
@@ -613,7 +613,8 @@
     (bundle-builder-redirect app-state product)
     (do
       (when (and (= events/navigate-product (get-in app-state keypaths/navigation-event))
-                 (= (:slug product) (get-in app-state (conj keypaths/navigation-message 1 :product-path))))
+                 (= (:slug product)
+                    (:product-slug (get-in app-state keypaths/navigation-args))))
         (opengraph/set-product-tags {:name (:name product)
                                      :image (when-let [image-url (->> product
                                                                       :master

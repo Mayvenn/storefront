@@ -37,7 +37,7 @@
   ["" {"/"                               (edn->bidi events/navigate-home)
        "/categories"                     (edn->bidi events/navigate-categories)
        ["/categories/hair/" :taxon-slug] (edn->bidi events/navigate-category)
-       ["/products/" :product-path]      (edn->bidi events/navigate-product)
+       ["/products/" :product-slug]      (edn->bidi events/navigate-product)
        "/guarantee"                      (edn->bidi events/navigate-guarantee)
        "/help"                           (edn->bidi events/navigate-help)
        "/policy/privacy"                 (edn->bidi events/navigate-privacy)

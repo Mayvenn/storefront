@@ -146,12 +146,12 @@
     #(messages/handle-message events/api-success-order-products
                               (select-keys % [:products]))}))
 
-(defn get-product [product-path]
+(defn get-product [product-slug]
   (api-req
    GET
    "/products"
    request-keys/get-product
-   {:params {:slug product-path}
+   {:params {:slug product-slug}
     :handler
     #(messages/handle-message events/api-success-product
                               {:product %})}))
