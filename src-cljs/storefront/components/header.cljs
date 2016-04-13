@@ -44,8 +44,8 @@
 
 (def logo
   (html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-    (merge {:style {:height "30px" :padding "0.25rem"}
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
+    (merge {:style {:height "30px"}
             :alt "Mayvenn"}
            (utils/route-to events/navigate-home))]))
 
@@ -79,26 +79,26 @@
    expanded?
    keypaths/store-info-expanded
    [:a
-    [:.teal {:style {:height "30px" :padding-top "0.25rem"}}
+    [:.teal.pp3 {:style {:height "30px"}}
      [:.flex.justify-center.items-center
-      [:span.line-height-1.gray.nowrap {:style {:font-size "7px" :margin-right "0.25rem"}} "HAIR BY"]
-      [:.truncate.fit {:style {:font-size "12px"}} (:firstname address)]] ;;TODO use new field 'nickname'
+      [:span.f6.line-height-1.gray.nowrap.mrp3 "HAIR BY"]
+      [:.truncate.fit.f4 (:firstname address)]] ;;TODO use new field 'nickname'
      [:span.h2 "ˇ"]]]
-   [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px" :margin-top "0.125rem"}}
+   [:div.absolute.left-0.right-0.mx-auto.mtp1 {:style {:max-width "240px"}}
     [:.border.rounded-2.bg-pure-white.center.relative
      {:style {:border-color "#d8d8d8"
               :box-shadow "0 2px 4px 0 rgba(0, 0, 0, 0.15)"}}
      (carrot-top {:width-px 5 :bg-color "#fff" :border-color "#d8d8d8"})
      [:div
-      [:.p1
+      [:.p1.h5
        (when store-photo
          [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
-       [:h3.medium store-name]
-       [:.h5.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
+       [:h3.h3.medium store-name]
+       [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
        (when instagram-account
-         [:a.block.p1.h5.teal {:href (str "http://instagram.com/" instagram-account)} "@" instagram-account])]
+         [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)} "@" instagram-account])]
       [:.border.border-silver]
-      [:.p2.h5.gray "Located in "
+      [:.p2.gray "Located in "
        [:span.black (:city address) ", " (:state address)]]]]]))
 
 (defn new-nav-component [{:keys [store cart-quantity store-expanded?]} _]
