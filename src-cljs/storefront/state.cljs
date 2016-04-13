@@ -171,6 +171,7 @@
           :browse-recently-added-variants []
           :menu-expanded false
           :account-menu-expanded false
+          :store-info-expanded false
 
           :selected-stylist-stat :next-payout
           :expanded-commission-order-id #{nil}

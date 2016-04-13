@@ -107,7 +107,8 @@
 
 (def menus #{keypaths/menu-expanded
              keypaths/account-menu-expanded
-             keypaths/shop-menu-expanded})
+             keypaths/shop-menu-expanded
+             keypaths/store-info-expanded})
 
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
