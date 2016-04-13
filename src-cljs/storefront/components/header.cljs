@@ -56,14 +56,20 @@
       [:span.teal cart-quantity]
       [:span "no"])]])
 
+(defn triangle-up [width color]
+  [:.absolute.inline-block
+   {:style {:top                 (str "-" width)
+            :margin-left         (str "-" width)
+            :border              (str width " solid transparent")
+            :border-top          "none"
+            :border-bottom-color color}}])
+
 (defn carrot-top [{:keys [width-px bg-color border-color]}]
   (let [outer-width (str width-px "px")
         inner-width (str (dec width-px) "px")]
     [:div
-     [:.absolute.inline-block
-      {:style {:top (str "-" outer-width) :margin-left (str "-" outer-width) :border (str outer-width " solid transparent") :border-top "none" :border-bottom-color border-color}}]
-     [:.absolute.inline-block
-      {:style {:top (str "-" inner-width) :margin-left (str "-" inner-width) :border (str inner-width " solid transparent") :border-top "none" :border-bottom-color bg-color}}]]))
+     (triangle-up outer-width border-color)
+     (triangle-up inner-width bg-color)]))
 
 (defn store-dropdown [expanded? {store-name :store_name
                                  instagram-account :instagram_account
