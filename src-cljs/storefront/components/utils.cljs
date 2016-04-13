@@ -4,6 +4,10 @@
             [storefront.events :as events]
             [storefront.messages :refer [handle-message]]))
 
+(defn position [pred coll]
+  (first (keep-indexed #(when (pred %2) %1)
+                       coll)))
+
 (defn noop-callback [e] (.preventDefault e))
 
 (defn send-event-callback [event & [args]]
@@ -26,6 +30,10 @@
      (handle-message events/control-change-state
                      {:keypath keypath
                       :value (.. e -target -value)}))})
+
+(defn fake-href [event & [args]]
+  {:href "#"
+   :on-click (send-event-callback event args)})
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
@@ -61,6 +69,20 @@
   ([] (spinner {:width "100%" :height "32px"}))
   ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
 
-(defn position [pred coll]
-  (first (keep-indexed #(when (pred %2) %1)
-                       coll)))
+(defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
+  [:.relative.z1
+   (into [link-tag
+          (fake-href events/control-menu-expand {:keypath menu-keypath})]
+         link-contents)
+   (when expanded?
+     [:div
+      {:on-click #(handle-message events/control-menu-collapse-all)}
+      [:.fixed.overlay]
+      menu])])
+
+(defn circle-picture
+  ([src] (circle-picture {} src))
+  ([{:keys [width] :as attrs :or {width "4em"}} src]
+   [:.circle.bg-silver.overflow-hidden
+    (merge {:style {:width width :height width}} attrs)
+    [:img {:style {:width width} :src src}]]))

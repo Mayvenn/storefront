@@ -11,10 +11,6 @@
             [storefront.components.formatters :refer [as-money]]
             [storefront.hooks.fastpass :as fastpass]))
 
-(defn fake-href [event & [args]]
-  {:href "#"
-   :on-click (utils/send-event-callback event args)})
-
 (defn navigate-hair [shop-now-navigation-message]
   (apply utils/route-to shop-now-navigation-message))
 
@@ -28,17 +24,6 @@
   []
   {:href (or (fastpass/community-url) "#")
    :on-click (utils/send-event-callback events/external-redirect-community)})
-
-(defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
-  [:.relative.z1
-   (into [link-tag
-          (fake-href events/control-menu-expand {:keypath menu-keypath})]
-         link-contents)
-   (when expanded?
-     [:div
-      {:on-click (utils/send-event-callback events/control-menu-collapse-all)}
-      [:.fixed.overlay]
-      menu])])
 
 (defn account-store-credit [available-store-credit]
   (when (pos? available-store-credit)
@@ -56,7 +41,7 @@
 (defn stylist-account-menu [{:keys [expanded? available-store-credit user-email]} _]
   (om/component
    (html
-    (drop-down
+    (utils/drop-down
      expanded?
      keypaths/account-menu-expanded
      [:a.account-menu-link
@@ -67,12 +52,12 @@
       [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
       [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
       [:li [:a (navigate-community) "Stylist Community"]]
-      [:li [:a (fake-href events/control-sign-out) "Logout"]]]))))
+      [:li [:a (utils/fake-href events/control-sign-out) "Logout"]]]))))
 
 (defn customer-account-menu [{:keys [expanded? available-store-credit user-email]} _]
   (om/component
    (html
-    (drop-down
+    (utils/drop-down
      expanded?
      keypaths/account-menu-expanded
      [:a.account-menu-link
@@ -82,10 +67,10 @@
      [:ul.account-detail-expanded
       [:li [:a (utils/route-to events/navigate-account-referrals) "Refer A Friend"]]
       [:li [:a (utils/route-to events/navigate-account-manage) "Manage Account"]]
-      [:li [:a (fake-href events/control-sign-out) "Logout"]]]))))
+      [:li [:a (utils/fake-href events/control-sign-out) "Logout"]]]))))
 
 (defn stylist-shop-link [{:keys [expanded? navigate-hair-message stylist-kits-path]}]
-  (drop-down
+  (utils/drop-down
    expanded?
    keypaths/shop-menu-expanded
    [:a "Shop " [:figure.down-arrow]]
@@ -124,7 +109,7 @@
   (nav-box "hair-extensions" "Hair Extensions" (navigate-hair navigate-hair-message) {:full-width? true}))
 
 (defn logout-box []
-  (nav-box "logout" "Logout" (fake-href events/control-sign-out)))
+  (nav-box "logout" "Logout" (utils/fake-href events/control-sign-out)))
 
 (defn slideout-store-credit [available-store-credit]
   (when (pos? available-store-credit)

@@ -22,11 +22,6 @@
       [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray circumference
                                                            :stroke-dashoffset arc-length}})]]]))
 
-(defn profile-picture-circle [profile-picture-url]
-  (let [width "4em"]
-    [:.circle.bg-silver.overflow-hidden {:style {:width width :height width}}
-     [:img {:src profile-picture-url :style {:width width}}]]))
-
 (def state-radius 36)
 (def state-diameter (* 2 state-radius))
 (def no-sales-icon
@@ -64,7 +59,7 @@
                  :else                        :in-progress)]
      [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-silver.p2
       {:key (str name join-date)}
-      [:.mr1 (profile-picture-circle profile-picture-url)]
+      [:.mr1 (utils/circle-picture profile-picture-url)]
       [:.flex-auto
        [:.h2 name]
        [:.h6.gray.line-height-4
