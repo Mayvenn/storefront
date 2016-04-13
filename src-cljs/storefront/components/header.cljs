@@ -98,7 +98,10 @@
        [:h3.h3.medium store-name]
        [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
        (when instagram-account
-         [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)} "@" instagram-account])]
+         [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
+          [:.flex.justify-center.items-center
+           [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
+           [:div "@" instagram-account]]])]
       [:.border.border-silver]
       [:.p2.gray "Located in "
        [:span.black (:city address) ", " (:state address)]]]]]))
