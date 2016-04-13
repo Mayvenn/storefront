@@ -377,6 +377,9 @@ html { line-height: 1.2; }
     .img-home { background-image: url("/images/desktop_assets/desktop_home_image_clickable.jpg"); }
 }
 
+.fill-teal { fill: var(--teal); }
+.fill-black { fill: var(--black); }
+
 /* Custom interaction */
 
 .pointer { cursor: pointer; }

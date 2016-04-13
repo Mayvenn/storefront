@@ -1,5 +1,6 @@
 (ns storefront.components.header
   (:require [storefront.components.utils :as utils]
+            [storefront.components.svg :as svg]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
@@ -50,11 +51,12 @@
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
-  [:.relative {:style {:min-height "60px" :width "60px"}}
-   [:.center.absolute.overlay.m-auto {:style {:font-size "12px" :height "1em"}}
-    (if (pos? cart-quantity)
-      [:span.teal cart-quantity]
-      [:span "no"])]])
+  [:.relative {:style {:min-height "60px"
+                       :width "60px"}}
+   (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
+   [:.center.absolute.overlay.m-auto.f4 {:style {:height "1em"}}
+    (when (pos? cart-quantity)
+      [:span.teal cart-quantity])]])
 
 (defn triangle-up [width color]
   [:.absolute.inline-block
