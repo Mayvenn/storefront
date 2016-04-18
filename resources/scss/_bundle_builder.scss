@@ -166,6 +166,7 @@
       }
 
       .option {
+          cursor: pointer;
           font-size: 1rem;
           box-sizing: border-box;
           position: relative;
@@ -220,19 +221,6 @@
           }
       }
 
-      .option label {
-          cursor: pointer;
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 100;
-          padding: 0;
-          margin: 0;
-      }
-
       .option-name {
           font-size: 1.1rem;
           text-transform: uppercase;
@@ -241,7 +229,6 @@
       }
 
       .subtext {
-          z-index: 1;
           font-size: .9rem;
           text-transform: uppercase;
           color: #9b9b9b;

@@ -61,7 +61,8 @@
        [:div.page-wrap
         (if (experiments/new-nav? data)
           [:div
-           (header/built-new-component data)]
+           (header/built-new-component data)
+           (slideout-nav/built-new-component data)]
           [:div
            (om/build header/header-component (header/header-query data))
            (om/build slideout-nav/slideout-nav-component (slideout-nav/slideout-nav-query data))])

@@ -329,9 +329,14 @@ html { line-height: 1.2; }
 
 .bg-pure-white { background-color: var(--pure-white); }
 
+.top-lit { box-shadow: 0 2px 4px 0 var(--darken-3)}
+.lit     { box-shadow: 0   0 4px 0 var(--darken-3)}
+
 /* Custom border-colors */
 
+.border-pure-white { border-color: var(--pure-white); }
 .border-dark-teal { border-color: var(--dark-teal); }
+.border-light-gray { border-color: var(--light-gray); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -399,6 +404,7 @@ html { line-height: 1.2; }
 .commission-order.commission-order-leave                               { max-height: 35rem; }
 .commission-order.commission-order-leave.commission-order-leave-active { max-height: 0px; }
 
+.rotate-45 { transform: rotate(45deg); }
 /* Custom media queries */
 
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
@@ -446,6 +452,7 @@ html { line-height: 1.2; }
 
     --white:  #fafafa;
     --silver: #f2f2f2;
+    --light-gray: #dadada;
     --gray:   #9b9b9b;
     --black:  #4a4a4a;
     --pure-white:  #fff;

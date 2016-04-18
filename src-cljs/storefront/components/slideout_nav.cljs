@@ -5,10 +5,12 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [storefront.messages :as messages]
             [storefront.accessors.taxons :refer [default-stylist-taxon-slug]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
+            [storefront.hooks.experiments :as experiments]
             [storefront.hooks.fastpass :as fastpass]))
 
 (defn navigate-hair [shop-now-navigation-message]
@@ -230,3 +232,145 @@
    :own-store?             (own-store? data)
    :navigate-hair-message  (navigation/shop-now-navigation-message data)
    :stylist-kits-path      (default-stylist-taxon-slug data)})
+
+(def logo
+  (html
+   [:a.block.img-logo.bg-no-repeat.bg-contain.teal.pp3
+    (merge {:style {:height "30px"}
+            :title "Mayvenn"}
+           (utils/route-to events/navigate-home))]))
+
+(def menu-x
+  (html
+   [:div {:style {:width "60px"}}
+    [:div.relative.rotate-45.p2 {:style {:height "60px"}}
+     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
+     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+
+(def new-taxon? #{"closures" "frontals"})
+
+(defn products-section [title taxons]
+  [:div
+   [:.clearfix
+    [:.col.col-2 utils/nbsp]
+    [:.col.col-10
+     [:.py1.border-bottom.border-light-gray
+      title]]]
+   [:ul.list-reset.my1
+    (for [{:keys [name slug]} taxons]
+      [:li
+       {:key slug}
+       [:a
+        (utils/route-to events/navigate-category {:taxon-slug slug})
+        [:.clearfix
+         [:.col.col-2.px1.pyp1
+          (if (new-taxon? slug)
+            [:.h6.inline-block.border.border-gray.gray.pp2
+             [:div {:style {:margin-bottom "-2px"}} "NEW"]]
+            utils/nbsp)]
+         [:.col.col-10.line-height-3
+          [:.teal.titleize
+           (case slug "stylist-products" "kits" name)]]]]])]])
+
+(def is-closure? (comp #{"frontals" "closures"} :slug))
+(def is-stylist-product? (comp #{"stylist-products"} :slug))
+(defn is-extension? [taxon]
+  (not (or (is-closure? taxon)
+           (is-stylist-product? taxon))))
+
+(defn extensions-section [taxons]
+  (products-section "Extensions" (filter is-extension? taxons)))
+
+(defn closures-section [taxons]
+  (products-section "Closures" (filter is-closure? taxons)))
+
+(defn stylist-products-section [taxons]
+  (products-section "Stylist Products" (filter is-stylist-product? taxons)))
+
+(def help-section
+  (html
+   [:div.border-bottom.border-light-gray
+    [:.ml3
+     [:ul.list-reset.my0.py2
+      [:li.line-height-3
+       [:a
+        (utils/route-to events/navigate-guarantee)
+        [:.clearfix
+         [:.col.col-2.px1 utils/nbsp]
+         [:.col.col-10.teal.block
+          "Our Guarantee"]]]]
+      [:li.line-height-3
+       [:a
+        (utils/route-to events/navigate-help)
+        [:.clearfix
+         [:.col.col-2.px1 utils/nbsp]
+         [:a.col.col-10.teal.block
+          "Contact Us"]]]]]]]))
+
+(def sign-in-section
+  (html
+   [:.ml3
+    [:.clearfix.py2
+     [:.col.col-6.p1
+      [:a.btn.btn-outline.teal.col-12
+       (utils/route-to events/navigate-sign-in)
+       "Sign In"]]
+     [:div.col.col-6.p1.center.h5.line-height-2
+      [:.gray "No account?"]
+      [:a.teal (utils/route-to events/navigate-sign-up) "Sign Up"]]]]))
+
+(def sign-out-section
+  (html
+   [:.center.col-12.p2
+    {:on-click
+     (utils/send-event-callback events/control-sign-out)}
+    [:.btn.teal "Log out"]]))
+
+(defn customer-shop-section [taxons]
+  [:.bg-pure-white.border-bottom.border-light-gray
+   [:.ml3
+    [:.py2
+     [:.sans-serif.medium "Shop"]
+     (extensions-section taxons)
+     (closures-section taxons)]]])
+
+(defn stylist-shop-section [taxons]
+  [:.bg-pure-white.border-bottom.border-light-gray
+   [:.ml3
+    [:.py2
+     [:.sans-serif.medium "Shop"]
+     (extensions-section taxons)
+     (closures-section taxons)
+     (stylist-products-section taxons)]]])
+
+(defn new-component [{:keys [slid-out? taxons stylist? user-email]} owner]
+  (om/component
+   (html
+    (when slid-out?
+      [:div.h3
+       {:on-click #(messages/handle-message events/control-menu-collapse-all)}
+       [:.fixed.overlay.bg-darken-2.z3
+        {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
+       [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver
+        {:style {:max-height "100%"}}
+        [:div.border-bottom.border-light-gray.flex.items-center.bg-pure-white
+         menu-x
+         [:.flex-auto.p2 logo]]
+        [:div
+         (if stylist?
+           (stylist-shop-section taxons)
+           (customer-shop-section taxons))
+         help-section
+         (if user-email
+           sign-out-section
+           sign-in-section)]]]))))
+
+(defn query [data]
+  {:slid-out?  (get-in data keypaths/menu-expanded)
+   :stylist?   (own-store? data)
+   :user-email (get-in data keypaths/user-email)
+   :taxons     (cond->> (get-in data keypaths/taxons)
+                 (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
+
+(defn built-new-component [data]
+  (om/build new-component (query data)))

@@ -127,12 +127,11 @@
                     :disabled disabled
                     :checked checked
                     :on-change on-change}]
-           [:.option {:class [step-name (when sold-out "sold-out")]}
+           [:label.option {:for option-id :class [step-name (when sold-out "sold-out")]}
             [:.option-name option-name]
             (cond
               sold-out [:.subtext "Sold Out"]
-              price [:.subtext "+ " (as-money price)])
-            [:label {:for option-id}]]])))]])
+              price [:.subtext "+ " (as-money price)])]])))]])
 
 (defn bundle-builder-steps [data variants steps]
   (map-indexed (fn [idx {:keys [step-name] :as step}]

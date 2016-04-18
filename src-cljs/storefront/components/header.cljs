@@ -17,10 +17,8 @@
       [:header#header.header
        (when-not store-photo-url
          {:class "no-picture"})
-       [:a.header-menu {:href "#"
-                        :on-click
-                        (utils/send-event-callback events/control-menu-expand
-                                                   {:keypath keypaths/menu-expanded})}
+       [:a.header-menu (utils/fake-href events/control-menu-expand
+                                        {:keypath keypaths/menu-expanded})
         "Menu"]
        [:a.logo (utils/route-to events/navigate-home)]
        (if (> product-quantity 0)
@@ -39,7 +37,9 @@
 
 (def hamburger
   (html
-   [:div {:style {:width "60px" :padding "17px 12px"}}
+   [:a.block (merge {:style {:width "60px" :padding "17px 12px"}}
+                    (utils/fake-href events/control-menu-expand
+                                     {:keypath keypaths/menu-expanded}))
     [:.border-top.border-bottom.border-black {:style {:height "13px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "13px"}}]]))
 
@@ -47,24 +47,27 @@
   (html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
     (merge {:style {:height "30px"}
-            :alt "Mayvenn"}
+            :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
-  [:.relative {:style {:min-height "60px"
-                       :width "60px"}}
+  [:.relative (merge {:style {:min-height "60px"
+                              :width "60px"}}
+                     (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    [:.center.absolute.overlay.m-auto.f4 {:style {:height "1em"}}
     (when (pos? cart-quantity)
       [:span.teal cart-quantity])]])
 
-(defn triangle-up [width color]
+(defn triangle-up [width class]
   [:.absolute.inline-block
    {:style {:top                 (str "-" width)
             :margin-left         (str "-" width)
-            :border              (str width " solid transparent")
-            :border-top          "none"
-            :border-bottom-color color}}])
+            :border-bottom-width width
+            :border-bottom-style "solid"
+            :border-left         (str width " solid transparent")
+            :border-right        (str width " solid transparent")}
+    :class class}])
 
 (defn carrot-top [{:keys [width-px bg-color border-color]}]
   (let [outer-width (str width-px "px")
@@ -87,10 +90,8 @@
       [:.truncate.fit.f4 (:firstname address)]] ;;TODO use new field 'nickname'
      [:span.h2 "ˇ"]]]
    [:div.absolute.left-0.right-0.mx-auto.mtp1 {:style {:max-width "240px"}}
-    [:.border.rounded-2.bg-pure-white.center.relative
-     {:style {:border-color "#d8d8d8"
-              :box-shadow "0 2px 4px 0 rgba(0, 0, 0, 0.15)"}}
-     (carrot-top {:width-px 5 :bg-color "#fff" :border-color "#d8d8d8"})
+    [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
+     (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
      [:div
       [:.p1.h5
        (when store-photo
