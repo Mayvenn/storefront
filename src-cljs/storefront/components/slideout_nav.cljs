@@ -400,9 +400,8 @@
         {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
        [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver
         {:style {:max-height "100%"}}
-        [:.border-bottom.border-light-gray.flex.items-center.bg-pure-white
-         menu-x
-         [:.flex-auto.p2 logo]]
+        [section-outer
+         [:.flex.items-center menu-x [:.flex-auto.p2 logo]]]
         (cond
           stylist? (stylist-content data)
           user-email (customer-content data)
