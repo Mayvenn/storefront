@@ -307,24 +307,41 @@
          [:.col.col-10.teal
           "Contact Us"]]]]]]]))
 
-(defn customer-section [user-email credit]
-  [:.border-bottom.border-light-gray.bg-pure-white
-   (when (pos? credit)
-     [:.right.border-bottom.border-left.border-light-gray.bg-white
-      {:style {:border-bottom-left-radius "4px"}}
-      [:.h6.gray.px1.pyp2.line-height-1
-       "Credit: " [:span.teal (as-money credit)]]])
-   [:.ml3.my0.py2
-    [:.clearfix
-     [:.col.col-2.px1 utils/nbsp]
-     [:.col.col-10.line-height-3
-      [:.truncate user-email]
-      [:a.teal.block
-       (utils/route-to events/navigate-account-manage)
-       "Account Settings"]
-      [:a.teal.block
-       (utils/route-to events/navigate-account-referrals)
-       "Refer a Friend"]]]]])
+(defn store-credit-flag [credit]
+  (when (pos? credit)
+    [:.right.border-bottom.border-left.border-light-gray.bg-white
+     {:style {:border-bottom-left-radius "4px"}}
+     [:.h6.gray.px1.pyp2.line-height-1
+      "Credit: " [:span.teal (as-money credit)]]]))
+
+(defn customer-section [user-email]
+  [:.ml3.my0.py2
+   [:.clearfix
+    [:.col.col-2.px1 utils/nbsp]
+    [:.col.col-10.line-height-3
+     [:.truncate user-email]
+     [:a.teal.block
+      (utils/route-to events/navigate-account-manage)
+      "Account Settings"]
+     [:a.teal.block
+      (utils/route-to events/navigate-account-referrals)
+      "Refer a Friend"]]]])
+
+(defn store-section [store]
+  (let [{store-photo :profile_picture_url
+         address     :address} store]
+    [:.ml3.my0.py2
+     [:.clearfix
+      [:.col.col-2
+       (if store-photo
+         (utils/circle-picture {:width "26px"} store-photo)
+         utils/nbsp)]
+      [:.col.col-10.line-height-3 (:firstname address) " " (:lastname address)]
+      [:.col.col-2.px1 utils/nbsp]
+      [:.col.col-10.line-height-3
+       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
+       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]
+       [:a.teal.block (navigate-community) "Community"]]]]))
 
 (def sign-in-section
   (html
@@ -362,7 +379,31 @@
      (closures-section taxons)
      (stylist-products-section taxons)]]])
 
-(defn new-component [{:keys [slid-out? taxons stylist? user-email available-store-credit]} owner]
+(defn guest-content [{:keys [taxons]}]
+  [:div
+   (customer-shop-section taxons)
+   help-section
+   sign-in-section])
+
+(defn customer-content [{:keys [available-store-credit user-email taxons]}]
+  [:div
+   [:.border-bottom.border-light-gray.bg-pure-white
+    (store-credit-flag available-store-credit)
+    (customer-section user-email)]
+   (customer-shop-section taxons)
+   help-section
+   sign-out-section])
+
+(defn stylist-content [{:keys [available-store-credit store taxons]}]
+  [:div
+   [:.border-bottom.border-light-gray.bg-pure-white
+    (store-credit-flag available-store-credit)
+    (store-section store)]
+   (stylist-shop-section taxons)
+   help-section
+   sign-out-section])
+
+(defn new-component [{:keys [slid-out? stylist? user-email] :as data} owner]
   (om/component
    (html
     (when slid-out?
@@ -376,19 +417,15 @@
          menu-x
          [:.flex-auto.p2 logo]]
         [:div
-         (when user-email
-           (customer-section user-email available-store-credit))
-         (if stylist?
-           (stylist-shop-section taxons)
-           (customer-shop-section taxons))
-         help-section
-         (if user-email
-           sign-out-section
-           sign-in-section)]]]))))
+         (cond
+           stylist? (stylist-content data)
+           user-email (customer-content data)
+           :else (guest-content data))]]]))))
 
 (defn query [data]
   {:slid-out?              (get-in data keypaths/menu-expanded)
    :stylist?               (own-store? data)
+   :store                  (get-in data keypaths/store)
    :user-email             (get-in data keypaths/user-email)
    :available-store-credit (get-in data keypaths/user-total-available-store-credit)
    :taxons                 (cond->> (get-in data keypaths/taxons)

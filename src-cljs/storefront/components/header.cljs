@@ -118,9 +118,9 @@
      (shopping-bag cart-quantity)])))
 
 (defn new-nav-query [data]
-  {:store         (get-in data keypaths/store)
+  {:store           (get-in data keypaths/store)
    :store-expanded? (get-in data keypaths/store-info-expanded)
-   :cart-quantity (orders/product-quantity (get-in data keypaths/order))})
+   :cart-quantity   (orders/product-quantity (get-in data keypaths/order))})
 
 (defn built-new-component [data]
   (om/build new-nav-component (new-nav-query data)))
