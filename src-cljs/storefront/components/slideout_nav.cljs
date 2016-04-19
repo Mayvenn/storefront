@@ -240,9 +240,9 @@
 (defn row
   ([right] (row nil right))
   ([left right]
-   [:.clearfix.line-height-3
+   [:.clearfix
     [:.col.col-2 [:.px1 (or left utils/nbsp)]]
-    [:.col.col-10 right]]))
+    [:.col.col-10.line-height-3 right]]))
 
 (def menu-x
   (html
