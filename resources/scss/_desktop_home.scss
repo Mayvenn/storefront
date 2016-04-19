@@ -80,6 +80,11 @@ div#home-content {
       left: 0;
     }
 
+    &.half-wide {
+      width: (510px / 2) - (64px / $default-font-size);
+      height: 66px;
+    }
+
     &.extra-wide {
       width: 510px;
       height: 66px;
@@ -87,7 +92,6 @@ div#home-content {
   }
 
   a.hair-category-link {
-    width: 167px;
     margin: 0 2px;
   }
 

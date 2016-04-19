@@ -9,7 +9,7 @@
 (def stylist-even? (comp even? :stylist_id))
 (def no-stylist?   (comp #{"shop" "store"} :store_slug))
 
-(def frontals-experiment (if config/production? 5490150509 5486980194))
+(def frontals-experiment (if config/production? 5641387545 5667681547))
 
 (def experiment->buckets
   {frontals-experiment [[no-stylist? 2]
@@ -44,7 +44,7 @@
              variation))
 
 (defn frontals? [data]
-  (display-variation data "frontals"))
+  (display-variation data "frontals-old-home"))
 
 (defn predict-frontals? [data]
   (if (get-in data keypaths/loaded-optimizely)

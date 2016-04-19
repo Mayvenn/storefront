@@ -1,3 +1,6 @@
+
+$hair-cat-link-margin: (4rem / $default-font-size);
+
 .hair-container {
   margin-top: 1.0em;
 
@@ -26,7 +29,6 @@
 
 .hair-category-link {
   display: inline-block;
-  width: 100%;
 }
 
 .hair-taxon {
@@ -100,6 +102,10 @@
   &.closures {
     background-image: url("/images/loose_wave.jpg");
   }
+
+  &.frontals {
+    background-image: url("/images/loose_wave.jpg");
+  }
 }
 
 .hair-image-container {
@@ -112,6 +118,11 @@
     position: relative;
     width: (211rem / $default-font-size);
     height: (211rem / $default-font-size);
+
+    &.half-wide {
+      width: (642rem / $default-font-size) / 2 - $hair-cat-link-margin;
+      height: (100rem / $default-font-size);
+    }
 
     &.extra-wide {
       width: (642rem / $default-font-size);
@@ -166,16 +177,17 @@
       background-image: url('/images/desktop_assets/knockout/closures-knockout.png');
     }
 
+    &.frontals {
+      background-image: url('/images/desktop_assets/knockout/frontals-knockout.png');
+    }
+
     p.hair-taxon-name {
       display: none;
     }
   }
 }
 
-$hair-cat-link-margin: (4rem / $default-font-size);
-
 .hair-category-link {
-  width: (211rem / $default-font-size);
   margin-left: $hair-cat-link-margin;
   margin-bottom: $hair-cat-link-margin;
 }
