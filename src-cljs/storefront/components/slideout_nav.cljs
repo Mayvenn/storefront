@@ -240,7 +240,7 @@
 (defn row
   ([right] (row nil right))
   ([left right]
-   [:.clearfix
+   [:.clearfix.pyp1
     [:.col.col-2 [:.px1 (or left utils/nbsp)]]
     [:.col.col-10.line-height-3 right]]))
 
@@ -266,11 +266,10 @@
       [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
 
 (defn customer-section [user-email]
-  (row
-   [:div
-    [:.truncate user-email]
-    [:a.teal.block (utils/route-to events/navigate-account-manage) "Account Settings"]
-    [:a.teal.block (utils/route-to events/navigate-account-referrals) "Refer a Friend"]]))
+  [:div
+   (row [:.truncate user-email])
+   [:a.teal.block (utils/route-to events/navigate-account-manage) (row "Account Settings")]
+   [:a.teal.block (utils/route-to events/navigate-account-referrals) (row "Refer a Friend")]])
 
 (defn store-section [store]
   (let [{store-photo :profile_picture_url
@@ -280,11 +279,10 @@
       (when store-photo
         [:.mxn1 (utils/circle-picture {:width "26px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
-     (row
-      [:div
-       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
-       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]
-       [:a.teal.block (navigate-community) "Community"]])]))
+     [:div
+      [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) (row "Dashboard")]
+      [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) (row "Account Settings")]
+      [:a.teal.block (navigate-community) (row "Community")]]]))
 
 (def new-taxon? #{"frontals"})
 
@@ -342,9 +340,9 @@
   (html
    [section-outer-gray
     [section-inner
-     [:.line-height-3
-      [:a.teal (utils/route-to events/navigate-guarantee) (row "Our Guarantee")]
-      [:a.teal (utils/route-to events/navigate-help) (row "Contact Us")]]]]))
+     [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]
+     [:a.teal (utils/route-to events/navigate-guarantee) (row "Our Guarantee")]
+     [:a.teal (utils/route-to events/navigate-help) (row "Contact Us")]]]))
 
 (def sign-in-section
   (html
