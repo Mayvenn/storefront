@@ -247,7 +247,7 @@
      [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
      [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
 
-(def new-taxon? #{"closures" "frontals"})
+(def new-taxon? #{"frontals"})
 
 (defn products-section [title taxons]
   [:div
