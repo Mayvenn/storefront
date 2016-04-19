@@ -27,7 +27,7 @@
                  [cljsjs/react-dom "0.14.3-1" :exclusions [cljsjs/react]]
                  [sablono "0.6.3"]
                  [cljs-ajax "0.3.11"]
-                 [bidi "1.20.3"]
+                 [bidi "2.0.6"]
                  [com.cemerick/url "0.1.1"]]
   :plugins [[lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]

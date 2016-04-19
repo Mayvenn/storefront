@@ -11,22 +11,6 @@
   (:import [goog.history Html5History]
            [goog Uri]))
 
-(extend-protocol bidi.bidi/Pattern
-  cljs.core.PersistentHashMap
-  (match-pattern [this env]
-    (when (every? (fn [[k v]]
-                    (cond
-                      (or (fn? v) (set? v)) (v (get env k))
-                      :otherwise (= v (get env k))))
-                  (seq this))
-      env))
-  (unmatch-pattern [_ _] ""))
-
-(extend-protocol bidi.bidi/Matched
-  cljs.core.PersistentHashMap
-  (resolve-handler [this m] (some #(bidi.bidi/match-pair % m) this))
-  (unresolve-handler [this m] (some #(bidi.bidi/unmatch-pair % m) this)))
-
 (defn edn->bidi [value]
   (keyword (prn-str value)))
 
