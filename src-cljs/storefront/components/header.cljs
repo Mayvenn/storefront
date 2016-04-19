@@ -110,7 +110,7 @@
 (defn new-nav-component [{:keys [store cart-quantity store-expanded?]} _]
   (om/component
    (html
-    [:.flex {:style {:min-height "60px"}}
+    [:.flex.bg-white {:style {:min-height "60px"}}
      hamburger
      [:.flex-auto.center
       logo
