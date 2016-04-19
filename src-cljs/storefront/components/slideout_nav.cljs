@@ -307,6 +307,25 @@
          [:.col.col-10.teal
           "Contact Us"]]]]]]]))
 
+(defn customer-section [user-email credit]
+  [:.border-bottom.border-light-gray.bg-pure-white
+   (when (pos? credit)
+     [:.right.border-bottom.border-left.border-light-gray.bg-white
+      {:style {:border-bottom-left-radius "4px"}}
+      [:.h6.gray.px1.pyp2.line-height-1
+       "Credit: " [:span.teal (as-money credit)]]])
+   [:.ml3.my0.py2
+    [:.clearfix
+     [:.col.col-2.px1 utils/nbsp]
+     [:.col.col-10.line-height-3
+      [:.truncate user-email]
+      [:a.teal.block
+       (utils/route-to events/navigate-account-manage)
+       "Account Settings"]
+      [:a.teal.block
+       (utils/route-to events/navigate-account-referrals)
+       "Refer a Friend"]]]]])
+
 (def sign-in-section
   (html
    [:.ml3
@@ -343,7 +362,7 @@
      (closures-section taxons)
      (stylist-products-section taxons)]]])
 
-(defn new-component [{:keys [slid-out? taxons stylist? user-email]} owner]
+(defn new-component [{:keys [slid-out? taxons stylist? user-email available-store-credit]} owner]
   (om/component
    (html
     (when slid-out?
@@ -357,6 +376,8 @@
          menu-x
          [:.flex-auto.p2 logo]]
         [:div
+         (when user-email
+           (customer-section user-email available-store-credit))
          (if stylist?
            (stylist-shop-section taxons)
            (customer-shop-section taxons))
@@ -366,11 +387,12 @@
            sign-in-section)]]]))))
 
 (defn query [data]
-  {:slid-out?  (get-in data keypaths/menu-expanded)
-   :stylist?   (own-store? data)
-   :user-email (get-in data keypaths/user-email)
-   :taxons     (cond->> (get-in data keypaths/taxons)
-                 (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
+  {:slid-out?              (get-in data keypaths/menu-expanded)
+   :stylist?               (own-store? data)
+   :user-email             (get-in data keypaths/user-email)
+   :available-store-credit (get-in data keypaths/user-total-available-store-credit)
+   :taxons                 (cond->> (get-in data keypaths/taxons)
+                             (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
 
 (defn built-new-component [data]
   (om/build new-component (query data)))
