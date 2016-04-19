@@ -297,14 +297,14 @@
         (utils/route-to events/navigate-guarantee)
         [:.clearfix
          [:.col.col-2.px1 utils/nbsp]
-         [:.col.col-10.teal.block
+         [:.col.col-10.teal
           "Our Guarantee"]]]]
       [:li.line-height-3
        [:a
         (utils/route-to events/navigate-help)
         [:.clearfix
          [:.col.col-2.px1 utils/nbsp]
-         [:a.col.col-10.teal.block
+         [:.col.col-10.teal
           "Contact Us"]]]]]]]))
 
 (def sign-in-section
