@@ -233,6 +233,13 @@
    :navigate-hair-message  (navigation/shop-now-navigation-message data)
    :stylist-kits-path      (default-stylist-taxon-slug data)})
 
+(def menu-x
+  (html
+   [:div {:style {:width "60px"}}
+    [:div.relative.rotate-45.p2 {:style {:height "60px"}}
+     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
+     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+
 (def logo
   (html
    [:a.block.img-logo.bg-no-repeat.bg-contain.teal.pp3
@@ -240,12 +247,37 @@
             :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
 
-(def menu-x
-  (html
-   [:div {:style {:width "60px"}}
-    [:div.relative.rotate-45.p2 {:style {:height "60px"}}
-     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
-     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+(defn store-credit-flag [credit]
+  (when (pos? credit)
+    [:.right.border-bottom.border-left.border-light-gray.bg-white
+     {:style {:border-bottom-left-radius "4px"}}
+     [:.h6.gray.px1.pyp2.line-height-1
+      "Credit: " [:span.teal (as-money credit)]]]))
+
+(defn customer-section [user-email]
+  [:.ml3.my0.py2
+   [:.clearfix
+    [:.col.col-2.px1 utils/nbsp]
+    [:.col.col-10.line-height-3
+     [:.truncate user-email]
+     [:a.teal.block (utils/route-to events/navigate-account-manage) "Account Settings"]
+     [:a.teal.block (utils/route-to events/navigate-account-referrals) "Refer a Friend"]]]])
+
+(defn store-section [store]
+  (let [{store-photo :profile_picture_url
+         address     :address} store]
+    [:.ml3.my0.py2
+     [:.clearfix
+      [:.col.col-2
+       (if store-photo
+         (utils/circle-picture {:width "26px"} store-photo)
+         utils/nbsp)]
+      [:.col.col-10.line-height-3 (:firstname address) " " (:lastname address)]
+      [:.col.col-2.px1 utils/nbsp]
+      [:.col.col-10.line-height-3
+       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
+       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]
+       [:a.teal.block (navigate-community) "Community"]]]]))
 
 (def new-taxon? #{"frontals"})
 
@@ -287,9 +319,26 @@
 (defn stylist-products-section [taxons]
   (products-section "Stylist Products" (filter is-stylist-product? taxons)))
 
+(defn customer-shop-section [taxons]
+  [:.bg-pure-white.border-bottom.border-light-gray
+   [:.ml3
+    [:.py2
+     [:.sans-serif.medium "Shop"]
+     (extensions-section taxons)
+     (closures-section taxons)]]])
+
+(defn stylist-shop-section [taxons]
+  [:.bg-pure-white.border-bottom.border-light-gray
+   [:.ml3
+    [:.py2
+     [:.sans-serif.medium "Shop"]
+     (extensions-section taxons)
+     (closures-section taxons)
+     (stylist-products-section taxons)]]])
+
 (def help-section
   (html
-   [:div.border-bottom.border-light-gray
+   [:.border-bottom.border-light-gray
     [:.ml3
      [:ul.list-reset.my0.py2
       [:li.line-height-3
@@ -306,42 +355,6 @@
          [:.col.col-2.px1 utils/nbsp]
          [:.col.col-10.teal
           "Contact Us"]]]]]]]))
-
-(defn store-credit-flag [credit]
-  (when (pos? credit)
-    [:.right.border-bottom.border-left.border-light-gray.bg-white
-     {:style {:border-bottom-left-radius "4px"}}
-     [:.h6.gray.px1.pyp2.line-height-1
-      "Credit: " [:span.teal (as-money credit)]]]))
-
-(defn customer-section [user-email]
-  [:.ml3.my0.py2
-   [:.clearfix
-    [:.col.col-2.px1 utils/nbsp]
-    [:.col.col-10.line-height-3
-     [:.truncate user-email]
-     [:a.teal.block
-      (utils/route-to events/navigate-account-manage)
-      "Account Settings"]
-     [:a.teal.block
-      (utils/route-to events/navigate-account-referrals)
-      "Refer a Friend"]]]])
-
-(defn store-section [store]
-  (let [{store-photo :profile_picture_url
-         address     :address} store]
-    [:.ml3.my0.py2
-     [:.clearfix
-      [:.col.col-2
-       (if store-photo
-         (utils/circle-picture {:width "26px"} store-photo)
-         utils/nbsp)]
-      [:.col.col-10.line-height-3 (:firstname address) " " (:lastname address)]
-      [:.col.col-2.px1 utils/nbsp]
-      [:.col.col-10.line-height-3
-       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
-       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]
-       [:a.teal.block (navigate-community) "Community"]]]]))
 
 (def sign-in-section
   (html
@@ -361,23 +374,6 @@
     {:on-click
      (utils/send-event-callback events/control-sign-out)}
     [:.btn.teal "Log out"]]))
-
-(defn customer-shop-section [taxons]
-  [:.bg-pure-white.border-bottom.border-light-gray
-   [:.ml3
-    [:.py2
-     [:.sans-serif.medium "Shop"]
-     (extensions-section taxons)
-     (closures-section taxons)]]])
-
-(defn stylist-shop-section [taxons]
-  [:.bg-pure-white.border-bottom.border-light-gray
-   [:.ml3
-    [:.py2
-     [:.sans-serif.medium "Shop"]
-     (extensions-section taxons)
-     (closures-section taxons)
-     (stylist-products-section taxons)]]])
 
 (defn guest-content [{:keys [taxons]}]
   [:div
@@ -408,19 +404,20 @@
    (html
     (when slid-out?
       [:div.h3
+       ;; Clicks on links in the slideout nav close the slideout nav and follow the link
        {:on-click #(messages/handle-message events/control-menu-collapse-all)}
        [:.fixed.overlay.bg-darken-2.z3
+        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
         {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
        [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver
         {:style {:max-height "100%"}}
-        [:div.border-bottom.border-light-gray.flex.items-center.bg-pure-white
+        [:.border-bottom.border-light-gray.flex.items-center.bg-pure-white
          menu-x
          [:.flex-auto.p2 logo]]
-        [:div
-         (cond
-           stylist? (stylist-content data)
-           user-email (customer-content data)
-           :else (guest-content data))]]]))))
+        (cond
+          stylist? (stylist-content data)
+          user-email (customer-content data)
+          :else (guest-content data))]]))))
 
 (defn query [data]
   {:slid-out?              (get-in data keypaths/menu-expanded)
