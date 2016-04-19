@@ -233,12 +233,23 @@
    :navigate-hair-message  (navigation/shop-now-navigation-message data)
    :stylist-kits-path      (default-stylist-taxon-slug data)})
 
+(def section-inner :.ml3.py2)
+(def section-outer :.border-bottom.border-light-gray.bg-pure-white)
+(def section-outer-gray :.border-bottom.border-light-gray)
+
+(defn row
+  ([right] (row nil right))
+  ([left right]
+   [:.clearfix.line-height-3
+    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-10 right]]))
+
 (def menu-x
   (html
    [:div {:style {:width "60px"}}
-    [:div.relative.rotate-45.p2 {:style {:height "60px"}}
-     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
-     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+    [:.relative.rotate-45.p2 {:style {:height "60px"}}
+     [:.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
+     [:.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
   (html
@@ -251,58 +262,51 @@
   (when (pos? credit)
     [:.right.border-bottom.border-left.border-light-gray.bg-white
      {:style {:border-bottom-left-radius "4px"}}
-     [:.h6.gray.px1.pyp2.line-height-1
-      "Credit: " [:span.teal (as-money credit)]]]))
+     [:.h6.px1.pyp2.line-height-1
+      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
 
 (defn customer-section [user-email]
-  [:.ml3.my0.py2
-   [:.clearfix
-    [:.col.col-2.px1 utils/nbsp]
-    [:.col.col-10.line-height-3
-     [:.truncate user-email]
-     [:a.teal.block (utils/route-to events/navigate-account-manage) "Account Settings"]
-     [:a.teal.block (utils/route-to events/navigate-account-referrals) "Refer a Friend"]]]])
+  (row
+   [:div
+    [:.truncate user-email]
+    [:a.teal.block (utils/route-to events/navigate-account-manage) "Account Settings"]
+    [:a.teal.block (utils/route-to events/navigate-account-referrals) "Refer a Friend"]]))
 
 (defn store-section [store]
   (let [{store-photo :profile_picture_url
          address     :address} store]
-    [:.ml3.my0.py2
-     [:.clearfix
-      [:.col.col-2
-       (if store-photo
-         (utils/circle-picture {:width "26px"} store-photo)
-         utils/nbsp)]
-      [:.col.col-10.line-height-3 (:firstname address) " " (:lastname address)]
-      [:.col.col-2.px1 utils/nbsp]
-      [:.col.col-10.line-height-3
+    [:div
+     (row
+      (when store-photo
+        [:.mxn1 (utils/circle-picture {:width "26px"} store-photo)])
+      [:div (:firstname address) " " (:lastname address)])
+     (row
+      [:div
        [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
        [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]
-       [:a.teal.block (navigate-community) "Community"]]]]))
+       [:a.teal.block (navigate-community) "Community"]])]))
 
 (def new-taxon? #{"frontals"})
 
+(def new-flag
+  (html
+   [:.pyp1
+    [:.h6.inline-block.border.border-gray.gray.pp2
+     [:div {:style {:margin-bottom "-2px"}} "NEW"]]]))
+
+(def slug->name
+  {"stylist-products" "kits"})
+
 (defn products-section [title taxons]
   [:div
-   [:.clearfix
-    [:.col.col-2 utils/nbsp]
-    [:.col.col-10
-     [:.py1.border-bottom.border-light-gray
-      title]]]
-   [:ul.list-reset.my1
+   (row [:.border-bottom.border-light-gray title])
+   [:.my1
     (for [{:keys [name slug]} taxons]
-      [:li
-       {:key slug}
-       [:a
-        (utils/route-to events/navigate-category {:taxon-slug slug})
-        [:.clearfix
-         [:.col.col-2.px1.pyp1
-          (if (new-taxon? slug)
-            [:.h6.inline-block.border.border-gray.gray.pp2
-             [:div {:style {:margin-bottom "-2px"}} "NEW"]]
-            utils/nbsp)]
-         [:.col.col-10.line-height-3
-          [:.teal.titleize
-           (case slug "stylist-products" "kits" name)]]]]])]])
+      [:a
+       (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
+       (row
+        (when (new-taxon? slug) new-flag)
+        [:.teal.titleize (get slug->name slug name)])])]])
 
 (def is-closure? (comp #{"frontals" "closures"} :slug))
 (def is-stylist-product? (comp #{"stylist-products"} :slug))
@@ -320,60 +324,45 @@
   (products-section "Stylist Products" (filter is-stylist-product? taxons)))
 
 (defn customer-shop-section [taxons]
-  [:.bg-pure-white.border-bottom.border-light-gray
-   [:.ml3
-    [:.py2
-     [:.sans-serif.medium "Shop"]
-     (extensions-section taxons)
-     (closures-section taxons)]]])
+  [section-outer
+   [section-inner
+    [:.sans-serif.medium "Shop"]
+    (extensions-section taxons)
+    (closures-section taxons)]])
 
 (defn stylist-shop-section [taxons]
-  [:.bg-pure-white.border-bottom.border-light-gray
-   [:.ml3
-    [:.py2
-     [:.sans-serif.medium "Shop"]
-     (extensions-section taxons)
-     (closures-section taxons)
-     (stylist-products-section taxons)]]])
+  [section-outer
+   [section-inner
+    [:.sans-serif.medium "Shop"]
+    (extensions-section taxons)
+    (closures-section taxons)
+    (stylist-products-section taxons)]])
 
 (def help-section
   (html
-   [:.border-bottom.border-light-gray
-    [:.ml3
-     [:ul.list-reset.my0.py2
-      [:li.line-height-3
-       [:a
-        (utils/route-to events/navigate-guarantee)
-        [:.clearfix
-         [:.col.col-2.px1 utils/nbsp]
-         [:.col.col-10.teal
-          "Our Guarantee"]]]]
-      [:li.line-height-3
-       [:a
-        (utils/route-to events/navigate-help)
-        [:.clearfix
-         [:.col.col-2.px1 utils/nbsp]
-         [:.col.col-10.teal
-          "Contact Us"]]]]]]]))
+   [section-outer-gray
+    [section-inner
+     [:.line-height-3
+      [:a.teal (utils/route-to events/navigate-guarantee) (row "Our Guarantee")]
+      [:a.teal (utils/route-to events/navigate-help) (row "Contact Us")]]]]))
 
 (def sign-in-section
   (html
-   [:.ml3
-    [:.clearfix.py2
+   [section-inner
+    [:.clearfix
      [:.col.col-6.p1
       [:a.btn.btn-outline.teal.col-12
        (utils/route-to events/navigate-sign-in)
        "Sign In"]]
-     [:div.col.col-6.p1.center.h5.line-height-2
+     [:.col.col-6.p1.center.h5.line-height-2
       [:.gray "No account?"]
       [:a.teal (utils/route-to events/navigate-sign-up) "Sign Up"]]]]))
 
 (def sign-out-section
   (html
-   [:.center.col-12.p2
-    {:on-click
-     (utils/send-event-callback events/control-sign-out)}
-    [:.btn.teal "Log out"]]))
+   [:a.block.teal.center.col-12.p2
+    (utils/fake-href events/control-sign-out)
+    "Log out"]))
 
 (defn guest-content [{:keys [taxons]}]
   [:div
@@ -383,18 +372,18 @@
 
 (defn customer-content [{:keys [available-store-credit user-email taxons]}]
   [:div
-   [:.border-bottom.border-light-gray.bg-pure-white
+   [section-outer
     (store-credit-flag available-store-credit)
-    (customer-section user-email)]
+    [section-inner (customer-section user-email)]]
    (customer-shop-section taxons)
    help-section
    sign-out-section])
 
 (defn stylist-content [{:keys [available-store-credit store taxons]}]
   [:div
-   [:.border-bottom.border-light-gray.bg-pure-white
+   [section-outer
     (store-credit-flag available-store-credit)
-    (store-section store)]
+    [section-inner (store-section store)]]
    (stylist-shop-section taxons)
    help-section
    sign-out-section])
@@ -403,7 +392,7 @@
   (om/component
    (html
     (when slid-out?
-      [:div.h3
+      [:.h3
        ;; Clicks on links in the slideout nav close the slideout nav and follow the link
        {:on-click #(messages/handle-message events/control-menu-collapse-all)}
        [:.fixed.overlay.bg-darken-2.z3
