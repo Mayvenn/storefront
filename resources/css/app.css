@@ -446,16 +446,16 @@ html { line-height: 1.2; }
     --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal)); /* use sparingly */
 
     --light-teal: #3edbf2; /* use sparingly */
-    --teal:    #36b4d4;
-    --dark-teal: #0092b7; /* use sparingly */
-    --green:   #7ed321;
+    --teal:       #36b4d4;
+    --dark-teal:  #0092b7; /* use sparingly */
+    --green:      #7ed321;
 
-    --white:  #fafafa;
-    --silver: #f2f2f2;
+    --white:      #fafafa;
+    --silver:     #f2f2f2;
     --light-gray: #dadada;
-    --gray:   #9b9b9b;
-    --black:  #4a4a4a;
-    --pure-white:  #fff;
+    --gray:       #9b9b9b;
+    --black:      #4a4a4a;
+    --pure-white: #fff;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 
