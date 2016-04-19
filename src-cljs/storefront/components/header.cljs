@@ -77,6 +77,7 @@
      (triangle-up inner-width bg-color)]))
 
 (defn store-dropdown [expanded? {store-name :store_name
+                                 nickname :store_nickname
                                  instagram-account :instagram_account
                                  store-photo :profile_picture_url
                                  address :address}]
@@ -87,7 +88,7 @@
     [:.teal.pp3 {:style {:height "30px"}}
      [:.flex.justify-center.items-center
       [:span.f6.line-height-1.gray.nowrap.mrp3 "HAIR BY"]
-      [:.truncate.fit.f4 (:firstname address)]] ;;TODO use new field 'nickname'
+      [:.truncate.fit.f4 nickname]]
      [:span.h2 "ˇ"]]]
    [:div.absolute.left-0.right-0.mx-auto.mtp1 {:style {:max-width "240px"}}
     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
