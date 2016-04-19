@@ -6,7 +6,7 @@ $default-font-size: 24;
   @return ($number / $default-font-size) + 0em;
 }
 
-* { @include box-sizing(border-box); }
+* { box-sizing: border-box; }
 
 html {
   height: 100%;
