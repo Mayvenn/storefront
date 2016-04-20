@@ -43,12 +43,13 @@
     [:.border-top.border-bottom.border-black {:style {:height "13px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "13px"}}]]))
 
-(def logo
+(defn logo [menu-height]
   (html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
-    (merge {:style {:height "30px"}
-            :title "Mayvenn"}
-           (utils/route-to events/navigate-home))]))
+   [:div
+    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
+     (merge {:style {:height (str (/ menu-height 2) "px")}
+             :title "Mayvenn"}
+            (utils/route-to events/navigate-home))]]))
 
 (defn shopping-bag [cart-quantity]
   [:.relative (merge {:style {:min-height "60px"
@@ -69,6 +70,16 @@
             :border-right        (str width " solid transparent")}
     :class class}])
 
+(defn triangle-down [width class]
+  [:.absolute.inline-block
+   {:style {:bottom              (str "-" width)
+            :margin-left         (str "-" width)
+            :border-top-width width
+            :border-top-style "solid"
+            :border-left         (str width " solid transparent")
+            :border-right        (str width " solid transparent")}
+    :class class}])
+
 (defn carrot-top [{:keys [width-px bg-color border-color]}]
   (let [outer-width (str width-px "px")
         inner-width (str (dec width-px) "px")]
@@ -76,47 +87,75 @@
      (triangle-up outer-width border-color)
      (triangle-up inner-width bg-color)]))
 
-(defn store-dropdown [expanded? {store-name :store_name
-                                 nickname :store_nickname
-                                 instagram-account :instagram_account
-                                 store-photo :profile_picture_url
-                                 address :address}]
-  (utils/drop-down
-   expanded?
-   keypaths/store-info-expanded
-   [:a
-    [:.teal.pp3 {:style {:height "30px"}}
-     [:.flex.justify-center.items-center
-      [:span.f6.line-height-1.gray.nowrap.mrp3 "HAIR BY"]
-      [:.truncate.fit.f4 nickname]]
-     [:span.h2 "ˇ"]]]
-   [:div.absolute.left-0.right-0.mx-auto.mtp1 {:style {:max-width "240px"}}
-    [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
-     (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
-     [:div
-      [:.p1.h5
-       (when store-photo
-         [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
-       [:h3.h3.medium store-name]
-       [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
-       (when instagram-account
-         [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
-          [:.flex.justify-center.items-center
-           [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
-           [:div "@" instagram-account]]])]
-      [:.border.border-silver]
-      [:.p2.gray "Located in "
-       [:span.black (:city address) ", " (:state address)]]]]]))
+(defn carrot-down [{:keys [width-px bg-color border-color]}]
+  (let [outer-width (str width-px "px")
+        inner-width (str (dec width-px) "px")]
+    [:div
+     (triangle-down outer-width border-color)
+     (triangle-down inner-width bg-color)]))
+
+(defn store-dropdown [expanded?
+                      {store-name :store_name
+                       nickname :store_nickname
+                       instagram-account :instagram_account
+                       store-photo :profile_picture_url
+                       address :address}]
+  [:div
+   (utils/drop-down
+    expanded?
+    keypaths/store-info-expanded
+    [:a
+     [:.teal {:style {:margin-bottom "10px"}}
+      [:.flex.justify-center.items-center.pyp3
+       [:span.line-height-1.gray.nowrap.mrp3 {:style {:font-size "7px"}} "HAIR BY"]
+       [:.truncate.fit.f4 nickname]]
+      (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+    [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px"}}
+     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
+      (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
+      [:div
+       [:.p1.h5
+        (when store-photo
+          [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
+        [:h3.h3.medium store-name]
+        [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
+        (when instagram-account
+          [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
+           [:.flex.justify-center.items-center
+            [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
+            [:div "@" instagram-account]]])]
+       [:.border.border-silver]
+       [:.p2.gray "Located in "
+        [:span.black (:city address) ", " (:state address)]]]]])])
 
 (defn new-nav-component [{:keys [store cart-quantity store-expanded?]} _]
   (om/component
    (html
-    [:.flex.bg-white {:style {:min-height "60px"}}
-     hamburger
-     [:.flex-auto.center
-      logo
-      (store-dropdown store-expanded? store)]
-     (shopping-bag cart-quantity)])))
+    [:div
+     [:.sm-up-hide.flex.bg-white {:style {:min-height "60px"}}
+      hamburger
+      [:.flex-auto.center
+       [:.flex.flex-column.justify-between {:style {:height "60px"}}
+        (logo 60)
+        (store-dropdown store-expanded? store)]]
+      (shopping-bag cart-quantity)]
+     [:.to-sm-hide.bg-white.clearfix {:style {:min-height "80px"}}
+      [:.col.col-4
+       [:div {:style {:height "50px"}}]
+       [:.right.h5.sans-serif.extra-light
+        [:a.black.col.py1 (utils/route-to events/navigate-categories) "Shop"]
+        [:a.black.col.py1.ml4 (utils/route-to events/navigate-guarantee) "Guarantee"]]]
+      [:.col.col-4.center
+       [:.flex.flex-column.justify-between {:style {:height "75px"}}
+        (logo 80)
+        (store-dropdown store-expanded? store)]]
+      [:.col.col-4
+       [:.right (shopping-bag cart-quantity)]
+       [:div {:style {:height "50px"}} "me@me.com"]
+       [:.h5.sans-serif.extra-light
+        [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
+        [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]
+     ])))
 
 (defn new-nav-query [data]
   {:store           (get-in data keypaths/store)

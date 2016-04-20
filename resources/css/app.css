@@ -76,6 +76,7 @@ html { line-height: 1.2; }
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500; }
+.extra-light { font-weight: 200; }
 
 .titleize { text-transform: capitalize; }
 .strike { text-decoration: line-through; }
@@ -85,6 +86,14 @@ html { line-height: 1.2; }
 
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
+@font-face {
+  font-family: 'Graphik';
+  src: url('/fonts/Graphik-Extralight-Web.otf') format("opentype");
+  font-weight:  200;
+  font-style:   normal;
+  font-stretch: normal;
+}
+
 @font-face {
   font-family: 'Graphik';
   src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
