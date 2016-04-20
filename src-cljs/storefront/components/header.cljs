@@ -114,10 +114,10 @@
      [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
       [:div
-       [:.p1.h5
+       [:.p1.f5
         (when store-photo
           [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
-        [:h3.h3.medium store-name]
+        [:h3.f3.medium store-name]
         [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
         (when instagram-account
           [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
@@ -125,7 +125,7 @@
             [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
             [:div "@" instagram-account]]])]
        [:.border.border-silver]
-       [:.p2.gray "Located in "
+       [:.p2.f4.gray "Located in "
         [:span.black (:city address) ", " (:state address)]]]]])])
 
 (defn new-nav-component [{:keys [store cart-quantity store-expanded?]} _]
