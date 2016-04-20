@@ -37,11 +37,11 @@
 
 (def hamburger
   (html
-   [:a.block (merge {:style {:width "60px" :padding "17px 12px"}}
+   [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
                     (utils/fake-href events/control-menu-expand
                                      {:keypath keypaths/menu-expanded}))
-    [:.border-top.border-bottom.border-black {:style {:height "13px"}} [:span.hide "MENU"]]
-    [:.border-bottom.border-black {:style {:height "13px"}}]]))
+    [:.border-top.border-bottom.border-black {:style {:height "12px"}} [:span.hide "MENU"]]
+    [:.border-bottom.border-black {:style {:height "12px"}}]]))
 
 (defn logo [menu-height]
   (html
@@ -56,9 +56,9 @@
                               :width "60px"}}
                      (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
-   [:.center.absolute.overlay.m-auto.f4 {:style {:height "1em"}}
+   [:.center.absolute.overlay.m-auto.f5.teal {:style {:height "1em"}}
     (when (pos? cart-quantity)
-      [:span.teal cart-quantity])]])
+      [:.mtp3 cart-quantity])]])
 
 (defn triangle-up [width class]
   [:.absolute.inline-block
