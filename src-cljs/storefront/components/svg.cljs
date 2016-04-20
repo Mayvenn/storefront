@@ -77,7 +77,7 @@
     [:circle {:cy "6" :cx "6" :r "6"}]]])
 
 (defn bag [opts quantity]
-  [:svg (merge {:version "1.1", :viewBox "0 0 25 35", :height "35px", :width "25px"}
+  [:svg (merge {:version "1.1", :viewBox "0 0 25 34", :height "34px", :width "25px"}
                opts)
    [:g {:fill-rule "evenodd",
         :stroke-width "1",
