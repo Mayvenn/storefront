@@ -141,7 +141,7 @@
       (shopping-bag cart-quantity)]
      [:.to-sm-hide.bg-white.clearfix {:style {:min-height "80px"}}
       [:.col.col-4
-       [:div {:style {:height "50px"}}]
+       [:div {:style {:height "48px"}}]
        [:.right.h5.sans-serif.extra-light
         [:a.black.col.py1 (utils/route-to events/navigate-categories) "Shop"]
         [:a.black.col.py1.ml4 (utils/route-to events/navigate-guarantee) "Guarantee"]]]
@@ -151,7 +151,7 @@
         (store-dropdown store-expanded? store)]]
       [:.col.col-4
        [:.right (shopping-bag cart-quantity)]
-       [:div {:style {:height "50px"}} "me@me.com"]
+       [:div {:style {:height "48px"}} "me@me.com"]
        [:.h5.sans-serif.extra-light
         [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
         [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]
