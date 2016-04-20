@@ -23,8 +23,8 @@
         [:div.hair-container.not-decorated.no-margin
          (when (> index 5)
            {:class (if frontals? "half-wide" "extra-wide")})
-         [:div.hair-taxon {:class slug}]
-         [:div.hair-image.image-cover {:class slug}]]])])))
+         [:div.hair-image.image-cover {:class slug}]
+         [:div.hair-taxon {:class slug}]]])])))
 
 (defn none-component [_ _]
   (om/component (html [:div])))

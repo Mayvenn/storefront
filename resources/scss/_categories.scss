@@ -141,7 +141,6 @@ $hair-cat-link-margin: (4rem / $default-font-size);
   .hair-taxon {
     display: inline;
     position: absolute;
-    z-index: 1;
     left: 50%;
     top: 50%;
     @include transform(translate(-50%,-50%));
