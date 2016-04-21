@@ -72,9 +72,9 @@
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
-   [link-tag
-    (fake-href events/control-menu-expand {:keypath menu-keypath})
-    link-contents]
+   (into [link-tag
+          (fake-href events/control-menu-expand {:keypath menu-keypath})]
+         link-contents)
    (when expanded?
      [:.relative.z1
       {:on-click #(handle-message events/control-menu-collapse-all)}

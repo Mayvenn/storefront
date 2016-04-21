@@ -110,7 +110,8 @@
       [:.flex.justify-center.items-center.pyp3
        [:span.line-height-1.gray.nowrap.mrp3 {:style {:font-size "7px"}} "HAIR BY"]
        [:.truncate.fit.f4 nickname]]
-      (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+      [:.relative
+       (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]]
     [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px"}}
      [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
