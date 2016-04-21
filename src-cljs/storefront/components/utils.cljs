@@ -71,12 +71,12 @@
   ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
-  [:.relative.z1
-   (into [link-tag
-          (fake-href events/control-menu-expand {:keypath menu-keypath})]
-         link-contents)
+  [:div
+   [link-tag
+    (fake-href events/control-menu-expand {:keypath menu-keypath})
+    link-contents]
    (when expanded?
-     [:div
+     [:.relative.z1
       {:on-click #(handle-message events/control-menu-collapse-all)}
       [:.fixed.overlay]
       menu])])
