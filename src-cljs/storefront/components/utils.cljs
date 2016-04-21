@@ -2,6 +2,7 @@
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.hooks.fastpass :as fastpass]
             [storefront.messages :refer [handle-message]]))
 
 (defn position [pred coll]
@@ -85,4 +86,10 @@
   ([{:keys [width] :as attrs :or {width "4em"}} src]
    [:.circle.bg-silver.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
-    [:img {:style {:width width} :src src}]]))
+    [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
+
+(defn navigate-community
+  "Can't be a def because (fastpass/community-url) is impure."
+  []
+  {:href (or (fastpass/community-url) "#")
+   :on-click (send-event-callback events/external-redirect-community)})

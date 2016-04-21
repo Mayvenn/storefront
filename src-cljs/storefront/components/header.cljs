@@ -5,6 +5,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as str]))
@@ -128,7 +129,58 @@
        [:.p2.f4.gray "Located in "
         [:span.black (:city address) ", " (:state address)]]]]])])
 
-(defn new-nav-component [{:keys [store cart-quantity store-expanded?]} _]
+(defn stylist-dropdown [expanded?
+                        {store-photo :profile_picture_url
+                         address :address}]
+  [:div
+   (utils/drop-down
+    expanded?
+    keypaths/account-menu-expanded
+    [:a.flex.items-center
+     [:.black.flex-auto.text-right.right-align.h5.pt1
+      [:.flex.justify-end.items-center
+       (when store-photo
+         [:.mx1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
+       (:firstname address)]]
+     [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+    [:div.absolute.right-0 {:style {:max-width "140px"}}
+     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
+      [:.absolute {:style {:right "15px"}}
+       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
+      [:.h6.bg-pure-white.flex.flex-column.left-align
+       [:div.px2.py1.line-height-4
+        [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]
+        [:a.teal.block (utils/navigate-community) "Community"]
+        [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) "Account Settings"]]
+       [:.border.border-silver]
+       [:a.teal.block.py1.center.bg-white (utils/fake-href events/control-sign-out) "Logout"]]]])])
+
+(defn customer-dropdown [expanded? user-email]
+  [:div
+   (utils/drop-down
+    expanded?
+    keypaths/account-menu-expanded
+    [:a.flex.items-center
+     [:.black.flex-auto.text-right.right-align.h5.pt1 user-email]
+     [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+    [:div.absolute.right-0 {:style {:max-width "140px"}}
+     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em"}}
+      [:.absolute {:style {:right "15px"}}
+       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
+      [:.h6.bg-pure-white.flex.flex-column.left-align
+       [:div.px2.py1.line-height-4
+        [:a.teal.block (utils/route-to events/navigate-account-manage) "Account Settings"]
+        [:a.teal.block (utils/route-to events/navigate-account-referrals) "Refer a Friend"]]
+       [:.border.border-silver]
+       [:a.teal.block.py1.center.bg-white (utils/fake-href events/control-sign-out) "Logout"]]]])])
+
+(defn guest-component []
+  [:.right-align.h6.sans-serif
+   [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
+   [:.inline-block.pxp4.black "|"]
+   [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]])
+
+(defn new-nav-component [{:keys [store cart-quantity store-expanded? account-expanded? stylist? store user-email]} _]
   (om/component
    (html
     [:div
@@ -150,17 +202,25 @@
         (logo 80)
         (store-dropdown store-expanded? store)]]
       [:.col.col-4
-       [:.right (shopping-bag cart-quantity)]
-       [:div {:style {:height "48px"}} "me@me.com"]
+       [:div
+        [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
+         [:.flex-auto
+          (cond
+            stylist? (stylist-dropdown account-expanded? store)
+            user-email (customer-dropdown account-expanded? user-email)
+            :else (guest-component))]
+         [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
        [:.h5.sans-serif.extra-light
         [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
-        [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]
-     ])))
+        [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]])))
 
 (defn new-nav-query [data]
-  {:store           (get-in data keypaths/store)
-   :store-expanded? (get-in data keypaths/store-info-expanded)
-   :cart-quantity   (orders/product-quantity (get-in data keypaths/order))})
+  {:store             (get-in data keypaths/store)
+   :store-expanded?   (get-in data keypaths/store-info-expanded)
+   :account-expanded? (get-in data keypaths/account-menu-expanded)
+   :cart-quantity     (orders/product-quantity (get-in data keypaths/order))
+   :stylist?          (own-store? data)
+   :user-email        (get-in data keypaths/user-email)})
 
 (defn built-new-component [data]
   (om/build new-nav-component (new-nav-query data)))

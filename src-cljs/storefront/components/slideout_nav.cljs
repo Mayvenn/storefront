@@ -10,8 +10,7 @@
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
-            [storefront.hooks.experiments :as experiments]
-            [storefront.hooks.fastpass :as fastpass]))
+            [storefront.hooks.experiments :as experiments]))
 
 (defn navigate-hair [shop-now-navigation-message]
   (apply utils/route-to shop-now-navigation-message))
@@ -20,12 +19,6 @@
   (when kits-path
     (utils/route-to events/navigate-category
                     {:taxon-slug kits-path})))
-
-(defn navigate-community
-  "Can't be a def because (fastpass/community-url) is impure."
-  []
-  {:href (or (fastpass/community-url) "#")
-   :on-click (utils/send-event-callback events/external-redirect-community)})
 
 (defn account-store-credit [available-store-credit]
   (when (pos? available-store-credit)
@@ -53,7 +46,7 @@
      [:ul.account-detail-expanded
       [:li [:a (utils/route-to events/navigate-stylist-dashboard-commissions) "Dashboard"]]
       [:li [:a (utils/route-to events/navigate-stylist-manage-account) "Manage Account"]]
-      [:li [:a (navigate-community) "Stylist Community"]]
+      [:li [:a (utils/navigate-community) "Stylist Community"]]
       [:li [:a (utils/fake-href events/control-sign-out) "Logout"]]]))))
 
 (defn customer-account-menu [{:keys [expanded? available-store-credit user-email]} _]
@@ -133,7 +126,7 @@
     [:h3.slideout-nav-section-header.highlight "Manage Store"]
     (nav-box "stylist-dashboard" "Dashboard" (utils/route-to events/navigate-stylist-dashboard-commissions))
     (nav-box "edit-profile" "Edit Profile" (utils/route-to events/navigate-stylist-manage-account))
-    (nav-box "community" "Stylist Community" (navigate-community) {:full-width? true})]
+    (nav-box "community" "Stylist Community" (utils/navigate-community) {:full-width? true})]
    [:li.slideout-nav-section
     [:h3.slideout-nav-section-header "Shop"]
     (nav-hair-box navigate-hair-message)
@@ -282,7 +275,7 @@
      [:div
       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) (row "Dashboard")]
       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) (row "Account Settings")]
-      [:a.teal.block (navigate-community) (row "Community")]]]))
+      [:a.teal.block (utils/navigate-community) (row "Community")]]]))
 
 (def new-taxon? #{"frontals"})
 
