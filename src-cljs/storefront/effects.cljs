@@ -288,14 +288,18 @@
                   {:message "The page you were looking for could not be found."
                    :navigation [event args]}))
 
-(defmethod perform-effects events/control-menu-expand
-  [_ event {keypath :keypath} app-state]
-  (when (#{keypaths/menu-expanded} keypath)
+(defmethod perform-effects events/control-menu-expand [_ event {keypath :keypath} app-state]
+  (when (and (#{keypaths/menu-expanded} keypath)
+             (not (experiments/new-nav? app-state)))
     (set! (.. js/document -body -style -overflow) "hidden")))
 
-(defmethod perform-effects events/control-menu-collapse-all
-  [_ _ _ _]
+(defmethod perform-effects events/control-menu-collapse-all [_ _ _ _]
   (set! (.. js/document -body -style -overflow) "auto"))
+
+(defmethod perform-effects events/control-menu-toggle [_ _ {keypath :keypath} app-state]
+  (if (get-in app-state keypath)
+    (handle-message events/control-menu-collapse-all)
+    (handle-message events/control-menu-expand {:keypath keypath})))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/sign-in-email)

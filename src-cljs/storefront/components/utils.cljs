@@ -3,7 +3,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.hooks.fastpass :as fastpass]
-            [storefront.messages :refer [handle-message]]))
+            [storefront.messages :refer [handle-message]]
+            [sablono.core :refer-macros [html]]))
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
@@ -65,6 +66,11 @@
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
+(def new-flag
+  (html
+   [:pyp1.right
+    [:.inline-block.border.border-gray.gray.pp2
+     [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
 (defn spinner
   ([] (spinner {:width "100%" :height "32px"}))

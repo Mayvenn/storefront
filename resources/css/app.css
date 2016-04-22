@@ -332,6 +332,10 @@ html { line-height: 1.2; }
 .bg-lighten-top-2 { background-image: var(--lighten-top-2); }
 .bg-lighten-top-3 { background-image: var(--lighten-top-3); }
 .bg-lighten-top-4 { background-image: var(--lighten-top-4); }
+.bg-lighten-top-5 { background-image: var(--lighten-top-5); }
+
+.bg-top-white { background-image: var(--top-white); }
+.bg-lighten-5 { background-color: var(--lighten-5); }
 
 .bg-teal-gradient { background-color: var(--teal); background-image: var(--teal-gradient); }
 .bg-embossed { box-shadow: inset 0 1px 0 0 var(--lighten-1); }
@@ -472,11 +476,15 @@ html { line-height: 1.2; }
     --lighten-top-2: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-2));
     --lighten-top-3: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-3));
     --lighten-top-4: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-4));
+    --lighten-top-5: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-5));
+
+    --top-white: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--white));
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);
     --lighten-3: rgba(255, 255, 255, .625);
     --lighten-4: rgba(255, 255, 255, .875);
+    --lighten-5: rgba(255, 255, 255, .925);
 
     --line-height-1: 1;
     --line-height-2: 1.3333;

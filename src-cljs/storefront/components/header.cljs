@@ -5,6 +5,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.taxons :refer [new-taxon? slug->name is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
@@ -181,7 +182,33 @@
    [:.inline-block.pxp4.black "|"]
    [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]])
 
-(defn new-nav-component [{:keys [store cart-quantity store-expanded? account-expanded? stylist? store user-email]} _]
+(defn row
+  ([right] (row nil right))
+  ([left right]
+   [:.clearfix.pyp1
+    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-10.line-height-3 right]]))
+
+(defn products-section [title taxons]
+  [:div
+   (row [:.border-bottom.border-light-gray.black.h4 title])
+   [:.my1
+    (for [{:keys [name slug]} taxons]
+      [:a.h5
+       (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
+       (row
+        (when (new-taxon? slug) utils/new-flag)
+        [:.teal.titleize (get slug->name slug name)])])]])
+
+(defn shop-dropdown [expanded? taxons]
+  [:.absolute.col-12.bg-top-white.bg-lighten-5.to-sm-hide.z1
+   (when-not expanded? {:class "hide"})
+   [:.flex.justify-center.items-start {:style {:padding "1em 6em"}}
+    [:div.col-4 (products-section "Hair Extensions" (filter is-extension? taxons))]
+    [:div.col-4 (products-section "Closures" (filter is-closure? taxons))]
+    [:div.col-4 (products-section "Stylist Products" (filter is-stylist-product? taxons))]]])
+
+(defn new-nav-component [{:keys [store cart-quantity store-expanded? account-expanded? stylist? shop-expanded? store user-email taxons]} _]
   (om/component
    (html
     [:div
@@ -192,36 +219,46 @@
         (logo 60)
         (store-dropdown store-expanded? store)]]
       (shopping-bag cart-quantity)]
-     [:.to-sm-hide.bg-white.clearfix {:style {:min-height "80px"}}
-      [:.col.col-4
-       [:div {:style {:height "48px"}}]
-       [:.right.h5.sans-serif.extra-light
-        [:a.black.col.py1 (utils/route-to events/navigate-categories) "Shop"]
-        [:a.black.col.py1.ml4 (utils/route-to events/navigate-guarantee) "Guarantee"]]]
-      [:.col.col-4.center
-       [:.flex.flex-column.justify-between {:style {:height "75px"}}
-        (logo 80)
-        (store-dropdown store-expanded? store)]]
-      [:.col.col-4
-       [:div
-        [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
-         [:.flex-auto
-          (cond
-            stylist? (stylist-dropdown account-expanded? store)
-            user-email (customer-dropdown account-expanded? user-email)
-            :else (guest-component))]
-         [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
-       [:.h5.sans-serif.extra-light
-        [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
-        [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]])))
+     [:.clearfix {:on-mouse-leave (utils/send-event-callback events/control-menu-collapse-all)}
+      [:.to-sm-hide.bg-white.clearfix {:style {:min-height "80px"}}
+       [:.col.col-4
+        [:div {:style {:height "48px"}}]
+        [:.right.h5.sans-serif.extra-light
+         [:div.col.py1
+          [:a.black
+           {:href "/categories"
+            :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
+            :on-click (utils/send-event-callback events/control-menu-toggle {:keypath keypaths/menu-expanded})}
+           "Shop"]]
+         [:a.black.col.py1.ml4 (utils/route-to events/navigate-guarantee) "Guarantee"]]]
+       [:.col.col-4.center
+        [:.flex.flex-column.justify-between {:style {:height "75px"}}
+         (logo 80)
+         (store-dropdown store-expanded? store)]]
+       [:.col.col-4
+        [:div
+         [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
+          [:.flex-auto
+           (cond
+             stylist? (stylist-dropdown account-expanded? store)
+             user-email (customer-dropdown account-expanded? user-email)
+             :else (guest-component))]
+          [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
+        [:.h5.sans-serif.extra-light
+         [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
+         [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]
+      (shop-dropdown shop-expanded? taxons)]])))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
    :store-expanded?   (get-in data keypaths/store-info-expanded)
    :account-expanded? (get-in data keypaths/account-menu-expanded)
+   :shop-expanded?    (get-in data keypaths/menu-expanded)
    :cart-quantity     (orders/product-quantity (get-in data keypaths/order))
    :stylist?          (own-store? data)
-   :user-email        (get-in data keypaths/user-email)})
+   :user-email        (get-in data keypaths/user-email)
+   :taxons                 (cond->> (get-in data keypaths/taxons)
+                             (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
 
 (defn built-new-component [data]
   (om/build new-nav-component (new-nav-query data)))

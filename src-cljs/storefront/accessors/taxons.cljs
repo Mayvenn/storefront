@@ -18,3 +18,14 @@
 (defn current-taxon [app-state]
   (query/get (get-in app-state keypaths/browse-taxon-query)
              (get-in app-state keypaths/taxons)))
+
+(def new-taxon? #{"frontals"})
+
+(def slug->name
+  {"stylist-products" "kits"})
+
+(def is-closure? (comp #{"frontals" "closures"} :slug))
+(def is-stylist-product? (comp #{"stylist-products"} :slug))
+(defn is-extension? [taxon]
+  (not (or (is-closure? taxon)
+           (is-stylist-product? taxon))))

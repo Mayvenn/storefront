@@ -6,7 +6,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.messages :as messages]
-            [storefront.accessors.taxons :refer [default-stylist-taxon-slug]]
+            [storefront.accessors.taxons :refer [default-stylist-taxon-slug new-taxon? slug->name is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
@@ -277,17 +277,6 @@
       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) (row "Account Settings")]
       [:a.teal.block (utils/navigate-community) (row "Community")]]]))
 
-(def new-taxon? #{"frontals"})
-
-(def new-flag
-  (html
-   [:.pyp1
-    [:.h6.inline-block.border.border-gray.gray.pp2
-     [:div {:style {:margin-bottom "-2px"}} "NEW"]]]))
-
-(def slug->name
-  {"stylist-products" "kits"})
-
 (defn products-section [title taxons]
   [:div
    (row [:.border-bottom.border-light-gray title])
@@ -296,14 +285,8 @@
       [:a
        (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
-        (when (new-taxon? slug) new-flag)
+        (when (new-taxon? slug) utils/new-flag)
         [:.teal.titleize (get slug->name slug name)])])]])
-
-(def is-closure? (comp #{"frontals" "closures"} :slug))
-(def is-stylist-product? (comp #{"stylist-products"} :slug))
-(defn is-extension? [taxon]
-  (not (or (is-closure? taxon)
-           (is-stylist-product? taxon))))
 
 (defn extensions-section [taxons]
   (products-section "Extensions" (filter is-extension? taxons)))
@@ -383,7 +366,7 @@
   (om/component
    (html
     (when slid-out?
-      [:.h3
+      [:.h3.sm-up-hide
        ;; Clicks on links in the slideout nav close the slideout nav and follow the link
        {:on-click #(messages/handle-message events/control-menu-collapse-all)}
        [:.fixed.overlay.bg-darken-2.z3
@@ -398,6 +381,7 @@
           user-email (customer-content data)
           :else (guest-content data))]]))))
 
+
 (defn query [data]
   {:slid-out?              (get-in data keypaths/menu-expanded)
    :stylist?               (own-store? data)
@@ -409,3 +393,4 @@
 
 (defn built-new-component [data]
   (om/build new-component (query data)))
+

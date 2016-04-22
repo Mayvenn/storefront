@@ -66,6 +66,7 @@
 (def control-menu (conj control :menu))
 (def control-menu-expand (conj control-menu :expand))
 (def control-menu-collapse-all (conj control-menu :collapse-all))
+(def control-menu-toggle (conj control-menu :toggle))
 
 (def control-sign-in (conj control :sign-in))
 (def control-sign-in-submit (conj control-sign-in :submit))
