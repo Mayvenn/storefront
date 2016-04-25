@@ -229,7 +229,7 @@
           [:a.black
            {:href "/categories"
             :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
-            :on-click (utils/send-event-callback events/control-menu-toggle {:keypath keypaths/menu-expanded})}
+            :on-click (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})}
            "Shop"]]
          [:a.black.col.py1.ml4
           (merge {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
