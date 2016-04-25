@@ -322,15 +322,16 @@
 
 (def sign-in-section
   (html
-   [section-inner
-    [:.clearfix
-     [:.col.col-6.p1
-      [:a.btn.btn-outline.teal.col-12
-       (utils/route-to events/navigate-sign-in)
-       "Sign In"]]
-     [:.col.col-6.p1.center.h5.line-height-2
-      [:.gray "No account?"]
-      [:a.teal (utils/route-to events/navigate-sign-up) "Sign Up"]]]]))
+   [section-outer-gray
+    [section-inner
+     [:.clearfix
+      [:.col.col-6.p1
+       [:a.btn.btn-outline.teal.col-12
+        (utils/route-to events/navigate-sign-in)
+        "Sign In"]]
+      [:.col.col-6.p1.center.h5.line-height-2
+       [:.gray "No account?"]
+       [:a.teal (utils/route-to events/navigate-sign-up) "Sign Up"]]]]]))
 
 (def sign-out-section
   (html
