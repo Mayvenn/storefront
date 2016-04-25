@@ -21,7 +21,7 @@
                     {:taxon-slug kits-path})))
 
 (defn account-store-credit [available-store-credit]
-  (when (pos? available-store-credit)
+  (if (pos? available-store-credit)
     [:span.stylist-user-label
      "Store credit:"
      [:span.store-credit-amount (as-money available-store-credit)]]))
@@ -252,11 +252,12 @@
            (utils/route-to events/navigate-home))]))
 
 (defn store-credit-flag [credit]
-  (when (pos? credit)
+  (if (pos? credit)
     [:.right.border-bottom.border-left.border-light-gray.bg-white
      {:style {:border-bottom-left-radius "8px"}}
      [:.h5.px2.py1.line-height-1
-      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
+      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]
+    [:.right.h5.px2.py1.line-height-1.border-bottom.border-white utils/nbsp]))
 
 (defn customer-section [user-email]
   [:div
