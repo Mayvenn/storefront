@@ -19,7 +19,7 @@
   (query/get (get-in app-state keypaths/browse-taxon-query)
              (get-in app-state keypaths/taxons)))
 
-(def new-taxon? #{"frontals" "closures"})
+(def new-taxon? #{"frontals"})
 
 (def slug->name
   {"stylist-products" "kits"})
