@@ -54,7 +54,7 @@
             (utils/route-to events/navigate-home))]]))
 
 (defn shopping-bag [cart-quantity]
-  [:.relative (merge {:style {:min-height "60px"
+  [:.relative.pointer (merge {:style {:min-height "60px"
                               :width "60px"}}
                      (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
