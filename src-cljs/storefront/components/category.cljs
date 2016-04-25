@@ -85,24 +85,20 @@
 
 (defn build-options-for-step [{:keys [all-selections variants step-name dependent-steps option-names]}]
   (let [prior-selections (select-keys all-selections dependent-steps)
-        step-disabled?   (> (count dependent-steps) (count all-selections))
+        later-step?      (> (count dependent-steps) (count all-selections))
         step-variants    (products/filter-variants-by-selections prior-selections variants)
         step-min-price   (min-price step-variants)]
-    (for [option-name option-names]
-      (let [option-variants  (products/filter-variants-by-selections {step-name option-name} step-variants)
-            option-min-price (min-price option-variants)
-            represented?     (not (empty? option-variants))
-            sold-out?        (and represented?
-                                  (every? :sold-out? option-variants))]
-        {:option-name option-name
-         :price       (when (and (not step-disabled?) represented?)
-                        (- option-min-price step-min-price))
-         :disabled    (or step-disabled?
-                          sold-out?
-                          (not represented?))
-         :represented represented?
-         :checked     (= (get all-selections step-name nil) option-name)
-         :sold-out    sold-out?
+    (for [option-name option-names
+          :let        [option-variants (products/filter-variants-by-selections {step-name option-name} step-variants)]
+          :when       (not (empty? option-variants))]
+      (let [option-min-price (min-price option-variants)
+            sold-out?        (every? :sold-out? option-variants)]
+        {:option-id   (string/replace (str option-name step-name) #"\W+" "-")
+         :option-name option-name
+         :price-delta (- option-min-price step-min-price)
+         :disabled?   (or later-step? sold-out?)
+         :checked?    (= (get all-selections step-name nil) option-name)
+         :sold-out?   sold-out?
          :on-change   (option-selection-event step-name
                                               (assoc prior-selections step-name option-name)
                                               option-variants)}))))
@@ -133,20 +129,18 @@
   [:.step {:key name}
    [:h2 (str (inc index)) ". Choose " (format-step-name name)]
    [:.options
-    (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
-      (when represented
-        (let [option-id (string/replace (str option-name name) #"\W+" "-")]
-          [:.option-container {:key option-id}
-           [:input {:type "radio"
-                    :id option-id
-                    :disabled disabled
-                    :checked checked
-                    :on-change on-change}]
-           [:label.option {:for option-id :class [name (when sold-out "sold-out")]}
-            [:.option-name option-name]
-            (cond
-              sold-out [:.subtext "Sold Out"]
-              price [:.subtext "+ " (as-money price)])]])))]])
+    (for [{:keys [option-id option-name price-delta disabled? checked? sold-out? on-change]} options]
+      [:.option-container {:key option-id}
+       [:input {:type      "radio"
+                :id        option-id
+                :disabled  disabled?
+                :checked   checked?
+                :on-change on-change}]
+       [:label.option {:for option-id :class [name (when sold-out? "sold-out")]}
+        [:.option-name option-name]
+        [:.subtext (cond
+                     sold-out?       "Sold Out"
+                     (not disabled?) [:span "+ " (as-money price-delta)])]]])]])
 
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
