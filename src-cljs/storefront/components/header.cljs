@@ -200,13 +200,14 @@
         (when (new-taxon? slug) utils/new-flag)
         [:.teal.titleize (get slug->name slug name)])])]])
 
-(defn shop-dropdown [expanded? taxons]
+(defn shop-dropdown [stylist? expanded? taxons]
   [:.absolute.col-12.bg-top-white.bg-lighten-5.to-sm-hide.z1
    (when-not expanded? {:class "hide"})
    [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
     [:div.col-4 (products-section "Hair Extensions" (filter is-extension? taxons))]
     [:div.col-4 (products-section "Closures" (filter is-closure? taxons))]
-    [:div.col-4 (products-section "Stylist Products" (filter is-stylist-product? taxons))]]])
+    (when stylist?
+      [:div.col-4 (products-section "Stylist Products" (filter is-stylist-product? taxons))])]])
 
 (defn new-nav-component [{:keys [store cart-quantity store-expanded? account-expanded? stylist? shop-expanded? store user-email taxons]} _]
   (om/component
@@ -253,7 +254,7 @@
           (merge
            {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
            (utils/route-to events/navigate-help)) "Contact Us"]]]]
-      (shop-dropdown shop-expanded? taxons)]])))
+      (shop-dropdown stylist? shop-expanded? taxons)]])))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
