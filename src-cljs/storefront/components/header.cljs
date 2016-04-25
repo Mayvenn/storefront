@@ -230,7 +230,9 @@
             :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
             :on-click (utils/send-event-callback events/control-menu-toggle {:keypath keypaths/menu-expanded})}
            "Shop"]]
-         [:a.black.col.py1.ml4 (utils/route-to events/navigate-guarantee) "Guarantee"]]]
+         [:a.black.col.py1.ml4
+          (merge {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+                 (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
        [:.col.col-4.center
         [:.flex.flex-column.justify-between {:style {:height "75px"}}
          (logo 80)
@@ -245,8 +247,12 @@
              :else (guest-component))]
           [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
         [:.h5.sans-serif.extra-light
-         [:a.black.col.py1.mr4 {:href "https://blog.mayvenn.com"} "Blog"]
-         [:a.black.col.py1 (utils/route-to events/navigate-help) "Contact Us"]]]]
+         [:a.black.col.py1.mr4 {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)
+                                :href "https://blog.mayvenn.com"} "Blog"]
+         [:a.black.col.py1
+          (merge
+           {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+           (utils/route-to events/navigate-help)) "Contact Us"]]]]
       (shop-dropdown shop-expanded? taxons)]])))
 
 (defn new-nav-query [data]
