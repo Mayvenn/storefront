@@ -203,7 +203,7 @@
 (defn shop-dropdown [expanded? taxons]
   [:.absolute.col-12.bg-top-white.bg-lighten-5.to-sm-hide.z1
    (when-not expanded? {:class "hide"})
-   [:.flex.justify-center.items-start {:style {:padding "1em 6em"}}
+   [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
     [:div.col-4 (products-section "Hair Extensions" (filter is-extension? taxons))]
     [:div.col-4 (products-section "Closures" (filter is-closure? taxons))]
     [:div.col-4 (products-section "Stylist Products" (filter is-stylist-product? taxons))]]])
