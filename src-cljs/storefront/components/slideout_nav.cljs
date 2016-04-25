@@ -227,8 +227,8 @@
    :stylist-kits-path      (default-stylist-taxon-slug data)})
 
 (def section-inner :.ml3.py2)
-(def section-outer :.border-bottom.border-light-gray.bg-pure-white)
-(def section-outer-gray :.border-bottom.border-light-gray)
+(def section-outer :.border-bottom.border-light-gray.bg-pure-white.black)
+(def section-outer-gray :.border-bottom.border-light-gray.bg-white)
 
 (defn row
   ([right] (row nil right))
@@ -254,8 +254,8 @@
 (defn store-credit-flag [credit]
   (when (pos? credit)
     [:.right.border-bottom.border-left.border-light-gray.bg-white
-     {:style {:border-bottom-left-radius "4px"}}
-     [:.h6.px1.pyp2.line-height-1
+     {:style {:border-bottom-left-radius "8px"}}
+     [:.h5.px2.py1.line-height-1
       [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
 
 (defn customer-section [user-email]
@@ -270,7 +270,7 @@
     [:div
      (row
       (when store-photo
-        [:.mxn1 (utils/circle-picture {:width "26px"} store-photo)])
+        [:.mxn1.ptp2 (utils/circle-picture {:width "32px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
      [:div
       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) (row "Dashboard")]
@@ -334,9 +334,9 @@
 
 (def sign-out-section
   (html
-   [:a.block.teal.center.col-12.p2
+   [:a.block.teal.center.col-12.p3.bg-white
     (utils/fake-href events/control-sign-out)
-    "Log out"]))
+    "Logout"]))
 
 (defn guest-content [{:keys [taxons]}]
   [:div
