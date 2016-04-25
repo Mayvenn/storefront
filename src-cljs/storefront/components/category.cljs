@@ -46,13 +46,7 @@
                                               (:slug taxon))}
                           (get-in data keypaths/api-requests))
              [:.spinner]
-             (map display-product products)))]]
-
-       [:div.gold-features
-        [:figure.guarantee-feature]
-        [:figure.free-shipping-feature]
-        [:figure.triple-bundle-feature]
-        [:feature.fs-feature]]]))))
+             (map display-product products)))]]]))))
 
 ;; Bundle builder below
 
@@ -73,9 +67,9 @@
       (str (if (vowel? (first step-name)) "an " "a ")
            (string/capitalize step-name)))))
 
-(defn next-step [selection-flow selected-options]
+(defn next-step [flow selected-options]
   (let [selected-set (set (keys selected-options))]
-    (first (drop-while selected-set selection-flow))))
+    (first (drop-while selected-set flow))))
 
 (defn option-selection-event [step-name selected-options selected-variants]
   (utils/send-event-callback events/control-bundle-option-select
@@ -89,9 +83,8 @@
          (map :price)
          (apply min))))
 
-(defn build-options-for-step [data variants {:keys [step-name option-names dependent-steps]}]
-  (let [all-selections   (get-in data keypaths/bundle-builder-selected-options) ;; e.g. {:grade "6a" :source "malaysia"}
-        prior-selections (select-keys all-selections dependent-steps)
+(defn build-options-for-step [{:keys [all-selections variants step-name dependent-steps option-names]}]
+  (let [prior-selections (select-keys all-selections dependent-steps)
         step-disabled?   (> (count dependent-steps) (count all-selections))
         step-variants    (products/filter-variants-by-selections prior-selections variants)
         step-min-price   (min-price step-variants)]
@@ -102,53 +95,67 @@
             sold-out?        (and represented?
                                   (every? :sold-out? option-variants))]
         {:option-name option-name
-         :price (when (and (not step-disabled?) represented?)
-                  (- option-min-price step-min-price))
-         :disabled (or step-disabled?
-                       sold-out?
-                       (not represented?))
+         :price       (when (and (not step-disabled?) represented?)
+                        (- option-min-price step-min-price))
+         :disabled    (or step-disabled?
+                          sold-out?
+                          (not represented?))
          :represented represented?
-         :checked (= (get all-selections step-name nil) option-name)
-         :sold-out sold-out?
-         :on-change (option-selection-event step-name
-                                            (assoc prior-selections step-name option-name)
-                                            option-variants)}))))
+         :checked     (= (get all-selections step-name nil) option-name)
+         :sold-out    sold-out?
+         :on-change   (option-selection-event step-name
+                                              (assoc prior-selections step-name option-name)
+                                              option-variants)}))))
 
-(defn step-html [step-name idx options]
-  [:.step {:key step-name}
-   [:h2 (str (inc idx)) ". Choose " (format-step-name step-name)]
+(defn build-steps
+  "We are going to build the steps of the bundle builder. A step is an index,
+  name and vector of options.
+  E.g., 1, Material, Lace/Silk ->
+  Step 2. Choose Material: Lace or Silk
+
+  The options are hardest to generate because they have to take into
+  consideration where in the flow the step appears, the list of variants in
+  play, and what the user has selected so far."
+  [flow step->option-names all-selections variants]
+  (map (fn [idx step dependent-steps]
+         {:name    step
+          :index   idx
+          :options (build-options-for-step {:all-selections  all-selections
+                                            :variants        variants
+                                            :step-name       step
+                                            :dependent-steps dependent-steps
+                                            :option-names    (step->option-names step)})})
+       (range)
+       flow
+       (reductions conj [] flow)))
+
+(defn step-html [{:keys [name index options]}]
+  [:.step {:key name}
+   [:h2 (str (inc index)) ". Choose " (format-step-name name)]
    [:.options
     (for [{:keys [option-name price represented disabled checked sold-out on-change]} options]
       (when represented
-        (let [option-id (string/replace (str option-name step-name) #"\W+" "-")]
+        (let [option-id (string/replace (str option-name name) #"\W+" "-")]
           [:.option-container {:key option-id}
            [:input {:type "radio"
                     :id option-id
                     :disabled disabled
                     :checked checked
                     :on-change on-change}]
-           [:label.option {:for option-id :class [step-name (when sold-out "sold-out")]}
+           [:label.option {:for option-id :class [name (when sold-out "sold-out")]}
             [:.option-name option-name]
             (cond
               sold-out [:.subtext "Sold Out"]
               price [:.subtext "+ " (as-money price)])]])))]])
 
-(defn bundle-builder-steps [data variants steps]
-  (map-indexed (fn [idx {:keys [step-name] :as step}]
-                 (step-html step-name
-                            idx
-                            (build-options-for-step data variants step)))
-               steps))
-
-(defn summary-format [data]
-  (let [variant (products/selected-variant data)
-        flow (conj (vec (selection-flow data)) :category)]
+(defn summary-format [variant flow]
+  (let [flow (conj (vec flow) :category)]
     (->> flow
          (map variant)
          (string/join " ")
          string/upper-case)))
 
-(defn add-to-bag-button [data variants]
+(defn add-to-bag-button [data]
   (let [saving (query/get {:request-key request-keys/add-to-bag}
                           (get-in data keypaths/api-requests))]
     [:button.large.primary.alternate#add-to-cart-button
@@ -157,31 +164,26 @@
       :class (when saving "saving")}
      "ADD TO CART"]))
 
-(def bundle-promotion-notice [:div [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"]])
+(def bundle-promotion-notice [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"])
 
-(defn summary-section [data variants]
-  (if-let [variant (products/selected-variant data)]
-    [:.selected
-     [:.line-item-summary (summary-format data)]
-     (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
-                                              :inc-event events/control-counter-inc
-                                              :dec-event events/control-counter-dec
-                                              :set-event events/control-counter-set}})
-     [:.price (as-money (:price variant))]
-     bundle-promotion-notice
-     (add-to-bag-button data variants)]
-    [:.selected
-     [:div (str "Select " (format-step-name (next-step (selection-flow data) (get-in data keypaths/bundle-builder-selected-options))) "!")]
-     [:.price "$--.--"]
-     bundle-promotion-notice]))
-
-(defn build-steps [flow options]
-  (map (fn [step dependent-steps]
-         {:step-name step
-          :option-names (step options)
-          :dependent-steps dependent-steps})
-       flow
-       (vec (reductions #(conj %1 %2) [] flow))))
+(defn summary-section [data]
+  (let [flow (selection-flow data)]
+    (if-let [variant (products/selected-variant data)]
+      [:.selected
+       [:.line-item-summary (summary-format variant flow)]
+       (om/build counter-component data {:opts {:path keypaths/browse-variant-quantity
+                                                :inc-event events/control-counter-inc
+                                                :dec-event events/control-counter-dec
+                                                :set-event events/control-counter-set}})
+       [:.price (as-money (:price variant))]
+       bundle-promotion-notice
+       (add-to-bag-button data)]
+      [:.selected
+       "Select "
+       (format-step-name (next-step flow (get-in data keypaths/bundle-builder-selected-options)))
+       "!"
+       [:.price "$--.--"]
+       bundle-promotion-notice])))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -227,6 +229,17 @@
   (when-let [cheapest-price (apply min (map :price variants))]
     (str "Starting at " (as-money cheapest-price))))
 
+(defn taxon-reviews-summary [data taxon]
+  [:.reviews-wrapper
+   [:.reviews-inner-wrapper
+    (when (get-in data keypaths/loaded-reviews)
+      (om/build reviews-summary-component data {:opts {:taxon taxon}}))]])
+
+(defn taxon-review-full [data taxon]
+  [:.reviews-wrapper
+   (when (get-in data keypaths/loaded-reviews)
+     (om/build reviews-component data {:opts {:taxon taxon}}))])
+
 (defn bundle-builder-category-component [data owner]
   (om/component
    (html
@@ -236,25 +249,14 @@
          [:.bundle-builder-info
           [:header.single-column
            [:h1
-            [:div
-             "Select Your "
-             (:name taxon)
-             " Hair"]
+            [:div "Select Your " (:name taxon) " Hair"]
             [:.category-header-sub "Buy now and get FREE SHIPPING"]]
-           [:.reviews-wrapper
-            [:.reviews-inner-wrapper
-             (when (get-in data keypaths/loaded-reviews)
-               (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]]
+           (taxon-reviews-summary data taxon)]
           [:header.two-column
            [:div.starting-at.floated (starting-at-price variants)]
            [:h1
-            [:div
-             (:name taxon)
-             " Hair"]]
-           [:.reviews-wrapper
-            [:.reviews-inner-wrapper
-             (when (get-in data keypaths/loaded-reviews)
-               (om/build reviews-summary-component data {:opts {:taxon taxon}}))]]
+            [:div (:name taxon) " Hair"]]
+           (taxon-reviews-summary data taxon)
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
           (if (query/get {:request-key (conj request-keys/get-products (:slug taxon))}
                          (get-in data keypaths/api-requests))
@@ -267,11 +269,14 @@
                                                           :images-path (conj keypaths/taxon-images
                                                                              (keyword (:name taxon)))}}))]
              [:div.starting-at.centered (starting-at-price variants)]
-             (let [steps (build-steps (selection-flow data) (:product_facets taxon))]
-               (bundle-builder-steps data variants steps))
+             (for [step (build-steps (selection-flow data)
+                                     (:product_facets taxon)
+                                     (get-in data keypaths/bundle-builder-selected-options)
+                                     variants)]
+               (step-html step))
              [:#summary
               [:h3 "Summary"]
-              (summary-section data variants)
+              (summary-section data)
               (when-let [bagged-variants (seq (get-in data keypaths/browse-recently-added-variants))]
                 [:div#after-add {:style {:display "block"}}
                  [:div.added-to-bag-container
@@ -281,18 +286,17 @@
              (into [:ul.category-description]
                    (for [description (category-descriptions taxon)]
                      [:li description]))])]
-         [:.reviews-wrapper
-          (when (get-in data keypaths/loaded-reviews)
-            (om/build reviews-component data {:opts {:taxon taxon}}))]
-         [:div.gold-features
-          [:figure.guarantee-feature]
-          [:figure.free-shipping-feature]
-          [:figure.triple-bundle-feature]]])))))
+         (taxon-review-full data taxon)])))))
 
 (defn category-component [data owner]
   (om/component
    (html
-    (om/build (if (bundle-builder/included-taxon? (taxons/current-taxon data))
-                bundle-builder-category-component
-                list-category-component)
-              data))))
+    [:div
+     (om/build (if (bundle-builder/included-taxon? (taxons/current-taxon data))
+                 bundle-builder-category-component
+                 list-category-component)
+               data)
+     [:div.gold-features
+      [:figure.guarantee-feature]
+      [:figure.free-shipping-feature]
+      [:figure.triple-bundle-feature]]])))
