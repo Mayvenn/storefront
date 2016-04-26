@@ -25,6 +25,10 @@
      (.preventDefault e)
      (routes/enqueue-navigate navigation-event args))})
 
+(defn current-page? [[current-event current-args] target-event & [args]]
+  (and (= (take (count target-event) current-event) target-event)
+       (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
+
 (defn change-text [app-state owner keypath]
   {:value (get-in app-state keypath)
    :on-change

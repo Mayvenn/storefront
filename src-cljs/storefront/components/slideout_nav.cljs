@@ -26,6 +26,15 @@
      "Store credit:"
      [:span.store-credit-amount (as-money available-store-credit)]]))
 
+(defn selectable
+  ([current-navigation-message event-name content]
+   (selectable current-navigation-message event-name {} content))
+  ([current-navigation-message event-name args content]
+   [:span
+    (when (utils/current-page? current-navigation-message event-name args)
+      {:class "border-teal border-bottom bold pyp1"})
+    content]))
+
 (def guest-account-menu
   (html
    [:span
@@ -265,7 +274,7 @@
    [:a.teal.block (utils/route-to events/navigate-account-manage) (row "Account Settings")]
    [:a.teal.block (utils/route-to events/navigate-account-referrals) (row "Refer a Friend")]])
 
-(defn store-section [store]
+(defn store-section [current-navigation-message store]
   (let [{store-photo :profile_picture_url
          address     :address} store]
     [:div
@@ -274,11 +283,13 @@
         [:.mxn1.ptp2 (utils/circle-picture {:width "32px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
      [:div
-      [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions) (row "Dashboard")]
-      [:a.teal.block (utils/route-to events/navigate-stylist-manage-account) (row "Account Settings")]
+      [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+       (row (selectable current-navigation-message events/navigate-stylist-dashboard "Dashboard"))]
+      [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
+       (row (selectable current-navigation-message events/navigate-stylist-manage-account "Account Settings"))]
       [:a.teal.block (utils/navigate-community) (row "Community")]]]))
 
-(defn products-section [title taxons]
+(defn products-section [current-navigation-message title taxons]
   [:div
    (row [:.border-bottom.border-light-gray title])
    [:.my1
@@ -287,39 +298,42 @@
        (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
         (when (new-taxon? slug) utils/new-flag)
-        [:.teal.titleize (get slug->name slug name)])])]])
+        [:.teal.titleize
+         (selectable current-navigation-message events/navigate-category {:taxon-slug slug} (get slug->name slug name))])])]])
 
-(defn extensions-section [taxons]
-  (products-section "Extensions" (filter is-extension? taxons)))
+(defn extensions-section [current-navigation-message taxons]
+  (products-section current-navigation-message "Extensions" (filter is-extension? taxons)))
 
-(defn closures-section [taxons]
-  (products-section "Closures" (filter is-closure? taxons)))
+(defn closures-section [current-navigation-message taxons]
+  (products-section current-navigation-message "Closures" (filter is-closure? taxons)))
 
-(defn stylist-products-section [taxons]
-  (products-section "Stylist Products" (filter is-stylist-product? taxons)))
+(defn stylist-products-section [current-navigation-message taxons]
+  (products-section current-navigation-message "Stylist Products" (filter is-stylist-product? taxons)))
 
-(defn customer-shop-section [taxons]
+(defn customer-shop-section [current-navigation-message taxons]
   [section-outer
    [section-inner
     [:.sans-serif.medium "Shop"]
-    (extensions-section taxons)
-    (closures-section taxons)]])
+    (extensions-section current-navigation-message taxons)
+    (closures-section current-navigation-message taxons)]])
 
-(defn stylist-shop-section [taxons]
+(defn stylist-shop-section [current-navigation-message taxons]
   [section-outer
    [section-inner
     [:.sans-serif.medium "Shop"]
-    (extensions-section taxons)
-    (closures-section taxons)
-    (stylist-products-section taxons)]])
+    (extensions-section current-navigation-message taxons)
+    (closures-section current-navigation-message taxons)
+    (stylist-products-section current-navigation-message taxons)]])
 
-(def help-section
+(defn help-section [current-navigation-message]
   (html
    [section-outer-gray
     [section-inner
      [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]
-     [:a.teal (utils/route-to events/navigate-guarantee) (row "Our Guarantee")]
-     [:a.teal (utils/route-to events/navigate-help) (row "Contact Us")]]]))
+     [:a.teal (utils/route-to events/navigate-guarantee)
+      (row (selectable current-navigation-message events/navigate-guarantee "Our Guarantee"))]
+     [:a.teal (utils/route-to events/navigate-help)
+      (row (selectable current-navigation-message events/navigate-help "Contact Us"))]]]))
 
 (def sign-in-section
   (html
@@ -340,28 +354,28 @@
     (utils/fake-href events/control-sign-out)
     "Logout"]))
 
-(defn guest-content [{:keys [taxons]}]
+(defn guest-content [{:keys [taxons current-navigation-message]}]
   [:div
-   (customer-shop-section taxons)
-   help-section
+   (customer-shop-section current-navigation-message taxons)
+   (help-section current-navigation-message)
    sign-in-section])
 
-(defn customer-content [{:keys [available-store-credit user-email taxons]}]
+(defn customer-content [{:keys [available-store-credit user-email taxons current-navigation-message]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
     [section-inner (customer-section user-email)]]
-   (customer-shop-section taxons)
-   help-section
+   (customer-shop-section current-navigation-message taxons)
+   (help-section current-navigation-message)
    sign-out-section])
 
-(defn stylist-content [{:keys [available-store-credit store taxons]}]
+(defn stylist-content [{:keys [current-navigation-message available-store-credit store taxons]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
-    [section-inner (store-section store)]]
-   (stylist-shop-section taxons)
-   help-section
+    [section-inner (store-section current-navigation-message store)]]
+   (stylist-shop-section current-navigation-message taxons)
+   (help-section current-navigation-message)
    sign-out-section])
 
 (defn new-component [{:keys [slid-out? stylist? user-email] :as data} owner]
@@ -385,13 +399,14 @@
 
 
 (defn query [data]
-  {:slid-out?              (get-in data keypaths/menu-expanded)
-   :stylist?               (own-store? data)
-   :store                  (get-in data keypaths/store)
-   :user-email             (get-in data keypaths/user-email)
-   :available-store-credit (get-in data keypaths/user-total-available-store-credit)
-   :taxons                 (cond->> (get-in data keypaths/taxons)
-                             (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
+  {:slid-out?                  (get-in data keypaths/menu-expanded)
+   :stylist?                   (own-store? data)
+   :store                      (get-in data keypaths/store)
+   :user-email                 (get-in data keypaths/user-email)
+   :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
+   :current-navigation-message (get-in data keypaths/navigation-message)
+   :taxons                     (cond->> (get-in data keypaths/taxons)
+                                 (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
 
 (defn built-new-component [data]
   (om/build new-component (query data)))
