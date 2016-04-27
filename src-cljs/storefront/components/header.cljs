@@ -19,8 +19,7 @@
       [:header#header.header
        (when-not store-photo-url
          {:class "no-picture"})
-       [:a.header-menu (utils/fake-href events/control-menu-expand
-                                        {:keypath keypaths/menu-expanded})
+       [:a.header-menu (utils/fake-href-menu-expand keypaths/menu-expanded)
         "Menu"]
        [:a.logo (utils/route-to events/navigate-home)]
        (if (> product-quantity 0)
@@ -40,8 +39,7 @@
 (def hamburger
   (html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
-                    (utils/fake-href events/control-menu-expand
-                                     {:keypath keypaths/menu-expanded}))
+                    (utils/fake-href-menu-expand keypaths/menu-expanded))
     [:.border-top.border-bottom.border-black {:style {:height "12px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "12px"}}]]))
 
@@ -253,7 +251,7 @@
                       taxons
                       user-email
                       class-str]
-  [:.clearfix {:on-mouse-leave (utils/send-event-callback events/control-menu-collapse-all)}
+  [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
    [:.bg-white.clearfix {:style {:min-height "80px"}
                          :class class-str}
     [:.col.col-4
@@ -263,14 +261,14 @@
        (selected-link? header-navigation-selected-link events/navigate-category)
        [:a.black
         {:href "/categories"
-         :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
-         :on-click (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})}
+         :on-mouse-enter (utils/expand-menu-callback keypaths/menu-expanded)
+         :on-click (utils/expand-menu-callback keypaths/menu-expanded)}
         "Shop"]]
 
       [:a.black.col.py1.ml4
        (merge
         (selected-link? header-navigation-selected-link events/navigate-guarantee)
-        {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+        {:on-mouse-enter (utils/collapse-all-menus-callback)}
         (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
     [:.col.col-4.center
      [:.flex.flex-column.justify-between {:style {:height "75px"}}
@@ -286,12 +284,12 @@
           :else (guest-component))]
        [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
      [:.h5.sans-serif.extra-light
-      [:a.black.col.py1.mr4 {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)
+      [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
                              :href "https://blog.mayvenn.com"} "Blog"]
       [:a.black.col.py1
        (merge
         (selected-link? header-navigation-selected-link events/navigate-help)
-        {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+        {:on-mouse-enter (utils/collapse-all-menus-callback)}
         (utils/route-to events/navigate-help)) "Contact Us"]]]]
    (shop-dropdown stylist? shop-expanded? selected-link? taxons)])
 

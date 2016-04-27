@@ -18,6 +18,12 @@
     (handle-message event args)
     nil))
 
+(defn expand-menu-callback [keypath]
+  (send-event-callback events/control-menu-expand {:keypath keypath}))
+
+(defn collapse-all-menus-callback []
+  (send-event-callback events/control-menu-collapse-all))
+
 (defn route-to [navigation-event & [args]]
   {:href (routes/path-for navigation-event args)
    :on-click
@@ -40,6 +46,11 @@
 (defn fake-href [event & [args]]
   {:href "#"
    :on-click (send-event-callback event args)})
+
+(defn fake-href-menu-expand [keypath]
+  {:href "#"
+   :on-click
+     (send-event-callback events/control-menu-expand {:keypath keypath})})
 
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
