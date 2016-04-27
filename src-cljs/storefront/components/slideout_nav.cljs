@@ -388,7 +388,7 @@
       [:.h3.sm-up-hide
        ;; Clicks on links in the slideout nav close the slideout nav and follow the link
        {:on-click #(messages/handle-message events/control-menu-collapse-all)}
-       [:.fixed.overlay.bg-darken-2.z3
+       [:.fixed.overlay.bg-darken-4.z3
         ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
         {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
        [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver
