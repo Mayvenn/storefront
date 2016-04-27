@@ -243,6 +243,10 @@ html { line-height: 1.2; }
   border-left-width: var(--border-width);
 }
 
+.border-width-2 {
+    border-width: 2px;
+}
+
 .capped { border-radius: 1000px; }
 .rounded-2 { border-radius: 8px; }
 .rounded-bottom-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }

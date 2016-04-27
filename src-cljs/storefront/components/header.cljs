@@ -97,8 +97,8 @@
      (triangle-down outer-width border-color)
      (triangle-down inner-width bg-color)]))
 
-(def header-navigation-selected-link "border-teal border-bottom")
-(def header-menu-selected-link "border-teal border-bottom pyp3")
+(def header-navigation-selected-link "border-teal border-bottom border-width-2")
+(def header-menu-selected-link "border-teal border-width-2 border-bottom pyp3")
 
 (defn selectable
   ([current-navigation-message class-str event-name]
