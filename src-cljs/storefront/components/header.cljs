@@ -160,7 +160,7 @@
      [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
       [:.absolute {:style {:right "15px"}}
        (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
-      [:.h6.bg-pure-white.flex.flex-column.left-align
+      [:.h6.bg-pure-white.rounded-2.flex.flex-column.left-align
        [:div.px2.py1.line-height-4
         (selected-link? header-navigation-selected-link events/navigate-stylist-dashboard-commissions)
         [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
@@ -171,8 +171,8 @@
         [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
          [:span (selected-link? header-menu-selected-link events/navigate-stylist-manage-account)
           "Account Settings"]]]
-       [:.border.border-silver]
-       [:a.teal.block.py1.center.bg-white (utils/fake-href events/control-sign-out) "Logout"]]]])])
+       [:.border-bottom.border-silver]
+       [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]])])
 
 (defn customer-dropdown [expanded? selected-link? user-email]
   [:div

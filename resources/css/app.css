@@ -245,6 +245,9 @@ html { line-height: 1.2; }
 
 .capped { border-radius: 1000px; }
 .rounded-2 { border-radius: 8px; }
+.rounded-bottom-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
+.rounded-bottom-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
+
 
 /* Custom responsive hide */
 
