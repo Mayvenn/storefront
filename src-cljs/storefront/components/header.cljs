@@ -232,57 +232,95 @@
     (when stylist?
       [:div.col-4 (products-section selected-link? "Stylist Products" (filter is-stylist-product? taxons))])]])
 
-(defn new-nav-component [{:keys [store cart-quantity store-expanded? account-expanded? stylist? shop-expanded? selected-link? store user-email taxons]} _]
+
+(defn mobile-header [store cart-quantity store-expanded? class-str]
+  [:.flex.bg-white {:style {:min-height "60px"}
+                               :class class-str}
+   hamburger
+   [:.flex-auto.center
+    [:.flex.flex-column.justify-between {:style {:height "60px"}}
+     (logo 60)
+     (store-dropdown store-expanded? store)]]
+   (shopping-bag cart-quantity)])
+
+(defn desktop-header [account-expanded?
+                      selected-link?
+                      shop-expanded?
+                      store-expanded?
+                      stylist?
+                      cart-quantity
+                      store
+                      taxons
+                      user-email
+                      class-str]
+  [:.clearfix {:on-mouse-leave (utils/send-event-callback events/control-menu-collapse-all)}
+   [:.bg-white.clearfix {:style {:min-height "80px"}
+                         :class class-str}
+    [:.col.col-4
+     [:div {:style {:height "48px"}}]
+     [:.right.h5.sans-serif.extra-light
+      [:div.col.py1
+       (selected-link? header-navigation-selected-link events/navigate-category)
+       [:a.black
+        {:href "/categories"
+         :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
+         :on-click (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})}
+        "Shop"]]
+
+      [:a.black.col.py1.ml4
+       (merge
+        (selected-link? header-navigation-selected-link events/navigate-guarantee)
+        {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+        (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
+    [:.col.col-4.center
+     [:.flex.flex-column.justify-between {:style {:height "75px"}}
+      (logo 80)
+      (store-dropdown store-expanded? store)]]
+    [:.col.col-4
+     [:div
+      [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
+       [:.flex-auto
+        (cond
+          stylist? (stylist-dropdown account-expanded? selected-link? store)
+          user-email (customer-dropdown account-expanded? selected-link? user-email)
+          :else (guest-component))]
+       [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
+     [:.h5.sans-serif.extra-light
+      [:a.black.col.py1.mr4 {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)
+                             :href "https://blog.mayvenn.com"} "Blog"]
+      [:a.black.col.py1
+       (merge
+        (selected-link? header-navigation-selected-link events/navigate-help)
+        {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
+        (utils/route-to events/navigate-help)) "Contact Us"]]]]
+   (shop-dropdown stylist? shop-expanded? selected-link? taxons)])
+
+
+
+(defn new-nav-component [{:keys [store
+                                 cart-quantity
+                                 store-expanded?
+                                 account-expanded?
+                                 stylist?
+                                 shop-expanded?
+                                 selected-link?
+                                 store
+                                 user-email
+                                 taxons]} _]
   (om/component
    (html
     [:div
-     [:.sm-up-hide.flex.bg-white {:style {:min-height "60px"}}
-      hamburger
-      [:.flex-auto.center
-       [:.flex.flex-column.justify-between {:style {:height "60px"}}
-        (logo 60)
-        (store-dropdown store-expanded? store)]]
-      (shopping-bag cart-quantity)]
-     [:.clearfix {:on-mouse-leave (utils/send-event-callback events/control-menu-collapse-all)}
-      [:.to-sm-hide.bg-white.clearfix {:style {:min-height "80px"}}
-       [:.col.col-4
-        [:div {:style {:height "48px"}}]
-        [:.right.h5.sans-serif.extra-light
-         [:div.col.py1
-          (selected-link? header-navigation-selected-link events/navigate-category)
-          [:a.black
-           {:href "/categories"
-            :on-mouse-enter (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})
-            :on-click (utils/send-event-callback events/control-menu-expand {:keypath keypaths/menu-expanded})}
-           "Shop"]]
-
-         [:a.black.col.py1.ml4
-          (merge
-           (selected-link? header-navigation-selected-link events/navigate-guarantee)
-           {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
-           (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
-       [:.col.col-4.center
-        [:.flex.flex-column.justify-between {:style {:height "75px"}}
-         (logo 80)
-         (store-dropdown store-expanded? store)]]
-       [:.col.col-4
-        [:div
-         [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
-          [:.flex-auto
-           (cond
-             stylist? (stylist-dropdown account-expanded? selected-link? store)
-             user-email (customer-dropdown account-expanded? selected-link? user-email)
-             :else (guest-component))]
-          [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
-        [:.h5.sans-serif.extra-light
-         [:a.black.col.py1.mr4 {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)
-                                :href "https://blog.mayvenn.com"} "Blog"]
-         [:a.black.col.py1
-          (merge
-           (selected-link? header-navigation-selected-link events/navigate-help)
-           {:on-mouse-enter (utils/send-event-callback events/control-menu-collapse-all)}
-           (utils/route-to events/navigate-help)) "Contact Us"]]]]
-      (shop-dropdown stylist? shop-expanded? selected-link? taxons)]])))
+     (mobile-header store cart-quantity store-expanded? "sm-up-hide")
+     (desktop-header account-expanded?
+                     selected-link?
+                     shop-expanded?
+                     store-expanded?
+                     stylist?
+                     cart-quantity
+                     store
+                     taxons
+                     user-email
+                     "to-sm-hide")])))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
