@@ -12,6 +12,16 @@
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
 
+(def menus #{keypaths/menu-expanded
+             keypaths/account-menu-expanded
+             keypaths/shop-menu-expanded
+             keypaths/store-info-expanded})
+
+(defn collapse-menus [app-state]
+  (reduce (fn [state menu] (assoc-in state menu false))
+          app-state
+          menus))
+
 (defmulti transition-state identity)
 
 (defmethod transition-state :default [dispatch event args app-state]
@@ -40,6 +50,7 @@
 
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
+      collapse-menus
       add-return-event
       (add-pending-promo-code args)
       (assoc-in keypaths/previous-navigation-message
@@ -105,11 +116,6 @@
             (orders/form-payment-methods (get-in app-state keypaths/order-total)
                                          (get-in app-state keypaths/user-total-available-store-credit))))
 
-(def menus #{keypaths/menu-expanded
-             keypaths/account-menu-expanded
-             keypaths/shop-menu-expanded
-             keypaths/store-info-expanded})
-
 (defmethod transition-state events/control-menu-expand
   [_ event {keypath :keypath} app-state]
   (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))
@@ -117,10 +123,8 @@
           menus))
 
 (defmethod transition-state events/control-menu-collapse-all
-  [_ event {keypath :keypath} app-state]
-  (reduce (fn [state menu] (assoc-in state menu false))
-          app-state
-          menus))
+  [_ _ _ app-state]
+  (collapse-menus app-state))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   (-> app-state
