@@ -385,7 +385,7 @@
   (om/component
    (html
     (when slid-out?
-      [:.h3.sm-up-hide
+      [:.h3.lg-up-hide
        ;; Clicks on links in the slideout nav close the slideout nav and follow the link
        {:on-click #(messages/handle-message events/control-menu-collapse-all)}
        [:.fixed.overlay.bg-darken-4.z3

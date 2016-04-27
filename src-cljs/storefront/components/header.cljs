@@ -227,7 +227,7 @@
           (get slug->name slug name)]])])]])
 
 (defn shop-dropdown [stylist? expanded? selected-link? taxons]
-  [:.absolute.col-12.bg-top-white.bg-lighten-5.to-sm-hide.z1
+  [:.absolute.col-12.bg-top-white.bg-lighten-5.to-lg-hide.z1
    (when-not expanded? {:class "hide"})
    [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
     [:div.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
@@ -317,7 +317,7 @@
   (om/component
    (html
     [:div
-     (mobile-header store cart-quantity store-expanded? "sm-up-hide")
+     (mobile-header store cart-quantity store-expanded? "lg-up-hide")
      (desktop-header account-expanded?
                      selected-link?
                      shop-expanded?
@@ -327,7 +327,7 @@
                      store
                      taxons
                      user-email
-                     "to-sm-hide")])))
+                     "to-lg-hide")])))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
