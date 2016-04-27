@@ -280,7 +280,7 @@
     [:div
      (row
       (when store-photo
-        [:.mxn1.ptp2 (utils/circle-picture {:width "32px"} store-photo)])
+        [:.mxn1.pyp3 (utils/circle-picture {:width "32px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
      [:div
       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
