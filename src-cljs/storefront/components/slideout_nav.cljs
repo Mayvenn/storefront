@@ -274,7 +274,7 @@
    [:a.teal.block (utils/route-to events/navigate-account-manage) (row "Account Settings")]
    [:a.teal.block (utils/route-to events/navigate-account-referrals) (row "Refer a Friend")]])
 
-(defn store-section [current-navigation-message store]
+(defn store-section [selectable? store]
   (let [{store-photo :profile_picture_url
          address     :address} store]
     [:div
@@ -284,12 +284,12 @@
       [:div (:firstname address) " " (:lastname address)])
      [:div
       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-       (row (selectable current-navigation-message events/navigate-stylist-dashboard "Dashboard"))]
+       (row (selectable? events/navigate-stylist-dashboard "Dashboard"))]
       [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
-       (row (selectable current-navigation-message events/navigate-stylist-manage-account "Account Settings"))]
+       (row (selectable? events/navigate-stylist-manage-account "Account Settings"))]
       [:a.teal.block (utils/navigate-community) (row "Community")]]]))
 
-(defn products-section [current-navigation-message title taxons]
+(defn products-section [selectable? title taxons]
   [:div
    (row [:.border-bottom.border-light-gray title])
    [:.my1
@@ -299,41 +299,41 @@
        (row
         (when (new-taxon? slug) utils/new-flag)
         [:.teal.titleize
-         (selectable current-navigation-message events/navigate-category {:taxon-slug slug} (get slug->name slug name))])])]])
+         (selectable? events/navigate-category {:taxon-slug slug} (get slug->name slug name))])])]])
 
-(defn extensions-section [current-navigation-message taxons]
-  (products-section current-navigation-message "Extensions" (filter is-extension? taxons)))
+(defn extensions-section [selectable? taxons]
+  (products-section selectable? "Extensions" (filter is-extension? taxons)))
 
-(defn closures-section [current-navigation-message taxons]
-  (products-section current-navigation-message "Closures" (filter is-closure? taxons)))
+(defn closures-section [selectable? taxons]
+  (products-section selectable? "Closures" (filter is-closure? taxons)))
 
-(defn stylist-products-section [current-navigation-message taxons]
-  (products-section current-navigation-message "Stylist Products" (filter is-stylist-product? taxons)))
+(defn stylist-products-section [selectable? taxons]
+  (products-section selectable? "Stylist Products" (filter is-stylist-product? taxons)))
 
-(defn customer-shop-section [current-navigation-message taxons]
+(defn customer-shop-section [selectable? taxons]
   [section-outer
    [section-inner
     [:.sans-serif.medium "Shop"]
-    (extensions-section current-navigation-message taxons)
-    (closures-section current-navigation-message taxons)]])
+    (extensions-section selectable? taxons)
+    (closures-section selectable? taxons)]])
 
-(defn stylist-shop-section [current-navigation-message taxons]
+(defn stylist-shop-section [selectable? taxons]
   [section-outer
    [section-inner
     [:.sans-serif.medium "Shop"]
-    (extensions-section current-navigation-message taxons)
-    (closures-section current-navigation-message taxons)
-    (stylist-products-section current-navigation-message taxons)]])
+    (extensions-section selectable? taxons)
+    (closures-section selectable? taxons)
+    (stylist-products-section selectable? taxons)]])
 
-(defn help-section [current-navigation-message]
+(defn help-section [selectable?]
   (html
    [section-outer-gray
     [section-inner
      [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]
      [:a.teal (utils/route-to events/navigate-guarantee)
-      (row (selectable current-navigation-message events/navigate-guarantee "Our Guarantee"))]
+      (row (selectable? events/navigate-guarantee "Our Guarantee"))]
      [:a.teal (utils/route-to events/navigate-help)
-      (row (selectable current-navigation-message events/navigate-help "Contact Us"))]]]))
+      (row (selectable? events/navigate-help "Contact Us"))]]]))
 
 (def sign-in-section
   (html
@@ -355,30 +355,33 @@
     "Logout"]))
 
 (defn guest-content [{:keys [taxons current-navigation-message]}]
-  [:div
-   (customer-shop-section current-navigation-message taxons)
-   (help-section current-navigation-message)
-   sign-in-section])
+  (let [selectable? (partial selectable current-navigation-message)]
+    [:div
+     (customer-shop-section selectable? taxons)
+     (help-section selectable?)
+     sign-in-section]))
 
 (defn customer-content [{:keys [available-store-credit user-email taxons current-navigation-message]}]
-  [:div
-   [section-outer
-    (store-credit-flag available-store-credit)
-    [section-inner (customer-section user-email)]]
-   (customer-shop-section current-navigation-message taxons)
-   (help-section current-navigation-message)
-   sign-out-section])
+  (let [selectable? (partial selectable current-navigation-message)]
+    [:div
+     [section-outer
+      (store-credit-flag available-store-credit)
+      [section-inner (customer-section user-email)]]
+     (customer-shop-section selectable? taxons)
+     (help-section selectable?)
+     sign-out-section]))
 
 (defn stylist-content [{:keys [current-navigation-message available-store-credit store taxons]}]
-  [:div
-   [section-outer
-    (store-credit-flag available-store-credit)
-    [section-inner (store-section current-navigation-message store)]]
-   (stylist-shop-section current-navigation-message taxons)
-   (help-section current-navigation-message)
-   sign-out-section])
+  (let [selectable? (partial selectable current-navigation-message)]
+    [:div
+     [section-outer
+      (store-credit-flag available-store-credit)
+      [section-inner (store-section selectable? store)]]
+     (stylist-shop-section selectable? taxons)
+     (help-section selectable?)
+     sign-out-section]))
 
-(defn new-component [{:keys [slid-out? stylist? user-email] :as data} owner]
+(defn new-component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner]
   (om/component
    (html
     (when slid-out?
