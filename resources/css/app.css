@@ -244,7 +244,7 @@ html { line-height: 1.2; }
 }
 
 .capped { border-radius: 1000px; }
-.rounded-2 { border-radius: 4px; }
+.rounded-2 { border-radius: 8px; }
 
 /* Custom responsive hide */
 
@@ -342,7 +342,7 @@ html { line-height: 1.2; }
 
 .bg-pure-white { background-color: var(--pure-white); }
 
-.top-lit { box-shadow: 0 2px 4px 0 var(--darken-3)}
+.top-lit { box-shadow: 0 4px 8px 0 var(--darken-2)}
 .lit     { box-shadow: 0   0 4px 0 var(--darken-3)}
 
 /* Custom border-colors */
