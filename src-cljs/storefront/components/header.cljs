@@ -11,6 +11,8 @@
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as str]))
 
+(def sans-stylist? #{"store" "shop"})
+
 (defn header-component [{:keys [store order home-page?]} _]
   (om/component
    (html
@@ -45,7 +47,8 @@
 
 (defn logo [menu-height]
   (html
-   [:div
+   [:div {:style {:margin-top "auto"
+                  :margin-bottom "auto"}}
     [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
      (merge {:style {:height (str (/ menu-height 2) "px")}
              :title "Mayvenn"}
@@ -109,35 +112,37 @@
                        nickname :store_nickname
                        instagram-account :instagram_account
                        store-photo :profile_picture_url
-                       address :address}]
-  [:div
-   (utils/drop-down
-    expanded?
-    keypaths/store-info-expanded
-    [:a
-     [:.teal {:style {:margin-bottom "10px"}}
-      [:.flex.justify-center.items-center.pyp3
-       [:span.line-height-1.gray.nowrap.mrp3 {:style {:font-size "8px"}} "HAIR BY"]
-       [:.truncate.fit.f3 nickname]]
-      [:.relative
-       (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]]
-    [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px"}}
-     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
-      (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
-      [:div
-       [:.p1.f5
-        (when store-photo
-          [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
-        [:h3.f3.medium store-name]
-        [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
-        (when instagram-account
-          [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
-           [:.flex.justify-center.items-center
-            [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
-            [:div "@" instagram-account]]])]
-       [:.border.border-silver]
-       [:.p2.f4.gray "Located in "
-        [:span.black (:city address) ", " (:state address)]]]]])])
+                       address :address
+                       store-slug :store_slug}]
+  (when-not (sans-stylist? store-slug)
+    [:div
+     (utils/drop-down
+      expanded?
+      keypaths/store-info-expanded
+      [:a
+       [:.teal {:style {:margin-bottom "10px"}}
+        [:.flex.justify-center.items-center.pyp3
+         [:span.line-height-1.gray.nowrap.mrp3 {:style {:font-size "8px"}} "HAIR BY"]
+         [:.truncate.fit.f3 nickname]]
+        [:.relative
+         (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]]
+      [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px"}}
+       [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
+        (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
+        [:div
+         [:.p1.f5
+          (when store-photo
+            [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
+          [:h3.f3.medium store-name]
+          [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
+          (when instagram-account
+            [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
+             [:.flex.justify-center.items-center
+              [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
+              [:div "@" instagram-account]]])]
+         [:.border.border-silver]
+         [:.p2.f4.gray "Located in "
+          [:span.black (:city address) ", " (:state address)]]]]])]))
 
 (defn stylist-dropdown [expanded?
                         selected-link?
@@ -236,8 +241,10 @@
                                :class class-str}
    hamburger
    [:.flex-auto.center
-    [:.flex.flex-column.justify-between {:style {:height "60px"}}
-     (logo 60)
+    [:.flex.flex-column {:style {:height "60px"}}
+     (if (sans-stylist? (:store_slug store))
+       (logo 80)
+       (logo 60))
      (store-dropdown store-expanded? store)]]
    (shopping-bag cart-quantity)])
 
@@ -272,7 +279,9 @@
         (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
     [:.col.col-4.center
      [:.flex.flex-column.justify-between {:style {:height "75px"}}
-      (logo 80)
+      (if (sans-stylist? (:store_slug store))
+        (logo 80)
+        (logo 60))
       (store-dropdown store-expanded? store)]]
     [:.col.col-4
      [:div
