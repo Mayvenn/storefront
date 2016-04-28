@@ -227,7 +227,7 @@
           (get slug->name slug name)]])])]])
 
 (defn shop-dropdown [stylist? expanded? selected-link? taxons]
-  [:.absolute.col-12.bg-top-white.bg-lighten-5.to-lg-hide.z1
+  [:.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
    [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
     [:div.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
