@@ -276,9 +276,7 @@
         (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
     [:.col.col-4.center
      [:.flex.flex-column.justify-between {:style {:height "75px"}}
-      (if (sans-stylist? (:store_slug store))
-        (logo 80)
-        (logo 60))
+      (logo (if (sans-stylist? (:store_slug store)) 80 60))
       (store-dropdown store-expanded? store)]]
     [:.col.col-4
      [:div
