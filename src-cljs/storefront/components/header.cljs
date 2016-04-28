@@ -98,7 +98,7 @@
      (triangle-down inner-width bg-color)]))
 
 (def header-navigation-selected-link "border-teal border-bottom border-width-2")
-(def header-menu-selected-link "border-teal border-width-2 border-bottom pyp3")
+(def header-menu-selected-link       "border-teal border-bottom border-width-2 pyp3")
 
 (defn selectable
   ([current-navigation-message class-str event-name]
@@ -238,7 +238,7 @@
 
 (defn mobile-header [store cart-quantity store-expanded? class-str]
   [:.flex.bg-white {:style {:min-height "60px"}
-                               :class class-str}
+                    :class class-str}
    hamburger
    [:.flex-auto.center
     [:.flex.flex-column {:style {:height "60px"}}
@@ -271,7 +271,6 @@
          :on-mouse-enter (utils/expand-menu-callback keypaths/menu-expanded)
          :on-click (utils/expand-menu-callback keypaths/menu-expanded)}
         "Shop"]]
-
       [:a.black.col.py1.ml4
        (merge
         (selected-link? header-navigation-selected-link events/navigate-guarantee)
