@@ -144,67 +144,61 @@
          [:.p2.f4.gray "Located in "
           [:span.black (:city address) ", " (:state address)]]]]])]))
 
-(defn stylist-dropdown [expanded?
-                        selected-link?
-                        {store-photo :profile_picture_url
-                         address :address}]
-  [:div
-   (utils/drop-down
-    expanded?
-    keypaths/account-menu-expanded
-    [:a.flex.items-center
-     [:.black.flex-auto.text-right.right-align.h5.pt1
-      [:.flex.justify-end.items-center
-       (when store-photo
-         [:.mx1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
-       (:firstname address)]]
-     [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
-    [:div.absolute.right-0 {:style {:max-width "140px"}}
-     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
-      [:.absolute {:style {:right "15px"}}
-       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
-      [:.h6.bg-pure-white.rounded-2.flex.flex-column.left-align
-       [:div.px2.py1.line-height-4
-        (selected-link? header-navigation-selected-link events/navigate-stylist-dashboard-commissions)
-        [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-         [:span
-          (selected-link? header-menu-selected-link events/navigate-stylist-dashboard)
-          "Dashboard"]]
-        [:a.teal.block (utils/navigate-community) "Community"]
-        [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
-         [:span (selected-link? header-menu-selected-link events/navigate-stylist-manage-account)
-          "Account Settings"]]]
-       [:.border-bottom.border-silver]
-       [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]])])
+(defn account-dropdown [expanded? link menu]
+  (utils/drop-down
+   expanded?
+   keypaths/account-menu-expanded
+   [:a.flex.items-center
+    [:.black.flex-auto.right-align.h5.pt1 link]
+    [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+   [:div.absolute.right-0 {:style {:max-width "140px"}}
+    [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
+     [:.absolute {:style {:right "15px"}}
+      (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
+     [:.h6.bg-pure-white.rounded-2.flex.flex-column.left-align
+      [:div.px2.py1.line-height-4 menu]
+      [:.border-bottom.border-silver]
+      [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
-(defn customer-dropdown [expanded? selected-link? user-email]
-  [:div
-   (utils/drop-down
-    expanded?
-    keypaths/account-menu-expanded
-    [:a.flex.items-center
-     [:.black.flex-auto.text-right.right-align.h5.pt1 user-email]
-     [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
-    [:div.absolute.right-0 {:style {:max-width "140px"}}
-     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em"}}
-      [:.absolute {:style {:right "15px"}}
-       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
-      [:.h6.bg-pure-white.flex.flex-column.left-align
-       [:div.px2.py1.line-height-4
-        [:a.teal.block.pyp1 (utils/route-to events/navigate-account-manage)
-         [:span (selected-link? header-menu-selected-link events/navigate-account-manage)
-          "Account Settings"]]
-        [:a.teal.block (utils/route-to events/navigate-account-referrals)
-         [:span (selected-link? header-menu-selected-link events/navigate-account-referrals)
-          "Refer a Friend"]]]
-       [:.border.border-silver]
-       [:a.teal.block.py1.center.bg-white (utils/fake-href events/control-sign-out) "Logout"]]]])])
+(defn stylist-account [expanded?
+                       selected-link?
+                       {store-photo :profile_picture_url
+                        address :address}]
+  (account-dropdown
+   expanded?
+   [:.flex.justify-end.items-center
+    (when store-photo
+      [:.mr1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
+    [:.truncate (apply str (repeat 15 (:firstname address)))]]
+   [:div
+    (selected-link? header-navigation-selected-link events/navigate-stylist-dashboard-commissions)
+    [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+     [:span
+      (selected-link? header-menu-selected-link events/navigate-stylist-dashboard)
+      "Dashboard"]]
+    [:a.teal.block (utils/navigate-community) "Community"]
+    [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
+     [:span (selected-link? header-menu-selected-link events/navigate-stylist-manage-account)
+      "Account Settings"]]]))
 
-(defn guest-component []
-  [:.right-align.h6.sans-serif
-   [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
-   [:.inline-block.pxp4.black "|"]
-   [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]])
+(defn customer-account [expanded? selected-link? user-email]
+  (account-dropdown
+   expanded?
+   [:.truncate user-email]
+   [:div
+    [:a.teal.block.pyp1 (utils/route-to events/navigate-account-manage)
+     [:span (selected-link? header-menu-selected-link events/navigate-account-manage)
+      "Account Settings"]]
+    [:a.teal.block (utils/route-to events/navigate-account-referrals)
+     [:span (selected-link? header-menu-selected-link events/navigate-account-referrals)
+      "Refer a Friend"]]]))
+
+(def guest-account
+  (html
+   [:.right-align.h6.sans-serif
+    [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
+    [:.inline-block.pxp4.black "|"]
+    [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]]))
 
 (defn row
   ([right] (row nil right))
@@ -283,9 +277,9 @@
       [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
        [:.flex-auto
         (cond
-          stylist? (stylist-dropdown account-expanded? selected-link? store)
-          user-email (customer-dropdown account-expanded? selected-link? user-email)
-          :else (guest-component))]
+          stylist?   (stylist-account account-expanded? selected-link? store)
+          user-email (customer-account account-expanded? selected-link? user-email)
+          :else      guest-account)]
        [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
      [:.h5.sans-serif.extra-light
       [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
