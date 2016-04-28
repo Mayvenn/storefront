@@ -242,9 +242,7 @@
    hamburger
    [:.flex-auto.center
     [:.flex.flex-column {:style {:height "60px"}}
-     (if (sans-stylist? (:store_slug store))
-       (logo 80)
-       (logo 60))
+     (logo 60)
      (store-dropdown store-expanded? store)]]
    (shopping-bag cart-quantity)])
 
