@@ -169,7 +169,7 @@
    [:.flex.justify-end.items-center
     (when store-photo
       [:.mr1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
-    [:.truncate (apply str (repeat 15 (:firstname address)))]]
+    [:.truncate (:firstname address)]]
    [:div
     (selected-link? header-navigation-selected-link events/navigate-stylist-dashboard-commissions)
     [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
