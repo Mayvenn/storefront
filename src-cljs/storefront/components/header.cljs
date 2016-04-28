@@ -229,6 +229,30 @@
     (when stylist?
       [:div.col-4 (products-section selected-link? "Stylist Products" (filter is-stylist-product? taxons))])]])
 
+(defn lower-right-desktop-nav [selected-link?]
+  [:.h5.sans-serif.extra-light
+   [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
+                          :href           "https://blog.mayvenn.com"} "Blog"]
+   [:a.black.col.py1
+    (merge
+     (selected-link? header-navigation-selected-link events/navigate-help)
+     {:on-mouse-enter (utils/collapse-all-menus-callback)}
+     (utils/route-to events/navigate-help)) "Contact Us"]])
+
+(defn lower-left-desktop-nav [selected-link?]
+  [:.right.h5.sans-serif.extra-light
+   [:div.col.py1
+    (selected-link? header-navigation-selected-link events/navigate-category)
+    [:a.black
+     {:href           "/categories"
+      :on-mouse-enter (utils/expand-menu-callback keypaths/menu-expanded)
+      :on-click       (utils/expand-menu-callback keypaths/menu-expanded)}
+     "Shop"]]
+   [:a.black.col.py1.ml4
+    (merge
+     (selected-link? header-navigation-selected-link events/navigate-guarantee)
+     {:on-mouse-enter (utils/collapse-all-menus-callback)}
+     (utils/route-to events/navigate-guarantee)) "Guarantee"]])
 
 (defn mobile-header [store cart-quantity store-expanded? class-str]
   [:.flex.bg-white {:style {:min-height "60px"}
@@ -255,19 +279,7 @@
                          :class class-str}
     [:.col.col-4
      [:div {:style {:height "48px"}}]
-     [:.right.h5.sans-serif.extra-light
-      [:div.col.py1
-       (selected-link? header-navigation-selected-link events/navigate-category)
-       [:a.black
-        {:href "/categories"
-         :on-mouse-enter (utils/expand-menu-callback keypaths/menu-expanded)
-         :on-click (utils/expand-menu-callback keypaths/menu-expanded)}
-        "Shop"]]
-      [:a.black.col.py1.ml4
-       (merge
-        (selected-link? header-navigation-selected-link events/navigate-guarantee)
-        {:on-mouse-enter (utils/collapse-all-menus-callback)}
-        (utils/route-to events/navigate-guarantee)) "Guarantee"]]]
+     (lower-left-desktop-nav selected-link?)]
     [:.col.col-4.center
      [:.flex.flex-column.justify-between {:style {:height "75px"}}
       (logo (if (sans-stylist? (:store_slug store)) 80 60))
@@ -281,14 +293,7 @@
           user-email (customer-account account-expanded? selected-link? user-email)
           :else      guest-account)]
        [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
-     [:.h5.sans-serif.extra-light
-      [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
-                             :href "https://blog.mayvenn.com"} "Blog"]
-      [:a.black.col.py1
-       (merge
-        (selected-link? header-navigation-selected-link events/navigate-help)
-        {:on-mouse-enter (utils/collapse-all-menus-callback)}
-        (utils/route-to events/navigate-help)) "Contact Us"]]]]
+     (lower-right-desktop-nav selected-link?)]]
    (shop-dropdown stylist? shop-expanded? selected-link? taxons)])
 
 
