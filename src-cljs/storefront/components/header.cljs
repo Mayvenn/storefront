@@ -305,24 +305,25 @@
                                  account-expanded?
                                  stylist?
                                  shop-expanded?
-                                 selected-link?
+                                 nav-message
                                  store
                                  user-email
                                  taxons]} _]
   (om/component
    (html
-    [:div
-     (mobile-header store cart-quantity store-expanded? "lg-up-hide")
-     (desktop-header account-expanded?
-                     selected-link?
-                     shop-expanded?
-                     store-expanded?
-                     stylist?
-                     cart-quantity
-                     store
-                     taxons
-                     user-email
-                     "to-lg-hide")])))
+    (let [selected-link? (partial selectable nav-message)]
+      [:div
+       (mobile-header store cart-quantity store-expanded? "lg-up-hide")
+       (desktop-header account-expanded?
+                       selected-link?
+                       shop-expanded?
+                       store-expanded?
+                       stylist?
+                       cart-quantity
+                       store
+                       taxons
+                       user-email
+                       "to-lg-hide")]))))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
@@ -331,7 +332,7 @@
    :shop-expanded?    (get-in data keypaths/menu-expanded)
    :cart-quantity     (orders/product-quantity (get-in data keypaths/order))
    :stylist?          (own-store? data)
-   :selected-link?    (partial selectable (get-in data keypaths/navigation-message))
+   :nav-message       (get-in data keypaths/navigation-message)
    :user-email        (get-in data keypaths/user-email)
    :taxons            (cond->> (get-in data keypaths/taxons)
                         (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
