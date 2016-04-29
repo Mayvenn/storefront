@@ -289,8 +289,7 @@
                    :navigation [event args]}))
 
 (defmethod perform-effects events/control-menu-expand [_ event {keypath :keypath} app-state]
-  (when (and (#{keypaths/menu-expanded} keypath)
-             (not (experiments/new-nav? app-state)))
+  (when (#{keypaths/menu-expanded} keypath)
     (set! (.. js/document -body -style -overflow) "hidden")))
 
 (defmethod perform-effects events/control-menu-collapse-all [_ _ _ _]
