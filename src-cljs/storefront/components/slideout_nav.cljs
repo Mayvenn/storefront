@@ -32,7 +32,7 @@
   ([current-navigation-message event-name args content]
    [:span
     (when (utils/current-page? current-navigation-message event-name args)
-      {:class "border-teal border-bottom bold pyp1"})
+      {:class "border-teal border-bottom border-width-2 bold pyp1"})
     content]))
 
 (def guest-account-menu
