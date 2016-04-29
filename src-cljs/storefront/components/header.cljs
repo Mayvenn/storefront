@@ -227,7 +227,7 @@
 (defn shop-dropdown [stylist? expanded? selected-link? taxons]
   [:.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
-   [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
+   [:.flex.items-start {:style {:padding "1em 10% 2em"}}
     [:.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
     [:.col-4 (products-section selected-link? "Closures" (filter is-closure? taxons))]
     (when stylist?
