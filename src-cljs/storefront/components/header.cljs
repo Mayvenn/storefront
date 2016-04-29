@@ -171,7 +171,6 @@
       [:.mr1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:.truncate (:firstname address)]]
    [:div
-    (selected-link? header-navigation-selected-link events/navigate-stylist-dashboard-commissions)
     [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
      [:span
       (selected-link? header-menu-selected-link events/navigate-stylist-dashboard)
