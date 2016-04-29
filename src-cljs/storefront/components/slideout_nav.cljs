@@ -248,14 +248,14 @@
 
 (def menu-x
   (html
-   [:div {:style {:width "60px"}}
+   [:.absolute {:style {:width "60px"}}
     [:.relative.rotate-45.p2 {:style {:height "60px"}}
      [:.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
      [:.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
   (html
-   [:a.block.img-logo.bg-no-repeat.bg-contain.teal.pp3
+   [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.teal.pp3
     (merge {:style {:height "30px"}
             :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
@@ -393,8 +393,7 @@
         {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
        [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver.rounded-bottom-right-2
         {:style {:max-height "100%"}}
-        [section-outer
-         [:.flex.items-center menu-x [:.flex-auto.p2 logo]]]
+        [section-outer menu-x [:.p2 logo]]
         (cond
           stylist? (stylist-content data)
           user-email (customer-content data)
