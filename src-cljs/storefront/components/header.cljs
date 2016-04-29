@@ -47,23 +47,20 @@
     [:.border-top.border-bottom.border-black {:style {:height "12px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "12px"}}]]))
 
-(defn logo [menu-height]
+(defn logo [height]
   (html
-   [:div {:style {:margin-top "auto"
-                  :margin-bottom "auto"}}
-    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
-     (merge {:style {:height (str (/ menu-height 2) "px")}
-             :title "Mayvenn"}
-            (utils/route-to events/navigate-home))]]))
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
+    (merge {:style {:height height}
+            :title "Mayvenn"}
+           (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
-  [:.relative.pointer (merge {:style {:min-height "60px"
-                              :width "60px"}}
-                     (utils/route-to events/navigate-cart))
+  [:.relative.pointer (merge {:style {:height "60px" :width "60px"}}
+                             (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
-   [:.center.absolute.overlay.m-auto.f5.teal {:style {:height "1em"}}
-    (when (pos? cart-quantity)
-      [:.mtp3 cart-quantity])]])
+   (when (pos? cart-quantity)
+     [:.absolute.overlay.m-auto {:style {:height "10px"}}
+      [:.center.teal.f5.mtp3 cart-quantity]])])
 
 (defn triangle-up [width class]
   [:.absolute.inline-block
@@ -130,45 +127,43 @@
                        instagram-account :instagram_account
                        styleseat-account :styleseat_account
                        store-photo :profile_picture_url
-                       address :address
-                       store-slug :store_slug}]
-  (when-not (sans-stylist? store-slug)
-    [:div
-     (utils/drop-down
-      expanded?
-      keypaths/store-info-expanded
-      [:a
-       [:.teal {:style {:margin-bottom "10px"}}
-        [:.flex.justify-center.items-center.mtp3
-         [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
-         [:.truncate.fit.f3 nickname]]
-        [:.relative teal-carrot-bottom]]]
-      [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
-       [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
-        notch-up
-        [:div
-         [:.py1.f5
-          (when store-photo
-            [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
-          [:h3.f3.medium store-name]
-          [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
-          [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
-         (when instagram-account
-           (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
-                        (str "http://instagram.com/" instagram-account)
-                        "Follow me on Instagram"))
-         (when styleseat-account
-           (social-link {:class "img-styleseat" :style {:width "15px" :height "14px"}}
-                        (str "https://www.styleseat.com/v/" styleseat-account)
-                        "Book me on StyleSeat"))]]])]))
+                       address :address}]
+  [:div
+   (utils/drop-down
+    expanded?
+    keypaths/store-info-expanded
+    [:a
+     [:.teal {:style {:margin-bottom "10px"}}
+      [:.flex.justify-center.items-center.mtp3
+       [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
+       [:.truncate.fit.f3 nickname]]
+      [:.relative teal-carrot-bottom]]]
+    [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
+     [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
+      notch-up
+      [:div
+       [:.py1.f5
+        (when store-photo
+          [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
+        [:h3.f3.medium store-name]
+        [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
+        [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
+       (when instagram-account
+         (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
+                      (str "http://instagram.com/" instagram-account)
+                      "Follow me on Instagram"))
+       (when styleseat-account
+         (social-link {:class "img-styleseat" :style {:width "15px" :height "14px"}}
+                      (str "https://www.styleseat.com/v/" styleseat-account)
+                      "Book me on StyleSeat"))]]])])
 
 (defn account-dropdown [expanded? link menu]
   (utils/drop-down
    expanded?
    keypaths/account-menu-expanded
    [:a.flex.items-center
-    [:.black.flex-auto.right-align.h5.pt1 link]
-    [:.relative.ml1 {:style {:height "4px"}} teal-carrot-bottom]]
+    [:.black.flex-auto.right-align.h5 link]
+    [:.relative.ml1.mtn1 {:style {:height "4px"}} teal-carrot-bottom]]
    [:.absolute.right-0 {:style {:max-width "140px"}}
     [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:.absolute {:style {:right "15px"}} notch-up]
@@ -239,91 +234,59 @@
    (utils/route-to nav-event)))
 
 (defn lower-left-desktop-nav [current-page?]
-  [:.right.h5.sans-serif.extra-light
-   [:a.black.col.py1 (merge
-                      {:href           "/categories"
-                       :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
-                       :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
-                      (when (current-page? events/navigate-category) {:class selected-link}))
-    "Shop"]
-   [:a.black.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-guarantee)
-    "Guarantee"]])
+  [:.to-lg-hide {:style {:margin-top "-12px"}}
+   [:.right.h5.sans-serif.extra-light
+    [:a.black.col.py1 (merge
+                       {:href           "/categories"
+                        :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
+                        :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
+                       (when (current-page? events/navigate-category) {:class selected-link}))
+     "Shop"]
+    [:a.black.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-guarantee)
+     "Guarantee"]]])
 
 (defn lower-right-desktop-nav [current-page?]
-  [:.h5.sans-serif.extra-light
-   [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
-                          :href           "https://blog.mayvenn.com"}
-    "Blog"]
-   [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
-    "Contact Us"]])
+  [:.to-lg-hide {:style {:margin-top "-12px"}}
+   [:.h5.sans-serif.extra-light
+    [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
+                           :href           "https://blog.mayvenn.com"}
+     "Blog"]
+    [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
+     "Contact Us"]]])
 
-(defn mobile-header [store cart-quantity store-expanded? class-str]
-  [:.flex.bg-white {:style {:min-height "60px"}
-                    :class class-str}
-   hamburger
-   [:.flex-auto.center
-    [:.flex.flex-column {:style {:height "60px"}}
-     (logo 60)
-     (store-dropdown store-expanded? store)]]
-   (shopping-bag cart-quantity)])
-
-(defn desktop-header [nav-message
-                      account-expanded?
-                      shop-expanded?
-                      store-expanded?
-                      stylist?
-                      cart-quantity
-                      store
-                      taxons
-                      user-email
-                      class-str]
-  (let [current-page? (partial utils/current-page? nav-message)]
-    [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
-     [:.bg-white.clearfix {:style {:min-height "80px"}
-                           :class class-str}
-      [:.col.col-4
-       [:div {:style {:height "48px"}}]
-       (lower-left-desktop-nav current-page?)]
-      [:.col.col-4.center
-       [:.flex.flex-column.justify-between {:style {:height "75px"}}
-        (logo (if (sans-stylist? (:store_slug store)) 80 60))
-        (store-dropdown store-expanded? store)]]
-      [:.col.col-4
-       [:div
-        [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
-         [:.flex-auto
-          (cond
-            stylist?   (stylist-account account-expanded? current-page? store)
-            user-email (customer-account account-expanded? current-page? user-email)
-            :else      guest-account)]
-         [:.pl2 (shopping-bag cart-quantity)]]]
-       (lower-right-desktop-nav current-page?)]]
-     (shop-panel stylist? shop-expanded? current-page? taxons)]))
-
-(defn new-nav-component [{:keys [store
-                                 cart-quantity
-                                 store-expanded?
+(defn new-nav-component [{:keys [nav-message
                                  account-expanded?
-                                 stylist?
                                  shop-expanded?
-                                 nav-message
+                                 store-expanded?
+                                 stylist?
+                                 cart-quantity
                                  store
-                                 user-email
-                                 taxons]} _]
+                                 taxons
+                                 user-email]} _]
   (om/component
    (html
-    [:div
-     (mobile-header store cart-quantity store-expanded? "lg-up-hide")
-     (desktop-header nav-message
-                     account-expanded?
-                     shop-expanded?
-                     store-expanded?
-                     stylist?
-                     cart-quantity
-                     store
-                     taxons
-                     user-email
-                     "to-lg-hide")])))
+    (let [current-page? (partial utils/current-page? nav-message)]
+      [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
+       [:.flex.items-stretch.bg-white.clearfix {:style {:min-height "60px"}}
+        [:.col-4
+         [:div {:style {:height "60px"}} [:.lg-up-hide hamburger]]
+         (lower-left-desktop-nav current-page?)]
+        (into [:.col-4.flex.flex-column.justify-center.center {:style {:min-width "188px"}}]
+              (if (sans-stylist? (:store_slug store))
+                (list (logo "40px"))
+                (list
+                 (logo "30px")
+                 (store-dropdown store-expanded? store))))
+        [:.col-4
+         [:.flex.justify-end.items-center
+          [:.flex-auto.to-lg-hide.pr2
+           (cond
+             stylist?   (stylist-account account-expanded? current-page? store)
+             user-email (customer-account account-expanded? current-page? user-email)
+             :else      guest-account)]
+          (shopping-bag cart-quantity)]
+         (lower-right-desktop-nav current-page?)]]
+       (shop-panel stylist? shop-expanded? current-page? taxons)]))))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
