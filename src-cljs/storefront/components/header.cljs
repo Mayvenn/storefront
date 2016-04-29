@@ -28,10 +28,10 @@
          [:a.cart.populated (utils/route-to events/navigate-cart) product-quantity]
          [:a.cart (utils/route-to events/navigate-cart)])
        (when home-page?
-         [:div.stylist-bar
-          [:div.stylist-bar-img-container
+         [:.stylist-bar
+          [:.stylist-bar-img-container
            [:img.stylist-bar-portrait {:src store-photo-url}]]
-          [:div.stylist-bar-name store-name]])]))))
+          [:.stylist-bar-name store-name]])]))))
 
 (defn header-query [data]
   {:store      (get-in data keypaths/store)
@@ -151,12 +151,12 @@
    [:a.flex.items-center
     [:.black.flex-auto.right-align.h5.pt1 link]
     [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
-   [:div.absolute.right-0 {:style {:max-width "140px"}}
+   [:.absolute.right-0 {:style {:max-width "140px"}}
     [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:.absolute {:style {:right "15px"}}
       (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
      [:.h6.bg-pure-white.rounded-2.flex.flex-column.left-align
-      [:div.px2.py1.line-height-4 menu]
+      [:.px2.py1.line-height-4 menu]
       [:.border-bottom.border-silver]
       [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
@@ -223,10 +223,10 @@
   [:.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
    [:.flex.justify-center.items-start {:style {:padding "1em 6em 2em"}}
-    [:div.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
-    [:div.col-4 (products-section selected-link? "Closures" (filter is-closure? taxons))]
+    [:.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
+    [:.col-4 (products-section selected-link? "Closures" (filter is-closure? taxons))]
     (when stylist?
-      [:div.col-4 (products-section selected-link? "Stylist Products" (filter is-stylist-product? taxons))])]])
+      [:.col-4 (products-section selected-link? "Stylist Products" (filter is-stylist-product? taxons))])]])
 
 (defn lower-right-desktop-nav [selected-link?]
   [:.h5.sans-serif.extra-light
@@ -240,7 +240,7 @@
 
 (defn lower-left-desktop-nav [selected-link?]
   [:.right.h5.sans-serif.extra-light
-   [:div.col.py1
+   [:.col.py1
     (selected-link? header-navigation-selected-link events/navigate-category)
     [:a.black
      {:href           "/categories"
