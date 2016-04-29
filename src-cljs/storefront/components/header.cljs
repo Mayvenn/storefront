@@ -104,13 +104,6 @@
   (html
    (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})))
 
-(defn row
-  ([right] (row nil right))
-  ([left right]
-   [:.clearfix.pyp1
-    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
-    [:.col.col-10.line-height-3 right]]))
-
 (def selected-link        "border-teal border-bottom border-width-2")
 (def padded-selected-link "border-teal border-bottom border-width-2 pyp3")
 
@@ -128,7 +121,7 @@
                        styleseat-account :styleseat_account
                        store-photo :profile_picture_url
                        address :address}]
-  [:div
+  [:div.center
    (utils/drop-down
     expanded?
     keypaths/store-info-expanded
@@ -157,7 +150,7 @@
                       (str "https://www.styleseat.com/v/" styleseat-account)
                       "Book me on StyleSeat"))]]])])
 
-(defn account-dropdown [expanded? link menu]
+(defn account-dropdown [expanded? link & menu]
   (utils/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -168,7 +161,7 @@
     [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:.absolute {:style {:right "15px"}} notch-up]
      [:.h6.bg-pure-white.rounded-2
-      [:.px2.py1.line-height-4 menu]
+      (into [:.px2.py1.line-height-4] menu)
       [:.border-bottom.border-silver]
       [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
@@ -183,21 +176,18 @@
   (account-dropdown
    expanded?
    [:.flex.justify-end.items-center
-    (when store-photo
-      [:.mr1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
+    (when store-photo [:.mr1 (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:.truncate (:firstname address)]]
-   [:div
-    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
-    [:a.teal.block (utils/navigate-community) "Community"]
-    (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")]))
+   (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
+   [:a.teal.block (utils/navigate-community) "Community"]
+   (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
   (account-dropdown
    expanded?
    [:.truncate user-email]
-   [:div
-    (account-link (current-page? events/navigate-account-manage) events/navigate-account-manage "Account Settings")
-    (account-link (current-page? events/navigate-account-referrals) events/navigate-account-referrals "Refer a Friend")]))
+   (account-link (current-page? events/navigate-account-manage) events/navigate-account-manage "Account Settings")
+   (account-link (current-page? events/navigate-account-referrals) events/navigate-account-referrals "Refer a Friend")))
 
 (def guest-account
   (html
@@ -205,6 +195,13 @@
     [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
     [:.inline-block.pxp4.black "|"]
     [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]]))
+
+(defn row
+  ([right] (row nil right))
+  ([left right]
+   [:.clearfix.pyp1
+    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-10.line-height-3 right]]))
 
 (defn products-section [current-page? title taxons]
   [:div
@@ -271,7 +268,7 @@
         [:.col-4
          [:div {:style {:height "60px"}} [:.lg-up-hide hamburger]]
          (lower-left-desktop-nav current-page?)]
-        (into [:.col-4.flex.flex-column.justify-center.center {:style {:min-width "188px"}}]
+        (into [:.col-4.flex.flex-column.justify-center {:style {:min-width "188px"}}]
               (if (sans-stylist? (:store_slug store))
                 (list (logo "40px"))
                 (list
