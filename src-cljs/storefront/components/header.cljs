@@ -38,6 +38,8 @@
    :home-page? (= (get-in data keypaths/navigation-event) events/navigate-home)
    :order      (get-in data keypaths/order)})
 
+;; New nav starts here
+
 (def hamburger
   (html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
@@ -75,12 +77,12 @@
 
 (defn triangle-down [width class]
   [:.absolute.inline-block
-   {:style {:bottom              (str "-" width)
-            :margin-left         (str "-" width)
+   {:style {:bottom           (str "-" width)
+            :margin-left      (str "-" width)
             :border-top-width width
             :border-top-style "solid"
-            :border-left         (str width " solid transparent")
-            :border-right        (str width " solid transparent")}
+            :border-left      (str width " solid transparent")
+            :border-right     (str width " solid transparent")}
     :class class}])
 
 (defn carrot-top [{:keys [width-px bg-color border-color]}]
@@ -97,17 +99,25 @@
      (triangle-down outer-width border-color)
      (triangle-down inner-width bg-color)]))
 
-(def header-navigation-selected-link "border-teal border-bottom border-width-2")
-(def header-menu-selected-link       "border-teal border-bottom border-width-2 pyp3")
+(def teal-carrot-bottom
+  (html
+   (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})))
 
-(defn selectable
-  ([current-navigation-message class-str event-name]
-   (selectable current-navigation-message class-str event-name {}))
-  ([current-navigation-message class-str event-name args]
-   (when (utils/current-page? current-navigation-message event-name args)
-     {:class class-str})))
+(def notch-up
+  (html
+   (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})))
 
-(defn social-link [title href img-attrs]
+(defn row
+  ([right] (row nil right))
+  ([left right]
+   [:.clearfix.pyp1
+    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-10.line-height-3 right]]))
+
+(def selected-link        "border-teal border-bottom border-width-2")
+(def padded-selected-link "border-teal border-bottom border-width-2 pyp3")
+
+(defn social-link [img-attrs href title]
   [:a.f4.teal.block.p1.bg-white.rounded-bottom-2.border-top.border-bottom.border-silver {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
@@ -132,22 +142,25 @@
         [:.flex.justify-center.items-center.mtp3
          [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
          [:.truncate.fit.f3 nickname]]
-        [:.relative
-         (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]]
+        [:.relative teal-carrot-bottom]]]
       [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
        [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
-        (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
+        notch-up
         [:div
          [:.py1.f5
           (when store-photo
             [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
           [:h3.f3.medium store-name]
-          [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
+          [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
           [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
          (when instagram-account
-           (social-link "Follow me on Instagram" (str "http://instagram.com/" instagram-account) {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}))
+           (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
+                        (str "http://instagram.com/" instagram-account)
+                        "Follow me on Instagram"))
          (when styleseat-account
-           (social-link "Book me on StyleSeat" (str "https://www.styleseat.com/v/" styleseat-account) {:class "img-styleseat" :style {:width "15px" :height "14px"}}))]]])]))
+           (social-link {:class "img-styleseat" :style {:width "15px" :height "14px"}}
+                        (str "https://www.styleseat.com/v/" styleseat-account)
+                        "Book me on StyleSeat"))]]])]))
 
 (defn account-dropdown [expanded? link menu]
   (utils/drop-down
@@ -155,18 +168,21 @@
    keypaths/account-menu-expanded
    [:a.flex.items-center
     [:.black.flex-auto.right-align.h5.pt1 link]
-    [:.relative.ml1 {:style {:height "4px"}} (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]
+    [:.relative.ml1 {:style {:height "4px"}} teal-carrot-bottom]]
    [:.absolute.right-0 {:style {:max-width "140px"}}
-    [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit {:style {:margin-right "-1em" :top "5px"}}
-     [:.absolute {:style {:right "15px"}}
-      (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})]
-     [:.h6.bg-pure-white.rounded-2.flex.flex-column.left-align
+    [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
+     [:.absolute {:style {:right "15px"}} notch-up]
+     [:.h6.bg-pure-white.rounded-2
       [:.px2.py1.line-height-4 menu]
       [:.border-bottom.border-silver]
       [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
+(defn account-link [current-page? nav-event title]
+  [:a.teal.block (utils/route-to nav-event)
+   [:span (when current-page? {:class padded-selected-link}) title]])
+
 (defn stylist-account [expanded?
-                       selected-link?
+                       current-page?
                        {store-photo :profile_picture_url
                         address :address}]
   (account-dropdown
@@ -176,26 +192,17 @@
       [:.mr1.inline-block (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:.truncate (:firstname address)]]
    [:div
-    [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-     [:span
-      (selected-link? header-menu-selected-link events/navigate-stylist-dashboard)
-      "Dashboard"]]
+    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
     [:a.teal.block (utils/navigate-community) "Community"]
-    [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
-     [:span (selected-link? header-menu-selected-link events/navigate-stylist-manage-account)
-      "Account Settings"]]]))
+    (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")]))
 
-(defn customer-account [expanded? selected-link? user-email]
+(defn customer-account [expanded? current-page? user-email]
   (account-dropdown
    expanded?
    [:.truncate user-email]
    [:div
-    [:a.teal.block.pyp1 (utils/route-to events/navigate-account-manage)
-     [:span (selected-link? header-menu-selected-link events/navigate-account-manage)
-      "Account Settings"]]
-    [:a.teal.block (utils/route-to events/navigate-account-referrals)
-     [:span (selected-link? header-menu-selected-link events/navigate-account-referrals)
-      "Refer a Friend"]]]))
+    (account-link (current-page? events/navigate-account-manage) events/navigate-account-manage "Account Settings")
+    (account-link (current-page? events/navigate-account-referrals) events/navigate-account-referrals "Refer a Friend")]))
 
 (def guest-account
   (html
@@ -204,14 +211,7 @@
     [:.inline-block.pxp4.black "|"]
     [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]]))
 
-(defn row
-  ([right] (row nil right))
-  ([left right]
-   [:.clearfix.pyp1
-    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
-    [:.col.col-10.line-height-3 right]]))
-
-(defn products-section [selected-link? title taxons]
+(defn products-section [current-page? title taxons]
   [:div
    (row [:.border-bottom.border-light-gray.black.h4 title])
    [:.my1
@@ -219,44 +219,43 @@
       [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
         (when (new-taxon? slug) utils/new-flag)
-        [:.teal.titleize
-         [:span
-          (selected-link? header-menu-selected-link events/navigate-category {:taxon-slug slug})
-          (get slug->name slug name)]])])]])
+        [:span.teal.titleize
+         (when (current-page? events/navigate-category {:taxon-slug slug}) {:class padded-selected-link})
+         (get slug->name slug name)])])]])
 
-(defn shop-dropdown [stylist? expanded? selected-link? taxons]
+(defn shop-panel [stylist? expanded? current-page? taxons]
   [:.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
    [:.flex.items-start {:style {:padding "1em 10% 2em"}}
-    [:.col-4 (products-section selected-link? "Hair Extensions" (filter is-extension? taxons))]
-    [:.col-4 (products-section selected-link? "Closures" (filter is-closure? taxons))]
+    [:.col-4 (products-section current-page? "Hair Extensions" (filter is-extension? taxons))]
+    [:.col-4 (products-section current-page? "Closures" (filter is-closure? taxons))]
     (when stylist?
-      [:.col-4 (products-section selected-link? "Stylist Products" (filter is-stylist-product? taxons))])]])
+      [:.col-4 (products-section current-page? "Stylist Products" (filter is-stylist-product? taxons))])]])
 
-(defn lower-right-desktop-nav [selected-link?]
+(defn desktop-nav-link-options [current-page? nav-event]
+  (merge
+   {:on-mouse-enter (utils/collapse-all-menus-callback)}
+   (when (current-page? nav-event) {:class selected-link})
+   (utils/route-to nav-event)))
+
+(defn lower-left-desktop-nav [current-page?]
+  [:.right.h5.sans-serif.extra-light
+   [:a.black.col.py1 (merge
+                      {:href           "/categories"
+                       :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
+                       :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
+                      (when (current-page? events/navigate-category) {:class selected-link}))
+    "Shop"]
+   [:a.black.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-guarantee)
+    "Guarantee"]])
+
+(defn lower-right-desktop-nav [current-page?]
   [:.h5.sans-serif.extra-light
    [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
-                          :href           "https://blog.mayvenn.com"} "Blog"]
-   [:a.black.col.py1
-    (merge
-     (selected-link? header-navigation-selected-link events/navigate-help)
-     {:on-mouse-enter (utils/collapse-all-menus-callback)}
-     (utils/route-to events/navigate-help)) "Contact Us"]])
-
-(defn lower-left-desktop-nav [selected-link?]
-  [:.right.h5.sans-serif.extra-light
-   [:.col.py1
-    (selected-link? header-navigation-selected-link events/navigate-category)
-    [:a.black
-     {:href           "/categories"
-      :on-mouse-enter (utils/expand-menu-callback keypaths/menu-expanded)
-      :on-click       (utils/expand-menu-callback keypaths/menu-expanded)}
-     "Shop"]]
-   [:a.black.col.py1.ml4
-    (merge
-     (selected-link? header-navigation-selected-link events/navigate-guarantee)
-     {:on-mouse-enter (utils/collapse-all-menus-callback)}
-     (utils/route-to events/navigate-guarantee)) "Guarantee"]])
+                          :href           "https://blog.mayvenn.com"}
+    "Blog"]
+   [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
+    "Contact Us"]])
 
 (defn mobile-header [store cart-quantity store-expanded? class-str]
   [:.flex.bg-white {:style {:min-height "60px"}
@@ -268,8 +267,8 @@
      (store-dropdown store-expanded? store)]]
    (shopping-bag cart-quantity)])
 
-(defn desktop-header [account-expanded?
-                      selected-link?
+(defn desktop-header [nav-message
+                      account-expanded?
                       shop-expanded?
                       store-expanded?
                       stylist?
@@ -278,29 +277,28 @@
                       taxons
                       user-email
                       class-str]
-  [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
-   [:.bg-white.clearfix {:style {:min-height "80px"}
-                         :class class-str}
-    [:.col.col-4
-     [:div {:style {:height "48px"}}]
-     (lower-left-desktop-nav selected-link?)]
-    [:.col.col-4.center
-     [:.flex.flex-column.justify-between {:style {:height "75px"}}
-      (logo (if (sans-stylist? (:store_slug store)) 80 60))
-      (store-dropdown store-expanded? store)]]
-    [:.col.col-4
-     [:div
-      [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
-       [:.flex-auto
-        (cond
-          stylist?   (stylist-account account-expanded? selected-link? store)
-          user-email (customer-account account-expanded? selected-link? user-email)
-          :else      guest-account)]
-       [:.pl2.self-bottom (shopping-bag cart-quantity)]]]
-     (lower-right-desktop-nav selected-link?)]]
-   (shop-dropdown stylist? shop-expanded? selected-link? taxons)])
-
-
+  (let [current-page? (partial utils/current-page? nav-message)]
+    [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
+     [:.bg-white.clearfix {:style {:min-height "80px"}
+                           :class class-str}
+      [:.col.col-4
+       [:div {:style {:height "48px"}}]
+       (lower-left-desktop-nav current-page?)]
+      [:.col.col-4.center
+       [:.flex.flex-column.justify-between {:style {:height "75px"}}
+        (logo (if (sans-stylist? (:store_slug store)) 80 60))
+        (store-dropdown store-expanded? store)]]
+      [:.col.col-4
+       [:div
+        [:.flex.justify-between.items-center.pt1 {:style {:height "48px"}}
+         [:.flex-auto
+          (cond
+            stylist?   (stylist-account account-expanded? current-page? store)
+            user-email (customer-account account-expanded? current-page? user-email)
+            :else      guest-account)]
+         [:.pl2 (shopping-bag cart-quantity)]]]
+       (lower-right-desktop-nav current-page?)]]
+     (shop-panel stylist? shop-expanded? current-page? taxons)]))
 
 (defn new-nav-component [{:keys [store
                                  cart-quantity
@@ -314,25 +312,24 @@
                                  taxons]} _]
   (om/component
    (html
-    (let [selected-link? (partial selectable nav-message)]
-      [:div
-       (mobile-header store cart-quantity store-expanded? "lg-up-hide")
-       (desktop-header account-expanded?
-                       selected-link?
-                       shop-expanded?
-                       store-expanded?
-                       stylist?
-                       cart-quantity
-                       store
-                       taxons
-                       user-email
-                       "to-lg-hide")]))))
+    [:div
+     (mobile-header store cart-quantity store-expanded? "lg-up-hide")
+     (desktop-header nav-message
+                     account-expanded?
+                     shop-expanded?
+                     store-expanded?
+                     stylist?
+                     cart-quantity
+                     store
+                     taxons
+                     user-email
+                     "to-lg-hide")])))
 
 (defn new-nav-query [data]
   {:store             (get-in data keypaths/store)
    :store-expanded?   (get-in data keypaths/store-info-expanded)
    :account-expanded? (get-in data keypaths/account-menu-expanded)
-   :shop-expanded?    (get-in data keypaths/menu-expanded)
+   :shop-expanded?    (get-in data keypaths/shop-menu-expanded)
    :cart-quantity     (orders/product-quantity (get-in data keypaths/order))
    :stylist?          (own-store? data)
    :nav-message       (get-in data keypaths/navigation-message)

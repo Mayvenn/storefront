@@ -26,15 +26,6 @@
      "Store credit:"
      [:span.store-credit-amount (as-money available-store-credit)]]))
 
-(defn selectable
-  ([current-navigation-message event-name content]
-   (selectable current-navigation-message event-name {} content))
-  ([current-navigation-message event-name args content]
-   [:span
-    (when (utils/current-page? current-navigation-message event-name args)
-      {:class "border-teal border-bottom border-width-2 bold pyp1"})
-    content]))
-
 (def guest-account-menu
   (html
    [:span
@@ -235,6 +226,8 @@
    :navigate-hair-message  (navigation/shop-now-navigation-message data)
    :stylist-kits-path      (default-stylist-taxon-slug data)})
 
+;; New Nav starts here
+
 (def section-inner :.ml3.py2)
 (def section-outer :.border-bottom.border-light-gray.bg-pure-white.black)
 (def section-outer-gray :.border-bottom.border-light-gray.bg-white)
@@ -260,19 +253,29 @@
             :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
 
+(defn selectable
+  ([current-navigation-message event-name content]
+   (selectable current-navigation-message event-name {} content))
+  ([current-navigation-message event-name args content]
+   [:span
+    (when (utils/current-page? current-navigation-message event-name args)
+      {:class "border-teal border-bottom border-width-2 bold pyp1"})
+    content]))
+
 (defn store-credit-flag [credit]
-  (if (pos? credit)
+  (when (pos? credit)
     [:.right.border-bottom.border-left.border-light-gray.bg-white
      {:style {:border-bottom-left-radius "8px"}}
      [:.h5.px2.py1.line-height-1
-      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]
-    [:.right.h5.px2.py1.line-height-1.border-bottom.border-white utils/nbsp]))
+      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
 
-(defn customer-section [user-email]
+(defn customer-section [selectable? user-email]
   [:div
    (row [:.truncate user-email])
-   [:a.teal.block (utils/route-to events/navigate-account-manage) (row "Account Settings")]
-   [:a.teal.block (utils/route-to events/navigate-account-referrals) (row "Refer a Friend")]])
+   [:a.teal.block (utils/route-to events/navigate-account-manage)
+    (row (selectable? events/navigate-account-manage "Account Settings"))]
+   [:a.teal.block (utils/route-to events/navigate-account-referrals)
+    (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
 
 (defn store-section [selectable? store]
   (let [{store-photo :profile_picture_url
@@ -354,50 +357,48 @@
     (utils/fake-href events/control-sign-out)
     "Logout"]))
 
-(defn guest-content [{:keys [taxons current-navigation-message]}]
-  (let [selectable? (partial selectable current-navigation-message)]
-    [:div
-     (customer-shop-section selectable? taxons)
-     (help-section selectable?)
-     sign-in-section]))
+(defn guest-content [selectable? {:keys [taxons]}]
+  [:div
+   (customer-shop-section selectable? taxons)
+   (help-section selectable?)
+   sign-in-section])
 
-(defn customer-content [{:keys [available-store-credit user-email taxons current-navigation-message]}]
-  (let [selectable? (partial selectable current-navigation-message)]
-    [:div
-     [section-outer
-      (store-credit-flag available-store-credit)
-      [section-inner (customer-section user-email)]]
-     (customer-shop-section selectable? taxons)
-     (help-section selectable?)
-     sign-out-section]))
+(defn customer-content [selectable? {:keys [available-store-credit user-email taxons]}]
+  [:div
+   [section-outer
+    (store-credit-flag available-store-credit)
+    [section-inner (customer-section selectable? user-email)]]
+   (customer-shop-section selectable? taxons)
+   (help-section selectable?)
+   sign-out-section])
 
-(defn stylist-content [{:keys [current-navigation-message available-store-credit store taxons]}]
-  (let [selectable? (partial selectable current-navigation-message)]
-    [:div
-     [section-outer
-      (store-credit-flag available-store-credit)
-      [section-inner (store-section selectable? store)]]
-     (stylist-shop-section selectable? taxons)
-     (help-section selectable?)
-     sign-out-section]))
+(defn stylist-content [selectable? {:keys [available-store-credit store taxons]}]
+  [:div
+   [section-outer
+    (store-credit-flag available-store-credit)
+    [section-inner (store-section selectable? store)]]
+   (stylist-shop-section selectable? taxons)
+   (help-section selectable?)
+   sign-out-section])
 
 (defn new-component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner]
   (om/component
    (html
     (when slid-out?
-      [:.h3.lg-up-hide
-       ;; Clicks on links in the slideout nav close the slideout nav and follow the link
-       {:on-click #(messages/handle-message events/control-menu-collapse-all)}
-       [:.fixed.overlay.bg-darken-4.z3
-        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
-        {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-       [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver.rounded-bottom-right-2
-        {:style {:max-height "100%"}}
-        [section-outer menu-x [:.p2 logo]]
-        (cond
-          stylist? (stylist-content data)
-          user-email (customer-content data)
-          :else (guest-content data))]]))))
+      (let [selectable? (partial selectable current-navigation-message)]
+        [:.h3.lg-up-hide
+         ;; Clicks on links in the slideout nav close the slideout nav and follow the link
+         {:on-click #(messages/handle-message events/control-menu-collapse-all)}
+         [:.fixed.overlay.bg-darken-4.z3
+          ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
+          {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
+         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver.rounded-bottom-right-2
+          {:style {:max-height "100%"}}
+          [section-outer menu-x [:.p2 logo]]
+          (cond
+            stylist? (stylist-content selectable? data)
+            user-email (customer-content selectable? data)
+            :else (guest-content selectable? data))]])))))
 
 
 (defn query [data]
