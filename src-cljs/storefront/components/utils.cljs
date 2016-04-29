@@ -83,7 +83,7 @@
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
 (def new-flag
   (html
-   [:pyp1.right
+   [:.pyp1.right
     [:.inline-block.border.border-gray.gray.pp2
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
