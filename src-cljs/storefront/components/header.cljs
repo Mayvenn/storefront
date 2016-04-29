@@ -107,10 +107,18 @@
    (when (utils/current-page? current-navigation-message event-name args)
      {:class class-str})))
 
+(defn social-link [title href img-attrs]
+  [:a.f4.teal.block.p1.bg-white.rounded-bottom-2.border-top.border-bottom.border-silver {:href href}
+   [:.flex.items-center
+    [:.mr1 {:style {:width "15px"}}
+     [:.bg-no-repeat.bg-contain img-attrs]]
+    [:.pp2 title]]])
+
 (defn store-dropdown [expanded?
                       {store-name :store_name
                        nickname :store_nickname
                        instagram-account :instagram_account
+                       styleseat-account :styleseat_account
                        store-photo :profile_picture_url
                        address :address
                        store-slug :store_slug}]
@@ -126,23 +134,20 @@
          [:.truncate.fit.f3 nickname]]
         [:.relative
          (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})]]]
-      [:div.absolute.left-0.right-0.mx-auto {:style {:max-width "240px"}}
-       [:.border.border-light-gray.rounded-2.bg-pure-white.center.relative.top-lit
+      [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
+       [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
         (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})
         [:div
-         [:.p1.f5
+         [:.py1.f5
           (when store-photo
             [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
           [:h3.f3.medium store-name]
           [:.gray.line-height-3 (goog.string/format "by %s %s" (:firstname address) (:lastname address)) ]
-          (when instagram-account
-            [:a.btn.teal {:href (str "http://instagram.com/" instagram-account)}
-             [:.flex.justify-center.items-center
-              [:.img-instagram.bg-no-repeat.bg-contain.mrp4 {:style {:width "10px" :height "10px"}}]
-              [:div "@" instagram-account]]])]
-         [:.border.border-silver]
-         [:.p2.f4.gray "Located in "
-          [:span.black (:city address) ", " (:state address)]]]]])]))
+          [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
+         (when instagram-account
+           (social-link "Follow me on Instagram" (str "http://instagram.com/" instagram-account) {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}))
+         (when styleseat-account
+           (social-link "Book me on StyleSeat" (str "https://www.styleseat.com/v/" styleseat-account) {:class "img-styleseat" :style {:width "15px" :height "14px"}}))]]])]))
 
 (defn account-dropdown [expanded? link menu]
   (utils/drop-down

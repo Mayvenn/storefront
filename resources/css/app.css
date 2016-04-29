@@ -391,6 +391,7 @@ html { line-height: 1.2; }
 
 .img-logo { background-image: url('/images/short_header_logo.png'); }
 .img-instagram { background-image: url('/images/icons/instagram.png'); }
+.img-styleseat { background-image: url('/images/icons/styleseat.png'); }
 
 .img-home {
     background-image: url("/images/home_image_clickable.jpg");
