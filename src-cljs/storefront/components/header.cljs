@@ -226,7 +226,7 @@
 
 (defn desktop-nav-link-options [current-page? nav-event]
   (merge
-   {:on-mouse-enter (utils/collapse-all-menus-callback)}
+   {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)}
    (when (current-page? nav-event) {:class selected-link})
    (utils/route-to nav-event)))
 
@@ -245,7 +245,7 @@
 (defn lower-right-desktop-nav [current-page?]
   [:.to-lg-hide {:style {:margin-top "-12px"}}
    [:.h5.sans-serif.extra-light
-    [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-all-menus-callback)
+    [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                            :href           "https://blog.mayvenn.com"}
      "Blog"]
     [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
@@ -263,7 +263,7 @@
   (om/component
    (html
     (let [current-page? (partial utils/current-page? nav-message)]
-      [:.clearfix {:on-mouse-leave (utils/collapse-all-menus-callback)}
+      [:.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
        [:.flex.items-stretch.bg-white.clearfix {:style {:min-height "60px"}}
         [:.col-4
          [:div {:style {:height "60px"}} [:.lg-up-hide hamburger]]

@@ -21,8 +21,8 @@
 (defn expand-menu-callback [keypath]
   (send-event-callback events/control-menu-expand {:keypath keypath}))
 
-(defn collapse-all-menus-callback []
-  (send-event-callback events/control-menu-collapse-all))
+(defn collapse-menus-callback [menus]
+  (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
 (defn route-to [navigation-event & [args]]
   {:href (routes/path-for navigation-event args)

@@ -12,15 +12,12 @@
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
 
-(def menus #{keypaths/menu-expanded
-             keypaths/account-menu-expanded
-             keypaths/shop-menu-expanded
-             keypaths/store-info-expanded})
-
-(defn collapse-menus [app-state]
-  (reduce (fn [state menu] (assoc-in state menu false))
-          app-state
-          menus))
+(defn collapse-menus
+  ([app-state] (collapse-menus app-state nil))
+  ([app-state menus]
+   (reduce (fn [state menu] (assoc-in state menu false))
+           app-state
+           (or menus keypaths/menus))))
 
 (defmulti transition-state identity)
 
@@ -120,11 +117,11 @@
   [_ event {keypath :keypath} app-state]
   (reduce (fn [state menu] (assoc-in state menu (= menu keypath)))
           app-state
-          menus))
+          keypaths/menus))
 
 (defmethod transition-state events/control-menu-collapse-all
-  [_ _ _ app-state]
-  (collapse-menus app-state))
+  [_ _ {:keys [menus]} app-state]
+  (collapse-menus app-state menus))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   (-> app-state

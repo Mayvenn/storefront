@@ -61,6 +61,11 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
+(def header-menus #{account-menu-expanded
+                    shop-menu-expanded
+                    store-info-expanded})
+(def menus (conj header-menus menu-expanded))
+
 (def places-enabled (conj ui :places-enabled))
 
 (def selected-stylist-stat (conj ui :selected-stylist-stat))
