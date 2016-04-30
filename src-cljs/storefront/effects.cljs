@@ -295,11 +295,6 @@
 (defmethod perform-effects events/control-menu-collapse-all [_ _ _ _]
   (set! (.. js/document -body -style -overflow) "auto"))
 
-(defmethod perform-effects events/control-menu-toggle [_ _ {keypath :keypath} app-state]
-  (if (get-in app-state keypath)
-    (handle-message events/control-menu-collapse-all)
-    (handle-message events/control-menu-expand {:keypath keypath})))
-
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
