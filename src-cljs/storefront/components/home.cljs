@@ -14,34 +14,51 @@
   (om/component
    (html
     [:div
-     (for [[index {:keys [slug]}] (map-indexed vector taxons)]
-       [:a.hair-category-link
-        (merge {:key slug
-                :data-test (str "taxon-" slug)}
-               (utils/route-to events/navigate-category
-                               {:taxon-slug slug}))
-        [:div.hair-container.not-decorated.no-margin
-         (when (> index 5)
-           {:class "half-wide"})
-         [:div.hair-image.image-cover {:class slug}]
-         [:div.hair-taxon {:class slug}]]])])))
+     (let [height 9
+           rem #(str % "rem")]
+       (for [[index {:keys [slug]}] (map-indexed vector taxons)]
+         [:a.col (merge {:key slug
+                         :data-test (str "taxon-" slug)}
+                        (utils/route-to events/navigate-category
+                                        {:taxon-slug slug})
+                        (if (> index 5)
+                          {:class "col-6"}
+                          {:class "col-4"}))
+          [:.mp1.flex.items-center.justify-center.bg-cover.bg-no-repeat.bg-center
+           {:class (str "img-" slug)
+            :style (if (> index 5)
+                     {:height (rem (/ height 2))}
+                     {:height (rem height)})}
+           ;; duplicate element to emulate old styles without custom special-cased classes
+           [:.bg-contain.bg-no-repeat.bg-center.col-10.md-up-hide
+            {:class (str "img-text-" slug)
+             :style {:height "1.33333rem"}}]
+           [:.bg-contain.bg-no-repeat.bg-center.col-10.to-md-hide
+            {:class (str "img-text-" slug)
+             :style {:height "25px"}}]]]))])))
 
 (defn home-component [data owner]
   (om/component
    (html
     (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
-      [:div#home-content
+      [:div
        [:a.home-large-image
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
        [:div.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
-       [:div.squashed-hair-categories
-        [:h3.pick-style "Pick your style"]
+
+       [:.col-6
+        [:.h3.center.black.mb1 "Pick your style"]]
+       [:.col.col-12.lg-col-6
         (om/build categories-component {:taxons taxons})
         [:div {:style {:clear "both"}}]]
-       [:div.featured-product-content.mobile-hidden
-        [:figure.featured-new]
-        [:a.featured-product-image
-         (apply utils/route-to (navigation/shop-now-navigation-message data))]
-        [:p.featured-product-banner "Introducing Peruvian In All Textures"]]
+       [:.col.col-6.to-lg-hide
+        [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
+         (merge {:style {:height "300px"}}
+                (apply utils/route-to (navigation/shop-now-navigation-message data)))]
+        [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
+         {:style {:height "72px"}}
+         "Introducing Peruvian In All Textures"]]
+
+
        [:div {:style {:clear "both"}}]]))))
