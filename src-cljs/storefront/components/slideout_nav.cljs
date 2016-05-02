@@ -396,9 +396,9 @@
           {:style {:max-height "100%"}}
           [section-outer menu-x [:.p2 logo]]
           (cond
-            stylist? (stylist-content selectable? data)
+            stylist?   (stylist-content selectable? data)
             user-email (customer-content selectable? data)
-            :else (guest-content selectable? data))]])))))
+            :else      (guest-content selectable? data))]])))))
 
 
 (defn query [data]
@@ -408,8 +408,7 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :taxons                     (cond->> (get-in data keypaths/taxons)
-                                 (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
+   :taxons                     (get-in data keypaths/taxons)})
 
 (defn built-new-component [data]
   (om/build new-component (query data)))

@@ -9,12 +9,10 @@
 (def stylist-even? (comp even? :stylist_id))
 (def no-stylist?   (comp #{"shop" "store"} :store_slug))
 
-(def frontals-experiment (if config/production? 5641387545 5667681547))
-
 (def experiment->buckets
-  {frontals-experiment [[no-stylist? 2]
-                        [stylist-odd? 0]
-                        [stylist-even? 1]]})
+  {:experiment-id [[no-stylist? 2]
+                   [stylist-odd? 0]
+                   [stylist-even? 1]]})
 
 (defn- bucket [store experiment-id]
   (some->> (get experiment->buckets experiment-id)
@@ -42,16 +40,6 @@
 (defn display-variation [data variation]
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
-
-(defn frontals? [data]
-  (display-variation data "frontals-old-home"))
-
-(defn predict-frontals? [data]
-  (if (get-in data keypaths/loaded-optimizely)
-    (frontals? data)
-    (let [store (get-in data keypaths/store)]
-      (and (stylist-even? store)
-           (not (no-stylist? store))))))
 
 (defn three-steps? [data]
   (display-variation data "three-steps"))

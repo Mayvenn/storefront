@@ -294,8 +294,7 @@
    :stylist?          (own-store? data)
    :nav-message       (get-in data keypaths/navigation-message)
    :user-email        (get-in data keypaths/user-email)
-   :taxons            (cond->> (get-in data keypaths/taxons)
-                        (not (experiments/frontals? data)) (remove (comp #{"frontals"} :slug)))})
+   :taxons            (get-in data keypaths/taxons)})
 
 (defn built-new-component [data]
   (om/build new-nav-component (new-nav-query data)))

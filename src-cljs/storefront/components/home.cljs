@@ -10,7 +10,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn categories-component [{:keys [frontals? taxons]} owner]
+(defn categories-component [{:keys [taxons]} owner]
   (om/component
    (html
     [:div
@@ -22,18 +22,14 @@
                                {:taxon-slug slug}))
         [:div.hair-container.not-decorated.no-margin
          (when (> index 5)
-           {:class (if frontals? "half-wide" "extra-wide")})
+           {:class "half-wide"})
          [:div.hair-image.image-cover {:class slug}]
          [:div.hair-taxon {:class slug}]]])])))
-
-(defn none-component [_ _]
-  (om/component (html [:div])))
 
 (defn home-component [data owner]
   (om/component
    (html
-    (let [frontals? (experiments/frontals? data)
-          taxons (filter-nav-taxons (get-in data keypaths/taxons))]
+    (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
       [:div#home-content
        [:a.home-large-image
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
@@ -41,10 +37,7 @@
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
        [:div.squashed-hair-categories
         [:h3.pick-style "Pick your style"]
-        (om/build
-         (if (get-in data keypaths/loaded-optimizely) categories-component none-component)
-         {:taxons    (if frontals? taxons (drop-last taxons))
-          :frontals? frontals?})
+        (om/build categories-component {:taxons taxons})
         [:div {:style {:clear "both"}}]]
        [:div.featured-product-content.mobile-hidden
         [:figure.featured-new]
