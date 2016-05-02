@@ -88,7 +88,7 @@ html { line-height: 1.2; }
 /* This was broken in old styles. */
 @font-face {
   font-family: 'Graphik';
-  src: url('/fonts/Graphik-Extralight-Web.otf') format("opentype");
+  src: url('/fonts/Graphik-Extralight-Web.woff') format('woff');
   font-weight:  200;
   font-style:   normal;
   font-stretch: normal;
@@ -96,10 +96,7 @@ html { line-height: 1.2; }
 
 @font-face {
   font-family: 'Graphik';
-  src: url('/fonts/Graphik-Regular-Web.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/Graphik-Regular-Web.woff') format('woff'),
-       url('/fonts/Graphik-Regular-Web.ttf')  format('truetype'),
-       url('/fonts/Graphik-Regular-Web.svg#svgFontName') format('svg');
+  src: url('/fonts/Graphik-Regular-Web.woff') format('woff');
   font-weight:  400;
   font-style:   normal;
   font-stretch: normal;
@@ -107,10 +104,7 @@ html { line-height: 1.2; }
 
 @font-face {
   font-family: 'Graphik';
-  src: url('/fonts/Graphik-Medium-Web.eot?#iefix') format('embedded-opentype'),
-       url('/fonts/Graphik-Medium-Web.woff') format('woff'),
-       url('/fonts/Graphik-Medium-Web.ttf')  format('truetype'),
-       url('/fonts/Graphik-Medium-Web.svg#svgFontName') format('svg');
+  src: url('/fonts/Graphik-Medium-Web.woff') format('woff');
   font-weight:  500;
   font-style:   normal;
   font-stretch: normal;
@@ -118,11 +112,7 @@ html { line-height: 1.2; }
 
 @font-face {
   font-family: 'Graphik';
-  src: url('/fonts/Graphik-Bold-Web.eot');
-  src: url('/fonts/Graphik-Bold-Web.eot?#iefix') format('embedded-opentype'),
-     url('/fonts/Graphik-Bold-Web.woff') format('woff'),
-     url('/fonts/Graphik-Bold-Web.ttf') format('truetype'),
-     url('/fonts/Graphik-Bold-Web.svg#Graphik-Bold') format('svg');
+  src: url('/fonts/Graphik-Bold-Web.woff') format('woff');
   font-weight:  700;
   font-style:   normal;
   font-stretch: normal;
