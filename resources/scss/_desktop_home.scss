@@ -8,10 +8,6 @@
   background-image: url("/images/desktop_assets/desktop_home_image_clickable.jpg");
 }
 
-.header-bar {
-  display: none;
-}
-
 .text-free-shipping-banner {
   border: 2px $roi_green solid;
   margin: 1rem 0;
@@ -21,82 +17,5 @@
 
   p {
     text-align: center;
-  }
-}
-
-.pick-style {
-  text-align: center;
-  color: $dark_text;
-  margin-bottom: 0.6rem;
-}
-
-.featured-product-content {
-  position: relative;
-  float: left;
-  width: 498px;
-  height: 340px;
-  margin: 57px 0 45px 3px;
-}
-
-.featured-product-banner {
-  position: absolute;
-  width: 100%;
-  @include linear-gradient(to right, $feature_gradient_dark, $feature_gradient_light);
-  height: 50px;
-  line-height: 48px;
-  bottom: 0;
-  left: 0;
-  color: white;
-  font-family: $secondary_font;
-  font-style: italic;
-  text-align: center;
-}
-
-.featured-product-image {
-  width: 100%;
-  height: 290px;
-  background-image: url("/images/desktop_assets/home_new-product-peruvian-clickable.jpg");
-  display: block;
-  @include stretch-bg;
-}
-
-div.squashed-hair-categories {
-  float: left;
-
-  width: 171px * 3;
-  margin-top: 30px;
-  margin-left: 4px;
-}
-
-div#home-content {
-  .hair-container {
-    position: relative;
-    width: 167px;
-    height: 135px;
-
-    .hair-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    &.half-wide {
-      width: (510px / 2) - (64px / $default-font-size);
-      height: 66px;
-    }
-
-    &.extra-wide {
-      width: 510px;
-      height: 66px;
-    }
-  }
-
-  a.hair-category-link {
-    margin: 0 2px;
-  }
-
-  .hair-taxon {
-    width: 135px;
-    height: 25px;
   }
 }

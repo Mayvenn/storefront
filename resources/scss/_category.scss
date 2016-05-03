@@ -10,35 +10,6 @@
   border-left: none;
   margin-top: 1rem;
   margin-bottom: 2rem;
-
-  .hair-taxon {
-    float: left;
-    border: solid #ccc 1px;
-    border-top: none;
-    border-right: none;
-    background-color: #f7f7f7;
-    height: 50px;
-    line-height: 50px;
-    width: 33.333%;
-
-    &.selected {
-      @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-
-      .hair-taxon-name {
-        color: white;
-      }
-    }
-  }
-
-  .hair-taxon-name {
-    font-family: $primary_font_medium;
-    color: #666;
-    margin: 0;
-  }
-
-  .taxon-slice {
-    display: inline;
-  }
 }
 
 .taxon-product-container {
@@ -68,15 +39,6 @@
   font-size: 1.3em;
   text-align: center;
   width: 100%;
-}
-
-.original-price {
-  text-decoration: line-through;
-}
-
-.current-price {
-  margin-left: 0.4rem;
-  color: #f88;
 }
 
 .taxon-product-image-container {

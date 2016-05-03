@@ -132,10 +132,6 @@ p {
   }
 }
 
-.underline{
-  text-decoration: underline;
-}
-
 .full-link {
   display: block;
   width: 100%;
@@ -221,7 +217,7 @@ p {
 
 // Mobile Layout
 @media screen and (max-width: 1023px) {
-  .mobile-hidden, .line-item-attr.item-form.price {
+  .line-item-attr.item-form.price {
     display: none;
   }
 

@@ -1,23 +1,9 @@
-#home-content {
-  width: (640rem / $default-font-size);
-  margin: 0 auto;
-}
-
 .home-large-image {
   height: 18em;
   background-image: url("/images/home_image_clickable.jpg");
   @include stretch-bg;
   width: 100%;
   display: block;
-}
-
-.squashed-hair-categories {
-  margin: 2em 0;
-  width: 100%;
-
-  .hair-category-link {
-    float: left;
-  }
 }
 
 .text-free-shipping-banner {
@@ -30,10 +16,4 @@
   p {
     text-align: center;
   }
-}
-
-.pick-style {
-  text-align: center;
-  color: $dark_text;
-  margin: 2.0rem 0 0.6rem 0;
 }
