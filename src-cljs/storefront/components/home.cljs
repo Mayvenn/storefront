@@ -41,17 +41,19 @@
   (om/component
    (html
     (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
-      [:div
-       [:a.home-large-image
+      [:.home-container.m-auto
+       [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-cover.col-12.block.banner-container
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
-       [:div.text-free-shipping-banner
+       [:a.lg-up-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-cover.col-12.block.banner-container
+        (apply utils/route-to (navigation/shop-now-navigation-message data))]
+       [:.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
 
        [:.col-6
         [:.h3.center.black.mb1 "Pick your style"]]
        [:.col.col-12.lg-col-6
         (om/build categories-component {:taxons taxons})
-        [:div {:style {:clear "both"}}]]
+        [:.clearfix]]
        [:.col.col-6.to-lg-hide
         [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
          (merge {:style {:height "300px"}}
@@ -60,5 +62,4 @@
          {:style {:height "72px"}}
          "Introducing Peruvian In All Textures"]]
 
-
-       [:div {:style {:clear "both"}}]]))))
+       [:.clearfix]]))))

@@ -122,6 +122,28 @@ html { line-height: 1.2; }
 
 .container { max-width: 640px; }
 
+.home-container { width: 320px; }
+@media (--breakpoint-md) {
+    .home-container { width: 427px; }
+}
+@media (--breakpoint-lg) {
+    .home-container { width: 768px; }
+}
+@media (--breakpoint-xl) {
+    .home-container { width: 100%; }
+}
+
+.banner-container { height: 130px; }
+@media (--breakpoint-md) {
+    .banner-container { height: 180px; }
+}
+@media (--breakpoint-lg) {
+    .banner-container { height: 326px; }
+}
+@media (--breakpoint-xl) {
+    .banner-container { height: 432px; }
+}
+
 /* Custom align */
 
 /* Custom margin */
@@ -323,6 +345,10 @@ html { line-height: 1.2; }
 
 /* Custom colors */
 
+/* Custom background-sizes */
+
+.bg-full { background-size: 100%; }
+
 /* Custom background-colors */
 
 .bg-lighten-top-1 { background-image: var(--lighten-top-1); }
@@ -399,17 +425,8 @@ html { line-height: 1.2; }
 .img-styleseat { background-image: url('/images/icons/styleseat.png'); }
 
 .img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
-
-.img-home {
-    background-image: url("/images/home_image_clickable.jpg");
-    height: 216px;
-}
-@media (--breakpoint-md) {
-    .img-home { height: 432px; }
-}
-@media (--breakpoint-xl) {
-    .img-home { background-image: url("/images/desktop_assets/desktop_home_image_clickable.jpg"); }
-}
+.img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
+.img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
 
 .fill-teal { fill: var(--teal); }
 .fill-black { fill: var(--black); }
