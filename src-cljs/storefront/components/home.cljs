@@ -49,8 +49,7 @@
        [:.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
 
-       [:.col-6
-        [:.h3.center.black.mb1 "Pick your style"]]
+       [:.col-12.lg-col-6 [:.h3.center.black.mb1 "Pick your style"]]
        [:.col.col-12.lg-col-6
         (om/build categories-component {:taxons taxons})
         [:.clearfix]]
