@@ -102,4 +102,4 @@
                [:h3.sub-header "Description"]
                [:div.product-description-text {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])]]]
 
-         [:div.clear-fix]])))))
+         [:div.clearfix]])))))
