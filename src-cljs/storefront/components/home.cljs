@@ -41,14 +41,15 @@
   (om/component
    (html
     (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
-      [:.home-container.m-auto
+      [:.home-container.m-auto.sans-serif
        [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
        [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
-        (merge {:style {:margin-bottom "33px"}}
-               (apply utils/route-to (navigation/shop-now-navigation-message data)))]
-       [:.text-free-shipping-banner
-        [:p "Free Shipping + 30 Day Money Back Guarantee"]]
+        (apply utils/route-to (navigation/shop-now-navigation-message data))]
+       [:.border.border-width-2.my3.py2.center.medium
+        {:style {:color "#40cbac"
+                 :border-color "#40cbac"}}
+        "Free Shipping + 30 Day Money Back Guarantee"]
 
        [:.col-12.lg-col-6 [:.h3.center.black.mb1 "Pick your style"]]
        [:.col.col-12.lg-col-6
