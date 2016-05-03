@@ -25,7 +25,7 @@
                           {:class "col-6"}
                           {:class "col-4"}))
           [:.mp1.flex.items-center.justify-center.bg-cover.bg-no-repeat.bg-center
-           {:class (str "img-" slug)
+           {:class (str "img-homepage-" slug)
             :style (if (> index 5)
                      {:height (rem (/ height 2))}
                      {:height (rem height)})}

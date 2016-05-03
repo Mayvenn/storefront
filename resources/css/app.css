@@ -411,6 +411,15 @@ html { line-height: 1.2; }
 .img-closures   { background-image: url('/images/loose_wave.jpg'); }
 .img-frontals   { background-image: url('/images/loose_wave.jpg'); }
 
+.img-homepage-straight   { background-image: url('/images/straight.jpg'); }
+.img-homepage-blonde     { background-image: url('/images/blonde.jpg'); }
+.img-homepage-curly      { background-image: url('/images/curly.jpg'); }
+.img-homepage-deep-wave  { background-image: url('/images/deep_wave.jpg'); }
+.img-homepage-loose-wave { background-image: url('/images/loose_wave.jpg'); }
+.img-homepage-body-wave  { background-image: url('/images/body_wave.jpg'); }
+.img-homepage-closures   { background-image: url('/images/loose_wave.jpg'); }
+.img-homepage-frontals   { background-image: url('/images/loose_wave.jpg'); }
+
 .img-text-straight   { background-image: url('/images/desktop_assets/knockout/straight-knockout.png'); }
 .img-text-blonde     { background-image: url('/images/desktop_assets/knockout/blonde-knockout.png'); }
 .img-text-curly      { background-image: url('/images/desktop_assets/knockout/curly-knockout.png'); }
