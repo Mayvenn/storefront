@@ -42,10 +42,11 @@
    (html
     (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
       [:.home-container.m-auto
-       [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-cover.col-12.block.banner-container
+       [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
-       [:a.lg-up-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-cover.col-12.block.banner-container
-        (apply utils/route-to (navigation/shop-now-navigation-message data))]
+       [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
+        (merge {:style {:margin-bottom "33px"}}
+               (apply utils/route-to (navigation/shop-now-navigation-message data)))]
        [:.text-free-shipping-banner
         [:p "Free Shipping + 30 Day Money Back Guarantee"]]
 

@@ -133,9 +133,9 @@ html { line-height: 1.2; }
     .home-container { width: 100%; }
 }
 
-.banner-container { height: 130px; }
+.banner-container { height: 216px; }
 @media (--breakpoint-md) {
-    .banner-container { height: 180px; }
+    .banner-container { height: 288px; }
 }
 @media (--breakpoint-lg) {
     .banner-container { height: 326px; }
