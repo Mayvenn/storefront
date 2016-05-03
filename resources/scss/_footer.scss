@@ -2,26 +2,6 @@
     display: none;
 }
 
-.fs-envelope {
-    position: absolute;
-    background-image: url('/images/free_shipping_envelope.png');
-    @include stretch-bg;
-    top: 1em;
-    left: 2em;
-    width: (73em / 12);
-    height: (32.5em / 12);
-}
-
-.fs-text {
-    position: absolute;
-    background-image: url('/images/free_shipping.png');
-    @include stretch-bg;
-    top: 1em;
-    right: (30em / 12);
-    width: (141.5em / 12);
-    height: (35.5em / 12);
-}
-
 .icon-facebook a {
     background-image: url('/images/desktop_assets/footer-facebook.png');
 }
