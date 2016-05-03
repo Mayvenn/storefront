@@ -110,3 +110,25 @@
          [:tr.balance-due.order-summary-row.cart-total
           [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
           [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]])])]])
+
+(defn display-cart-summary [data order]
+  [:div
+   [:h4.order-summary-header "Order Summary"]
+   [:table.order-summary-total
+    (let [adjustments (orders/all-order-adjustments order)
+          quantity    (orders/product-quantity order)
+          shipping-item (orders/shipping-item order)
+          store-credit (-> order :cart-payments :store-credit)]
+      [:tbody
+       [:tr.cart-subtotal.order-summary-row
+        [:td
+         [:h5 (str "Subtotal (" quantity " Item"
+                   (when (> quantity 1) "s") ")")]]
+        [:td
+         [:h5 (as-money (orders/products-subtotal order))]]]
+       (display-adjustments adjustments)
+       (when shipping-item
+         (display-shipment data shipping-item))
+       [:tr.cart-total.order-summary-row
+        [:td [:h5 "Order Total"]]
+        [:td [:h5 (as-money (:total order))]]]])]])

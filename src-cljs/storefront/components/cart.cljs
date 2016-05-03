@@ -6,7 +6,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
-            [storefront.components.order-summary :refer [display-order-summary display-line-items]]
+            [storefront.components.order-summary :refer [display-cart-summary display-line-items]]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
@@ -54,7 +54,7 @@
             "Apply Promo Code"]]]
          [:div
           [:div.order-summary-cart
-           (display-order-summary data cart)
+           (display-cart-summary data cart)
            [:a.button.checkout.primary.full-link#checkout-link
             {:on-click (when-not (cart-update-pending? data)
                          (utils/send-event-callback events/control-checkout-cart-submit))}
