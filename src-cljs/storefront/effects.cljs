@@ -169,6 +169,18 @@
                                    user-token
                                    {:page page}))))
 
+(defmethod perform-effects events/app-restart [_ _ _ _]
+  (.reload js/window.location))
+
+(defmethod perform-effects events/api-success [_ event request app-state]
+  (let [app-version (get-in app-state keypaths/app-version)
+        remote-version (-> request meta :app-version)]
+    (when (and app-version
+               remote-version
+               (< config/allowed-version-drift (- remote-version app-version)))
+      (handle-later events/app-restart))))
+
+
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
   (ensure-products app-state
                    (->> (get-in app-state keypaths/stylist-commissions-history)

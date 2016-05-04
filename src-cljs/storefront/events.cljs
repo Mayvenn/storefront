@@ -3,6 +3,7 @@
 (def app [:app])
 (def app-start (conj app :start))
 (def app-stop (conj app :stop))
+(def app-restart (conj app :restart))
 
 (def domain [:domain])
 (def order-completed (conj domain :order-completed))
