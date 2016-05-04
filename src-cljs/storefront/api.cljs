@@ -10,6 +10,17 @@
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
+(defn add-version-meta [body xhrio]
+  (with-meta body {:app-version (int (.getResponseHeader xhrio "X-App-Version"))}))
+
+(defn header-json-response-format [config]
+  (let [default (json-response-format config)
+        read-json (:read default)]
+    (assoc default :read (fn [xhrio]
+                           (-> xhrio
+                               read-json
+                               (add-version-meta xhrio))))))
+
 (defn default-error-handler [response]
   (cond
     ;; aborted request
@@ -51,7 +62,7 @@
 
 (def default-req-opts {:headers {"Accepts" "application/json"}
                        :format :json
-                       :response-format (json-response-format {:keywords? true})})
+                       :response-format (header-json-response-format {:keywords? true})})
 
 (defn merge-req-opts [req-key req-id {:keys [handler error-handler] :as request-opts}]
   (merge default-req-opts
