@@ -172,9 +172,9 @@
 (defmethod perform-effects events/app-restart [_ _ _ _]
   (.reload js/window.location))
 
-(defmethod perform-effects events/api-success [_ event response app-state]
+(defmethod perform-effects events/api-end [_ event args app-state]
   (let [app-version (get-in app-state keypaths/app-version)
-        remote-version (-> response meta :app-version)]
+        remote-version (:app-version args)]
     (when (and app-version
                remote-version
                (< config/allowed-version-drift (- remote-version app-version)))
