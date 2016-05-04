@@ -18,9 +18,7 @@
             [hiccup.page :as page]
             [hiccup.element :as element]
             [storefront.assets :refer [asset-path]])
-  (:import [java.util Locale TimeZone Calendar GregorianCalendar]
-           [java.text SimpleDateFormat]
-           [java.io ByteArrayInputStream]))
+  (:import [java.io ByteArrayInputStream]))
 
 (defn storefront-site-defaults
   [env]
@@ -142,18 +140,6 @@
                                  "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
                                  "var apiUrl=\"" (:endpoint storeback-config) "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
-
-(defn- ^SimpleDateFormat make-http-format
-  "Formats or parses dates into HTTP date format (RFC 822/1123).
-  From ring"
-  []
-  ;; SimpleDateFormat is not threadsafe, so return a new instance each time
-  (doto (SimpleDateFormat. "EEE, dd MMM yyyy HH:mm:ss ZZZ" Locale/US)
-    (.setTimeZone (TimeZone/getTimeZone "UTC"))))
-
-(defn years-from-now []
-  (.getTime (doto (GregorianCalendar.)
-              (.add Calendar/YEAR 10))))
 
 (defn request-scheme [req]
   (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
