@@ -1,8 +1,10 @@
 (ns storefront.handler
   (:require [storefront.config :as config]
+            [storefront.app-routes :refer [app-routes]]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
+            [bidi.bidi :as bidi]
             [clj-http.client :as http]
             [cheshire.core :refer [generate-string]]
             [ring.middleware.defaults :refer :all]
@@ -158,13 +160,12 @@
       ring-logging/wrap-trace-request))
 
 (defn wrap-site-routes
-  [routes {:keys [logger storeback-config environment prerender-token]}]
+  [routes {:keys [storeback-config environment prerender-token]}]
   (-> routes
       (wrap-prerender (config/development? environment)
                       prerender-token
                       (partial prerender-original-request-url
                                (config/development? environment)))
-      (wrap-logging logger)
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-redirect)
       (wrap-fetch-store storeback-config)
@@ -173,11 +174,12 @@
 
 (defn site-routes
   [{:keys [storeback-config environment]}]
-  (routes
-   (GET "*" req
+  (fn [{:keys [uri] :as req}]
+    (let [{handler :handler} (bidi/match-route app-routes uri)]
+      (when handler
         (-> (index req storeback-config environment)
             response
-            (content-type "text/html")))))
+            (content-type "text/html"))))))
 
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
@@ -219,6 +221,7 @@
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found "Not found"))
+       (wrap-logging logger)
        (wrap-params)
        (#(if (config/development? environment)
            (wrap-exceptions %)

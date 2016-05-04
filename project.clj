@@ -13,7 +13,7 @@
                  [compojure "1.4.0"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]
-                 [ring/ring-defaults "0.1.3"]
+                 [ring/ring-defaults "0.1.4"]
                  [ring-jetty-component "0.2.2"]
                  [ring-logging "0.2.1"]
                  [hiccup "1.0.5"]
@@ -41,10 +41,11 @@
                                     "resources/public/js/out/"
                                     "resources/public/css/"
                                     "resources/public/cdn"]
+  :source-paths ["src" "src-cljc"]
   :cljsbuild
   {:builds
    {:dev
-    {:source-paths ["src-cljs"]
+    {:source-paths ["src-cljc" "src-cljs"]
      :figwheel {:on-jsload "storefront.core/on-jsload"}
      :compiler {:main "storefront.core"
                 :asset-path "/js/out"
@@ -87,7 +88,7 @@
    :dev {:source-paths ["dev/clj"]
          :dependencies [[pjstadig/humane-test-output "0.6.0"]
                         [standalone-test-server "0.3.0"]
-                        [org.clojure/tools.namespace "0.2.9"]
+                        [org.clojure/tools.namespace "0.2.11"]
                         [figwheel-sidecar "0.3.1"]]
          :injections [(require 'pjstadig.humane-test-output)
                       (pjstadig.humane-test-output/activate!)]
