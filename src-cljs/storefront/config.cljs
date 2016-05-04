@@ -5,6 +5,10 @@
 (def development? (= js/environment "development"))
 (def acceptance? (= js/environment "acceptance"))
 
+(def allowed-version-drift
+  "The number of versions that storefront is allowed to fall behind before requiring a refresh"
+  0)
+
 (def api-base-url js/apiUrl)
 
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
