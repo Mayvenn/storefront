@@ -175,8 +175,7 @@
 (defmethod perform-effects events/api-end [_ event args app-state]
   (let [app-version (get-in app-state keypaths/app-version)
         remote-version (:app-version args)]
-    (when (and app-version
-               remote-version
+    (when (and app-version remote-version
                (< config/allowed-version-drift (- remote-version app-version)))
       (handle-later events/app-restart))))
 

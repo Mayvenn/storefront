@@ -10,17 +10,6 @@
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
-(defn add-version-meta [body xhrio]
-  (with-meta body {:app-version (int (.getResponseHeader xhrio "X-App-Version"))}))
-
-(defn header-json-response-format [config]
-  (let [default (json-response-format config)
-        read-json (:read default)]
-    (assoc default :read (fn [xhrio]
-                           (-> xhrio
-                               read-json
-                               (add-version-meta xhrio))))))
-
 (defn default-error-handler [response]
   (cond
     ;; aborted request
@@ -57,6 +46,16 @@
     :else
     (messages/handle-message events/api-failure-bad-server-response response)))
 
+(defn app-version [xhrio]
+  (some-> xhrio (.getResponseHeader "X-App-Version") int))
+
+(defn header-json-response-format [config]
+  (let [default (json-response-format config)
+        read-json (:read default)]
+    (assoc default :read (fn [xhrio]
+                           {:body (read-json xhrio)
+                            :app-version (app-version xhrio)}))))
+
 (defn filter-nil [m]
   (into {} (filter (comp not nil? val) m)))
 
@@ -70,14 +69,14 @@
          {:handler (fn [response]
                      (messages/handle-message events/api-end {:request-key req-key
                                                               :request-id req-id
-                                                              :app-version (-> response meta :app-version)})
-                     (handler response))
+                                                              :app-version (:app-version response)})
+                     (handler (:body response)))
           :error-handler (fn [response]
                            (messages/handle-message events/api-end {:request-id req-id
                                                                     :request-key req-key
-                                                                    :app-version (-> response meta :app-version)})
+                                                                    :app-version (:app-version response)})
                            ((or error-handler default-error-handler)
-                            response))}))
+                            (:body response)))}))
 
 (defn api-req
   [method path req-key request-opts]

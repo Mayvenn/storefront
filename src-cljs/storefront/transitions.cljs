@@ -174,17 +174,15 @@
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
 
-(defmethod transition-state events/api-success
-  [_ event response app-state]
-  (update-in app-state keypaths/app-version #(or % (-> response meta :app-version))))
-
 (defmethod transition-state events/api-start
   [_ event request app-state]
   (update-in app-state keypaths/api-requests conj request))
 
 (defmethod transition-state events/api-end
-  [_ event {:keys [request-id] :as request} app-state]
-  (update-in app-state keypaths/api-requests (partial remove (comp #{request-id} :request-id))))
+  [_ event {:keys [request-id app-version] :as request} app-state]
+  (-> app-state
+      (update-in keypaths/app-version #(or % app-version))
+      (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
   (assoc-in app-state keypaths/taxons (:taxons args)))
