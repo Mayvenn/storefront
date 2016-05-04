@@ -35,13 +35,23 @@
   (and (= (take (count target-event) current-event) target-event)
        (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
 
-(defn change-text [app-state owner keypath]
-  {:value (get-in app-state keypath)
-   :on-change
-   (fn [e]
-     (handle-message events/control-change-state
-                     {:keypath keypath
-                      :value (.. e -target -value)}))})
+(defn change-text
+  ;; new style
+  ([keypath value]
+   {:value value
+    :on-change
+    (fn [e]
+      (handle-message events/control-change-state
+                      {:keypath keypath
+                       :value (.. e -target -value)}))})
+  ;; old style
+  ([app-state owner keypath]
+   {:value (get-in app-state keypath)
+    :on-change
+    (fn [e]
+      (handle-message events/control-change-state
+                      {:keypath keypath
+                       :value (.. e -target -value)}))}))
 
 (defn fake-href [event & [args]]
   {:href "#"
@@ -52,6 +62,18 @@
    :on-click
      (send-event-callback events/control-menu-expand {:keypath keypath})})
 
+;; new style
+(defn toggle-checkbox [keypath value]
+  (let [checked-val (when value "checked")]
+    {:checked checked-val
+     :value checked-val
+     :on-change
+     (fn [e]
+       (handle-message events/control-change-state
+                       {:keypath keypath
+                        :value (.. e -target -checked)}))}))
+
+;; old style
 (defn change-checkbox [app-state keypath]
   (let [checked-val (when (get-in app-state keypath) "checked")]
     {:checked checked-val

@@ -7,8 +7,8 @@
             [storefront.config :as config]
             [storefront.keypaths :as keypaths]))
 
-(defn- button [data click-event]
-  (if (get-in data keypaths/loaded-facebook)
+(defn- button [loaded? click-event]
+  (if loaded?
     [:button.fb-login-button
      {:on-click (utils/send-event-callback click-event)}
      [:div.fb-login-wrapper
@@ -16,11 +16,11 @@
       [:div.fb-login-content "Sign in with Facebook"]]]
     [:div.fb-filler]))
 
-(defn sign-in-button [data]
-  (button data events/control-facebook-sign-in))
+(defn sign-in-button [loaded?]
+  (button loaded? events/control-facebook-sign-in))
 
-(defn reset-button [data]
-  (button data events/control-facebook-reset))
+(defn reset-button [loaded?]
+  (button loaded? events/control-facebook-reset))
 
 (defn opt-in-component [{:keys [user-id loaded-facebook?]} _]
   (reify

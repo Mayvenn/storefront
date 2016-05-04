@@ -14,7 +14,7 @@
      (when-not (get-in data keypaths/get-satisfaction-login?)
        [:div.page-heading.center "Sign In to Your Account"])
      [:div#existing-customer.new_spree_user
-      (facebook/sign-in-button data)
+      (facebook/sign-in-button (get-in data keypaths/loaded-facebook))
       [:div.or-divider [:span "or"]]
       [:form.simple_form
        {:on-submit (utils/send-event-callback events/control-sign-in-submit)}

@@ -41,8 +41,12 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
+(defn three-steps-redesign? [data]
+  (display-variation data "three-steps-redesign"))
+
 (defn three-steps? [data]
-  (display-variation data "three-steps"))
+  (or (three-steps-redesign? data)
+      (display-variation data "three-steps")))
 
 (defn new-nav? [data]
   (display-variation data "new-nav"))

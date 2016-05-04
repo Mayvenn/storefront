@@ -28,4 +28,4 @@
         [:input.button.primary.mb3 {:type "submit"
                                     :value "Reset my password"}]]]
       [:div.or-divider.my0 [:span "or"]]
-      (facebook/sign-in-button data)]])))
+      (facebook/sign-in-button (get-in data keypaths/loaded-facebook))]])))

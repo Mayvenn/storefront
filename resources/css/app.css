@@ -84,6 +84,10 @@ html { line-height: 1.2; }
 .shadow { text-shadow: 1px 1px #000; }
 .engrave-2 { text-shadow: var(--inset-top-2); }
 
+.letter-spacing-1 { letter-spacing: 1px; }
+.letter-spacing-2 { letter-spacing: 2px; }
+.letter-spacing-3 { letter-spacing: 3px; }
+
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
 @font-face {
@@ -260,6 +264,7 @@ html { line-height: 1.2; }
 }
 
 .capped { border-radius: 1000px; }
+.rounded-1 { border-radius: 4px; }
 .rounded-2 { border-radius: 8px; }
 .rounded-bottom-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
 .rounded-bottom-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
@@ -316,6 +321,30 @@ html { line-height: 1.2; }
 /* Custom responsive-padding */
 
 /* Custom forms */
+
+.floating-label + label {
+  position: relative;
+  top: -5em;
+  left: 1em;
+  display: none;
+}
+
+.floating-label.has-value + label {
+  display: block;
+}
+
+.floating-label {
+  padding: 1em 0.5em;
+}
+
+.floating-label.has-value {
+  padding-top: 1.5em;
+  padding-bottom: 0.5em;
+}
+
+.glow {
+  outline-color: var(--teal);
+}
 
 /* Custom btn */
 
