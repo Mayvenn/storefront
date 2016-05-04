@@ -1,6 +1,8 @@
 (ns storefront.handler
   (:require [storefront.config :as config]
-            [storefront.app-routes :refer [app-routes]]
+            [storefront.app-routes :refer [app-routes bidi->edn]]
+            [storefront.events :as events]
+            [storefront.fetch :as fetch]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -31,20 +33,6 @@
         (assoc-in [:security :hsts] false)
         (assoc-in [:static :resources] false))))
 
-(defn fetch-store [storeback-config store-slug]
-  (when (seq store-slug)
-    (try
-      (->
-       (http/get (str (:endpoint storeback-config) "/store")
-                 {:query-params {:store_slug store-slug}
-                  :throw-exceptions false
-                  :socket-timeout 10000
-                  :conn-timeout 10000
-                  :as :json})
-       :body)
-      (catch java.io.IOException e
-        ::storeback-unavailable))))
-
 (defn parse-subdomains [server-name]
   (->> (string/split server-name #"\.")
        (drop-last 2)))
@@ -64,7 +52,7 @@
 (defn wrap-fetch-store [h storeback-config]
   (fn [req]
     (let [subdomains (parse-subdomains (:server-name req))
-          store (fetch-store storeback-config (last subdomains))]
+          store (fetch/store storeback-config (last subdomains))]
       (h (merge req
                 {:store store
                  :subdomains subdomains})))))
@@ -172,11 +160,20 @@
       (wrap-resource "public")
       (wrap-content-type)))
 
+(def not-404 (comp (partial not= 404) :status))
+(defn resource-exists [storeback-config nav-event params req]
+  (let [token (get-in req [:cookies "token" :value])]
+    (condp = nav-event
+      events/navigate-category (not-404 (fetch/category storeback-config (:taxon-slug params) token))
+      events/navigate-product (not-404 (fetch/product storeback-config (:product-slug params) token))
+      true)))
+
 (defn site-routes
   [{:keys [storeback-config environment]}]
   (fn [{:keys [uri] :as req}]
-    (let [{handler :handler} (bidi/match-route app-routes uri)]
-      (when handler
+    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+      (when (and nav-event
+                 (resource-exists storeback-config (bidi->edn nav-event) params req))
         (-> (index req storeback-config environment)
             response
             (content-type "text/html"))))))
