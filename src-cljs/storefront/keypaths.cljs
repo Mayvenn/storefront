@@ -7,6 +7,8 @@
 
 (def session-id [:session-id])
 
+(def app-version [:app-version])
+
 (def user [:user])
 (def user-email (conj user :email))
 (def user-token (conj user :user-token))
