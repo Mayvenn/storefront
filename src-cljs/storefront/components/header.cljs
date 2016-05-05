@@ -9,6 +9,7 @@
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
+            [storefront.components.utils :as utils]
             [clojure.string :as str]))
 
 (defn fake-href-menu-expand [keypath]
