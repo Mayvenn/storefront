@@ -57,11 +57,6 @@
   {:href "#"
    :on-click (send-event-callback event args)})
 
-(defn fake-href-menu-expand [keypath]
-  {:href "#"
-   :on-click
-     (send-event-callback events/control-menu-expand {:keypath keypath})})
-
 ;; new style
 (defn toggle-checkbox [keypath value]
   (let [checked-val (when value "checked")]

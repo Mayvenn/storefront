@@ -11,6 +11,11 @@
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as str]))
 
+(defn fake-href-menu-expand [keypath]
+  {:href "#"
+   :on-click
+   (utils/send-event-callback events/control-menu-expand {:keypath keypath})})
+
 (def sans-stylist? #{"store" "shop"})
 
 (defn header-component [{:keys [store order home-page?]} _]
@@ -21,7 +26,7 @@
       [:header#header.header
        (when-not store-photo-url
          {:class "no-picture"})
-       [:a.header-menu (utils/fake-href-menu-expand keypaths/menu-expanded)
+       [:a.header-menu (fake-href-menu-expand keypaths/menu-expanded)
         "Menu"]
        [:a.logo (utils/route-to events/navigate-home)]
        (if (> product-quantity 0)
@@ -43,7 +48,7 @@
 (def hamburger
   (html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
-                    (utils/fake-href-menu-expand keypaths/menu-expanded))
+                    (fake-href-menu-expand keypaths/menu-expanded))
     [:.border-top.border-bottom.border-black {:style {:height "12px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "12px"}}]]))
 
