@@ -70,7 +70,7 @@
 (defn old-sign-in-component [data owner]
   (om/component
    (html
-    [:.flex.flex-column.items-center.black.sans-serif.bg-white
+    [:div.centered-content
      (when-not (get-in data keypaths/get-satisfaction-login?)
        [:div.page-heading.center "Sign In to Your Account"])
      [:div#existing-customer.new_spree_user
@@ -117,7 +117,9 @@
   (om/component
    (html
     [:div
-     (om/build redesigned-sign-in-component (query app-state))])))
+     (if (experiments/three-steps-redesign? app-state)
+       (om/build redesigned-sign-in-component (query app-state))
+       (om/build old-sign-in-component app-state))])))
 
 (defn requires-sign-in [app-state authorized-component]
   (if (get-in app-state keypaths/user-id)
