@@ -30,7 +30,7 @@
        (:variants product)))
 
 (defn ordered-products-for-category [app-state {:keys [product-ids]}]
-  (map (get-in app-state keypaths/products) product-ids))
+  (remove nil? (map (get-in app-state keypaths/products) product-ids)))
 
 (defn current-taxon-variants [data]
   (->> (taxons/current-taxon data)
