@@ -4,6 +4,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.utils.query :as query]
             [storefront.request-keys :as request-keys]
@@ -59,7 +60,7 @@
                  :else                        :in-progress)]
      [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-silver.p2
       {:key (str name join-date)}
-      [:.mr1 (utils/circle-picture profile-picture-url)]
+      [:.mr1 (ui/circle-picture profile-picture-url)]
       [:.flex-auto
        [:.h2 name]
        [:.h6.gray.line-height-4
@@ -112,7 +113,7 @@
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
-      (utils/spinner {:height "100px"})
+      (ui/spinner {:height "100px"})
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
         [:.sm-col-right.sm-col-4

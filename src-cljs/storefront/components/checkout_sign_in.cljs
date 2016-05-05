@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.facebook :as facebook]
             [storefront.components.sign-in :as sign-in]
             [storefront.events :as events]
@@ -14,10 +15,9 @@
     [:.bg-white
      [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
       [:.my2.h2.block. "I'm new here"]
-      [:div
-       (merge utils/large-button-style
-              {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)})
-       [utils/large-button-text "Guest Checkout"]]
+      [ui/large-button
+       {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}
+       [ui/large-button-text "Guest Checkout"]]
       [:.my3.border.col-2.border-light-gray]
       [:.h2.mb1 "Already registered?"]
       [:.h5 "Sign into your account below, and checkout even faster!"]

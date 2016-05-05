@@ -3,6 +3,7 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
+            [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.messages :as messages]
@@ -36,7 +37,7 @@
 (defn stylist-account-menu [{:keys [expanded? available-store-credit user-email]} _]
   (om/component
    (html
-    (utils/drop-down
+    (ui/drop-down
      expanded?
      keypaths/account-menu-expanded
      [:a.account-menu-link
@@ -52,7 +53,7 @@
 (defn customer-account-menu [{:keys [expanded? available-store-credit user-email]} _]
   (om/component
    (html
-    (utils/drop-down
+    (ui/drop-down
      expanded?
      keypaths/account-menu-expanded
      [:a.account-menu-link
@@ -65,7 +66,7 @@
       [:li [:a (utils/fake-href events/control-sign-out) "Logout"]]]))))
 
 (defn stylist-shop-link [{:keys [expanded? navigate-hair-message stylist-kits-path]}]
-  (utils/drop-down
+  (ui/drop-down
    expanded?
    keypaths/shop-menu-expanded
    [:a "Shop " [:figure.down-arrow]]
@@ -236,7 +237,7 @@
   ([right] (row nil right))
   ([left right]
    [:.clearfix.pyp1
-    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-2 [:.px1 (or left ui/nbsp)]]
     [:.col.col-10.line-height-3 right]]))
 
 (def menu-x
@@ -283,7 +284,7 @@
     [:div
      (row
       (when store-photo
-        [:.mxn1.pyp3 (utils/circle-picture {:width "32px"} store-photo)])
+        [:.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
      [:div
       [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
@@ -300,7 +301,7 @@
       [:a
        (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
-        (when (new-taxon? slug) utils/new-flag)
+        (when (new-taxon? slug) ui/new-flag)
         [:.teal.titleize
          (selectable? events/navigate-category {:taxon-slug slug} (get slug->name slug name))])])]])
 

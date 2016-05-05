@@ -9,6 +9,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
@@ -193,7 +194,7 @@
    (let [{:keys [history page pages rate]} commissions]
      (html
       (if (and (empty? (seq history)) fetching?)
-        (utils/spinner {:height "100px"})
+        (ui/spinner {:height "100px"})
         [:.mx-auto.container {:data-test "commissions-panel"}
          [:.clearfix
           [:.sm-col.sm-col-9

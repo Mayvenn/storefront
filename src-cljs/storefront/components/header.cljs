@@ -10,6 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [clojure.string :as str]))
 
 (defn fake-href-menu-expand [keypath]
@@ -128,7 +129,7 @@
                        store-photo :profile_picture_url
                        address :address}]
   [:div.center
-   (utils/drop-down
+   (ui/drop-down
     expanded?
     keypaths/store-info-expanded
     [:a
@@ -143,7 +144,7 @@
       [:div
        [:.py1.f5
         (when store-photo
-          [:.m1 (utils/circle-picture {:class "mx-auto"} store-photo)])
+          [:.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
         [:h3.f3.medium store-name]
         [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
         [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
@@ -157,7 +158,7 @@
                       "Book me on StyleSeat"))]]])])
 
 (defn account-dropdown [expanded? link & menu]
-  (utils/drop-down
+  (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
    [:a.flex.items-center
@@ -182,7 +183,7 @@
   (account-dropdown
    expanded?
    [:.flex.justify-end.items-center
-    (when store-photo [:.mr1 (utils/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
+    (when store-photo [:.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:.truncate (:firstname address)]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.teal.block (utils/navigate-community) "Community"]
@@ -206,7 +207,7 @@
   ([right] (row nil right))
   ([left right]
    [:.clearfix.pyp1
-    [:.col.col-2 [:.px1 (or left utils/nbsp)]]
+    [:.col.col-2 [:.px1 (or left ui/nbsp)]]
     [:.col.col-10.line-height-3 right]]))
 
 (defn products-section [current-page? title taxons]
@@ -216,7 +217,7 @@
     (for [{:keys [name slug]} taxons]
       [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
-        (when (new-taxon? slug) utils/new-flag)
+        (when (new-taxon? slug) ui/new-flag)
         [:span.teal.titleize
          (when (current-page? events/navigate-category {:taxon-slug slug}) {:class padded-selected-link})
          (get slug->name slug name)])])]])

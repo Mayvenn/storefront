@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :refer [validation-errors-component]]
             [storefront.events :as events]
@@ -24,25 +25,24 @@
        {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
        [:input.hide {:type "submit"}]
 
-       (utils/text-field "Email" keypaths/sign-up-email email
-                         {:autofocus "autofocus"
-                          :type "email"
-                          :name "email"
-                          :required true})
+       (ui/text-field "Email" keypaths/sign-up-email email
+                      {:autofocus "autofocus"
+                       :type "email"
+                       :name "email"
+                       :required true})
 
-       (utils/text-field "Password" keypaths/sign-up-password password
-                         {:type "password"
-                          :name "password"
-                          :required true})
+       (ui/text-field "Password" keypaths/sign-up-password password
+                      {:type "password"
+                       :name "password"
+                       :required true})
 
-       (utils/text-field "Password Confirmation" keypaths/sign-up-password-confirmation password-confirmation
-                         {:type "password"
-                          :name "password-confirmation"
-                          :required true})
-       [:div
-        (merge utils/large-button-style
-               {:on-click (utils/send-event-callback events/control-sign-up-submit)})
-        [utils/large-button-text "Sign Up"]]
+       (ui/text-field "Password Confirmation" keypaths/sign-up-password-confirmation password-confirmation
+                      {:type "password"
+                       :name "password-confirmation"
+                       :required true})
+       [ui/large-button
+        {:on-click (utils/send-event-callback events/control-sign-up-submit)}
+        [ui/large-button-text "Sign Up"]]
 
        [:.center.gray.mt3.mb2 "Already have an account? "
         [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]]])))

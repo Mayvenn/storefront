@@ -9,7 +9,8 @@
             [storefront.utils.query :as query]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
-            [storefront.components.utils :as utils]))
+            [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.border-bottom.border-white.flex.items-center.justify-between.py1
@@ -68,7 +69,7 @@
   (om/component
    (html
     (if (and (empty? history) fetching?)
-      (utils/spinner {:height "100px"})
+      (ui/spinner {:height "100px"})
       [:.mx-auto.container {:data-test "bonuses-panel"}
        [:.clearfix.mb3
         [:.sm-col.sm-col-8
@@ -106,7 +107,7 @@
                [:p.btn.mt1
                 [:a.teal
                  (apply utils/route-to navigate-hair-message)
-                 "Shop now " utils/rarr]]])])]
+                 "Shop now " ui/rarr]]])])]
 
         [:.sm-col-right.sm-col-4
          (when (pos? lifetime-total)

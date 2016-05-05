@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.facebook :as facebook]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
@@ -18,20 +19,19 @@
       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
       [:input.hide {:type "submit"}]
 
-      (utils/text-field "Email" keypaths/sign-in-email email
-                        {:autofocus "autofocus"
-                         :type "email"
-                         :name "email"
-                         :required true})
+      (ui/text-field "Email" keypaths/sign-in-email email
+                     {:autofocus "autofocus"
+                      :type "email"
+                      :name "email"
+                      :required true})
 
-      (utils/text-field "Password" keypaths/sign-in-password password
-                        {:type "password"
-                         :name "password"
-                         :required true})
-      [:div
-       (merge utils/large-button-style
-              {:on-click (utils/send-event-callback events/control-sign-in-submit)})
-       [utils/large-button-text "Sign In"]]
+      (ui/text-field "Password" keypaths/sign-in-password password
+                     {:type "password"
+                      :name "password"
+                      :required true})
+      [ui/large-button
+       {:on-click (utils/send-event-callback events/control-sign-in-submit)}
+       [ui/large-button-text "Sign In"]]
 
       [:.mt2.col-10.mb3
        [:label.col.col-6.left-align.gray
