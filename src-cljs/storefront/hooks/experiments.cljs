@@ -42,7 +42,7 @@
              variation))
 
 (defn three-steps-redesign? [data]
-  (display-variation data "three-steps-redesign"))
+  (display-variation data "checkout-css"))
 
 (defn three-steps? [data]
   (or (three-steps-redesign? data)
