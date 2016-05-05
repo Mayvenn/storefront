@@ -8,16 +8,17 @@
             [storefront.keypaths :as keypaths]))
 
 (defn text-field [label keypath value input-attributes]
-  (list
+  [:.col-12.flex.flex-column.items-center
    [:input.col-10.h3.border.border-width-1.border-light-gray.border-teal-gradient.mb1.col-10.rounded-1.glow.floating-label
-    (merge (utils/change-text keypath value)
+    (merge {:key label}
+           (utils/change-text keypath value)
            (when (seq value) {:class "has-value"})
            {:placeholder label}
            input-attributes)]
-   [:label.col-10.h6.teal label]))
+   [:label.col-10.h6.teal label]])
 
 (def large-button-style {:class "my2 btn btn-large btn-primary btn-teal-gradient col-10"})
-(def large-button-text :.h3.p1.extra-light.letter-spacing-1)
+(def large-button-text :.h3.p1.letter-spacing-1)
 
 (defn redesigned-sign-in-form-component [{:keys [facebook-loaded? email password remember-me? get-satisfaction-login?]}]
   (om/component
