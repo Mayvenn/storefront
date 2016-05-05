@@ -7,6 +7,19 @@
             [storefront.config :as config]
             [storefront.keypaths :as keypaths]))
 
+(defn- redesigned-button [loaded? click-event]
+  (if loaded?
+    [:.btn.btn-large.bg-fb-blue.col-10.border.rounded-1
+     {:on-click (utils/send-event-callback click-event)}
+     [:.flex.items-center.justify-center.white.items-center
+      [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
+      [:.h3.py1 "Sign in with Facebook"]]]
+    [:div {:style {:height "3.25rem"}}]))
+
+(defn redesigned-sign-in-button [loaded?]
+  (redesigned-button loaded? events/control-facebook-sign-in))
+
+;; TODO: delete me after experiements/three-steps-redesign? is removed
 (defn- button [loaded? click-event]
   (if loaded?
     [:button.fb-login-button
@@ -16,6 +29,7 @@
       [:div.fb-login-content "Sign in with Facebook"]]]
     [:div.fb-filler]))
 
+;; TODO: delete me after experiements/three-steps-redesign? is removed
 (defn sign-in-button [loaded?]
   (button loaded? events/control-facebook-sign-in))
 

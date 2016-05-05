@@ -8,31 +8,20 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
 
-(defn text-field [label keypath value input-attributes]
-  (list
-   [:input.col-10.h3.border.border-width-1.border-light-gray.border-teal-gradient.mb1.col-10.rounded-1.glow.floating-label
-    (merge (utils/change-text keypath value)
-           (when (seq value) {:class "has-value"})
-           {:placeholder label}
-           input-attributes)]
-   [:label.col-10.h6.teal label]))
-
-(def large-button-style {:class "my2 btn btn-large btn-primary btn-teal-gradient col-10"})
-(def large-button-text :.h3.p1.extra-light.letter-spacing-1)
-
 (defn redesigned-checkout-sign-in-component [sign-in-form-data owner]
   (om/component
    (html
-    [:.flex.flex-column.items-center.black.sans-serif.bg-white
-     [:.my2.h2.block. "I'm new here"]
-     [:div
-      (merge large-button-style
-             {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)})
-      [large-button-text "Guest Checkout"]]
-     [:.my3.border.col-2.border-light-gray]
-     [:.h2.mb1 "Already registered?"]
-     [:.h5 "Sign into your account below, and checkout even faster!"]
-     (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)])))
+    [:.bg-white
+     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
+      [:.my2.h2.block. "I'm new here"]
+      [:div
+       (merge sign-in/large-button-style
+              {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)})
+       [sign-in/large-button-text "Guest Checkout"]]
+      [:.my3.border.col-2.border-light-gray]
+      [:.h2.mb1 "Already registered?"]
+      [:.h5 "Sign into your account below, and checkout even faster!"]
+      (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)]])))
 
 (defn old-checkout-sign-in [data owner]
   [:div.centered-content

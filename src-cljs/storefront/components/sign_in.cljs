@@ -22,9 +22,9 @@
 (defn redesigned-sign-in-form-component [{:keys [facebook-loaded? email password remember-me? get-satisfaction-login?]}]
   (om/component
    (html
-    [:.flex.flex-column.items-center.black.sans-serif.bg-white.col-12
-     (facebook/sign-in-button facebook-loaded?)
-     [:.h4.gray.extra-light.mb2 "OR"]
+    [:.flex.flex-column.items-center.black.sans-serif.col-12.mt1
+     (facebook/redesigned-sign-in-button facebook-loaded?)
+     [:.h4.gray.extra-light.my2 "OR"]
 
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
@@ -61,10 +61,11 @@
 (defn redesigned-sign-in-component [{:keys [get-satisfaction-login?] :as form-data} owner]
   (om/component
    (html
-    [:.flex.flex-column.items-center.black.sans-serif.bg-white
-     (when-not get-satisfaction-login?
-       [:.h2.mb1.mt3 "Sign In to Your Account"])
-     (om/build redesigned-sign-in-form-component form-data)])))
+    [:.bg-white
+     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
+      (when-not get-satisfaction-login?
+        [:.h2.mb1.mt3 "Sign in to your account"])
+      (om/build redesigned-sign-in-form-component form-data)]])))
 
 (defn old-sign-in-component [data owner]
   (om/component
