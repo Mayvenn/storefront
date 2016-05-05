@@ -20,7 +20,7 @@
        [ui/large-button-text "Guest Checkout"]]
       [:.my3.border.col-2.border-light-gray]
       [:.h2.mb1 "Already registered?"]
-      [:.h5 "Sign into your account below, and checkout even faster!"]
+      [:.h5.mb2 "Sign into your account below, and checkout even faster!"]
       (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)]])))
 
 (defn old-checkout-sign-in [data owner]
