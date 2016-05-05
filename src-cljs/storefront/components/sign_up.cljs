@@ -8,7 +8,46 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
 
-(defn sign-up-component [data owner]
+(defn redesigned-sign-up-component [{:keys [facebook-loaded?
+                                            email
+                                            password
+                                            password-confirmation]}]
+  (om/component
+   (html
+    [:.bg-white
+     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto.mt1
+      [:.h2.mb2.mt3 "Sign up for an account"]
+      (facebook/redesigned-sign-in-button facebook-loaded?)
+      [:.h4.gray.extra-light.my2 "OR"]
+
+      [:form.col-12.flex.flex-column.items-center
+       {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
+       [:input.hide {:type "submit"}]
+
+       (utils/text-field "Email" keypaths/sign-up-email email
+                         {:autofocus "autofocus"
+                          :type "email"
+                          :name "email"
+                          :required true})
+
+       (utils/text-field "Password" keypaths/sign-up-password password
+                         {:type "password"
+                          :name "password"
+                          :required true})
+
+       (utils/text-field "Password Confirmation" keypaths/sign-up-password-confirmation password-confirmation
+                         {:type "password"
+                          :name "password-confirmation"
+                          :required true})
+       [:div
+        (merge utils/large-button-style
+               {:on-click (utils/send-event-callback events/control-sign-up-submit)})
+        [utils/large-button-text "Sign Up"]]
+
+       [:.center.gray.mt3.mb2 "Already have an account? "
+        [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]]])))
+
+(defn old-sign-up-component [data owner]
   (om/component
    (html
     [:div
@@ -45,3 +84,18 @@
                                  :value "Create"}]]]]
       [:p.center "Already have an account? "
        [:a (utils/route-to events/navigate-sign-in) "Log In"]]]])))
+
+
+(defn query [data]
+  {:email (get-in data keypaths/sign-up-email)
+   :password (get-in data keypaths/sign-up-password)
+   :password-confirmation (get-in data keypaths/sign-up-password-confirmation)
+   :facebook-loaded? (get-in data keypaths/loaded-facebook)})
+
+(defn sign-up-component [app-state owner]
+  (om/component
+   (html
+    [:div
+     (if (experiments/three-steps-redesign? app-state)
+       (om/build redesigned-sign-up-component (query app-state))
+       (om/build old-sign-up-component app-state))])))

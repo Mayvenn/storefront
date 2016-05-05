@@ -15,9 +15,9 @@
      [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
       [:.my2.h2.block. "I'm new here"]
       [:div
-       (merge sign-in/large-button-style
+       (merge utils/large-button-style
               {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)})
-       [sign-in/large-button-text "Guest Checkout"]]
+       [utils/large-button-text "Guest Checkout"]]
       [:.my3.border.col-2.border-light-gray]
       [:.h2.mb1 "Already registered?"]
       [:.h5 "Sign into your account below, and checkout even faster!"]

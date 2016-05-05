@@ -57,6 +57,22 @@
   {:href "#"
    :on-click (send-event-callback event args)})
 
+(defn text-field [label keypath value input-attributes]
+  [:.col-10.floating-label.mb2.mx-auto
+   [:.absolute
+    [:label.col-12.h6.teal.relative
+     (when (seq value) {:class "has-value"})
+     label]]
+   [:input.col-12.h3.border.border-width-1.border-light-gray.border-teal-gradient.col-10.rounded-1.glow.floating-input
+    (merge {:key label}
+           (change-text keypath value)
+           (when (seq value) {:class "has-value"})
+           {:placeholder label}
+           input-attributes)]])
+
+(def large-button-style {:class "my2 btn btn-large btn-primary btn-teal-gradient col-10"})
+(def large-button-text :.h3.p1.letter-spacing-1)
+
 ;; new style
 (defn toggle-checkbox [keypath value]
   (let [checked-val (when value "checked")]

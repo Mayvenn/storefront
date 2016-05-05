@@ -157,6 +157,7 @@ html { line-height: 1.2; }
 .mtn3 { margin-top: -var(--space-3); }
 .mtn4 { margin-top: -var(--space-4); }
 .m-auto { margin: auto; }
+.mx-auto { margin-left: auto; margin-right: auto; }
 
 .mp1, .mtp1, .myp1 { margin-top: 1px; }
 .mp2, .mtp2, .myp2 { margin-top: 2px; }
@@ -322,22 +323,22 @@ html { line-height: 1.2; }
 
 /* Custom forms */
 
-.floating-label + label {
+.floating-label label {
   position: relative;
-  top: -5em;
+  top: 1em;
   left: 1em;
   display: none;
 }
 
-.floating-label.has-value + label {
+.floating-label label.has-value {
   display: block;
 }
 
-.floating-label {
+.floating-label .floating-input {
   padding: 1em 0.5em;
 }
 
-.floating-label.has-value {
+.floating-label .floating-input.has-value {
   padding-top: 1.5em;
   padding-bottom: 0.5em;
 }

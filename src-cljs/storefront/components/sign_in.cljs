@@ -7,19 +7,6 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]))
 
-(defn text-field [label keypath value input-attributes]
-  [:.col-12.flex.flex-column.items-center
-   [:input.col-10.h3.border.border-width-1.border-light-gray.border-teal-gradient.mb1.col-10.rounded-1.glow.floating-label
-    (merge {:key label}
-           (utils/change-text keypath value)
-           (when (seq value) {:class "has-value"})
-           {:placeholder label}
-           input-attributes)]
-   [:label.col-10.h6.teal label]])
-
-(def large-button-style {:class "my2 btn btn-large btn-primary btn-teal-gradient col-10"})
-(def large-button-text :.h3.p1.letter-spacing-1)
-
 (defn redesigned-sign-in-form-component [{:keys [facebook-loaded? email password remember-me? get-satisfaction-login?]}]
   (om/component
    (html
@@ -31,20 +18,20 @@
       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
       [:input.hide {:type "submit"}]
 
-      (text-field "Email" keypaths/sign-in-email email
-                  {:autofocus "autofocus"
-                   :type "email"
-                   :name "email"
-                   :required true})
+      (utils/text-field "Email" keypaths/sign-in-email email
+                        {:autofocus "autofocus"
+                         :type "email"
+                         :name "email"
+                         :required true})
 
-      (text-field "Password" keypaths/sign-in-password password
-                  {:type "password"
-                   :name "password"
-                   :required true})
+      (utils/text-field "Password" keypaths/sign-in-password password
+                        {:type "password"
+                         :name "password"
+                         :required true})
       [:div
-       (merge large-button-style
+       (merge utils/large-button-style
               {:on-click (utils/send-event-callback events/control-sign-in-submit)})
-       [large-button-text "Sign In"]]
+       [utils/large-button-text "Sign In"]]
 
       [:.mt2.col-10.mb3
        [:label.col.col-6.left-align.gray
