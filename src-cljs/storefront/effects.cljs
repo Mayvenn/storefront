@@ -48,9 +48,10 @@
                              stylist-id))))
 
 (defn ensure-products [app-state product-ids]
-  (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)]
+  (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)
+        user-token (get-in app-state keypaths/user-token)]
     (when (seq not-cached)
-      (api/get-products-by-ids not-cached))))
+      (api/get-products-by-ids not-cached user-token))))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -126,7 +127,7 @@
          (routes/navigation-message-for (:url-path product))))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-slug]} app-state]
-  (api/get-product product-slug)
+  (api/get-product product-slug (get-in app-state keypaths/user-token))
   (reviews/insert-reviews)
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))]

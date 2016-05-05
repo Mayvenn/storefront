@@ -148,22 +148,24 @@
                               (merge (select-keys % [:products])
                                      {:taxon-slug taxon-slug}))}))
 
-(defn get-products-by-ids [product-ids]
+(defn get-products-by-ids [product-ids user-token]
   (api-req
    GET
    "/products"
    request-keys/get-product
-   {:params {:ids product-ids}
+   {:params {:ids product-ids
+             :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-products
                               (select-keys % [:products]))}))
 
-(defn get-product [product-slug]
+(defn get-product [product-slug user-token]
   (api-req
    GET
    "/products"
    request-keys/get-product
-   {:params {:slug product-slug}
+   {:params {:slug product-slug
+             :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-product
                               {:product %})}))
