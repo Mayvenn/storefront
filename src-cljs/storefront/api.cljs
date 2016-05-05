@@ -11,40 +11,41 @@
             [storefront.request-keys :as request-keys]))
 
 (defn default-error-handler [response]
-  (cond
-    ;; aborted request
-    (#{:aborted} (:failure response))
-    (messages/handle-message events/api-abort)
+  (let [response-body (get-in response [:response :body])]
+    (cond
+      ;; aborted request
+      (#{:aborted} (:failure response))
+      (messages/handle-message events/api-abort)
 
-    ;; connectivity
-    (zero? (:status response))
-    (messages/handle-message events/api-failure-no-network-connectivity response)
+      ;; connectivity
+      (zero? (:status response))
+      (messages/handle-message events/api-failure-no-network-connectivity response)
 
-    ;; standard rails error response
-    (or (seq (get-in response [:response :error]))
-        (seq (get-in response [:response :errors])))
-    (messages/handle-message events/api-failure-validation-errors
-                             (-> (:response response)
-                                 (select-keys [:error :errors])
-                                 (rename-keys {:error :error-message
-                                               :errors :details})))
+      ;; standard rails error response
+      (or (seq (:error response-body))
+          (seq (:errors response-body)))
+      (messages/handle-message events/api-failure-validation-errors
+                               (-> response-body
+                                   (select-keys [:error :errors])
+                                   (rename-keys {:error :error-message
+                                                 :errors :details})))
 
-    ;; standard rails validation errors
-    (seq (get-in response [:response :exception]))
-    (messages/handle-message events/api-failure-validation-errors
-                             {:details {"" [(get-in response [:response :exception])]}})
+      ;; standard rails validation errors
+      (seq (:exception response-body))
+      (messages/handle-message events/api-failure-validation-errors
+                               {:details {"" [(:exception response-body)]}})
 
-    ;; kill order cookies if no order is found
-    (= "order-not-found" (-> response :response :error-code))
-    (messages/handle-message events/api-handle-order-not-found response)
+      ;; kill order cookies if no order is found
+      (= "order-not-found" (:error-code response-body))
+      (messages/handle-message events/api-handle-order-not-found response)
 
-    ;; Standard waiter response
-    (seq (get-in response [:response :error-code]))
-    (messages/handle-message events/api-failure-validation-errors
-                             (select-keys (:response response) [:error-message :details]))
+      ;; Standard waiter response
+      (seq (:error-code response-body))
+      (messages/handle-message events/api-failure-validation-errors
+                               (select-keys response-body [:error-message :details]))
 
-    :else
-    (messages/handle-message events/api-failure-bad-server-response response)))
+      :else
+      (messages/handle-message events/api-failure-bad-server-response response))))
 
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
@@ -71,12 +72,11 @@
                                                               :request-id req-id
                                                               :app-version (:app-version response)})
                      (handler (:body response)))
-          :error-handler (fn [response]
+          :error-handler (fn [res]
                            (messages/handle-message events/api-end {:request-id req-id
                                                                     :request-key req-key
-                                                                    :app-version (:app-version response)})
-                           ((or error-handler default-error-handler)
-                            (:body response)))}))
+                                                                    :app-version (-> res :response :app-version)})
+                           ((or error-handler default-error-handler) res))}))
 
 (defn api-req
   [method path req-key request-opts]
