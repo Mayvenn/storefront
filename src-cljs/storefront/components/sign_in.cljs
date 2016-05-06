@@ -50,7 +50,7 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
+     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto
       (when-not get-satisfaction-login?
         [:.h2.mb1.mt3 "Sign in to your account"])
       (om/build redesigned-sign-in-form-component form-data)]])))

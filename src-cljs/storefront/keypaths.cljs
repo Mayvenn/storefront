@@ -113,7 +113,8 @@
 (def checkout (conj ui :checkout))
 (def checkout-as-guest (conj checkout :as-guest))
 (def checkout-guest-email (conj checkout :guest-email))
-(def checkout-ship-to-billing-address (conj checkout :ship-to-billing-address))
+(def checkout-ship-to-billing-address (conj checkout :ship-to-billing-address)) ;; TODO: <- remove when three-steps-redesign experiment is done
+(def checkout-bill-to-shipping-address (conj checkout :bill-to-shipping-address))
 (def checkout-billing-address (conj checkout :billing-address))
 (def checkout-billing-address-first-name (conj checkout-billing-address :first-name))
 (def checkout-billing-address-last-name (conj checkout-billing-address :last-name))

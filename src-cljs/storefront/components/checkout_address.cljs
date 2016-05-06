@@ -184,19 +184,163 @@
                            {:id :shipping-zipcode
                             :required? true})))]]]))
 
-(defn redesigned-checkout-address-component [{:keys [billing-address
-                                                     shipping-address
-                                                     email
+(defn redesigned-shipping-address-component [{:keys [shipping-address
                                                      states
-                                                     saving
+                                                     email
                                                      guest?
                                                      places-loaded?
-                                                     shipping-expanded?
-                                                     billing-expanded?]} owner]
+                                                     shipping-expanded?]}
+                                             owner]
+  (om/component
+   (html
+    [:.flex.flex-column.items-center.col-12
+     [:.h3.black.col-12.my1 "Shipping Address"]
+     [:.flex.col-12
+      [:.col-6
+       (ui/text-field "First Name" keypaths/checkout-shipping-address-first-name (:first-name shipping-address)
+                      {:autofocus "autofocus"
+                       :type      "text"
+                       :name      "shipping-first-name"
+                       :id        "shipping-first-name"
+                       :class     "rounded-left-1"
+                       :required  true})]
+
+      [:.col-6
+       (ui/text-field "Last Name" keypaths/checkout-shipping-address-last-name (:last-name shipping-address)
+                      {:type     "text"
+                       :name     "shipping-last-name"
+                       :id       "shipping-last-name"
+                       :class    "rounded-right-1 border-width-left-0"
+                       :required true})]]
+
+     ;; TODO: hide when not guest, and query
+     (when guest?
+       (ui/text-field "Email" keypaths/checkout-guest-email email
+                      {:type     "email"
+                       :name     "shipping-email"
+                       :id       "shipping-email"
+                       :required true}))
+
+     (ui/text-field "Mobile Phone" keypaths/checkout-shipping-address-phone (:phone shipping-address)
+                    {:type     "tel"
+                     :name     "shipping-phone"
+                     :id       "shipping-phone"
+                     :required true})
+
+     (when places-loaded?
+       (om/build redesigned-places-component {:id              :shipping-address1
+                                              :address-keypath keypaths/checkout-shipping-address
+                                              :keypath         keypaths/checkout-shipping-address-address1
+                                              :value           (:address1 shipping-address)}))
+
+     (when shipping-expanded?
+       [:.flex.flex-column.items-center.col-12
+        [:.flex.col-12
+         [:.col-6
+          (ui/text-field "Apt/Suite" keypaths/checkout-shipping-address-address2 (:address2 shipping-address)
+                         {:type  "text"
+                          :name  "shipping-address2"
+                          :class "rounded-left-1"
+                          :id    "shipping-address2"})]
+         [:.col-6
+          (ui/text-field "Zip Code" keypaths/checkout-shipping-address-zip (:zipcode shipping-address)
+                         {:type     "text"
+                          :name     "shipping-zip"
+                          :id       "shipping-zip"
+                          :class    "rounded-right-1 border-width-left-0"
+                          :required true})]]
+
+        (ui/text-field "City" keypaths/checkout-shipping-address-city (:city shipping-address)
+                       {:type     "text"
+                        :name     "shipping-city"
+                        :id       "shipping-city"
+                        :required true})
+
+        (ui/select-field "State" keypaths/checkout-shipping-address-state (:state shipping-address) states
+                         {:id       :shipping-state
+                          :required true})])])))
+
+(defn redesigned-billing-address-component [{:keys [billing-address
+                                                    states
+                                                    bill-to-shipping-address?
+                                                    places-loaded?
+                                                    billing-expanded?]}
+                                             owner]
+  (om/component
+   (html
+    [:.flex.flex-column.items-center.col-12
+     [:.h3.black.col-12.my1 "Billing Address"]
+     [:.col-12
+      [:input
+       (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address bill-to-shipping-address?)
+              {:type "checkbox"
+               :id "use_billing"
+               :class "checkbox  checkout-use-billing-address"})]
+      [:span.h5.gray.ml1 "Use same address?"]]
+     (when-not bill-to-shipping-address?
+       [:div
+        [:.flex.col-12
+         [:.col-6
+          (ui/text-field "First Name" keypaths/checkout-billing-address-first-name (:first-name billing-address)
+                         {:autofocus "autofocus"
+                          :type      "text"
+                          :name      "billing-first-name"
+                          :id        "billing-first-name"
+                          :class     "rounded-left-1"
+                          :required  true})]
+
+         [:.col-6
+          (ui/text-field "Last Name" keypaths/checkout-billing-address-last-name (:last-name billing-address)
+                         {:type     "text"
+                          :name     "billing-last-name"
+                          :id       "billing-last-name"
+                          :class    "rounded-right-1 border-width-left-0"
+                          :required true})]]
+
+        (ui/text-field "Mobile Phone" keypaths/checkout-billing-address-phone (:phone billing-address)
+                       {:type     "tel"
+                        :name     "billing-phone"
+                        :id       "billing-phone"
+                        :required true})
+
+        (when places-loaded?
+          (om/build redesigned-places-component {:id              :billing-address1
+                                                 :address-keypath keypaths/checkout-billing-address
+                                                 :keypath         keypaths/checkout-billing-address-address1
+                                                 :value           (:address1 billing-address)}))
+
+        (when billing-expanded?
+          [:.flex.flex-column.items-center.col-12
+           [:.flex.col-12
+            [:.col-6
+             (ui/text-field "Apt/Suite" keypaths/checkout-billing-address-address2 (:address2 billing-address)
+                            {:type  "text"
+                             :name  "billing-address2"
+                             :class "rounded-left-1"
+                             :id    "billing-address2"})]
+            [:.col-6
+             (ui/text-field "Zip Code" keypaths/checkout-billing-address-zip (:zipcode billing-address)
+                            {:type     "text"
+                             :name     "billing-zip"
+                             :id       "billing-zip"
+                             :class    "rounded-right-1 border-width-left-0"
+                             :required true})]]
+
+           (ui/text-field "City" keypaths/checkout-billing-address-city (:city billing-address)
+                          {:type     "text"
+                           :name     "billing-city"
+                           :id       "billing-city"
+                           :required true})
+
+           (ui/select-field "State" keypaths/checkout-billing-address-state (:state billing-address) states
+                            {:id       :billing-state
+                             :required true})])])])))
+
+(defn redesigned-checkout-address-component [{:keys [saving] :as data} owner]
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto.mt1
+     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto.mt1
       #_(om/build validation-errors-component data)
       #_(checkout-step-bar data)
 
@@ -204,64 +348,8 @@
        {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)}
        [:input.hide {:type "submit"}]
 
-       [:.flex.flex-column.items-center.col-12
-        [:.h2.black "Shipping Address"]
-        (ui/text-field "First Name" keypaths/checkout-shipping-address-first-name (:first-name shipping-address)
-                       {:autofocus "autofocus"
-                        :type      "text"
-                        :name      "shipping-first-name"
-                        :id        "shipping-first-name"
-                        :required  true})
-
-        (ui/text-field "Last Name" keypaths/checkout-shipping-address-last-name (:last-name shipping-address)
-                       {:type     "text"
-                        :name     "shipping-last-name"
-                        :id       "shipping-last-name"
-                        :required true})
-
-        ;; TODO: hide when not guest, and query
-        (ui/text-field "Email" keypaths/checkout-guest-email email
-                       {:type     "email"
-                        :name     "shipping-email"
-                        :id       "shipping-email"
-                        :required true})
-
-        (ui/text-field "Mobile Phone" keypaths/checkout-shipping-address-phone (:phone shipping-address)
-                       {:type     "tel"
-                        :name     "shipping-phone"
-                        :id       "shipping-phone"
-                        :required true})
-
-        (when places-loaded?
-          (om/build redesigned-places-component {:id              :shipping-address1
-                                                 :address-keypath keypaths/checkout-shipping-address
-                                                 :keypath         keypaths/checkout-shipping-address-address1
-                                                 :value           (:address1 shipping-address)}))
-
-        (when shipping-expanded?
-          [:.flex.flex-column.items-center.col-12
-           (ui/text-field "Apt/Suite" keypaths/checkout-shipping-address-address2 (:address2 shipping-address)
-                          {:type "text"
-                           :name "shipping-address2"
-                           :id   "shipping-address2"})
-
-           (ui/text-field "Zip Code" keypaths/checkout-shipping-address-zip (:zipcode shipping-address)
-                          {:type     "text"
-                           :name     "shipping-zip"
-                           :id       "shipping-zip"
-                           :required true})
-
-           (ui/text-field "City" keypaths/checkout-shipping-address-city (:city shipping-address)
-                          {:type     "text"
-                           :name     "shipping-city"
-                           :id       "shipping-city"
-                           :required true})
-
-           (ui/select-field "State" keypaths/checkout-shipping-address-state (:state shipping-address) states
-                            {:id       :shipping-state
-                             :required true})])]
-
-       [:div "Billing Address"]]
+       (om/build redesigned-shipping-address-component data)
+       (om/build redesigned-billing-address-component data)]
 
       [ui/large-button
        {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
@@ -290,16 +378,17 @@
               "Continue to Shipping")])]]]]])))
 
 (defn query [data]
-  {:billing-address    (get-in data keypaths/checkout-billing-address)
-   :shipping-address   (get-in data keypaths/checkout-shipping-address)
-   :states             (get-in data keypaths/states)
-   :email              (get-in data keypaths/checkout-guest-email)
-   :saving?            (query/get {:request-key request-keys/update-addresses}
-                                  (get-in data keypaths/api-requests))
-   :places-loaded?     (get-in data keypaths/loaded-places)
-   :guest?             (get-in data keypaths/checkout-as-guest)
-   :shipping-expanded? (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
-   :biling-expanded?   (not (empty? (get-in data keypaths/checkout-shipping-address-address1))) })
+  {:billing-address           (get-in data keypaths/checkout-billing-address)
+   :shipping-address          (get-in data keypaths/checkout-shipping-address)
+   :states                    (get-in data keypaths/states)
+   :email                     (get-in data keypaths/checkout-guest-email)
+   :saving?                   (query/get {:request-key request-keys/update-addresses}
+                                         (get-in data keypaths/api-requests))
+   :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
+   :places-loaded?            (get-in data keypaths/loaded-places)
+   :guest?                    (get-in data keypaths/checkout-as-guest)
+   :shipping-expanded?        (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
+   :biling-expanded?          (not (empty? (get-in data keypaths/checkout-shipping-address-address1))) })
 
 (defn checkout-address-component [data owner]
   (om/component
