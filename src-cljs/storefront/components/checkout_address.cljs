@@ -8,7 +8,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
-            [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]
             [storefront.messages :refer [handle-message]]
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
@@ -346,12 +346,12 @@
                             {:id       :billing-state
                              :required true})])])])))
 
-(defn redesigned-checkout-address-component [{:keys [saving] :as data} owner]
+(defn redesigned-checkout-address-component [{:keys [saving? errors] :as data} owner]
   (om/component
    (html
     [:.bg-white
      [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto.mt1
-      #_(om/build validation-errors-component data)
+      (om/build redesigned-validation-errors-component errors)
       #_(checkout-step-bar data)
 
       [:form.col-12.flex.flex-column.items-center
@@ -363,8 +363,8 @@
 
       [:.my2.col-12
        [ui/large-button
-        {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))}
-        (if saving
+        {:on-click (when-not saving? (utils/send-event-callback events/control-checkout-update-addresses-submit))}
+        (if saving?
           [:.img-spinner.bg-no-repeat.bg-center
            {:style {:height "2.1em"}}]
           [ui/large-button-text
@@ -396,8 +396,8 @@
    :shipping-address          (get-in data keypaths/checkout-shipping-address)
    :states                    (get-in data keypaths/states)
    :email                     (get-in data keypaths/checkout-guest-email)
-   :saving?                   (query/get {:request-key request-keys/update-addresses}
-                                         (get-in data keypaths/api-requests))
+   :saving?                   (query/get {:request-key request-keys/update-addresses} (get-in data keypaths/api-requests))
+   :errors                    (get-in data keypaths/validation-errors-details)
    :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
    :places-loaded?            (get-in data keypaths/loaded-places)
    :guest?                    (get-in data keypaths/checkout-as-guest)
