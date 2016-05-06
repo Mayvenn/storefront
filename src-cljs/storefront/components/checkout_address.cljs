@@ -63,7 +63,8 @@
                       {:type "text"
                        :name id
                        :id id
-                       :required true})))))
+                       :required true
+                       :on-key-down utils/suppress-return-key})))))
 
 (defn places-component [data owner {:keys [id address-keypath keypath]}]
   (reify
@@ -244,11 +245,15 @@
                           :id    "shipping-address2"})]
          [:.col-6
           (ui/text-field "Zip Code" keypaths/checkout-shipping-address-zip (:zipcode shipping-address)
-                         {:type     "text"
-                          :name     "shipping-zip"
-                          :id       "shipping-zip"
-                          :class    "rounded-right-1 border-width-left-0"
-                          :required true})]]
+                         {:type       "text"
+                          :name       "shipping-zip"
+                          :id         "shipping-zip"
+                          :class      "rounded-right-1 border-width-left-0"
+                          :required   true
+                          :max-length 5
+                          :min-length 5
+                          :pattern    "\\d{5}"
+                          :title      "zip code must be 5 digits"})]]
 
         (ui/text-field "City" keypaths/checkout-shipping-address-city (:city shipping-address)
                        {:type     "text"
@@ -271,14 +276,15 @@
     [:.flex.flex-column.items-center.col-12
      [:.h3.black.col-12.my1 "Billing Address"]
      [:.col-12
-      [:input
-       (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address bill-to-shipping-address?)
-              {:type "checkbox"
-               :id "use_billing"
-               :class "checkbox  checkout-use-billing-address"})]
-      [:span.h5.gray.ml1 "Use same address?"]]
+      [:label.h5.gray
+       [:input.mr1
+        (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address bill-to-shipping-address?)
+               {:type  "checkbox"
+                :id    "use_billing"
+                :class "checkbox  checkout-use-billing-address"})]
+       "Use same address?"]]
      (when-not bill-to-shipping-address?
-       [:div
+       [:.col-12
         [:.flex.col-12
          [:.col-6
           (ui/text-field "First Name" keypaths/checkout-billing-address-first-name (:first-name billing-address)
@@ -320,11 +326,15 @@
                              :id    "billing-address2"})]
             [:.col-6
              (ui/text-field "Zip Code" keypaths/checkout-billing-address-zip (:zipcode billing-address)
-                            {:type     "text"
-                             :name     "billing-zip"
-                             :id       "billing-zip"
-                             :class    "rounded-right-1 border-width-left-0"
-                             :required true})]]
+                            {:type       "text"
+                             :name       "billing-zip"
+                             :id         "billing-zip"
+                             :class      "rounded-right-1 border-width-left-0"
+                             :required   true
+                             :max-length 5
+                             :min-length 5
+                             :pattern    "\\d{5}"
+                             :title      "zip code must be 5 digits"})]]
 
            (ui/text-field "City" keypaths/checkout-billing-address-city (:city billing-address)
                           {:type     "text"
@@ -351,10 +361,11 @@
        (om/build redesigned-shipping-address-component data)
        (om/build redesigned-billing-address-component data)]
 
-      [ui/large-button
-       {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
-        :class    (when saving "saving")}
-       [ui/large-button-text "Continue to Payment"]]]])))
+      [:.my2.col-12
+       [ui/large-button
+        {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
+         :class    (when saving "saving")}
+        [ui/large-button-text "Continue to Payment"]]]]])))
 
 (defn old-checkout-address-component [data owner]
   (om/component
@@ -388,7 +399,7 @@
    :places-loaded?            (get-in data keypaths/loaded-places)
    :guest?                    (get-in data keypaths/checkout-as-guest)
    :shipping-expanded?        (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
-   :biling-expanded?          (not (empty? (get-in data keypaths/checkout-shipping-address-address1))) })
+   :billing-expanded?         (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))})
 
 (defn checkout-address-component [data owner]
   (om/component

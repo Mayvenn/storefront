@@ -480,21 +480,25 @@
       (api/update-stylist-account-profile-picture user-token stylist-account))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
-  (let [use-billing  (get-in app-state keypaths/checkout-ship-to-billing-address)
+  (let [redesign? (experiments/three-steps-redesign? app-state)
+        three-steps? (experiments/three-steps? app-state)
+        guest-checkout? (get-in app-state keypaths/checkout-as-guest)
         billing-address (get-in app-state keypaths/checkout-billing-address)
-        shipping-address (if use-billing
-                           billing-address
-                           (get-in app-state keypaths/checkout-shipping-address))]
-    (if (get-in app-state keypaths/checkout-as-guest)
-      (api/guest-update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                                         {:email (get-in app-state keypaths/checkout-guest-email)
-                                          :billing-address billing-address
-                                          :shipping-address shipping-address})
-                                  (experiments/three-steps? app-state))
-      (api/update-addresses (merge (select-keys (get-in app-state keypaths/order) [:number :token])
-                                   {:billing-address billing-address
-                                    :shipping-address shipping-address})
-                            (experiments/three-steps? app-state)))))
+        shipping-address (get-in app-state keypaths/checkout-shipping-address)
+        update-addresses (if guest-checkout? api/guest-update-addresses api/update-addresses)]
+    (update-addresses
+
+     (cond-> (merge (select-keys (get-in app-state keypaths/order) [:number :token])
+                    {:billing-address billing-address :shipping-address shipping-address})
+       guest-checkout?
+       (assoc :email (get-in app-state keypaths/checkout-guest-email))
+
+       (and redesign? (get-in app-state keypaths/checkout-bill-to-shipping-address))
+       (assoc :billing-address shipping-address)
+
+       (and (not redesign?) (get-in app-state keypaths/checkout-ship-to-billing-address))
+       (assoc :shipping-address billing-address))
+     three-steps?)))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])

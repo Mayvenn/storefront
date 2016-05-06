@@ -34,6 +34,10 @@
   (and (= (take (count target-event) current-event) target-event)
        (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
 
+(defn suppress-return-key [e]
+  (when (= 13 (.-keyCode e))
+    (.preventDefault e)))
+
 (defn change-text
   ;; new style
   ([keypath value]
