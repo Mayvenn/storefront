@@ -16,7 +16,7 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto.mt1
+     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto.mt1
       [:.h2.mb2.mt3 "Sign up for an account"]
       (facebook/redesigned-sign-in-button facebook-loaded?)
       [:.h4.gray.extra-light.my2 "OR"]

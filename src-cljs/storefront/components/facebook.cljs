@@ -9,7 +9,7 @@
 
 (defn- redesigned-button [loaded? click-event]
   (if loaded?
-    [:.btn.btn-large.bg-fb-blue.col-10.border.rounded-1
+    [:.btn.btn-large.bg-fb-blue.col-12.border.rounded-1
      {:on-click (utils/send-event-callback click-event)}
      [:.flex.items-center.justify-center.white.items-center
       [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]

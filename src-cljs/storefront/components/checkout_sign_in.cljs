@@ -13,7 +13,7 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto
+     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto
       [:.my2.h2.block. "I'm new here"]
       [ui/large-button
        {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}

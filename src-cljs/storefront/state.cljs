@@ -24,7 +24,8 @@
                       :phone ""}
    :save-my-addresses true
    :save-my-addresses-no-op true
-   :ship-to-billing-address true
+   :ship-to-billing-address true ;; TODO: <- remove when three-steps-redesign experiment is done
+   :bill-to-shipping-address true
    :credit-card-name ""
    :credit-card-number ""
    :credit-card-expiration ""

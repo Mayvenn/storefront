@@ -264,11 +264,22 @@ html { line-height: 1.2; }
     border-width: 2px;
 }
 
+.border-width-right-0 { border-right-width: 0; }
+.border-width-left-0 { border-left-width: 0; }
+.border-width-top-0 { border-top-width: 0; }
+.border-width-bottom-0 { border-bottom-width: 0; }
+
 .capped { border-radius: 1000px; }
 .rounded-1 { border-radius: 4px; }
 .rounded-2 { border-radius: 8px; }
-.rounded-bottom-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
-.rounded-bottom-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
+.rounded-top-1, .rounded-left-1, .rounded-top-left-1 { border-top-left-radius: 4px; }
+.rounded-top-1, .rounded-right-1, .rounded-top-right-1 { border-top-right-radius: 4px; }
+.rounded-bottom-1, .rounded-left-1, .rounded-bottom-left-1 { border-bottom-left-radius: 4px; }
+.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: 4px; }
+.rounded-top-2, .rounded-left-2, .rounded-top-left-2 { border-top-left-radius: 8px; }
+.rounded-top-2, .rounded-right-2, .rounded-top-right-2 { border-top-right-radius: 8px; }
+.rounded-bottom-2, .rounded-left-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
+.rounded-bottom-2, .rounded-right-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
 
 
 /* Custom responsive hide */
@@ -323,14 +334,14 @@ html { line-height: 1.2; }
 
 /* Custom forms */
 
-.floating-label label {
+.floating-label .floated-label {
   position: relative;
   top: 1em;
   left: 1em;
   display: none;
 }
 
-.floating-label label.has-value {
+.floating-label .floated-label.has-value {
   display: block;
 }
 
@@ -409,6 +420,7 @@ html { line-height: 1.2; }
 
 .border-pure-white { border-color: var(--pure-white); }
 .border-dark-teal { border-color: var(--dark-teal); }
+.border-teal { border-color: var(--teal); }
 .border-light-gray { border-color: var(--light-gray); }
 
 .debug * { outline: 1px solid gold; }

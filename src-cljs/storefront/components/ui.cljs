@@ -5,20 +5,7 @@
             [storefront.messages :refer [handle-message]]
             [sablono.core :refer-macros [html]]))
 
-(defn text-field [label keypath value input-attributes]
-  [:.col-10.floating-label.mb2.mx-auto
-   [:.absolute
-    [:label.col-12.h6.teal.relative
-     (when (seq value) {:class "has-value"})
-     label]]
-   [:input.col-12.h3.border.border-width-1.border-light-gray.border-teal-gradient.col-10.rounded-1.glow.floating-input
-    (merge {:key label}
-           (utils/change-text keypath value)
-           (when (seq value) {:class "has-value"})
-           {:placeholder label}
-           input-attributes)]])
-
-(def large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-10)
+(def large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-12)
 (def large-button-text :.h3.p1.letter-spacing-1)
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
@@ -28,6 +15,54 @@
    [:.pyp1.right
     [:.inline-block.border.border-gray.gray.pp2
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
+
+(defn text-field [label keypath value input-attributes]
+  [:.col-12.floating-label.mb2
+   [:.absolute
+    [:label.floated-label.col-12.h6.teal.relative
+     (when (seq value) {:class "has-value"})
+     label]]
+   [:input.col-12.h3.border.border-width-1.border-light-gray.border-teal-gradient.glow.floating-input
+    (cond-> (merge {:key label
+                    :class "rounded-1"
+                    :placeholder label}
+                   (utils/change-text keypath value)
+                   input-attributes)
+      (seq value) (update :class #(str %1 " " %2) "has-value"))]])
+
+(defn selected-value [evt]
+  (let [elem (.-target evt)]
+    (.-value
+     (aget (.-options elem)
+           (.-selectedIndex elem)))))
+
+(defn select-field [label keypath value options select-attributes]
+  [:.col-12.floating-label.mb2.mx-auto
+   [:.relative.z1
+    [:select.col-12.h2.glow.floating-input.absolute.border-none
+     (merge {:key label
+             :style {:height "3.75rem" :color "transparent" :background-color "transparent"}
+             :placeholder label
+             :value value
+             :on-change #(handle-message events/control-change-state
+                                         {:keypath keypath
+                                          :value   (selected-value %)})}
+            (when (seq value) {:class "has-value"})
+            select-attributes)
+     [:option ""]
+     (map (fn [{name :name val :abbr}]
+            [:option {:key val :value val}
+             (str name)])
+          options)]]
+   [:.bg-pure-white.border.border-width-1.border-light-gray.border-teal-gradient.rounded-1.p1
+    [:label.col-12.h6.teal.relative
+     (merge
+      {:for "shipping-state"}
+      (when (seq value) {:class "has-value"}))
+     label]
+    [:.h3.black.relative
+     (or (:name (first (filter (comp (partial = value) :abbr) options)))
+         nbsp)]]])
 
 (defn spinner
   ([] (spinner {:width "100%" :height "32px"}))

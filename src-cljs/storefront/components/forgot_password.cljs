@@ -13,7 +13,7 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.mx-auto.py3
+     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.mx-auto.py3
       [:.h2.mt1.mb2 "Reset your forgotten password"]
 
       [:form.col-12.flex.flex-column.items-center

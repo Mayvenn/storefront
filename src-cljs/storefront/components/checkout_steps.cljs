@@ -49,3 +49,27 @@
       [:ol {:class (str "progress-steps checkout-step-" (:id current-step))}
        (map-indexed (partial display-progress-step (count steps) current-index)
                     steps)]]]))
+
+(defn redesigned-checkout-step-bar [{:keys [current-navigation-event]} owner]
+  (om/component
+   (html
+    (let [steps three-steps
+          [current-index current-step] (->> steps
+                                            (map-indexed vector)
+                                            (filter #(= (:event (second %)) current-navigation-event))
+                                            first)]
+      [:.flex.flex-column.items-center.col-12.my3
+       [:.relative.border-bottom.border-teal.col-8 {:style {:top "6px"}}]
+       [:.flex.justify-center.col-12.z1
+        (for [{:keys [name id] :as step} steps]
+          [:.h4.col-12.center.titleize.flex.flex-column.justify-center.teal
+           {:key id :id id}
+           [:.mx-auto {:style {:width "12px" :height "12px"}}
+            [:.relative
+             [:.bg-teal.circle.absolute {:style {:width "12px" :height "12px"}}]
+             (when (not= current-step step)
+               [:.bg-pure-white.circle.absolute {:style {:top "1px" :left "1px" :width "10px" :height "10px"}}])]]
+           [:.mt2 name]])]]))))
+
+(defn query [data]
+  {:current-navigation-event (get-in data keypaths/navigation-event)})

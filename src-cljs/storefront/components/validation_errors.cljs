@@ -34,3 +34,12 @@
          [:p "There were problems with the following fields:"]
          [:ul
           (map display-field-errors (sort-by first fields))]])))))
+
+(defn redesigned-validation-errors-component [errors owner]
+  (om/component
+   (html
+    (when (seq errors)
+      [:div#errorExplanation.errorExplanation
+       [:p "There were problems with the following fields:"]
+       [:ul
+        (map display-field-errors (sort-by first errors))]]))))
