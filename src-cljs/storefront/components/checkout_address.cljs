@@ -363,9 +363,12 @@
 
       [:.my2.col-12
        [ui/large-button
-        {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
-         :class    (when saving "saving")}
-        [ui/large-button-text "Continue to Payment"]]]]])))
+        {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))}
+        (if saving
+          [:.img-spinner.bg-no-repeat.bg-center
+           {:style {:height "2.1em"}}]
+          [ui/large-button-text
+           "Continue to Payment"])]]]])))
 
 (defn old-checkout-address-component [data owner]
   (om/component
