@@ -7,7 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
-            [storefront.components.checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]
             [storefront.messages :refer [handle-message]]
             [storefront.hooks.experiments :as experiments]
@@ -346,13 +346,13 @@
                             {:id       :billing-state
                              :required true})])])])))
 
-(defn redesigned-checkout-address-component [{:keys [saving? errors] :as data} owner]
+(defn redesigned-checkout-address-component [{:keys [saving? errors step-bar] :as data} owner]
   (om/component
    (html
-    [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto.mt1
+    [:.bg-white.black.sans-serif
+     [:.flex.flex-column.items-center.col-10.md-col-8.lg-col-5.m-auto.mt1
       (om/build redesigned-validation-errors-component errors)
-      #_(checkout-step-bar data)
+      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 
       [:form.col-12.flex.flex-column.items-center
        {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)}
@@ -375,7 +375,7 @@
    (html
     [:div#checkout
      (om/build validation-errors-component data)
-     (checkout-step-bar data)
+     (checkout-steps/checkout-step-bar data)
      [:div.row
       [:div.checkout-form-wrapper
        [:form.edit_order
@@ -402,7 +402,8 @@
    :places-loaded?            (get-in data keypaths/loaded-places)
    :guest?                    (get-in data keypaths/checkout-as-guest)
    :shipping-expanded?        (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
-   :billing-expanded?         (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))})
+   :billing-expanded?         (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
+   :step-bar                  (checkout-steps/query data)})
 
 (defn checkout-address-component [data owner]
   (om/component

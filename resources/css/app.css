@@ -420,6 +420,7 @@ html { line-height: 1.2; }
 
 .border-pure-white { border-color: var(--pure-white); }
 .border-dark-teal { border-color: var(--dark-teal); }
+.border-teal { border-color: var(--teal); }
 .border-light-gray { border-color: var(--light-gray); }
 
 .debug * { outline: 1px solid gold; }
