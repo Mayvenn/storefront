@@ -323,14 +323,14 @@ html { line-height: 1.2; }
 
 /* Custom forms */
 
-.floating-label label {
+.floating-label .floated-label {
   position: relative;
   top: 1em;
   left: 1em;
   display: none;
 }
 
-.floating-label label.has-value {
+.floating-label .floated-label.has-value {
   display: block;
 }
 

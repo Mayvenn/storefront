@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
             [storefront.components.checkout-steps :refer [checkout-step-bar]]
@@ -48,6 +49,21 @@
   [:p.field {:class class}
    [:input {:type "checkbox" :id id :name id :value value :on-change on-change :checked checked}]
    [:label {:for id} " " label]])
+
+(defn redesigned-places-component [{:keys [id address-keypath keypath value]} owner]
+  (reify
+    om/IDidMount
+    (did-mount [this]
+      (handle-message events/checkout-address-component-mounted {:address-elem id
+                                                                 :address-keypath address-keypath}))
+    om/IRender
+    (render [_]
+      (html
+       (ui/text-field "Address" keypath value
+                      {:type "text"
+                       :name id
+                       :id id
+                       :required true})))))
 
 (defn places-component [data owner {:keys [id address-keypath keypath]}]
   (reify
@@ -168,7 +184,91 @@
                            {:id :shipping-zipcode
                             :required? true})))]]]))
 
-(defn checkout-address-component [data owner]
+(defn redesigned-checkout-address-component [{:keys [billing-address
+                                                     shipping-address
+                                                     email
+                                                     states
+                                                     saving
+                                                     guest?
+                                                     places-loaded?
+                                                     shipping-expanded?
+                                                     billing-expanded?]} owner]
+  (om/component
+   (html
+    [:.bg-white
+     [:.flex.flex-column.items-center.black.sans-serif.col-12.md-col-9.lg-col-6.m-auto.mt1
+      #_(om/build validation-errors-component data)
+      #_(checkout-step-bar data)
+
+      [:form.col-12.flex.flex-column.items-center
+       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)}
+       [:input.hide {:type "submit"}]
+
+       [:.flex.flex-column.items-center.col-12
+        [:.h2.black "Shipping Address"]
+        (ui/text-field "First Name" keypaths/checkout-shipping-address-first-name (:first-name shipping-address)
+                       {:autofocus "autofocus"
+                        :type      "text"
+                        :name      "shipping-first-name"
+                        :id        "shipping-first-name"
+                        :required  true})
+
+        (ui/text-field "Last Name" keypaths/checkout-shipping-address-last-name (:last-name shipping-address)
+                       {:type     "text"
+                        :name     "shipping-last-name"
+                        :id       "shipping-last-name"
+                        :required true})
+
+        ;; TODO: hide when not guest, and query
+        (ui/text-field "Email" keypaths/checkout-guest-email email
+                       {:type     "email"
+                        :name     "shipping-email"
+                        :id       "shipping-email"
+                        :required true})
+
+        (ui/text-field "Mobile Phone" keypaths/checkout-shipping-address-phone (:phone shipping-address)
+                       {:type     "tel"
+                        :name     "shipping-phone"
+                        :id       "shipping-phone"
+                        :required true})
+
+        (when places-loaded?
+          (om/build redesigned-places-component {:id              :shipping-address1
+                                                 :address-keypath keypaths/checkout-shipping-address
+                                                 :keypath         keypaths/checkout-shipping-address-address1
+                                                 :value           (:address1 shipping-address)}))
+
+        (when shipping-expanded?
+          [:.flex.flex-column.items-center.col-12
+           (ui/text-field "Apt/Suite" keypaths/checkout-shipping-address-address2 (:address2 shipping-address)
+                          {:type "text"
+                           :name "shipping-address2"
+                           :id   "shipping-address2"})
+
+           (ui/text-field "Zip Code" keypaths/checkout-shipping-address-zip (:zipcode shipping-address)
+                          {:type     "text"
+                           :name     "shipping-zip"
+                           :id       "shipping-zip"
+                           :required true})
+
+           (ui/text-field "City" keypaths/checkout-shipping-address-city (:city shipping-address)
+                          {:type     "text"
+                           :name     "shipping-city"
+                           :id       "shipping-city"
+                           :required true})
+
+           (ui/select-field "State" keypaths/checkout-shipping-address-state (:state shipping-address) states
+                            {:id       :shipping-state
+                             :required true})])]
+
+       [:div "Billing Address"]]
+
+      [ui/large-button
+       {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
+        :class    (when saving "saving")}
+       [ui/large-button-text "Continue to Payment"]]]])))
+
+(defn old-checkout-address-component [data owner]
   (om/component
    (html
     [:div#checkout
@@ -188,3 +288,23 @@
             (if (experiments/three-steps? data)
               "Continue to Payment"
               "Continue to Shipping")])]]]]])))
+
+(defn query [data]
+  {:billing-address    (get-in data keypaths/checkout-billing-address)
+   :shipping-address   (get-in data keypaths/checkout-shipping-address)
+   :states             (get-in data keypaths/states)
+   :email              (get-in data keypaths/checkout-guest-email)
+   :saving?            (query/get {:request-key request-keys/update-addresses}
+                                  (get-in data keypaths/api-requests))
+   :places-loaded?     (get-in data keypaths/loaded-places)
+   :guest?             (get-in data keypaths/checkout-as-guest)
+   :shipping-expanded? (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
+   :biling-expanded?   (not (empty? (get-in data keypaths/checkout-shipping-address-address1))) })
+
+(defn checkout-address-component [data owner]
+  (om/component
+   (html
+    [:div
+     (if (experiments/three-steps-redesign? data)
+       (om/build redesigned-checkout-address-component (query data))
+       (om/build old-checkout-address-component data))])))
