@@ -23,13 +23,14 @@
        (map (partial apply str))))
 
 (defn format-expiration [s]
-  (let [[month year] (parse-expiration s)]
+  (let [[month year] (parse-expiration s)
+        filtered-str (str month year)]
     (cond
-      (and (empty? month) (empty? year)) s
+      (and (empty? month) (empty? year)) filtered-str
       (goog.string/endsWith s " /") (str month) ;; occurs when the user backspaces through the slash
-      (and (> month 12) (empty? year)) (str "0" (get s 0) " / " (.substring s 1))
+      (and (> month 12) (empty? year)) (str "0" (get filtered-str 0) " / " (.substring filtered-str 1))
       (and (<= 10 month 12) (empty? year)) (str month " / ")
-      (and (< 1 month 10) (not (goog.string/startsWith s "0"))) (str "0" month " / ")
+      (and (< 1 month 10) (not (goog.string/startsWith filtered-str "0"))) (str "0" month " / ")
       (and (= month 1) (goog.string/endsWith s " ")) (str "0" month " / ")
       (empty? year) (str month)
       :else (str month " / " year))))

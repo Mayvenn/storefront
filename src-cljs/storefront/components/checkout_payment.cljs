@@ -6,9 +6,10 @@
             [storefront.request-keys :as request-keys]
             [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.formatters :refer [as-money]]
-            [storefront.components.checkout-steps :refer [checkout-step-bar]]
-            [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.components.checkout-steps :as checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]
             [storefront.hooks.experiments :as experiments]
             [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.orders :as orders]
@@ -62,7 +63,66 @@
       [:h2.checkout-header "Credit Card Info (Required)"]
       (display-credit-card-form data)]])))
 
-(defn checkout-payment-component [data owner]
+(defn redesigned-checkout-payment-component [{:keys [step-bar saving? loaded-stripe? store-credit errors credit-card]} owner]
+  (om/component
+   (html
+    [:.bg-white
+     [ui/container
+      (om/build redesigned-validation-errors-component errors)
+      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
+
+      [:form
+       {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
+
+       (let [{:keys [available applicable remaining fully-covered?]} store-credit]
+         [:div
+          (when (pos? available)
+       ;;; LAND OF CONFUSION
+            [:.border.border-teal
+             [:.h2 "Store credit will be applied for this order!"]
+             [:p.store-credit-instructions
+              (as-money applicable) " in store credit will be applied to this order ("
+              (as-money remaining) " remaining)"]
+             (when (zero? remaining)
+               [:p.store-credit-instructions
+                "Please enter an additional payment method below for the remaining total on your order."])])
+          (when-not fully-covered?
+            [:div
+             [:.h2.my2 "Payment Information"]
+             (let [{:keys [name number expiration ccv]} credit-card]
+               [:div
+                (ui/text-field "Cardholder's Name" keypaths/checkout-credit-card-name name
+                               {:name "name"
+                                :required true})
+                (ui/text-field "Credit Card Number" keypaths/checkout-credit-card-number (cc/format-cc-number number)
+                               {:max-length 19
+                                :auto-complete "off"
+                                :class "cardNumber rounded-1"
+                                :type "tel"
+                                :required true})
+                [:.flex.col-12
+                 [:.col-6
+                  (ui/text-field "Expiration (MM/YY)" keypaths/checkout-credit-card-expiration (cc/format-expiration expiration)
+                                 {:max-length 9
+                                  :auto-complete "off"
+                                  :class "cardExpiry rounded-left-1"
+                                  :type "tel"
+                                  :required true})]
+                 [:.col-6
+                  (ui/text-field "Security Code" keypaths/checkout-credit-card-ccv ccv
+                                 {:max-length 4
+                                  :auto-complete "off"
+                                  :class "cardCode rounded-right-1 border-width-left-0"
+                                  :type "tel"
+                                  :required true})]]])
+             [:.h4.gray
+              "You can review your order on the next page before we charge your credit card."]])])
+
+       (when loaded-stripe?
+         [:.my2
+          (ui/submit-button "Go to Review Order" saving?)])]]])))
+
+(defn old-checkout-payment-component [data owner]
   (om/component
    (html
     [:#checkout
@@ -93,3 +153,32 @@
                             (utils/send-event-callback events/control-checkout-payment-method-submit))
                 :class (when saving "saving")}
                "Go to Review Order"])])]]]]])))
+
+(defn query [data]
+  (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
+        credit-to-use          (min available-store-credit (get-in data keypaths/order-total))
+        remaining-credit       (- available-store-credit credit-to-use)]
+    {:store-credit   {:available  available-store-credit
+                      :applicable credit-to-use
+                      :remaining  remaining-credit
+                      :fully-covered? (orders/fully-covered-by-store-credit?
+                                       (get-in data keypaths/order)
+                                       (get-in data keypaths/user))}
+     :credit-card    {:name (get-in data keypaths/checkout-credit-card-name)
+                      :number (get-in data keypaths/checkout-credit-card-number)
+                      :expiration (get-in data keypaths/checkout-credit-card-expiration)
+                      :ccv (get-in data keypaths/checkout-credit-card-ccv)}
+     :errors         (get-in data keypaths/validation-errors-details)
+     :saving?        (or (query/get {:request-key request-keys/stripe-create-token}
+                                    (get-in data keypaths/api-requests))
+                         (query/get {:request-key request-keys/update-cart-payments}
+                                    (get-in data keypaths/api-requests)))
+     :loaded-stripe? (get-in data keypaths/loaded-stripe)
+     :step-bar       (checkout-steps/query data)}))
+
+(defn checkout-payment-component [data owner]
+  (om/component
+   (html
+    (if (experiments/three-steps-redesign? data)
+      (om/build redesigned-checkout-payment-component (query data))
+      (om/build old-checkout-payment-component data)))))

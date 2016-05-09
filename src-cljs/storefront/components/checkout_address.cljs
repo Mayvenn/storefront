@@ -358,10 +358,10 @@
        {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)}
 
        (om/build redesigned-shipping-address-component data)
-       (om/build redesigned-billing-address-component data)]
+       (om/build redesigned-billing-address-component data)
 
-      [:.my2.col-12
-       (ui/submit-button "Continue to Payment" saving?)]]])))
+       [:.my2.col-12
+        (ui/submit-button "Continue to Payment" saving?)]]]])))
 
 (defn old-checkout-address-component [data owner]
   (om/component
