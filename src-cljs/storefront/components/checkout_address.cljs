@@ -350,25 +350,18 @@
   (om/component
    (html
     [:.bg-white.black.sans-serif
-     [:.flex.flex-column.items-center.col-10.md-col-8.lg-col-5.m-auto.mt1
+     [ui/container
       (om/build redesigned-validation-errors-component errors)
       (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 
       [:form.col-12.flex.flex-column.items-center
        {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)}
-       [:input.hide {:type "submit"}]
 
        (om/build redesigned-shipping-address-component data)
        (om/build redesigned-billing-address-component data)]
 
       [:.my2.col-12
-       [ui/large-button
-        {:on-click (when-not saving? (utils/send-event-callback events/control-checkout-update-addresses-submit))}
-        (if saving?
-          [:.img-spinner.bg-no-repeat.bg-center
-           {:style {:height "2.1em"}}]
-          [ui/large-button-text
-           "Continue to Payment"])]]]])))
+       (ui/submit-button "Continue to Payment" saving?)]]])))
 
 (defn old-checkout-address-component [data owner]
   (om/component

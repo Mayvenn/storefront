@@ -16,14 +16,13 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto.mt1
-      [:.h2.mb2.mt3 "Sign up for an account"]
+     [ui/container
+      [:.h2.mb2.mt2 "Sign up for an account"]
       (facebook/redesigned-sign-in-button facebook-loaded?)
       [:.h4.gray.extra-light.my2 "OR"]
 
       [:form.col-12.flex.flex-column.items-center
        {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
-       [:input.hide {:type "submit"}]
 
        (ui/text-field "Email" keypaths/sign-up-email email
                       {:autofocus "autofocus"
@@ -40,9 +39,8 @@
                       {:type "password"
                        :name "password-confirmation"
                        :required true})
-       [ui/large-button
-        {:on-click (utils/send-event-callback events/control-sign-up-submit)}
-        [ui/large-button-text "Sign Up"]]
+
+       (ui/submit-button "Sign Up")
 
        [:.center.gray.mt3.mb2 "Already have an account? "
         [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]]])))

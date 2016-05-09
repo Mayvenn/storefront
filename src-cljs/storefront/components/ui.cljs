@@ -5,8 +5,37 @@
             [storefront.messages :refer [handle-message]]
             [sablono.core :refer-macros [html]]))
 
-(def large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-12)
-(def large-button-text :.h3.p1.letter-spacing-1)
+(def container :.flex.flex-column.items-center.col-10.md-col-8.lg-col-5.m-auto.mt1.py2.black.sans-serif)
+
+(def ^:private large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-12)
+(def ^:private large-button-text :.h3.p1.letter-spacing-1)
+
+(defn submit-button
+  ([title show-spinner?]
+   (if show-spinner?
+     [large-button
+      [:.img-spinner.bg-no-repeat.bg-center
+       {:style {:height "2.1em"}}]]
+     (submit-button title)))
+  ([title]
+   [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
+    {:type "submit"
+     :value title
+     :style {:height "3.25rem"}}]))
+
+(defn button
+  ([title event show-spinner?]
+   (if show-spinner?
+     [large-button
+      [:.img-spinner.bg-no-repeat.bg-center
+       {:style {:height "2.1em"}}]]
+     (submit-button title)))
+  ([title event]
+   [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
+    {:type "button"
+     :value title
+     :style {:height "3.25rem"}
+     :on-click (utils/send-event-callback event)}]))
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])

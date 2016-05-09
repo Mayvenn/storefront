@@ -18,7 +18,6 @@
 
       [:form.col-12.flex.flex-column.items-center
        {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
-       [:input.hide {:type "submit"}]
 
        (ui/text-field "Email" keypaths/forgot-password-email email
                       {:autofocus "autofocus"
@@ -26,9 +25,7 @@
                        :name "email"
                        :required true})
 
-       [ui/large-button
-        {:on-click (utils/send-event-callback events/control-forgot-password-submit)}
-        [ui/large-button-text "Reset my password"]]]
+       (ui/submit-button "Reset my password")]
 
       [:.h4.gray.extra-light.my2 "OR"]
       (facebook/redesigned-sign-in-button facebook-loaded?)]])))

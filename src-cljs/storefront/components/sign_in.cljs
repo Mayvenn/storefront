@@ -17,7 +17,6 @@
 
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
-      [:input.hide {:type "submit"}]
 
       (ui/text-field "Email" keypaths/sign-in-email email
                      {:autofocus "autofocus"
@@ -29,11 +28,10 @@
                      {:type "password"
                       :name "password"
                       :required true})
-      [ui/large-button
-       {:on-click (utils/send-event-callback events/control-sign-in-submit)}
-       [ui/large-button-text "Sign In"]]
 
-      [:.mt2.col-10.mb3
+      (ui/submit-button "Sign In")
+
+      [:.mt2.col-12.mb3
        [:label.col.col-6.left-align.gray
         [:input#remember-me.align-middle
          (merge (utils/toggle-checkbox keypaths/sign-in-remember remember-me?)
@@ -50,9 +48,9 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto
+     [ui/container
       (when-not get-satisfaction-login?
-        [:.h2.mb1.mt3 "Sign in to your account"])
+        [:.h2.mb1.mt2 "Sign in to your account"])
       (om/build redesigned-sign-in-form-component form-data)]])))
 
 (defn old-sign-in-component [data owner]

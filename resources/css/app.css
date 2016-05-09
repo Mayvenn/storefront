@@ -334,6 +334,12 @@ html { line-height: 1.2; }
 
 /* Custom forms */
 
+input[type=button].reset, input[type=submit].reset {
+    -webkit-appearance: none;
+    display: inline-block;
+    outline: none;
+}
+
 .floating-label .floated-label {
   position: relative;
   top: 1em;

@@ -13,11 +13,9 @@
   (om/component
    (html
     [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.m-auto
-      [:.my2.h2.block. "I'm new here"]
-      [ui/large-button
-       {:on-click (utils/send-event-callback events/control-checkout-as-guest-submit)}
-       [ui/large-button-text "Guest Checkout"]]
+     [ui/container
+      [:.mt1.mb2.h2.block "I'm new here"]
+      (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)
       [:.my3.border.col-2.border-light-gray]
       [:.h2.mb1 "Already registered?"]
       [:.h5.mb2 "Sign into your account below, and checkout even faster!"]
