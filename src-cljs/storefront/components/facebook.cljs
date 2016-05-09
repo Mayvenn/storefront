@@ -19,6 +19,9 @@
 (defn redesigned-sign-in-button [loaded?]
   (redesigned-button loaded? events/control-facebook-sign-in))
 
+(defn redesigned-reset-button [loaded?]
+  (redesigned-button loaded? events/control-facebook-reset))
+
 ;; TODO: delete me after experiements/three-steps-redesign? is removed
 (defn- button [loaded? click-event]
   (if loaded?
@@ -33,6 +36,7 @@
 (defn sign-in-button [loaded?]
   (button loaded? events/control-facebook-sign-in))
 
+;; TODO: delete me after experiements/three-steps-redesign? is removed
 (defn reset-button [loaded?]
   (button loaded? events/control-facebook-reset))
 

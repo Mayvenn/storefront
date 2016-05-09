@@ -2,13 +2,36 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.components.facebook :as facebook]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
-            [storefront.components.validation-errors :refer [validation-errors-component]]))
+            [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]))
 
-(defn reset-password-component [data owner]
+(defn redesigned-reset-password-component [{:keys [reset-password reset-password-confirmation errors loaded-facebook?]} owner]
+  (om/component
+   (html
+    [:.bg-white
+     [ui/container
+      [:.h2.mb2 "Update Your Password"]
+      (om/build redesigned-validation-errors-component errors)
+      [:form.col-12
+       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
+       (ui/text-field "Password" keypaths/reset-password-password reset-password
+                      {:type "password"
+                       :required true
+                       :min-length 6})
+       (ui/text-field "Password Confirmation" keypaths/reset-password-password-confirmation reset-password-confirmation
+                      {:type "password"
+                       :required true
+                       :min-length 6})
+
+       (ui/submit-button "Update")]
+      [:.h4.gray.extra-light.my2 "OR"]
+      (facebook/redesigned-reset-button loaded-facebook?)]])))
+
+(defn old-reset-password-component [data owner]
   (om/component
    (html
     [:div
@@ -36,3 +59,16 @@
                                     :value "Update"}]]]
       [:div.or-divider.my0 [:span "or"]]
       (facebook/reset-button data)]])))
+
+(defn query [data]
+  {:reset-password              (get-in data keypaths/reset-password-password)
+   :reset-password-confirmation (get-in data keypaths/reset-password-password-confirmation)
+   :errors                      (get-in data keypaths/validation-errors-details)
+   :loaded-facebook?            (get-in data keypaths/loaded-facebook)})
+
+(defn reset-password-component [data owner]
+  (om/component
+   (html
+    (if (experiments/three-steps-redesign? data)
+      (om/build redesigned-reset-password-component (query data))
+      (om/build old-reset-password-component data)))))
