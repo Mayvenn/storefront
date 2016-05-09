@@ -77,14 +77,10 @@
        (let [{:keys [available applicable remaining fully-covered?]} store-credit]
          [:div
           (when (pos? available)
-       ;;; LAND OF CONFUSION
-            [:.border.border-teal
-             [:.h2 "Store credit will be applied for this order!"]
-             [:p.store-credit-instructions
-              (as-money applicable) " in store credit will be applied to this order ("
-              (as-money remaining) " remaining)"]
+            [:.border.border-green.bg-light-green.rounded-1.p2.dark-green
+             [:.h5.mb1 [:span.medium (as-money applicable)] " in store credit will be applied."]
              (when (zero? remaining)
-               [:p.store-credit-instructions
+               [:.h6.line-height-2
                 "Please enter an additional payment method below for the remaining total on your order."])])
           (when-not fully-covered?
             [:div
@@ -152,7 +148,7 @@
                {:on-click (when-not saving
                             (utils/send-event-callback events/control-checkout-payment-method-submit))
                 :class (when saving "saving")}
-               "Go to Review Order"])])]]]]])))
+               "Review Order"])])]]]]])))
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)

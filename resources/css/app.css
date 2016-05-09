@@ -392,6 +392,8 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom colors */
 
+.dark-green { color: var(--dark-green); }
+
 /* Custom background-sizes */
 
 .bg-full { background-size: 100%; }
@@ -421,6 +423,7 @@ input[type=button].reset, input[type=submit].reset {
   background-image: linear-gradient(to right,#f865a5,#ff6562);
 }
 
+.bg-light-green { background-color: var(--light-green); }
 
 /* Custom border-colors */
 
@@ -428,6 +431,7 @@ input[type=button].reset, input[type=submit].reset {
 .border-dark-teal { border-color: var(--dark-teal); }
 .border-teal { border-color: var(--teal); }
 .border-light-gray { border-color: var(--light-gray); }
+.border-green { border-color: var (--green); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -548,10 +552,12 @@ input[type=button].reset, input[type=submit].reset {
 
     --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal)); /* use sparingly */
 
-    --light-teal: #3edbf2; /* use sparingly */
-    --teal:       #36b4d4;
-    --dark-teal:  #0092b7; /* use sparingly */
-    --green:      #7ed321;
+    --light-teal:  #3edbf2; /* use sparingly */
+    --teal:        #36b4d4;
+    --dark-teal:   #0092b7; /* use sparingly */
+    --green:       #7ed321;
+    --light-green: rgba(183, 232, 134, 0.2);
+    --dark-green:  #417505;
 
     --white:      #fafafa;
     --silver:     #f2f2f2;
