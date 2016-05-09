@@ -103,7 +103,7 @@
           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
          link-contents)
    (when expanded?
-     [:.relative.z1
+     [:.relative.z2
       {:on-click #(handle-message events/control-menu-collapse-all)}
       [:.fixed.overlay]
       menu])])
