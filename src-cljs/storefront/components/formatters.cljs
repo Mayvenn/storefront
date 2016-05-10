@@ -65,3 +65,8 @@
   (if (zero? amount)
     "FREE"
     (as-money amount)))
+
+(defn as-money-without-cents-or-free [amount]
+  (if (zero? amount)
+    "FREE"
+    (as-money-without-cents amount)))

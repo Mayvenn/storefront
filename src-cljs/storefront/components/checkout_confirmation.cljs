@@ -42,17 +42,7 @@
           [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
           (om/build checkout-payment/redesigned-checkout-payment-component payment)])
        (summary/redesigned-display-order-summary shipping-methods order)
-       [:div.form-buttons.pay-for-order
-        [:a.large.continue.button.primary
-         (merge
-          {:on-click (when-not saving?
-                       (utils/send-event-callback events/control-checkout-confirmation-submit
-                                                  {:place-order? requires-additional-payment?}))
-           :class (str (when submitting?
-                         "saving") " "
-                       (when updating-shipping? "disabled"))}
-          (when saving? {:disabled "disabled"}))
-         "Complete my Purchase"]]]]])))
+       (ui/submit-button "Place Order" submitting? updating-shipping?)]]])))
 
 (defn old-checkout-confirmation-component [data owner]
   (let [placing-order? (query/get {:request-key request-keys/place-order}

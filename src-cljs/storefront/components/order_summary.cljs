@@ -1,5 +1,5 @@
 (ns storefront.components.order-summary
-  (:require [storefront.components.formatters :refer [as-money]]
+  (:require [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.utils :as utils]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :as taxons]
@@ -133,57 +133,56 @@
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]])]])
 
-(defn- redesigned-display-shipment [shipping-methods shipping-item]
-  (when shipping-methods
-    (let [shipping-method (orders/shipping-method-details shipping-methods shipping-item)]
-      [:tr.order-summary-row
-       [:td
-        [:h5 (:name shipping-method)]]
-       [:td
-        [:h5 (as-money (* (:quantity shipping-item) (:unit-price shipping-item)))]]])))
-
 (defn redesigned-display-order-summary [shipping-methods order]
-  [:div
-   [:h4.order-summary-header "Order Summary"]
-   [:table.order-summary-total
-    (let [adjustments   (orders/all-order-adjustments order)
-          quantity      (orders/product-quantity order)
-          shipping-item (orders/shipping-item order)
-          store-credit  (-> order :cart-payments :store-credit)]
+  (let [adjustments   (orders/all-order-adjustments order)
+        quantity      (orders/product-quantity order)
+        shipping-item (orders/shipping-item order)
+        store-credit  (-> order :cart-payments :store-credit)
+        row (fn row
+              ([name amount] (row {} name amount))
+              ([row-attrs name amount]
+               [:tr.h4.line-height-4
+                (merge row-attrs
+                       (when (neg? amount)
+                         {:class "teal"}))
+                [:td name]
+                [:td.right-align.medium (as-money-or-free amount)]]))]
+    [:div.border-top.border-light-gray.mt2
+     [:table.col-12.mt2
       [:tbody
-       [:tr.cart-subtotal.order-summary-row
-        [:td
-         [:h5 (str "Subtotal (" quantity " Item"
-                   (when (> quantity 1) "s") ")")]]
-        [:td
-         [:h5 (as-money (orders/products-subtotal order))]]]
-       (display-adjustments adjustments)
-       (when shipping-item
-         (redesigned-display-shipment shipping-methods shipping-item))
-       [:tr.cart-total.order-summary-row
-        [:td [:h5 "Order Total"]]
-        [:td [:h5 (as-money (:total order))]]]
+       (row "Subtotal"
+            (orders/products-subtotal order))
+
+       (for [{:keys [name price coupon-code]} adjustments]
+         (when-not (= price 0)
+           (row {:key name}
+                (orders/display-adjustment-name name)
+                price)))
+
+       (when (and shipping-item shipping-methods)
+         (row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
+
        (when store-credit
-         [:tr.store-credit-used.order-summary-row.adjustment
-          [:td [:h5 "Store Credit"]]
-          [:td [:h5 (as-money (- (:amount store-credit)))]]])
-       (when store-credit
-         [:tr.balance-due.order-summary-row.cart-total
-          [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
-          [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]])])]])
+         (row "Store Credit" (- (:amount store-credit))))]]
+     [:.border-top.border-light-gray.mt2.py2.h1
+      [:.flex.ml1
+       [:.flex-auto "Total"]
+       [:.right-align
+        (as-money-or-free (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn redesigned-display-line-items [products order]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:div {:key variant-id}
-     [:a [:img.border.rounded-1 {:src (products/thumbnail-url products product-id)
-                                 :alt (:product-name line-item)
-                                 :style {:width "7.33em"
-                                         :height "7.33em"}}]]
-     [:div.line-item-detail.interactive
-      [:h4
-       [:a (products/summary line-item)]]
-      (when-let [length (-> line-item :variant-attrs :length)]
-        (field "Length: " length))
-      (field "Quantity:" (:quantity line-item))
-      (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")]
-     [:div {:style {:clear "both"}}]]))
+    [:.mb1.border-bottom.border-light-gray.py2 {:key variant-id}
+     [:a.col.col-4.mbp2
+      [:img.border.border-light-gray.rounded-1 {:src (products/thumbnail-url products product-id)
+                                                :alt (:product-name line-item)
+                                                :style {:width "7.33em"
+                                                        :height "7.33em"}}]]
+     [:.h4.col.col-8.black.py1
+      [:a.black.medium.titleize (products/summary line-item)]
+      [:.mt1.line-height-2
+       (when-let [length (-> line-item :variant-attrs :length)]
+         [:.h5 "Length: " length])
+       [:.h5 "Price: " (as-money (:unit-price line-item))]
+       [:.h5 "Quantity: " (:quantity line-item)]]]
+     [:.clearfix]]))

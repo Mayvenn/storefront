@@ -11,6 +11,14 @@
 (def ^:private large-button-text :.h3.p1.letter-spacing-1)
 
 (defn submit-button
+  ([title show-spinner? disabled?]
+   (if disabled?
+     [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
+      {:type "submit"
+       :value title
+       :disabled true
+       :style {:height "3.25rem"}}]
+     (submit-button title show-spinner?)))
   ([title show-spinner?]
    (if show-spinner?
      [large-button
