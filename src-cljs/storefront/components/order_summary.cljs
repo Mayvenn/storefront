@@ -132,3 +132,58 @@
        [:tr.cart-total.order-summary-row
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]])]])
+
+(defn- redesigned-display-shipment [shipping-methods shipping-item]
+  (when shipping-methods
+    (let [shipping-method (orders/shipping-method-details shipping-methods shipping-item)]
+      [:tr.order-summary-row
+       [:td
+        [:h5 (:name shipping-method)]]
+       [:td
+        [:h5 (as-money (* (:quantity shipping-item) (:unit-price shipping-item)))]]])))
+
+(defn redesigned-display-order-summary [shipping-methods order]
+  [:div
+   [:h4.order-summary-header "Order Summary"]
+   [:table.order-summary-total
+    (let [adjustments   (orders/all-order-adjustments order)
+          quantity      (orders/product-quantity order)
+          shipping-item (orders/shipping-item order)
+          store-credit  (-> order :cart-payments :store-credit)]
+      [:tbody
+       [:tr.cart-subtotal.order-summary-row
+        [:td
+         [:h5 (str "Subtotal (" quantity " Item"
+                   (when (> quantity 1) "s") ")")]]
+        [:td
+         [:h5 (as-money (orders/products-subtotal order))]]]
+       (display-adjustments adjustments)
+       (when shipping-item
+         (redesigned-display-shipment shipping-methods shipping-item))
+       [:tr.cart-total.order-summary-row
+        [:td [:h5 "Order Total"]]
+        [:td [:h5 (as-money (:total order))]]]
+       (when store-credit
+         [:tr.store-credit-used.order-summary-row.adjustment
+          [:td [:h5 "Store Credit"]]
+          [:td [:h5 (as-money (- (:amount store-credit)))]]])
+       (when store-credit
+         [:tr.balance-due.order-summary-row.cart-total
+          [:td [:h5 (if (= "paid" (:payment-state order)) "Amount charged" "Balance Due")]]
+          [:td [:h5 (as-money (- (:total order) (:amount store-credit)))]]])])]])
+
+(defn redesigned-display-line-items [products order]
+  (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
+    [:div {:key variant-id}
+     [:a [:img.border.rounded-1 {:src (products/thumbnail-url products product-id)
+                                 :alt (:product-name line-item)
+                                 :style {:width "7.33em"
+                                         :height "7.33em"}}]]
+     [:div.line-item-detail.interactive
+      [:h4
+       [:a (products/summary line-item)]]
+      (when-let [length (-> line-item :variant-attrs :length)]
+        (field "Length: " length))
+      (field "Quantity:" (:quantity line-item))
+      (field "Price:" (as-money (:unit-price line-item)) "item-form" "price")]
+     [:div {:style {:clear "both"}}]]))

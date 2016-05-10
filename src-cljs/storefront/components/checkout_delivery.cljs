@@ -81,3 +81,24 @@
             {:on-click (when-not saving (utils/send-event-callback events/control-checkout-shipping-method-submit))
              :class    (when saving "saving")}
             "Continue to Payment"])]]]]])))
+
+
+(defn redesigned-confirm-delivery-component [{:keys [saving? shipping-methods selected-sku]} owner]
+  (om/component
+   (html
+    [:div.checkout-container.delivery
+     [:h2.checkout-header "Delivery Options"]
+     [:div#methods
+      [:div.shipment
+       [:ul.field.radios.shipping-methods
+        (for [shipping-method shipping-methods]
+          (display-shipping-method shipping-method
+                                   {:selected-sku selected-sku
+                                    :saving?      saving?
+                                    :on-click     (select-and-submit-shipping-method shipping-method)}))]]]])))
+
+(defn query [data]
+  {:saving?          (query/get {:request-key request-keys/update-shipping-method}
+                                (get-in data keypaths/api-requests))
+   :shipping-methods (get-in data keypaths/shipping-methods)
+   :selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)})
