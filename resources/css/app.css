@@ -455,6 +455,14 @@ input[type=button].reset, input[type=submit].reset {
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
 .img-spinner      { background-image: url("/images/spinner.svg"); }
 
+.img-check-circle { background-image: url("/images/icons/earned-icon.png"); }
+@media(-webkit-min-device-pixel-ratio: 2) {
+    .img-check-circle { background-image: url("/images/icons/earned-icon@2x.png"); }
+}
+@media(-webkit-min-device-pixel-ratio: 3) {
+    .img-check-circle { background-image: url("/images/icons/earned-icon@3x.png"); }
+}
+
 .img-straight   { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
 .img-blonde     { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
 .img-curly      { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }

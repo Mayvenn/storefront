@@ -2,9 +2,25 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
-            [storefront.events :as events]))
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.hooks.experiments :as experiments]))
 
-(defn checkout-complete-component [_ _]
+(defn redesigned-checkout-complete-component [_ _]
+  (om/component
+   (html
+    [:.bg-white
+     [ui/container
+      [:.img-check-circle.bg-no-repeat.bg-center.bg-contain.mb3.mt2
+       {:style {:width "70px" :height "70px"}}]
+      [:.h2.col-10.center "Thank you for your order!"]
+
+      [:.py3.line-height-3.col-10
+       "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]
+
+      (ui/button "Return to Homepage" events/navigate-home)]])))
+
+(defn old-checkout-complete-component [_ _]
   (om/component
    (html
     [:div.checkout-container
@@ -15,7 +31,14 @@
      [:div.solid-line-divider]
 
      [:p.order-thanks-detail
-      "We've received your order and will being processing it right away. Once your order ships we will send you another e-mail confirmation."]
+      "We've received your order and we'll process it right away. Once your order ships we'll send you another e-mail confirmation."]
      [:a.big-button.left-half.button.primary
       (utils/route-to events/navigate-home)
       "Return Home"]])))
+
+(defn checkout-complete-component [data _]
+  (om/component
+   (html
+    (if (experiments/three-steps-redesign? data)
+      (om/build redesigned-checkout-complete-component {})
+      (om/build old-checkout-complete-component data)))))
