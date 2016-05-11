@@ -6,10 +6,11 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
-            [storefront.components.order-summary :refer [display-cart-summary display-line-items]]
+            [storefront.components.order-summary :as order-summary :refer [display-cart-summary display-line-items]]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
+            [storefront.components.ui :as ui]
             [storefront.utils.query :as query]))
 
 (defn shopping-link-attrs [data]
@@ -75,7 +76,7 @@
      (shopping-link-attrs data)
      "Shop Now"]]])
 
-(defn cart-component [data owner]
+(defn old-cart-component [data owner]
   (om/component
    (html
     [:div
@@ -92,3 +93,56 @@
       [:div.free-shipping-action]
       [:div.keep-shopping
        [:a.full-link (shopping-link-attrs data)]]]])))
+
+(defn new-cart-component [{:keys [products
+                                  order
+                                  coupon-code
+                                  updating?
+                                  shipping-methods]} owner]
+  (let [item-count (count (orders/product-items order))]
+    (om/component
+     (html
+      [:div.col-10.m-auto
+       [:.h2.py3.center.gray (str "You have "
+                                  item-count
+                                  (if (>= 1 item-count)
+                                    " item"
+                                    " items")
+                                  " in your shopping bag.")]
+       [:.h2.py1 "Review your order"]
+       (order-summary/redesigned-display-line-items products order)
+       [:div.flex.items-center
+        [:.col-8.pr1
+         (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+        [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                                 events/control-cart-update-coupon
+                                                 {:show-spinner? updating?})]]
+       (order-summary/redesigned-display-order-summary shipping-methods order)
+       [:div.border-top.border-light-gray.py2]
+       [:form
+        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+        (ui/submit-button "Check Out" false updating?)]
+       [:div.gray.center.py3 "OR"]
+       [:div (ui/button
+              [:.flex
+               [:.flex-auto "Check out with"]
+               [:div.img-paypal.bg-no-repeat.bg-contain {:style {:height "18px" :width "100%"}}]]
+                        events/control-checkout-cart-paypal-setup
+                        {:show-spinner? false
+                         :color "btn-paypal-yellow-gradient"})]
+       ]))))
+
+(defn query [data]
+  {:products         (get-in data keypaths/products)
+   :order            (get-in data keypaths/order)
+   :updating?        (cart-update-pending? data)
+   :applying-coupon? (query/get {:request-key request-keys/add-promotion-code}
+                                 (get-in data keypaths/api-requests))
+   :shipping-methods (get-in data keypaths/shipping-methods)})
+
+(defn cart-component [data owner]
+  (om/component
+   (html
+    (if (experiments/three-steps-redesign? data)
+      (om/build new-cart-component (query data))
+      (om/build old-cart-component data)))))

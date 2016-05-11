@@ -3,6 +3,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.messages :refer [handle-message]]
+            [clojure.string :as str]
             [sablono.core :refer-macros [html]]))
 
 (def container :.flex.flex-column.items-center.col-10.md-col-8.lg-col-5.m-auto.mt1.py2.black.sans-serif)
@@ -31,19 +32,28 @@
      :value title
      :style {:height "3.25rem"}}]))
 
+(def button-classes
+  ["reset"
+   "border"
+   "btn-large"
+   "btn-primary"
+   "col-12"
+   "h3"
+   "p1"
+   "letter-spacing-1"])
+
 (defn button
-  ([title event show-spinner?]
-   (if show-spinner?
-     [large-button
-      [:.img-spinner.bg-no-repeat.bg-center
-       {:style {:height "2.1em"}}]]
-     (submit-button title)))
   ([title event]
-   [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
-    {:type "button"
-     :value title
-     :style {:height "3.25rem"}
-     :on-click (utils/send-event-callback event)}]))
+   (button title event {}))
+  ([title event {:keys [show-spinner? color]}]
+   [:div.flex.items-center.justify-center
+    {:style {:height "3.25rem"}
+     :class (conj button-classes (or color "btn-teal-gradient"))
+     :on-click (utils/send-event-callback event)}
+    (if show-spinner?
+      [:.img-spinner.bg-no-repeat.bg-center
+       {:style {:height "2.1em"}}]
+      title)]))
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])

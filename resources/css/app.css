@@ -381,6 +381,11 @@ input[type=button].reset, input[type=submit].reset {
   background-image: none;
 }
 
+.btn-paypal-yellow-gradient {
+  border-color: var(--paypal-orange);
+  background-image: var(--paypal-yellow-gradient);
+}
+
 .btn-teal-gradient {
   border-color: var(--dark-teal);
   background-image: var(--teal-gradient);
@@ -494,6 +499,8 @@ input[type=button].reset, input[type=submit].reset {
 .img-instagram { background-image: url('/images/icons/instagram.png'); }
 .img-styleseat { background-image: url('/images/icons/styleseat.png'); }
 
+.img-paypal { background-image: url('/images/PPPayPalYellowButton.png'); }
+
 .img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
 .img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
 .img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
@@ -562,7 +569,9 @@ input[type=button].reset, input[type=submit].reset {
 
     --border-radius: 2px;
 
-    --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal)); /* use sparingly */
+    /* use sparingly */
+    --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal));
+    --paypal-yellow-gradient: linear-gradient(0deg, var(--paypal-orange), var(--paypal-yellow));
 
     --light-teal:  #3edbf2; /* use sparingly */
     --teal:        #36b4d4;
@@ -578,6 +587,8 @@ input[type=button].reset, input[type=submit].reset {
     --black:      #4a4a4a;
     --pure-white: #fff;
     --facebook-blue: #3b5998;
+    --paypal-yellow: #ffc43a;
+    --paypal-orange: #fcaf08;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 
