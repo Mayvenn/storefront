@@ -456,10 +456,10 @@ input[type=button].reset, input[type=submit].reset {
 .img-spinner      { background-image: url("/images/spinner.svg"); }
 
 .img-check-circle { background-image: url("/images/icons/earned-icon.png"); }
-@media(-webkit-min-device-pixel-ratio: 2) {
+@media (--xhdpi) {
     .img-check-circle { background-image: url("/images/icons/earned-icon@2x.png"); }
 }
-@media(-webkit-min-device-pixel-ratio: 3) {
+@media (--xxhdpi) {
     .img-check-circle { background-image: url("/images/icons/earned-icon@3x.png"); }
 }
 
@@ -539,6 +539,10 @@ input[type=button].reset, input[type=submit].reset {
 
 @custom-media --breakpoint-sm-md (min-width: 480px) and (max-width: 639px);
 @custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
+
+/* Screen Densities */
+@custom-media --xhdpi (only screen) and (-webkit-min-device-pixel-ratio: 2);
+@custom-media --xxhdpi (only screen) and (-webkit-min-device-pixel-ratio: 3);
 
 /* Custom variables */
 
