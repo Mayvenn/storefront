@@ -40,7 +40,7 @@
        (when requires-additional-payment?
          [:div
           [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
-          (om/build checkout-payment/redesigned-checkout-payment-component payment)])
+          (om/build checkout-payment/redesigned-credit-card-form-component payment)])
        (summary/redesigned-display-order-summary shipping-methods order)
        (ui/submit-button "Place Order" submitting? updating-shipping?)]]])))
 
@@ -101,7 +101,7 @@
      :shipping-methods             (get-in data keypaths/shipping-methods)
      :products                     (get-in data keypaths/products)
      :order                        (get-in data keypaths/order)
-     :payment                      (checkout-payment/query data)
+     :payment                      (checkout-payment/redesigned-credit-card-form-query data)
      :delivery                     (checkout-delivery/query data)}))
 
 (defn checkout-confirmation-component [data owner]
