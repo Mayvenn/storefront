@@ -45,11 +45,15 @@
 (defn button
   ([title event]
    (button title event {}))
-  ([title event {:keys [show-spinner? color]}]
+  ([title event {:keys [show-spinner? disabled? color]}]
    [:div.flex.items-center.justify-center
     {:style {:height "3.25rem"}
-     :class (conj button-classes (or color "btn-teal-gradient"))
-     :on-click (utils/send-event-callback event)}
+     :class (conj button-classes
+                  (or color "btn-teal-gradient")
+                  (when disabled? "is-disabled"))
+     :on-click (if disabled?
+                 utils/noop-callback
+                 (utils/send-event-callback event))}
     (if show-spinner?
       [:.img-spinner.bg-no-repeat.bg-center
        {:style {:height "2.1em"}}]
@@ -132,3 +136,24 @@
    [:.circle.bg-silver.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
     [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
+
+(def ^:private counter-button
+  :a.col.flex.border.border-silver.circle.items-center.justify-center.black.h1)
+
+(defn ^:private counter-button* [spinning? f label]
+  [counter-button
+   {:href "#"
+    :disabled spinning?
+    :on-click (if-not spinning? f utils/noop-callback)
+    :style {:height "1em" :width "1em"}} [:div label]]
+  )
+
+(defn counter [value spinning? dec-fn inc-fn]
+  [:div.flex.items-center
+   (counter-button* spinning? dec-fn "-")
+   [:div.center.h2.mx1
+    {:class (when spinning? "img-spinner bg-no-repeat bg-center")
+     :style {:height "1.0em"
+             :width "1.0em"}}
+    (when-not spinning? value)]
+   (counter-button* spinning? inc-fn "+")])

@@ -4,6 +4,8 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as products]
+            [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
             [storefront.components.order-summary :as order-summary :refer [display-cart-summary display-line-items]]
@@ -94,51 +96,96 @@
       [:div.keep-shopping
        [:a.full-link (shopping-link-attrs data)]]]])))
 
+(defn new-display-line-items [products order cart-quantities update-line-item-requests]
+  (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
+    [:.mb1.border-bottom.border-light-gray.py2 {:key variant-id}
+     [:a.col.col-4.mbp2
+      [:img.border.border-light-gray.rounded-1 {:src (products/thumbnail-url products product-id)
+                                                :alt (:product-name line-item)
+                                                :style {:width "7.33em"
+                                                        :height "7.33em"}}]]
+     [:.h4.col.col-8.black.py1
+      [:a.black.medium.titleize (products/summary line-item)]
+      [:.mt1.line-height-2
+       (when-let [length (-> line-item :variant-attrs :length)]
+         [:.h5 "Length: " length])
+       [:.h5 "Price: " (as-money (:unit-price line-item))]]
+      [:.pt2.flex.items-center
+       [:div.flex-auto
+        [:a.teal
+         {:href "#"
+          :on-click (if false
+                      utils/noop-callback
+                      (utils/send-event-callback events/control-cart-remove variant-id))}
+         "Remove"]]
+       [:div
+        (ui/counter (get cart-quantities variant-id)
+                    (get update-line-item-requests variant-id)
+                    (utils/send-event-callback events/control-cart-line-item-dec
+                                               {:variant-id variant-id})
+                    (utils/send-event-callback events/control-cart-line-item-inc
+                                               {:variant-id variant-id}))]]]
+     [:.clearfix]]))
+
 (defn new-cart-component [{:keys [products
                                   order
                                   coupon-code
+                                  applying-coupon?
                                   updating?
-                                  shipping-methods]} owner]
-  (let [item-count (count (orders/product-items order))]
+                                  shipping-methods
+                                  cart-quantities
+                                  update-line-item-requests]} owner]
+  (let [item-count (orders/product-quantity order)]
     (om/component
      (html
       [:div.col-10.m-auto
-       [:.h2.py3.center.gray (str "You have "
-                                  item-count
-                                  (if (>= 1 item-count)
-                                    " item"
-                                    " items")
-                                  " in your shopping bag.")]
+       [:.h2.center.py3.gray.mxn1 (str "You have " item-count
+                           (if (>= 1 item-count) " item" " items")
+                           " in your shopping bag.")]
        [:.h2.py1 "Review your order"]
-       (order-summary/redesigned-display-line-items products order)
-       [:div.flex.items-center
+       (new-display-line-items products order cart-quantities update-line-item-requests)
+       [:div.flex.items-center.pt2
         [:.col-8.pr1
          (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
         [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
                                                  events/control-cart-update-coupon
-                                                 {:show-spinner? updating?})]]
-       (order-summary/redesigned-display-order-summary shipping-methods order)
+                                                 {:disabled? updating?
+                                                  :show-spinner? applying-coupon?})]]
+       [:div.mtn1
+        (order-summary/redesigned-display-order-summary shipping-methods order)]
        [:div.border-top.border-light-gray.py2]
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
         (ui/submit-button "Check Out" false updating?)]
        [:div.gray.center.py3 "OR"]
-       [:div (ui/button
-              [:.flex
-               [:.flex-auto "Check out with"]
-               [:div.img-paypal.bg-no-repeat.bg-contain {:style {:height "18px" :width "100%"}}]]
+       [:div.pb4 (ui/button
+              [:.col-12.flex.items-center.justify-center
+               [:.right-align.mr1 "Check out with"]
+               [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
+                                                              :width "80px"}}]]
                         events/control-checkout-cart-paypal-setup
                         {:show-spinner? false
                          :color "btn-paypal-yellow-gradient"})]
        ]))))
 
 (defn query [data]
-  {:products         (get-in data keypaths/products)
-   :order            (get-in data keypaths/order)
-   :updating?        (cart-update-pending? data)
-   :applying-coupon? (query/get {:request-key request-keys/add-promotion-code}
-                                 (get-in data keypaths/api-requests))
-   :shipping-methods (get-in data keypaths/shipping-methods)})
+  (let [cart-quantities (get-in data keypaths/cart-quantities)]
+    {:products         (get-in data keypaths/products)
+     :order            (get-in data keypaths/order)
+     :coupon-code      (get-in data keypaths/cart-coupon-code)
+     :updating?        (cart-update-pending? data)
+     :applying-coupon? (query/get {:request-key request-keys/add-promotion-code}
+                                  (get-in data keypaths/api-requests))
+     :shipping-methods (get-in data keypaths/shipping-methods)
+     :cart-quantities cart-quantities
+     :update-line-item-requests (->> cart-quantities
+                                     keys
+                                     (map (juxt identity
+                                                #(query/get
+                                                  {:request-key
+                                                   (conj request-keys/update-line-item %)}
+                                                  (get-in data keypaths/api-requests))))
+                                     (into {}))}))
 
 (defn cart-component [data owner]
   (om/component
