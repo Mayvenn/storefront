@@ -125,9 +125,7 @@
                           :auto-complete "off"
                           :class         "cardCode rounded-right-1 border-width-left-0"
                           :type          "tel"
-                          :required      true})]]]
-       [:.h4.gray
-        "You can review your order on the next page before we charge your credit card."]]))))
+                          :required      true})]]]]))))
 
 (defn redesigned-credit-card-form-query [data]
   {:credit-card {:name (get-in data keypaths/checkout-credit-card-name)
@@ -155,7 +153,10 @@
                [:.h6.line-height-2
                 "Please enter an additional payment method below for the remaining total on your order."])])
           (when-not fully-covered?
-            (om/build redesigned-credit-card-form-component {:credit-card credit-card}))])
+            [:div
+             (om/build redesigned-credit-card-form-component {:credit-card credit-card})
+             [:.h4.gray
+              "You can review your order on the next page before we charge your credit card."]] )])
 
        (when loaded-stripe?
          [:.my2
