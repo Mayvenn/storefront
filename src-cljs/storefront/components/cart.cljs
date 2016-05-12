@@ -156,17 +156,16 @@
        [:div.border-top.border-light-gray.py2]
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        (ui/submit-button "Check Out" false updating?)]
+        (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
        [:div.gray.center.py3 "OR"]
        [:div.pb4 (ui/button
-              [:.col-12.flex.items-center.justify-center
-               [:.right-align.mr1 "Check out with"]
-               [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
-                                                              :width "80px"}}]]
-                        events/control-checkout-cart-paypal-setup
-                        {:show-spinner? false
-                         :color "btn-paypal-yellow-gradient"})]
-       ]))))
+                  [:.col-12.flex.items-center.justify-center
+                   [:.right-align.mr1 "Check out with"]
+                   [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
+                                                                  :width "80px"}}]]
+                  events/control-checkout-cart-paypal-setup
+                  {:show-spinner? false
+                   :color "btn-paypal-yellow-gradient"})]]))))
 
 (defn query [data]
   (let [cart-quantities (get-in data keypaths/cart-quantities)]

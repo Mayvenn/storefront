@@ -159,7 +159,7 @@
 
        (when loaded-stripe?
          [:.my2
-          (ui/submit-button "Go to Review Order" saving?)])]]])))
+          (ui/submit-button "Go to Review Order" {:spinning? saving?})])]]])))
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)

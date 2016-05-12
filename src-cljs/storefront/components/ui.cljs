@@ -12,25 +12,18 @@
 (def ^:private large-button-text :.h3.p1.letter-spacing-1)
 
 (defn submit-button
-  ([title show-spinner? disabled?]
-   (if disabled?
-     [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
-      {:type "submit"
-       :value title
-       :disabled true
-       :style {:height "3.25rem"}}]
-     (submit-button title show-spinner?)))
-  ([title show-spinner?]
-   (if show-spinner?
+  ([title]
+   (submit-button title {}))
+  ([title {:keys [spinning? disabled?]}]
+   (if spinning?
      [large-button
       [:.img-spinner.bg-no-repeat.bg-center
        {:style {:height "2.1em"}}]]
-     (submit-button title)))
-  ([title]
-   [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
-    {:type "submit"
-     :value title
-     :style {:height "3.25rem"}}]))
+     [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
+      {:type "submit"
+       :value title
+       :disabled (boolean disabled?)
+       :style {:height "3.25rem"}}])))
 
 (def button-classes
   ["reset"
@@ -152,7 +145,7 @@
   [:div.flex.items-center
    (counter-button* spinning? dec-fn "-")
    [:div.center.h2.mx1
-    {:class (when spinning? "img-spinner bg-no-repeat bg-center")
+    {:class (when spinning? "img-spinner bg-no-repeat bg-center bg-contain")
      :style {:height "1.0em"
              :width "1.0em"}}
     (when-not spinning? value)]

@@ -42,7 +42,8 @@
           [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
           (om/build checkout-payment/redesigned-credit-card-form-component payment)])
        (summary/redesigned-display-order-summary shipping-methods order)
-       (ui/submit-button "Place Order" submitting? updating-shipping?)]]])))
+       (ui/submit-button "Place Order" {:spinning? submitting?
+                                        :disabled? updating-shipping?})]]])))
 
 (defn old-checkout-confirmation-component [data owner]
   (let [placing-order? (query/get {:request-key request-keys/place-order}

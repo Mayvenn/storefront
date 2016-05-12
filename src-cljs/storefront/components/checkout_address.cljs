@@ -361,7 +361,7 @@
        (om/build redesigned-billing-address-component data)
 
        [:.my2.col-12
-        (ui/submit-button "Continue to Payment" saving?)]]]])))
+        (ui/submit-button "Continue to Payment" {:spinning? saving?})]]]])))
 
 (defn old-checkout-address-component [data owner]
   (om/component
