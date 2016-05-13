@@ -12,9 +12,10 @@
 (defn store [storeback-config store-slug]
   (when (seq store-slug)
     (try
-      (->
-       (storeback-fetch storeback-config "/store" {:store_slug store-slug})
-       :body)
+      (let [resp (storeback-fetch storeback-config "/store" {:store_slug store-slug})]
+        (if (#{500} (:status resp))
+          ::storeback-unavailable
+          (:body resp)))
       (catch java.io.IOException e
         ::storeback-unavailable))))
 

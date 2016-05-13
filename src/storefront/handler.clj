@@ -69,7 +69,7 @@
         (= "www" subdomain)
         (redirect (str "http://" store-slug "." domain (query-string req)))
 
-        (= store ::storeback-unavailable)
+        (= store :storefront.fetch/storeback-unavailable)
         (h req)
 
         store-slug
