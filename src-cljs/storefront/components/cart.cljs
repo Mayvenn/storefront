@@ -146,7 +146,8 @@
      [:.align-left.col-12
       [:.h2.py1 "Review your order"]
       (new-display-line-items products order cart-quantities update-line-item-requests)
-      [:div.flex.items-center.pt2
+      [:form.flex.items-center.pt2
+       {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
        [:.col-8.pr1
         (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
        [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
