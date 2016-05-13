@@ -418,10 +418,12 @@
                       (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
-  (api/add-promotion-code (get-in app-state keypaths/order-number)
-                          (get-in app-state keypaths/order-token)
-                          (get-in app-state keypaths/cart-coupon-code)
-                          false))
+  (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
+    (when-not (empty? coupon-code)
+      (api/add-promotion-code (get-in app-state keypaths/order-number)
+                              (get-in app-state keypaths/order-token)
+                              coupon-code
+                              false))))
 
 (defn- modify-cart [app-state args f]
   (f (get-in app-state keypaths/order)
