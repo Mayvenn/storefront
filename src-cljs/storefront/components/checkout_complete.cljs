@@ -6,19 +6,21 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]))
 
+(def order-complete-check :.img-check-circle.bg-no-repeat.bg-center.bg-contain.mb3.mt2.m-auto)
+
 (defn redesigned-checkout-complete-component [_ _]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      [:.img-check-circle.bg-no-repeat.bg-center.bg-contain.mb3.mt2
-       {:style {:width "70px" :height "70px"}}]
-      [:.h2.col-10.center "Thank you for your order!"]
+    (ui/container
+     [:.col-10.center.m-auto.py3
+      [order-complete-check {:style {:width "70px" :height "70px"}}]]
 
-      [:.py3.line-height-3.col-10
-       "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]
+     [:.h1.col-12.m-auto.center "Thank you for your order!"]
 
-      (ui/button "Return to Homepage" events/navigate-home)]])))
+     [:.py3.line-height-3.col-10.m-auto.gray
+      "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]
+
+     (ui/button "Return to Homepage" events/navigate-home)))))
 
 (defn old-checkout-complete-component [_ _]
   (om/component

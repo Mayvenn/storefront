@@ -136,31 +136,30 @@
 (defn redesigned-checkout-payment-component [{:keys [step-bar saving? loaded-stripe? store-credit errors credit-card]} owner]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      (om/build redesigned-validation-errors-component errors)
-      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
+    (ui/container
+     (om/build redesigned-validation-errors-component errors)
+     (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 
-      [:form
-       {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
+     [:form
+      {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
 
-       (let [{:keys [available applicable remaining fully-covered?]} store-credit]
-         [:div
-          (when (pos? available)
-            [:.border.border-green.bg-light-green.rounded-1.p2.dark-green
-             [:.h5.mb1 [:span.medium (as-money applicable)] " in store credit will be applied."]
-             (when (zero? remaining)
-               [:.h6.line-height-2
-                "Please enter an additional payment method below for the remaining total on your order."])])
-          (when-not fully-covered?
-            [:div
-             (om/build redesigned-credit-card-form-component {:credit-card credit-card})
-             [:.h4.gray
-              "You can review your order on the next page before we charge your credit card."]] )])
+      (let [{:keys [available applicable remaining fully-covered?]} store-credit]
+        [:div
+         (when (pos? available)
+           [:.border.border-green.bg-light-green.rounded-1.p2.dark-green
+            [:.h5.mb1 [:span.medium (as-money applicable)] " in store credit will be applied."]
+            (when (zero? remaining)
+              [:.h6.line-height-2
+               "Please enter an additional payment method below for the remaining total on your order."])])
+         (when-not fully-covered?
+           [:div
+            (om/build redesigned-credit-card-form-component {:credit-card credit-card})
+            [:.h4.gray
+             "You can review your order on the next page before we charge your credit card."]] )])
 
-       (when loaded-stripe?
-         [:.my2
-          (ui/submit-button "Go to Review Order" {:spinning? saving?})])]]])))
+      (when loaded-stripe?
+        [:.my2
+         (ui/submit-button "Go to Review Order" {:spinning? saving?})])]))))
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)

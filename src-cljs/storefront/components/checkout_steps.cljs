@@ -58,7 +58,7 @@
                                             (map-indexed vector)
                                             (filter #(= (:event (second %)) current-navigation-event))
                                             first)]
-      [:.flex.flex-column.items-center.col-12.my3
+      [:.flex.flex-column.items-center.col-12.my2
        [:.relative.border-bottom.border-teal.col-8 {:style {:top "6px"}}]
        [:.flex.justify-center.col-12.z1
         (for [[step-index {:keys [name id event] :as step}] (map-indexed vector steps)]

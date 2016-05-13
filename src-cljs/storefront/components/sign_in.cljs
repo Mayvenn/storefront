@@ -47,11 +47,10 @@
 (defn redesigned-sign-in-component [{:keys [get-satisfaction-login?] :as form-data} owner]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      (when-not get-satisfaction-login?
-        [:.h2.mb1.mt2 "Sign in to your account"])
-      (om/build redesigned-sign-in-form-component form-data)]])))
+    (ui/container
+     (when-not get-satisfaction-login?
+       [:.h2.center.my2 "Sign in to your account"])
+     (om/build redesigned-sign-in-form-component form-data)))))
 
 (defn old-sign-in-component [data owner]
   (om/component

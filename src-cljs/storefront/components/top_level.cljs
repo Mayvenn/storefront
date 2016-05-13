@@ -60,7 +60,7 @@
        (om/build promotion-banner-component data)
        [:div.page-wrap
         (if (experiments/new-nav? data)
-          [:div
+          [:div.border-bottom.border-silver
            (header/built-new-component data)
            (slideout-nav/built-new-component data)]
           [:div

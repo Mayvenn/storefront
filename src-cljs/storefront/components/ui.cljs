@@ -6,7 +6,20 @@
             [clojure.string :as str]
             [sablono.core :refer-macros [html]]))
 
-(def container :.flex.flex-column.items-center.col-10.md-col-8.lg-col-5.m-auto.mt1.py2.black.sans-serif)
+(defn container [& content]
+  [:div {:class [:flex
+                 :flex-column
+                 :items-center
+                 :col-12
+                 :bg-white
+                 :black
+                 :sans-serif]}
+   [:div {:class [:p2
+                  :col-10
+                  :md-col-8
+                  :lg-col-6
+                  :m-auto]}
+    content]])
 
 (def ^:private large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-12)
 (def ^:private large-button-text :.h3.p1.letter-spacing-1)

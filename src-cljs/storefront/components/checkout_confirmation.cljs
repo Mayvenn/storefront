@@ -28,22 +28,21 @@
                                                   owner]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      (om/build checkout-steps/redesigned-checkout-step-bar checkout-steps)
-      [:.h2.left-align.col-12 "Order Summary"]
-      [:form.col-12
-       {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
-                                              {:place-order? requires-additional-payment?})}
-       (summary/redesigned-display-line-items products order)
-       (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
-       (when requires-additional-payment?
-         [:div
-          [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
-          (om/build checkout-payment/redesigned-credit-card-form-component payment)])
-       (summary/redesigned-display-order-summary shipping-methods order)
-       (ui/submit-button "Place Order" {:spinning? submitting?
-                                        :disabled? updating-shipping?})]]])))
+    (ui/container
+     (om/build checkout-steps/redesigned-checkout-step-bar checkout-steps)
+     [:.h2.left-align.col-12 "Order Summary"]
+     [:form.col-12
+      {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
+                                             {:place-order? requires-additional-payment?})}
+      (summary/redesigned-display-line-items products order)
+      (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
+      (when requires-additional-payment?
+        [:div
+         [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
+         (om/build checkout-payment/redesigned-credit-card-form-component payment)])
+      (summary/redesigned-display-order-summary shipping-methods order)
+      (ui/submit-button "Place Order" {:spinning? submitting?
+                                       :disabled? updating-shipping?})]))))
 
 (defn old-checkout-confirmation-component [data owner]
   (let [placing-order? (query/get {:request-key request-keys/place-order}

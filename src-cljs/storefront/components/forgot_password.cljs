@@ -12,23 +12,23 @@
 (defn redesigned-forgot-password-component [{:keys [email facebook-loaded?]} owner]
   (om/component
    (html
-    [:.bg-white
-     [:.flex.flex-column.items-center.black.sans-serif.col-10.md-col-8.lg-col-5.mx-auto.py3
-      [:.h2.mt1.mb2 "Reset your forgotten password"]
+    (ui/container
+     [:.h2.center.my2 "Reset your forgotten password"]
 
-      [:form.col-12.flex.flex-column.items-center
-       {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
+     [:form.col-12.flex.flex-column.items-center
+      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
 
-       (ui/text-field "Email" keypaths/forgot-password-email email
-                      {:autofocus "autofocus"
-                       :type "email"
-                       :name "email"
-                       :required true})
+      (ui/text-field "Email" keypaths/forgot-password-email email
+                     {:autofocus "autofocus"
+                      :type "email"
+                      :name "email"
+                      :required true})
 
-       (ui/submit-button "Reset my password")]
+      (ui/submit-button "Reset my password")]
 
-      [:.h4.gray.extra-light.my2 "OR"]
-      (facebook/redesigned-sign-in-button facebook-loaded?)]])))
+     [:.h4.center.gray.extra-light.my2 "OR"]
+
+     (facebook/redesigned-sign-in-button facebook-loaded?)))))
 
 (defn old-forgot-password-component [data owner]
   (om/component

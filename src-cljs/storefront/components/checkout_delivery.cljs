@@ -86,7 +86,7 @@
 (defn redesigned-confirm-delivery-component [{:keys [saving? shipping-methods selected-sku]} owner]
   (om/component
    (html
-    [:div
+    [:.bg-white
      [:.h3 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]

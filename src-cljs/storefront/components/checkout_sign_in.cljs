@@ -12,14 +12,15 @@
 (defn redesigned-checkout-sign-in-component [sign-in-form-data owner]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      [:.mt1.mb2.h2.block "I'm new here"]
-      (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)
-      [:.my3.border.col-2.border-light-gray]
-      [:.h2.mb1 "Already registered?"]
-      [:.h5.mb2 "Sign into your account below, and checkout even faster!"]
-      (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)]])))
+    (ui/container
+     [:.h2.center.my2 "I'm new here"]
+
+     (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)
+
+     [:.my3 [:.col-2.m-auto.border.border-light-gray]]
+     [:.h2.center.my2 "Already registered?"]
+     [:.h5.center.mb2 "Sign into your account below, and checkout even faster!"]
+     (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)))))
 
 (defn old-checkout-sign-in [data owner]
   (om/component

@@ -105,7 +105,7 @@
                                                 :alt (:product-name line-item)
                                                 :style {:width "7.33em"
                                                         :height "7.33em"}}]]
-     [:.h4.col.col-8.black.py1
+     [:.h4.col.col-8.black.p1
       [:a.black.medium.titleize (products/summary line-item)]
       [:.mt1.line-height-2
        (when-let [length (-> line-item :variant-attrs :length)]
@@ -139,34 +139,35 @@
                                   update-line-item-requests]} owner]
   (om/component
    (html
-    [:div.col-10.m-auto
-     [:.h2.center.py3.gray.mxn1 (str "You have " item-count
-                                     (if (>= 1 item-count) " item" " items")
-                                     " in your shopping bag.")]
-     [:.h2.py1 "Review your order"]
-     (new-display-line-items products order cart-quantities update-line-item-requests)
-     [:div.flex.items-center.pt2
-      [:.col-8.pr1
-       (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-      [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                               events/control-cart-update-coupon
-                                               {:disabled? updating?
-                                                :show-spinner? applying-coupon?})]]
-     [:div.mtn1
-      (order-summary/redesigned-display-order-summary shipping-methods order)]
-     [:div.border-top.border-light-gray.py2]
-     [:form
-      {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-      (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
-     [:div.gray.center.py3 "OR"]
-     [:div.pb4 (ui/button
-                [:.col-12.flex.items-center.justify-center
-                 [:.right-align.mr1 "Check out with"]
-                 [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
-                                                                :width "80px"}}]]
-                events/control-checkout-cart-paypal-setup
-                {:show-spinner? false
-                 :color "btn-paypal-yellow-gradient"})]])))
+    (ui/container
+     [:.h2.center.py3.gray (str "You have " item-count
+                         (if (>= 1 item-count) " item" " items")
+                         " in your shopping bag.")]
+     [:.align-left.col-12
+      [:.h2.py1 "Review your order"]
+      (new-display-line-items products order cart-quantities update-line-item-requests)
+      [:div.flex.items-center.pt2
+       [:.col-8.pr1
+        (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+       [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                                events/control-cart-update-coupon
+                                                {:disabled? updating?
+                                                 :show-spinner? applying-coupon?})]]
+      [:div.mtn1
+       (order-summary/redesigned-display-order-summary shipping-methods order)]
+      [:div.border-top.border-light-gray.py2]
+      [:form
+       {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+       (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
+      [:div.h4.gray.center.py2 "OR"]
+      [:div.pb4 (ui/button
+                 [:.col-12.flex.items-center.justify-center
+                  [:.right-align.mr1 "Check out with"]
+                  [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
+                                                                 :width "80px"}}]]
+                 events/control-checkout-cart-paypal-setup
+                 {:show-spinner? false
+                  :color "btn-paypal-yellow-gradient"})]]))))
 
 (defn query [data]
   (let [cart-quantities (get-in data keypaths/cart-quantities)
@@ -192,14 +193,15 @@
 (defn new-empty-cart-component [{:keys [nav-message]} owner]
   (om/component
    (html
-    [:div.col-10.center.m-auto
-     [:.m-auto.py3
-      (svg/bag {:height "70px"
-                :width "70px"} 1)]
+    (ui/container
+     [:.col-10.center.m-auto.py3
+      (svg/bag {:height "70px" :width "70px"} 1)]
+
      [:p.h1.center "Oh No!"]
-     [:p.py2.gray.center "Your Shopping Bag is Empty."]
-     [:div.py2.center
-      (ui/button "Shop Now" [] (apply utils/route-to nav-message))]])))
+
+     [:.py3.line-height-3.gray.center "Your Shopping Bag is Empty."]
+
+     (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
 
 
 (defn cart-component [data owner]

@@ -15,35 +15,34 @@
                                             password-confirmation]}]
   (om/component
    (html
-    [:.bg-white
-     [ui/container
-      [:.h2.mb2.mt2 "Sign up for an account"]
-      (facebook/redesigned-sign-in-button facebook-loaded?)
-      [:.h4.gray.extra-light.my2 "OR"]
+    (ui/container
+     [:.h2.center.my2 "Sign up for an account"]
+     (facebook/redesigned-sign-in-button facebook-loaded?)
+     [:.h4.center.gray.extra-light.my2 "OR"]
 
-      [:form.col-12.flex.flex-column.items-center
-       {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
+     [:form.col-12.flex.flex-column.items-center
+      {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
 
-       (ui/text-field "Email" keypaths/sign-up-email email
-                      {:autofocus "autofocus"
-                       :type "email"
-                       :name "email"
-                       :required true})
+      (ui/text-field "Email" keypaths/sign-up-email email
+                     {:autofocus "autofocus"
+                      :type "email"
+                      :name "email"
+                      :required true})
 
-       (ui/text-field "Password" keypaths/sign-up-password password
-                      {:type "password"
-                       :name "password"
-                       :required true})
+      (ui/text-field "Password" keypaths/sign-up-password password
+                     {:type "password"
+                      :name "password"
+                      :required true})
 
-       (ui/text-field "Password Confirmation" keypaths/sign-up-password-confirmation password-confirmation
-                      {:type "password"
-                       :name "password-confirmation"
-                       :required true})
+      (ui/text-field "Password Confirmation" keypaths/sign-up-password-confirmation password-confirmation
+                     {:type "password"
+                      :name "password-confirmation"
+                      :required true})
 
-       (ui/submit-button "Sign Up")
+      (ui/submit-button "Sign Up")
 
-       [:.center.gray.mt3.mb2 "Already have an account? "
-        [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]]])))
+      [:.center.gray.mt3.mb2 "Already have an account? "
+       [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]))))
 
 (defn old-sign-up-component [data owner]
   (om/component
