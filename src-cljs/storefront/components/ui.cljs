@@ -38,15 +38,16 @@
 (defn button
   ([title event]
    (button title event {}))
-  ([title event {:keys [show-spinner? disabled? color]}]
+  ([title event {:keys [show-spinner? disabled? color on-click]}]
    [:div.flex.items-center.justify-center
     {:style {:height "3.25rem"}
      :class (conj button-classes
                   (or color "btn-teal-gradient")
                   (when disabled? "is-disabled"))
-     :on-click (if disabled?
-                 utils/noop-callback
-                 (utils/send-event-callback event))}
+     :on-click (or on-click
+                   (if disabled?
+                     utils/noop-callback
+                     (utils/send-event-callback event)))}
     (if show-spinner?
       [:.img-spinner.bg-no-repeat.bg-center
        {:style {:height "2.1em"}}]
