@@ -15,7 +15,7 @@
                  :black
                  :sans-serif]}
    [:div {:class [:p2
-                  :col-10
+                  :col-12
                   :md-col-8
                   :lg-col-6
                   :m-auto]}
