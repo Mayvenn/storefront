@@ -394,7 +394,7 @@
    :places-loaded?            (get-in data keypaths/loaded-places)
    :guest?                    (get-in data keypaths/checkout-as-guest)
    :shipping-expanded?        (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
-   :billing-expanded?         (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
+   :billing-expanded?         (not (empty? (get-in data keypaths/checkout-billing-address-address1)))
    :step-bar                  (checkout-steps/query data)})
 
 (defn checkout-address-component [data owner]
