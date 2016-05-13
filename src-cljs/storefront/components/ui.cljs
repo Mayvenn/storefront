@@ -144,23 +144,20 @@
     (merge {:style {:width width :height width}} attrs)
     [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
 
-(def ^:private counter-button
-  :a.col.flex.border.border-silver.circle.items-center.justify-center.black.h1)
-
-(defn ^:private counter-button* [spinning? f label]
-  [counter-button
-   {:href "#"
-    :disabled spinning?
-    :on-click (if-not spinning? f utils/noop-callback)
-    :style {:height "1em" :width "1em"}} [:div label]]
-  )
+(defn ^:private counter-button [spinning? f label]
+  [:.circle.bg-gray
+   [:a.col.flex.items-center.justify-center.bg-lighten-3.white.h1.extra-light
+    {:href "#"
+     :disabled spinning?
+     :on-click (if-not spinning? f utils/noop-callback)
+     :style {:height ".93em" :width ".93em"}} [:div label]]])
 
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.flex.items-center
-   (counter-button* spinning? dec-fn "-")
+   (counter-button spinning? dec-fn "–")
    [:div.center.h2.mx1
     {:class (when spinning? "img-spinner bg-no-repeat bg-center bg-contain")
      :style {:height "1.0em"
              :width "1.0em"}}
     (when-not spinning? value)]
-   (counter-button* spinning? inc-fn "+")])
+   (counter-button spinning? inc-fn "+")])
