@@ -6,6 +6,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.components.formatters :refer [as-money as-money-or-free]]
+            [storefront.components.svg :as svg]
             [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
             [storefront.components.order-summary :as order-summary :refer [display-cart-summary display-line-items]]
@@ -129,54 +130,57 @@
 
 (defn new-cart-component [{:keys [products
                                   order
+                                  item-count
                                   coupon-code
                                   applying-coupon?
                                   updating?
                                   shipping-methods
                                   cart-quantities
                                   update-line-item-requests]} owner]
-  (let [item-count (orders/product-quantity order)]
-    (om/component
-     (html
-      [:div.col-10.m-auto
-       [:.h2.center.py3.gray.mxn1 (str "You have " item-count
-                           (if (>= 1 item-count) " item" " items")
-                           " in your shopping bag.")]
-       [:.h2.py1 "Review your order"]
-       (new-display-line-items products order cart-quantities update-line-item-requests)
-       [:div.flex.items-center.pt2
-        [:.col-8.pr1
-         (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-        [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                 events/control-cart-update-coupon
-                                                 {:disabled? updating?
-                                                  :show-spinner? applying-coupon?})]]
-       [:div.mtn1
-        (order-summary/redesigned-display-order-summary shipping-methods order)]
-       [:div.border-top.border-light-gray.py2]
-       [:form
-        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
-       [:div.gray.center.py3 "OR"]
-       [:div.pb4 (ui/button
-                  [:.col-12.flex.items-center.justify-center
-                   [:.right-align.mr1 "Check out with"]
-                   [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
-                                                                  :width "80px"}}]]
-                  events/control-checkout-cart-paypal-setup
-                  {:show-spinner? false
-                   :color "btn-paypal-yellow-gradient"})]]))))
+  (om/component
+   (html
+    [:div.col-10.m-auto
+     [:.h2.center.py3.gray.mxn1 (str "You have " item-count
+                                     (if (>= 1 item-count) " item" " items")
+                                     " in your shopping bag.")]
+     [:.h2.py1 "Review your order"]
+     (new-display-line-items products order cart-quantities update-line-item-requests)
+     [:div.flex.items-center.pt2
+      [:.col-8.pr1
+       (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+      [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                               events/control-cart-update-coupon
+                                               {:disabled? updating?
+                                                :show-spinner? applying-coupon?})]]
+     [:div.mtn1
+      (order-summary/redesigned-display-order-summary shipping-methods order)]
+     [:div.border-top.border-light-gray.py2]
+     [:form
+      {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+      (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
+     [:div.gray.center.py3 "OR"]
+     [:div.pb4 (ui/button
+                [:.col-12.flex.items-center.justify-center
+                 [:.right-align.mr1 "Check out with"]
+                 [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
+                                                                :width "80px"}}]]
+                events/control-checkout-cart-paypal-setup
+                {:show-spinner? false
+                 :color "btn-paypal-yellow-gradient"})]])))
 
 (defn query [data]
-  (let [cart-quantities (get-in data keypaths/cart-quantities)]
-    {:products         (get-in data keypaths/products)
-     :order            (get-in data keypaths/order)
-     :coupon-code      (get-in data keypaths/cart-coupon-code)
-     :updating?        (cart-update-pending? data)
-     :applying-coupon? (query/get {:request-key request-keys/add-promotion-code}
-                                  (get-in data keypaths/api-requests))
-     :shipping-methods (get-in data keypaths/shipping-methods)
-     :cart-quantities cart-quantities
+  (let [cart-quantities (get-in data keypaths/cart-quantities)
+        order           (get-in data keypaths/order)]
+    {:order                     order
+     :cart-quantities           cart-quantities
+     :item-count                (orders/product-quantity order)
+     :products                  (get-in data keypaths/products)
+     :coupon-code               (get-in data keypaths/cart-coupon-code)
+     :updating?                 (cart-update-pending? data)
+     :applying-coupon?          (query/get {:request-key request-keys/add-promotion-code}
+                                           (get-in data keypaths/api-requests))
+     :shipping-methods          (get-in data keypaths/shipping-methods)
+     :nav-message               (navigation/shop-now-navigation-message data)
      :update-line-item-requests (->> cart-quantities
                                      keys
                                      (map (juxt identity
@@ -185,10 +189,25 @@
                                                    (conj request-keys/update-line-item %)}
                                                   (get-in data keypaths/api-requests))))
                                      (into {}))}))
+(defn new-empty-cart-component [{:keys [nav-message]} owner]
+  (om/component
+   (html
+    [:div.col-10.center.m-auto
+     [:.m-auto.py3
+      (svg/bag {:height "70px"
+                :width "70px"} 1)]
+     [:p.h1.center "Oh No!"]
+     [:p.py2.gray.center "Your Shopping Bag is Empty."]
+     [:div.py2.center
+      (ui/button "Shop Now" [] (apply utils/route-to nav-message))]])))
+
 
 (defn cart-component [data owner]
   (om/component
    (html
     (if (experiments/three-steps-redesign? data)
-      (om/build new-cart-component (query data))
+      (let [component-data (query data)]
+        (if (> (:item-count component-data) 0)
+          (om/build new-cart-component component-data)
+          (om/build new-empty-cart-component component-data)))
       (om/build old-cart-component data)))))
