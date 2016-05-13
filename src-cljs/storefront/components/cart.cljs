@@ -164,11 +164,10 @@
       [:div.pb4 (ui/button
                  [:.col-12.flex.items-center.justify-center
                   [:.right-align.mr1 "Check out with"]
-                  [:.img-paypal.bg-no-repeat.bg-contain {:style {:height "24px"
-                                                                 :width "80px"}}]]
+                  [:.h2.medium.sans-serif.italic "PayPal™"]]
                  events/control-checkout-cart-paypal-setup
                  {:show-spinner? false
-                  :color "btn-paypal-yellow-gradient"})]]))))
+                  :color ""})]]))))
 
 (defn query [data]
   (let [cart-quantities (get-in data keypaths/cart-quantities)
