@@ -42,7 +42,7 @@
 
      (when-not get-satisfaction-login?
        [:.clearfix.center.gray.mb2 "Don't have an account? "
-        [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]])])))
+        [:a.green (utils/route-to events/navigate-sign-up) "Register Here"]])])))
 
 (defn redesigned-sign-in-component [{:keys [get-satisfaction-login?] :as form-data} owner]
   (om/component

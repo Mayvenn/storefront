@@ -21,7 +21,7 @@
                   :m-auto]}
     content]])
 
-(def ^:private large-button :.my2.btn.btn-large.btn-primary.btn-teal-gradient.col-12)
+(def ^:private large-button :.my2.btn.btn-large.btn-primary.bg-green.col-12)
 (def ^:private large-button-text :.h3.p1.letter-spacing-1)
 
 (defn submit-button
@@ -32,7 +32,7 @@
      [large-button
       [:.img-spinner.bg-no-repeat.bg-center
        {:style {:height "2.1em"}}]]
-     [:input.reset.border.btn-large.btn-primary.btn-teal-gradient.col-12.h3.p1.letter-spacing-1
+     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.p1.letter-spacing-1
       {:type "submit"
        :value title
        :disabled (boolean disabled?)
@@ -55,7 +55,7 @@
    [:div.flex.items-center.justify-center
     {:style {:height "3.25rem"}
      :class (conj button-classes
-                  (or color "btn-teal-gradient")
+                  (or color "bg-green")
                   (when disabled? "is-disabled"))
      :on-click (or on-click
                    (if disabled?
@@ -77,10 +77,10 @@
 (defn text-field [label keypath value input-attributes]
   [:.col-12.floating-label.mb2
    [:.absolute
-    [:label.floated-label.col-12.h6.teal.relative
+    [:label.floated-label.col-12.h6.green.relative
      (when (seq value) {:class "has-value"})
      label]]
-   [:input.col-12.h3.border.border-width-1.border-light-gray.border-teal-gradient.glow.floating-input
+   [:input.col-12.h3.border.border-width-1.border-light-gray.glow.floating-input
     (cond-> (merge {:key label
                     :class "rounded-1"
                     :placeholder label}
@@ -112,8 +112,8 @@
             [:option {:key val :value val}
              (str name)])
           options)]]
-   [:.bg-pure-white.border.border-width-1.border-light-gray.border-teal-gradient.rounded-1.p1
-    [:label.col-12.h6.teal.relative
+   [:.bg-pure-white.border.border-width-1.border-light-gray.rounded-1.p1
+    [:label.col-12.h6.green.relative
      (merge
       {:for "shipping-state"}
       (when (seq value) {:class "has-value"}))

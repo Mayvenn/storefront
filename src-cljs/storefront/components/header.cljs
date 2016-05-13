@@ -56,7 +56,7 @@
 
 (defn logo [height]
   (html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.green.pp3
     (merge {:style {:height height}
             :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
@@ -67,7 +67,7 @@
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
      [:.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:.center.teal.f5.mtp3 cart-quantity]])])
+      [:.center.green.f5.mtp3 cart-quantity]])])
 
 (defn triangle-up [width class]
   [:.absolute.inline-block
@@ -115,7 +115,7 @@
 (def padded-selected-link "border-teal border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
-  [:a.f4.teal.block.p1.bg-white.rounded-bottom-2.border-top.border-bottom.border-silver {:href href}
+  [:a.f4.green.block.p1.bg-white.rounded-bottom-2.border-top.border-bottom.border-silver {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
      [:.bg-no-repeat.bg-contain img-attrs]]
@@ -133,7 +133,7 @@
     expanded?
     keypaths/store-info-expanded
     [:a
-     [:.teal {:style {:margin-bottom "10px"}}
+     [:.green {:style {:margin-bottom "10px"}}
       [:.flex.justify-center.items-center.mtp3
        [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
        [:.truncate.fit.f3 nickname]]
@@ -170,10 +170,10 @@
      [:.h6.bg-pure-white.rounded-2
       (into [:.px2.py1.line-height-4] menu)
       [:.border-bottom.border-silver]
-      [:a.teal.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
+      [:a.green.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
-  [:a.teal.block (utils/route-to nav-event)
+  [:a.green.block (utils/route-to nav-event)
    [:span (when current-page? {:class padded-selected-link}) title]])
 
 (defn stylist-account [expanded?
@@ -186,7 +186,7 @@
     (when store-photo [:.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:.truncate (:firstname address)]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
-   [:a.teal.block (utils/navigate-community) "Community"]
+   [:a.green.block (utils/navigate-community) "Community"]
    (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
@@ -218,7 +218,7 @@
       [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
         (when (new-taxon? slug) ui/new-flag)
-        [:span.teal.titleize
+        [:span.green.titleize
          (when (current-page? events/navigate-category {:taxon-slug slug}) {:class padded-selected-link})
          (get slug->name slug name)])])]])
 

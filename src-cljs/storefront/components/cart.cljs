@@ -113,7 +113,7 @@
        [:.h5 "Price: " (as-money (:unit-price line-item))]]
       [:.pt2.flex.items-center
        [:div.flex-auto
-        [:a.teal
+        [:a.gray
          {:href "#"
           :on-click (if false
                       utils/noop-callback
