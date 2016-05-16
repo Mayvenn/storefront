@@ -59,13 +59,9 @@
       [:div
        (om/build promotion-banner-component data)
        [:div.page-wrap
-        (if (experiments/new-nav? data)
-          [:div.border-bottom.border-silver
-           (header/built-new-component data)
-           (slideout-nav/built-new-component data)]
-          [:div
-           (om/build header/header-component (header/header-query data))
-           (om/build slideout-nav/slideout-nav-component (slideout-nav/slideout-nav-query data))])
+        [:div.border-bottom.border-silver
+         (header/built-component data)
+         (slideout-nav/built-component data)]
         (om/build flash-component {:success (get-in data keypaths/flash-success-message)
                                    :failure (get-in data keypaths/flash-failure-message)})
         [:main {:role "main"}

@@ -48,9 +48,6 @@
   (or (three-steps-redesign? data)
       (display-variation data "three-steps")))
 
-(defn new-nav? [data]
-  (display-variation data "new-nav"))
-
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

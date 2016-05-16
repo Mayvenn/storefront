@@ -20,33 +20,6 @@
 
 (def sans-stylist? #{"store" "shop"})
 
-(defn header-component [{:keys [store order home-page?]} _]
-  (om/component
-   (html
-    (let [product-quantity (orders/product-quantity order)
-          {store-photo-url :profile_picture_url store-name :store_name} store]
-      [:header#header.header
-       (when-not store-photo-url
-         {:class "no-picture"})
-       [:a.header-menu (fake-href-menu-expand keypaths/menu-expanded)
-        "Menu"]
-       [:a.logo (utils/route-to events/navigate-home)]
-       (if (> product-quantity 0)
-         [:a.cart.populated (utils/route-to events/navigate-cart) product-quantity]
-         [:a.cart (utils/route-to events/navigate-cart)])
-       (when home-page?
-         [:.stylist-bar
-          [:.stylist-bar-img-container
-           [:img.stylist-bar-portrait {:src store-photo-url}]]
-          [:.stylist-bar-name store-name]])]))))
-
-(defn header-query [data]
-  {:store      (get-in data keypaths/store)
-   :home-page? (= (get-in data keypaths/navigation-event) events/navigate-home)
-   :order      (get-in data keypaths/order)})
-
-;; New nav starts here
-
 (def hamburger
   (html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
@@ -258,7 +231,7 @@
     [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
      "Contact Us"]]])
 
-(defn new-nav-component [{:keys [nav-message
+(defn component [{:keys [nav-message
                                  account-expanded?
                                  shop-expanded?
                                  store-expanded?
@@ -292,7 +265,7 @@
          (lower-right-desktop-nav current-page?)]]
        (shop-panel stylist? shop-expanded? current-page? taxons)]))))
 
-(defn new-nav-query [data]
+(defn query [data]
   {:store             (get-in data keypaths/store)
    :store-expanded?   (get-in data keypaths/store-info-expanded)
    :account-expanded? (get-in data keypaths/account-menu-expanded)
@@ -303,5 +276,5 @@
    :user-email        (get-in data keypaths/user-email)
    :taxons            (get-in data keypaths/taxons)})
 
-(defn built-new-component [data]
-  (om/build new-nav-component (new-nav-query data)))
+(defn built-component [data]
+  (om/build component (query data)))
