@@ -35,7 +35,8 @@
   (html
    [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.green.pp3
     (merge {:style {:height "30px"}
-            :title "Mayvenn"}
+            :title "Mayvenn"
+            :data-test "slideout-logo"}
            (utils/route-to events/navigate-home))]))
 
 (defn selectable
