@@ -483,13 +483,11 @@
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [redesign? (experiments/three-steps-redesign? app-state)
-        three-steps? (experiments/three-steps? app-state)
         guest-checkout? (get-in app-state keypaths/checkout-as-guest)
         billing-address (get-in app-state keypaths/checkout-billing-address)
         shipping-address (get-in app-state keypaths/checkout-shipping-address)
         update-addresses (if guest-checkout? api/guest-update-addresses api/update-addresses)]
     (update-addresses
-
      (cond-> (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                     {:billing-address billing-address :shipping-address shipping-address})
        guest-checkout?
@@ -499,15 +497,13 @@
        (assoc :billing-address shipping-address)
 
        (and (not redesign?) (get-in app-state keypaths/checkout-ship-to-billing-address))
-       (assoc :shipping-address billing-address))
-     three-steps?)))
+       (assoc :shipping-address billing-address)))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
   (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                      {:shipping-method-sku (get-in
                                                             app-state
-                                                            keypaths/checkout-selected-shipping-method-sku)})
-                              (experiments/three-steps? app-state)))
+                                                            keypaths/checkout-selected-shipping-method-sku)})))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response app-state]
   (api/update-cart-payments

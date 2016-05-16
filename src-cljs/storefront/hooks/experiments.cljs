@@ -44,10 +44,6 @@
 (defn three-steps-redesign? [data]
   (display-variation data "checkout-css"))
 
-(defn three-steps? [data]
-  (or (three-steps-redesign? data)
-      (display-variation data "three-steps")))
-
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

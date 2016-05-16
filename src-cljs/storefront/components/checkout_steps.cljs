@@ -7,16 +7,10 @@
             [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]))
 
-(def ^:private three-steps
+(def ^:private steps
   [{:event events/navigate-checkout-address :name "your details" :id "address"}
    {:event events/navigate-checkout-payment :name "payment" :id "payment"}
    {:event events/navigate-checkout-confirmation :name "review" :id "confirm"}])
-
-(def ^:private four-steps
-  [{:event events/navigate-checkout-address :name "address" :id "address"}
-   {:event events/navigate-checkout-delivery :name "shipping" :id "shipping"}
-   {:event events/navigate-checkout-payment :name "payment" :id "payment"}
-   {:event events/navigate-checkout-confirmation :name "confirm" :id "confirm"}])
 
 (defn ^:private display-progress-step [steps-count current-index index {step-name :name step-id :id event :event}]
   [:li.progress-step
@@ -39,8 +33,7 @@
         text))]])
 
 (defn checkout-step-bar [data]
-  (let [steps (if (experiments/three-steps? data) three-steps four-steps)
-        [current-index current-step] (->> steps
+  (let [[current-index current-step] (->> steps
                                           (map-indexed vector)
                                           (filter #(= (:event (second %)) (get-in data keypaths/navigation-event)))
                                           first)]
@@ -53,8 +46,7 @@
 (defn redesigned-checkout-step-bar [{:keys [current-navigation-event]} owner]
   (om/component
    (html
-    (let [steps three-steps
-          [current-index current-step] (->> steps
+    (let [[current-index current-step] (->> steps
                                             (map-indexed vector)
                                             (filter #(= (:event (second %)) current-navigation-event))
                                             first)]

@@ -15,8 +15,7 @@
             [storefront.components.order-summary :as summary :refer [display-order-summary display-line-items]]))
 
 (defn requires-additional-payment? [data]
-  (and (experiments/three-steps? data)
-       (nil? (get-in data keypaths/order-cart-payments-stripe))
+  (and (nil? (get-in data keypaths/order-cart-payments-stripe))
        (> (get-in data keypaths/order-total)
           (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
 
@@ -63,8 +62,7 @@
          [:form.edit_order
           [:div.checkout-container
            (display-line-items data (get-in data keypaths/order))
-           (when (experiments/three-steps? data)
-             (om/build checkout-confirm-delivery-component data))
+           (om/build checkout-confirm-delivery-component data)
            (when (requires-additional-payment? data)
              [:div
               [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]

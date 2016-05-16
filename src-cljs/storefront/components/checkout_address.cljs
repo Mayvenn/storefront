@@ -379,9 +379,7 @@
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
-            (if (experiments/three-steps? data)
-              "Continue to Payment"
-              "Continue to Shipping")])]]]]])))
+            "Continue to Payment"])]]]]])))
 
 (defn query [data]
   {:billing-address           (get-in data keypaths/checkout-billing-address)
