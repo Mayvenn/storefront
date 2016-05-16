@@ -103,9 +103,9 @@
      (triangle-down outer-width border-color)
      (triangle-down inner-width bg-color)]))
 
-(def teal-carrot-bottom
+(def navy-carrot-bottom
   (html
-   (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-teal"})))
+   (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-navy"})))
 
 (def notch-up
   (html
@@ -115,7 +115,7 @@
 (def padded-selected-link "border-teal border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
-  [:a.f4.green.block.p1.bg-white.rounded-bottom-2.border-top.border-bottom.border-silver {:href href}
+  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-bottom.border-silver.bg-white {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
      [:.bg-no-repeat.bg-contain img-attrs]]
@@ -133,11 +133,11 @@
     expanded?
     keypaths/store-info-expanded
     [:a
-     [:.green {:style {:margin-bottom "10px"}}
+     [:div {:style {:margin-bottom "10px"}}
       [:.flex.justify-center.items-center.mtp3
        [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
-       [:.truncate.fit.f3 nickname]]
-      [:.relative teal-carrot-bottom]]]
+       [:.truncate.fit.f3.navy nickname]]
+      [:.relative navy-carrot-bottom]]]
     [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
      [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
       notch-up
@@ -147,7 +147,7 @@
           [:.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
         [:h3.f3.medium store-name]
         [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
-        [:.mt1.f5.gray "Located in " [:span.black (:city address) ", " (:state address)]]]
+        [:.mt1.f5.gray.muted "Located in " (:city address) ", " (:state address)]]
        (when instagram-account
          (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
                       (str "http://instagram.com/" instagram-account)
@@ -163,14 +163,14 @@
    keypaths/account-menu-expanded
    [:a.flex.items-center
     [:.black.flex-auto.right-align.h5 link]
-    [:.relative.ml1.mtn1 {:style {:height "4px"}} teal-carrot-bottom]]
+    [:.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:.absolute.right-0 {:style {:max-width "140px"}}
     [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:.absolute {:style {:right "15px"}} notch-up]
      [:.h6.bg-pure-white.rounded-2
       (into [:.px2.py1.line-height-4] menu)
       [:.border-bottom.border-silver]
-      [:a.green.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
+      [:a.navy.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
   [:a.green.block (utils/route-to nav-event)

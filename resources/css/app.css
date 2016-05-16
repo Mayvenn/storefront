@@ -400,6 +400,7 @@ input[type=button].reset, input[type=submit].reset {
 /* Custom colors */
 
 .dark-green { color: var(--dark-green); }
+.light-gray { color: var(--light-gray); }
 
 /* Custom background-sizes */
 
@@ -585,6 +586,7 @@ input[type=button].reset, input[type=submit].reset {
 
     --white:      #fafafa;
     --silver:     #f2f2f2;
+    --navy:       #175674;
     --light-gray: #dadada;
     --gray:       #666;
     --black:      #4a4a4a;
@@ -592,7 +594,6 @@ input[type=button].reset, input[type=submit].reset {
     --facebook-blue: #3b5998;
     --paypal-yellow: #ffc43a;
     --paypal-orange: #fcaf08;
-    --navy: #175674;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 

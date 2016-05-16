@@ -144,9 +144,12 @@
                [:tr.h4.line-height-4
                 (merge row-attrs
                        (when (neg? amount)
-                         {:class "teal"}))
+                         {:class "green"}))
                 [:td name]
-                [:td.right-align.medium (as-money-or-free amount)]]))]
+                [:td.right-align.medium
+                 {:class (when (pos? amount)
+                           "navy")}
+                 (as-money-or-free amount)]]))]
     [:div.border-top.border-light-gray.mt2
      [:table.col-12.mt2
       [:tbody
