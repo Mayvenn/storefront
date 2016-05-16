@@ -71,7 +71,7 @@
 (def new-flag
   (html
    [:.pyp1.right
-    [:.inline-block.border.border-gray.gray.pp2
+    [:.inline-block.border.border-gray.navy.pp2
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
 (defn text-field [label keypath value input-attributes]

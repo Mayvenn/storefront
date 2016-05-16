@@ -586,12 +586,13 @@ input[type=button].reset, input[type=submit].reset {
     --white:      #fafafa;
     --silver:     #f2f2f2;
     --light-gray: #dadada;
-    --gray:       #9b9b9b;
+    --gray:       #666;
     --black:      #4a4a4a;
     --pure-white: #fff;
     --facebook-blue: #3b5998;
     --paypal-yellow: #ffc43a;
     --paypal-orange: #fcaf08;
+    --navy: #175674;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 

@@ -249,7 +249,7 @@
 
 (def logo
   (html
-   [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.teal.pp3
+   [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.green.pp3
     (merge {:style {:height "30px"}
             :title "Mayvenn"}
            (utils/route-to events/navigate-home))]))
@@ -260,7 +260,7 @@
   ([current-navigation-message event-name args content]
    [:span
     (when (utils/current-page? current-navigation-message event-name args)
-      {:class "border-teal border-bottom border-width-2 bold pyp1"})
+      {:class "border-green border-bottom border-width-2 bold pyp1"})
     content]))
 
 (defn store-credit-flag [credit]
@@ -268,14 +268,14 @@
     [:.right.border-bottom.border-left.border-light-gray.bg-white
      {:style {:border-bottom-left-radius "8px"}}
      [:.h5.px2.py1.line-height-1
-      [:span.gray "Credit: "] [:span.teal (as-money credit)]]]))
+      [:span.gray "Credit: "] [:span.navy (as-money credit)]]]))
 
 (defn customer-section [selectable? user-email]
   [:div
    (row [:.truncate user-email])
-   [:a.teal.block (utils/route-to events/navigate-account-manage)
+   [:a.green.block (utils/route-to events/navigate-account-manage)
     (row (selectable? events/navigate-account-manage "Account Settings"))]
-   [:a.teal.block (utils/route-to events/navigate-account-referrals)
+   [:a.green.block (utils/route-to events/navigate-account-referrals)
     (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
 
 (defn store-section [selectable? store]
@@ -287,22 +287,22 @@
         [:.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)])
       [:div (:firstname address) " " (:lastname address)])
      [:div
-      [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+      [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
        (row (selectable? events/navigate-stylist-dashboard "Dashboard"))]
-      [:a.teal.block (utils/route-to events/navigate-stylist-manage-account)
+      [:a.green.block (utils/route-to events/navigate-stylist-manage-account)
        (row (selectable? events/navigate-stylist-manage-account "Account Settings"))]
-      [:a.teal.block (utils/navigate-community) (row "Community")]]]))
+      [:a.green.block (utils/navigate-community) (row "Community")]]]))
 
 (defn products-section [selectable? title taxons]
   [:div
-   (row [:.border-bottom.border-light-gray title])
+   (row [:.border-bottom.border-light-gray.nav.navy title])
    [:.my1
     (for [{:keys [name slug]} taxons]
       [:a
        (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
         (when (new-taxon? slug) ui/new-flag)
-        [:.teal.titleize
+        [:.green.titleize
          (selectable? events/navigate-category {:taxon-slug slug} (get slug->name slug name))])])]])
 
 (defn extensions-section [selectable? taxons]
@@ -333,10 +333,10 @@
   (html
    [section-outer-gray
     [section-inner
-     [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]
-     [:a.teal (utils/route-to events/navigate-guarantee)
+     [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
+     [:a.green (utils/route-to events/navigate-guarantee)
       (row (selectable? events/navigate-guarantee "Our Guarantee"))]
-     [:a.teal (utils/route-to events/navigate-help)
+     [:a.green (utils/route-to events/navigate-help)
       (row (selectable? events/navigate-help "Contact Us"))]]]))
 
 (def sign-in-section
@@ -345,16 +345,16 @@
     [section-inner
      [:.clearfix
       [:.col.col-6.p1
-       [:a.btn.btn-outline.teal.col-12
+       [:a.btn.btn-outline.navy.col-12
         (utils/route-to events/navigate-sign-in)
         "Sign In"]]
       [:.col.col-6.p1.center.h5.line-height-2
        [:.gray "No account?"]
-       [:a.teal (utils/route-to events/navigate-sign-up) "Sign Up"]]]]]))
+       [:a.green (utils/route-to events/navigate-sign-up) "Sign Up"]]]]]))
 
 (def sign-out-section
   (html
-   [:a.block.teal.center.col-12.p3.bg-white
+   [:a.block.navy.center.col-12.p3.bg-white
     (utils/fake-href events/control-sign-out)
     "Logout"]))
 
