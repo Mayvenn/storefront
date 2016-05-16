@@ -60,8 +60,8 @@ gulp.task('cdn', function () {
     throw "missing --host";
   }
 
-  if (!argv.sourcemap_host) {
-    throw "missing --sourcemap_host";
+  if (!argv.sourcemaps_host) {
+    throw "missing --sourcemaps_host";
   }
 
   // Clean up from last build
@@ -71,7 +71,7 @@ gulp.task('cdn', function () {
       prefix: "//" + argv.host + "/cdn/"
   });
 
-  var sourceMapHost = "//" + argv.sourcemap_host + "/sourcemaps";
+  var sourceMapHost = "//" + argv.sourcemaps_host + "/sourcemaps";
   var sourceMapPath = 'resources/public/js/out/main.js.map';
   var sourceMapStream = gulp.src([sourceMapPath])
       .pipe(jsonTransform(function(data) {
