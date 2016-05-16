@@ -77,7 +77,7 @@
 (defn text-field [label keypath value input-attributes]
   [:.col-12.floating-label.mb2
    [:.absolute
-    [:label.floated-label.col-12.h6.green.relative
+    [:label.floated-label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
    [:input.col-12.h3.border.border-width-1.border-light-gray.glow.floating-input
