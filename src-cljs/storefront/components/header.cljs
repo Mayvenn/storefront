@@ -23,6 +23,7 @@
 (def hamburger
   (html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
+                    {:data-test "hamburger"}
                     (fake-href-menu-expand keypaths/menu-expanded))
     [:.border-top.border-bottom.border-black {:style {:height "12px"}} [:span.hide "MENU"]]
     [:.border-bottom.border-black {:style {:height "12px"}}]]))
