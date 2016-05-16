@@ -84,8 +84,8 @@
   (html
    (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-gray"})))
 
-(def selected-link        "border-teal border-bottom border-width-2")
-(def padded-selected-link "border-teal border-bottom border-width-2 pyp3")
+(def selected-link        "border-navy border-bottom border-width-2")
+(def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
   [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-bottom.border-silver.bg-white {:href href}
