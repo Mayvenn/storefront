@@ -71,7 +71,7 @@ gulp.task('cdn', function () {
       prefix: "//" + argv.host + "/cdn/"
   });
 
-  var sourceMapHost = "//" + argv.sourcemap_host + "/sourcemaps/";
+  var sourceMapHost = "//" + argv.sourcemap_host + "/sourcemaps";
   var sourceMapPath = 'resources/public/js/out/main.js.map';
   var sourceMapStream = gulp.src([sourceMapPath])
       .pipe(jsonTransform(function(data) {
