@@ -23,15 +23,6 @@ body {
   .legacy-container {
     width: 100%;
   }
-
-  &.slideout-nav-open {
-    position: fixed;
-
-    main {
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-  }
 }
 
 .page-wrap {

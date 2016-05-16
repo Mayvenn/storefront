@@ -10,43 +10,6 @@ body {
   background-color: white;
 }
 
-.slideout-nav {
-  height: $header_height;
-  font-size: 14px;
-
-  &.no-picture {
-    .slideout-nav-img-container {
-      display: none;
-    }
-
-    .horizontal-nav-list {
-      left: 0;
-      width: 100%;
-    }
-
-    .horizontal-nav-title {
-      width: 397px;
-    }
-  }
-}
-
-.slideout-nav-title {
-  display: none;
-}
-
-.slideout-nav-img-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: $header_height;
-  height: $header_height;
-}
-
-.slideout-nav-portrait {
-  width: 100%;
-  height: 100%;
-}
-
 .header {
   position: absolute;
   left: $header_height;
@@ -77,58 +40,6 @@ body {
   }
 }
 
-.slideout-nav-list {
-  display: none;
-}
-
-.horizontal-nav-title {
-  position: relative;
-  font-family: $secondary_font;
-  font-size: 18px;
-  font-style: italic;
-  font-weight: normal;
-  color: $lighter_grey;;
-  display: inline-block;
-  height: 100%;
-  width: 309px;
-  line-height: ($header_height / 2);
-  padding-left: 32px;
-}
-
-.horizontal-nav-list {
-  position: absolute;
-  left: $header_height;
-  top: ($header_height / 2);
-  width: 1024px - $header_height;
-  height: ($header_height / 2);
-  background-color: #444;
-}
-
-.horizontal-nav-menu {
-  margin: 0;
-  padding: 0;
-  width: 209px * 3;
-  float: right;
-  @include display(flex);
-  position: right;
-
-  & > li {
-    text-align: center;
-    display: block;
-    line-height: ($header_height / 2);
-    width: 208px;
-    height: ($header_height / 2);
-    border-left: solid #999 1px;
-
-    a {
-      color: $lighter_grey;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
-
 .header .cart {
   top: 0;
   right: 14px;
@@ -145,75 +56,6 @@ body {
   }
 }
 
-.account-detail {
-  position: absolute;
-  top: -44px;
-  right: 90px;
-  color: $dark_grey;
-  font-family: $secondary_font;
-
-  a {
-    color: $dark_grey;
-    display: inline-block;
-    padding: 0 5px;
-    line-height: 44px;
-    height: 44px;
-  }
-}
-
-.store-credit-amount {
-    display: inline-block;
-    min-width:  2rem;
-    margin-left: 0.375rem;
-    margin-right: 0.75rem;
-    color: #49b5d6;
-}
-
-.account-detail-name {
-  font-style: italic;
-}
-
-.account-detail-expanded, .shop-menu-expanded {
-  position: absolute;
-  width: 208px;
-  background-color: #e2e2e2;
-  right: 0;
-  margin: 0;
-  padding: 0;
-  font-family: $primary_font_medium;
-  font-style: normal;
-
-  li {
-    width: 100%;
-    height: 45px;
-    line-height: 45px;
-    border-bottom: solid white 1px;
-    display: block;
-
-    a {
-      display: block;
-      width: 100%;
-      height: 100%;
-      padding: 0 15px;
-      color: $dark_text;
-
-      &:hover {
-        @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-        color: white;
-      }
-    }
-  }
-}
-
-.stylist-user-label {
-  font-weight: bold;
-  font-family: $primary_font_medium;
-  font-style: normal;
-  font-size: 11px;
-  padding-right: 5px;
-  text-transform: uppercase;
-}
-
 div.advertised-promo {
   font-size: 12px;
 }
@@ -224,8 +66,4 @@ div.advertised-promo {
   width: 10px;
   height: 10px;
   @include stretch-bg;
-}
-
-div.stylist-bar {
-  display: none;
 }
