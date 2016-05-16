@@ -509,6 +509,7 @@ input[type=button].reset, input[type=submit].reset {
 .img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
 
 .fill-teal { fill: var(--teal); }
+.fill-navy { fill: var(--navy); }
 .fill-black { fill: var(--black); }
 
 /* Custom interaction */

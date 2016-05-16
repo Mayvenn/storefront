@@ -40,7 +40,7 @@
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
      [:.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:.center.green.f5.mtp3 cart-quantity]])])
+      [:.center.navy.f5.mtp3 cart-quantity]])])
 
 (defn triangle-up [width class]
   [:.absolute.inline-block
