@@ -23,20 +23,7 @@
 
 (defn spinner
   ([] (spinner {:width "100%" :height "32px"}))
-  ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
-
-(def ^:private large-button :.my2.btn.btn-large.btn-primary.bg-green.col-12)
-(def ^:private large-button-text :.h3.p1.letter-spacing-1)
-
-(defn submit-button
-  ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled?]}]
-   (if spinning?
-     [large-button (spinner {:height "2.1em"})]
-     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
-      {:type "submit"
-       :value title
-       :disabled (boolean disabled?)}])))
+  ([style] [:.img-spinner.bg-no-repeat.bg-center.bg-contain {:style style}]))
 
 (defn button
   ([content event]
@@ -46,11 +33,21 @@
     {:class (conj [color]
                   (when disabled? "is-disabled"))
      :on-click (or on-click
-                   (if disabled?
+                   (if (or disabled? show-spinner?)
                      utils/noop-callback
                      (utils/send-event-callback event)))}
     [:.flex.items-center.justify-center
-     (if show-spinner? (spinner {:height "2.1em"}) content)]]))
+     (if show-spinner? (spinner {:height "1.2em" :width "1.2em"}) content)]]))
+
+(defn submit-button
+  ([title] (submit-button title {}))
+  ([title {:keys [spinning? disabled?]}]
+   (if spinning?
+     (button nil nil {:show-spinner? true})
+     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
+      {:type "submit"
+       :value title
+       :disabled (boolean disabled?)}])))
 
 (def nbsp (html [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}]))
 (def rarr (html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
@@ -138,5 +135,5 @@
   [:div.flex.items-center
    (counter-button spinning? dec-fn "–")
    [:.center.h2.mx1 {:style {:width "1em"}}
-    (if spinning? (spinner {:height "1em" :background-size "contain"}) value)]
+    (if spinning? (spinner {:height "1em"}) value)]
    (counter-button spinning? inc-fn "+")])

@@ -114,6 +114,7 @@
     .checkbox-container {
       .large-checkbox {
         background-image: url("/images/spinner.svg");
+        background-size: contain;
       }
     }
   }

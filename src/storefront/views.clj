@@ -33,6 +33,7 @@
        [:div {:style (str "height: 2em;"
                           "margin-top: 2em;"
                           "background-image: url('/images/spinner.svg');"
+                          "background-size: contain;"
                           "background-position: center center;"
                           "background-repeat: no-repeat;")}]]]]
     (element/javascript-tag (str "var environment=\"" env "\";"
