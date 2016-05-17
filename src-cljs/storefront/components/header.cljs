@@ -37,6 +37,7 @@
 
 (defn shopping-bag [cart-quantity]
   [:.relative.pointer (merge {:style {:height "60px" :width "60px"}}
+                             {:data-test "cart"}
                              (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
