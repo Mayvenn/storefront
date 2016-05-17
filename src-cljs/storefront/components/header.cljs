@@ -111,7 +111,7 @@
      [:div {:style {:margin-bottom "10px"}}
       [:.flex.justify-center.items-center.mtp3
        [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
-       [:.truncate.fit.f3.navy nickname]]
+       [:.truncate.fit.f3.navy {:data-test "nickname"} nickname]]
       [:.relative navy-carrot-bottom]]]
     [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
      [:.relative.border.border-light-gray.rounded-2.bg-pure-white.top-lit
