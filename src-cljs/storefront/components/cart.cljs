@@ -99,9 +99,9 @@
 
 (defn new-display-line-items [products order cart-quantities update-line-item-requests]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.mb1.border-bottom.border-light-gray.py2 {:key variant-id}
+    [:.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
      [:a.col.col-4.mbp2
-      [:img.border.border-light-gray.rounded-1 {:src (products/thumbnail-url products product-id)
+      [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
                                                 :alt (:product-name line-item)
                                                 :style {:width "7.33em"
                                                         :height "7.33em"}}]]
@@ -140,7 +140,7 @@
   (om/component
    (html
     (ui/container
-     [:.h2.center.py3.gray (str "You have " item-count
+     [:.h2.center.py3.silver (str "You have " item-count
                          (if (>= 1 item-count) " item" " items")
                          " in your shopping bag.")]
      [:.align-left.col-12
@@ -156,7 +156,7 @@
                                                  :show-spinner? applying-coupon?})]]
       [:div.mtn1
        (order-summary/redesigned-display-order-summary shipping-methods order)]
-      [:div.border-top.border-light-gray.py2]
+      [:div.border-top.border-light-silver.py2]
       [:form
        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
        (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]

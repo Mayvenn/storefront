@@ -17,7 +17,7 @@
 
      (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)
 
-     [:.my3 [:.col-2.m-auto.border.border-light-gray]]
+     [:.my3 [:.col-2.m-auto.border.border-light-silver]]
      [:.h2.center.my2 "Already registered?"]
      [:.h5.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/redesigned-sign-in-form-component sign-in-form-data)))))

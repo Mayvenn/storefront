@@ -11,7 +11,7 @@
                  :flex-column
                  :items-center
                  :col-12
-                 :bg-white
+                 :bg-light-white
                  :black
                  :sans-serif]}
    [:div {:class [:p2
@@ -71,7 +71,7 @@
 (def new-flag
   (html
    [:.pyp1.right
-    [:.inline-block.border.border-gray.navy.pp2
+    [:.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
 (defn text-field [label keypath value input-attributes]
@@ -80,7 +80,7 @@
     [:label.floated-label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
-   [:input.col-12.h3.border.border-width-1.border-light-gray.glow.floating-input
+   [:input.col-12.h3.border.border-width-1.border-light-silver.glow.floating-input
     (cond-> (merge {:key label
                     :class "rounded-1"
                     :placeholder label}
@@ -112,7 +112,7 @@
             [:option {:key val :value val}
              (str name)])
           options)]]
-   [:.bg-pure-white.border.border-width-1.border-light-gray.rounded-1.p1
+   [:.bg-pure-white.border.border-width-1.border-light-silver.rounded-1.p1
     [:label.col-12.h6.green.relative
      (merge
       {:for "shipping-state"}

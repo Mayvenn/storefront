@@ -14,8 +14,8 @@
             [storefront.hooks.experiments :as experiments]))
 
 (def section-inner :.ml3.py2)
-(def section-outer :.border-bottom.border-light-gray.bg-pure-white.black)
-(def section-outer-gray :.border-bottom.border-light-gray.bg-white)
+(def section-outer :.border-bottom.border-light-silver.bg-pure-white.black)
+(def section-outer-darker :.border-bottom.border-light-silver)
 
 (defn row
   ([right] (row nil right))
@@ -28,8 +28,8 @@
   (html
    [:.absolute {:style {:width "60px"}}
     [:.relative.rotate-45.p2 {:style {:height "60px"}}
-     [:.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
-     [:.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+     [:.absolute.border-right.border-dark-gray {:style {:width "18px" :height "36px"}}]
+     [:.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
   (html
@@ -50,7 +50,7 @@
 
 (defn store-credit-flag [credit]
   (when (pos? credit)
-    [:.right.border-bottom.border-left.border-light-gray.bg-white
+    [:.right.border-bottom.border-left.border-light-silver.bg-white
      {:style {:border-bottom-left-radius "8px"}}
      [:.h5.px2.py1.line-height-1
       [:span.gray "Credit: "] [:span.navy (as-money credit)]]]))
@@ -83,7 +83,7 @@
 
 (defn products-section [selectable? title taxons]
   [:div
-   (row [:.border-bottom.border-light-gray.nav.navy title])
+   (row [:.border-bottom.border-light-silver.nav.navy title])
    [:.my1
     (for [{:keys [name slug]} taxons]
       [:a
@@ -119,7 +119,7 @@
 
 (defn help-section [selectable?]
   (html
-   [section-outer-gray
+   [section-outer-darker
     [section-inner
      [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
      [:a.green (utils/route-to events/navigate-guarantee)
@@ -129,7 +129,7 @@
 
 (def sign-in-section
   (html
-   [section-outer-gray
+   [section-outer-darker
     [section-inner
      [:.clearfix
       [:.col.col-6.p1
@@ -186,9 +186,9 @@
          [:.fixed.overlay.bg-darken-4.z3
           ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
           {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-silver.rounded-bottom-right-2
+         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-2
           {:style {:max-height "100%"}}
-          [section-outer menu-x [:.p2 logo]]
+          [section-outer-darker menu-x [:.p2 logo]]
           (cond
             stylist?   (stylist-content selectable? data)
             user-email (customer-content selectable? data)

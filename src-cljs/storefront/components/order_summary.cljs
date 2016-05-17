@@ -150,7 +150,7 @@
                  {:class (when (pos? amount)
                            "navy")}
                  (as-money-or-free amount)]]))]
-    [:div.border-top.border-light-gray.mt2
+    [:div.border-top.border-light-silver.mt2
      [:table.col-12.mt2
       [:tbody
        (row "Subtotal"
@@ -167,7 +167,7 @@
 
        (when store-credit
          (row "Store Credit" (- (:amount store-credit))))]]
-     [:.border-top.border-light-gray.mt2.py2.h1
+     [:.border-top.border-light-silver.mt2.py2.h1
       [:.flex.ml1
        [:.flex-auto "Total"]
        [:.right-align
@@ -175,9 +175,9 @@
 
 (defn redesigned-display-line-items [products order]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.mb1.border-bottom.border-light-gray.py2 {:key variant-id}
+    [:.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
      [:a.col.col-4.mbp2
-      [:img.border.border-light-gray.rounded-1 {:src (products/thumbnail-url products product-id)
+      [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
                                                 :alt (:product-name line-item)
                                                 :style {:width "7.33em"
                                                         :height "7.33em"}}]]

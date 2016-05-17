@@ -395,7 +395,15 @@ input[type=button].reset, input[type=submit].reset {
 /* Custom colors */
 
 .dark-green { color: var(--dark-green); }
-.light-gray { color: var(--light-gray); }
+.light-white  { color: var(--light-white); }
+.dark-white   { color: var(--dark-white); }
+.light-silver { color: var(--light-silver); }
+.dark-silver  { color: var(--dark-silver); }
+.light-gray   { color: var(--light-gray); }
+.dark-gray    { color: var(--dark-gray); }
+.light-black  { color: var(--light-black); }
+.dark-black   { color: var(--dark-black); }
+
 
 /* Custom background-sizes */
 
@@ -418,6 +426,15 @@ input[type=button].reset, input[type=submit].reset {
 .bg-pure-white { background-color: var(--pure-white); }
 .bg-fb-blue { background-color: var(--facebook-blue); }
 
+.bg-light-white  { background-color: var(--light-white); }
+.bg-dark-white   { background-color: var(--dark-white); }
+.bg-light-silver { background-color: var(--light-silver); }
+.bg-dark-silver  { background-color: var(--dark-silver); }
+.bg-light-gray   { background-color: var(--light-gray); }
+.bg-dark-gray    { background-color: var(--dark-gray); }
+.bg-light-black  { background-color: var(--light-black); }
+.bg-dark-black   { background-color: var(--dark-black); }
+
 .top-lit { box-shadow: 0 4px 8px 0 var(--darken-2)}
 .lit     { box-shadow: 0   0 4px 0 var(--darken-3)}
 
@@ -430,11 +447,19 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom border-colors */
 
-.border-pure-white { border-color: var(--pure-white); }
 .border-dark-teal { border-color: var(--dark-teal); }
 .border-teal { border-color: var(--teal); }
-.border-light-gray { border-color: var(--light-gray); }
 .border-green { border-color: var (--green); }
+
+.border-pure-white   { border-color: var(--pure-white); }
+.border-light-white  { border-color: var(--light-white); }
+.border-dark-white   { border-color: var(--dark-white); }
+.border-light-silver { border-color: var(--light-silver); }
+.border-dark-silver  { border-color: var(--dark-silver); }
+.border-light-gray   { border-color: var(--light-gray); }
+.border-dark-gray    { border-color: var(--dark-gray); }
+.border-light-black  { border-color: var(--light-black); }
+.border-dark-black   { border-color: var(--dark-black); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -577,13 +602,22 @@ input[type=button].reset, input[type=submit].reset {
     --green:       #50e3c2;
     --light-green: rgba(183, 232, 134, 0.2);
     --dark-green:  #417505;
-    --white:      #fafafa;
-    --silver:     #f2f2f2;
     --navy:       #175674;
-    --light-gray: #dadada;
-    --gray:       #666;
-    --black:      #4a4a4a;
-    --pure-white: #fff;
+
+    --pure-white:   #ffffff;
+    --light-white:  #fcfcfc;
+    --white:        #fafafa;
+    --dark-white:   #e6e6e6;
+    --light-silver: #d2d2d2;
+    --silver:       #bebebe;
+    --dark-silver:  #aaaaaa;
+    --light-gray:   #969696;
+    --gray:         #828282;
+    --dark-gray:    #6e6e6e;
+    --light-black:  #5a5a5a;
+    --black:        #464646;
+    --dark-black:   #323232;
+
     --facebook-blue: #3b5998;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
