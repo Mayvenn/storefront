@@ -59,7 +59,8 @@
   [:div
    (row [:.truncate user-email])
    [:a.green.block (utils/route-to events/navigate-account-manage)
-    (row (selectable? events/navigate-account-manage "Account Settings"))]
+    (row (selectable? events/navigate-account-manage
+                      [:div {:data-test "account-settings"} "Account Settings"]))]
    [:a.green.block (utils/route-to events/navigate-account-referrals)
     (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
 
@@ -73,9 +74,11 @@
       [:div (:firstname address) " " (:lastname address)])
      [:div
       [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-       (row (selectable? events/navigate-stylist-dashboard "Dashboard"))]
+       (row (selectable? events/navigate-stylist-dashboard
+                         [:div {:data-test "dashboard"} "Dashboard"]))]
       [:a.green.block (utils/route-to events/navigate-stylist-manage-account)
-       (row (selectable? events/navigate-stylist-manage-account "Account Settings"))]
+       (row (selectable? events/navigate-stylist-manage-account
+                         [:div {:data-test "account-settings"} "Account Settings"]))]
       [:a.green.block (utils/navigate-community) (row "Community")]]]))
 
 (defn products-section [selectable? title taxons]
@@ -131,16 +134,21 @@
      [:.clearfix
       [:.col.col-6.p1
        [:a.btn.btn-outline.navy.col-12
-        (utils/route-to events/navigate-sign-in)
+        (merge {:data-test "sign-in"}
+               (utils/route-to events/navigate-sign-in))
         "Sign In"]]
       [:.col.col-6.p1.center.h5.line-height-2
        [:.gray "No account?"]
-       [:a.green (utils/route-to events/navigate-sign-up) "Sign Up"]]]]]))
+       [:a.green
+        (merge {:data-test "sign-up"}
+               (utils/route-to events/navigate-sign-up))
+        "Sign Up"]]]]]))
 
 (def sign-out-section
   (html
    [:a.block.navy.center.col-12.p3.bg-white
-    (utils/fake-href events/control-sign-out)
+    (merge {:data-test "sign-out"}
+           (utils/fake-href events/control-sign-out))
     "Logout"]))
 
 (defn guest-content [selectable? {:keys [taxons]}]
