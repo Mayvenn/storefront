@@ -167,7 +167,7 @@
                   [:.h2.medium.sans-serif.italic "PayPal™"]]
                  events/control-checkout-cart-paypal-setup
                  {:show-spinner? false
-                  :color ""})]]))))
+                  :color "bg-paypal-blue"})]]))))
 
 (defn query [data]
   (let [cart-quantities (get-in data keypaths/cart-quantities)

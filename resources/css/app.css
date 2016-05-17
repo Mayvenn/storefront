@@ -425,6 +425,7 @@ input[type=button].reset, input[type=submit].reset {
 
 .bg-pure-white { background-color: var(--pure-white); }
 .bg-fb-blue { background-color: var(--facebook-blue); }
+.bg-paypal-blue { background-color: var(--paypal-blue); }
 
 .bg-light-white  { background-color: var(--light-white); }
 .bg-dark-white   { background-color: var(--dark-white); }
@@ -619,6 +620,7 @@ input[type=button].reset, input[type=submit].reset {
     --dark-black:   #323232;
 
     --facebook-blue: #3b5998;
+    --paypal-blue:   #49bbf0;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 
