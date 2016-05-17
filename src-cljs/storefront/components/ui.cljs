@@ -21,17 +21,18 @@
                   :m-auto]}
     content]])
 
+(defn spinner
+  ([] (spinner {:width "100%" :height "32px"}))
+  ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
+
 (def ^:private large-button :.my2.btn.btn-large.btn-primary.bg-green.col-12)
 (def ^:private large-button-text :.h3.p1.letter-spacing-1)
 
 (defn submit-button
-  ([title]
-   (submit-button title {}))
+  ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled?]}]
    (if spinning?
-     [large-button
-      [:.img-spinner.bg-no-repeat.bg-center
-       {:style {:height "2.1em"}}]]
+     [large-button (spinner {:height "2.1em"})]
      [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.p1.letter-spacing-1
       {:type "submit"
        :value title
@@ -52,7 +53,7 @@
   ([title event]
    (button title event {}))
   ([title event {:keys [show-spinner? disabled? color on-click]}]
-   [:div.flex.items-center.justify-center
+   [:.flex.items-center.justify-center
     {:style {:height "3.25rem"}
      :class (conj button-classes
                   (or color "bg-green")
@@ -61,10 +62,7 @@
                    (if disabled?
                      utils/noop-callback
                      (utils/send-event-callback event)))}
-    (if show-spinner?
-      [:.img-spinner.bg-no-repeat.bg-center
-       {:style {:height "2.1em"}}]
-      title)]))
+    (if show-spinner? (spinner {:height "2.1em"}) title)]))
 
 (def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
 (def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
@@ -122,10 +120,6 @@
      (or (:name (first (filter (comp (partial = value) :abbr) options)))
          nbsp)]]])
 
-(defn spinner
-  ([] (spinner {:width "100%" :height "32px"}))
-  ([style] [:.img-spinner.bg-no-repeat.bg-center {:style style}]))
-
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
    (into [link-tag
@@ -155,9 +149,6 @@
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.flex.items-center
    (counter-button spinning? dec-fn "–")
-   [:div.center.h2.mx1
-    {:class (when spinning? "img-spinner bg-no-repeat bg-center bg-contain")
-     :style {:height "1.0em"
-             :width "1.0em"}}
-    (when-not spinning? value)]
+   [:.center.h2.mx1 {:style {:width "1em"}}
+    (if spinning? (spinner {:height "1em" :background-size "contain"}) value)]
    (counter-button spinning? inc-fn "+")])
