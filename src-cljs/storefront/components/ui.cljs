@@ -12,7 +12,7 @@
                  :items-center
                  :col-12
                  :bg-light-white
-                 :black
+                 :light-black
                  :sans-serif]}
    [:div {:class [:p2
                   :col-12
