@@ -338,6 +338,7 @@ input[type=button].reset, input[type=submit].reset {
   -webkit-appearance: none;
   display: inline-block;
   outline: none;
+  line-height: 1.2;
 }
 
 .floating-label .floated-label {

@@ -33,39 +33,27 @@
   ([title {:keys [spinning? disabled?]}]
    (if spinning?
      [large-button (spinner {:height "2.1em"})]
-     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.p1.letter-spacing-1
+     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
       {:type "submit"
        :value title
-       :disabled (boolean disabled?)
-       :style {:height "3.25rem"}}])))
-
-(def button-classes
-  ["reset"
-   "border"
-   "btn-large"
-   "btn-primary"
-   "col-12"
-   "h3"
-   "p1"
-   "letter-spacing-1"])
+       :disabled (boolean disabled?)}])))
 
 (defn button
-  ([title event]
-   (button title event {}))
-  ([title event {:keys [show-spinner? disabled? color on-click]}]
-   [:.flex.items-center.justify-center
-    {:style {:height "3.25rem"}
-     :class (conj button-classes
-                  (or color "bg-green")
+  ([content event]
+   (button content event {}))
+  ([content event {:keys [show-spinner? disabled? color on-click] :or {color "bg-green"}}]
+   [:.reset.border.btn-large.btn-primary.col-12.h3.px1.py2.letter-spacing-1
+    {:class (conj [color]
                   (when disabled? "is-disabled"))
      :on-click (or on-click
                    (if disabled?
                      utils/noop-callback
                      (utils/send-event-callback event)))}
-    (if show-spinner? (spinner {:height "2.1em"}) title)]))
+    [:.flex.items-center.justify-center
+     (if show-spinner? (spinner {:height "2.1em"}) content)]]))
 
-(def nbsp [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}])
-(def rarr [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}])
+(def nbsp (html [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}]))
+(def rarr (html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def new-flag
   (html
    [:.pyp1.right
