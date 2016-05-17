@@ -383,11 +383,6 @@ input[type=button].reset, input[type=submit].reset {
   background-image: none;
 }
 
-.btn-paypal-yellow-gradient {
-  border-color: var(--paypal-orange);
-  background-image: var(--paypal-yellow-gradient);
-}
-
 .btn-teal-gradient {
   border-color: var(--dark-teal);
   background-image: var(--teal-gradient);
@@ -575,7 +570,6 @@ input[type=button].reset, input[type=submit].reset {
 
     /* use sparingly */
     --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal));
-    --paypal-yellow-gradient: linear-gradient(0deg, var(--paypal-orange), var(--paypal-yellow));
 
     --light-teal:  #3edbf2; /* use sparingly */
     --teal:        #36b4d4;
@@ -583,8 +577,6 @@ input[type=button].reset, input[type=submit].reset {
     --green:       #50e3c2;
     --light-green: rgba(183, 232, 134, 0.2);
     --dark-green:  #417505;
-    50e3c2
-
     --white:      #fafafa;
     --silver:     #f2f2f2;
     --navy:       #175674;
@@ -593,8 +585,6 @@ input[type=button].reset, input[type=submit].reset {
     --black:      #4a4a4a;
     --pure-white: #fff;
     --facebook-blue: #3b5998;
-    --paypal-yellow: #ffc43a;
-    --paypal-orange: #fcaf08;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 
