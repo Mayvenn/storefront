@@ -481,14 +481,6 @@ input[type=button].reset, input[type=submit].reset {
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
 .img-spinner      { background-image: url("/images/spinner.svg"); }
 
-.img-check-circle { background-image: url("/images/icons/earned-icon.png"); }
-@media (--xhdpi) {
-    .img-check-circle { background-image: url("/images/icons/earned-icon@2x.png"); }
-}
-@media (--xxhdpi) {
-    .img-check-circle { background-image: url("/images/icons/earned-icon@3x.png"); }
-}
-
 .img-straight   { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
 .img-blonde     { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
 .img-curly      { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
@@ -519,8 +511,6 @@ input[type=button].reset, input[type=submit].reset {
 .img-logo { background-image: url('/images/short_header_logo.png'); }
 .img-instagram { background-image: url('/images/icons/instagram.png'); }
 .img-styleseat { background-image: url('/images/icons/styleseat.png'); }
-
-.img-paypal { background-image: url('/images/PPPayPalYellowButton.png'); }
 
 .img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
 .img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }

@@ -3,22 +3,25 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]))
 
-(def order-complete-check :.img-check-circle.bg-no-repeat.bg-center.bg-contain.mb3.mt2.m-auto)
+(def order-complete-check
+  (html (svg/adjustable-check {:class "stroke-green" :width "80px" :height "80px"})))
 
 (defn redesigned-checkout-complete-component [_ _]
   (om/component
    (html
     (ui/container
-     [:.col-10.center.m-auto.py3
-      [order-complete-check {:style {:width "70px" :height "70px"}}]]
+     [:.col-12
+      [:.py2.center order-complete-check]
 
-     [:.h1.col-12.m-auto.center "Thank you for your order!"]
+      [:.px3
+       [:.h1.center "Thank you for your order!"]
 
-     [:.py3.line-height-3.col-10.m-auto.gray
-      "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]
+       [:.py3.line-height-3.gray
+        "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
      (ui/button "Return to Homepage" events/navigate-home)))))
 
