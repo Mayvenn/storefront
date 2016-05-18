@@ -12,7 +12,7 @@
 (defn redesigned-checkout-sign-in-component [sign-in-form-data owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.h2.center.my2 "I'm new here"]
 
      (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)

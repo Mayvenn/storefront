@@ -15,7 +15,7 @@
                                             password-confirmation]}]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.h2.center.my2 "Sign up for an account"]
      (facebook/redesigned-sign-in-button facebook-loaded?)
      [:.h4.center.gray.extra-light.my2 "OR"]
@@ -42,7 +42,7 @@
       (ui/submit-button "Sign Up")
 
       [:.center.gray.mt3.mb2 "Already have an account? "
-       [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]))))
+       [:a.green (utils/route-to events/navigate-sign-in) "Log In"]]]))))
 
 (defn old-sign-up-component [data owner]
   (om/component

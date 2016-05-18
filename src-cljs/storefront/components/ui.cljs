@@ -7,19 +7,11 @@
             [sablono.core :refer-macros [html]]))
 
 (defn container [& content]
-  [:div {:class [:flex
-                 :flex-column
-                 :items-center
-                 :col-12
-                 :bg-light-white
-                 :light-black
-                 :sans-serif]}
-   [:div {:class [:p2
-                  :col-12
-                  :md-col-8
-                  :lg-col-6
-                  :m-auto]}
-    content]])
+  [:.bg-light-white.light-black.sans-serif
+   (into [:.p2.m-auto] content)])
+
+(defn narrow-container [& content]
+  (apply container {:class [:md-col-8 :lg-col-6]} content))
 
 (defn spinner
   ([] (spinner {:width "100%" :height "32px"}))

@@ -136,7 +136,7 @@
 (defn redesigned-checkout-payment-component [{:keys [step-bar saving? loaded-stripe? store-credit errors credit-card]} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      (om/build redesigned-validation-errors-component errors)
      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 

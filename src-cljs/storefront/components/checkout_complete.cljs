@@ -13,7 +13,7 @@
 (defn redesigned-checkout-complete-component [_ _]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.col-12
       [:.py2.center order-complete-check]
 

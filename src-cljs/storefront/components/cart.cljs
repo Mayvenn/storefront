@@ -143,32 +143,37 @@
      [:.h2.center.py3.silver (str "You have " item-count
                          (if (>= 1 item-count) " item" " items")
                          " in your shopping bag.")]
-     [:.align-left.col-12
-      [:.h2.py1 "Review your order"]
-      (new-display-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
-      [:form.flex.items-center.pt2
-       {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-       [:.col-8.pr1
-        (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-       [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                events/control-cart-update-coupon
-                                                {:disabled? updating?
-                                                 :show-spinner? applying-coupon?})]]
-      [:div.mtn1
-       (order-summary/redesigned-display-order-summary shipping-methods order)]
-      [:div.border-top.border-light-silver.py2]
-      [:form
-       {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-       (ui/submit-button "Check Out" {:spinning? false :disabled? updating?})]
-      [:div.h4.gray.center.py2 "OR"]
-      [:div.pb4 (ui/button
-                 [:.col-12.flex.items-center.justify-center
-                  [:.right-align.mr1 "Check out with"]
-                  [:.h2.medium.sans-serif.italic "PayPal™"]]
-                 events/control-checkout-cart-paypal-setup
-                 {:show-spinner? redirecting-to-paypal?
-                  :disabled? updating?
-                  :color "bg-paypal-blue"})]]))))
+
+     [:.h2.py1 "Review your order"]
+     (new-display-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
+
+     [:.clearfix.mxn2.py2
+      [:.md-col.md-col-6.px2
+       [:form.flex.items-center.mb1
+        {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
+        [:.col-8.pr1
+         (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+        [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                                 events/control-cart-update-coupon
+                                                 {:disabled? updating?
+                                                  :show-spinner? applying-coupon?})]]]
+
+      [:.md-col.md-col-6.px2
+       [:.mb2.border-bottom.border-light-silver.md-up-hide]
+       (order-summary/redesigned-display-order-summary shipping-methods order)
+       [:div.border-top.border-light-silver.mb3]
+       [:form
+        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+        (ui/submit-button "Check out" {:spinning? false :disabled? updating?})]
+       [:div.h4.gray.center.py2 "OR"]
+       [:div.pb4 (ui/button
+                  [:.col-12.flex.items-center.justify-center
+                   [:.right-align.mr1 "Check out with"]
+                   [:.h2.medium.sans-serif.italic "PayPal™"]]
+                  events/control-checkout-cart-paypal-setup
+                  {:show-spinner? redirecting-to-paypal?
+                   :disabled? updating?
+                   :color "bg-paypal-blue"})]]]))))
 
 (defn- variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -199,7 +204,7 @@
 (defn new-empty-cart-component [{:keys [nav-message]} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.col-10.center.m-auto.py2
       (svg/bag {:height "70px" :width "70px"} 1)]
 

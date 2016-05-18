@@ -150,8 +150,8 @@
                  {:class (when-not (neg? amount)
                            "navy")}
                  (as-money-or-free amount)]]))]
-    [:div.border-top.border-light-silver.mt2
-     [:table.col-12.mt2
+    [:div
+     [:table.col-12
       [:tbody
        (row "Subtotal"
             (orders/products-subtotal order))

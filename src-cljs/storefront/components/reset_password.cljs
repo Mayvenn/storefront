@@ -12,7 +12,7 @@
 (defn redesigned-reset-password-component [{:keys [reset-password reset-password-confirmation errors loaded-facebook?]} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.h2.center.my2 "Update Your Password"]
      (om/build redesigned-validation-errors-component errors)
      [:form.col-12

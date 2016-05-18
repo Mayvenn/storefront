@@ -47,7 +47,7 @@
 (defn redesigned-sign-in-component [{:keys [get-satisfaction-login?] :as form-data} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      (when-not get-satisfaction-login?
        [:.h2.center.my2 "Sign in to your account"])
      (om/build redesigned-sign-in-form-component form-data)))))

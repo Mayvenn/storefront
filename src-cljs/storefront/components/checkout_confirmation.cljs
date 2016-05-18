@@ -27,7 +27,7 @@
                                                   owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      (om/build checkout-steps/redesigned-checkout-step-bar checkout-steps)
      [:.h2.left-align.col-12 "Order Summary"]
      [:form.col-12
@@ -42,7 +42,9 @@
           [:.p2.navy
            "Please enter an additional payment method below for the remaining total on your order."])
          (om/build checkout-payment/redesigned-credit-card-form-component payment)])
-      (summary/redesigned-display-order-summary shipping-methods order)
+      [:div.border-top.border-light-silver.mt2
+       [:.mt2
+        (summary/redesigned-display-order-summary shipping-methods order)]]
       (ui/submit-button "Place Order" {:spinning? submitting?
                                        :disabled? updating-shipping?})]))))
 

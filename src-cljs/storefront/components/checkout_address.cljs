@@ -349,7 +349,7 @@
 (defn redesigned-checkout-address-component [{:keys [saving? errors step-bar] :as data} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      (om/build redesigned-validation-errors-component errors)
      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 

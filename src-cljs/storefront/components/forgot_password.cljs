@@ -12,7 +12,7 @@
 (defn redesigned-forgot-password-component [{:keys [email facebook-loaded?]} owner]
   (om/component
    (html
-    (ui/container
+    (ui/narrow-container
      [:.h2.center.my2 "Reset your forgotten password"]
 
      [:form.col-12.flex.flex-column.items-center
