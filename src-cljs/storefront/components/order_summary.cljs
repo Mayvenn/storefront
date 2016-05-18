@@ -168,8 +168,8 @@
        (when store-credit
          (row "Store Credit" (- (:amount store-credit))))]]
      [:.border-top.border-light-silver.mt2.py2.h1
-      [:.flex.ml1
-       [:.flex-auto "Total"]
+      [:.flex
+       [:.flex-auto.extra-light "Total"]
        [:.right-align
         (as-money-or-free (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
