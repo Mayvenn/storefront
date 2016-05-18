@@ -42,9 +42,9 @@
 (defn selectable
   ([current-navigation-message event-name content]
    (selectable current-navigation-message event-name {} content))
-  ([current-navigation-message event-name args content]
+  ([current-navigation-message event-name event-args content]
    [:span
-    (when (utils/current-page? current-navigation-message event-name args)
+    (when (utils/current-page? current-navigation-message event-name event-args)
       {:class "border-navy border-bottom border-width-2 bold pyp1"})
     content]))
 
@@ -60,7 +60,7 @@
    (row [:.truncate user-email])
    [:a.green.block (utils/route-to events/navigate-account-manage)
     (row (selectable? events/navigate-account-manage
-                      [:div {:data-test "account-settings"} "Account Settings"]))]
+                      [:span {:data-test "account-settings"} "Account Settings"]))]
    [:a.green.block (utils/route-to events/navigate-account-referrals)
     (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
 
@@ -75,10 +75,10 @@
      [:div
       [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
        (row (selectable? events/navigate-stylist-dashboard
-                         [:div {:data-test "dashboard"} "Dashboard"]))]
+                         [:span {:data-test "dashboard"} "Dashboard"]))]
       [:a.green.block (utils/route-to events/navigate-stylist-manage-account)
        (row (selectable? events/navigate-stylist-manage-account
-                         [:div {:data-test "account-settings"} "Account Settings"]))]
+                         [:span {:data-test "account-settings"} "Account Settings"]))]
       [:a.green.block (utils/navigate-community) (row "Community")]]]))
 
 (defn products-section [selectable? title taxons]
