@@ -49,11 +49,11 @@
     content]))
 
 (defn store-credit-flag [credit]
-  (when (pos? credit)
-    [:.right.border-bottom.border-left.border-light-silver.bg-white
-     {:style {:border-bottom-left-radius "8px"}}
-     [:.h5.px2.py1.line-height-1
-      [:span.gray "Credit: "] [:span.navy (as-money credit)]]]))
+  [:.right.border-bottom.border-left.border-light-silver.bg-white
+   {:style (merge {:border-bottom-left-radius "8px"}
+                  (when (zero? credit) {:visibility "hidden"}))}
+   [:.h5.px2.py1.line-height-1
+    [:span.gray "Credit: "] [:span.navy (as-money credit)]]])
 
 (defn customer-section [selectable? user-email]
   [:div
