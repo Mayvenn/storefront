@@ -200,12 +200,12 @@
   (om/component
    (html
     (ui/container
-     [:.col-10.center.m-auto.py3
+     [:.col-10.center.m-auto.py2
       (svg/bag {:height "70px" :width "70px"} 1)]
 
-     [:p.h1.center "Oh No!"]
+     [:p.h1.center.extra-light "Oh No!"]
 
-     [:.py3.line-height-3.gray.center "Your Shopping Bag is Empty."]
+     [:.py2.line-height-3.center "Your Shopping Bag is Empty."]
 
      (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
 
