@@ -96,7 +96,7 @@
              (str name)])
           options)]]
    [:.bg-pure-white.border.border-width-1.border-light-silver.rounded-1.p1
-    [:label.col-12.h6.green.relative
+    [:label.col-12.h6.navy.relative
      (merge
       {:for "shipping-state"}
       (when (seq value) {:class "has-value"}))
