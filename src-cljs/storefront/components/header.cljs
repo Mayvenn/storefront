@@ -90,7 +90,7 @@
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
-  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-bottom.border-dark-white.bg-white {:href href}
+  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-dark-white.bg-white {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
      [:.bg-no-repeat.bg-contain img-attrs]]
