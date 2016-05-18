@@ -99,13 +99,13 @@
 
 (defn new-display-line-items [products order cart-quantities update-line-item-requests]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
-     [:a.col.col-4.mbp2
+    [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
+     [:a.left.mr1
       [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
                                                 :alt (:product-name line-item)
                                                 :style {:width "7.33em"
                                                         :height "7.33em"}}]]
-     [:.h4.col.col-8.black.p1
+     [:.overflow-hidden.h4.black.p1
       [:a.black.medium.titleize (products/summary line-item)]
       [:.mt1.line-height-2
        (when-let [length (-> line-item :variant-attrs :length)]
