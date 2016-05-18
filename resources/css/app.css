@@ -465,6 +465,7 @@ input[type=button].reset, input[type=submit].reset {
 
 .stroke-teal         { stroke: var(--teal); }
 .stroke-green        { stroke: var(--green); }
+.stroke-navy         { stroke: var(--navy); }
 
 .stroke-pure-white   { stroke: var(--pure-white); }
 .stroke-white        { stroke: var(--white); }

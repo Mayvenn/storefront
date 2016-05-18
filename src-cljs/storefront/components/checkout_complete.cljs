@@ -8,7 +8,7 @@
             [storefront.hooks.experiments :as experiments]))
 
 (def order-complete-check
-  (html (svg/adjustable-check {:class "stroke-green" :width "80px" :height "80px"})))
+  (html (svg/adjustable-check {:class "stroke-navy" :width "80px" :height "80px"})))
 
 (defn redesigned-checkout-complete-component [_ _]
   (om/component
