@@ -125,8 +125,7 @@
                     (utils/send-event-callback events/control-cart-line-item-dec
                                                {:variant-id variant-id})
                     (utils/send-event-callback events/control-cart-line-item-inc
-                                               {:variant-id variant-id}))]]]
-     [:.clearfix]]))
+                                               {:variant-id variant-id}))]]]]))
 
 (defn new-cart-component [{:keys [products
                                   order
