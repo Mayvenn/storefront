@@ -604,7 +604,7 @@ input[type=button].reset, input[type=submit].reset {
     --green:       #50e3c2;
     --light-green: rgba(183, 232, 134, 0.2);
     --dark-green:  #417505;
-    --navy:       #175674;
+    --navy:        #175674;
 
     --pure-white:   #ffffff;
     --light-white:  #fcfcfc;
