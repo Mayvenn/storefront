@@ -1,5 +1,6 @@
 (ns storefront.components.ui
   (:require [storefront.components.utils :as utils]
+            [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.messages :refer [handle-message]]
@@ -115,23 +116,22 @@
     (merge {:style {:width width :height width}} attrs)
     [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
 
-(defn ^:private counter-button [spinning? f label]
-  [:.circle.bg-gray
-   [:a.col.flex.items-center.justify-center.bg-lighten-3.white.h1.extra-light
-    {:href "#"
-     :disabled spinning?
-     :on-click (if-not spinning? f utils/noop-callback)
-     :style {:height ".93em" :width ".93em"}} [:div label]]])
+(defn ^:private counter-button [spinning? f content]
+  [:a.col
+   {:href "#"
+    :disabled spinning?
+    :on-click (if-not spinning? f utils/noop-callback)}
+   content])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:div.flex.items-center
-   (counter-button spinning? dec-fn "–")
-   [:.center.h2.mx1 {:style {:width "1.2em"}}
-    (if spinning? (spinner {:height "1.2em"}) value)]
-   (counter-button spinning? inc-fn "+")])
+  [:div.h2
+   (counter-button spinning? dec-fn svg/counter-dec)
+   [:.left.center.mx1.mtp1 {:style {:width "1.2em"}} (if spinning? (spinner {:height "1.2em"}) value)]
+   (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [color contents]
   [:.border.rounded-1
    {:class (str "bg-" color " border-" color)}
    [:.bg-lighten-4.rounded-1
     contents]])
+
