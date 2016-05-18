@@ -51,15 +51,15 @@
                                             (filter #(= (:event (second %)) current-navigation-event))
                                             first)]
       [:.flex.flex-column.items-center.col-12.my2
-       [:.relative.border-bottom.border-green.col-8 {:style {:top "6px"}}]
+       [:.relative.border-bottom.border-navy.col-8 {:style {:top "6px"}}]
        [:.flex.justify-center.col-12.z1
         (for [[step-index {:keys [name id event] :as step}] (map-indexed vector steps)]
-          [:.h4.col-12.center.titleize.flex.flex-column.justify-center.green
+          [:.h4.col-12.center.titleize.flex.flex-column.justify-center.navy
            {:key id :id id}
-           [:a.green (when (< step-index current-index) (route-to event))
+           [:a.navy (when (< step-index current-index) (route-to event))
             [:.mx-auto {:style {:width "12px" :height "12px"}}
              [:.relative {:style {:width "0"}}
-              [:.bg-green.circle.absolute {:style {:width "12px" :height "12px"}}]
+              [:.bg-navy.circle.absolute {:style {:width "12px" :height "12px"}}]
               (when (> step-index current-index)
                 [:.bg-pure-white.circle.absolute {:style {:top "1px" :left "1px" :width "10px" :height "10px"}}])]]
             [:.mt2 name]]])]]))))
