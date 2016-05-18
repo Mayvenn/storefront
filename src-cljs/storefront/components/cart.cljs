@@ -134,6 +134,7 @@
                                   coupon-code
                                   applying-coupon?
                                   updating?
+                                  redirecting-to-paypal?
                                   shipping-methods
                                   cart-quantities
                                   update-line-item-requests]} owner]
@@ -166,7 +167,8 @@
                   [:.right-align.mr1 "Check out with"]
                   [:.h2.medium.sans-serif.italic "PayPal™"]]
                  events/control-checkout-cart-paypal-setup
-                 {:show-spinner? false
+                 {:show-spinner? redirecting-to-paypal?
+                  :disabled? updating?
                   :color "bg-paypal-blue"})]]))))
 
 (defn query [data]
@@ -180,6 +182,7 @@
      :updating?                 (cart-update-pending? data)
      :applying-coupon?          (query/get {:request-key request-keys/add-promotion-code}
                                            (get-in data keypaths/api-requests))
+     :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :shipping-methods          (get-in data keypaths/shipping-methods)
      :nav-message               (navigation/shop-now-navigation-message data)
      :update-line-item-requests (->> cart-quantities
