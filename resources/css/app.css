@@ -445,13 +445,9 @@ input[type=button].reset, input[type=submit].reset {
   background-image: linear-gradient(to right,#f865a5,#ff6562);
 }
 
-.bg-light-green { background-color: var(--light-green); }
-
 /* Custom border-colors */
 
 .border-dark-teal { border-color: var(--dark-teal); }
-.border-teal { border-color: var(--teal); }
-.border-green { border-color: var (--green); }
 
 .border-pure-white   { border-color: var(--pure-white); }
 .border-light-white  { border-color: var(--light-white); }
@@ -602,7 +598,6 @@ input[type=button].reset, input[type=submit].reset {
     --teal:        #36b4d4;
     --dark-teal:   #0092b7; /* use sparingly */
     --green:       #50e3c2;
-    --light-green: rgba(183, 232, 134, 0.2);
     --dark-green:  #417505;
     --navy:        #175674;
 

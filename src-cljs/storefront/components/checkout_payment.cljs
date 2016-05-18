@@ -143,14 +143,15 @@
      [:form
       {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
 
-      (let [{:keys [available applicable remaining fully-covered?]} store-credit]
+      (let [{:keys [available applicable fully-covered?]} store-credit]
         [:div
          (when (pos? available)
-           [:.border.border-green.bg-light-green.rounded-1.p2.dark-green
-            [:.h5.mb1 [:span.medium (as-money applicable)] " in store credit will be applied."]
-            (when (zero? remaining)
-              [:.h6.line-height-2
-               "Please enter an additional payment method below for the remaining total on your order."])])
+           [:.bg-green.border.border-green.rounded-1
+            [:.bg-lighten-4.rounded-1.p2.navy
+             [:.h4 [:span.medium (as-money applicable)] " in store credit will be applied to this order."]
+             (when-not fully-covered?
+               [:.h5.mt1.line-height-2
+                "Please enter an additional payment method below for the remaining total on your order."])]])
          (when-not fully-covered?
            [:div
             (om/build redesigned-credit-card-form-component {:credit-card credit-card})
@@ -163,12 +164,10 @@
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
-        credit-to-use          (min available-store-credit (get-in data keypaths/order-total))
-        remaining-credit       (- available-store-credit credit-to-use)]
+        credit-to-use          (min available-store-credit (get-in data keypaths/order-total))]
     (merge
      {:store-credit   {:available  available-store-credit
                        :applicable credit-to-use
-                       :remaining  remaining-credit
                        :fully-covered? (orders/fully-covered-by-store-credit?
                                         (get-in data keypaths/order)
                                         (get-in data keypaths/user))}
