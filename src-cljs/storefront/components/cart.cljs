@@ -97,35 +97,34 @@
       [:div.keep-shopping
        [:a.full-link (shopping-link-attrs data)]]]])))
 
-(defn new-display-line-items [products order cart-quantities update-line-item-requests]
+(defn new-display-line-items [products order cart-quantities update-line-item-requests delete-line-item-requests]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
-     [:a.left.mr1
-      [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
-                                                :alt (:product-name line-item)
-                                                :style {:width "7.33em"
-                                                        :height "7.33em"}}]]
-     [:.overflow-hidden.h4.black.p1
-      [:a.black.medium.titleize (products/summary line-item)]
-      [:.mt1.line-height-2
-       (when-let [length (-> line-item :variant-attrs :length)]
-         [:.h5 "Length: " length])
-       [:.h5 "Price: " (as-money (:unit-price line-item))]]
-      [:.pt2.flex.items-center
-       [:div.flex-auto
-        [:a.gray
-         {:href "#"
-          :on-click (if false
-                      utils/noop-callback
-                      (utils/send-event-callback events/control-cart-remove variant-id))}
-         "Remove"]]
-       [:div
-        (ui/counter (get cart-quantities variant-id)
-                    (get update-line-item-requests variant-id)
-                    (utils/send-event-callback events/control-cart-line-item-dec
-                                               {:variant-id variant-id})
-                    (utils/send-event-callback events/control-cart-line-item-inc
-                                               {:variant-id variant-id}))]]]]))
+    (let [updating? (get update-line-item-requests variant-id)
+          removing? (get delete-line-item-requests variant-id)]
+      [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
+       [:a.left.mr1
+        [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
+                                                    :alt (:product-name line-item)
+                                                    :style {:width "7.33em"
+                                                            :height "7.33em"}}]]
+       [:.overflow-hidden.h4.black.p1
+        [:a.black.medium.titleize (products/summary line-item)]
+        [:.mt1.h5.line-height-2
+         (when-let [length (-> line-item :variant-attrs :length)]
+           [:div "Length: " length])
+         [:div "Price: " (as-money (:unit-price line-item))]]
+        [:.pt2.flex.items-center.justify-between
+         [:div
+          (if removing?
+            [:.h2 {:style {:width "1.2em"}} (ui/spinner {:height "1.2em"})]
+            [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])]
+         [:div
+          (ui/counter (get cart-quantities variant-id)
+                      updating?
+                      (utils/send-event-callback events/control-cart-line-item-dec
+                                                 {:variant-id variant-id})
+                      (utils/send-event-callback events/control-cart-line-item-inc
+                                                 {:variant-id variant-id}))]]]])))
 
 (defn new-cart-component [{:keys [products
                                   order
@@ -136,7 +135,8 @@
                                   redirecting-to-paypal?
                                   shipping-methods
                                   cart-quantities
-                                  update-line-item-requests]} owner]
+                                  update-line-item-requests
+                                  delete-line-item-requests]} owner]
   (om/component
    (html
     (ui/container
@@ -145,7 +145,7 @@
                          " in your shopping bag.")]
      [:.align-left.col-12
       [:.h2.py1 "Review your order"]
-      (new-display-line-items products order cart-quantities update-line-item-requests)
+      (new-display-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
       [:form.flex.items-center.pt2
        {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
        [:.col-8.pr1
@@ -170,9 +170,18 @@
                   :disabled? updating?
                   :color "bg-paypal-blue"})]]))))
 
+(defn- variants-requests [data request-key variant-ids]
+  (->> variant-ids
+       (map (juxt identity
+                  #(query/get
+                    {:request-key (conj request-key %)}
+                    (get-in data keypaths/api-requests))))
+       (into {})))
+
 (defn query [data]
   (let [cart-quantities (get-in data keypaths/cart-quantities)
-        order           (get-in data keypaths/order)]
+        order           (get-in data keypaths/order)
+        variant-ids     (keys cart-quantities)]
     {:order                     order
      :cart-quantities           cart-quantities
      :item-count                (orders/product-quantity order)
@@ -184,14 +193,9 @@
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :shipping-methods          (get-in data keypaths/shipping-methods)
      :nav-message               (navigation/shop-now-navigation-message data)
-     :update-line-item-requests (->> cart-quantities
-                                     keys
-                                     (map (juxt identity
-                                                #(query/get
-                                                  {:request-key
-                                                   (conj request-keys/update-line-item %)}
-                                                  (get-in data keypaths/api-requests))))
-                                     (into {}))}))
+     :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
+     :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
+
 (defn new-empty-cart-component [{:keys [nav-message]} owner]
   (om/component
    (html
@@ -204,7 +208,6 @@
      [:.py3.line-height-3.gray.center "Your Shopping Bag is Empty."]
 
      (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
-
 
 (defn cart-component [data owner]
   (om/component

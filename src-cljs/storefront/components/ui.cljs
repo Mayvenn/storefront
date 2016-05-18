@@ -134,6 +134,6 @@
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.flex.items-center
    (counter-button spinning? dec-fn "–")
-   [:.center.h2.mx1 {:style {:width "1em"}}
-    (if spinning? (spinner {:height "1em"}) value)]
+   [:.center.h2.mx1 {:style {:width "1.2em"}}
+    (if spinning? (spinner {:height "1.2em"}) value)]
    (counter-button spinning? inc-fn "+")])
