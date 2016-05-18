@@ -83,19 +83,15 @@
             "Continue to Payment"])]]]]])))
 
 
-(defn redesigned-confirm-delivery-component [{:keys [saving? shipping-methods selected-sku]} owner]
+(defn redesigned-confirm-delivery-component [{:keys [shipping-methods selected-sku]} owner]
   (om/component
    (html
-    [:.bg-white
-     [:.h3 "Shipping Method"]
+    [:div.mt2
+     [:.h2.py1 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
-        [:.flex.items-center.col-12.my2.px2
-         {:key sku
-          :class (str (when (= selected-sku sku) "selected")
-                      " "
-                      (when saving? "saving"))}
-         [:input.mr2.h1
+        [:label.flex.items-center.col-12.py1 {:key sku}
+         [:input.mx2.h1
           {:type "radio"
            :name "shipping-method"
            :id (str "shipping-method-" sku)
@@ -103,14 +99,12 @@
            :on-change (fn [e]
                         (messages/handle-message events/control-checkout-shipping-method-select shipping-method)
                         (messages/handle-later events/control-checkout-shipping-method-submit))}]
-         [:label.flex.flex-column.col-12 {:for (str "shipping-method-" sku)}
+         [:.flex.flex-column.col-12
           [:.h4.flex
            [:.flex-auto.mb1 name]
-           [:div (as-money-without-cents-or-free price)]]
+           [:.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]]
           [:.h5 (shipping/timeframe sku)]]])]])))
 
 (defn query [data]
-  {:saving?          (query/get {:request-key request-keys/update-shipping-method}
-                                (get-in data keypaths/api-requests))
-   :shipping-methods (get-in data keypaths/shipping-methods)
+  {:shipping-methods (get-in data keypaths/shipping-methods)
    :selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)})

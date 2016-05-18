@@ -37,7 +37,10 @@
       (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
       (when requires-additional-payment?
         [:div
-         [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
+         (ui/note-box
+          "green"
+          [:.p2.navy
+           "Please enter an additional payment method below for the remaining total on your order."])
          (om/build checkout-payment/redesigned-credit-card-form-component payment)])
       (summary/redesigned-display-order-summary shipping-methods order)
       (ui/submit-button "Place Order" {:spinning? submitting?

@@ -137,3 +137,9 @@
    [:.center.h2.mx1 {:style {:width "1.2em"}}
     (if spinning? (spinner {:height "1.2em"}) value)]
    (counter-button spinning? inc-fn "+")])
+
+(defn note-box [color contents]
+  [:.border.rounded-1
+   {:class (str "bg-" color " border-" color)}
+   [:.bg-lighten-4.rounded-1
+    contents]])

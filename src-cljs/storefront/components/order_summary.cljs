@@ -147,7 +147,7 @@
                          {:class "green"}))
                 [:td name]
                 [:td.right-align.medium
-                 {:class (when (pos? amount)
+                 {:class (when-not (neg? amount)
                            "navy")}
                  (as-money-or-free amount)]]))]
     [:div.border-top.border-light-silver.mt2
@@ -170,8 +170,8 @@
      [:.border-top.border-light-silver.mt2.py2.h1
       [:.flex
        [:.flex-auto.extra-light "Total"]
-       [:.right-align
-        (as-money-or-free (- (:total order) (:amount store-credit 0.0)))]]] ]))
+       [:.right-align.dark-gray
+        (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn redesigned-display-line-items [products order]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]

@@ -140,34 +140,35 @@
      (om/build redesigned-validation-errors-component errors)
      (om/build checkout-steps/redesigned-checkout-step-bar step-bar)
 
-     [:form
-      {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
+     (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
+       [:form
+        {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
 
-      (let [{:keys [available applicable fully-covered?]} store-credit]
-        [:div
-         (when (pos? available)
-           [:.bg-green.border.border-green.rounded-1
-            [:.bg-lighten-4.rounded-1.p2.navy
-             [:.h4 [:span.medium (as-money applicable)] " in store credit will be applied to this order."]
-             (when-not fully-covered?
-               [:.h5.mt1.line-height-2
-                "Please enter an additional payment method below for the remaining total on your order."])]])
-         (when-not fully-covered?
-           [:div
-            (om/build redesigned-credit-card-form-component {:credit-card credit-card})
-            [:.h4.gray
-             "You can review your order on the next page before we charge your credit card."]] )])
+        (when (pos? credit-available)
+          (ui/note-box
+           "green"
+           [:.p2.navy
+            [:.h4 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+            (when-not fully-covered?
+              [:.h5.mt1.line-height-2
+               "Please enter an additional payment method below for the remaining total on your order."])]))
 
-      (when loaded-stripe?
-        [:.my2
-         (ui/submit-button "Go to Review Order" {:spinning? saving?})])]))))
+        (when-not fully-covered?
+          [:div
+           (om/build redesigned-credit-card-form-component {:credit-card credit-card})
+           [:.h4.gray
+            "You can review your order on the next page before we charge your credit card."]] )
+
+        (when loaded-stripe?
+          [:.my2
+           (ui/submit-button "Go to Review Order" {:spinning? saving?})])])))))
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
         credit-to-use          (min available-store-credit (get-in data keypaths/order-total))]
     (merge
-     {:store-credit   {:available  available-store-credit
-                       :applicable credit-to-use
+     {:store-credit   {:credit-available  available-store-credit
+                       :credit-applicable credit-to-use
                        :fully-covered? (orders/fully-covered-by-store-credit?
                                         (get-in data keypaths/order)
                                         (get-in data keypaths/user))}
