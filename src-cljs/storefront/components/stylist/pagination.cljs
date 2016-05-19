@@ -10,6 +10,6 @@
     [:.col-5.mx-auto.my3
      (if fetching?
        [:.h1 ui/spinner]
-       [:.btn.btn-outline.teal.col-12
+       [:.btn.btn-outline.navy.col-12
         {:on-click (utils/send-event-callback event)}
         "Load More"])]))
