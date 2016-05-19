@@ -183,7 +183,7 @@
        (wrap-resource "public")
        (wrap-logging logger)
        (wrap-defaults (storefront-site-defaults environment))
-       (routes (GET "/healthcheck" [] "cool beans"))
+       ((fn [h] (routes (GET "/healthcheck" [] "cool beans") h)))
        (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
