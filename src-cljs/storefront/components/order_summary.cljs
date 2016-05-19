@@ -176,17 +176,16 @@
 
 (defn redesigned-display-line-items [products order]
   (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
-     [:a.col.col-4.mbp2
+    [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
+     [:a.left.mr1
       [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
                                                 :alt (:product-name line-item)
                                                 :style {:width "7.33em"
                                                         :height "7.33em"}}]]
-     [:.h4.col.col-8.black.py1
+     [:.overflow-hidden.h4.black.p1
       [:a.black.medium.titleize (products/summary line-item)]
-      [:.mt1.line-height-2
+      [:.mt1.h5.line-height-2
        (when-let [length (-> line-item :variant-attrs :length)]
-         [:.h5 "Length: " length])
-       [:.h5 "Price: " (as-money (:unit-price line-item))]
-       [:.h5 "Quantity: " (:quantity line-item)]]]
-     [:.clearfix]]))
+         [:div "Length: " length])
+       [:div "Price: " (as-money (:unit-price line-item))]
+       [:div "Quantity: " (:quantity line-item)]]]]))
