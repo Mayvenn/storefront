@@ -159,7 +159,12 @@
        (for [{:keys [name price coupon-code]} adjustments]
          (when-not (= price 0)
            (row {:key name}
-                (orders/display-adjustment-name name)
+                [:div
+                 (orders/display-adjustment-name name)
+                 (when coupon-code
+                   [:a.ml1.h5.silver
+                    (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                    "Remove"])]
                 price)))
 
        (when (and shipping-item shipping-methods)
