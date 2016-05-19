@@ -16,8 +16,8 @@
 
 (defn status-look [status]
   (case status
-    "pending" "teal"
-    "paid" "green"))
+    "pending" "green"
+    "paid" "navy"))
 
 (defn four-up [a b c d]
   [:.clearfix.mxn1
@@ -89,20 +89,23 @@
                                      (shipping-subtotals shipping-methods order)
                                      (store-credit-subtotals order))]
     [:.clearfix.mxn1.my2
-     [:.px1.col.col-8 name]
-     [:.px1.col.col-4.medium.right-align (f/as-money price)]]))
+     [:.px1.col.col-8
+      {:class (when (neg? price) "green")}
+      name]
+     [:.px1.col.col-4.medium.right-align
+      {:class (if (neg? price) "green" "navy")}
+      (f/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:.h2.mt1.py2.col-12.right-align
-   [:span.h4.mr1.gray "USD"]
+  [:.h2.p2.col-12.right-align.navy.border-top.border-dark-white
    (f/as-money commissionable-amount)])
 
 (defn show-order [products shipping-methods order]
-  (list
+  [:.px2
    (for [item (orders/product-items order)]
      (show-item products item))
 
-   (show-subtotals shipping-methods order)))
+   (show-subtotals shipping-methods order)])
 
 (defn payout-bar [& content]
   [:.bg-lighten-4.flex.items-center.px2.py1
@@ -112,10 +115,10 @@
 (defn show-payout [{:keys [amount status payout-date]}]
   [:.border-dotted-top.border-dotted-bottom.border-gray.h5
    (if (= status "paid")
-     [:.bg-green
+     [:.bg-navy
       (payout-bar
        (f/as-money amount) " paid on " (f/long-date payout-date))]
-     [:.bg-teal
+     [:.bg-green
       (payout-bar
        (f/as-money amount) " has been added to your next payment.")])])
 
@@ -133,12 +136,12 @@
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
      (when (= status "paid") "+") (f/as-money amount)]
-    [:.h2 (:full-name order)]]
+    [:.h2.navy (:full-name order)]]
 
-   [:.gray.h5
+   [:.silver.h5
     (four-up "Status" "Ship Date" "Order"
              [:.right.h1.mtn2.mr1
-              {:class (if (expanded? number) "gray" "black")}
+              {:class (if (expanded? number) "light-gray" "black")}
               "..."])]
 
    [:.medium.h5.line-height-3
@@ -163,7 +166,7 @@
                       :component "div"}
                      (when (expanded? number)
                        [:div.transition-3.transition-ease.overflow-auto.commission-order
-                        [:.bg-white.px2
+                        [:.dark-gray.bg-white
                          (show-order products shipping-methods order)
                          (show-grand-total commissionable-amount)]
                         (show-payout commission)]))])
