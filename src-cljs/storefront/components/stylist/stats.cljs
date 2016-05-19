@@ -70,7 +70,7 @@
    (if (> amount 0)
      [:div
       [:.py2.h00 re-center-money (money-with-cents amount)]
-      [:div (str "On " (f/long-date date))]]
+      [:div "On " (f/long-date date)]]
      [:div
       [:div {:style {:padding "18px"}} svg/large-payout]
       [:div "Your last payment will show here."]])])
@@ -131,11 +131,12 @@
               (dotimes [_ delta] (.prev swiper))
               (dotimes [_ (- delta)] (.next swiper)))))
         (html
-         [:.py1.bg-teal-gradient.white.center.sans-serif
-          [:.overflow-hidden.relative
-           {:ref "stats"}
-           (om/build stats-details-component stats)]
+         [:.bg-green.white.center.sans-serif
+          [:.py1.bg-darken-bottom-2
+           [:.overflow-hidden.relative
+            {:ref "stats"}
+            (om/build stats-details-component stats)]
 
-          [:.flex.justify-center
-           (for [stat ordered-stats]
-             (circle-for-stat stat selected))]])))))
+           [:.flex.justify-center
+            (for [stat ordered-stats]
+              (circle-for-stat stat selected))]]])))))

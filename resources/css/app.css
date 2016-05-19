@@ -384,18 +384,12 @@ input[type=button].reset, input[type=submit].reset {
   background-image: none;
 }
 
-.btn-teal-gradient {
-  border-color: var(--dark-teal);
-  background-image: var(--teal-gradient);
-}
-
 /* Custom btn-outline */
 
 /* Custom btn-sizes */
 
 /* Custom colors */
 
-.dark-green { color: var(--dark-green); }
 .light-white  { color: var(--light-white); }
 .dark-white   { color: var(--dark-white); }
 .light-silver { color: var(--light-silver); }
@@ -412,17 +406,12 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom background-colors */
 
-.bg-lighten-top-1 { background-image: var(--lighten-top-1); }
-.bg-lighten-top-2 { background-image: var(--lighten-top-2); }
-.bg-lighten-top-3 { background-image: var(--lighten-top-3); }
-.bg-lighten-top-4 { background-image: var(--lighten-top-4); }
-.bg-lighten-top-5 { background-image: var(--lighten-top-5); }
-
 .bg-top-white { background-image: var(--top-white); }
-.bg-lighten-5 { background-color: var(--lighten-5); }
 
-.bg-teal-gradient { background-color: var(--teal); background-image: var(--teal-gradient); }
-.bg-embossed { box-shadow: inset 0 1px 0 0 var(--lighten-1); }
+.bg-darken-bottom-1 { background-image: var(--darken-bottom-1); }
+.bg-darken-bottom-2 { background-image: var(--darken-bottom-2); }
+.bg-darken-bottom-3 { background-image: var(--darken-bottom-3); }
+.bg-darken-bottom-4 { background-image: var(--darken-bottom-4); }
 
 .bg-pure-white { background-color: var(--pure-white); }
 .bg-fb-blue { background-color: var(--facebook-blue); }
@@ -446,8 +435,6 @@ input[type=button].reset, input[type=submit].reset {
 }
 
 /* Custom border-colors */
-
-.border-dark-teal { border-color: var(--dark-teal); }
 
 .border-pure-white   { border-color: var(--pure-white); }
 .border-light-white  { border-color: var(--light-white); }
@@ -606,14 +593,8 @@ input[type=button].reset, input[type=submit].reset {
 
     --border-radius: 2px;
 
-    /* use sparingly */
-    --teal-gradient: linear-gradient(0deg, var(--teal), var(--light-teal));
-
-    --light-teal:  #3edbf2; /* use sparingly */
     --teal:        #36b4d4;
-    --dark-teal:   #0092b7; /* use sparingly */
     --green:       #50e3c2;
-    --dark-green:  #417505;
     --navy:        #175674;
 
     --pure-white:   #ffffff;
@@ -635,19 +616,24 @@ input[type=button].reset, input[type=submit].reset {
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
 
-    --lighten-top-1: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-1));
-    --lighten-top-2: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-2));
-    --lighten-top-3: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-3));
-    --lighten-top-4: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-4));
-    --lighten-top-5: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--lighten-5));
-
     --top-white: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--white));
+
+    --darken-bottom-1: linear-gradient(0deg, var(--darken-1), rgba(255, 255, 255, 0));
+    --darken-bottom-2: linear-gradient(0deg, var(--darken-2), rgba(255, 255, 255, 0));
+    --darken-bottom-3: linear-gradient(0deg, var(--darken-3), rgba(255, 255, 255, 0));
+    --darken-bottom-4: linear-gradient(0deg, var(--darken-4), rgba(255, 255, 255, 0));
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);
     --lighten-3: rgba(255, 255, 255, .625);
     --lighten-4: rgba(255, 255, 255, .875);
     --lighten-5: rgba(255, 255, 255, .925);
+
+    --darken-1: rgba(0, 0, 0, .075);
+    --darken-2: rgba(0, 0, 0, .125);
+    --darken-3: rgba(0, 0, 0, .375);
+    --darken-4: rgba(0, 0, 0, .625);
+    --darken-5: rgba(0, 0, 0, .875);
 
     --line-height-1: 1;
     --line-height-2: 1.3333;

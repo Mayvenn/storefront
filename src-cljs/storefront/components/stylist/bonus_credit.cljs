@@ -24,7 +24,7 @@
   (om/component
    (html
     (when history
-      [:div.border-top.border-dark-white.mx2.py2
+      [:.border-top.border-dark-white.mx2.py2
        [:.h5.gray.mb1 "Sales Goals"]
 
        (map display-stylist-bonus history)
@@ -32,16 +32,16 @@
        (pagination/fetch-more events/control-stylist-bonuses-fetch fetching? page pages)]))))
 
 (defn pending-bonus-progress [{:keys [progress milestone]}]
-  (let [bar-value (min 100 (/ progress (/ milestone 100.0)))
+  (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
         bar-width (str (max 15 bar-value) "%")
-        bar-padding-y {:height "1.5em"}]
-    [:div.my2.border.border-dark-white.capped
+        bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
+    [:.my2.border.border-dark-white.capped.h3
      (if (zero? progress)
-       [:div.gray.left-align.px1.self-center.flex.items-center {:style bar-padding-y}
-        [:div.flex-auto "0%"]]
-       [:div.bg-teal-gradient.border.border-dark-teal.white.bg-embossed.px2.capped.engrave-2.flex.items-center
+       [:.dark-silver.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
+        [:.flex-auto "0%"]]
+       [:.bg-green.white.px2.capped.flex.items-center
         {:style (merge bar-padding-y {:width bar-width})}
-        [:div.right-align.flex-auto
+        [:.right-align.flex-auto
          (str (.toFixed bar-value 0) "%")]])]))
 
 (defn show-lifetime-total [lifetime-total]
