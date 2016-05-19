@@ -115,23 +115,24 @@
                                   " in your shopping bag.")]
 
      [:.h2.py1 "Review your order"]
-     (order-summary/redesigned-display-adjustable-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
 
-     [:.clearfix.mxn2.py2
-      [:.md-col.md-col-6.px2
-       [:form.flex.items-center.mb1
+     [:.clearfix.mxn3.py2
+      [:.md-col.md-col-6.px3
+       (order-summary/redesigned-display-adjustable-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)]
+
+      [:.md-col.md-col-6.px3
+       [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:.col-8.pr1
-         (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-        [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                 events/control-cart-update-coupon
-                                                 {:disabled? updating?
-                                                  :show-spinner? applying-coupon?})]]]
+        [:.pt2.flex.items-center
+         [:.col-8.pr1
+          (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+         [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                                      events/control-cart-update-coupon
+                                                      {:disabled? updating?
+                                                       :show-spinner? applying-coupon?})]]]
 
-      [:.md-col.md-col-6.px2
-       [:.mb2.border-bottom.border-light-silver.md-up-hide]
        (order-summary/redesigned-display-order-summary shipping-methods order)
-       [:div.border-top.border-light-silver.mb3]
+
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
         (ui/submit-button "Check out" {:spinning? false :disabled? updating?})]

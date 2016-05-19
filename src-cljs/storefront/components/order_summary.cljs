@@ -149,29 +149,30 @@
         shipping-item (orders/shipping-item order)
         store-credit  (-> order :cart-payments :store-credit)]
     [:div
-     [:table.col-12
-      [:tbody
-       (redesigned-order-summary-row "Subtotal"
-                                     (orders/products-subtotal order))
+     [:.py2.border-top.border-bottom.border-light-silver
+      [:table.col-12
+       [:tbody
+        (redesigned-order-summary-row "Subtotal"
+                                      (orders/products-subtotal order))
 
-       (for [{:keys [name price coupon-code]} adjustments]
-         (when-not (= price 0)
-           (redesigned-order-summary-row
-            {:key name}
-            [:div
-             (orders/display-adjustment-name name)
-             (when coupon-code
-               [:a.ml1.h5.silver
-                (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
-                "Remove"])]
-            price)))
+        (for [{:keys [name price coupon-code]} adjustments]
+          (when-not (= price 0)
+            (redesigned-order-summary-row
+             {:key name}
+             [:div
+              (orders/display-adjustment-name name)
+              (when coupon-code
+                [:a.ml1.h5.silver
+                 (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                 "Remove"])]
+             price)))
 
-       (when (and shipping-item shipping-methods)
-         (redesigned-order-summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
+        (when (and shipping-item shipping-methods)
+          (redesigned-order-summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-       (when store-credit
-         (redesigned-order-summary-row "Store Credit" (- (:amount store-credit))))]]
-     [:.border-top.border-light-silver.mt2.py2.h1
+        (when store-credit
+          (redesigned-order-summary-row "Store Credit" (- (:amount store-credit))))]]]
+     [:.py2.h1
       [:.flex
        [:.flex-auto.extra-light "Total"]
        [:.right-align.dark-gray

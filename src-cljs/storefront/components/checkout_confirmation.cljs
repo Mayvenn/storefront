@@ -45,9 +45,7 @@
           [:.p2.navy
            "Please enter an additional payment method below for the remaining total on your order."])
          (om/build checkout-payment/redesigned-credit-card-form-component payment)])
-      [:div.border-top.border-light-silver.mt2
-       [:.mt2
-        (summary/redesigned-display-order-summary shipping-methods order)]]
+      (summary/redesigned-display-order-summary shipping-methods order)
       (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                        :disabled? updating-shipping?})]))))
 
