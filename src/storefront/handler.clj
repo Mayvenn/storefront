@@ -107,10 +107,7 @@
                                (config/development? environment)))
       (wrap-stylist-not-found-redirect)
       (wrap-fetch-store storeback-config)
-      (wrap-known-subdomains-redirect)
-      (wrap-defaults (storefront-site-defaults environment))
-      (wrap-resource "public")
-      (wrap-content-type)))
+      (wrap-known-subdomains-redirect)))
 
 (def not-404 (comp (partial not= 404) :status))
 (defn resource-exists [storeback-config nav-event params req]
@@ -184,8 +181,9 @@
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
        (wrap-add-domains)
+       (wrap-resource "public")
        (wrap-logging logger)
-       (wrap-params)
+       (wrap-defaults (storefront-site-defaults environment))
        (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
