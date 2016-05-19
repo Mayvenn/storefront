@@ -87,13 +87,8 @@
     (h (merge req {:subdomains (parse-subdomains (:server-name req))
                    :domain (parse-domain req)}))))
 
-(defn request-scheme [req]
-  (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
-    (keyword forwarded-proto)
-    (:scheme req)))
-
 (defn prerender-original-request-url [development? req]
-  (str (name (request-scheme req)) "://shop."
+  (str (name (:scheme req)) "://shop."
        (parse-tld (:server-name req))
        ":" (if development? (:server-port req) 443) (:uri req)))
 
@@ -110,10 +105,10 @@
                       prerender-token
                       (partial prerender-original-request-url
                                (config/development? environment)))
-      (wrap-defaults (storefront-site-defaults environment))
       (wrap-stylist-not-found-redirect)
       (wrap-fetch-store storeback-config)
       (wrap-known-subdomains-redirect)
+      (wrap-defaults (storefront-site-defaults environment))
       (wrap-resource "public")
       (wrap-content-type)))
 
