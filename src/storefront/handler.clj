@@ -48,8 +48,8 @@
     (h (merge req
               {:store (fetch/store storeback-config (last subdomains))}))))
 
-(defn parse-domain [{:keys [server-name server-port]}]
-  (str (parse-tld server-name) ":" server-port))
+(defn parse-domain [{:keys [server-name server-port scheme]}]
+  (str (parse-tld server-name) ":" (if (= :https scheme) 443 server-port)))
 
 (defn wrap-stylist-not-found-redirect [h]
   (fn [{domain :domain
