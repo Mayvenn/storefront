@@ -90,7 +90,7 @@
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
-  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-dark-white.bg-white {:href href}
+  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-light-silver.bg-white {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
      [:.bg-no-repeat.bg-contain img-attrs]]
@@ -144,7 +144,7 @@
      [:.absolute {:style {:right "15px"}} notch-up]
      [:.h6.bg-pure-white.rounded-2
       (into [:.px2.py1.line-height-4] menu)
-      [:.border-bottom.border-dark-white]
+      [:.border-bottom.border-light-silver]
       [:a.navy.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]

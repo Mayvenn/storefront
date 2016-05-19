@@ -551,6 +551,7 @@ input[type=button].reset, input[type=submit].reset {
 .commission-order.commission-order-leave.commission-order-leave-active { max-height: 0px; }
 
 .rotate-45 { transform: rotate(45deg); }
+
 /* Custom media queries */
 
 /* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice

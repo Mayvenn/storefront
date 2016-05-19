@@ -56,7 +56,7 @@
       [:div
        (om/build promotion-banner-component data)
        [:div.page-wrap
-        [:div.border-bottom.border-dark-white
+        [:div.border-bottom.border-light-silver
          (header/built-component data)
          (slideout-nav/built-component data)]
         (om/build flash-component {:success (get-in data keypaths/flash-success-message)

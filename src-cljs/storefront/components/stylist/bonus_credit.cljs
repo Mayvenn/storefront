@@ -12,7 +12,7 @@
             [storefront.components.ui :as ui]))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.dark-silver.flex.items-center.justify-between.py1
+  [:.gray.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1
     (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})]
@@ -37,7 +37,7 @@
         bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
     [:.my2.border.border-dark-white.capped.h3.extra-light
      (if (zero? progress)
-       [:.dark-silver.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
+       [:.light-gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]
        [:.bg-green.white.px2.capped.flex.items-center
         {:style (merge bar-padding-y {:width bar-width})}
