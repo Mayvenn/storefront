@@ -48,7 +48,6 @@
 (def navigate-checkout (conj navigate :checkout))
 (def navigate-checkout-sign-in (conj navigate-checkout :sign-in))
 (def navigate-checkout-address (conj navigate-checkout :address))
-(def navigate-checkout-delivery (conj navigate-checkout :delivery))
 (def navigate-checkout-payment (conj navigate-checkout :payment))
 (def navigate-checkout-confirmation (conj navigate-checkout :confirmation))
 

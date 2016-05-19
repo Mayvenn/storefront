@@ -102,9 +102,6 @@
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
 
-(defmethod transition-state events/navigate-checkout-delivery [_ event args app-state]
-  (ensure-cart-has-shipping-method app-state))
-
 (defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
   (ensure-cart-has-shipping-method app-state))
 

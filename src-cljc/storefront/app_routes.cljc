@@ -33,7 +33,6 @@
        "/share"                          (edn->bidi events/navigate-friend-referrals)
        "/checkout/login"                 (edn->bidi events/navigate-checkout-sign-in)
        "/checkout/address"               (edn->bidi events/navigate-checkout-address)
-       "/checkout/delivery"              (edn->bidi events/navigate-checkout-delivery)
        "/checkout/payment"               (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm"               (edn->bidi events/navigate-checkout-confirmation)
        ["/orders/" :number "/complete"]  (edn->bidi events/navigate-order-complete)}])

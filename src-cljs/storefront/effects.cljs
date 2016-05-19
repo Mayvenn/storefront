@@ -240,9 +240,6 @@
   (places-autocomplete/insert-places-autocomplete)
   (api/get-states (get-in app-state keypaths/api-cache)))
 
-(defmethod perform-effects events/navigate-checkout-delivery [_ event args app-state]
-  (api/get-shipping-methods))
-
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
   (stripe/insert))
 

@@ -25,7 +25,6 @@
             [storefront.components.cart :refer [cart-component]]
             [storefront.components.checkout-sign-in :refer [checkout-sign-in-component requires-sign-in-or-guest]]
             [storefront.components.checkout-address :refer [checkout-address-component]]
-            [storefront.components.checkout-delivery :refer [checkout-delivery-component]]
             [storefront.components.checkout-payment :refer [checkout-payment-component]]
             [storefront.components.checkout-confirmation :refer [checkout-confirmation-component]]
             [storefront.components.checkout-complete :refer [checkout-complete-component]]
@@ -86,7 +85,6 @@
              events/navigate-friend-referrals               friend-referrals-component
              events/navigate-checkout-sign-in               checkout-sign-in-component
              events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address-component)
-             events/navigate-checkout-delivery              (requires-sign-in-or-guest data checkout-delivery-component)
              events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment-component)
              events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation-component)
              events/navigate-order-complete                 checkout-complete-component

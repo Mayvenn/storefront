@@ -15,7 +15,6 @@
     events/navigate-reset-password
     events/navigate-cart
     events/navigate-checkout-address
-    events/navigate-checkout-delivery
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
