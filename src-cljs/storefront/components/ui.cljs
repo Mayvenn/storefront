@@ -70,28 +70,24 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn select-field [label keypath value options select-attributes]
+(defn select-field [label value options select-attributes]
   [:.col-12.floating-label.mb2.mx-auto
    [:.relative.z1
     [:select.col-12.h2.glow.floating-input.absolute.border-none
-     (merge {:key label
-             :style {:height "3.75rem" :color "transparent" :background-color "transparent"}
+     (merge {:key         label
+             :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
              :placeholder label
-             :value value
-             :on-change #(handle-message events/control-change-state
-                                         {:keypath keypath
-                                          :value   (selected-value %)})}
+             :value       value}
             (when (seq value) {:class "has-value"})
             select-attributes)
      [:option ""]
-     (map (fn [{name :name val :abbr}]
-            [:option {:key val :value val}
-             (str name)])
-          options)]]
+     (for [{name :name val :abbr} options]
+       [:option {:key val :value val}
+        (str name)])]]
    [:.bg-pure-white.border.border-width-1.border-light-silver.rounded-1.p1
     [:label.col-12.h6.navy.relative
      (merge
-      {:for "shipping-state"}
+      {:for (name (:id select-attributes))}
       (when (seq value) {:class "has-value"}))
      label]
     [:.h3.black.relative
