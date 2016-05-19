@@ -49,6 +49,7 @@
                     (merge {:server-name "welcome.mayvenn.com"
                             :server-port 8080
                             :uri "/"
+                            :scheme :http
                             :request-method :get}
                            req))]
           (asserter resp))))))

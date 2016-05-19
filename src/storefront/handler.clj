@@ -76,7 +76,7 @@
         (h req)
 
         :else
-        (redirect (str "http://store." domain (query-string req)))))))
+        (redirect (str (name (:scheme req)) "://store." domain (query-string req)))))))
 
 (defn request-scheme [req]
   (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
