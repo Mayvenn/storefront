@@ -43,6 +43,10 @@ div.gold-features {
   width: 100%;
   height: 252px;
   @include stretch-bg;
+
+  &.stylist-products {
+    background-image: url('/images/desktop_assets/category-banner-stylist-sample-kits.jpg');
+  }
 }
 
 div.taxon-products-list-container {

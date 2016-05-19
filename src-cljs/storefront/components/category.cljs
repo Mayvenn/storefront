@@ -242,12 +242,12 @@
       (let [variants (products/current-taxon-variants data)]
         [:.bundle-builder
          [:.bundle-builder-info
-          [:header.single-column
+          [:header.single-column.relative
            [:h1
             [:div "Select Your " (:name taxon) " Hair"]
             [:.category-header-sub "Buy now and get FREE SHIPPING"]]
            (taxon-reviews-summary data taxon)]
-          [:header.two-column
+          [:header.two-column.relative
            [:div.starting-at.floated (starting-at-price variants)]
            [:h1
             [:div (:name taxon) " Hair"]]

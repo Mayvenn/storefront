@@ -41,15 +41,13 @@
 (defn getsat-top-level-component [data owner]
   (om/component
    (html
-    [:.community-login
-     [:.page-wrap
-      [:header#header.header.comm-login
-       [:div.logo.comm-login]]
-      (om/build flash-component {:success (get-in data keypaths/flash-success-message)
-                                 :failure (get-in data keypaths/flash-failure-message)})
-      [:main {:role "main"}
-       [:div.legacy-container
-        (om/build (requires-sign-in data redirect-getsat-component) data)]]]])))
+    [:.page-wrap
+     [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
+     (om/build flash-component {:success (get-in data keypaths/flash-success-message)
+                                :failure (get-in data keypaths/flash-failure-message)})
+     [:main {:role "main"}
+      [:div.legacy-container
+       (om/build (requires-sign-in data redirect-getsat-component) data)]]])))
 
 (defn top-level-component [data owner]
   (om/component

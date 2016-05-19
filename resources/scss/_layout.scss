@@ -152,19 +152,20 @@ p {
   }
 }
 
-.community-login {
-  font-size: 75%;
-}
-
 // Desktop Layout
 @media screen and (min-width: 1024px) {
-  .legacy-container {
-    padding-bottom: 2em;
+  html {
+    background-image: url('/images/desktop_assets/bg-wave-pattern.png');
+    background-size: 47px 51px;
   }
 
-  .centered-content {
-    width: 25rem;
-    margin: 0 auto;
+  body {
+    width: 1024px;
+    background-color: white;
+  }
+
+  .legacy-container {
+    padding-bottom: 2em;
   }
 
   .centered-content {
@@ -194,7 +195,10 @@ p {
     width: 47%;
   }
 
-  @import 'desktop_nav';
+  div.advertised-promo {
+    font-size: 12px;
+  }
+
   @import 'desktop_footer';
   @import 'desktop_taxons';
   @import 'desktop_product_show';
@@ -202,7 +206,6 @@ p {
   @import 'desktop_stylist_edit';
   @import 'desktop_static_pages';
   @import 'desktop_account';
-  @import 'desktop_banners';
   @import 'desktop_bundle_builder';
 }
 
