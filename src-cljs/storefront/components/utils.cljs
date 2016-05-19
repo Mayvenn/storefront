@@ -1,6 +1,7 @@
 (ns storefront.components.utils
   (:require [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
+            [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.messages :refer [handle-message]]))
@@ -33,6 +34,13 @@
 (defn current-page? [[current-event current-args] target-event & [args]]
   (and (= (take (count target-event) current-event) target-event)
        (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
+
+(defn requesting?
+  ([data request-key] (requesting? data :request-key request-key))
+  ([data request-search request-key]
+   (query/get
+    {request-search request-key}
+    (get-in data keypaths/api-requests))))
 
 (defn suppress-return-key [e]
   (when (= 13 (.-keyCode e))

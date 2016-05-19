@@ -10,7 +10,6 @@
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
-            [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
@@ -213,4 +212,4 @@
    :expanded?        (get-in data keypaths/expanded-commission-order-id)
    :shipping-methods (get-in data keypaths/shipping-methods)
    :products         (get-in data keypaths/products)
-   :fetching?        (query/get {:request-key request-keys/get-stylist-commissions} (get-in data keypaths/api-requests))})
+   :fetching?        (utils/requesting? data request-keys/get-stylist-commissions)})

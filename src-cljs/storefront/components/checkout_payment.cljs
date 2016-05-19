@@ -4,7 +4,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.formatters :refer [as-money]]
@@ -85,10 +84,8 @@
 
          (when (get-in data keypaths/loaded-stripe)
            [:.form-buttons
-            (let [saving (or (query/get {:request-key request-keys/stripe-create-token}
-                                        (get-in data keypaths/api-requests))
-                             (query/get {:request-key request-keys/update-cart-payments}
-                                        (get-in data keypaths/api-requests)))]
+            (let [saving (or (utils/requesting? data request-keys/stripe-create-token)
+                             (utils/requesting? data request-keys/update-cart-payments))]
               [:a.large.continue.button.primary
                {:on-click (when-not saving
                             (utils/send-event-callback events/control-checkout-payment-method-submit))
@@ -173,10 +170,8 @@
                                         (get-in data keypaths/order)
                                         (get-in data keypaths/user))}
       :errors         (get-in data keypaths/validation-errors-details)
-      :saving?        (or (query/get {:request-key request-keys/stripe-create-token}
-                                     (get-in data keypaths/api-requests))
-                          (query/get {:request-key request-keys/update-cart-payments}
-                                     (get-in data keypaths/api-requests)))
+      :saving?        (or (utils/requesting? data request-keys/stripe-create-token)
+                          (utils/requesting? data request-keys/update-cart-payments))
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)}
      (redesigned-credit-card-form-query data))))

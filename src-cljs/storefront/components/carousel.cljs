@@ -3,7 +3,6 @@
             [storefront.components.utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [sablono.core :refer-macros [html]]
             [om.core :as om]))
 

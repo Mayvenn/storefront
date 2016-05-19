@@ -6,8 +6,7 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.messages :refer [handle-message]]
             [storefront.routes :as routes]
-            [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]))
+            [storefront.keypaths :as keypaths]))
 
 (def product-options-by-taxon
   {:straight   {:data-product-id  80

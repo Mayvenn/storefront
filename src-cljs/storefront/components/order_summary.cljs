@@ -11,7 +11,6 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.components.counter :refer [counter-component]]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [storefront.accessors.orders :as orders]
             [storefront.keypaths :as keypaths]))
 
@@ -52,10 +51,7 @@
      [:a (products/summary line-item)]]
     (when interactive?
       (let [update-spinner-key (conj request-keys/update-line-item variant-id)
-            delete-request (query/get
-                            {:request-key
-                             (conj request-keys/delete-line-item variant-id)}
-                            (get-in data keypaths/api-requests))]
+            removing? (utils/requesting? data (conj request-keys/delete-line-item variant-id))]
         [:.quantity-adjustments
          (om/build counter-component
                    data
@@ -65,8 +61,8 @@
                            :spinner-key update-spinner-key}})
          [:a.delete
           {:href "#"
-           :class (when delete-request "saving")
-           :on-click (if delete-request
+           :class (when removing? "saving")
+           :on-click (if removing?
                        utils/noop-callback
                        (utils/send-event-callback events/control-cart-remove
                                                   variant-id))}

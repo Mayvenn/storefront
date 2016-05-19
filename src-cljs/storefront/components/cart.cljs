@@ -14,19 +14,18 @@
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
-            [storefront.components.ui :as ui]
-            [storefront.utils.query :as query]))
+            [storefront.components.ui :as ui]))
 
 (defn shopping-link-attrs [data]
   (apply utils/route-to (navigation/shop-now-navigation-message data)))
 
 (defn cart-update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]
-    (some #(query/get % (get-in data keypaths/api-requests))
-          [{:request-key request-keys/checkout-cart}
-           {:request-key request-keys/add-promotion-code}
-           {request-key-prefix request-keys/update-line-item}
-           {request-key-prefix request-keys/delete-line-item}])))
+    (some #(apply utils/requesting? data %)
+          [request-keys/checkout-cart
+           request-keys/add-promotion-code
+           [request-key-prefix request-keys/update-line-item]
+           [request-key-prefix request-keys/delete-line-item]])))
 
 (defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
@@ -49,8 +48,7 @@
               {:type "text"
                :name "coupon-code"})]]
            [:div.primary.button#update-button
-            (let [spinning (query/get {:request-key request-keys/add-promotion-code}
-                                      (get-in data keypaths/api-requests))]
+            (let [spinning (utils/requesting? data request-keys/add-promotion-code)]
               {:type "submit"
                :name "update"
                :class (when spinning "saving")
@@ -179,9 +177,7 @@
 (defn- variants-requests [data request-key variant-ids]
   (->> variant-ids
        (map (juxt identity
-                  #(query/get
-                    {:request-key (conj request-key %)}
-                    (get-in data keypaths/api-requests))))
+                  #(utils/requesting? data (conj request-key %))))
        (into {})))
 
 (defn query [data]
@@ -195,8 +191,7 @@
      :promotions                (get-in data keypaths/promotions)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :updating?                 (cart-update-pending? data)
-     :applying-coupon?          (query/get {:request-key request-keys/add-promotion-code}
-                                           (get-in data keypaths/api-requests))
+     :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :shipping-methods          (get-in data keypaths/shipping-methods)
      :nav-message               (navigation/shop-now-navigation-message data)

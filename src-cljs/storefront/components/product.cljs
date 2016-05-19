@@ -74,8 +74,7 @@
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]
 
-               (let [adding-to-cart (query/get {:request-key request-keys/add-to-bag}
-                                               (get-in data keypaths/api-requests))]
+               (let [adding-to-cart (utils/requesting? data request-keys/add-to-bag)]
                  ;; TODO: disable add to bag button until there is a browse-variant-query
                  [:a.large.primary.alternate#add-to-cart-button
                   {:on-click

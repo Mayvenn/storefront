@@ -15,7 +15,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [storefront.utils.sequences :refer [update-vals]]))
 
 (defn display-product [product]
@@ -43,9 +42,8 @@
        [:div.taxon-products-container
         [:div.taxon-products-list-container
          (let [products (products/ordered-products-for-category data taxon)]
-           (if (query/get {:request-key (conj request-keys/get-products
-                                              (:slug taxon))}
-                          (get-in data keypaths/api-requests))
+           (if (utils/requesting? data (conj request-keys/get-products
+                                             (:slug taxon)))
              [:.spinner]
              (map display-product products)))]]]))))
 
@@ -151,8 +149,7 @@
          string/upper-case)))
 
 (defn add-to-bag-button [data]
-  (let [saving (query/get {:request-key request-keys/add-to-bag}
-                          (get-in data keypaths/api-requests))]
+  (let [saving (utils/requesting? data request-keys/add-to-bag)]
     [:button.large.primary.alternate#add-to-cart-button
      {:on-click (when-not saving
                   (utils/send-event-callback events/control-build-add-to-bag))
@@ -253,8 +250,7 @@
             [:div (:name taxon) " Hair"]]
            (taxon-reviews-summary data taxon)
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
-          (if (query/get {:request-key (conj request-keys/get-products (:slug taxon))}
-                         (get-in data keypaths/api-requests))
+          (if (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
             [:.spinner]
             [:div
              [:.carousel

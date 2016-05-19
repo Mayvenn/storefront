@@ -5,7 +5,6 @@
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
-            [storefront.utils.query :as query]
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.validation-errors :as validation]
@@ -49,15 +48,11 @@
                                        :disabled? updating-shipping?})]))))
 
 (defn old-checkout-confirmation-component [data owner]
-  (let [placing-order? (query/get {:request-key request-keys/place-order}
-                                  (get-in data keypaths/api-requests))
-        updating-shipping? (query/get {:request-key request-keys/update-shipping-method}
-                                      (get-in data keypaths/api-requests))
-        updating-payments? (query/get {:request-key request-keys/update-cart-payments}
-                                      (get-in data keypaths/api-requests))
-        creating-stripe-token? (query/get {:request-key request-keys/stripe-create-token}
-                                          (get-in data keypaths/api-requests))
-        saving? (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
+  (let [placing-order?         (utils/requesting? data request-keys/place-order)
+        updating-shipping?     (utils/requesting? data request-keys/update-shipping-method)
+        updating-payments?     (utils/requesting? data request-keys/update-cart-payments)
+        creating-stripe-token? (utils/requesting? data request-keys/stripe-create-token)
+        saving?                (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
     (om/component
      (html
       [:div#checkout
@@ -79,21 +74,17 @@
               {:on-click (when-not saving?
                            (utils/send-event-callback events/control-checkout-confirmation-submit
                                                       {:place-order? (requires-additional-payment? data)}))
-               :class (str (when (or creating-stripe-token? updating-payments? placing-order?)
-                             "saving") " "
-                           (when updating-shipping? "disabled"))}
-             (when saving? {:disabled "disabled"}))
+               :class    (str (when (or creating-stripe-token? updating-payments? placing-order?)
+                                "saving") " "
+                              (when updating-shipping? "disabled"))}
+              (when saving? {:disabled "disabled"}))
              "Complete my Purchase"]]]]]]]))))
 
 (defn query [data]
-  (let [placing-order?         (query/get {:request-key request-keys/place-order}
-                                          (get-in data keypaths/api-requests))
-        updating-shipping?     (query/get {:request-key request-keys/update-shipping-method}
-                                          (get-in data keypaths/api-requests))
-        updating-payments?     (query/get {:request-key request-keys/update-cart-payments}
-                                          (get-in data keypaths/api-requests))
-        creating-stripe-token? (query/get {:request-key request-keys/stripe-create-token}
-                                          (get-in data keypaths/api-requests))
+  (let [placing-order?         (utils/requesting? data request-keys/place-order)
+        updating-shipping?     (utils/requesting? data request-keys/update-shipping-method)
+        updating-payments?     (utils/requesting? data request-keys/update-cart-payments)
+        creating-stripe-token? (utils/requesting? data request-keys/stripe-create-token)
         saving?                (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
     {:submitting?                  (or creating-stripe-token? updating-payments? placing-order?)
      :updating-shipping?           updating-shipping?

@@ -6,7 +6,6 @@
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]
             [storefront.messages :refer [handle-message]]
@@ -380,8 +379,7 @@
         (billing-address-form data owner)
         (shipping-address-form data owner)
         [:div.form-buttons.checkout.save-and-continue
-         (let [saving (query/get {:request-key request-keys/update-addresses}
-                                 (get-in data keypaths/api-requests))]
+         (let [saving (utils/requesting? data request-keys/update-addresses)]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback events/control-checkout-update-addresses-submit))
              :class (when saving "saving")}
@@ -392,7 +390,7 @@
    :shipping-address          (get-in data keypaths/checkout-shipping-address)
    :states                    (get-in data keypaths/states)
    :email                     (get-in data keypaths/checkout-guest-email)
-   :saving?                   (query/get {:request-key request-keys/update-addresses} (get-in data keypaths/api-requests))
+   :saving?                   (utils/requesting? data request-keys/update-addresses)
    :errors                    (get-in data keypaths/validation-errors-details)
    :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
    :places-loaded?            (get-in data keypaths/loaded-places)

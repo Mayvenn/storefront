@@ -6,7 +6,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
-            [storefront.utils.query :as query]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
             [storefront.components.utils :as utils]
@@ -123,5 +122,4 @@
    :page                  (get-in data keypaths/stylist-bonuses-page)
    :pages                 (get-in data keypaths/stylist-bonuses-pages)
    :history               (seq (get-in data keypaths/stylist-bonuses-history))
-   :fetching?             (query/get {:request-key request-keys/get-stylist-bonus-credits}
-                                     (get-in data keypaths/api-requests))})
+   :fetching?             (utils/requesting? data request-keys/get-stylist-bonus-credits)})

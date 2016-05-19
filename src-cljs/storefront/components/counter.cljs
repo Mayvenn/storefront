@@ -4,13 +4,11 @@
             [storefront.messages :refer [handle-message]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [sablono.core :refer-macros [html]]
             [om.core :as om]))
 
 (defn counter-component [data owner {:keys [path set-event inc-event dec-event spinner-key]}]
-  (let [request (when spinner-key (query/get {:request-key spinner-key}
-                                             (get-in data keypaths/api-requests)))]
+  (let [saving? (when spinner-key (utils/requesting? data spinner-key))]
     (om/component
      (html
       [:div.quantity
@@ -18,27 +16,27 @@
         [:div.minus
          [:a.pm-link
           {:href "#"
-           :disabled request
-           :on-click (if (not request)
-                       (utils/send-event-callback dec-event {:path path})
-                       utils/noop-callback)}
+           :disabled saving?
+           :on-click (if saving?
+                       utils/noop-callback
+                       (utils/send-event-callback dec-event {:path path}))}
           "-"]]
         [:input#quantity.quantity-selector-input
          {:min 1
           :name "quantity"
           :type "text"
-          :disabled (or (nil? set-event) request)
-          :class (when request "saving")
+          :disabled (or (nil? set-event) saving?)
+          :class (when saving? "saving")
           :value (str (get-in data path))
-          :on-change (if (not request)
+          :on-change (if saving?
+                       utils/noop-callback
                        #(handle-message set-event
-                                        {:value-str (.. % -target -value) :path path})
-                       utils/noop-callback)}]
+                                        {:value-str (.. % -target -value) :path path}))}]
         [:div.plus
          [:a.pm-link
           {:href "#"
-           :disabled request
-           :on-click (if (not request)
-                       (utils/send-event-callback inc-event {:path path})
-                       utils/noop-callback)}
+           :disabled saving?
+           :on-click (if saving?
+                       utils/noop-callback
+                       (utils/send-event-callback inc-event {:path path}))}
           "+"]]]]))))

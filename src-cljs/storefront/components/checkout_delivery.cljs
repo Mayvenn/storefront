@@ -3,7 +3,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.query :as query]
             [storefront.events :as events]
             [storefront.messages :as messages]
             [storefront.hooks.experiments :as experiments]
@@ -41,8 +40,7 @@
                              shipping-method))
 
 (defn checkout-confirm-delivery-component [data owner]
-  (let [saving? (query/get {:request-key request-keys/update-shipping-method}
-                           (get-in data keypaths/api-requests))]
+  (let [saving? (utils/requesting? data request-keys/update-shipping-method)]
     (om/component
      (html
       [:div.checkout-container.delivery
@@ -75,8 +73,7 @@
                                        :saving?      false
                                        :on-click     (select-shipping-method shipping-method)}))]]]
         [:div.form-buttons
-         (let [saving (query/get {:request-key request-keys/update-shipping-method}
-                                 (get-in data keypaths/api-requests))]
+         (let [saving (utils/requesting? data request-keys/update-shipping-method)]
            [:a.large.continue.button.primary
             {:on-click (when-not saving (utils/send-event-callback events/control-checkout-shipping-method-submit))
              :class    (when saving "saving")}

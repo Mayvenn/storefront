@@ -6,7 +6,6 @@
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.stylist.pagination :as pagination]
-            [storefront.utils.query :as query]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -139,4 +138,4 @@
    :referrals       (get-in data keypaths/stylist-referral-program-referrals)
    :page            (get-in data keypaths/stylist-referral-program-page)
    :pages           (get-in data keypaths/stylist-referral-program-pages)
-   :fetching?       (query/get {:request-key request-keys/get-stylist-referral-program} (get-in data keypaths/api-requests))})
+   :fetching?       (utils/requesting? data request-keys/get-stylist-referral-program)})
