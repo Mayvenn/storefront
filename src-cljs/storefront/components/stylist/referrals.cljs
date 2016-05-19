@@ -19,7 +19,7 @@
     [:svg {:width diameter :height diameter}
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
       [:circle.stroke-silver svg-circle-size]
-      [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray circumference
+      [:circle.stroke-green (merge svg-circle-size {:style {:stroke-dasharray circumference
                                                            :stroke-dashoffset arc-length}})]]]))
 
 (def state-radius 36)
@@ -30,11 +30,12 @@
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
      [:.relative
       [:.h6.gray.muted.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
-      [:.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
+      [:.border-dashed.border-silver.circle {:style {:width width :height width}}]])))
+
 (def paid-icon
   (let [width (str state-diameter "px")]
     (html
-     (svg/adjustable-check {:class "stroke-teal" :width width :height width}))))
+     (svg/adjustable-check {:class "stroke-green" :width width :height width}))))
 
 (defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
 (defmethod state-icon :referred [_ _ _] no-sales-icon)
@@ -44,7 +45,7 @@
   [:.relative
    [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
-    [:.h2.teal {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:.h2.green.extra-light {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
     [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
@@ -61,11 +62,11 @@
       {:key (str name join-date)}
       [:.mr1 (ui/circle-picture profile-picture-url)]
       [:.flex-auto
-       [:.h2 name]
+       [:.h2.navy name]
        [:.h6.gray.line-height-4
-        [:div "Joined " (f/long-date join-date)]
+        [:div.silver "Joined " (f/long-date join-date)]
         (when (= state :paid)
-          [:div "Credit Earned: " [:span.black (f/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
+          [:div "Credit Earned: " [:span.navy (f/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
       [:.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
 
 (defn show-lifetime-total [lifetime-total]
@@ -86,12 +87,12 @@
                                     (f/as-money-without-cents earning-amount))]
     [:div
      [:.py2.px3.to-sm-hide
-      [:.center svg/large-mail]
+      [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.muted.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.bg-green {:href mailto :target "_top"} "Refer"]]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-dark-white
-      [:.left.mx1 svg/large-mail]
+      [:.left.mx1.fill-navy svg/large-mail]
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.bg-green.btn-big {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
