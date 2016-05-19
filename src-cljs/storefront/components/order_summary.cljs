@@ -131,7 +131,7 @@
         [:td [:h5 (as-money (:total order))]]]])]])
 
 (defn redesigned-order-summary-row
-  ([name amount] (row {} name amount))
+  ([name amount] (redesigned-order-summary-row {} name amount))
   ([row-attrs name amount]
    [:tr.h4.line-height-4
     (merge row-attrs
