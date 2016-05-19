@@ -121,10 +121,13 @@
     :on-click (if spinning? utils/noop-callback f)}
    content])
 
+(defn ^:private counter-value [spinning? value]
+  [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? spinner value)])
+
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.h2
    (counter-button spinning? dec-fn svg/counter-dec)
-   [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? spinner value)]
+   (counter-value spinning? value)
    (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [color contents]
