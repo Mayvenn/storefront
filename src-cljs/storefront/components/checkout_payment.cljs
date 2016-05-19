@@ -160,6 +160,10 @@
           [:.my2
            (ui/submit-button "Go to Review Order" {:spinning? saving?})])])))))
 
+(defn saving-card? [data]
+  (or (utils/requesting? data request-keys/stripe-create-token)
+      (utils/requesting? data request-keys/update-cart-payments)))
+
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
         credit-to-use          (min available-store-credit (get-in data keypaths/order-total))]
@@ -170,8 +174,7 @@
                                         (get-in data keypaths/order)
                                         (get-in data keypaths/user))}
       :errors         (get-in data keypaths/validation-errors-details)
-      :saving?        (or (utils/requesting? data request-keys/stripe-create-token)
-                          (utils/requesting? data request-keys/update-cart-payments))
+      :saving?        (saving-card? data)
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)}
      (redesigned-credit-card-form-query data))))

@@ -18,7 +18,7 @@
        (> (get-in data keypaths/order-total)
           (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
 
-(defn redesigned-checkout-confirmation-component [{:keys [errors checkout-steps saving? submitting? updating-shipping?
+(defn redesigned-checkout-confirmation-component [{:keys [errors checkout-steps submitting? updating-shipping?
                                                           requires-additional-payment?
                                                           payment delivery order
                                                           shipping-methods
@@ -50,9 +50,8 @@
 (defn old-checkout-confirmation-component [data owner]
   (let [placing-order?         (utils/requesting? data request-keys/place-order)
         updating-shipping?     (utils/requesting? data request-keys/update-shipping-method)
-        updating-payments?     (utils/requesting? data request-keys/update-cart-payments)
-        creating-stripe-token? (utils/requesting? data request-keys/stripe-create-token)
-        saving?                (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
+        saving-card?           (checkout-payment/saving-card? data)
+        saving?                (or saving-card? updating-shipping? placing-order?)]
     (om/component
      (html
       [:div#checkout
@@ -74,21 +73,19 @@
               {:on-click (when-not saving?
                            (utils/send-event-callback events/control-checkout-confirmation-submit
                                                       {:place-order? (requires-additional-payment? data)}))
-               :class    (str (when (or creating-stripe-token? updating-payments? placing-order?)
+               :class    (str (when (or saving-card? placing-order?)
                                 "saving") " "
                               (when updating-shipping? "disabled"))}
               (when saving? {:disabled "disabled"}))
              "Complete my Purchase"]]]]]]]))))
 
 (defn query [data]
-  (let [placing-order?         (utils/requesting? data request-keys/place-order)
-        updating-shipping?     (utils/requesting? data request-keys/update-shipping-method)
-        updating-payments?     (utils/requesting? data request-keys/update-cart-payments)
-        creating-stripe-token? (utils/requesting? data request-keys/stripe-create-token)
-        saving?                (or creating-stripe-token? updating-shipping? updating-payments? placing-order?)]
-    {:submitting?                  (or creating-stripe-token? updating-payments? placing-order?)
-     :updating-shipping?           updating-shipping?
-     :saving?                      saving?
+  (let [placing-order?     (utils/requesting? data request-keys/place-order)
+        updating-shipping? (utils/requesting? data request-keys/update-shipping-method)
+        saving-card?       (checkout-payment/saving-card? data)
+        submitting?        (or saving-card? placing-order?)]
+    {:updating-shipping?           updating-shipping?
+     :submitting?                  submitting?
      :requires-additional-payment? (requires-additional-payment? data)
      :checkout-steps               (checkout-steps/query data)
      :errors                       (get-in data keypaths/validation-errors)
