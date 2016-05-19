@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
+            [storefront.accessors.promos :as promos]
             [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.svg :as svg]
             [storefront.accessors.navigation :as navigation]
@@ -191,6 +192,7 @@
      :cart-quantities           cart-quantities
      :item-count                (orders/product-quantity order)
      :products                  (get-in data keypaths/products)
+     :promotions                (get-in data keypaths/promotions)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :updating?                 (cart-update-pending? data)
      :applying-coupon?          (query/get {:request-key request-keys/add-promotion-code}
@@ -201,16 +203,19 @@
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
-(defn new-empty-cart-component [{:keys [nav-message]} owner]
+(defn new-empty-cart-component [{:keys [nav-message promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
      [:.col-10.center.m-auto.py2
       (svg/bag {:height "70px" :width "70px"} 1)]
 
-     [:p.h1.center.extra-light "Oh No!"]
+     [:p.h1.center.extra-light "Your bag is empty."]
 
-     [:.py2.line-height-3.center "Your Shopping Bag is Empty."]
+     [:.py2.line-height-3.center
+      (if-let [promo (promos/default-advertised-promotion promotions)]
+        (:description promo)
+        promos/bundle-discount-description)]
 
      (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
 

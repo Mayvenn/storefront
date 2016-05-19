@@ -3,6 +3,7 @@
             [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
+            [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
@@ -158,7 +159,7 @@
       :class (when saving "saving")}
      "ADD TO CART"]))
 
-(def bundle-promotion-notice [:em.bundle-discount-callout "Save 10% - Purchase 3 or more bundles"])
+(def bundle-promotion-notice [:em.bundle-discount-callout promos/bundle-discount-description])
 
 (defn summary-section [data]
   (let [flow (selection-flow data)]
