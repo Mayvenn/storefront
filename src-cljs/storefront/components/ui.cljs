@@ -126,7 +126,7 @@
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.h2
    (counter-button spinning? dec-fn svg/counter-dec)
-   [:.left.center.mx1.mtp1 {:style {:width "1.2em"}} (if spinning? (spinner {:height "1.2em"}) value)]
+   [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? (spinner {:height "1.2em"}) value)]
    (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [color contents]
