@@ -26,7 +26,7 @@
    (html
     (let [tab-position         (utils/position #(= % navigation-state) nav-events)
           {:keys [left width]} (get tab-bounds tab-position)]
-      [:div.border-teal.border.absolute.transition-ease-in.transition-1
+      [:div.border-navy.border.absolute.transition-ease-in.transition-1
        {:style {:margin-top "-2px"
                 :left       (str left "px")
                 :width      (str width "px")}}]))))
