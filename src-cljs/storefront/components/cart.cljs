@@ -10,7 +10,7 @@
             [storefront.components.svg :as svg]
             [storefront.accessors.navigation :as navigation]
             [clojure.string :as string]
-            [storefront.components.order-summary :as order-summary :refer [display-cart-summary display-line-items]]
+            [storefront.components.order-summary :as order-summary]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
@@ -34,7 +34,7 @@
       [:div.inside-cart-form
        [:div.cart-items
         [:div.cart-line-items
-         (display-line-items data cart true)]
+         (order-summary/display-line-items data cart true)]
         [:div.cart-bottom
          [:form
           {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
@@ -57,7 +57,7 @@
             "Apply Promo Code"]]]
          [:div
           [:div.order-summary-cart
-           (display-cart-summary data cart)
+           (order-summary/display-cart-summary data cart)
            [:a.button.checkout.primary.full-link#checkout-link
             {:on-click (when-not (cart-update-pending? data)
                          (utils/send-event-callback events/control-checkout-cart-submit))}

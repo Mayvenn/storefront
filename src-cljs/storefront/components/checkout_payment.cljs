@@ -7,7 +7,7 @@
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.formatters :refer [as-money]]
-            [storefront.components.checkout-steps :as checkout-steps :refer [checkout-step-bar]]
+            [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.validation-errors :refer [validation-errors-component redesigned-validation-errors-component]]
             [storefront.hooks.experiments :as experiments]
             [storefront.accessors.credit-cards :as cc]
@@ -67,7 +67,7 @@
    (html
     [:#checkout
      (om/build validation-errors-component data)
-     (checkout-step-bar data)
+     (checkout-steps/checkout-step-bar data)
      [:.row
       [:.checkout-form-wrapper
        [:form.edit_order
@@ -170,9 +170,9 @@
     (merge
      {:store-credit   {:credit-available  available-store-credit
                        :credit-applicable credit-to-use
-                       :fully-covered? (orders/fully-covered-by-store-credit?
-                                        (get-in data keypaths/order)
-                                        (get-in data keypaths/user))}
+                       :fully-covered?    (orders/fully-covered-by-store-credit?
+                                           (get-in data keypaths/order)
+                                           (get-in data keypaths/user))}
       :errors         (get-in data keypaths/validation-errors-details)
       :saving?        (saving-card? data)
       :loaded-stripe? (get-in data keypaths/loaded-stripe)

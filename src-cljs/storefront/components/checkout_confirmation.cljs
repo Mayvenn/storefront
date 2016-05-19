@@ -8,10 +8,10 @@
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.validation-errors :as validation]
-            [storefront.components.checkout-steps :as checkout-steps :refer [checkout-step-bar]]
-            [storefront.components.checkout-payment :as checkout-payment :refer [checkout-payment-credit-card-component]]
-            [storefront.components.checkout-delivery :as checkout-delivery :refer [checkout-confirm-delivery-component]]
-            [storefront.components.order-summary :as summary :refer [display-order-summary display-line-items]]))
+            [storefront.components.checkout-steps :as checkout-steps]
+            [storefront.components.checkout-payment :as checkout-payment]
+            [storefront.components.checkout-delivery :as checkout-delivery]
+            [storefront.components.order-summary :as summary]))
 
 (defn requires-additional-payment? [data]
   (and (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -55,18 +55,18 @@
     (om/component
      (html
       [:div#checkout
-       (checkout-step-bar data)
+       (checkout-steps/checkout-step-bar data)
        [:div.row
         [:div.checkout-form-wrapper
          [:form.edit_order
           [:div.checkout-container
-           (display-line-items data (get-in data keypaths/order))
-           (om/build checkout-confirm-delivery-component data)
+           (summary/display-line-items data (get-in data keypaths/order))
+           (om/build checkout-delivery/checkout-confirm-delivery-component data)
            (when (requires-additional-payment? data)
              [:div
               [:p.store-credit-instructions "Please enter an additional payment method below for the remaining total on your order"]
-              (om/build checkout-payment-credit-card-component data)])
-           (display-order-summary data (get-in data keypaths/order))
+              (om/build checkout-payment/checkout-payment-credit-card-component data)])
+           (summary/display-order-summary data (get-in data keypaths/order))
            [:div.form-buttons.pay-for-order
             [:a.large.continue.button.primary
              (merge
