@@ -12,10 +12,10 @@
             [storefront.components.ui :as ui]))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.gray.border-bottom.border-dark-white.flex.items-center.justify-between.py1
+  [:.dark-silver.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1
-    (svg/adjustable-check {:width "12px" :height "12px" :class "stroke-green"})]
+    (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})]
    [:.flex-auto.h5
     "Credit Earned: " (f/as-money-without-cents amount) " on " (f/epoch-date created-at)]
    [:.h3.ml1.mr1.strike (f/as-money-without-cents revenue-surpassed)]])
@@ -24,8 +24,8 @@
   (om/component
    (html
     (when history
-      [:.border-top.border-dark-white.mx2.py2
-       [:.h5.gray.mb1 "Sales Goals"]
+      [:.mx2.py2
+       [:.h5.mb1 "Sales Goals"]
 
        (map display-stylist-bonus history)
 
@@ -35,7 +35,7 @@
   (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
         bar-width (str (max 15 bar-value) "%")
         bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
-    [:.my2.border.border-dark-white.capped.h3
+    [:.my2.border.border-dark-white.capped.h3.extra-light
      (if (zero? progress)
        [:.dark-silver.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]
@@ -99,12 +99,12 @@
             (when (pos? available-credit)
               [:.center.bg-white.p2.line-height-2
                [:p
-                "Bonus credits available " [:span.green (f/as-money available-credit)]
+                "Bonus credits available " [:span.navy (f/as-money available-credit)]
                 [:br]
                 "Why not treat yourself?"]
 
                [:p.btn.mt1
-                [:a.teal
+                [:a.navy
                  (apply utils/route-to navigate-hair-message)
                  "Shop now " ui/rarr]]])])]
 
