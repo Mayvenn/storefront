@@ -48,8 +48,8 @@
     (h (merge req
               {:store (fetch/store storeback-config (last subdomains))}))))
 
-(defn parse-domain [{:keys [server-name server-port scheme]}]
-  (str (parse-tld server-name) ":" (if (= :https scheme) 443 server-port)))
+(defn parse-domain [{:keys [server-name server-port]}]
+  (str (parse-tld server-name) ":" server-port))
 
 (defn wrap-stylist-not-found-redirect [h]
   (fn [{domain :domain
@@ -68,7 +68,7 @@
       (h req)
 
       :else
-      (redirect (str (name (:scheme req)) "://store." domain (query-string req))))))
+      (redirect (str "http://store." domain (query-string req))))))
 
 (defn wrap-known-subdomains-redirect [h]
   (fn [{:keys [subdomains domain] :as req}]
@@ -105,9 +105,12 @@
                       prerender-token
                       (partial prerender-original-request-url
                                (config/development? environment)))
+      (wrap-defaults (storefront-site-defaults environment))
       (wrap-stylist-not-found-redirect)
       (wrap-fetch-store storeback-config)
-      (wrap-known-subdomains-redirect)))
+      (wrap-known-subdomains-redirect)
+      (wrap-resource "public")
+      (wrap-content-type)))
 
 (def not-404 (comp (partial not= 404) :status))
 (defn resource-exists [storeback-config nav-event params req]
@@ -174,16 +177,15 @@
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
-   (-> (routes (GET "/robots.txt" req (content-type (response (robots req))
+   (-> (routes (GET "/healthcheck" [] "cool beans")
+               (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
        (wrap-add-domains)
-       (wrap-resource "public")
        (wrap-logging logger)
-       (wrap-defaults (storefront-site-defaults environment))
-       ((fn [h] (routes (GET "/healthcheck" [] "cool beans") h)))
+       (wrap-params)
        (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
