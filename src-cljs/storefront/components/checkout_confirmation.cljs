@@ -18,7 +18,11 @@
        (> (get-in data keypaths/order-total)
           (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
 
-(defn redesigned-checkout-confirmation-component [{:keys [errors checkout-steps submitting? updating-shipping?
+(defn redesigned-checkout-confirmation-component [{:keys [errors
+                                                          checkout-steps
+                                                          updating-shipping?
+                                                          saving-card?
+                                                          placing-order?
                                                           requires-additional-payment?
                                                           payment delivery order
                                                           shipping-methods
@@ -44,7 +48,7 @@
       [:div.border-top.border-light-silver.mt2
        [:.mt2
         (summary/redesigned-display-order-summary shipping-methods order)]]
-      (ui/submit-button "Place Order" {:spinning? submitting?
+      (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                        :disabled? updating-shipping?})]))))
 
 (defn old-checkout-confirmation-component [data owner]
@@ -80,20 +84,17 @@
              "Complete my Purchase"]]]]]]]))))
 
 (defn query [data]
-  (let [placing-order?     (utils/requesting? data request-keys/place-order)
-        updating-shipping? (utils/requesting? data request-keys/update-shipping-method)
-        saving-card?       (checkout-payment/saving-card? data)
-        submitting?        (or saving-card? placing-order?)]
-    {:updating-shipping?           updating-shipping?
-     :submitting?                  submitting?
-     :requires-additional-payment? (requires-additional-payment? data)
-     :checkout-steps               (checkout-steps/query data)
-     :errors                       (get-in data keypaths/validation-errors)
-     :shipping-methods             (get-in data keypaths/shipping-methods)
-     :products                     (get-in data keypaths/products)
-     :order                        (get-in data keypaths/order)
-     :payment                      (checkout-payment/redesigned-credit-card-form-query data)
-     :delivery                     (checkout-delivery/query data)}))
+  {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
+   :saving-card?                 (checkout-payment/saving-card? data)
+   :placing-order?               (utils/requesting? data request-keys/place-order)
+   :requires-additional-payment? (requires-additional-payment? data)
+   :checkout-steps               (checkout-steps/query data)
+   :errors                       (get-in data keypaths/validation-errors)
+   :shipping-methods             (get-in data keypaths/shipping-methods)
+   :products                     (get-in data keypaths/products)
+   :order                        (get-in data keypaths/order)
+   :payment                      (checkout-payment/redesigned-credit-card-form-query data)
+   :delivery                     (checkout-delivery/query data)})
 
 (defn checkout-confirmation-component [data owner]
   (om/component
