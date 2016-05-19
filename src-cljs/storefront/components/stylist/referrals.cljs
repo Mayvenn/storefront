@@ -57,7 +57,7 @@
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
-     [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-silver.p2
+     [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-dark-white.p2
       {:key (str name join-date)}
       [:.mr1 (ui/circle-picture profile-picture-url)]
       [:.flex-auto
@@ -90,7 +90,7 @@
       [:p.py1.h5.muted.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.btn-teal-gradient {:href mailto :target "_top"} "Refer"]]]
 
-     [:.p2.clearfix.sm-up-hide.border-bottom.border-silver
+     [:.p2.clearfix.sm-up-hide.border-bottom.border-dark-white
       [:.left.mx1 svg/large-mail]
       [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big.btn-teal-gradient {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))

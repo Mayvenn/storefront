@@ -12,7 +12,7 @@
             [storefront.components.ui :as ui]))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.gray.border-bottom.border-white.flex.items-center.justify-between.py1
+  [:.gray.border-bottom.border-dark-white.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1
     (svg/adjustable-check {:width "12px" :height "12px" :class "stroke-green"})]
@@ -24,7 +24,7 @@
   (om/component
    (html
     (when history
-      [:div.border-top.border-white.mx2.py2
+      [:div.border-top.border-dark-white.mx2.py2
        [:.h5.gray.mb1 "Sales Goals"]
 
        (map display-stylist-bonus history)
@@ -35,7 +35,7 @@
   (let [bar-value (min 100 (/ progress (/ milestone 100.0)))
         bar-width (str (max 15 bar-value) "%")
         bar-padding-y {:height "1.5em"}]
-    [:div.my2.border.border-silver.capped
+    [:div.my2.border.border-dark-white.capped
      (if (zero? progress)
        [:div.gray.left-align.px1.self-center.flex.items-center {:style bar-padding-y}
         [:div.flex-auto "0%"]]

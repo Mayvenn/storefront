@@ -28,7 +28,7 @@
 
 (defn show-item [products {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
   [:.py2.clearfix
-   [:img.left.border.border-silver.mr3
+   [:img.left.border.border-dark-white.mr3
     {:style {:width "5rem"}
      :src   (products/thumbnail-url products product-id)
      :alt   product-name}]
@@ -126,7 +126,7 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:.p2.border-bottom.border-right.border-left.border-silver.pointer
+  [:.p2.border-bottom.border-right.border-left.border-dark-white.pointer
    {:on-click (toggle-expanded-commission expanded? number)}
    [:.mb2
     [:.px1.h5.right.border.capped
@@ -171,7 +171,7 @@
 (def empty-commissions
   (html
    [:.center
-    [:.p2.border-bottom.border-silver
+    [:.p2.border-bottom.border-dark-white
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
      [:p.h2.gray.muted "Looks like you don't have any commissions yet."]]
     [:.py3.h3
