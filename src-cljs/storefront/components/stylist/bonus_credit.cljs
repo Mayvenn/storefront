@@ -69,7 +69,7 @@
   (om/component
    (html
     (if (and (empty? history) fetching?)
-      (ui/spinner {:height "100px"})
+      [:.my2.h1 ui/spinner]
       [:.mx-auto.container {:data-test "bonuses-panel"}
        [:.clearfix.mb3
         [:.sm-col.sm-col-8

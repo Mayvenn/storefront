@@ -117,7 +117,7 @@
         [:.pt2.flex.items-center.justify-between
          [:div
           (if removing?
-            [:.h2 {:style {:width "1.2em"}} (ui/spinner {:height "1.2em"})]
+            [:.h2 {:style {:width "1.2em"}} ui/spinner]
             [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])]
          [:div
           (ui/counter (get cart-quantities variant-id)

@@ -113,7 +113,7 @@
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
-      (ui/spinner {:height "100px"})
+      [:.my2.h1 ui/spinner]
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
         [:.sm-col-right.sm-col-4

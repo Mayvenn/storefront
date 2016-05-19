@@ -1,9 +1,6 @@
 (ns storefront.components.stylist.pagination
   (:require [storefront.components.utils :as utils]
-            [storefront.components.ui :as ui]
-            [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]))
+            [storefront.components.ui :as ui]))
 
 (defn more-pages? [page pages]
   (> (or pages 0) (or page 0)))
@@ -12,7 +9,7 @@
   (when (more-pages? page pages)
     [:.col-5.mx-auto.my3
      (if fetching?
-       (ui/spinner)
+       [:.h1 ui/spinner]
        [:.btn.btn-outline.teal.col-12
         {:on-click (utils/send-event-callback event)}
         "Load More"])]))

@@ -194,7 +194,7 @@
    (let [{:keys [history page pages rate]} commissions]
      (html
       (if (and (empty? (seq history)) fetching?)
-        (ui/spinner {:height "100px"})
+        [:.my2.h1 ui/spinner]
         [:.mx-auto.container {:data-test "commissions-panel"}
          [:.clearfix
           [:.sm-col.sm-col-9

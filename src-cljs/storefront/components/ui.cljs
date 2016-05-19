@@ -14,9 +14,11 @@
 (defn narrow-container [& content]
   (apply container {:class [:md-col-8 :lg-col-6]} content))
 
-(defn spinner
-  ([] (spinner {:width "100%" :height "32px"}))
-  ([style] [:.img-spinner.bg-no-repeat.bg-center.bg-contain {:style style}]))
+(def spinner
+  "Spinner that fills line at current font size, assuming line-height is 1.2"
+  (html
+   [:.img-spinner.bg-no-repeat.bg-center.bg-contain
+    {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
   ([content event]
@@ -30,7 +32,7 @@
                      utils/noop-callback
                      (utils/send-event-callback event)))}
     [:.flex.items-center.justify-center
-     (if show-spinner? (spinner {:height "1.2em" :width "1.2em"}) content)]]))
+     (if show-spinner? spinner content)]]))
 
 (defn submit-button
   ([title] (submit-button title {}))
@@ -116,13 +118,13 @@
   [:a.col
    {:href "#"
     :disabled spinning?
-    :on-click (if-not spinning? f utils/noop-callback)}
+    :on-click (if spinning? utils/noop-callback f)}
    content])
 
 (defn counter [value spinning? dec-fn inc-fn]
   [:div.h2
    (counter-button spinning? dec-fn svg/counter-dec)
-   [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? (spinner {:height "1.2em"}) value)]
+   [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? spinner value)]
    (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [color contents]
