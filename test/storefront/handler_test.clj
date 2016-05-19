@@ -33,26 +33,26 @@
        (finally
          (~close-fn ~(bindings 0))))))
 
-(defmacro with-test-system
-  [sys & body]
+(defmacro with-handler
+  [handler & body]
   `(let [unstarted-system# (-> (create-system test-overrides))]
-     (with-resource [~sys (component/start unstarted-system#)]
+     (with-resource [sys# (component/start unstarted-system#)
+                     ~handler (-> sys# :app-handler :handler)]
        component/stop
        ~@body)))
+
+(def default-req-params {:server-name "welcome.mayvenn.com"
+                         :server-port 8080
+                         :uri "/"
+                         :scheme :http
+                         :request-method :get})
 
 (defn assert-request [req storeback-resp asserter]
   (let [[get-requests endpoint]
         (recording-endpoint {:handler (constantly storeback-resp)})]
     (with-standalone-server [ss (standalone-server endpoint)]
-      (with-test-system system
-        (let [resp ((-> system :app-handler :handler)
-                    (merge {:server-name "welcome.mayvenn.com"
-                            :server-port 8080
-                            :uri "/"
-                            :scheme :http
-                            :request-method :get}
-                           req))]
-          (asserter resp))))))
+      (with-handler handler
+        (asserter (handler (merge default-req-params req)))))))
 
 (deftest redirects-missing-stylists-to-store-while-preserving-query-params
   (assert-request
@@ -73,52 +73,28 @@
      (is (= "http://bob.mayvenn.com:8080"
             (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-www-to-welcome
-  (assert-request
-   {:server-name "www.mayvenn.com"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080/hello"
-            (get-in resp [:headers "Location"]))))))
-
 (deftest redirects-www-to-welcome-preserving-query-params
-  (assert-request
-   {:server-name "www.mayvenn.com"
-    :query-string "world=true"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080/hello?world=true"
-            (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-no-subdomain-to-welcome
-  (assert-request
-   {:server-name "mayvenn.com"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080/hello"
-            (get-in resp [:headers "Location"]))))))
+  (with-handler handler
+    (let [resp (handler (merge default-req-params {:server-name "www.mayvenn.com"
+                                                   :query-string "world=true"}))]
+      (is (= 302 (:status resp)))
+      (is (= "http://welcome.mayvenn.com:8080/hello?world=true"
+             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-no-subdomain-to-welcome-preserving-query-params
-  (assert-request
-   {:server-name "mayvenn.com"
-    :query-string "hello=world"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://welcome.mayvenn.com:8080/hello?hello=world"
-            (get-in resp [:headers "Location"]))))))
+  (with-handler handler
+    (let [resp (handler (merge default-req-params {:server-name "mayvenn.com"
+                                                   :query-string "world=true"}))]
+      (is (= 302 (:status resp)))
+      (is (= "http://welcome.mayvenn.com:8080/hello?world=true"
+             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-vistaprint
-  (assert-request
-   {:server-name "vistaprint.mayvenn.com"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
-            (get-in resp [:headers "Location"]))))))
+  (with-handler handler
+    (let [resp (handler (merge default-req-params {:server-name "vistaprint.mayvenn.com"}))]
+      (is (= 302 (:status resp)))
+      (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+             (get-in resp [:headers "Location"]))))))
 
 (deftest renders-page-when-matches-stylist-subdomain
   (assert-request

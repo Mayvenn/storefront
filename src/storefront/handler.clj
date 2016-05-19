@@ -44,39 +44,48 @@
        (drop-last 2)))
 
 (defn wrap-fetch-store [h storeback-config]
+  (fn [{:keys [subdomains] :as req}]
+    (h (merge req
+              {:store (fetch/store storeback-config (last subdomains))}))))
+
+(defn parse-domain [{:keys [server-name server-port]}]
+  (str (parse-tld server-name) ":" server-port))
+
+(defn wrap-stylist-not-found-redirect [h]
+  (fn [{domain :domain
+       subdomains :subdomains
+       {store-slug :store_slug :as store} :store
+       :as req}]
+    (cond
+      (= "www" (first subdomains))
+      (redirect (str "http://" store-slug "." domain (query-string req)))
+
+      ;; TODO: render a a not available page
+      (= store :storefront.fetch/storeback-unavailable)
+      (h req)
+
+      store-slug
+      (h req)
+
+      :else
+      (redirect (str (name (:scheme req)) "://store." domain (query-string req))))))
+
+(defn wrap-known-subdomains-redirect [h]
+  (fn [{:keys [subdomains domain] :as req}]
+    (cond
+      (= "vistaprint" (first subdomains))
+      (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
+
+      (#{[] ["www"]} subdomains)
+      (redirect (str "http://welcome." domain "/hello" (query-string req)))
+
+      :else
+      (h req))))
+
+(defn wrap-add-domains [h]
   (fn [req]
-    (let [subdomains (parse-subdomains (:server-name req))
-          store (fetch/store storeback-config (last subdomains))]
-      (h (merge req
-                {:store store
-                 :subdomains subdomains})))))
-
-(defn wrap-redirect [h]
-  (fn [req]
-    (let [subdomains (:subdomains req)
-          subdomain (first subdomains)
-          domain (str (parse-tld (:server-name req)) ":"
-                      (:server-port req))
-          store (:store req)
-          store-slug (:store_slug store)]
-      (cond
-        (= "vistaprint" subdomain)
-        (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
-
-        (#{[] ["www"]} subdomains)
-        (redirect (str "http://welcome." domain "/hello" (query-string req)))
-
-        (= "www" subdomain)
-        (redirect (str "http://" store-slug "." domain (query-string req)))
-
-        (= store :storefront.fetch/storeback-unavailable)
-        (h req)
-
-        store-slug
-        (h req)
-
-        :else
-        (redirect (str (name (:scheme req)) "://store." domain (query-string req)))))))
+    (h (merge req {:subdomains (parse-subdomains (:server-name req))
+                   :domain (parse-domain req)}))))
 
 (defn request-scheme [req]
   (if-let [forwarded-proto (get-in req [:headers "x-forwarded-proto"])]
@@ -102,8 +111,9 @@
                       (partial prerender-original-request-url
                                (config/development? environment)))
       (wrap-defaults (storefront-site-defaults environment))
-      (wrap-redirect)
+      (wrap-stylist-not-found-redirect)
       (wrap-fetch-store storeback-config)
+      (wrap-known-subdomains-redirect)
       (wrap-resource "public")
       (wrap-content-type)))
 
@@ -125,19 +135,18 @@
             response
             (content-type "text/html"))))))
 
-(defn robots [req]
-  (let [subdomains (parse-subdomains (:server-name req))]
-    (if (#{["shop"] ["www"] []} subdomains)
-      (string/join "\n" ["User-agent: *"
-                         "Disallow: /account"
-                         "Disallow: /checkout"
-                         "Disallow: /orders"
-                         "Disallow: /stylist"
-                         "Disallow: /cart"
-                         "Disallow: /m/"
-                         "Disallow: /admin"])
-      (string/join "\n" ["User-agent: googlebot"
-                         "Disallow: /"]))))
+(defn robots [{:keys [subdomains]}]
+  (if (#{["shop"] ["www"] []} subdomains)
+    (string/join "\n" ["User-agent: *"
+                       "Disallow: /account"
+                       "Disallow: /checkout"
+                       "Disallow: /orders"
+                       "Disallow: /stylist"
+                       "Disallow: /cart"
+                       "Disallow: /m/"
+                       "Disallow: /admin"])
+    (string/join "\n" ["User-agent: googlebot"
+                       "Disallow: /"])))
 
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
@@ -179,6 +188,7 @@
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
+       (wrap-add-domains)
        (wrap-logging logger)
        (wrap-params)
        (#(if (config/development? environment)
