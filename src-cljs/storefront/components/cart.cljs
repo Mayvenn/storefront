@@ -96,55 +96,26 @@
       [:div.keep-shopping
        [:a.full-link (shopping-link-attrs data)]]]])))
 
-(defn new-display-line-items [products order cart-quantities update-line-item-requests delete-line-item-requests]
-  (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    (let [updating? (get update-line-item-requests variant-id)
-          removing? (get delete-line-item-requests variant-id)]
-      [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
-       [:a.left.mr1
-        [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
-                                                    :alt (:product-name line-item)
-                                                    :style {:width "7.33em"
-                                                            :height "7.33em"}}]]
-       [:.overflow-hidden.h4.black.p1
-        [:a.black.medium.titleize (products/summary line-item)]
-        [:.mt1.h5.line-height-2
-         (when-let [length (-> line-item :variant-attrs :length)]
-           [:div "Length: " length])
-         [:div "Price: " (as-money (:unit-price line-item))]]
-        [:.pt2.flex.items-center.justify-between
-         [:div
-          (if removing?
-            [:.h2 {:style {:width "1.2em"}} ui/spinner]
-            [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])]
-         [:div
-          (ui/counter (get cart-quantities variant-id)
-                      updating?
-                      (utils/send-event-callback events/control-cart-line-item-dec
-                                                 {:variant-id variant-id})
-                      (utils/send-event-callback events/control-cart-line-item-inc
-                                                 {:variant-id variant-id}))]]]])))
-
-(defn new-cart-component [{:keys [products
-                                  order
-                                  item-count
-                                  coupon-code
-                                  applying-coupon?
-                                  updating?
-                                  redirecting-to-paypal?
-                                  shipping-methods
-                                  cart-quantities
-                                  update-line-item-requests
-                                  delete-line-item-requests]} owner]
+(defn redesigned-cart-component [{:keys [products
+                                         order
+                                         item-count
+                                         coupon-code
+                                         applying-coupon?
+                                         updating?
+                                         redirecting-to-paypal?
+                                         shipping-methods
+                                         cart-quantities
+                                         update-line-item-requests
+                                         delete-line-item-requests]} owner]
   (om/component
    (html
     (ui/container
      [:.h2.center.py3.silver (str "You have " item-count
-                         (if (>= 1 item-count) " item" " items")
-                         " in your shopping bag.")]
+                                  (if (>= 1 item-count) " item" " items")
+                                  " in your shopping bag.")]
 
      [:.h2.py1 "Review your order"]
-     (new-display-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
+     (order-summary/redesigned-display-adjustable-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)
 
      [:.clearfix.mxn2.py2
       [:.md-col.md-col-6.px2
@@ -174,6 +145,23 @@
                    :disabled? updating?
                    :color "bg-paypal-blue"})]]]))))
 
+(defn redesigned-empty-cart-component [{:keys [nav-message promotions]} owner]
+  (om/component
+   (html
+    (ui/narrow-container
+     [:.center
+      [:.m2
+       (svg/bag {:height "70px" :width "70px"} 1)]
+
+      [:p.m2.h1.extra-light "Your bag is empty."]
+
+      [:.m2
+       (if-let [promo (promos/default-advertised-promotion promotions)]
+         (:description promo)
+         promos/bundle-discount-description)]]
+
+     (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
+
 (defn- variants-requests [data request-key variant-ids]
   (->> variant-ids
        (map (juxt identity
@@ -198,28 +186,12 @@
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
-(defn new-empty-cart-component [{:keys [nav-message promotions]} owner]
-  (om/component
-   (html
-    (ui/narrow-container
-     [:.col-10.center.m-auto.py2
-      (svg/bag {:height "70px" :width "70px"} 1)]
-
-     [:p.h1.center.extra-light "Your bag is empty."]
-
-     [:.py2.line-height-3.center
-      (if-let [promo (promos/default-advertised-promotion promotions)]
-        (:description promo)
-        promos/bundle-discount-description)]
-
-     (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
-
 (defn cart-component [data owner]
   (om/component
    (html
     (if (experiments/three-steps-redesign? data)
       (let [component-data (query data)]
         (if (> (:item-count component-data) 0)
-          (om/build new-cart-component component-data)
-          (om/build new-empty-cart-component component-data)))
+          (om/build redesigned-cart-component component-data)
+          (om/build redesigned-empty-cart-component component-data)))
       (om/build old-cart-component data)))))

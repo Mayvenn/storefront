@@ -1,6 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.components.formatters :refer [as-money as-money-or-free]]
             [storefront.components.utils :as utils]
+            [storefront.components.ui :as ui]
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.shipping :as shipping]
@@ -129,63 +130,92 @@
         [:td [:h5 "Order Total"]]
         [:td [:h5 (as-money (:total order))]]]])]])
 
+(defn redesigned-order-summary-row
+  ([name amount] (row {} name amount))
+  ([row-attrs name amount]
+   [:tr.h4.line-height-4
+    (merge row-attrs
+           (when (neg? amount)
+             {:class "green"}))
+    [:td name]
+    [:td.right-align.medium
+     {:class (when-not (neg? amount)
+               "navy")}
+     (as-money-or-free amount)]]))
+
 (defn redesigned-display-order-summary [shipping-methods order]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
-        store-credit  (-> order :cart-payments :store-credit)
-        row (fn row
-              ([name amount] (row {} name amount))
-              ([row-attrs name amount]
-               [:tr.h4.line-height-4
-                (merge row-attrs
-                       (when (neg? amount)
-                         {:class "green"}))
-                [:td name]
-                [:td.right-align.medium
-                 {:class (when-not (neg? amount)
-                           "navy")}
-                 (as-money-or-free amount)]]))]
+        store-credit  (-> order :cart-payments :store-credit)]
     [:div
      [:table.col-12
       [:tbody
-       (row "Subtotal"
-            (orders/products-subtotal order))
+       (redesigned-order-summary-row "Subtotal"
+                                     (orders/products-subtotal order))
 
        (for [{:keys [name price coupon-code]} adjustments]
          (when-not (= price 0)
-           (row {:key name}
-                [:div
-                 (orders/display-adjustment-name name)
-                 (when coupon-code
-                   [:a.ml1.h5.silver
-                    (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
-                    "Remove"])]
-                price)))
+           (redesigned-order-summary-row
+            {:key name}
+            [:div
+             (orders/display-adjustment-name name)
+             (when coupon-code
+               [:a.ml1.h5.silver
+                (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                "Remove"])]
+            price)))
 
        (when (and shipping-item shipping-methods)
-         (row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
+         (redesigned-order-summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
        (when store-credit
-         (row "Store Credit" (- (:amount store-credit))))]]
+         (redesigned-order-summary-row "Store Credit" (- (:amount store-credit))))]]
      [:.border-top.border-light-silver.mt2.py2.h1
       [:.flex
        [:.flex-auto.extra-light "Total"]
        [:.right-align.dark-gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
+(defn ^:private redesigned-display-line-item [products
+                                              {:keys [id product-id product-name variant-attrs unit-price quantity] :as line-item}
+                                              last-line]
+  [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
+   [:a.left.mr1
+    [:img.border.border-light-silver.rounded-1
+     {:src   (products/thumbnail-url products product-id)
+      :alt   product-name
+      :style {:width  "7.33em"
+              :height "7.33em"}}]]
+   [:.overflow-hidden.h4.black.p1
+    [:a.black.medium.titleize (products/summary line-item)]
+    [:.mt1.h5.line-height-2
+     (when-let [length (:length variant-attrs)]
+       [:div "Length: " length])
+     [:div "Price: " (as-money unit-price)]
+     last-line]]])
+
 (defn redesigned-display-line-items [products order]
-  (for [{product-id :product-id variant-id :id :as line-item} (orders/product-items order)]
-    [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key variant-id}
-     [:a.left.mr1
-      [:img.border.border-light-silver.rounded-1 {:src (products/thumbnail-url products product-id)
-                                                :alt (:product-name line-item)
-                                                :style {:width "7.33em"
-                                                        :height "7.33em"}}]]
-     [:.overflow-hidden.h4.black.p1
-      [:a.black.medium.titleize (products/summary line-item)]
-      [:.mt1.h5.line-height-2
-       (when-let [length (-> line-item :variant-attrs :length)]
-         [:div "Length: " length])
-       [:div "Price: " (as-money (:unit-price line-item))]
-       [:div "Quantity: " (:quantity line-item)]]]]))
+  (for [{:keys [quantity] :as line-item} (orders/product-items order)]
+    (redesigned-display-line-item
+     products
+     line-item
+     [:div "Quantity: " quantity])))
+
+(defn redesigned-display-adjustable-line-items [products order cart-quantities update-line-item-requests delete-line-item-requests]
+  (for [{variant-id :id :as line-item} (orders/product-items order)]
+    (let [updating? (get update-line-item-requests variant-id)
+          removing? (get delete-line-item-requests variant-id)]
+      (redesigned-display-line-item
+       products
+       line-item
+       [:.mt2.flex.items-center.justify-between
+        (if removing?
+          [:.h2 {:style {:width "1.2em"}} ui/spinner]
+          [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+        (ui/counter (get cart-quantities variant-id)
+                    updating?
+                    (utils/send-event-callback events/control-cart-line-item-dec
+                                               {:variant-id variant-id})
+                    (utils/send-event-callback events/control-cart-line-item-inc
+                                               {:variant-id variant-id}))]))))
