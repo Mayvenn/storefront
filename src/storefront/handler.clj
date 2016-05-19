@@ -174,8 +174,7 @@
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
-   (-> (routes (GET "/healthcheck" [] "cool beans")
-               (GET "/robots.txt" req (content-type (response (robots req))
+   (-> (routes (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
@@ -184,6 +183,7 @@
        (wrap-resource "public")
        (wrap-logging logger)
        (wrap-defaults (storefront-site-defaults environment))
+       (routes (GET "/healthcheck" [] "cool beans"))
        (#(if (config/development? environment)
            (wrap-exceptions %)
            (wrap-internal-error %
