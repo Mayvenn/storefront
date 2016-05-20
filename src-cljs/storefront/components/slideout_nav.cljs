@@ -50,8 +50,8 @@
 
 (defn store-credit-flag [credit]
   [:.right.border-bottom.border-left.border-light-silver.bg-white
-   {:style (merge {:border-bottom-left-radius "8px"}
-                  (when (zero? credit) {:visibility "hidden"}))}
+   {:style {:border-bottom-left-radius "8px"}
+    :class (when (zero? credit) :invisible)}
    [:.h5.px2.py1.line-height-1
     [:span.gray "Credit: "] [:span.navy (as-money credit)]]])
 

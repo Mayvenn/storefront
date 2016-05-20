@@ -291,6 +291,8 @@ html { line-height: 1.2; }
 
 /* Custom responsive hide */
 
+.invisible { visibility: hidden; }
+
 /* WARNING: Avoid the basscss helpers (xs-hide sm-hide md-hide lg-hide), they
  * may be removed.
  * They are too hard to remember... these are better.

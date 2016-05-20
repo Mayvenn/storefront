@@ -7,7 +7,6 @@
             [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
             [storefront.components.reviews :as reviews]
             [storefront.components.counter :refer [counter-component]]
-            [storefront.components.carousel :refer [carousel-component]]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
             [om.core :as om]
@@ -16,7 +15,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.sequences :refer [update-vals]]))
+            [storefront.messages :as messages]
+            [storefront.utils.sequences :refer [update-vals]]
+            [swipe :as swipe]
+            [storefront.components.carousel :as carousel]))
 
 (defn format-step-name [step-name]
   (when step-name
@@ -180,7 +182,9 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
-                         bagged-variants]}
+                         bagged-variants
+                         carousel-images
+                         carousel-index]}
                  owner]
   (om/component
    (html
@@ -194,8 +198,29 @@
         (if fetching-taxon?
           [:.h1 ui/spinner]
           [:div
-           #_[:img {:src (or image-url "https://placekitten.com/g/200/300")}]
-           (starting-at-price variants)
+           (let [items (vec (map-indexed (fn [idx image] {:id idx
+                                                         :body [:.bg-cover.bg-no-repeat.bg-center.col-12 {:style {:background-image (css-url image)
+                                                                                                                  :height "200px"}}]})
+                                         carousel-images))
+                 selected (or carousel-index 0)
+                 handler (fn [item]
+                           (messages/handle-message events/control-carousel-move
+                                                    {:index (:id item)}))]
+             [:div
+              (om/build carousel/swipe-component
+                        {:selected-index selected
+                         :items items}
+                        {:opts {:handler handler}})
+
+              [:.clearfix
+               [:.col.col-4
+                (for [item items]
+                  [:.p1.col.pointer {:key (:id item) :on-click (fn [_] (handler item))}
+                   [:.border.border-light-gray.circle
+                    {:class (when (= selected (:id item)) "bg-light-gray")
+                     :style {:width "8px" :height "8px"}}]])]
+               [:.col.col-4
+                (starting-at-price variants)]]])
            (for [step (build-steps flow
                                    (:product_facets taxon)
                                    selected-options
@@ -253,7 +278,9 @@
      :variant-quantity (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?   (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants  (get-in data keypaths/browse-recently-added-variants)
-     :reviews          (reviews/query data)}))
+     :reviews          (reviews/query data)
+     :carousel-images  (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))
+     :carousel-index   (get-in data keypaths/bundle-builder-carousel-index)}))
 
 (defn built-component [data]
   (om/build component (query data)))
