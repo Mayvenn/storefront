@@ -5,7 +5,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
-            [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
+            [storefront.components.reviews :as reviews]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
             [storefront.components.ui :as ui]
@@ -170,14 +170,6 @@
      [:.dark-gray.h1.extra-light
       (as-money-without-cents cheapest-price)]]))
 
-(defn taxon-reviews-summary [data taxon]
-  (when (get-in data keypaths/loaded-reviews)
-    (om/build reviews-summary-component data {:opts {:taxon taxon}})))
-
-(defn taxon-review-full [data taxon]
-  (when (get-in data keypaths/loaded-reviews)
-    (om/build reviews-component data {:opts {:taxon taxon}})))
-
 (defn component [{:keys [taxon
                          variants
                          fetching-taxon?
@@ -186,6 +178,7 @@
                          flow
                          variant
                          variant-quantity
+                         reviews
                          adding-to-bag?
                          bagged-variants]}
                  owner]
@@ -197,7 +190,7 @@
         [:.center
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
          [:.inline-block
-          #_(taxon-reviews-summary data taxon)]]
+          (om/build reviews/reviews-summary-component reviews)]]
         (if fetching-taxon?
           [:.h1 ui/spinner]
           [:div
@@ -227,7 +220,7 @@
                [:.cart-button ; for scrolling
                 (ui/button "Check out" events/navigate-cart)]])]
            (taxon-description (:description taxon))])]
-       #_(taxon-review-full data taxon))))))
+       (om/build reviews/reviews-component reviews))))))
 
 (def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
 
@@ -259,7 +252,8 @@
      :variant          (products/selected-variant data)
      :variant-quantity (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?   (utils/requesting? data request-keys/add-to-bag)
-     :bagged-variants  (get-in data keypaths/browse-recently-added-variants)}))
+     :bagged-variants  (get-in data keypaths/browse-recently-added-variants)
+     :reviews          (reviews/query data)}))
 
 (defn built-component [data]
   (om/build component (query data)))

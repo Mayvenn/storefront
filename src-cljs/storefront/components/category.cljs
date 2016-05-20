@@ -5,7 +5,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
-            [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
+            [storefront.components.reviews :as reviews]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
             [storefront.components.bundle-builder :as bundle-builder]
@@ -223,16 +223,14 @@
   (when-let [cheapest-price (apply min (map :price variants))]
     (str "Starting at " (as-money cheapest-price))))
 
-(defn taxon-reviews-summary [data taxon]
+(defn taxon-reviews-summary [data]
   [:.reviews-wrapper
    [:.reviews-inner-wrapper
-    (when (get-in data keypaths/loaded-reviews)
-      (om/build reviews-summary-component data {:opts {:taxon taxon}}))]])
+    (om/build reviews/reviews-summary-component (reviews/query data))]])
 
-(defn taxon-review-full [data taxon]
+(defn taxon-review-full [data]
   [:.reviews-wrapper
-   (when (get-in data keypaths/loaded-reviews)
-     (om/build reviews-component data {:opts {:taxon taxon}}))])
+   (om/build reviews/reviews-component (reviews/query data))])
 
 (defn bundle-builder-category-component [data owner]
   (om/component
@@ -245,12 +243,12 @@
            [:h1
             [:div "Select Your " (:name taxon) " Hair"]
             [:.category-header-sub "Buy now and get FREE SHIPPING"]]
-           (taxon-reviews-summary data taxon)]
+           (taxon-reviews-summary data)]
           [:header.two-column.relative
            [:div.starting-at.floated (starting-at-price variants)]
            [:h1
             [:div (:name taxon) " Hair"]]
-           (taxon-reviews-summary data taxon)
+           (taxon-reviews-summary data)
            [:.category-header-sub "Buy now and get FREE SHIPPING"]]
           (if (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
             [:.spinner]
@@ -279,7 +277,7 @@
              (into [:ul.category-description]
                    (for [description (category-descriptions taxon)]
                      [:li description]))])]
-         (taxon-review-full data taxon)])))))
+         (taxon-review-full data)])))))
 
 (defn category-component [data owner]
   (om/component
