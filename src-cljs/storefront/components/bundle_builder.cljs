@@ -236,7 +236,7 @@
                {:show-spinner? adding-to-bag? :color "bg-navy"}))
             (when-let [bagged-variants (seq bagged-variants)]
               [:div
-               (map redesigned-display-bagged-variant bagged-variants)
+               (map-indexed redesigned-display-bagged-variant bagged-variants)
                (ui/button "Check out" events/navigate-cart)])]
            #_(into [:ul]
                  (for [description (category-descriptions taxon)]
