@@ -53,8 +53,8 @@
 (defn redesigned-confirm-delivery-component [{:keys [shipping-methods selected-sku]} owner]
   (om/component
    (html
-    [:div.mt2
-     [:.h2.py1 "Shipping Method"]
+    [:div
+     [:.h2 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
         [:label.flex.items-center.col-12.py1 {:key sku}

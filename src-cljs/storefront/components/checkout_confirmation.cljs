@@ -30,24 +30,29 @@
                                                   owner]
   (om/component
    (html
-    (ui/narrow-container
+    (ui/container
      (om/build checkout-steps/redesigned-checkout-step-bar checkout-steps)
-     [:.h2.left-align.col-12 "Order Summary"]
-     [:form.col-12
-      {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
-                                             {:place-order? requires-additional-payment?})}
-      (summary/redesigned-display-line-items products order)
-      (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
-      (when requires-additional-payment?
-        [:div
-         (ui/note-box
-          "green"
-          [:.p2.navy
-           "Please enter an additional payment method below for the remaining total on your order."])
-         (om/build checkout-payment/redesigned-credit-card-form-component payment)])
-      (summary/redesigned-display-order-summary shipping-methods order)
-      (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                       :disabled? updating-shipping?})]))))
+
+     [:.clearfix.mxn3
+      [:.md-col.md-col-6.px3
+       [:.h2.left-align "Order Summary"]
+       [:.mb2
+        (summary/redesigned-display-line-items products order)]]
+      [:.md-col.md-col-6.px3
+       (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
+       [:form
+        {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
+                                               {:place-order? requires-additional-payment?})}
+        (summary/redesigned-display-order-summary shipping-methods order)
+        (when requires-additional-payment?
+          [:div
+           (ui/note-box
+            "green"
+            [:.p2.navy
+             "Please enter an additional payment method below for the remaining total on your order."])
+           (om/build checkout-payment/redesigned-credit-card-form-component payment)])
+        (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                         :disabled? updating-shipping?})]]]))))
 
 (defn old-checkout-confirmation-component [data owner]
   (let [placing-order?         (utils/requesting? data request-keys/place-order)
