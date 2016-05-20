@@ -205,7 +205,7 @@
   (om/component
    (html
     (when taxon
-      (ui/container
+      (ui/narrow-container
        [:.px1
         [:.center
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
@@ -237,7 +237,8 @@
             (when-let [bagged-variants (seq bagged-variants)]
               [:div
                (map-indexed redesigned-display-bagged-variant bagged-variants)
-               (ui/button "Check out" events/navigate-cart)])]
+               [:.cart-button ; for scrolling
+                (ui/button "Check out" events/navigate-cart)]])]
            #_(into [:ul]
                  (for [description (category-descriptions taxon)]
                    [:li description]))])]
