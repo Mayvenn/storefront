@@ -129,7 +129,7 @@
        "Select " (format-step-name (next-step flow selected-options)) "!"])]
    [:.right-align.light-gray.h5 "PRICE"]
    [:.flex
-    [:div.h1.flex-auto
+    [:.h1.flex-auto
      {:style {:min-height "1.5em"}}
      (if-not variant
        ui/nbsp
@@ -178,7 +178,7 @@
 
 (defn starting-at-price [variants]
   (when-let [cheapest-price (apply min (map :price variants))]
-    [:div.center
+    [:.center
      [:.silver.h5 "Starting at"]
      [:.dark-gray.h1.extra-light
       (as-money-without-cents cheapest-price)]]))
@@ -200,14 +200,14 @@
                          variant
                          variant-quantity
                          adding-to-bag?
-                         bagged-variants]
-                  :as   data} owner]
+                         bagged-variants]}
+                 owner]
   (om/component
    (html
     (when taxon
       (ui/container
        [:.px1
-        [:div.center
+        [:.center
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
          [:.inline-block
           #_(taxon-reviews-summary data taxon)]]
@@ -215,7 +215,7 @@
           [:.h1 ui/spinner]
           [:div
            #_[:img {:src (or image-url "https://placekitten.com/g/200/300")}]
-           [:div (starting-at-price variants)]
+           (starting-at-price variants)
            (for [step (build-steps flow
                                    (:product_facets taxon)
                                    selected-options
