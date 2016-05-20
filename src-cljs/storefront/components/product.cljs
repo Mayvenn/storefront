@@ -32,6 +32,15 @@
    " "
    (:name product)])
 
+(defn redesigned-display-bagged-variant [{:keys [quantity product variant]}]
+  [:.h6.line-height-3.my1.p1.caps.gray.bg-dark-white.medium.center
+   "Added to bag: "
+   (number->words quantity)
+   " "
+   (some-> variant :variant_attrs :length)
+   " "
+   (:name product)])
+
 (defn product-component [data owner]
   (om/component
    (html

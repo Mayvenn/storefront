@@ -214,9 +214,10 @@
         (if removing?
           [:.h2 {:style {:width "1.2em"}} ui/spinner]
           [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
-        (ui/counter (get cart-quantities variant-id)
-                    updating?
-                    (utils/send-event-callback events/control-cart-line-item-dec
-                                               {:variant-id variant-id})
-                    (utils/send-event-callback events/control-cart-line-item-inc
-                                               {:variant-id variant-id}))]))))
+        [:.h2
+         (ui/counter (get cart-quantities variant-id)
+                     updating?
+                     (utils/send-event-callback events/control-cart-line-item-dec
+                                                {:variant-id variant-id})
+                     (utils/send-event-callback events/control-cart-line-item-inc
+                                                {:variant-id variant-id}))]]))))

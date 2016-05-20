@@ -125,7 +125,7 @@
   [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:div.h2
+  [:div
    (counter-button spinning? dec-fn svg/counter-dec)
    (counter-value spinning? value)
    (counter-button spinning? inc-fn svg/counter-inc)])

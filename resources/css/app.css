@@ -79,6 +79,7 @@ html { line-height: 1.2; }
 .extra-light { font-weight: 200; }
 
 .titleize { text-transform: capitalize; }
+.shout { text-transform: uppercase; }
 .strike { text-decoration: line-through; }
 
 .shadow { text-shadow: 1px 1px #000; }
@@ -183,6 +184,12 @@ html { line-height: 1.2; }
 .mp4, .mlp4, .mxp4 { margin-left: 4px; }
 .mp5, .mlp5, .mxp5 { margin-left: 5px; }
 .mp6, .mlp6, .mxp6 { margin-left: 6px; }
+.mxnp1 { margin-left: -1px; margin-right: -1px; }
+.mxnp2 { margin-left: -2px; margin-right: -2px; }
+.mxnp3 { margin-left: -3px; margin-right: -3px; }
+.mxnp4 { margin-left: -4px; margin-right: -4px; }
+.mxnp5 { margin-left: -5px; margin-right: -5px; }
+.mxnp6 { margin-left: -6px; margin-right: -6px; }
 
 /* Custom padding */
 

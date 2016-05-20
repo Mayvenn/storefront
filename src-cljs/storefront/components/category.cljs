@@ -8,10 +8,12 @@
             [storefront.components.reviews :refer [reviews-component reviews-summary-component]]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]
+            [storefront.components.bundle-builder :as bundle-builder]
+            [storefront.hooks.experiments :as experiments]
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.bundle-builder :as accessors.bundle-builder]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
@@ -33,7 +35,7 @@
      [:div.taxon-product-title
       (:name product)]]]])
 
-(defn list-category-component [data owner]
+(defn kits-component [data owner]
   (om/component
    (html
     (when-let [taxon (taxons/current-taxon data)]
@@ -282,12 +284,15 @@
 (defn category-component [data owner]
   (om/component
    (html
-    [:div
-     (om/build (if (bundle-builder/included-taxon? (taxons/current-taxon data))
-                 bundle-builder-category-component
-                 list-category-component)
-               data)
-     [:div.gold-features
-      [:figure.guarantee-feature]
-      [:figure.free-shipping-feature]
-      [:figure.triple-bundle-feature]]])))
+    (let [redesigned? (experiments/product-page-redesign? data)]
+      [:div
+       (if (accessors.bundle-builder/included-taxon? (taxons/current-taxon data))
+         (if redesigned?
+           (bundle-builder/built-component data)
+           (om/build bundle-builder-category-component data))
+         (om/build kits-component data))
+       (when-not redesigned?
+         [:div.gold-features
+          [:figure.guarantee-feature]
+          [:figure.free-shipping-feature]
+          [:figure.triple-bundle-feature]])]))))
