@@ -147,34 +147,21 @@
 
 (defn css-url [url] (str "url(" url ")"))
 
-(defn category-descriptions [taxon]
-  (case (:name taxon)
-    "frontals"
-    '("100% Human Virgin Hair"
-      "13\" x 4\" size"
-      "Lace Material"
-      "Color 1B"
-      "14\" and 18\" Length Bundles"
-      "2.5 ounces")
-
-    "closures"
-    '("100% Human Virgin Hair"
-      "4\" x 4\" size"
-      "Silk and Lace Materials"
-      "Colors: 1B and #613 Blonde"
-      "14\" and 18\" Length Bundles"
-      "1.2 ounces")
-
-    "blonde"
-    '("100% Human Virgin Hair"
-      "Colors: #27 and #613 Blonde"
-      "14\" - 26\" Length Bundles"
-      "3.5 ounces")
-
-    '("100% Human Virgin Hair"
-      "Color 1B"
-      "12\" - 28\" Length Bundles"
-      "3.5 ounces")))
+(defn taxon-description [{:keys [colors weights materials commentary]}]
+  [:.border.border-light-gray.p2
+   [:.h3.medium.navy.shout "Description"]
+   [:.clearfix.my2
+    (let [attrs (->> [["Color" colors]
+                      ["Weight" weights]
+                      ["Base" materials]]
+                     (filter second))
+          size (str "col-" (/ 12 (count attrs)))]
+      (for [[title value] attrs]
+        [:.col {:class size
+                :key title}
+         [:.dark-gray.shout.h5 title]
+         [:.h3.navy.medium value]]))]
+   [:.h5.dark-gray.line-height-2 (first commentary)]])
 
 (defn starting-at-price [variants]
   (when-let [cheapest-price (apply min (map :price variants))]
@@ -239,9 +226,7 @@
                (map-indexed redesigned-display-bagged-variant bagged-variants)
                [:.cart-button ; for scrolling
                 (ui/button "Check out" events/navigate-cart)]])]
-           #_(into [:ul]
-                 (for [description (category-descriptions taxon)]
-                   [:li description]))])]
+           (taxon-description (:description taxon))])]
        #_(taxon-review-full data taxon))))))
 
 (def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
