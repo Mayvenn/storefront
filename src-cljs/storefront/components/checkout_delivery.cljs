@@ -60,11 +60,11 @@
            :id (str "shipping-method-" sku)
            :checked (= selected-sku sku)
            :on-change (select-shipping-method shipping-method)}]
-         [:.flex.flex-column.col-12
-          [:.h4.flex
-           [:.flex-auto.mb1 name]
-           [:.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]]
-          [:.h5 (shipping/timeframe sku)]]])]])))
+         [:.clearfix.col-12
+          [:.right.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]
+          [:.overflow-hidden
+           [:.mb1 name]
+           [:.h5 (shipping/timeframe sku)]]]])]])))
 
 (defn query [data]
   {:shipping-methods (get-in data keypaths/shipping-methods)
