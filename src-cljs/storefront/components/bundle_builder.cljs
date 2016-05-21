@@ -70,14 +70,13 @@
   consideration where in the flow the step appears, the list of variants in
   play, and what the user has selected so far."
   [flow step->option-names all-selections variants]
-  (map (fn [idx step dependent-steps]
+  (map (fn [step dependent-steps]
          {:name    step
           :options (build-options-for-step {:all-selections  all-selections
                                             :variants        variants
                                             :step-name       step
                                             :dependent-steps dependent-steps
                                             :option-names    (step->option-names step)})})
-       (range)
        flow
        (reductions conj [] flow)))
 
