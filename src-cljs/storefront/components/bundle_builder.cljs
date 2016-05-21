@@ -50,17 +50,14 @@
     (for [option-name option-names
           :let        [option-variants (products/filter-variants-by-selections {step-name option-name} step-variants)]
           :when       (not (empty? option-variants))]
-      (let [option-min-price (min-price option-variants)
-            sold-out?        (every? :sold-out? option-variants)]
-        {:option-id   (string/replace (str option-name step-name) #"\W+" "-")
-         :option-name option-name
-         :price-delta (- option-min-price step-min-price)
-         :disabled?   (or later-step? sold-out?)
-         :checked?    (= (get all-selections step-name nil) option-name)
-         :sold-out?   sold-out?
-         :on-change   (option-selection-event step-name
-                                              (assoc prior-selections step-name option-name)
-                                              option-variants)}))))
+      {:option-name option-name
+       :price-delta (- (min-price option-variants) step-min-price)
+       :checked?    (= (get all-selections step-name nil) option-name)
+       :later-step? later-step?
+       :sold-out?   (every? :sold-out? option-variants)
+       :on-change   (option-selection-event step-name
+                                            (assoc prior-selections step-name option-name)
+                                            option-variants)})))
 
 (defn build-steps
   "We are going to build the steps of the bundle builder. A step is a
@@ -80,15 +77,15 @@
        flow
        (reductions conj [] flow)))
 
-(defn option-html [{:keys [option-name price-delta disabled? checked? sold-out? on-change]}]
+(defn option-html [{:keys [option-name price-delta checked? later-step? sold-out? on-change]}]
   [:label.border.border-silver.p1.block.center
    {:class (cond
-             sold-out? "bg-silver gray"
-             disabled? "bg-light-silver muted"
-             checked?  "bg-green white"
-             true      "bg-white gray")}
+             sold-out?   "bg-silver gray"
+             later-step? "bg-light-silver muted"
+             checked?    "bg-green white"
+             true        "bg-white gray")}
    [:input.hide {:type      "radio"
-                 :disabled  disabled?
+                 :disabled  (or later-step? sold-out?)
                  :checked   checked?
                  :on-change on-change}]
    [:.h3.titleize option-name]
@@ -102,8 +99,8 @@
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
-    (for [{:keys [option-id] :as option} options]
-      [:.col.pp3 {:key   option-id
+    (for [{:keys [option-name] :as option} options]
+      [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
                   :class (if (#{:length} step-name) "col-4" "col-6")}
        (option-html option)])]])
 
@@ -143,8 +140,6 @@
                                           {:path keypaths/browse-variant-quantity}))
    (as-money (:price variant))))
 
-(defn css-url [url] (str "url(" url ")"))
-
 (defn taxon-description [{:keys [colors weights materials commentary]}]
   [:.border.border-light-gray.p2
    [:.h3.medium.navy.shout "Description"]
@@ -163,10 +158,35 @@
 
 (defn starting-at-price [variants]
   (when-let [cheapest-price (apply min (map :price variants))]
-    [:.center
+    [:.center.mt1
      [:.silver.h5 "Starting at"]
      [:.dark-gray.h1.extra-light
       (as-money-without-cents cheapest-price)]]))
+
+(def checkout-button
+  (html
+   [:.cart-button ; for scrolling
+    (ui/button "Check out" events/navigate-cart)]))
+
+(defn add-to-bag-button [adding-to-bag?]
+  (ui/button
+   "Add to bag"
+   events/control-build-add-to-bag
+   {:show-spinner? adding-to-bag? :color "bg-navy"}))
+
+(defn carousel-circles [items selected handler]
+  (for [item items]
+    [:.p1.col.pointer {:key (:id item) :on-click (fn [_] (handler item))}
+     [:.border.border-light-gray.circle
+      {:class (when (= selected (:id item)) "bg-light-gray")
+       :style {:width "8px" :height "8px"}}]]))
+
+(defn css-url [url] (str "url(" url ")"))
+
+(defn carousel-image [image]
+  [:.bg-cover.bg-no-repeat.bg-center.col-12
+   {:style {:background-image (css-url image)
+            :height "200px"}}])
 
 (defn component [{:keys [taxon
                          variants
@@ -194,10 +214,11 @@
         (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
-           (let [items (vec (map-indexed (fn [idx image] {:id idx
-                                                         :body [:.bg-cover.bg-no-repeat.bg-center.col-12 {:style {:background-image (css-url image)
-                                                                                                                  :height "200px"}}]})
-                                         carousel-images))
+           (let [items (->> carousel-images
+                            (map-indexed (fn [idx image]
+                                           {:id idx
+                                            :body (carousel-image image)}))
+                            vec)
                  selected (or carousel-index 0)
                  handler (fn [item]
                            (messages/handle-message events/control-carousel-move
@@ -209,36 +230,26 @@
                         {:opts {:handler handler}})
 
               [:.clearfix
-               [:.col.col-4
-                (for [item items]
-                  [:.p1.col.pointer {:key (:id item) :on-click (fn [_] (handler item))}
-                   [:.border.border-light-gray.circle
-                    {:class (when (= selected (:id item)) "bg-light-gray")
-                     :style {:width "8px" :height "8px"}}]])]
-               [:.col.col-4
-                (starting-at-price variants)]]])
+               [:.col.col-4 (carousel-circles items selected handler)]
+               [:.col.col-4 (starting-at-price variants)]]])
            (for [step (build-steps flow
                                    (:product_facets taxon)
                                    selected-options
                                    variants)]
              (step-html step))
            [:.py2.border-top.border-dark-white.border-width-2
-            (if-not variant
+            (if variant
+              (variant-summary {:flow             flow
+                                :variant          variant
+                                :variant-quantity variant-quantity})
               (no-variant-summary {:flow             flow
-                                   :selected-options selected-options})
-              [:div
-               (variant-summary {:flow             flow
-                                 :variant          variant
-                                 :variant-quantity variant-quantity})
-               (ui/button
-                "Add to bag"
-                events/control-build-add-to-bag
-                {:show-spinner? adding-to-bag? :color "bg-navy"})])
+                                   :selected-options selected-options}))
+            (when variant
+              (add-to-bag-button adding-to-bag?))
             (when-let [bagged-variants (seq bagged-variants)]
               [:div
                (map-indexed redesigned-display-bagged-variant bagged-variants)
-               [:.cart-button ; for scrolling
-                (ui/button "Check out" events/navigate-cart)]])]
+               checkout-button])]
            (taxon-description (:description taxon))])]
        [:div {:key (:slug taxon)}
         (om/build reviews/reviews-component reviews)])))))
