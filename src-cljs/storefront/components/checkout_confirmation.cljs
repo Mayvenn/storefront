@@ -5,6 +5,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
+            [storefront.accessors.orders :as orders]
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.validation-errors :as validation]
@@ -37,7 +38,7 @@
       [:.md-col.md-col-6.px3
        [:.h2.left-align "Order Summary"]
        [:.mb2
-        (summary/redesigned-display-line-items products order)]]
+        (summary/redesigned-display-line-items (orders/product-items order) products)]]
       [:.md-col.md-col-6.px3
        (om/build checkout-delivery/redesigned-confirm-delivery-component delivery)
        [:form

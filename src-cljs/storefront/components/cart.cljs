@@ -104,7 +104,6 @@
                                          updating?
                                          redirecting-to-paypal?
                                          shipping-methods
-                                         cart-quantities
                                          update-line-item-requests
                                          delete-line-item-requests]} owner]
   (om/component
@@ -118,7 +117,7 @@
 
      [:.clearfix.mxn3.py2
       [:.md-col.md-col-6.px3
-       (order-summary/redesigned-display-adjustable-line-items products order cart-quantities update-line-item-requests delete-line-item-requests)]
+       (order-summary/redesigned-display-adjustable-line-items (orders/product-items order) products update-line-item-requests delete-line-item-requests)]
 
       [:.md-col.md-col-6.px3
        [:form.my1
@@ -174,7 +173,6 @@
         order           (get-in data keypaths/order)
         variant-ids     (keys cart-quantities)]
     {:order                     order
-     :cart-quantities           cart-quantities
      :item-count                (orders/product-quantity order)
      :products                  (get-in data keypaths/products)
      :promotions                (get-in data keypaths/promotions)

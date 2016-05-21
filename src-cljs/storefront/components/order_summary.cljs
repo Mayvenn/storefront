@@ -178,13 +178,13 @@
        [:.right-align.dark-gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
-(defn ^:private redesigned-display-line-item [products
-                                              {:keys [id product-id product-name variant-attrs unit-price quantity] :as line-item}
-                                              last-line]
+(defn ^:private redesigned-display-line-item [{:keys [id product-name variant-attrs unit-price] :as line-item}
+                                              thumbnail
+                                              quantity-line]
   [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
    [:a.left.mr1
     [:img.border.border-light-silver.rounded-1
-     {:src   (products/thumbnail-url products product-id)
+     {:src   thumbnail
       :alt   product-name
       :style {:width  "7.33em"
               :height "7.33em"}}]]
@@ -194,28 +194,28 @@
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: " (as-money unit-price)]
-     last-line]]])
+     quantity-line]]])
 
-(defn redesigned-display-line-items [products order]
-  (for [{:keys [quantity] :as line-item} (orders/product-items order)]
+(defn redesigned-display-line-items [line-items products]
+  (for [{:keys [quantity product-id] :as line-item} line-items]
     (redesigned-display-line-item
-     products
      line-item
+     (products/thumbnail-url products product-id)
      [:div "Quantity: " quantity])))
 
-(defn redesigned-display-adjustable-line-items [products order cart-quantities update-line-item-requests delete-line-item-requests]
-  (for [{variant-id :id :as line-item} (orders/product-items order)]
+(defn redesigned-display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
+  (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
     (let [updating? (get update-line-item-requests variant-id)
           removing? (get delete-line-item-requests variant-id)]
       (redesigned-display-line-item
-       products
        line-item
+       (products/thumbnail-url products product-id)
        [:.mt2.flex.items-center.justify-between
         (if removing?
           [:.h2 {:style {:width "1.2em"}} ui/spinner]
           [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
         [:.h2
-         (ui/counter (get cart-quantities variant-id)
+         (ui/counter quantity
                      updating?
                      (utils/send-event-callback events/control-cart-line-item-dec
                                                 {:variant-id variant-id})
