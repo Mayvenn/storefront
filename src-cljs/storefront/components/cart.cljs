@@ -147,7 +147,7 @@
                    :disabled? updating?
                    :color "bg-paypal-blue"})]]]))))
 
-(defn redesigned-empty-cart-component [{:keys [nav-message promotions]} owner]
+(defn redesigned-empty-cart-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -162,7 +162,7 @@
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/button "Shop Now" [] (apply utils/route-to nav-message))))))
+     (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))))))
 
 (defn- variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -177,21 +177,23 @@
     {:order                     order
      :item-count                (orders/product-quantity order)
      :products                  (get-in data keypaths/products)
-     :promotions                (get-in data keypaths/promotions)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :updating?                 (cart-update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-     :nav-message               (navigation/shop-now-navigation-message data)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
+
+(defn empty-cart-query [data]
+  {:promotions           (get-in data keypaths/promotions)
+   :shop-now-nav-message (navigation/shop-now-navigation-message data)})
 
 (defn cart-component [data owner]
   (om/component
    (html
     (if (experiments/three-steps-redesign? data)
-      (let [component-data (query data)]
-        (if (> (:item-count component-data) 0)
-          (om/build redesigned-cart-component component-data)
-          (om/build redesigned-empty-cart-component component-data)))
+      (let [item-count (orders/product-quantity (get-in data keypaths/order))]
+        (if (zero? item-count)
+          (om/build redesigned-empty-cart-component (empty-cart-query data))
+          (om/build redesigned-cart-component (query data))))
       (om/build old-cart-component data)))))
