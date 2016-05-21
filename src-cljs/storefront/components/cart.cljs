@@ -102,7 +102,6 @@
        [:a.full-link (shopping-link-attrs data)]]]])))
 
 (defn redesigned-cart-component [{:keys [order
-                                         item-count
                                          products
                                          coupon-code
                                          applying-coupon?
@@ -113,7 +112,7 @@
   (om/component
    (html
     (ui/container
-     [:.h2.center.py3.silver "You have " (pluralize item-count "item") " in your shopping bag."]
+     [:.h2.center.py3.silver "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]
 
      [:.h2.py1 "Review your order"]
 
@@ -175,7 +174,6 @@
         order           (get-in data keypaths/order)
         variant-ids     (keys cart-quantities)]
     {:order                     order
-     :item-count                (orders/product-quantity order)
      :products                  (get-in data keypaths/products)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :updating?                 (cart-update-pending? data)
