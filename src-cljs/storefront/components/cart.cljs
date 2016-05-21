@@ -101,14 +101,13 @@
       [:div.keep-shopping
        [:a.full-link (shopping-link-attrs data)]]]])))
 
-(defn redesigned-cart-component [{:keys [products
-                                         order
+(defn redesigned-cart-component [{:keys [order
                                          item-count
+                                         products
                                          coupon-code
                                          applying-coupon?
                                          updating?
                                          redirecting-to-paypal?
-                                         shipping-methods
                                          update-line-item-requests
                                          delete-line-item-requests]} owner]
   (om/component
@@ -133,7 +132,7 @@
                                                       {:disabled? updating?
                                                        :show-spinner? applying-coupon?})]]]
 
-       (order-summary/redesigned-display-order-summary shipping-methods order)
+       (order-summary/redesigned-display-order-summary order)
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
@@ -183,7 +182,6 @@
      :updating?                 (cart-update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-     :shipping-methods          (get-in data keypaths/shipping-methods)
      :nav-message               (navigation/shop-now-navigation-message data)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))

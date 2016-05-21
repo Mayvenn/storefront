@@ -143,7 +143,7 @@
                "navy")}
      (as-money-or-free amount)]]))
 
-(defn redesigned-display-order-summary [shipping-methods order]
+(defn redesigned-display-order-summary [order]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
@@ -167,7 +167,7 @@
                  "Remove"])]
              price)))
 
-        (when (and shipping-item shipping-methods)
+        (when shipping-item
           (redesigned-order-summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
         (when store-credit

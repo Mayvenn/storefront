@@ -26,7 +26,6 @@
                                                           placing-order?
                                                           requires-additional-payment?
                                                           payment delivery order
-                                                          shipping-methods
                                                           products]}
                                                   owner]
   (om/component
@@ -44,7 +43,7 @@
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
                                                {:place-order? requires-additional-payment?})}
-        (summary/redesigned-display-order-summary shipping-methods order)
+        (summary/redesigned-display-order-summary order)
         (when requires-additional-payment?
           [:div
            (ui/note-box
@@ -94,7 +93,6 @@
    :requires-additional-payment? (requires-additional-payment? data)
    :checkout-steps               (checkout-steps/query data)
    :errors                       (get-in data keypaths/validation-errors)
-   :shipping-methods             (get-in data keypaths/shipping-methods)
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
    :payment                      (checkout-payment/redesigned-credit-card-form-query data)
