@@ -27,6 +27,11 @@
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
+(defn pluralize
+  ([cnt singular] (pluralize cnt singular (str singular "s")))
+  ([cnt singular plural]
+   (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
+
 (defn display-full-cart [data owner]
   (let [cart (get-in data keypaths/order)]
     [:div
@@ -109,9 +114,7 @@
   (om/component
    (html
     (ui/container
-     [:.h2.center.py3.silver (str "You have " item-count
-                                  (if (>= 1 item-count) " item" " items")
-                                  " in your shopping bag.")]
+     [:.h2.center.py3.silver "You have " (pluralize item-count "item") " in your shopping bag."]
 
      [:.h2.py1 "Review your order"]
 
