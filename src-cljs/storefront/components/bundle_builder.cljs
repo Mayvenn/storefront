@@ -173,7 +173,7 @@
 
 (defn component [{:keys [taxon
                          variants
-                         fetching-taxon?
+                         fetching-variants?
                          image-url
                          selected-options
                          flow
@@ -194,7 +194,7 @@
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
          [:.inline-block {:key (:slug taxon)}
           (om/build reviews/reviews-summary-component reviews)]]
-        (if fetching-taxon?
+        (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
            (let [items (vec (map-indexed (fn [idx image] {:id idx
@@ -267,19 +267,19 @@
 
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
-    {:taxon            taxon
-     :variants         (products/current-taxon-variants data)
-     :fetching-taxon?  (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
-     :image-url        (representative-image-url data taxon)
-     :selected-options (get-in data keypaths/bundle-builder-selected-options)
-     :flow             (selection-flow data)
-     :variant          (products/selected-variant data)
-     :variant-quantity (get-in data keypaths/browse-variant-quantity)
-     :adding-to-bag?   (utils/requesting? data request-keys/add-to-bag)
-     :bagged-variants  (get-in data keypaths/browse-recently-added-variants)
-     :reviews          (reviews/query data)
-     :carousel-images  (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))
-     :carousel-index   (get-in data keypaths/bundle-builder-carousel-index)}))
+    {:taxon              taxon
+     :variants           (products/current-taxon-variants data)
+     :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
+     :image-url          (representative-image-url data taxon)
+     :selected-options   (get-in data keypaths/bundle-builder-selected-options)
+     :flow               (selection-flow data)
+     :variant            (products/selected-variant data)
+     :variant-quantity   (get-in data keypaths/browse-variant-quantity)
+     :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
+     :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
+     :reviews            (reviews/query data)
+     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))
+     :carousel-index     (get-in data keypaths/bundle-builder-carousel-index)}))
 
 (defn built-component [data]
   (om/build component (query data)))
