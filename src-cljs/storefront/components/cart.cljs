@@ -170,9 +170,9 @@
        (into {})))
 
 (defn query [data]
-  (let [cart-quantities (get-in data keypaths/cart-quantities)
-        order           (get-in data keypaths/order)
-        variant-ids     (keys cart-quantities)]
+  (let [order       (get-in data keypaths/order)
+        line-items  (orders/product-items order)
+        variant-ids (map :id line-items)]
     {:order                     order
      :products                  (get-in data keypaths/products)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
