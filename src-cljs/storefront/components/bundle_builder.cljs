@@ -6,7 +6,6 @@
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
             [storefront.components.reviews :as reviews]
-            [storefront.components.counter :refer [counter-component]]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
             [om.core :as om]
