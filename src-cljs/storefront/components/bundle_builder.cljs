@@ -80,31 +80,32 @@
        flow
        (reductions conj [] flow)))
 
-(defn step-html [{:keys [options] step-name :name}]
+(defn option-html [{:keys [option-name price-delta disabled? checked? sold-out? on-change]}]
+  [:label.border.border-silver.p1.block.center
+   {:class (cond
+             sold-out? "bg-silver gray"
+             disabled? "bg-light-silver muted"
+             checked?  "bg-green white"
+             true      "bg-white gray")}
+   [:input.hide {:type      "radio"
+                 :disabled  disabled?
+                 :checked   checked?
+                 :on-change on-change}]
+   [:.h3.titleize option-name]
+   [:.h6.line-height-2
+    (if sold-out?
+      "Sold Out"
+      [:span {:class (when-not checked? "navy")}
+       "+" (as-money-without-cents price-delta)])]])
+
+(defn step-html [{options :options step-name :name}]
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
-    (for [{:keys [option-id option-name price-delta disabled? checked? sold-out? on-change]} options]
+    (for [{:keys [option-id] :as option} options]
       [:.col.pp3 {:key   option-id
-                 :class (if (#{:length} step-name) "col-4" "col-6")}
-       [:input.hide {:type      "radio"
-                     :id        option-id
-                     :disabled  disabled?
-                     :checked   checked?
-                     :on-change on-change}]
-       [:label.border.border-silver.p1.block.center
-        {:for   option-id
-         :class (cond
-                  sold-out? "bg-silver gray"
-                  disabled? "bg-light-silver muted"
-                  checked?  "bg-green white"
-                  true      "bg-white gray")}
-        [:.h3.titleize option-name]
-        [:.h6.line-height-2
-         (if sold-out?
-           "Sold Out"
-           [:span {:class (when-not checked? "navy")}
-            "+" (as-money-without-cents price-delta)])]]])]])
+                  :class (if (#{:length} step-name) "col-4" "col-6")}
+       (option-html option)])]])
 
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
