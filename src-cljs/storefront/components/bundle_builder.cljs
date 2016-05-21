@@ -117,34 +117,34 @@
          (string/join " ")
          string/upper-case)))
 
-(defn summary-section [{:keys [flow
-                               variant
-                               variant-quantity
-                               selected-options
-                               adding-to-bag?]}]
+(defn summary-structure [desc counter price]
   [:div
-   [:.navy
-    (if variant
-      (summary-format variant flow)
-      [:span
-       "Select " (format-step-name (next-step flow selected-options)) "!"])]
+   [:h3.regular.h2.extra-light "Summary"]
+   [:.navy desc]
    [:.right-align.light-gray.h5 "PRICE"]
-   [:.flex
-    [:.h1.flex-auto
-     {:style {:min-height "1.5em"}}
-     (if-not variant
-       ui/nbsp
-       (ui/counter variant-quantity
-                   false
-                   (utils/send-event-callback events/control-counter-dec
-                                              {:path keypaths/browse-variant-quantity})
-                   (utils/send-event-callback events/control-counter-inc
-                                              {:path keypaths/browse-variant-quantity})))]
-    [:.h1.navy
-     (if variant
-       (as-money (:price variant))
-       "$--.--")]]
+   [:.flex.h1 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
+    [:.flex-auto counter]
+    [:.navy price]]
    [:.center.p2.navy promos/bundle-discount-description]])
+
+(defn no-variant-summary [{:keys [flow selected-options]}]
+  (summary-structure
+   (str "Select " (format-step-name (next-step flow selected-options)) "!")
+   ui/nbsp
+   "$--.--"))
+
+(defn variant-summary [{:keys [flow
+                               variant
+                               variant-quantity]}]
+  (summary-structure
+   (summary-format variant flow)
+   (ui/counter variant-quantity
+               false
+               (utils/send-event-callback events/control-counter-dec
+                                          {:path keypaths/browse-variant-quantity})
+               (utils/send-event-callback events/control-counter-inc
+                                          {:path keypaths/browse-variant-quantity}))
+   (as-money (:price variant))))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -226,18 +226,17 @@
                                    variants)]
              (step-html step))
            [:.py2.border-top.border-dark-white.border-width-2
-            [:h3.regular.h2.extra-light "Summary"]
-            (summary-section
-             {:flow             flow
-              :variant          variant
-              :variant-quantity variant-quantity
-              :selected-options selected-options
-              :adding-to-bag?   adding-to-bag?})
-            (when variant
-              (ui/button
-               "Add to bag"
-               events/control-build-add-to-bag
-               {:show-spinner? adding-to-bag? :color "bg-navy"}))
+            (if-not variant
+              (no-variant-summary {:flow             flow
+                                   :selected-options selected-options})
+              [:div
+               (variant-summary {:flow             flow
+                                 :variant          variant
+                                 :variant-quantity variant-quantity})
+               (ui/button
+                "Add to bag"
+                events/control-build-add-to-bag
+                {:show-spinner? adding-to-bag? :color "bg-navy"})])
             (when-let [bagged-variants (seq bagged-variants)]
               [:div
                (map-indexed redesigned-display-bagged-variant bagged-variants)
