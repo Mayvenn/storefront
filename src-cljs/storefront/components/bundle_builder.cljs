@@ -63,10 +63,8 @@
                                               option-variants)}))))
 
 (defn build-steps
-  "We are going to build the steps of the bundle builder. A step is an index,
-  name and vector of options.
-  E.g., 1, Material, Lace/Silk ->
-  Step 2. Choose Material: Lace or Silk
+  "We are going to build the steps of the bundle builder. A step is a
+  name and vector of options. E.g., Material: Lace or Silk
 
   The options are hardest to generate because they have to take into
   consideration where in the flow the step appears, the list of variants in
@@ -74,7 +72,6 @@
   [flow step->option-names all-selections variants]
   (map (fn [idx step dependent-steps]
          {:name    step
-          :index   idx
           :options (build-options-for-step {:all-selections  all-selections
                                             :variants        variants
                                             :step-name       step
@@ -84,7 +81,7 @@
        flow
        (reductions conj [] flow)))
 
-(defn step-html [{:keys [index options] step-name :name}]
+(defn step-html [{:keys [options] step-name :name}]
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
@@ -257,13 +254,12 @@
       (when (= 1 (count images))
         (first images)))))
 
-(defn selection-flow [data]
-  (let [taxon-name (:name (taxons/current-taxon data))]
-    (case taxon-name
-      "frontals" '(:style :material :origin :length)
-      "closures" '(:style :material :origin :length)
-      "blonde" '(:color :origin :length)
-      '(:origin :length))))
+(defn selection-flow [{:keys [name]}]
+  (case name
+    "frontals" '(:style :material :origin :length)
+    "closures" '(:style :material :origin :length)
+    "blonde" '(:color :origin :length)
+    '(:origin :length)))
 
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
@@ -272,7 +268,7 @@
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
      :image-url          (representative-image-url data taxon)
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
-     :flow               (selection-flow data)
+     :flow               (selection-flow taxon)
      :variant            (products/selected-variant data)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
