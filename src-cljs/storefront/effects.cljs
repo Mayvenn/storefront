@@ -496,7 +496,7 @@
        (and (not redesign?) (get-in app-state keypaths/checkout-ship-to-billing-address))
        (assoc :shipping-address billing-address)))))
 
-(defmethod perform-effects events/control-checkout-shipping-method-submit [_ event args app-state]
+(defmethod perform-effects events/control-checkout-shipping-method-select [_ event args app-state]
   (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])
                                      {:shipping-method-sku (get-in
                                                             app-state

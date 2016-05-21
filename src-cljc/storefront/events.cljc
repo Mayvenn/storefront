@@ -111,7 +111,6 @@
 (def control-checkout-cart-paypal-setup (conj control-checkout :cart-paypal-setup))
 (def control-checkout-update-addresses-submit (conj control-checkout :update-addresses))
 (def control-checkout-shipping-method-select (conj control-checkout :shipping-method-select))
-(def control-checkout-shipping-method-submit (conj control-checkout :shipping-method-submit))
 (def control-checkout-payment-method-submit (conj control-checkout :payment-method-submit))
 (def control-checkout-remove-promotion (conj control-checkout :remove-promotion))
 (def control-checkout-confirmation-submit (conj control-checkout :confirmation-submit))
