@@ -193,7 +193,7 @@
        [:.px1
         [:.center
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
-         [:.inline-block
+         [:.inline-block {:key (:slug taxon)}
           (om/build reviews/reviews-summary-component reviews)]]
         (if fetching-taxon?
           [:.h1 ui/spinner]
@@ -245,7 +245,8 @@
                [:.cart-button ; for scrolling
                 (ui/button "Check out" events/navigate-cart)]])]
            (taxon-description (:description taxon))])]
-       (om/build reviews/reviews-component reviews))))))
+       [:div {:key (:slug taxon)}
+        (om/build reviews/reviews-component reviews)])))))
 
 (def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
 
