@@ -224,12 +224,12 @@
     (str "Starting at " (as-money cheapest-price))))
 
 (defn taxon-reviews-summary [data]
-  [:.reviews-wrapper
+  [:.reviews-wrapper {:key (:slug (taxons/current-taxon data))}
    [:.reviews-inner-wrapper
     (om/build reviews/reviews-summary-component (reviews/query data))]])
 
 (defn taxon-review-full [data]
-  [:.reviews-wrapper
+  [:.reviews-wrapper {:key (:slug (taxons/current-taxon data))}
    (om/build reviews/reviews-component (reviews/query data))])
 
 (defn bundle-builder-category-component [data owner]
