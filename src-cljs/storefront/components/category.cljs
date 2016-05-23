@@ -4,7 +4,7 @@
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
+            [storefront.accessors.taxons :as taxons]
             [storefront.components.reviews :as reviews]
             [storefront.components.counter :refer [counter-component]]
             [storefront.components.carousel :refer [carousel-component]]

@@ -2,7 +2,7 @@
   (:require [storefront.components.utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
-            [storefront.accessors.taxons :refer [filter-nav-taxons]]
+            [storefront.accessors.taxons :as taxons]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
@@ -31,8 +31,9 @@
       [:h1.regular.py2
        [:div "Select your favorite style"]]]
      [:.clearfix.mxn1.center
-      (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
-        (map-indexed category taxons))]])))
+      (->> (get-in data keypaths/taxons)
+           (remove taxons/is-stylist-product?)
+           (map-indexed category))]])))
 
 (defn categories-page-component [data owner]
   (om/component

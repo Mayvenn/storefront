@@ -3,7 +3,7 @@
             [storefront.hooks.analytics :as analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.taxons :refer [filter-nav-taxons]]
+            [storefront.accessors.taxons :as taxons]
             [storefront.accessors.navigation :as navigation]
             [om.core :as om]
             [clojure.string :as string]
@@ -40,7 +40,7 @@
 (defn home-component [data owner]
   (om/component
    (html
-    (let [taxons (filter-nav-taxons (get-in data keypaths/taxons))]
+    (let [taxons (remove taxons/is-stylist-product? (get-in data keypaths/taxons))]
       [:.home-container.m-auto.sans-serif
        [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
