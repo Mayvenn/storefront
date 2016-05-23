@@ -42,42 +42,52 @@
          (map :price)
          (apply min))))
 
-(defn build-options-for-step [{:keys [all-selections variants step-name dependent-steps option-names]}]
-  (let [prior-selections (select-keys all-selections dependent-steps)
-        later-step?      (> (count dependent-steps) (count all-selections))
-        step-variants    (products/filter-variants-by-selections prior-selections variants)
-        step-min-price   (min-price step-variants)]
-    (for [option-name option-names
-          :let        [option-variants (products/filter-variants-by-selections {step-name option-name} step-variants)]
-          :when       (not (empty? option-variants))]
-      {:option-name option-name
-       :price-delta (- (min-price option-variants) step-min-price)
-       :checked?    (= (get all-selections step-name nil) option-name)
-       :later-step? later-step?
-       :sold-out?   (every? :sold-out? option-variants)
-       :on-change   (option-selection-event step-name
-                                            (assoc prior-selections step-name option-name)
-                                            option-variants)})))
+(defn build-options-for-step [option-names
+                              {:keys [prior-selections
+                                      selected-option-name
+                                      step-name
+                                      step-variants
+                                      step-min-price]}]
+  (for [option-name option-names
+        :let        [option-selection {step-name option-name}
+                     option-variants  (products/filter-variants-by-selections option-selection step-variants)]
+        ;; There are no Silk Blonde closures, so hide Silk when Blonde has been
+        ;; selected, even though Silk Straight closures exist.
+        :when       (seq option-variants)]
+    {:option-name option-name
+     :price-delta (- (min-price option-variants) step-min-price)
+     :checked?    (= selected-option-name option-name)
+     :sold-out?   (every? :sold-out? option-variants)
+     :on-change   (option-selection-event step-name
+                                          (merge prior-selections option-selection)
+                                          option-variants)}))
 
 (defn build-steps
-  "We are going to build the steps of the bundle builder. A step is a
-  name and vector of options. E.g., Material: Lace or Silk
+  "We are going to build the steps of the bundle builder. A 'step' is a name and
+  vector of options, e.g., Material: Lace or Silk. An 'option' is a single one
+  of these, Silk. The pair Material: Silk is a 'selection'.
 
   The options are hardest to generate because they have to take into
-  consideration where in the flow the step appears, the list of variants in
-  play, and what the user has selected so far."
+  consideration the position in which the step appears in the flow, the list of
+  variants in the step, and the seletions the user has chosen so far."
   [flow step->option-names all-selections variants]
-  (map (fn [step dependent-steps]
-         {:name    step
-          :options (build-options-for-step {:all-selections  all-selections
-                                            :variants        variants
-                                            :step-name       step
-                                            :dependent-steps dependent-steps
-                                            :option-names    (step->option-names step)})})
-       flow
-       (reductions conj [] flow)))
+  (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
+        ;; The variants that represent a step are tricky. Even if a user has
+        ;; selected Lace, the Deep Wave variants include Lace and Silk, because
+        ;; the Style step comes before the Material step. To manage this, this
+        ;; code keeps track of which steps precede every other step.
+        :let [prior-selections (select-keys all-selections prior-steps)
+              step-variants    (products/filter-variants-by-selections prior-selections variants)]]
+    {:step-name   step-name
+     :later-step? (> (count prior-steps) (count all-selections))
+     :options     (build-options-for-step (step->option-names step-name)
+                                          {:prior-selections     prior-selections
+                                           :selected-option-name (get all-selections step-name nil)
+                                           :step-name            step-name
+                                           :step-variants        step-variants
+                                           :step-min-price       (min-price step-variants)})}))
 
-(defn option-html [{:keys [option-name price-delta checked? later-step? sold-out? on-change]}]
+(defn option-html [later-step? {:keys [option-name price-delta checked? sold-out? on-change]}]
   [:label.border.border-silver.p1.block.center
    {:class (cond
              sold-out?   "bg-silver gray"
@@ -95,14 +105,14 @@
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{options :options step-name :name}]
+(defn step-html [{:keys [step-name later-step? options]}]
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
     (for [{:keys [option-name] :as option} options]
       [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
                   :class (if (#{:length} step-name) "col-4" "col-6")}
-       (option-html option)])]])
+       (option-html later-step? option)])]])
 
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
