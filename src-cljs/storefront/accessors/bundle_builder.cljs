@@ -62,9 +62,5 @@
     "blonde" '(:color :origin :length)
     '(:origin :length)))
 
-(defn- bundle-builder-included-stylist-only [stylist-only-map]
-  (not (:stylist_only? stylist-only-map)))
-
-(def included-product? bundle-builder-included-stylist-only)
-
-(def included-taxon? bundle-builder-included-stylist-only)
+(def included-product? (complement :stylist_only?))
+(def included-taxon? (complement :stylist_only?))

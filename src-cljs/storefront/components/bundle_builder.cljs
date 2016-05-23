@@ -118,7 +118,7 @@
    [:.h5.dark-gray.line-height-2 (first commentary)]])
 
 (defn starting-at-price [variants]
-  (when-let [cheapest-price (apply min (map :price variants))]
+  (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:.center.mt1
      [:.silver.h5 "Starting at"]
      [:.dark-gray.h1.extra-light
