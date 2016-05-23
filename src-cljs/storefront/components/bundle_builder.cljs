@@ -169,7 +169,7 @@
        [:.px1
         [:.center
          [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
-         [:.inline-block {:key (:slug taxon)}
+         [:.inline-block
           (om/build reviews/reviews-summary-component reviews)]]
         (if fetching-variants?
           [:.h1 ui/spinner]
@@ -211,8 +211,7 @@
                (map-indexed redesigned-display-bagged-variant bagged-variants)
                checkout-button])]
            (taxon-description (:description taxon))])]
-       [:div {:key (:slug taxon)}
-        (om/build reviews/reviews-component reviews)])))))
+       (om/build reviews/reviews-component reviews))))))
 
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
