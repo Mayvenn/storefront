@@ -7,7 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.messages :as messages]
-            [storefront.accessors.taxons :refer [default-stylist-taxon-slug new-taxon? slug->name is-closure? is-extension? is-stylist-product?]]
+            [storefront.accessors.taxons :refer [new-taxon? slug->name is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
