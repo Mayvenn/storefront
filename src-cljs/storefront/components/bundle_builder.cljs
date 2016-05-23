@@ -35,7 +35,8 @@
                               :selected-options selected-options
                               :selected-variants selected-variants}))
 
-(defn option-html [{:keys [step-name step-variants later-step?]}
+(defn option-html [variants
+                   {:keys [step-name later-step?]}
                    {:keys [option-name price-delta checked? sold-out? selections]}]
   [:label.border.border-silver.p1.block.center
    {:class (cond
@@ -48,7 +49,7 @@
                  :checked   checked?
                  :on-change (option-selection-event step-name
                                                     selections
-                                                    (products/filter-variants-by-selections selections step-variants))}]
+                                                    (products/filter-variants-by-selections selections variants))}]
    [:.h3.titleize option-name]
    [:.h6.line-height-2
     (if sold-out?
@@ -56,14 +57,14 @@
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name options] :as step}]
+(defn step-html [variants {:keys [step-name options] :as step}]
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
     (for [{:keys [option-name] :as option} options]
       [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
                   :class (if (#{:length} step-name) "col-4" "col-6")}
-       (option-html step option)])]])
+       (option-html variants step option)])]])
 
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
@@ -196,7 +197,7 @@
                                             (:product_facets taxon)
                                             selected-options
                                             variants)]
-             (step-html step))
+             (step-html variants step))
            [:.py2.border-top.border-dark-white.border-width-2
             (if variant
               (variant-summary {:flow             flow

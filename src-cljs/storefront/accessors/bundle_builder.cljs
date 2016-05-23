@@ -47,7 +47,6 @@
                                  step-variants    (products/filter-variants-by-selections prior-selections variants)]]
     {:step-name     step-name
      :later-step?   (> (count prior-steps) (count all-selections))
-     :step-variants step-variants
      :options       (options-for-step (step->option-names step-name)
                                       {:prior-selections     prior-selections
                                        :selected-option-name (get all-selections step-name nil)
