@@ -4,7 +4,7 @@
             [storefront.components.formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.taxons :refer [filter-nav-taxons] :as taxons]
+            [storefront.accessors.taxons :as taxons]
             [storefront.components.reviews :as reviews]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
@@ -15,8 +15,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.messages :as messages]
-            [storefront.utils.sequences :refer [update-vals]]
-            [swipe :as swipe]
             [storefront.components.carousel :as carousel]))
 
 (defn format-step-name [step-name]
@@ -26,68 +24,19 @@
       (str (if (vowel? (first step-name)) "an " "a ")
            (string/capitalize step-name)))))
 
-(defn next-step [flow selected-options]
-  (let [selected-set (set (keys selected-options))]
-    (first (drop-while selected-set flow))))
-
 (defn option-selection-event [step-name selected-options selected-variants]
+  ;; FIXME: events/control-bundle-option-select really only needs
+  ;; selected-options. Denormalizing the rest of this is convenient, but means
+  ;; threading extraneous data. From selected-options it's easy to calculate the
+  ;; selected-variants, and with the flow, one could calculate the "but-last"
+  ;; options.
   (utils/send-event-callback events/control-bundle-option-select
                              {:step-name step-name
                               :selected-options selected-options
                               :selected-variants selected-variants}))
 
-(defn min-price [variants]
-  (when (seq variants)
-    (->> variants
-         (map :price)
-         (apply min))))
-
-(defn build-options-for-step [option-names
-                              {:keys [prior-selections
-                                      selected-option-name
-                                      step-name
-                                      step-variants
-                                      step-min-price]}]
-  (for [option-name option-names
-        :let        [option-selection {step-name option-name}
-                     option-variants  (products/filter-variants-by-selections option-selection step-variants)]
-        ;; There are no Silk Blonde closures, so hide Silk when Blonde has been
-        ;; selected, even though Silk Straight closures exist.
-        :when       (seq option-variants)]
-    {:option-name option-name
-     :price-delta (- (min-price option-variants) step-min-price)
-     :checked?    (= selected-option-name option-name)
-     :sold-out?   (every? :sold-out? option-variants)
-     :on-change   (option-selection-event step-name
-                                          (merge prior-selections option-selection)
-                                          option-variants)}))
-
-(defn build-steps
-  "We are going to build the steps of the bundle builder. A 'step' is a name and
-  vector of options, e.g., Material: Lace or Silk. An 'option' is a single one
-  of these, Silk. The pair Material: Silk is a 'selection'.
-
-  The options are hardest to generate because they have to take into
-  consideration the position in which the step appears in the flow, the list of
-  variants in the step, and the seletions the user has chosen so far."
-  [flow step->option-names all-selections variants]
-  (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
-        ;; The variants that represent a step are tricky. Even if a user has
-        ;; selected Lace, the Deep Wave variants include Lace and Silk, because
-        ;; the Style step comes before the Material step. To manage this, this
-        ;; code keeps track of which steps precede every other step.
-        :let [prior-selections (select-keys all-selections prior-steps)
-              step-variants    (products/filter-variants-by-selections prior-selections variants)]]
-    {:step-name   step-name
-     :later-step? (> (count prior-steps) (count all-selections))
-     :options     (build-options-for-step (step->option-names step-name)
-                                          {:prior-selections     prior-selections
-                                           :selected-option-name (get all-selections step-name nil)
-                                           :step-name            step-name
-                                           :step-variants        step-variants
-                                           :step-min-price       (min-price step-variants)})}))
-
-(defn option-html [later-step? {:keys [option-name price-delta checked? sold-out? on-change]}]
+(defn option-html [{:keys [step-name step-variants later-step?]}
+                   {:keys [option-name price-delta checked? sold-out? selections]}]
   [:label.border.border-silver.p1.block.center
    {:class (cond
              sold-out?   "bg-silver gray"
@@ -97,7 +46,9 @@
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
-                 :on-change on-change}]
+                 :on-change (option-selection-event step-name
+                                                    selections
+                                                    (products/filter-variants-by-selections selections step-variants))}]
    [:.h3.titleize option-name]
    [:.h6.line-height-2
     (if sold-out?
@@ -105,14 +56,14 @@
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name later-step? options]}]
+(defn step-html [{:keys [step-name options] :as step}]
   [:.my2 {:key step-name}
    [:h2.regular.navy.center.h4.shout (name step-name)]
    [:.clearfix.mxnp3
     (for [{:keys [option-name] :as option} options]
       [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
                   :class (if (#{:length} step-name) "col-4" "col-6")}
-       (option-html later-step? option)])]])
+       (option-html step option)])]])
 
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
@@ -133,7 +84,7 @@
 
 (defn no-variant-summary [{:keys [flow selected-options]}]
   (summary-structure
-   (str "Select " (format-step-name (next-step flow selected-options)) "!")
+   (str "Select " (format-step-name (bundle-builder/next-step flow selected-options)) "!")
    ui/nbsp
    "$--.--"))
 
@@ -201,7 +152,6 @@
 (defn component [{:keys [taxon
                          variants
                          fetching-variants?
-                         image-url
                          selected-options
                          flow
                          variant
@@ -242,10 +192,10 @@
               [:.clearfix
                [:.col.col-4 (carousel-circles items selected handler)]
                [:.col.col-4 (starting-at-price variants)]]])
-           (for [step (build-steps flow
-                                   (:product_facets taxon)
-                                   selected-options
-                                   variants)]
+           (for [step (bundle-builder/steps flow
+                                            (:product_facets taxon)
+                                            selected-options
+                                            variants)]
              (step-html step))
            [:.py2.border-top.border-dark-white.border-width-2
             (if variant
@@ -264,32 +214,13 @@
        [:div {:key (:slug taxon)}
         (om/build reviews/reviews-component reviews)])))))
 
-(def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
-
-(defn representative-image-url [data taxon]
-  (when (display-product-images-for-taxon? (:name taxon))
-    (let [products (vals (products/selected-products data))
-          images (->> products
-                      (map #(get-in % [:master :images 0 :large_url]))
-                      set)]
-      (when (= 1 (count images))
-        (first images)))))
-
-(defn selection-flow [{:keys [name]}]
-  (case name
-    "frontals" '(:style :material :origin :length)
-    "closures" '(:style :material :origin :length)
-    "blonde" '(:color :origin :length)
-    '(:origin :length)))
-
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
      :variants           (products/current-taxon-variants data)
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
-     :image-url          (representative-image-url data taxon)
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
-     :flow               (selection-flow taxon)
+     :flow               (bundle-builder/selection-flow taxon)
      :variant            (products/selected-variant data)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
