@@ -165,19 +165,18 @@
                                            {:id idx
                                             :body (carousel-image image)}))
                             vec)
-                 selected (or carousel-index 0)
                  handler (fn [item]
                            (messages/handle-message events/control-carousel-move
                                                     {:index (:id item)}))]
              [:div
               (om/build carousel/swipe-component
-                        {:selected-index selected
+                        {:selected-index carousel-index
                          :items items
                          :continuous true}
                         {:opts {:handler handler}})
 
               [:.clearfix
-               [:.col.col-4 (carousel-circles items selected handler)]
+               [:.col.col-4 (carousel-circles items carousel-index handler)]
                [:.col.col-4 (starting-at-price variants)]]])
            (for [step (bundle-builder/steps flow
                                             (:product_facets taxon)
@@ -212,7 +211,7 @@
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)
      :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))
-     :carousel-index     (get-in data keypaths/bundle-builder-carousel-index)}))
+     :carousel-index     (or (get-in data keypaths/bundle-builder-carousel-index) 0)}))
 
 (defn built-component [data]
   (om/build component (query data)))
