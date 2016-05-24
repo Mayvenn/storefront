@@ -101,8 +101,7 @@
                        nickname :store_nickname
                        instagram-account :instagram_account
                        styleseat-account :styleseat_account
-                       store-photo :profile_picture_url
-                       address :address}]
+                       store-photo :profile_picture_url}]
   [:div.center
    (ui/drop-down
     expanded?
@@ -152,12 +151,12 @@
 (defn stylist-account [expanded?
                        current-page?
                        {store-photo :profile_picture_url
-                        address :address}]
+                        store-nickname :store_nickname}]
   (account-dropdown
    expanded?
    [:.flex.justify-end.items-center
     (when store-photo [:.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
-    [:.truncate (:firstname address)]]
+    [:.truncate store-nickname]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.green.block (utils/navigate-community) "Community"]
    (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")))
