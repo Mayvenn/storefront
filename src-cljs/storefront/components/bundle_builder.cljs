@@ -133,7 +133,7 @@
 (defn carousel-image [image]
   [:.bg-cover.bg-no-repeat.bg-center.col-12
    {:style {:background-image (css-url image)
-            :height "200px"}}])
+            :height "31rem"}}])
 
 (defn component [{:keys [taxon
                          variants
