@@ -493,6 +493,10 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom darken */
 
+.active-darken-3:active {
+    background-color: var(--darken-3);
+}
+
 /* Custom lighten */
 
 /* Custom background-image */
@@ -500,7 +504,12 @@ input[type=button].reset, input[type=submit].reset {
 .img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
 .img-no-chat-icon { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
-.img-spinner      { background-image: url("/images/spinner.svg"); }
+.img-spinner      { background-image: url('/images/spinner.svg'); }
+.img-left-arrow   {
+    background-image: url('/images/carousel/arrow.png');
+    transform: rotate(180deg);
+}
+.img-right-arrow  { background-image: url('/images/carousel/arrow.png'); }
 
 .img-straight   { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
 .img-blonde     { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }

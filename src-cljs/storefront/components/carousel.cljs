@@ -6,7 +6,8 @@
             [storefront.request-keys :as request-keys]
             [sablono.core :refer-macros [html]]
             [swipe :as swipe]
-            [om.core :as om]))
+            [om.core :as om]
+            [storefront.components.ui :as ui]))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -50,10 +51,21 @@
               (dotimes [_ (- delta)] (.next swiper)))))
         (html
          [:.center
+          [:.absolute.z2.to-md-hide.lg-col-8
+           [:a.col.col-2.left-align.img-left-arrow.bg-no-repeat.bg-center.cursor.active-darken-3
+            {:style {:height "31rem"
+                     :background-size "30px"}
+             :on-click (fn [_]
+                         (handler (nth items (dec selected-idx) (last items))))}]
+           [:.col.col-4 ui/nbsp]
+           [:a.col.col-2.right-align.img-right-arrow.bg-no-repeat.bg-center.cursor.active-darken-3
+            {:style {:height "31rem"
+                     :background-size "30px"}
+             :on-click (fn [_]
+                         (handler (nth items (inc selected-idx) (first items))))}]]
           [:.overflow-hidden.relative.invisible
            {:ref "items"}
            [:.overflow-hidden.relative
             (for [item items]
               [:.left.col-12.relative {:key (:id item)}
                (:body item)])]]])))))
-

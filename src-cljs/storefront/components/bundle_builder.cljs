@@ -160,19 +160,19 @@
         (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
-           (let [items (->> carousel-images
-                            (map-indexed (fn [idx image]
-                                           {:id idx
-                                            :body (carousel-image image)}))
-                            vec)
+           (let [items   (->> carousel-images
+                              (map-indexed (fn [idx image]
+                                             {:id   idx
+                                              :body (carousel-image image)}))
+                              vec)
                  handler (fn [item]
                            (messages/handle-message events/control-carousel-move
                                                     {:index (:id item)}))]
              [:div
               (om/build carousel/swipe-component
                         {:selected-index carousel-index
-                         :items items
-                         :continuous true}
+                         :items          items
+                         :continuous     true}
                         {:opts {:handler handler}})
 
               [:.clearfix
