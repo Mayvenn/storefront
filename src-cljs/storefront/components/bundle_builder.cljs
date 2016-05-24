@@ -17,13 +17,6 @@
             [storefront.messages :as messages]
             [storefront.components.carousel :as carousel]))
 
-(defn format-step-name [step-name]
-  (when step-name
-    (let [step-name (name step-name)
-          vowel? (set "AEIOUaeiou")]
-      (str (if (vowel? (first step-name)) "an " "a ")
-           (string/capitalize step-name)))))
-
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
   [:label.border.border-silver.p1.block.center
@@ -53,6 +46,11 @@
                   :class (if (#{:length} step-name) "col-4" "col-6")}
        (option-html later-step? option)])]])
 
+(defn indefinite-articalize [word]
+  (let [vowel? (set "AEIOUaeiou")]
+    (str (if (vowel? (first word)) "an " "a ")
+         word)))
+
 (defn summary-format [variant flow]
   (let [flow (conj (vec flow) :category)]
     (->> flow
@@ -70,9 +68,9 @@
     [:.navy price]]
    [:.center.p2.navy promos/bundle-discount-description]])
 
-(defn no-variant-summary [{:keys [flow selected-options]}]
+(defn no-variant-summary [next-step]
   (summary-structure
-   (str "Select " (format-step-name (bundle-builder/next-step flow selected-options)) "!")
+   (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
    ui/nbsp
    "$--.--"))
 
@@ -191,8 +189,7 @@
               (variant-summary {:flow             flow
                                 :variant          variant
                                 :variant-quantity variant-quantity})
-              (no-variant-summary {:flow             flow
-                                   :selected-options selected-options}))
+              (no-variant-summary (bundle-builder/next-step flow selected-options)))
             (when variant
               (add-to-bag-button adding-to-bag?))
             (when (seq bagged-variants)
