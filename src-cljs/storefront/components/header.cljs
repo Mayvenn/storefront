@@ -120,9 +120,7 @@
        [:.py1.f5
         (when store-photo
           [:.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
-        [:h3.f3.medium store-name]
-        [:.gray.line-height-3 "by " (:firstname address) " " (:lastname address) ]
-        [:.mt1.f5.gray.muted "Located in " (:city address) ", " (:state address)]]
+        [:h3.f3.medium store-name]]
        (when instagram-account
          (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
                       (str "http://instagram.com/" instagram-account)
