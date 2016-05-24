@@ -65,13 +65,12 @@
     (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
 
 (defn store-section [selectable? store]
-  (let [{store-photo :profile_picture_url
-         address     :address} store]
+  (let [{store-photo :profile_picture_url nickname :store_nickname} store]
     [:div
      (row
       (when store-photo
         [:.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)])
-      [:div (:firstname address) " " (:lastname address)])
+      [:div nickname])
      [:div
       [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
        (row (selectable? events/navigate-stylist-dashboard
