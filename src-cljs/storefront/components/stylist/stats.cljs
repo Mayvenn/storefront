@@ -1,14 +1,10 @@
 (ns storefront.components.stylist.stats
-  (:require [clojure.string :as str]
-            [om.core :as om]
+  (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.formatters :as f]
-            [storefront.components.utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
             [storefront.messages :as messages]
-            [swipe :as swipe]
             [storefront.components.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
@@ -72,13 +68,6 @@
      [:div
       [:.py2 svg/large-percent]
       [:div "All sales since you joined Mayvenn."]])])
-
-(defn stats-details-component [stats]
-  (om/component
-   (html
-    [:.overflow-hidden.relative.engrave-2
-     (for [stat ordered-stats]
-       (render-stat stat (get stats stat)))])))
 
 (defn stylist-dashboard-stats-component [{:keys [selected stats]} owner]
   (om/component
