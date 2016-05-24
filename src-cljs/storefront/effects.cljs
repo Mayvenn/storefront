@@ -8,7 +8,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.taxons :as taxons]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -363,10 +362,12 @@
     (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-bundle-option-select
-  [_ event {:keys [step-name selected-options]} app-state]
-  (when (step-name selected-options)
-    (analytics/track-page
-     (str (routes/current-path app-state) "/choose_" (clj->js step-name)))))
+  [_ event _ app-state]
+  (let [selected-options (get-in app-state keypaths/bundle-builder-selected-options)
+        step-name        (get-in app-state keypaths/bundle-builder-previous-step)]
+    (when (step-name selected-options)
+      (analytics/track-page
+       (str (routes/current-path app-state) "/choose_" (clj->js step-name))))))
 
 (defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
   (let [product (products/selected-product app-state)
@@ -705,16 +706,10 @@
     (save-cookie app-state)
     (add-pending-promo-code app-state (get-in app-state keypaths/order))
     (when (bundle-builder/included-product? product)
-      (when-let [step (get-in app-state keypaths/bundle-builder-previous-step)]
-        (let [previous-options (dissoc (get-in app-state keypaths/bundle-builder-selected-options) step)
-              all-variants (products/current-taxon-variants app-state)
-              previous-variants (products/filter-variants-by-selections
-                                 previous-options
-                                 all-variants)]
+      (when-let [last-step (get-in app-state keypaths/bundle-builder-previous-step)]
+        (let [current-selections (get-in app-state keypaths/bundle-builder-selected-options)]
           (handle-message events/control-bundle-option-select
-                          {:step-name step
-                           :selected-options previous-options
-                           :selected-variants previous-variants}))))
+                          {:selected-options (dissoc current-selections last-step)}))))
     (when (stylists/own-store? app-state)
       (experiments/set-dimension "stylist-own-store" "stylists"))
     (experiments/track-event "add-to-bag")

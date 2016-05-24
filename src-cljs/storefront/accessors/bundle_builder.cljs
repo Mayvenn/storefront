@@ -1,9 +1,13 @@
 (ns storefront.accessors.bundle-builder
   (:require [storefront.accessors.products :as products]))
 
+(defn last-step [flow selections]
+  (let [finished-step? (set (keys selections))]
+    (last (take-while finished-step? flow))))
+
 (defn next-step [flow selections]
-  (let [selected-steps (set (keys selections))]
-    (first (drop-while selected-steps flow))))
+  (let [finished-step? (set (keys selections))]
+    (first (drop-while finished-step? flow))))
 
 (defn min-price [variants]
   (when (seq variants)

@@ -3,6 +3,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as products]
+            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.combinators :refer [map-values key-by]]
@@ -150,11 +153,17 @@
                 (max 1))))
 
 (defmethod transition-state events/control-bundle-option-select
-  [_ event {:keys [selected-options selected-variants step-name], :as args} app-state]
-  (-> app-state
-      (assoc-in keypaths/bundle-builder-selected-options selected-options)
-      (assoc-in keypaths/bundle-builder-previous-step step-name)
-      (assoc-in keypaths/bundle-builder-selected-variants selected-variants)))
+  [_ event {:keys [selected-options]} app-state]
+  (let [selected-variants (products/filter-variants-by-selections
+                           selected-options
+                           (products/current-taxon-variants app-state))
+        last-step (-> (taxons/current-taxon app-state)
+                      bundle-builder/selection-flow
+                      (bundle-builder/last-step selected-options))]
+    (-> app-state
+        (assoc-in keypaths/bundle-builder-selected-options selected-options)
+        (assoc-in keypaths/bundle-builder-previous-step last-step)
+        (assoc-in keypaths/bundle-builder-selected-variants selected-variants))))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))

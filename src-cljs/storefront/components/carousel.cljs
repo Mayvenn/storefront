@@ -5,6 +5,7 @@
             [storefront.messages :as messages]
             [storefront.request-keys :as request-keys]
             [sablono.core :refer-macros [html]]
+            [swipe :as swipe]
             [om.core :as om]))
 
 (defn css-url [url] (str "url(" url ")"))

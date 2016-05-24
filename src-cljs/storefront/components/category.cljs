@@ -72,11 +72,9 @@
   (let [selected-set (set (keys selected-options))]
     (first (drop-while selected-set flow))))
 
-(defn option-selection-event [step-name selected-options selected-variants]
+(defn option-selection-event [selected-options]
   (utils/send-event-callback events/control-bundle-option-select
-                             {:step-name step-name
-                              :selected-options selected-options
-                              :selected-variants selected-variants}))
+                             {:selected-options selected-options}))
 
 (defn min-price [variants]
   (when (seq variants)
@@ -100,9 +98,7 @@
          :disabled?   (or later-step? sold-out?)
          :checked?    (= (get all-selections step-name nil) option-name)
          :sold-out?   sold-out?
-         :on-change   (option-selection-event step-name
-                                              (assoc prior-selections step-name option-name)
-                                              option-variants)}))))
+         :on-change   (option-selection-event (assoc prior-selections step-name option-name))}))))
 
 (defn build-steps
   "We are going to build the steps of the bundle builder. A step is an index,
