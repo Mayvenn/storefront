@@ -1,6 +1,5 @@
 (ns storefront.accessors.products
   (:require [storefront.keypaths :as keypaths]
-            [storefront.utils.sequences :refer [update-vals]]
             [storefront.accessors.taxons :as taxons]))
 
 (defn all-variants [product]

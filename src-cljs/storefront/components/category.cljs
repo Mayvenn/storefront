@@ -16,8 +16,7 @@
             [storefront.accessors.bundle-builder :as accessors.bundle-builder]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
-            [storefront.utils.sequences :refer [update-vals]]))
+            [storefront.request-keys :as request-keys]))
 
 (defn display-product [product]
   [:a (utils/route-to events/navigate-product
