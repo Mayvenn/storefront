@@ -162,7 +162,7 @@
 (defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
   (assoc-in app-state keypaths/bundle-builder-carousel-index index))
 
-(defmethod transition-state events/control-stylist-view-stat [_ _ stat app-state]
+(defmethod transition-state events/control-stylist-stat-move [_ _ stat app-state]
   (assoc-in app-state keypaths/selected-stylist-stat stat))
 
 (defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]

@@ -8,40 +8,14 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.messages :as messages]
-            [swipe :as swipe]))
-
-(defn choose-stat [stat]
-  (utils/send-event-callback events/control-stylist-view-stat stat))
-
-(defn choose-stat-now [stat]
-  (messages/handle-message events/control-stylist-view-stat stat))
+            [swipe :as swipe]
+            [storefront.components.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
-(def default-stat :next-payout) ; NOTE: this should match the `selected-stylist-stat` in `storefront.state`
-
-(defn stat->idx [stat]
-  (utils/position #(= % stat) ordered-stats))
-
-(defn idx->stat [idx]
-  (get ordered-stats idx default-stat))
-
-(def default-idx (stat->idx default-stat))
-
-(defn ^:private circle [selected]
-  [:.bg-white.circle
-   {:class (when-not selected "bg-lighten-2")
-    :style {:width "8px" :height "8px"}}])
-
-(defn ^:private circle-for-stat [stat selected]
-  [:.p1.pointer {:key stat :on-click (choose-stat stat)}
-   (circle (= selected stat))])
-
-(defn ^:private money [amount]
-  (f/as-money-without-cents amount))
 
 (defn ^:private money-with-cents [amount]
   [:.flex.justify-center.line-height-1
-   (money amount)
+   (f/as-money-without-cents amount)
    [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
 
 (def payday 3) ;; 3 -> Wednesday in JS
@@ -93,7 +67,7 @@
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (money amount)]
+      [:.py2.h00 re-center-money (f/as-money-cents-only amount)]
       [:div "Sales since you joined Mayvenn"]]
      [:div
       [:.py2 svg/large-percent]
@@ -107,36 +81,21 @@
        (render-stat stat (get stats stat)))])))
 
 (defn stylist-dashboard-stats-component [{:keys [selected stats]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [this]
-      (om/set-state!
-       owner
-       {:swiper (js/Swipe. (om/get-ref owner "stats")
-                           #js {:continuous false
-                                :startSlide (or (stat->idx selected)
-                                                default-idx)
-                                :callback (fn [idx _]
-                                            (choose-stat-now (idx->stat idx)))})}))
-    om/IWillUnmount
-    (will-unmount [this]
-      (when-let [swiper (:swiper (om/get-state owner))]
-        (.kill swiper)))
-    om/IRenderState
-    (render-state [_ {:keys [swiper]}]
-      (let [selected-idx (stat->idx selected)]
-        (when (and swiper selected-idx)
-          (let [delta (- (.getPos swiper) selected-idx)]
-            (if (pos? delta)
-              (dotimes [_ delta] (.prev swiper))
-              (dotimes [_ (- delta)] (.next swiper)))))
-        (html
-         [:.bg-green.white.center.sans-serif
-          [:.py1.bg-darken-bottom-2
-           [:.overflow-hidden.relative
-            {:ref "stats"}
-            (om/build stats-details-component stats)]
-
-           [:.flex.justify-center
-            (for [stat ordered-stats]
-              (circle-for-stat stat selected))]]])))))
+  (om/component
+   (html
+    (let [handler (partial messages/handle-message events/control-stylist-stat-move)
+          items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
+                       {:id idx
+                        :body (render-stat stat (get stats stat))}))]
+      [:.bg-green.white.center.sans-serif
+       [:.py1.bg-darken-bottom-2
+        (om/build carousel/swipe-component
+                  {:selected-index selected
+                   :items items}
+                  {:opts {:handler (comp handler :id)}})
+        [:.flex.justify-center
+         (for [{:keys [id]} items]
+           [:.p1.pointer {:key id :on-click (fn [_] (handler id))}
+            [:.bg-white.circle
+             {:class (when-not (= selected id) "bg-lighten-2")
+              :style {:width "8px" :height "8px"}}]])]]]))))

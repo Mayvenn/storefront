@@ -187,7 +187,8 @@
              [:div
               (om/build carousel/swipe-component
                         {:selected-index selected
-                         :items items}
+                         :items items
+                         :continuous true}
                         {:opts {:handler handler}})
 
               [:.clearfix

@@ -25,14 +25,14 @@
                                             {:index-path index-path
                                              :index (mod (inc idx) (count images))})}]]))))
 
-(defn swipe-component [{:keys [selected-index items]} owner {:keys [handler]}]
+(defn swipe-component [{:keys [selected-index items continuous]} owner {:keys [handler]}]
   (reify
     om/IDidMount
     (did-mount [this]
       (om/set-state!
        owner
        {:swiper (js/Swipe. (om/get-ref owner "items")
-                           #js {:continuous false
+                           #js {:continuous (or continuous false)
                                 :startSlide (or selected-index 0)
                                 :callback (fn [idx _] (handler (get items idx)))})}))
     om/IWillUnmount
