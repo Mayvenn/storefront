@@ -27,45 +27,72 @@
                                             {:index-path index-path
                                              :index (mod (inc idx) (count images))})}]]))))
 
-(defn swipe-component [{:keys [selected-index items continuous]} owner {:keys [handler]}]
+(defn set-selected-index [owner i]
+  (when-not (= (.getPos (:swiper (om/get-state owner))) i)
+    (om/update-state! owner #(assoc % :selected-index i))))
+
+(defn swipe-component [{:keys [items continuous]} owner {:keys [start-index dot-location]}]
   (reify
     om/IDidMount
     (did-mount [this]
       (om/set-state!
        owner
-       {:swiper (js/Swipe. (om/get-ref owner "items")
-                           #js {:continuous (or continuous false)
-                                :startSlide (or selected-index 0)
-                                :callback (fn [idx _] (handler (get items idx)))})}))
+       {:swiper         (js/Swipe. (om/get-ref owner "items")
+                                   #js {:continuous (or continuous false)
+                                        :startSlide (or start-index 0)
+                                        :callback   (fn [i] (set-selected-index owner i))})
+        :selected-index (or start-index 0)}))
     om/IWillUnmount
     (will-unmount [this]
       (when-let [swiper (:swiper (om/get-state owner))]
         (.kill swiper)))
     om/IRenderState
-    (render-state [_ {:keys [swiper]}]
-      (let [selected-idx selected-index]
-        (when (and swiper selected-idx)
-          (let [delta (- (.getPos swiper) selected-idx)]
+    (render-state [_ {:keys [swiper selected-index]}]
+      (when (and swiper selected-index)
+        (let [delta (- (.getPos swiper) selected-index)]
+          (if (= (Math/abs delta) (dec (count items)))
+            (.slide swiper selected-index)
             (if (pos? delta)
               (dotimes [_ delta] (.prev swiper))
-              (dotimes [_ (- delta)] (.next swiper)))))
-        (html
-         [:.center
-          [:.absolute.z2.to-md-hide.lg-col-8
-           [:a.col.col-2.left-align.img-left-arrow.bg-no-repeat.bg-center.cursor.active-darken-3
-            {:style {:height "31rem"
+              (dotimes [_ (- delta)] (.next swiper))))))
+      (html
+       [:.center.relative
+        [:.overflow-hidden.relative.invisible
+         {:ref "items"}
+         [:.overflow-hidden.relative
+          (for [item items]
+            [:.left.col-12.relative {:key (:id item)}
+             (:body item)])]]
+        [:a.block.absolute.img-left-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide
+         {:style    {:top             0
+                     :bottom          0
+                     :left            0
+                     :width           "5rem"
                      :background-size "30px"}
-             :on-click (fn [_]
-                         (handler (nth items (dec selected-idx) (last items))))}]
-           [:.col.col-4 ui/nbsp]
-           [:a.col.col-2.right-align.img-right-arrow.bg-no-repeat.bg-center.cursor.active-darken-3
-            {:style {:height "31rem"
+          :on-click (fn [_]
+                      (set-selected-index owner (if (= 0 selected-index)
+                                                  (dec (count items))
+                                                  (dec selected-index))))}]
+        [:a.block.absolute.img-right-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide
+         {:style    {:width           "5rem"
+                     :top             0
+                     :bottom          0
+                     :right           0
                      :background-size "30px"}
-             :on-click (fn [_]
-                         (handler (nth items (inc selected-idx) (first items))))}]]
-          [:.overflow-hidden.relative.invisible
-           {:ref "items"}
-           [:.overflow-hidden.relative
-            (for [item items]
-              [:.left.col-12.relative {:key (:id item)}
-               (:body item)])]]])))))
+          :on-click (fn [_]
+                      (set-selected-index owner (if (= selected-index (dec (count items)))
+                                                  0
+                                                  (inc selected-index))))}]
+        [:.flex.block.absolute
+         {:style {:bottom "1rem"
+                  :left   "1.5rem"
+                  :right  "1.5rem"}
+          :class (when-not (= :left dot-location) "justify-center")}
+         (for [i (range (count items))]
+           [:.pointer
+            {:key      i
+             :style    {:padding "0 2px"}
+             :on-click (fn [_] (set-selected-index owner i))}
+            [:.bg-white.border.border-light-gray.circle.bg-lighten-2
+             {:class (when (= selected-index i) "bg-light-gray bg-lighten-4")
+              :style {:width "7px" :height "7px"}}]])]]))))

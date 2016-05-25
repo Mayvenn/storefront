@@ -9,7 +9,7 @@
   "The number of versions that storefront is allowed to fall behind before requiring a refresh"
   0)
 
-(def api-base-url js/apiUrl)
+(def api-base-url "http://api.welcome.localhost:3005" #_js/apiUrl)
 
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
 (def send-sonar-publishable-key "d7d8f2d0-9f91-4507-bc82-137586d41ab8")

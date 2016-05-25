@@ -174,7 +174,6 @@
           :account-menu-expanded false
           :store-info-expanded false
 
-          :selected-stylist-stat 1
           :expanded-commission-order-id #{nil}
 
           :sign-in {:email ""

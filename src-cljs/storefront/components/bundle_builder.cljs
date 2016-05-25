@@ -121,13 +121,6 @@
    events/control-build-add-to-bag
    {:show-spinner? adding-to-bag? :color "bg-navy"}))
 
-(defn carousel-circles [items selected handler]
-  (for [item items]
-    [:.p1.col.pointer {:key (:id item) :on-click (fn [_] (handler item))}
-     [:.border.border-light-gray.circle
-      {:class (when (= selected (:id item)) "bg-light-gray")
-       :style {:width "8px" :height "8px"}}]]))
-
 (defn css-url [url] (str "url(" url ")"))
 
 (defn carousel-image [image]
@@ -145,8 +138,7 @@
                          reviews
                          adding-to-bag?
                          bagged-variants
-                         carousel-images
-                         carousel-index]}
+                         carousel-images]}
                  owner]
   (om/component
    (html
@@ -160,23 +152,18 @@
         (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
-           (let [items   (->> carousel-images
-                              (map-indexed (fn [idx image]
-                                             {:id   idx
-                                              :body (carousel-image image)}))
-                              vec)
-                 handler (fn [item]
-                           (messages/handle-message events/control-carousel-move
-                                                    {:index (:id item)}))]
+           (let [items (->> carousel-images
+                            (map-indexed (fn [idx image]
+                                           {:id   idx
+                                            :body (carousel-image image)}))
+                            vec)]
              [:div
               (om/build carousel/swipe-component
-                        {:selected-index carousel-index
-                         :items          items
-                         :continuous     true}
-                        {:opts {:handler handler}})
+                        {:items      items
+                         :continuous true}
+                        {:opts {:dot-location :left}})
 
               [:.clearfix
-               [:.col.col-4 (carousel-circles items carousel-index handler)]
                [:.col.col-4 (starting-at-price variants)]]])
            (for [step (bundle-builder/steps flow
                                             (:product_facets taxon)
@@ -210,8 +197,7 @@
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)
-     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))
-     :carousel-index     (or (get-in data keypaths/bundle-builder-carousel-index) 0)}))
+     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))}))
 
 (defn built-component [data]
   (om/build component (query data)))

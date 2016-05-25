@@ -58,7 +58,6 @@
 (def control-change-state (conj control :change-state))
 
 (def control-carousel-move (conj control :carousel-move))
-(def control-stylist-stat-move (conj control :stylist-stat-move))
 (def control-stylist-commissions-fetch (conj control :stylist-commissions-fetch))
 (def control-stylist-referrals-fetch (conj control :stylist-referrals-fetch))
 (def control-stylist-bonuses-fetch (conj control :stylist-bonuses-fetch))
