@@ -84,4 +84,6 @@
                         :body (render-stat stat (get stats stat))}))]
       [:.bg-green.white.center.sans-serif
        [:.bg-darken-bottom-2
-        (om/build carousel/swipe-component {:items items} {:opts {:start-index 1}})]]))))
+        (om/build carousel/swipe-component {:items items}
+                  {:react-key "stat-swiper"
+                   :opts {:start-index 1}})]]))))

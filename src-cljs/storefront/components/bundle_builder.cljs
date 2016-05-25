@@ -161,7 +161,8 @@
               (om/build carousel/swipe-component
                         {:items      items
                          :continuous true}
-                        {:opts {:dot-location :left}})
+                        {:react-key (str "category-swiper-" (:slug taxon))
+                         :opts {:dot-location :left}})
 
               [:.clearfix
                [:.col.col-4 (starting-at-price variants)]]])
