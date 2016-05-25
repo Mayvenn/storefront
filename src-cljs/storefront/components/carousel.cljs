@@ -28,7 +28,7 @@
                                              :index (mod (inc idx) (count images))})}]]))))
 
 (defn set-selected-index [owner i]
-  (om/update-state! owner #(assoc % :selected-index i))
+  (om/set-state! owner :selected-index i)
   false)
 
 (defn swipe-component [{:keys [items continuous]} owner {:keys [start-index dot-location]}]
