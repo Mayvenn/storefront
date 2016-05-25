@@ -20,7 +20,8 @@
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
   [:label.border.border-silver.p1.block.center
-   {:class (cond
+   {:style {:height "150px"}
+    :class (cond
              sold-out?   "bg-silver gray"
              later-step? "bg-light-silver muted"
              checked?    "bg-green white"
@@ -39,7 +40,7 @@
 
 (defn step-html [{:keys [step-name later-step? options]}]
   [:.my2 {:key step-name}
-   [:h2.regular.navy.center.h4.shout (name step-name)]
+   [:.navy.h4.medium.shout (name step-name)]
    [:.clearfix.mxnp3
     (for [{:keys [option-name] :as option} options]
       [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
@@ -93,14 +94,14 @@
    [:.clearfix.my2
     (let [attrs (->> [["Color" colors]
                       ["Weight" weights]
-                      ["Base" materials]]
+                      ["Material" materials]]
                      (filter second))
           size (str "col-" (/ 12 (count attrs)))]
       (for [[title value] attrs]
         [:.col {:class size
                 :key title}
          [:.dark-gray.shout.h5 title]
-         [:.h3.navy.medium value]]))]
+         [:.h4.navy.medium.pr2 value]]))]
    [:.h5.dark-gray.line-height-2 (first commentary)]])
 
 (defn starting-at-price [variants]
@@ -146,26 +147,27 @@
       (ui/narrow-container
        [:.px1
         [:.center
-         [:h1.regular.titleize.navy.mt1.h2 (:name taxon)]
+         [:h1.regular.titleize.navy.mbp4.h2 (:name taxon)]
          [:.inline-block
           (om/build reviews/reviews-summary-component reviews)]]
         (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
-           (let [items (->> carousel-images
-                            (map-indexed (fn [idx image]
-                                           {:id   idx
-                                            :body (carousel-image image)}))
-                            vec)]
-             [:div
-              (om/build carousel/swipe-component
-                        {:items      items
-                         :continuous true}
-                        {:react-key (str "category-swiper-" (:slug taxon))
-                         :opts {:dot-location :left}})
+           [:.mxn3
+            (let [items (->> carousel-images
+                             (map-indexed (fn [idx image]
+                                            {:id   idx
+                                             :body (carousel-image image)}))
+                             vec)]
+              [:div
+               (om/build carousel/swipe-component
+                         {:items      items
+                          :continuous true}
+                         {:react-key (str "category-swiper-" (:slug taxon))
+                          :opts {:dot-location :left}})
 
-              [:.clearfix
-               [:.col.col-4 (starting-at-price variants)]]])
+               [:.clearfix
+                [:.col-4.pt2.m-auto (starting-at-price variants)]]])]
            (for [step (bundle-builder/steps flow
                                             (:product_facets taxon)
                                             selected-options
