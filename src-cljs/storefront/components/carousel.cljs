@@ -63,21 +63,15 @@
           (for [item items]
             [:.left.col-12.relative {:key (:id item)}
              (:body item)])]]
-        [:a.block.absolute.img-left-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide
-         {:style    {:top             0
-                     :bottom          0
-                     :left            0
-                     :width           "5rem"
+        [:a.block.absolute.img-left-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide.top-0.bottom-0.left-0
+         {:style    {:width           "5rem"
                      :background-size "30px"}
           :on-click (fn [_]
                       (set-selected-index owner (if (= 0 selected-index)
                                                   (dec (count items))
                                                   (dec selected-index))))}]
-        [:a.block.absolute.img-right-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide
+        [:a.block.absolute.img-right-arrow.bg-no-repeat.bg-center.cursor.active-darken-3.to-md-hide.top-0.bottom-0.right-0
          {:style    {:width           "5rem"
-                     :top             0
-                     :bottom          0
-                     :right           0
                      :background-size "30px"}
           :on-click (fn [_]
                       (set-selected-index owner (if (= selected-index (dec (count items)))
