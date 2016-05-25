@@ -506,10 +506,10 @@ input[type=button].reset, input[type=submit].reset {
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
 .img-spinner      { background-image: url('/images/spinner.svg'); }
 .img-left-arrow   {
-    background-image: url('/images/carousel/arrow.png');
+    background-image: url('/images/carousel/arrow.svg');
     transform: rotate(180deg);
 }
-.img-right-arrow  { background-image: url('/images/carousel/arrow.png'); }
+.img-right-arrow  { background-image: url('/images/carousel/arrow.svg'); }
 
 .img-straight   { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
 .img-blonde     { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
