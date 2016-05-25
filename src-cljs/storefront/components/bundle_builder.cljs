@@ -19,8 +19,9 @@
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.border.border-silver.p1.block.center
-   {:style {:height "150px"}
+  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center
+   {:style {:width "100%"
+            :height "100%"}
     :class (cond
              sold-out?   "bg-silver gray"
              later-step? "bg-light-silver muted"
@@ -31,8 +32,8 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   [:.h3.titleize option-name]
-   [:.h6.line-height-2
+   [:.h2.extra-light.titleize option-name]
+   [:.h5.line-height-2
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
@@ -41,10 +42,13 @@
 (defn step-html [{:keys [step-name later-step? options]}]
   [:.my2 {:key step-name}
    [:.navy.h4.medium.shout (name step-name)]
-   [:.clearfix.mxnp3
+   [:.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [option-name] :as option} options]
-      [:.col.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
-                  :class (if (#{:length} step-name) "col-4" "col-6")}
+      [:.flex.flex-column.justify-center.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
+                   :style {:height "6rem"}
+                   :class (case step-name
+                            :length "col-4"
+                            "col-6")}
        (option-html later-step? option)])]])
 
 (defn indefinite-articalize [word]
