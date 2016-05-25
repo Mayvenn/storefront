@@ -70,7 +70,6 @@
 
 (def places-enabled (conj ui :places-enabled))
 
-(def selected-stylist-stat (conj ui :selected-stylist-stat))
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def taxon-images (conj ui :taxon-images))
