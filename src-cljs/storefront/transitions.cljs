@@ -394,10 +394,16 @@
 (defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
   (assoc-in app-state keypaths/flash-failure nil))
 
+(defn swap-straight-image [app-state variation]
+  (if (= "product-css" variation)
+    (assoc-in app-state (conj keypaths/taxon-images :straight 0) "/images/style_images/straight/1-alt.jpg")
+    app-state))
+
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
   (-> app-state
-      (update-in keypaths/optimizely-variations conj variation)))
+      (update-in keypaths/optimizely-variations conj variation)
+      (swap-straight-image variation)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
   (assoc-in app-state keypaths/loaded-optimizely true))
