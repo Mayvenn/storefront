@@ -28,8 +28,8 @@
                                              :index (mod (inc idx) (count images))})}]]))))
 
 (defn set-selected-index [owner i]
-  (when-not (= (.getPos (:swiper (om/get-state owner))) i)
-    (om/update-state! owner #(assoc % :selected-index i))))
+  (om/update-state! owner #(assoc % :selected-index i))
+  false)
 
 (defn swipe-component [{:keys [items continuous]} owner {:keys [start-index dot-location]}]
   (reify
@@ -40,7 +40,7 @@
        {:swiper         (js/Swipe. (om/get-ref owner "items")
                                    #js {:continuous (or continuous false)
                                         :startSlide (or start-index 0)
-                                        :callback   (fn [i] (set-selected-index owner i))})
+                                        :callback   (partial set-selected-index owner)})
         :selected-index (or start-index 0)}))
     om/IWillUnmount
     (will-unmount [this]
