@@ -84,7 +84,8 @@
           :class (when-not (= :left dot-location) "justify-center")}
          (for [i (range (count items))]
            [:.pointer.pxp2
-            {:on-click (fn [_] (set-selected-index owner i))}
+            {:key i
+             :on-click (fn [_] (set-selected-index owner i))}
             [:.bg-white.border.border-light-gray.circle.bg-lighten-2
              {:class (when (= selected-index i) "bg-light-gray bg-lighten-4")
               :style {:width "7px" :height "7px"}}]])]]))))
