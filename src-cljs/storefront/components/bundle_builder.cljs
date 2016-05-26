@@ -19,7 +19,7 @@
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center
+  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1
    {:style {:width "100%"
             :height "100%"}
     :class (cond
@@ -44,11 +44,12 @@
    [:.navy.h4.medium.shout (name step-name)]
    [:.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [option-name] :as option} options]
-      [:.flex.flex-column.justify-center.pp3 {:key   (string/replace (str option-name step-name) #"\W+" "-")
-                   :style {:height "6rem"}
-                   :class (case step-name
-                            :length "col-4"
-                            "col-6")}
+      [:.flex.flex-column.justify-center.pp3
+       {:key   (string/replace (str option-name step-name) #"\W+" "-")
+        :style {:height "6rem"}
+        :class (case step-name
+                 :length "col-4"
+                 "col-6")}
        (option-html later-step? option)])]])
 
 (defn indefinite-articalize [word]
@@ -93,7 +94,7 @@
    (as-money (:price variant))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
-  [:.border.border-light-gray.p2
+  [:.border.border-light-gray.p2.rounded-1
    [:.h3.medium.navy.shout "Description"]
    [:.clearfix.my2
     (let [attrs (->> [["Color" colors]
