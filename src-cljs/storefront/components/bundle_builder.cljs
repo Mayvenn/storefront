@@ -157,7 +157,7 @@
         (if fetching-variants?
           [:.h1 ui/spinner]
           [:div
-           [:.mxn3
+           [:.mxnp18
             (let [items (->> carousel-images
                              (map-indexed (fn [idx image]
                                             {:id   idx
