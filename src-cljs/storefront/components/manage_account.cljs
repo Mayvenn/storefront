@@ -1,19 +1,18 @@
 (ns storefront.components.manage-account
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.components.utils :as utils]
             [storefront.components.facebook :as facebook]
-            [storefront.components.validation-errors :refer [validation-errors-component]]
-            [storefront.events :as events]
-            [storefront.config :as config]
             [storefront.components.formatters :refer [as-money]]
+            [storefront.components.utils :as utils]
+            [storefront.components.validation-errors :as validation-errors]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
 (defn manage-account-component [data owner]
   (om/component
    (html
     [:div
-     (om/build validation-errors-component data)
+     (om/build validation-errors/component (get-in data keypaths/validation-errors-details))
      [:div#edit-account
       [:form
        {:on-submit (utils/send-event-callback events/control-manage-account-submit)}

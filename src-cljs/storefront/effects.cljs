@@ -480,8 +480,7 @@
       (api/update-stylist-account-profile-picture user-token stylist-account))))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
-  (let [redesign? (experiments/three-steps-redesign? app-state)
-        guest-checkout? (get-in app-state keypaths/checkout-as-guest)
+  (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
         billing-address (get-in app-state keypaths/checkout-billing-address)
         shipping-address (get-in app-state keypaths/checkout-shipping-address)
         update-addresses (if guest-checkout? api/guest-update-addresses api/update-addresses)]
@@ -491,11 +490,8 @@
        guest-checkout?
        (assoc :email (get-in app-state keypaths/checkout-guest-email))
 
-       (and redesign? (get-in app-state keypaths/checkout-bill-to-shipping-address))
-       (assoc :billing-address shipping-address)
-
-       (and (not redesign?) (get-in app-state keypaths/checkout-ship-to-billing-address))
-       (assoc :shipping-address billing-address)))))
+       (get-in app-state keypaths/checkout-bill-to-shipping-address)
+       (assoc :billing-address shipping-address)))))
 
 (defmethod perform-effects events/control-checkout-shipping-method-select [_ event args app-state]
   (api/update-shipping-method (merge (select-keys (get-in app-state keypaths/order) [:number :token])

@@ -41,9 +41,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn three-steps-redesign? [data]
-  (display-variation data "checkout-css"))
-
 (defn product-page-redesign? [data]
   (display-variation data "product-css"))
 

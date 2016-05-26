@@ -5,7 +5,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.utils :as utils]
             [storefront.components.facebook :as facebook]
-            [storefront.components.validation-errors :refer [validation-errors-component]]
+            [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -87,7 +87,7 @@
     [:div
      [:h2.header-bar-heading "Manage Account"]
 
-     (om/build validation-errors-component data)
+     (om/build validation-errors/component (get-in data keypaths/validation-errors-details))
 
      [:div.manage-account-content
       [:.mx-auto

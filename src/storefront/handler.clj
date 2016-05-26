@@ -60,7 +60,7 @@
       (= "www" (first subdomains))
       (redirect (str "http://" store-slug "." domain (query-string req)))
 
-      ;; TODO: render a a not available page
+      ;; TODO: render an unavailable page
       (= store :storefront.fetch/storeback-unavailable)
       (h req)
 

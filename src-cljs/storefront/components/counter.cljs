@@ -7,6 +7,7 @@
             [sablono.core :refer-macros [html]]
             [om.core :as om]))
 
+;; TODO CLEANUP Remove this after product-css experiment variant wins
 (defn counter-component [data owner {:keys [path set-event inc-event dec-event spinner-key]}]
   (let [saving? (when spinner-key (utils/requesting? data spinner-key))]
     (om/component

@@ -1,8 +1,8 @@
 (ns storefront.components.validation-errors
-  (:require [om.core :as om]
+  (:require [clojure.string :as string]
+            [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.keypaths :as keypaths]
-            [clojure.string :as string]))
+            [storefront.keypaths :as keypaths]))
 
 (defn- field->human-name [key]
   (get {"billing-address" "Billing Address"
@@ -25,17 +25,7 @@
                                   " "
                                   err)])))))
 
-(defn validation-errors-component [data owner]
-  (om/component
-   (html
-    (let [fields (get-in data keypaths/validation-errors-details)]
-      (when (seq fields)
-        [:div#errorExplanation.errorExplanation
-         [:p "There were problems with the following fields:"]
-         [:ul
-          (map display-field-errors (sort-by first fields))]])))))
-
-(defn redesigned-validation-errors-component [errors owner]
+(defn component [errors owner]
   (om/component
    (html
     (when (seq errors)

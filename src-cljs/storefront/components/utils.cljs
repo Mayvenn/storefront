@@ -1,10 +1,10 @@
 (ns storefront.components.utils
-  (:require [storefront.routes :as routes]
-            [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [storefront.hooks.fastpass :as fastpass]
-            [storefront.messages :refer [handle-message]]))
+            [storefront.keypaths :as keypaths]
+            [storefront.messages :refer [handle-message]]
+            [storefront.routes :as routes]
+            [storefront.utils.query :as query]))
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
