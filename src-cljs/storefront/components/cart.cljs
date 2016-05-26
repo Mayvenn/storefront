@@ -116,11 +116,10 @@
 
      [:.h2.py1 "Review your order"]
 
-     [:.clearfix.mxn3.py2
-      [:.md-col.md-col-6.px3
+     [:.py2.md-flex.justify-between
+      [:.md-col-6
        (order-summary/redesigned-display-adjustable-line-items (orders/product-items order) products update-line-item-requests delete-line-item-requests)]
-
-      [:.md-col.md-col-6.px3
+      [:.md-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:.pt2.flex.items-center
