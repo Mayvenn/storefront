@@ -365,7 +365,7 @@
   [_ event _ app-state]
   (let [selected-options (get-in app-state keypaths/bundle-builder-selected-options)
         step-name        (get-in app-state keypaths/bundle-builder-previous-step)]
-    (when (step-name selected-options)
+    (when (and step-name (step-name selected-options))
       (analytics/track-page
        (str (routes/current-path app-state) "/choose_" (clj->js step-name))))))
 
