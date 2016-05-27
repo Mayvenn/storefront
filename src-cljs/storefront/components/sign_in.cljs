@@ -35,19 +35,22 @@
       (ui/text-field "Password"
                      keypaths/sign-in-password
                      password
-                     {:type     "password"
-                      :name     "password"
+                     {:type      "password"
+                      :name      "password"
                       :data-test "user-password"
-                      :required true})
+                      :required  true})
 
       (ui/submit-button "Sign In"
                         {:data-test "user-submit"})
 
       [:.mt2.col-12.mb3
        [:label.col.col-6.left-align.gray
-        [:input#remember-me.align-middle
+        [:input.align-middle
          (merge (utils/toggle-checkbox keypaths/sign-in-remember remember-me?)
-                {:type "checkbox" :name "remember-me"})]
+                {:type      "checkbox"
+                 :name      "remember-me"
+                 :data-test "user-remember"
+                 })]
         [:.inline.ml1 "Remember me"]]
        [:a.col.col-6.right-align.gray
         (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]

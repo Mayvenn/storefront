@@ -124,7 +124,9 @@
    content])
 
 (defn ^:private counter-value [spinning? value]
-  [:.left.center.mx1 {:style {:width "1.2em"}} (if spinning? spinner value)])
+  [:.left.center.mx1 {:style {:width "1.2em"}
+                      :data-test "line-item-quantity"}
+   (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
   [:div

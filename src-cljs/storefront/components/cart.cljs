@@ -32,7 +32,9 @@
      [:.h2.center.py3.silver
       "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]
 
-     [:.h2.py1 "Review your order"]
+     [:.h2.py1
+      {:data-test "order-summary"}
+      "Review your order"]
 
      [:.py2.md-flex.justify-between
       [:.md-col-6
@@ -75,6 +77,7 @@
    (html
     (ui/narrow-container
      [:.center
+      {:data-test "empty-bag"}
       [:.m2
        (svg/bag {:height "70px" :width "70px"} 1)]
 
