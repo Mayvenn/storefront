@@ -16,7 +16,9 @@
       [:.py2.center order-complete-check]
 
       [:.px3
-       [:.h1.center "Thank you for your order!"]
+       [:.h1.center
+        {:data-test "checkout-success-message"}
+        "Thank you for your order!"]
 
        [:.py3.line-height-3.gray
         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]

@@ -12,7 +12,7 @@
     (ui/narrow-container
      [:.h2.center.my2 "I'm new here"]
 
-     (ui/button "Guest Checkout" events/control-checkout-as-guest-submit)
+     (ui/button "Guest Checkout" events/control-checkout-as-guest-submit {:data-test "guest-checkout-button"})
 
      [:.my3 [:.col-2.m-auto.border.border-light-silver]]
      [:.h2.center.my2 "Already registered?"]

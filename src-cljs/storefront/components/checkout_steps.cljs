@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
+;;TODO Possibly clean up ID
 (def ^:private steps
   [{:event events/navigate-checkout-address :name "your details" :id "address"}
    {:event events/navigate-checkout-payment :name "payment" :id "payment"}
@@ -18,6 +19,7 @@
                                             (filter #(= (:event (second %)) current-navigation-event))
                                             first)]
       [:.flex.flex-column.items-center.col-12.my2
+       {:data-test (str "checkout-step-" (:id current-step))}
        [:.relative.border-bottom.border-navy.col-8 {:style {:top "6px"}}]
        [:.flex.justify-center.col-12
         (for [[step-index {:keys [name id event] :as step}] (map-indexed vector steps)]

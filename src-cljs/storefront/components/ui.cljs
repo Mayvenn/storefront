@@ -23,10 +23,11 @@
 (defn button
   ([content event]
    (button content event {}))
-  ([content event {:keys [show-spinner? disabled? color on-click] :or {color "bg-green"}}]
+  ([content event {:keys [show-spinner? disabled? color on-click data-test] :or {color "bg-green"}}]
    [:.reset.border.btn-large.btn-primary.col-12.h3.px1.py2.letter-spacing-1
     {:class (conj [color]
                   (when disabled? "is-disabled"))
+     :data-test data-test
      :on-click (or on-click
                    (if (or disabled? show-spinner?)
                      utils/noop-callback
@@ -36,11 +37,12 @@
 
 (defn submit-button
   ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled?]}]
+  ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
      (button nil nil {:show-spinner? true})
      [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
       {:type "submit"
+       :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))
 
@@ -130,9 +132,10 @@
    (counter-value spinning? value)
    (counter-button spinning? inc-fn svg/counter-inc)])
 
-(defn note-box [color contents]
+(defn note-box [{:keys [color data-test]} contents]
   [:.border.rounded-1
-   {:class (str "bg-" color " border-" color)}
+   {:class (str "bg-" color " border-" color)
+    :data-test data-test}
    [:.bg-lighten-4.rounded-1
     contents]])
 

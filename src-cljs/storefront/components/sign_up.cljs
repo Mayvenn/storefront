@@ -30,23 +30,27 @@
                      {:autofocus "autofocus"
                       :type      "email"
                       :name      "email"
+                      :data-test "user-email"
                       :required  true})
 
       (ui/text-field "Password"
                      keypaths/sign-up-password
                      password
-                     {:type     "password"
-                      :name     "password"
-                      :required true})
+                     {:type      "password"
+                      :name      "password"
+                      :data-test "user-password"
+                      :required  true})
 
       (ui/text-field "Password Confirmation"
                      keypaths/sign-up-password-confirmation
                      password-confirmation
                      {:type     "password"
                       :name     "password-confirmation"
+                      :data-test "user-password-confirmation"
                       :required true})
 
-      (ui/submit-button "Sign Up")
+      (ui/submit-button "Sign Up"
+                        {:data-test "user-submit"})
 
       [:.center.gray.mt3.mb2 "Already have an account? "
        [:a.green (utils/route-to events/navigate-sign-in) "Log In"]]]))))

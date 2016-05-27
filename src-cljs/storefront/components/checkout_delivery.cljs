@@ -19,17 +19,20 @@
      [:.h2 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
-        [:label.flex.items-center.col-12.py1 {:key sku}
+        [:label.flex.items-center.col-12.py1
+         {:key sku}
          [:input.mx2.h1
-          {:type "radio"
-           :name "shipping-method"
-           :id (str "shipping-method-" sku)
-           :checked (= selected-sku sku)
-           :on-change (select-shipping-method shipping-method)}]
+          {:type         "radio"
+           :name         "shipping-method"
+           :id           (str "shipping-method-" sku)
+           :data-test    "shipping-method"
+           :data-test-id sku
+           :checked      (= selected-sku sku)
+           :on-change    (select-shipping-method shipping-method)}]
          [:.clearfix.col-12
           [:.right.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]
           [:.overflow-hidden
-           [:.mb1 name]
+           [:.mb1 (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
            [:.h5 (shipping/timeframe sku)]]]])]])))
 
 (defn query [data]

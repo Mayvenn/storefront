@@ -26,12 +26,14 @@
       (ui/text-field "Cardholder's Name"
                      keypaths/checkout-credit-card-name
                      name
-                     {:name     "name"
-                      :required true})
+                     {:name      "name"
+                      :data-test "payment-form-name"
+                      :required  true})
       (ui/text-field "Credit Card Number"
                      keypaths/checkout-credit-card-number
                      (cc/format-cc-number number)
                      {:max-length    19
+                      :data-test     "payment-form-number"
                       :auto-complete "off"
                       :class         "cardNumber rounded-1"
                       :type          "tel"
@@ -41,6 +43,7 @@
                                keypaths/checkout-credit-card-expiration
                                (cc/format-expiration expiration)
                                {:max-length    9
+                                :data-test     "payment-form-expiry"
                                 :auto-complete "off"
                                 :class         "cardExpiry rounded-left-1"
                                 :type          "tel"
@@ -50,6 +53,7 @@
                                ccv
                                {:max-length    4
                                 :auto-complete "off"
+                                :data-test     "payment-form-code"
                                 :class         "cardCode rounded-right-1 border-width-left-0"
                                 :type          "tel"
                                 :required      true})]]]])))
@@ -76,11 +80,13 @@
 
      (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
        [:form
-        {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)}
+        {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)
+         :data-test "payment-form"}
 
         (when (pos? credit-available)
           (ui/note-box
-           "green"
+           {:color "green"
+            :data-test "store-credit-note"}
            [:.p2.navy
             [:.h4 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
             (when-not fully-covered?
@@ -95,7 +101,8 @@
 
         (when loaded-stripe?
           [:.my2
-           (ui/submit-button "Go to Review Order" {:spinning? saving?})])])))))
+           (ui/submit-button "Go to Review Order" {:spinning? saving?
+                                                   :data-test "payment-form-submit"})])])))))
 
 (defn ^:private saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)

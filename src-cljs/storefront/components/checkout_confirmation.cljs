@@ -46,12 +46,14 @@
         (when requires-additional-payment?
           [:div
            (ui/note-box
-            "green"
+            {:color "green"
+             :data-test "additional-payment-required-note"}
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
            (om/build checkout-payment/credit-card-form-component payment)])
         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                         :disabled? updating-shipping?})]]]))))
+                                         :disabled? updating-shipping?
+                                         :data-test "confirm-form-submit"})]]]))))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)

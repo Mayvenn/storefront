@@ -29,6 +29,7 @@
                      {:autofocus "autofocus"
                       :type      "email"
                       :name      "email"
+                      :data-test "user-email"
                       :required  true})
 
       (ui/text-field "Password"
@@ -36,9 +37,11 @@
                      password
                      {:type     "password"
                       :name     "password"
+                      :data-test "user-password"
                       :required true})
 
-      (ui/submit-button "Sign In")
+      (ui/submit-button "Sign In"
+                        {:data-test "user-submit"})
 
       [:.mt2.col-12.mb3
        [:label.col.col-6.left-align.gray

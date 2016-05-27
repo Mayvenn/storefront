@@ -36,6 +36,7 @@
 
      [:.py2.md-flex.justify-between
       [:.md-col-6
+       {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                                products
                                                                update-line-item-requests
@@ -55,7 +56,9 @@
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        (ui/submit-button "Check out" {:spinning? false :disabled? updating?})]
+        (ui/submit-button "Check out" {:spinning? false
+                                       :disabled? updating?
+                                       :data-test "start-checkout-button"})]
        [:div.h4.gray.center.py2 "OR"]
        [:div.pb4 (ui/button
                   [:.col-12.flex.items-center.justify-center
@@ -64,7 +67,8 @@
                   events/control-checkout-cart-paypal-setup
                   {:show-spinner? redirecting-to-paypal?
                    :disabled? updating?
-                   :color "bg-paypal-blue"})]]]))))
+                   :color "bg-paypal-blue"
+                   :data-test "paypal-checkout"})]]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
