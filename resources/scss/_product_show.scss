@@ -61,7 +61,7 @@
   background-size: (300em / 15) (2.5em / 15);
 }
 
-.product-description, .product-collection-description, .cart-form-container, #after-add {
+.product-description, .cart-form-container, #after-add {
   margin: 0 auto;
   width: (300rem / 12);
 }
@@ -71,77 +71,9 @@
   margin-bottom: 3rem;
 }
 
-.product-description-text, .product-collection-text {
+.product-description-text {
   color: $dark_text;
   line-height: (17em / 12);
-}
-
-h6.ui-descriptor {
-  color: $light_text;
-  text-align: center;
-  text-transform: none;
-  margin-top: 1.3846em;
-  margin-bottom: 0.6153em;
-  font-size: (13em / 12);
-  line-height: 1em;
-}
-
-.keypad {
-  margin: 0;
-  padding: 0;
-}
-
-.keypad-item {
-  list-style: none;
-  float: left;
-  padding: 0;
-  height: (41em / 12);
-  width: (98em / 12);
-  margin: (1em / 12);
-}
-
-.keypad-input {
-  display: none;
-}
-
-.keypad-label {
-  display: block;
-  background-color: $lightest_blue_grey;
-  width: 100%;
-  height: 100%;
-}
-
-.keypad-input:checked + .keypad-label {
-  @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-
-  .variant-description {
-    color: white;
-
-    &.out-of-stock {
-      background-color: $darkest_blue_grey;
-    }
-  }
-}
-
-.variant-description {
-  font-family: $secondary_font;
-  text-align: center;
-  color: $light_text;
-  font-size: (16em / 12);
-  line-height: (31em / 16);
-  padding: (5em / 12);
-
-  &.out-of-stock {
-    font-style: italic;
-    background-color: $darkest_blue_grey;
-    font-size: (13em / 12);
-    line-height: (15.5em / 13);
-  }
-}
-
-// FIXME - Override Spree Styles
-#product-variants ul li {
-  padding: 0;
 }
 
 .quantity-label {
@@ -235,11 +167,6 @@ a.pm-link {
 
 .price-container {
   margin-top: 1.5em;
-}
-
-.image-pagination {
-  display: none; // FIXME - Disabled until pagination is ready
-  height: (22em / 12);
 }
 
 .go-to-checkout {
