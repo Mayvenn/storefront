@@ -1,7 +1,6 @@
 (ns storefront.events
   (:require [storefront.macros :refer-macros [defpath]]))
 
-(defpath app)
 (defpath app-start)
 (defpath app-stop)
 (defpath app-restart)
@@ -9,7 +8,6 @@
 (defpath domain)
 (defpath order-completed)
 
-(defpath external-redirect)
 (defpath external-redirect-community)
 (defpath external-redirect-paypal-setup)
 
@@ -32,7 +30,6 @@
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
 
-(defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
 (defpath navigate-stylist-dashboard-commissions)
 (defpath navigate-stylist-dashboard-referrals)
@@ -43,7 +40,6 @@
 (defpath navigate-account-manage)
 (defpath navigate-account-referrals)
 
-(defpath navigate-talkable)
 (defpath navigate-friend-referrals)
 
 (defpath navigate-checkout)
@@ -55,7 +51,6 @@
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
 
-(defpath control)
 (defpath control-change-state)
 
 (defpath control-carousel-move)
@@ -63,49 +58,36 @@
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
 
-(defpath control-menu)
 (defpath control-menu-expand)
 (defpath control-menu-collapse-all)
 
-(defpath control-sign-in)
 (defpath control-sign-in-submit)
 (defpath control-sign-out)
-(defpath control-sign-up)
 (defpath control-sign-up-submit)
-(defpath control-forgot-password)
 (defpath control-forgot-password-submit)
-(defpath control-reset-password)
 (defpath control-reset-password-submit)
-(defpath control-manage-account)
 (defpath control-manage-account-submit)
 
-(defpath control-facebook)
 (defpath control-facebook-sign-in)
 (defpath control-facebook-reset)
 
 (defpath control-bundle-option-select)
 
-(defpath control-browse)
 (defpath control-browse-variant)
 (defpath control-browse-variant-select)
 (defpath control-browse-add-to-bag)
 
-(defpath control-build)
 (defpath control-build-add-to-bag)
 
-(defpath control-cart)
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)
 (defpath control-cart-line-item-dec)
-(defpath control-cart-line-item-set)
 (defpath control-cart-remove)
 
-(defpath control-counter)
 (defpath control-counter-inc)
 (defpath control-counter-dec)
 (defpath control-counter-set)
 
-(defpath control-checkout)
 (defpath control-checkout-as-guest-submit)
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
@@ -117,8 +99,6 @@
 
 (defpath control-stylist-profile-picture)
 
-(defpath control-stylist-manage-account)
-(defpath control-stylist-manage-account-change)
 (defpath control-stylist-manage-account-submit)
 
 (defpath control-commission-order-expand)
@@ -132,8 +112,6 @@
 (defpath api-success-cache)
 
 (defpath api-success-taxons)
-(defpath api-success-store)
-(defpath api-success-category)
 (defpath api-success-products)
 (defpath api-success-product)
 (defpath api-success-states)
