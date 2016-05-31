@@ -1,6 +1,5 @@
 /* basscss-basic is a reasonable reset and basic styles, but it interferes with legacy
  * styles, so disabling for now.
- * TODO: consider nesting this under .redesign with `postcss-nesting` */
 /* @import 'basscss-basic'; */
 
 /* All common modules */

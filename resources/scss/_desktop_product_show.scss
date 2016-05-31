@@ -4,10 +4,6 @@
 
 .product-show {
   margin-bottom: 2em;
-
-  .home-actions-top {
-    margin-top: 38px;
-  }
 }
 
 div#product-images {
@@ -27,7 +23,7 @@ div#product-images {
   margin-top: 38px;
 }
 
-div.product-description, div.product-collection-description {
+div.product-description {
   margin: 0 54px;
   width: 427px;
 
@@ -38,13 +34,6 @@ div.product-description, div.product-collection-description {
 
 #inside-product-cart-form {
   width: 420px;
-}
-
-.keypad {
-  .keypad-item {
-    width: 136px;
-    margin: 2px;
-  }
 }
 
 div.price-container {

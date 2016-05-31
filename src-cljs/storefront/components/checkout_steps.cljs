@@ -5,7 +5,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-;;TODO Possibly clean up ID
 (def ^:private steps
   [{:event events/navigate-checkout-address :name "your details" :id "address"}
    {:event events/navigate-checkout-payment :name "payment" :id "payment"}

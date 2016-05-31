@@ -27,11 +27,6 @@
 }
 
 @font-face {
-  font-family: 'Ministry-Medium';
-  src: url('/fonts/2C6012_0_0.woff') format('woff');
-}
-
-@font-face {
   font-family: 'Fortescue';
   font-style: normal;
   src: url('/fonts/fortescue-regular.woff') format('woff');
@@ -56,5 +51,4 @@
 $primary_font_medium: 'Graphik-Medium', sans-serif;
 $primary_font_regular: 'Graphik-Regular', sans-serif;
 $secondary_font: 'Fortescue', serif;
-$number_font: 'Ministry-Medium', sans-serif;
 $super_bold_font: 'Graphik Web', sans-serif;

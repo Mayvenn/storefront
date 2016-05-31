@@ -33,7 +33,7 @@
                                  events/navigate-forgot-password
                                  events/navigate-reset-password
                                  events/navigate-checkout-sign-in
-                                 events/navigate-sign-in-getsat})
+                                 events/navigate-getsat-sign-in})
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
@@ -57,7 +57,7 @@
       (assoc-in keypaths/validation-errors {})
       (assoc-in keypaths/navigation-message [event args])))
 
-(defmethod transition-state events/navigate-sign-in-getsat [_ event args app-state]
+(defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/get-satisfaction-login? true)
       (assoc-in keypaths/return-navigation-message [event args])))

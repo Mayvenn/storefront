@@ -275,7 +275,7 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
-(defmethod perform-effects events/navigate-sign-in-getsat [_ event args app-state]
+(defmethod perform-effects events/navigate-getsat-sign-in [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]

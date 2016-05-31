@@ -29,6 +29,7 @@
    :on-click
    (fn [e]
      (.preventDefault e)
+     (handle-message events/control-menu-collapse-all)
      (routes/enqueue-navigate navigation-event args))})
 
 (defn current-page? [[current-event current-args] target-event & [args]]
@@ -68,20 +69,8 @@
   {:href "#"
    :on-click (send-event-callback event args)})
 
-;; new style
 (defn toggle-checkbox [keypath value]
   (let [checked-val (when value "checked")]
-    {:checked checked-val
-     :value checked-val
-     :on-change
-     (fn [e]
-       (handle-message events/control-change-state
-                       {:keypath keypath
-                        :value (.. e -target -checked)}))}))
-
-;; old style
-(defn change-checkbox [app-state keypath]
-  (let [checked-val (when (get-in app-state keypath) "checked")]
     {:checked checked-val
      :value checked-val
      :on-change
