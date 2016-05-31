@@ -12,8 +12,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
 
-;; TODO: move?
-(defn pluralize
+(defn- pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
   ([cnt singular plural]
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
@@ -90,7 +89,6 @@
 
      (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))))))
 
-;; TODO CLEANUP can these two be unified?
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
        (map (juxt identity
