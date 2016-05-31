@@ -19,13 +19,13 @@
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
 
 (defn full-component [{:keys [order
-                                         products
-                                         coupon-code
-                                         applying-coupon?
-                                         updating?
-                                         redirecting-to-paypal?
-                                         update-line-item-requests
-                                         delete-line-item-requests]} owner]
+                              products
+                              coupon-code
+                              applying-coupon?
+                              updating?
+                              redirecting-to-paypal?
+                              update-line-item-requests
+                              delete-line-item-requests]} owner]
   (om/component
    (html
     (ui/container
@@ -40,9 +40,9 @@
       [:.md-col-6
        {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
-                                                               products
-                                                               update-line-item-requests
-                                                               delete-line-item-requests)]
+                                                    products
+                                                    update-line-item-requests
+                                                    delete-line-item-requests)]
       [:.md-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
