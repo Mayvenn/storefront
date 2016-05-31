@@ -179,39 +179,38 @@
    (html
     (when taxon
       (ui/container
-       [:.p2
-        [:.center.md-up-hide
-         (taxon-title taxon)
-         [:.inline-block (reviews-summary reviews)]]
-        (if fetching-variants?
-          [:.h1 ui/spinner]
-          [:.clearfix.mxn2
-           [:.md-col.md-col-6.px2 (carousel carousel-images taxon)]
-           [:.md-col.md-col-6.px2
-            [:.md-up-hide (narrow-starting-at variants)]
-            [:.to-md-hide.mb1
-             [:.clearfix.mb1
-              [:.right (wide-starting-at variants)]
-              (taxon-title taxon)]
-             (reviews-summary reviews)]
-            (for [step (bundle-builder/steps flow
-                                             (:product_facets taxon)
-                                             selected-options
-                                             variants)]
-              (step-html step))
-            [:.py2.border-top.border-dark-white.border-width-2
-             (if variant
-               (variant-summary {:flow             flow
-                                 :variant          variant
-                                 :variant-quantity variant-quantity})
-               (no-variant-summary (bundle-builder/next-step flow selected-options)))
-             (when variant
-               (add-to-bag-button adding-to-bag?))
-             (when (seq bagged-variants)
-               [:div
-                (map-indexed redesigned-display-bagged-variant bagged-variants)
-                checkout-button])]
-            (taxon-description (:description taxon))]])]
+       [:.center.md-up-hide
+        (taxon-title taxon)
+        [:.inline-block (reviews-summary reviews)]]
+       (if fetching-variants?
+         [:.h1 ui/spinner]
+         [:.clearfix.mxn2
+          [:.md-col.md-col-6.px2 (carousel carousel-images taxon)]
+          [:.md-col.md-col-6.px2
+           [:.md-up-hide (narrow-starting-at variants)]
+           [:.to-md-hide.mb1
+            [:.clearfix.mb1
+             [:.right (wide-starting-at variants)]
+             (taxon-title taxon)]
+            (reviews-summary reviews)]
+           (for [step (bundle-builder/steps flow
+                                            (:product_facets taxon)
+                                            selected-options
+                                            variants)]
+             (step-html step))
+           [:.py2.border-top.border-dark-white.border-width-2
+            (if variant
+              (variant-summary {:flow             flow
+                                :variant          variant
+                                :variant-quantity variant-quantity})
+              (no-variant-summary (bundle-builder/next-step flow selected-options)))
+            (when variant
+              (add-to-bag-button adding-to-bag?))
+            (when (seq bagged-variants)
+              [:div
+               (map-indexed redesigned-display-bagged-variant bagged-variants)
+               checkout-button])]
+           (taxon-description (:description taxon))]])
        (om/build reviews/reviews-component reviews))))))
 
 (defn query [data]

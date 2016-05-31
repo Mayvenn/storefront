@@ -12,27 +12,26 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.p2
-      [:.h2.center.my2 "Update Your Password"]
-      (om/build validation-errors/component errors)
-      [:form.col-12
-       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
-       (ui/text-field "Password"
-                      keypaths/reset-password-password
-                      reset-password
-                      {:type       "password"
-                       :required   true
-                       :min-length 6})
-       (ui/text-field "Password Confirmation"
-                      keypaths/reset-password-password-confirmation
-                      reset-password-confirmation
-                      {:type       "password"
-                       :required   true
-                       :min-length 6})
+     [:.h2.center.my2 "Update Your Password"]
+     (om/build validation-errors/component errors)
+     [:form.col-12
+      {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
+      (ui/text-field "Password"
+                     keypaths/reset-password-password
+                     reset-password
+                     {:type       "password"
+                      :required   true
+                      :min-length 6})
+      (ui/text-field "Password Confirmation"
+                     keypaths/reset-password-password-confirmation
+                     reset-password-confirmation
+                     {:type       "password"
+                      :required   true
+                      :min-length 6})
 
-       (ui/submit-button "Update")]
-      [:.h4.center.gray.extra-light.my2 "OR"]
-      (facebook/reset-button loaded-facebook?)]))))
+      (ui/submit-button "Update")]
+     [:.h4.center.gray.extra-light.my2 "OR"]
+     (facebook/reset-button loaded-facebook?)))))
 
 (defn query [data]
   {:reset-password              (get-in data keypaths/reset-password-password)

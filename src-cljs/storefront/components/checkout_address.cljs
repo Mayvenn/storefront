@@ -234,20 +234,19 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.p2
-      (om/build validation-errors/component errors)
-      (om/build checkout-steps/component step-bar)
+     (om/build validation-errors/component errors)
+     (om/build checkout-steps/component step-bar)
 
-      [:form.col-12.flex.flex-column.items-center
-       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)
-        :data-test "address-form"}
+     [:form.col-12.flex.flex-column.items-center
+      {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)
+       :data-test "address-form"}
 
-       (om/build shipping-address-component shipping-address-data)
-       (om/build billing-address-component billing-address-data)
+      (om/build shipping-address-component shipping-address-data)
+      (om/build billing-address-component billing-address-data)
 
-       [:.my2.col-12
-        (ui/submit-button "Continue to Payment" {:spinning? saving?
-                                                 :data-test "address-form-submit"})]]]))))
+      [:.my2.col-12
+       (ui/submit-button "Continue to Payment" {:spinning? saving?
+                                                :data-test "address-form-submit"})]]))))
 
 (defn query [data]
   (let [places-loaded? (get-in data keypaths/loaded-places)
