@@ -32,8 +32,8 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   [:.h2.extra-light.titleize option-name]
-   [:.h5.line-height-2
+   [:.f2.extra-light.titleize option-name]
+   [:.f4.line-height-2
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
@@ -41,12 +41,12 @@
 
 (defn step-html [{:keys [step-name later-step? options]}]
   [:.my2 {:key step-name}
-   [:.navy.h4.medium.shout (name step-name)]
+   [:.navy.f3.medium.shout (name step-name)]
    [:.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [option-name] :as option} options]
       [:.flex.flex-column.justify-center.pp3
        {:key   (string/replace (str option-name step-name) #"\W+" "-")
-        :style {:height "6rem"}
+        :style {:height "72px"}
         :class (case step-name
                  :length "col-4"
                  "col-6")}
@@ -109,13 +109,6 @@
          [:.h4.navy.medium.pr2 value]]))]
    [:.h5.dark-gray.line-height-2 (first commentary)]])
 
-(defn starting-at-price [variants]
-  (when-let [cheapest-price (bundle-builder/min-price variants)]
-    [:.center.mt1
-     [:.silver.h5 "Starting at"]
-     [:.dark-gray.h1.extra-light
-      (as-money-without-cents cheapest-price)]]))
-
 (def checkout-button
   (html
    [:.cart-button ; for scrolling
@@ -134,6 +127,42 @@
    {:style {:background-image (css-url image)
             :height "31rem"}}])
 
+(defn carousel [carousel-images taxon]
+  (let [items (->> carousel-images
+                   (map-indexed (fn [idx image]
+                                  {:id   idx
+                                   :body (carousel-image image)}))
+                   vec)]
+    ;; The mxn2 pairs with the p2 of the ui/container, to make the carousel full
+    ;; width on mobile. On desktop, we don't need the full-width effect, hence
+    ;; the md-m0.
+    [:.mxn2.md-m0
+     (om/build carousel/swipe-component
+               {:items      items
+                :continuous true}
+               {:react-key (str "category-swiper-" (:slug taxon))
+                :opts {:dot-location :left}})]))
+
+(defn taxon-title [taxon]
+  [:h1.medium.titleize.navy.h2 (:name taxon)])
+
+(defn wide-starting-at [variants]
+  (when-let [cheapest-price (bundle-builder/min-price variants)]
+    [:.flex.items-center
+     [:.silver.h5 "Starting at"]
+     [:.dark-gray.h2.extra-light.ml1
+      (as-money-without-cents cheapest-price)]]))
+
+(defn narrow-starting-at [variants]
+  (when-let [cheapest-price (bundle-builder/min-price variants)]
+    [:.center.mt2
+     [:.silver.h5 "Starting at"]
+     [:.dark-gray.h1.extra-light
+      (as-money-without-cents cheapest-price)]]))
+
+(defn reviews-summary [reviews]
+  (om/build reviews/reviews-summary-component reviews))
+
 (defn component [{:keys [taxon
                          variants
                          fetching-variants?
@@ -149,48 +178,40 @@
   (om/component
    (html
     (when taxon
-      (ui/narrow-container
-       [:.px1
-        [:.center
-         [:h1.regular.titleize.navy.mbp4.h2 (:name taxon)]
-         [:.inline-block
-          (om/build reviews/reviews-summary-component reviews)]]
+      (ui/container
+       [:.p2
+        [:.center.md-up-hide
+         (taxon-title taxon)
+         [:.inline-block (reviews-summary reviews)]]
         (if fetching-variants?
           [:.h1 ui/spinner]
-          [:div
-           [:.mxnp18
-            (let [items (->> carousel-images
-                             (map-indexed (fn [idx image]
-                                            {:id   idx
-                                             :body (carousel-image image)}))
-                             vec)]
-              [:div
-               (om/build carousel/swipe-component
-                         {:items      items
-                          :continuous true}
-                         {:react-key (str "category-swiper-" (:slug taxon))
-                          :opts {:dot-location :left}})
-
-               [:.clearfix
-                [:.col-4.pt2.m-auto (starting-at-price variants)]]])]
-           (for [step (bundle-builder/steps flow
-                                            (:product_facets taxon)
-                                            selected-options
-                                            variants)]
-             (step-html step))
-           [:.py2.border-top.border-dark-white.border-width-2
-            (if variant
-              (variant-summary {:flow             flow
-                                :variant          variant
-                                :variant-quantity variant-quantity})
-              (no-variant-summary (bundle-builder/next-step flow selected-options)))
-            (when variant
-              (add-to-bag-button adding-to-bag?))
-            (when (seq bagged-variants)
-              [:div
-               (map-indexed redesigned-display-bagged-variant bagged-variants)
-               checkout-button])]
-           (taxon-description (:description taxon))])]
+          [:.clearfix.mxn2
+           [:.md-col.md-col-6.px2 (carousel carousel-images taxon)]
+           [:.md-col.md-col-6.px2
+            [:.md-up-hide (narrow-starting-at variants)]
+            [:.to-md-hide.mb1
+             [:.clearfix.mb1
+              [:.right (wide-starting-at variants)]
+              (taxon-title taxon)]
+             (reviews-summary reviews)]
+            (for [step (bundle-builder/steps flow
+                                             (:product_facets taxon)
+                                             selected-options
+                                             variants)]
+              (step-html step))
+            [:.py2.border-top.border-dark-white.border-width-2
+             (if variant
+               (variant-summary {:flow             flow
+                                 :variant          variant
+                                 :variant-quantity variant-quantity})
+               (no-variant-summary (bundle-builder/next-step flow selected-options)))
+             (when variant
+               (add-to-bag-button adding-to-bag?))
+             (when (seq bagged-variants)
+               [:div
+                (map-indexed redesigned-display-bagged-variant bagged-variants)
+                checkout-button])]
+            (taxon-description (:description taxon))]])]
        (om/build reviews/reviews-component reviews))))))
 
 (defn query [data]

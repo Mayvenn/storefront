@@ -190,7 +190,6 @@ html { line-height: 1.2; }
 .mxnp4 { margin-left: -4px; margin-right: -4px; }
 .mxnp5 { margin-left: -5px; margin-right: -5px; }
 .mxnp6 { margin-left: -6px; margin-right: -6px; }
-.mxnp18 { margin-left: -18px; margin-right: -18px; }
 
 /* Custom padding */
 
@@ -659,4 +658,6 @@ input[type=button].reset, input[type=submit].reset {
     --line-height-2: 1.3333;
     --line-height-3: 1.6666;
     --line-height-4: 2;
+
+    --caps-letter-spacing: 0.1em;
 }
