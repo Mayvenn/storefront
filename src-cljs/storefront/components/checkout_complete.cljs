@@ -22,10 +22,7 @@
 
        [:.py2.line-height-3
         [:p.my2.gray
-         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]
-
-        [:p.my2.navy
-         "Due to the Memorial Day holiday, your order shipping will be delayed one extra day. Customer service will also be closed all day May 30th."]]]]
+         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
 
      (ui/button "Return to Homepage" events/navigate-home)))))
 
