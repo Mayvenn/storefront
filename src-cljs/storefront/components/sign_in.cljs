@@ -78,7 +78,7 @@
   (om/component (html (om/build component (query data)))))
 
 (defn requires-sign-in [app-state authorized-component]
-  (let [sign-in-component component]
+  (let [sign-in-component built-component]
     (if (get-in app-state keypaths/user-id) authorized-component sign-in-component)))
 
 (defn redirect-getsat-component [data owner]
