@@ -31,6 +31,7 @@
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
 
+(defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
 (defpath navigate-stylist-dashboard-commissions)
 (defpath navigate-stylist-dashboard-referrals)
