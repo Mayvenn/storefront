@@ -7,9 +7,10 @@
             [clojure.string :as str]
             [sablono.core :refer-macros [html]]))
 
+;; TODO: when the old CSS is gone, perhaps this can go on body
 (defn container [& content]
   [:.bg-light-white.light-black.sans-serif
-   (into [:.p2.m-auto] content)])
+   (into [:.m-auto] content)])
 
 (defn narrow-container [& content]
   (apply container {:class [:md-col-8 :lg-col-6]} content))

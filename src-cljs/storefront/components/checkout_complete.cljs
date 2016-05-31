@@ -12,19 +12,20 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.col-12
-      [:.py2.center order-complete-check]
+     [:.p2
+      [:.col-12
+       [:.py2.center order-complete-check]
 
-      [:.px3
-       [:.h1.center
-        {:data-test "checkout-success-message"}
-        "Thank you for your order!"]
+       [:.px3
+        [:.h1.center
+         {:data-test "checkout-success-message"}
+         "Thank you for your order!"]
 
-       [:.py2.line-height-3
-        [:p.my2.gray
-         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
+        [:.py2.line-height-3
+         [:p.my2.gray
+          "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
 
-     (ui/button "Return to Homepage" events/navigate-home)))))
+      (ui/button "Return to Homepage" events/navigate-home)]))))
 
 (defn built-component [data _]
   (om/component (html (om/build component {}))))

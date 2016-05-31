@@ -11,24 +11,25 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.h2.center.my2 "Reset your forgotten password"]
+     [:.p2
+      [:.h2.center.my2 "Reset your forgotten password"]
 
-     [:form.col-12.flex.flex-column.items-center
-      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
+      [:form.col-12.flex.flex-column.items-center
+       {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
 
-      (ui/text-field "Email"
-                     keypaths/forgot-password-email
-                     email
-                     {:autofocus "autofocus"
-                      :type "email"
-                      :name "email"
-                      :required true})
+       (ui/text-field "Email"
+                      keypaths/forgot-password-email
+                      email
+                      {:autofocus "autofocus"
+                       :type "email"
+                       :name "email"
+                       :required true})
 
-      (ui/submit-button "Reset my password")]
+       (ui/submit-button "Reset my password")]
 
-     [:.h4.center.gray.extra-light.my2 "OR"]
+      [:.h4.center.gray.extra-light.my2 "OR"]
 
-     (facebook/sign-in-button facebook-loaded?)))))
+      (facebook/sign-in-button facebook-loaded?)]))))
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)

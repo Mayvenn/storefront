@@ -29,66 +29,68 @@
   (om/component
    (html
     (ui/container
-     [:.h2.center.py3.silver
-      "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]
+     [:.p2
+      [:.h2.center.py3.silver
+       "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]
 
-     [:.h2.py1
-      {:data-test "order-summary"}
-      "Review your order"]
+      [:.h2.py1
+       {:data-test "order-summary"}
+       "Review your order"]
 
-     [:.py2.md-flex.justify-between
-      [:.md-col-6
-       {:data-test "cart-line-items"}
-       (order-summary/display-adjustable-line-items (orders/product-items order)
-                                                               products
-                                                               update-line-item-requests
-                                                               delete-line-item-requests)]
-      [:.md-col-5
-       [:form.my1
-        {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:.pt2.flex.items-center
-         [:.col-8.pr1
-          (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-         [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                  events/control-cart-update-coupon
-                                                  {:disabled? updating?
-                                                   :show-spinner? applying-coupon?})]]]
+      [:.py2.md-flex.justify-between
+       [:.md-col-6
+        {:data-test "cart-line-items"}
+        (order-summary/display-adjustable-line-items (orders/product-items order)
+                                                     products
+                                                     update-line-item-requests
+                                                     delete-line-item-requests)]
+       [:.md-col-5
+        [:form.my1
+         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
+         [:.pt2.flex.items-center
+          [:.col-8.pr1
+           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+          [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+                                                   events/control-cart-update-coupon
+                                                   {:disabled? updating?
+                                                    :show-spinner? applying-coupon?})]]]
 
-       (order-summary/display-order-summary order)
+        (order-summary/display-order-summary order)
 
-       [:form
-        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        (ui/submit-button "Check out" {:spinning? false
-                                       :disabled? updating?
-                                       :data-test "start-checkout-button"})]
-       [:div.h4.gray.center.py2 "OR"]
-       [:div.pb4 (ui/button
-                  [:.col-12.flex.items-center.justify-center
-                   [:.right-align.mr1 "Check out with"]
-                   [:.h2.medium.sans-serif.italic "PayPal™"]]
-                  events/control-checkout-cart-paypal-setup
-                  {:show-spinner? redirecting-to-paypal?
-                   :disabled? updating?
-                   :color "bg-paypal-blue"
-                   :data-test "paypal-checkout"})]]]))))
+        [:form
+         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+         (ui/submit-button "Check out" {:spinning? false
+                                        :disabled? updating?
+                                        :data-test "start-checkout-button"})]
+        [:div.h4.gray.center.py2 "OR"]
+        [:div.pb4 (ui/button
+                   [:.col-12.flex.items-center.justify-center
+                    [:.right-align.mr1 "Check out with"]
+                    [:.h2.medium.sans-serif.italic "PayPal™"]]
+                   events/control-checkout-cart-paypal-setup
+                   {:show-spinner? redirecting-to-paypal?
+                    :disabled? updating?
+                    :color "bg-paypal-blue"
+                    :data-test "paypal-checkout"})]]]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
-     [:.center
-      {:data-test "empty-bag"}
-      [:.m2
-       (svg/bag {:height "70px" :width "70px"} 1)]
+     [:.p2
+      [:.center
+       {:data-test "empty-bag"}
+       [:.m2
+        (svg/bag {:height "70px" :width "70px"} 1)]
 
-      [:p.m2.h1.extra-light "Your bag is empty."]
+       [:p.m2.h1.extra-light "Your bag is empty."]
 
-      [:.m2
-       (if-let [promo (promos/default-advertised-promotion promotions)]
-         (:description promo)
-         promos/bundle-discount-description)]]
+       [:.m2
+        (if-let [promo (promos/default-advertised-promotion promotions)]
+          (:description promo)
+          promos/bundle-discount-description)]]
 
-     (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))))))
+      (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))]))))
 
 ;; TODO CLEANUP can these two be unified?
 (defn ^:private variants-requests [data request-key variant-ids]

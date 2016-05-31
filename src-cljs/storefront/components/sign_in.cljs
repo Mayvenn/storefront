@@ -63,9 +63,10 @@
   (om/component
    (html
     (ui/narrow-container
-     (when-not get-satisfaction-login?
-       [:.h2.center.my2 "Sign in to your account"])
-     (om/build form-component form-data)))))
+     [:.p2
+      (when-not get-satisfaction-login?
+        [:.h2.center.my2 "Sign in to your account"])
+      (om/build form-component form-data)]))))
 
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)

@@ -30,30 +30,31 @@
   (om/component
    (html
     (ui/container
-     (om/build checkout-steps/component checkout-steps)
+     [:.p2
+      (om/build checkout-steps/component checkout-steps)
 
-     [:.clearfix.mxn3
-      [:.md-col.md-col-6.px3
-       [:.h2.left-align "Order Summary"]
-       [:.mb2
-        (summary/display-line-items (orders/product-items order) products)]]
-      [:.md-col.md-col-6.px3
-       (om/build checkout-delivery/component delivery)
-       [:form
-        {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
-                                               {:place-order? requires-additional-payment?})}
-        (summary/display-order-summary order)
-        (when requires-additional-payment?
-          [:div
-           (ui/note-box
-            {:color "green"
-             :data-test "additional-payment-required-note"}
-            [:.p2.navy
-             "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-payment/credit-card-form-component payment)])
-        (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                         :disabled? updating-shipping?
-                                         :data-test "confirm-form-submit"})]]]))))
+      [:.clearfix.mxn3
+       [:.md-col.md-col-6.px3
+        [:.h2.left-align "Order Summary"]
+        [:.mb2
+         (summary/display-line-items (orders/product-items order) products)]]
+       [:.md-col.md-col-6.px3
+        (om/build checkout-delivery/component delivery)
+        [:form
+         {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
+                                                {:place-order? requires-additional-payment?})}
+         (summary/display-order-summary order)
+         (when requires-additional-payment?
+           [:div
+            (ui/note-box
+             {:color "green"
+              :data-test "additional-payment-required-note"}
+             [:.p2.navy
+              "Please enter an additional payment method below for the remaining total on your order."])
+            (om/build checkout-payment/credit-card-form-component payment)])
+         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                          :disabled? updating-shipping?
+                                          :data-test "confirm-form-submit"})]]]]))))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
