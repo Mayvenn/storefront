@@ -29,6 +29,7 @@
    :on-click
    (fn [e]
      (.preventDefault e)
+     (handle-message events/control-menu-collapse-all)
      (routes/enqueue-navigate navigation-event args))})
 
 (defn current-page? [[current-event current-args] target-event & [args]]

@@ -27,7 +27,8 @@
 (def menu-x
   (html
    [:.absolute {:style {:width "60px"}}
-    [:.relative.rotate-45.p2 {:style {:height "60px"}}
+    [:.relative.rotate-45.p2 {:style {:height "60px"}
+                              :on-click #(messages/handle-message events/control-menu-collapse-all)}
      [:.absolute.border-right.border-dark-gray {:style {:width "18px" :height "36px"}}]
      [:.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
 
@@ -180,8 +181,6 @@
     (when slid-out?
       (let [selectable? (partial selectable current-navigation-message)]
         [:.h3.lg-up-hide
-         ;; Clicks on links in the slideout nav close the slideout nav and follow the link
-         {:on-click #(messages/handle-message events/control-menu-collapse-all)}
          [:.fixed.overlay.bg-darken-4.z3
           ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
           {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
