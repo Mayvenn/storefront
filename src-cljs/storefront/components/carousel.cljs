@@ -86,6 +86,6 @@
            [:.pointer.pxp2
             {:key i
              :on-click (fn [_] (set-selected-index owner i))}
-            [:.bg-white.border.border-light-gray.circle.bg-lighten-2
-             {:class (when (= selected-index i) "bg-light-gray bg-lighten-4")
+            [:.bg-white.border.border-dark-gray.circle.bg-lighten-3
+             {:class (when (= selected-index i) "bg-dark-gray")
               :style {:width "7px" :height "7px"}}]])]]))))
