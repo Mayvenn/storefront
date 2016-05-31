@@ -1,5 +1,6 @@
 (ns storefront.events
-  (:require [storefront.macros :refer-macros [defpath]]))
+  #?(:cljs (:require [storefront.macros :refer-macros [defpath]]))
+  #?(:clj (:require [storefront.macros :refer [defpath]])))
 
 (defpath app-start)
 (defpath app-stop)
