@@ -134,14 +134,13 @@
     [:.flex.flex-column.items-center.col-12
      [:.h3.black.col-12.my1 "Billing Address"]
      [:.col-12
-      [:label.h5.gray
+      [:label.h5.gray.py1
        [:input.mr1
         (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address
                                       bill-to-shipping-address?)
                {:type      "checkbox"
                 :id        "use_billing"
-                :data-test "use-billing"
-                :class     "checkbox  checkout-use-billing-address"})]
+                :data-test "use-billing"})]
        "Use same address?"]]
      (when-not bill-to-shipping-address?
        [:.col-12
