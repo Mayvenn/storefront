@@ -35,7 +35,7 @@
   (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
         bar-width (str (max 15 bar-value) "%")
         bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
-    [:.my2.border.border-dark-white.capped.h3.extra-light
+    [:.my2.border.border-dark-white.capped.h3.light
      (if (zero? progress)
        [:.light-gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]

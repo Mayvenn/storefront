@@ -32,7 +32,7 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   [:.f2.extra-light.titleize option-name]
+   [:.f2.light.titleize option-name]
    [:.f4.line-height-2
     (if sold-out?
       "Sold Out"
@@ -66,7 +66,7 @@
 
 (defn summary-structure [desc counter price]
   [:div
-   [:h3.regular.h2.extra-light "Summary"]
+   [:h3.regular.h2.light "Summary"]
    [:.navy desc]
    [:.right-align.light-gray.h5 "PRICE"]
    [:.flex.h1 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
@@ -150,14 +150,14 @@
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:.flex.items-center
      [:.silver.h5 "Starting at"]
-     [:.dark-gray.h2.extra-light.ml1
+     [:.dark-gray.h2.light.ml1
       (as-money-without-cents cheapest-price)]]))
 
 (defn narrow-starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:.center.mt2
      [:.silver.h5 "Starting at"]
-     [:.dark-gray.h1.extra-light
+     [:.dark-gray.h1.light
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews]

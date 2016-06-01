@@ -30,7 +30,7 @@
                       :min-length 6})
 
       (ui/submit-button "Update")]
-     [:.h4.center.gray.extra-light.my2 "OR"]
+     [:.h4.center.gray.light.my2 "OR"]
      (facebook/reset-button loaded-facebook?)))))
 
 (defn query [data]

@@ -211,7 +211,7 @@
 
 (defn lower-left-desktop-nav [current-page?]
   [:.to-lg-hide {:style {:margin-top "-12px"}}
-   [:.right.h5.sans-serif.extra-light
+   [:.right.h5.sans-serif.light
     [:a.black.col.py1 (merge
                        {:href           "/categories"
                         :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
@@ -223,7 +223,7 @@
 
 (defn lower-right-desktop-nav [current-page?]
   [:.to-lg-hide {:style {:margin-top "-12px"}}
-   [:.h5.sans-serif.extra-light
+   [:.h5.sans-serif.light
     [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                            :href           "https://blog.mayvenn.com"}
      "Blog"]

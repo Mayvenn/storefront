@@ -18,7 +18,7 @@
     [:.flex.flex-column.items-center.black.sans-serif.col-12.mt1
 
      (facebook/sign-in-button facebook-loaded?)
-     [:.h4.gray.extra-light.my2 "OR"]
+     [:.h4.gray.light.my2 "OR"]
 
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-sign-in-submit)}

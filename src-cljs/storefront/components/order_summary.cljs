@@ -50,7 +50,7 @@
           (summary-row "Store Credit" (- (:amount store-credit))))]]]
      [:.py2.h1
       [:.flex
-       [:.flex-auto.extra-light "Total"]
+       [:.flex-auto.light "Total"]
        [:.right-align.dark-gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 

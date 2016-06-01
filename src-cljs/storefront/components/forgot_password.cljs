@@ -26,7 +26,7 @@
 
       (ui/submit-button "Reset my password")]
 
-     [:.h4.center.gray.extra-light.my2 "OR"]
+     [:.h4.center.gray.light.my2 "OR"]
 
      (facebook/sign-in-button facebook-loaded?)))))
 
