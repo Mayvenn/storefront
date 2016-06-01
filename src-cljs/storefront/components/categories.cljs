@@ -8,15 +8,14 @@
             [storefront.events :as events]))
 
 (defn category [redesigned? index {:keys [name slug]}]
-  [:a.p1.inline-block
+  [:a.p1.inline-block.col-6
    (merge
     {:key slug
      :data-test (str "taxon-" slug)}
     (utils/route-to events/navigate-category
                    {:taxon-slug slug})
-    (if (> index 5)
-      {:class "col-6"}
-      {:class "col-6 lg-col-4"}))
+    (when (<= index 5)
+      {:class "lg-col-4"}))
    [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
     {:class (str "img-" slug (when (and (#{"straight"} slug)
                                         redesigned?)
@@ -29,9 +28,7 @@
   (om/component
    (html
     [:div
-     [:.center.black
-      [:h1.regular.py2
-       [:div "Select your favorite style"]]]
+     [:h1.regular.py2.center.black "Select your favorite style"]
      [:.clearfix.mxn1.center
       (->> (get-in data keypaths/taxons)
            (remove taxons/is-stylist-product?)
@@ -40,5 +37,6 @@
 (defn categories-page-component [data owner]
   (om/component
    (html
+    ;; More spacing on this page than on home page
     [:.m2
      (om/build categories-component data)])))
