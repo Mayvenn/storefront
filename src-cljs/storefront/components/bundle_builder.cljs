@@ -19,7 +19,7 @@
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1
+  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1.light
    {:style {:width "100%"
             :height "100%"}
     :class (cond
@@ -32,7 +32,7 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   [:.f2.light.titleize option-name]
+   [:.f2.titleize option-name]
    [:.f4.line-height-2
     (if sold-out?
       "Sold Out"
