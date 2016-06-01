@@ -492,10 +492,6 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom darken */
 
-.active-darken-3:active {
-    background-color: var(--darken-3);
-}
-
 /* Custom lighten */
 
 /* Custom background-image */
