@@ -185,6 +185,35 @@
       (when (= 1 (count images))
         (first images)))))
 
+(defn category-descriptions [taxon]
+  (case (:name taxon)
+    "frontals"
+    '("100% Human Virgin Hair"
+      "13\" x 4\" size"
+      "Lace Material"
+      "Color 1B"
+      "14\" and 18\" Length Bundles"
+      "2.5 ounces")
+
+    "closures"
+    '("100% Human Virgin Hair"
+      "4\" x 4\" size"
+      "Silk and Lace Materials"
+      "Colors: 1B and #613 Blonde"
+      "14\" and 18\" Length Bundles"
+      "1.2 ounces")
+
+    "blonde"
+    '("100% Human Virgin Hair"
+      "Colors: #27 and #613 Blonde"
+      "14\" - 26\" Length Bundles"
+      "3.5 ounces")
+
+    '("100% Human Virgin Hair"
+      "Color 1B"
+      "12\" - 28\" Length Bundles"
+      "3.5 ounces")))
+
 (defn starting-at-price [variants]
   (when-let [cheapest-price (apply min (map :price variants))]
     (str "Starting at " (as-money cheapest-price))))
@@ -240,7 +269,7 @@
                  [:div.go-to-checkout
                   [:a.cart-button (utils/route-to events/navigate-cart) "Checkout"]]])]
              (into [:ul.category-description]
-                   (for [description (-> taxon :description :summary)]
+                   (for [description (category-descriptions taxon)]
                      [:li description]))])]
          (taxon-review-full data)])))))
 
