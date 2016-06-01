@@ -6,8 +6,10 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.hooks.experiments :as experiments]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
+            [storefront.utils.query :as query]
             [storefront.utils.combinators :refer [map-values key-by]]
             [clojure.string :as string]))
 
@@ -186,8 +188,18 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
+(defn swap-straight-image [app-state]
+  (if (experiments/product-page-redesign? app-state)
+    (update-in app-state keypaths/taxons
+               (fn [taxons] (query/update-where taxons
+                                               #(= "straight" (:name %))
+                                               #(assoc-in % [:images 0] "//d275k6vjijb2m1.cloudfront.net/cellar/straight/1-alt/640x580.jpg"))))
+    app-state))
+
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
-  (assoc-in app-state keypaths/taxons (:taxons args)))
+  (-> app-state
+      (assoc-in keypaths/taxons (:taxons args))
+      (swap-straight-image)))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
   (-> app-state
@@ -394,16 +406,11 @@
 (defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
   (assoc-in app-state keypaths/flash-failure nil))
 
-(defn swap-straight-image [app-state variation]
-  (if (= "product-css" variation)
-    (assoc-in app-state (conj keypaths/taxon-images :straight 0) "/images/style_images/straight/1-alt.jpg")
-    app-state))
-
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
   (-> app-state
       (update-in keypaths/optimizely-variations conj variation)
-      (swap-straight-image variation)))
+      (swap-straight-image)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
   (assoc-in app-state keypaths/loaded-optimizely true))

@@ -228,7 +228,7 @@
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)
-     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))}))
+     :carousel-images    (:images taxon)}))
 
 (defn built-component [data]
   (om/build component (query data)))
