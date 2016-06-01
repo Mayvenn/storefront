@@ -158,7 +158,7 @@
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews]
-  [:.inline-block
+  [:.inline-block.h5
    (om/build reviews/reviews-summary-component reviews)])
 
 (defn component [{:keys [taxon
