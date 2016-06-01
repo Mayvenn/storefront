@@ -424,9 +424,11 @@
   (assoc-in app-state keypaths/loaded-talkable true))
 
 (defmethod transition-state events/reviews-component-mounted [_ event args app-state]
+  (prn "mount review")
   (update-in app-state keypaths/review-components-count inc))
 
 (defmethod transition-state events/reviews-component-will-unmount [_ event args app-state]
+  (prn "unmount review")
   (update-in app-state keypaths/review-components-count dec))
 
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
