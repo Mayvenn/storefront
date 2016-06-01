@@ -195,8 +195,7 @@
            [:.to-md-hide.mb1
             [:.clearfix.mb1
              [:.right (wide-starting-at variants)]
-             (taxon-title taxon)]
-            (reviews-summary reviews)]
+             (taxon-title taxon)]]
            (for [step (bundle-builder/steps flow
                                             (:product_facets taxon)
                                             selected-options

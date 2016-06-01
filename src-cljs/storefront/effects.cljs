@@ -716,8 +716,12 @@
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
-  (when (= 3 (get-in app-state keypaths/review-components-count))
-    (reviews/start)))
+  (let [expected-reviews-count (if (experiments/product-page-redesign? app-state)
+                                 2
+                                 3)
+        actual-reviews-count (get-in app-state keypaths/review-components-count)]
+    (when (= expected-reviews-count actual-reviews-count)
+      (reviews/start))))
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
   (when (= 0 (get-in app-state keypaths/review-components-count))
