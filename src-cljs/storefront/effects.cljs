@@ -716,9 +716,9 @@
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
-  (prn "review count " (get-in app-state keypaths/review-components-count))
+  (js/console.log "review count " (get-in app-state keypaths/review-components-count))
   (when (= 3 (get-in app-state keypaths/review-components-count))
-    (prn "review start")
+    (js/console.log "review start")
     (reviews/start)))
 
 (defmethod perform-effects events/reviews-component-will-unmount [_ event args app-state]
