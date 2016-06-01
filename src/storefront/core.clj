@@ -13,7 +13,7 @@
 (defn -main [& args]
   (try
     (alter-var-root #'the-system (constantly (system/create-system)))
-    (component/start the-system)
+    (alter-var-root #'the-system component/start)
     (catch Exception e
       (do (tocsin/notify e {:api-key (env :bugsnag-token)
                             :environment (env :environment)
