@@ -144,7 +144,11 @@
                 :opts {:dot-location :left}})]))
 
 (defn taxon-title [taxon]
-  [:h1.medium.titleize.navy.h2 (:name taxon)])
+  [:h1.medium.titleize.navy.h2
+   (:name taxon)
+   ;; TODO: if experiments/product-page-redesign? succeeds, put the word "Hair"
+   ;; into cellar.
+   (when-not (taxons/is-closure? taxon) " Hair")])
 
 (defn wide-starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
