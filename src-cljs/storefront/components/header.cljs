@@ -142,7 +142,8 @@
      [:.h6.bg-pure-white.rounded-2
       (into [:.px2.py1.line-height-4] menu)
       [:.border-bottom.border-light-silver]
-      [:a.navy.block.py1.center.bg-white.rounded-bottom-2 (utils/fake-href events/control-sign-out) "Logout"]]]]))
+      [:a.navy.block.py1.center.bg-white.rounded-bottom-2
+       (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
   [:a.green.block (utils/route-to nav-event)

@@ -67,8 +67,7 @@
 
 (defn fake-href [event & [args]]
   {:href "#"
-   :on-click (juxt (send-event-callback event args)
-                   (send-event-callback events/control-menu-collapse-all))})
+   :on-click (send-event-callback event args)})
 
 (defn toggle-checkbox [keypath value]
   (let [checked-val (when value "checked")]

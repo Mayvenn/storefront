@@ -340,6 +340,7 @@
   (handle-message events/flash-show-success
                   {:message "Logged out successfully"
                    :navigation [events/navigate-home {}]})
+  (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home))
 
