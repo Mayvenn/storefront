@@ -158,7 +158,8 @@
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews]
-  (om/build reviews/reviews-summary-component reviews))
+  [:.inline-block
+   (om/build reviews/reviews-summary-component reviews)])
 
 (defn component [{:keys [taxon
                          variants
@@ -181,7 +182,7 @@
         [:.md-col.md-col-5.px2
          [:.center
           (taxon-title taxon)
-          [:.inline-block (reviews-summary reviews)]
+          (reviews-summary reviews)
           [:.md-up-hide.my2 (carousel taxon)]
           (when-not fetching-variants?
             (starting-at variants))]
