@@ -11,10 +11,11 @@
 
 (defn css-url [url] (str "url(" url ")"))
 
-(defn carousel-component [data owner {:keys [index-path images]}]
+(defn carousel-component [data owner {:keys [index-path images-path]}]
   (om/component
    (html
-    (let [idx (get-in data index-path)]
+    (let [idx (get-in data index-path)
+          images (get-in data images-path [])]
       [:.carousel-component
        [:.hair-category-image {:style {:background-image (css-url (get images idx))}}]
        [:.left {:on-click
