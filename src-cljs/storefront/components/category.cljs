@@ -191,7 +191,7 @@
 
 (defn taxon-reviews-summary [data]
   [:.reviews-wrapper
-   [:.reviews-inner-wrapper
+   [:.reviews-inner-wrapper.mb1
     (om/build reviews/reviews-summary-component (reviews/query data))]])
 
 (defn taxon-review-full [data]

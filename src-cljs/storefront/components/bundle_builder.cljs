@@ -127,8 +127,8 @@
    {:style {:background-image (css-url image)
             :height "31rem"}}])
 
-(defn carousel [carousel-images taxon]
-  (let [items (->> carousel-images
+(defn carousel [{:keys [images slug]}]
+  (let [items (->> images
                    (map-indexed (fn [idx image]
                                   {:id   idx
                                    :body (carousel-image image)}))
@@ -140,28 +140,21 @@
      (om/build carousel/swipe-component
                {:items      items
                 :continuous true}
-               {:react-key (str "category-swiper-" (:slug taxon))
-                :opts {:dot-location :left}})]))
+               {:react-key (str "category-swiper-" slug)
+                :opts      {:dot-location :left}})]))
 
 (defn taxon-title [taxon]
-  [:h1.medium.titleize.navy.h2
+  [:h1.medium.titleize.navy.h2.line-height-2
    (:name taxon)
    ;; TODO: if experiments/product-page-redesign? succeeds, put the word "Hair"
    ;; into cellar.
    (when-not (taxons/is-closure? taxon) " Hair")])
 
-(defn wide-starting-at [variants]
+(defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
-    [:.flex.items-center
-     [:.silver.h5 "Starting at"]
-     [:.dark-gray.h2.light.ml1
-      (as-money-without-cents cheapest-price)]]))
-
-(defn narrow-starting-at [variants]
-  (when-let [cheapest-price (bundle-builder/min-price variants)]
-    [:.center.mt2
-     [:.silver.h5 "Starting at"]
-     [:.dark-gray.h1.light
+    [:.center
+     [:.silver.f5 "Starting at"]
+     [:.dark-gray.f1.light
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews]
@@ -176,44 +169,43 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
-                         bagged-variants
-                         carousel-images]}
+                         bagged-variants]}
                  owner]
   (om/component
    (html
     (when taxon
       (ui/container
-       [:.center.md-up-hide
-        (taxon-title taxon)
-        [:.inline-block (reviews-summary reviews)]]
-       (if fetching-variants?
-         [:.h1 ui/spinner]
-         [:.clearfix.mxn2
-          [:.md-col.md-col-6.px2 (carousel carousel-images taxon)]
-          [:.md-col.md-col-6.px2
-           [:.md-up-hide (narrow-starting-at variants)]
-           [:.to-md-hide.mb1
-            [:.clearfix.mb1
-             [:.right (wide-starting-at variants)]
-             (taxon-title taxon)]]
-           (for [step (bundle-builder/steps flow
-                                            (:product_facets taxon)
-                                            selected-options
-                                            variants)]
-             (step-html step))
-           [:.py2.border-top.border-dark-white.border-width-2
-            (if variant
-              (variant-summary {:flow             flow
-                                :variant          variant
-                                :variant-quantity variant-quantity})
-              (no-variant-summary (bundle-builder/next-step flow selected-options)))
-            (when variant
-              (add-to-bag-button adding-to-bag?))
-            (when (seq bagged-variants)
-              [:div
-               (map-indexed redesigned-display-bagged-variant bagged-variants)
-               checkout-button])]
-           (taxon-description (:description taxon))]])
+       [:.clearfix.mxn2
+        [:.md-col.md-col-7.px2
+         [:.to-md-hide (carousel taxon)]]
+        [:.md-col.md-col-5.px2
+         [:.center
+          (taxon-title taxon)
+          [:.inline-block (reviews-summary reviews)]
+          [:.md-up-hide.my2 (carousel taxon)]
+          (when-not fetching-variants?
+            (starting-at variants))]
+         (if fetching-variants?
+           [:.h1.mb2 ui/spinner]
+           [:div
+            (for [step (bundle-builder/steps flow
+                                             (:product_facets taxon)
+                                             selected-options
+                                             variants)]
+              (step-html step))
+            [:.py2.border-top.border-dark-white.border-width-2
+             (if variant
+               (variant-summary {:flow             flow
+                                 :variant          variant
+                                 :variant-quantity variant-quantity})
+               (no-variant-summary (bundle-builder/next-step flow selected-options)))
+             (when variant
+               (add-to-bag-button adding-to-bag?))
+             (when (seq bagged-variants)
+               [:div
+                (map-indexed redesigned-display-bagged-variant bagged-variants)
+                checkout-button])]])
+         (taxon-description (:description taxon))]]
        (om/build reviews/reviews-component reviews))))))
 
 (defn query [data]
@@ -227,8 +219,7 @@
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)
-     :carousel-images    (:images taxon)}))
+     :reviews            (reviews/query data)}))
 
 (defn built-component [data]
   (om/build component (query data)))
