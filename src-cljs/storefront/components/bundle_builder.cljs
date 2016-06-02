@@ -127,8 +127,8 @@
    {:style {:background-image (css-url image)
             :height "31rem"}}])
 
-(defn carousel [carousel-images {:keys [slug]}]
-  (let [items (->> carousel-images
+(defn carousel [{:keys [images slug]}]
+  (let [items (->> images
                    (map-indexed (fn [idx image]
                                   {:id   idx
                                    :body (carousel-image image)}))
@@ -170,8 +170,7 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
-                         bagged-variants
-                         carousel-images]}
+                         bagged-variants]}
                  owner]
   (om/component
    (html
@@ -179,12 +178,12 @@
       (ui/container
        [:.clearfix.mxn2
         [:.md-col.md-col-7.px2
-         [:.to-md-hide (carousel carousel-images taxon)]]
+         [:.to-md-hide (carousel taxon)]]
         [:.md-col.md-col-5.px2
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)
-          [:.md-up-hide.my2 (carousel carousel-images taxon)]
+          [:.md-up-hide.my2 (carousel taxon)]
           (when-not fetching-variants?
             (starting-at variants))]
          (if fetching-variants?
@@ -221,8 +220,7 @@
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)
-     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))}))
+     :reviews            (reviews/query data)}))
 
 (defn built-component [data]
   (om/build component (query data)))

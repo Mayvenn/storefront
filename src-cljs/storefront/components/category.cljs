@@ -251,8 +251,7 @@
               (if-let [image-url (representative-image-url data taxon)]
                 [:.hair-category-image {:style {:background-image (css-url image-url)}}]
                 (om/build carousel-component data {:opts {:index-path keypaths/bundle-builder-carousel-index
-                                                          :images-path (conj keypaths/taxon-images
-                                                                             (keyword (:name taxon)))}}))]
+                                                          :images (:images taxon)}}))]
              [:div.starting-at.centered (starting-at-price variants)]
              (for [step (build-steps (selection-flow data)
                                      (:product_facets taxon)
