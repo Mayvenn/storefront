@@ -71,8 +71,6 @@
 
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
-(def taxon-images (conj ui :taxon-images))
-
 (def bundle-builder (conj ui :bundle-builder))
 (def bundle-builder-carousel-index (conj bundle-builder :carousel-index))
 (def bundle-builder-previous-step (conj bundle-builder :previous-step))
