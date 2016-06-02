@@ -25,7 +25,7 @@
   ([content event]
    (button content event {}))
   ([content event {:keys [show-spinner? disabled? color on-click data-test] :or {color "bg-green"}}]
-   [:.reset.border.btn-large.btn-primary.col-12.h3.px1.py2.letter-spacing-1
+   [:.reset.border.btn-primary.col-12.h3.px1.py2.letter-spacing-1
     {:class (conj [color]
                   (when disabled? "is-disabled"))
      :data-test data-test
@@ -41,7 +41,7 @@
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
      (button nil nil {:show-spinner? true})
-     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
+     [:input.reset.border.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
       {:type "submit"
        :data-test data-test
        :value title

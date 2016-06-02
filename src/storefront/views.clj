@@ -56,6 +56,6 @@
      [:img.mx-auto.block {:src (asset-path "/images/not_found_head.png")
                           :style "max-width: 80%"}]
      [:div.h2.mt3.mb2.center "We can't seem to find the page you're looking for."]
-     [:a.mx-auto.btn.btn-large.btn-primary.bg-green.col-10
+     [:a.mx-auto.btn.btn-primary.bg-green.col-10
       {:href "/"}
       [:div.h3.p1.letter-spacing-1 "Return to Homepage"]]]]))
