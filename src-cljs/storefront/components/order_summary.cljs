@@ -1,7 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.components.formatters :refer [as-money as-money-or-free]]
+            [storefront.components.formatters :refer [as-money as-money-without-cents as-money-or-free]]
             [storefront.components.ui :as ui]
             [storefront.components.utils :as utils]
             [storefront.events :as events]))
@@ -69,7 +69,7 @@
     [:.mt1.h5.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div "Price: " (as-money unit-price)]
+     [:div "Price: " (as-money-without-cents unit-price)]
      quantity-line]]])
 
 (defn display-line-items [line-items products]
