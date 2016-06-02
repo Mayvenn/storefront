@@ -135,7 +135,7 @@
 (defn carousel [carousel-images {:keys [slug]}]
   (let [items (->> carousel-images
                    (map-indexed (fn [idx image]
-                                  {:id   idx
+                                  {:id   (.substring image (max 0 (- (.-length image) 50)))
                                    :body (carousel-image image)}))
                    vec)]
     ;; The mxn2 pairs with the p2 of the ui/container, to make the carousel full
@@ -145,7 +145,7 @@
      (om/build carousel/swipe-component
                {:items      items
                 :continuous true}
-               {:react-key (str "category-swiper-" slug)
+               {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))
                 :opts      {:dot-location :left}})]))
 
 (defn taxon-title [taxon]
@@ -217,6 +217,13 @@
          (taxon-description (:description taxon))]]
        (om/build reviews/reviews-component reviews))))))
 
+(defn images-from-variants [data]
+  (let [taxon (taxons/current-taxon data)
+        variants (products/selected-variants data)]
+    (if (and (#{"blonde" "closures" "frontals"} (:name taxon)) (seq variants))
+      (vec (set (map #(get-in % [:images 0 :large_url]) variants)))
+      (get-in data (conj keypaths/taxon-images (keyword (:name taxon)))))))
+
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
@@ -230,7 +237,7 @@
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)
-     :carousel-images    (get-in data (conj keypaths/taxon-images (keyword (:name taxon))))}))
+     :carousel-images    (images-from-variants data)}))
 
 (defn built-component [data]
   (om/build component (query data)))
