@@ -22,11 +22,13 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  [content {:keys [show-spinner? disabled? color on-click data-test]
+  [content {:keys [show-spinner? disabled? color btn-type border text-color on-click data-test]
             :or {color "bg-green"
+                 text-color ""
+                 btn-type "btn-primary"
                  on-click utils/noop-callback}}]
-  [:.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
-   {:class (conj [color]
+  [:.btn.col-12.h3.px1.py2.letter-spacing-1
+   {:class (conj [color text-color btn-type border]
                  (when disabled? "is-disabled"))
     :data-test data-test
     :on-click (if (or disabled? show-spinner?)

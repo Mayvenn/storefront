@@ -25,6 +25,7 @@
                               updating?
                               redirecting-to-paypal?
                               redesigned?
+                              share-carts?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
@@ -64,7 +65,7 @@
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
        [:div.h4.gray.center.py2 "OR"]
-       [:div.pb4 (ui/button
+       [:div.pb2 (ui/button
                   [:.col-12.flex.items-center.justify-center
                    [:.right-align.mr1 "Check out with"]
                    [:.h2.medium.sans-serif.italic "PayPal™"]]
@@ -72,7 +73,20 @@
                    :show-spinner? redirecting-to-paypal?
                    :disabled?     updating?
                    :color         "bg-paypal-blue"
-                   :data-test     "paypal-checkout"})]]]))))
+                   :data-test     "paypal-checkout"})]
+
+       (when share-carts?
+         [:div.border-top.border-bottom.border-light-silver.py2
+          (ui/button [:.flex.items-center.justify-center
+                      [:.img-share-icon.bg-center.bg-contain.mr2
+                       {:style {:width "24px"
+                                :height "18px"}}]
+                      "Share your bag"]
+                     {:btn-type "btn-outline"
+                      :color "bg-white"
+                      :border "border-navy"
+                      :text-color "navy"})
+          [:.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
@@ -117,6 +131,7 @@
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :redesigned?               (experiments/product-page-redesign? data)
+     :share-carts?              (experiments/share-carts? data)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 

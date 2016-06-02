@@ -382,6 +382,10 @@ html { line-height: 1.2; }
   box-shadow: 0 0 0 3px rgba(0,0,0,.375); /* override default from basscss: match :focus outline, instead of having an inset */
 }
 
+.btn-outline:active {
+  box-shadow: 0 0 0 3px rgba(0,0,0,.375); /* override default from basscss: match :focus outline, instead of having an inset */
+}
+
 /* Custom btn-outline */
 
 /* Custom btn-sizes */
@@ -487,6 +491,7 @@ html { line-height: 1.2; }
 .img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
 .img-no-chat-icon { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
+.img-share-icon   { background-image: url('/images/icons/share.png'); }
 .img-spinner      { background-image: url('/images/spinner.svg'); }
 .img-left-arrow   {
     background-image: url('/images/carousel/arrow.svg');

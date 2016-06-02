@@ -44,6 +44,9 @@
 (defn product-page-redesign? [data]
   (display-variation data "product-css"))
 
+(defn share-carts? [data]
+  (display-variation data "share-carts"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))
