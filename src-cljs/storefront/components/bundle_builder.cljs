@@ -15,7 +15,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.messages :as messages]
-            [storefront.components.carousel :as carousel]))
+            [storefront.components.carousel :as carousel]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
@@ -82,7 +83,8 @@
 
 (defn variant-summary [{:keys [flow
                                variant
-                               variant-quantity]}]
+                               variant-quantity
+                               redesigned?]}]
   (summary-structure
    (summary-format variant flow)
    (ui/counter variant-quantity
@@ -91,7 +93,9 @@
                                           {:path keypaths/browse-variant-quantity})
                (utils/send-event-callback events/control-counter-inc
                                           {:path keypaths/browse-variant-quantity}))
-   (as-money-without-cents (:price variant))))
+   (if redesigned?
+     (as-money-without-cents (:price variant))
+     (as-money (:price variant)))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
   [:.border.border-light-gray.p2.rounded-1
@@ -165,6 +169,7 @@
 (defn component [{:keys [taxon
                          variants
                          fetching-variants?
+                         redesigned?
                          selected-options
                          flow
                          variant
@@ -200,7 +205,8 @@
              (if variant
                (variant-summary {:flow             flow
                                  :variant          variant
-                                 :variant-quantity variant-quantity})
+                                 :variant-quantity variant-quantity
+                                 :redesigned?      redesigned?})
                (no-variant-summary (bundle-builder/next-step flow selected-options)))
              (when variant
                (add-to-bag-button adding-to-bag?))
@@ -216,6 +222,7 @@
     {:taxon              taxon
      :variants           (products/current-taxon-variants data)
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
+     :redesigned?        (experiments/product-page-redesign? data)
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
      :variant            (products/selected-variant data)

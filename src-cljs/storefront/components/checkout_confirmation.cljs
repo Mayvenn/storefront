@@ -10,7 +10,8 @@
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn requires-additional-payment? [data]
   (and (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -24,6 +25,7 @@
            saving-card?
            placing-order?
            requires-additional-payment?
+           redesigned?
            payment delivery order
            products]}
    owner]
@@ -36,7 +38,7 @@
       [:.md-col.md-col-6.px3
        [:.h2.left-align "Order Summary"]
        [:.mb2
-        (summary/display-line-items (orders/product-items order) products)]]
+        (summary/display-line-items (orders/product-items order) products redesigned?)]]
       [:.md-col.md-col-6.px3
        (om/build checkout-delivery/component delivery)
        [:form
@@ -60,6 +62,7 @@
    :saving-card?                 (checkout-payment/saving-card? data)
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
+   :redesigned?                  (experiments/product-page-redesign? data)
    :checkout-steps               (checkout-steps/query data)
    :errors                       (get-in data keypaths/validation-errors)
    :products                     (get-in data keypaths/products)

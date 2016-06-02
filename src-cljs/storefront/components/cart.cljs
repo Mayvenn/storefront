@@ -10,7 +10,8 @@
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn- pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
@@ -23,6 +24,7 @@
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
+                              redesigned?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
@@ -41,7 +43,8 @@
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
-                                                    delete-line-item-requests)]
+                                                    delete-line-item-requests
+                                                    redesigned?)]
       [:.md-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
@@ -113,6 +116,7 @@
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
+     :redesigned?               (experiments/product-page-redesign? data)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
