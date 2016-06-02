@@ -2,9 +2,6 @@
  * styles, so disabling for now.
 /* @import 'basscss-basic'; */
 
-/* All common modules */
-@import 'basscss';
-
 /* Optional Modules (not included in Basscss by default) */
 
 @import 'basscss-addons/modules/responsive-margin';
@@ -58,6 +55,11 @@
 
 /* We want h00 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in ems. 5.25em is 63px... close enough. */
+
+/* All common modules */
+/* Must come last, so they have the power to override addons. */
+
+@import 'basscss';
 
 html { line-height: 1.2; }
 
@@ -276,16 +278,16 @@ html { line-height: 1.2; }
 .border-width-bottom-0 { border-bottom-width: 0; }
 
 .capped { border-radius: 1000px; }
-.rounded-1 { border-radius: 4px; }
-.rounded-2 { border-radius: 8px; }
-.rounded-top-1, .rounded-left-1, .rounded-top-left-1 { border-top-left-radius: 4px; }
-.rounded-top-1, .rounded-right-1, .rounded-top-right-1 { border-top-right-radius: 4px; }
-.rounded-bottom-1, .rounded-left-1, .rounded-bottom-left-1 { border-bottom-left-radius: 4px; }
-.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: 4px; }
-.rounded-top-2, .rounded-left-2, .rounded-top-left-2 { border-top-left-radius: 8px; }
-.rounded-top-2, .rounded-right-2, .rounded-top-right-2 { border-top-right-radius: 8px; }
-.rounded-bottom-2, .rounded-left-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
-.rounded-bottom-2, .rounded-right-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
+.rounded-1 { border-radius: var(--border-radius-1); }
+.rounded-2 { border-radius: var(--border-radius-2); }
+.rounded-top-1,    .rounded-left-1,  .rounded-top-left-1     { border-top-left-radius:     var(--border-radius-1); }
+.rounded-top-1,    .rounded-right-1, .rounded-top-right-1    { border-top-right-radius:    var(--border-radius-1); }
+.rounded-bottom-1, .rounded-left-1,  .rounded-bottom-left-1  { border-bottom-left-radius:  var(--border-radius-1); }
+.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
+.rounded-top-2,    .rounded-left-2,  .rounded-top-left-2     { border-top-left-radius:     var(--border-radius-2); }
+.rounded-top-2,    .rounded-right-2, .rounded-top-right-2    { border-top-right-radius:    var(--border-radius-2); }
+.rounded-bottom-2, .rounded-left-2,  .rounded-bottom-left-2  { border-bottom-left-radius:  var(--border-radius-2); }
+.rounded-bottom-2, .rounded-right-2, .rounded-bottom-right-2 { border-bottom-right-radius: var(--border-radius-2); }
 
 
 /* Custom responsive hide */
@@ -342,13 +344,6 @@ html { line-height: 1.2; }
 
 /* Custom forms */
 
-input[type=button].reset, input[type=submit].reset {
-  -webkit-appearance: none;
-  display: inline-block;
-  outline: none;
-  line-height: 1.2;
-}
-
 .floating-label .floated-label {
   position: relative;
   top: 1em;
@@ -375,21 +370,15 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom btn */
 
-.btn { text-align: center; }
+.btn {
+  text-align: center;
+  border-radius: var(--button-border-radius);
+}
 
 /* Custom btn-primary */
 
-.btn-primary {
-  border: none;
-  border-radius: 4px;
-  background-image: none;
-  text-shadow: none;
-  box-shadow: none;
-}
-
 .btn-primary:active {
-  box-shadow: none; /* override default from basscss */
-  background-image: none;
+  box-shadow: 0 0 0 3px rgba(0,0,0,.375); /* override default from basscss: match :focus outline, instead of having an inset */
 }
 
 /* Custom btn-outline */
@@ -413,8 +402,6 @@ input[type=button].reset, input[type=submit].reset {
 .bg-full { background-size: 100%; }
 
 /* Custom background-colors */
-
-.bg-top-white { background-image: var(--top-white); }
 
 .bg-darken-bottom-1 { background-image: var(--darken-bottom-1); }
 .bg-darken-bottom-2 { background-image: var(--darken-bottom-2); }
@@ -603,10 +590,14 @@ input[type=button].reset, input[type=submit].reset {
     --heading-font-family: var(--sans-serif);
 
     --button-font-weight: inherit;
-    --button-background-color: var(--teal);
+    --button-line-height: 1.2;
+    --button-background-color: var(--green);
+    --button-border-radius: var(--border-radius-1);
     --button-big-padding-y: .75rem;
 
     --border-radius: 2px;
+    --border-radius-1: 4px;
+    --border-radius-2: 8px;
 
     --teal:        #36b4d4;
     --green:       #40CBAC;
@@ -630,8 +621,6 @@ input[type=button].reset, input[type=submit].reset {
     --paypal-blue:   #49bbf0;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
-
-    --top-white: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--white));
 
     --darken-bottom-1: linear-gradient(0deg, var(--darken-1), rgba(255, 255, 255, 0));
     --darken-bottom-2: linear-gradient(0deg, var(--darken-2), rgba(255, 255, 255, 0));

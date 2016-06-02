@@ -89,11 +89,11 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.muted.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.bg-green {:href mailto :target "_top"} "Refer"]]]
+      [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary {:href mailto :target "_top"} "Refer"]]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.bg-green.btn-big {:href mailto :target "_top"} "Refer"]]
+      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
 (def empty-referrals
