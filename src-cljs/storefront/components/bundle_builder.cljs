@@ -91,7 +91,7 @@
                                           {:path keypaths/browse-variant-quantity})
                (utils/send-event-callback events/control-counter-inc
                                           {:path keypaths/browse-variant-quantity}))
-   (as-money (:price variant))))
+   (as-money-without-cents (:price variant))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
   [:.border.border-light-gray.p2.rounded-1
