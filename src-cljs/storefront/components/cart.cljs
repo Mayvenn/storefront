@@ -49,8 +49,8 @@
          [:.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
          [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                  events/control-cart-update-coupon
-                                                  {:disabled? updating?
+                                                  {:on-click      (utils/send-event-callback events/control-cart-update-coupon)
+                                                   :disabled?     updating?
                                                    :show-spinner? applying-coupon?})]]]
 
        (order-summary/display-order-summary order)
@@ -65,11 +65,11 @@
                   [:.col-12.flex.items-center.justify-center
                    [:.right-align.mr1 "Check out with"]
                    [:.h2.medium.sans-serif.italic "PayPal™"]]
-                  events/control-checkout-cart-paypal-setup
-                  {:show-spinner? redirecting-to-paypal?
-                   :disabled? updating?
-                   :color "bg-paypal-blue"
-                   :data-test "paypal-checkout"})]]]))))
+                  {:on-click      (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                   :show-spinner? redirecting-to-paypal?
+                   :disabled?     updating?
+                   :color         "bg-paypal-blue"
+                   :data-test     "paypal-checkout"})]]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
@@ -87,7 +87,7 @@
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))))))
+     (ui/button "Shop Now" (apply utils/route-to shop-now-nav-message))))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

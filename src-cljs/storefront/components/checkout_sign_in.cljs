@@ -4,7 +4,8 @@
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.components.utils :as utils]))
 
 (defn component [sign-in-form-data owner]
   (om/component
@@ -12,7 +13,9 @@
     (ui/narrow-container
      [:.h2.center.my2 "I'm new here"]
 
-     (ui/button "Guest Checkout" events/control-checkout-as-guest-submit {:data-test "guest-checkout-button"})
+     (ui/button "Guest Checkout"
+                {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
+                 :data-test "guest-checkout-button"})
 
      [:.my3 [:.col-2.m-auto.border.border-light-silver]]
      [:.h2.center.my2 "Already registered?"]

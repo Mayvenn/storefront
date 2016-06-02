@@ -22,19 +22,18 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  ([content event]
-   (button content event {}))
-  ([content event {:keys [show-spinner? disabled? color on-click data-test] :or {color "bg-green"}}]
-   [:.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
-    {:class (conj [color]
-                  (when disabled? "is-disabled"))
-     :data-test data-test
-     :on-click (or on-click
-                   (if (or disabled? show-spinner?)
-                     utils/noop-callback
-                     (utils/send-event-callback event)))}
-    [:.flex.items-center.justify-center
-     (if show-spinner? spinner content)]]))
+  [content {:keys [show-spinner? disabled? color on-click data-test]
+            :or {color "bg-green"
+                 on-click utils/noop-callback}}]
+  [:.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
+   {:class (conj [color]
+                 (when disabled? "is-disabled"))
+    :data-test data-test
+    :on-click (if (or disabled? show-spinner?)
+                utils/noop-callback
+                on-click)}
+   [:.flex.items-center.justify-center
+    (if show-spinner? spinner content)]])
 
 (defn submit-button
   ([title] (submit-button title {}))

@@ -112,13 +112,14 @@
 (def checkout-button
   (html
    [:.cart-button ; for scrolling
-    (ui/button "Check out" events/navigate-cart)]))
+    (ui/button "Check out" (utils/route-to events/navigate-cart))]))
 
 (defn add-to-bag-button [adding-to-bag?]
   (ui/button
    "Add to bag"
-   events/control-build-add-to-bag
-   {:show-spinner? adding-to-bag? :color "bg-navy"}))
+   {:on-click      (utils/send-event-callback events/control-build-add-to-bag)
+    :show-spinner? adding-to-bag?
+    :color         "bg-navy"}))
 
 (defn css-url [url] (str "url(" url ")"))
 
