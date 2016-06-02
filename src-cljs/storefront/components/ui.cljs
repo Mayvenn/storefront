@@ -39,7 +39,7 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
-     (button nil nil {:show-spinner? true})
+     (button nil {:show-spinner? true})
      [:input.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
       {:type "submit"
        :data-test data-test
