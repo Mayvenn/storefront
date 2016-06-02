@@ -116,7 +116,7 @@
      [:.relative.border.border-light-silver.rounded-2.bg-pure-white.top-lit
       notch-up
       [:div
-       [:.py1.f5
+       [:.p1.f5
         (when store-photo
           [:.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
         [:h3.f3.medium store-name]]
