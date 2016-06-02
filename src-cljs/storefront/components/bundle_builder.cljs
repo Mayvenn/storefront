@@ -19,7 +19,7 @@
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1.light
+  [:label.pointer.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1.light
    {:style {:width "100%"
             :height "100%"}
     :class (cond
