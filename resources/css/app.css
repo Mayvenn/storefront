@@ -2,14 +2,7 @@
  * styles, so disabling for now.
 /* @import 'basscss-basic'; */
 
-/* Optional Modules (not included in Basscss by default) */
-
-@import 'basscss-addons/modules/responsive-margin';
-
-@import 'basscss-addons/modules/responsive-padding';
-
-/* Would like to use this, but .input interferes with existing forms */
-/* @import 'basscss-addons/modules/forms'; */
+/* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
 @import 'basscss-addons/modules/btn';
 
@@ -18,6 +11,19 @@
 @import 'basscss-addons/modules/btn-outline';
 
 @import 'basscss-addons/modules/btn-sizes';
+
+/* Basscss Core */
+
+@import 'basscss';
+
+/* Optional Modules (not included in Basscss by default) that must be able to be override basscss core */
+
+@import 'basscss-addons/modules/responsive-margin';
+
+@import 'basscss-addons/modules/responsive-padding';
+
+/* Would like to use this, but .input interferes with existing forms */
+/* @import 'basscss-addons/modules/forms'; */
 
 @import 'basscss-addons/modules/colors';
 
@@ -56,10 +62,6 @@
 /* We want h00 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in ems. 5.25em is 63px... close enough. */
 
-/* All common modules */
-/* Must come last, so they have the power to override addons. */
-
-@import 'basscss';
 
 html { line-height: 1.2; }
 
