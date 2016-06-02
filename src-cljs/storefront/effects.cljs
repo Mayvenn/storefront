@@ -359,7 +359,7 @@
   (let [product (query/get (get-in app-state keypaths/browse-product-query)
                            (vals (get-in app-state keypaths/products)))
         variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (products/all-variants product))]
+                           (:variants product))]
     (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-bundle-option-select
@@ -621,16 +621,15 @@
                     (:product-slug (get-in app-state keypaths/navigation-args))))
         (opengraph/set-product-tags {:name (:name product)
                                      :image (when-let [image-url (->> product
-                                                                      :master
                                                                       :images
                                                                       first
                                                                       :large_url)]
                                               (str "http:" image-url))})
-        (when-let [variant (if-let [variants (seq (-> product :variants))]
-                             (or (->> variants (filter :can_supply?) first) (first variants))
-                             (:master product))]
-          (handle-message events/control-browse-variant-select
-                          {:variant variant}))))))
+        (when-let [variants (seq (:variants product))]
+          (when-let [variant (or (->> variants (filter :can_supply?) first)
+                                 (first variants))]
+            (handle-message events/control-browse-variant-select
+                            {:variant variant})))))))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]

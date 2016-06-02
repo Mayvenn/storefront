@@ -7,7 +7,6 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.utils.query :as query]
             [storefront.accessors.taxons :as taxons]
-            [storefront.accessors.products :refer [all-variants]]
             [storefront.components.counter :refer [counter-component]]
             [om.core :as om]
             [clojure.string :as string]
@@ -16,7 +15,7 @@
 (defn selected-variant [app-state product]
   (let [variant-query (get-in app-state keypaths/browse-variant-query)]
     (->> product
-         all-variants
+         :variants
          (query/get variant-query))))
 
 (defn number->words [n]
@@ -47,7 +46,7 @@
    (html
     (let [product (query/get (get-in data keypaths/browse-product-query)
                              (vals (get-in data keypaths/products)))
-          image (->> product :master :images first :product_url)
+          image (->> product :images first :product_url)
           variants (:variants product)]
       (when product
         [:div
@@ -65,8 +64,6 @@
              [:div#inside-product-cart-form {:item-prop "offers"
                                              :item-scope ""
                                              :item-type "http://schema.org/Offer"}
-              [:input {:type "hidden"
-                       :id (get-in product [:master :id])}]
               [:div.price-container
                [:div.quantity
                 [:h4.quantity-label "Quantity"]
@@ -80,7 +77,7 @@
                   [:span.price.selling {:item-prop "price"}
                    (as-money-without-cents (:price variant))])
                 [:span {:item-prop "priceCurrency" :content (:currency product)}]
-                (if (get-in product [:master :can_supply?])
+                (if (some :can_supply? variants)
                   [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
                   [:span.out-of-stock [:br] (str (:name product) " is out of stock.")])]
 

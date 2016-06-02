@@ -2,9 +2,6 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]))
 
-(defn all-variants [product]
-  (conj (:variants product) (:master product)))
-
 (defn selected-variant [data]
   (let [variants (get-in data keypaths/bundle-builder-selected-variants)]
     (when (= 1 (count variants))
@@ -81,4 +78,4 @@
     (clojure.string/join " " strs)))
 
 (defn thumbnail-url [products product-id]
-  (get-in products [product-id :master :images 0 :small_url]))
+  (get-in products [product-id :images 0 :small_url]))

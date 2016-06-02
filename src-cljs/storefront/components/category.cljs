@@ -23,7 +23,6 @@
                       {:product-slug (:slug product)})
    [:div.taxon-product-container
     (when-let [medium-image (->> product
-                                 :master
                                  :images
                                  first
                                  :product_url)]
@@ -180,7 +179,7 @@
   (when (display-product-images-for-taxon? (:name taxon))
     (let [products (vals (products/selected-products data))
           images (->> products
-                      (map #(get-in % [:master :images 0 :large_url]))
+                      (map #(get-in % [:images 0 :large_url]))
                       set)]
       (when (= 1 (count images))
         (first images)))))
