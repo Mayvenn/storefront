@@ -183,7 +183,7 @@
    (html
     (when taxon
       (ui/container
-       [:.clearfix.mxn2
+       [:.clearfix.mxn2.md-mx0
         [:.md-col.md-col-7.px2
          [:.to-md-hide (carousel carousel-images taxon)]]
         [:.md-col.md-col-5.px2
