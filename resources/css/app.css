@@ -373,6 +373,7 @@ html { line-height: 1.2; }
 .btn {
   text-align: center;
   border-radius: var(--button-border-radius);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 /* Custom btn-primary */
