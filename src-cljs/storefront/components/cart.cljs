@@ -4,6 +4,7 @@
             [storefront.accessors.navigation :as navigation]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
+            [storefront.accessors.stylists :as stylists]
             [storefront.components.order-summary :as order-summary]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -131,7 +132,7 @@
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :redesigned?               (experiments/product-page-redesign? data)
-     :share-carts?              (experiments/share-carts? data)
+     :share-carts?              (and (experiments/share-carts? data) (stylists/own-store? data))
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
