@@ -83,8 +83,7 @@
 
 (defn variant-summary [{:keys [flow
                                variant
-                               variant-quantity
-                               redesigned?]}]
+                               variant-quantity]}]
   (summary-structure
    (summary-format variant flow)
    (ui/counter variant-quantity
@@ -93,9 +92,7 @@
                                           {:path keypaths/browse-variant-quantity})
                (utils/send-event-callback events/control-counter-inc
                                           {:path keypaths/browse-variant-quantity}))
-   (if redesigned?
-     (as-money-without-cents (:price variant))
-     (as-money (:price variant)))))
+   (as-money-without-cents (:price variant))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
   [:.border.border-light-gray.p2.rounded-1
@@ -169,7 +166,6 @@
 (defn component [{:keys [taxon
                          variants
                          fetching-variants?
-                         redesigned?
                          selected-options
                          flow
                          variant
@@ -205,8 +201,7 @@
              (if variant
                (variant-summary {:flow             flow
                                  :variant          variant
-                                 :variant-quantity variant-quantity
-                                 :redesigned?      redesigned?})
+                                 :variant-quantity variant-quantity})
                (no-variant-summary (bundle-builder/next-step flow selected-options)))
              (when variant
                (add-to-bag-button adding-to-bag?))
@@ -229,7 +224,6 @@
     {:taxon              taxon
      :variants           (products/current-taxon-variants data)
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
-     :redesigned?        (experiments/product-page-redesign? data)
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
      :variant            (products/selected-variant data)
