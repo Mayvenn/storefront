@@ -381,14 +381,14 @@ html { line-height: 1.2; }
 /* Custom btn-primary */
 
 .btn-primary:active {
-  box-shadow: 0 0 0 3px rgba(0,0,0,.375); /* override default from basscss: match :focus outline, instead of having an inset */
-}
-
-.btn-outline:active {
-  box-shadow: 0 0 0 3px rgba(0,0,0,.375); /* override default from basscss: match :focus outline, instead of having an inset */
+  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
 }
 
 /* Custom btn-outline */
+
+.btn-outline:active {
+  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
+}
 
 /* Custom btn-sizes */
 
