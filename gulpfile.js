@@ -6,7 +6,6 @@ var path = require('path');
 var argv = require('yargs').argv;
 var gzip = require('gulp-gzip');
 var jsonTransform = require('gulp-json-transform');
-var gutil = require('gulp-util');
 var merge = require('merge-stream');
 var gulpIgnore = require('gulp-ignore');
 var debug = require('gulp-debug');
