@@ -2,61 +2,68 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.keypaths :as keypaths]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.components.ui :as ui]))
 
 (defn display-sms [number]
   (->> number
        (re-find #"(\d{3})(\d{3})(\d{4})")
        rest
-       (string/join "-")))
+       (string/join "-")
+       (str "1-")))
 
-(defn help-component [data owner]
+(defn cell-border [& body]
+  (into [:.border.border-silver.rounded.px1.py2.flex.flex-column.justify-between.items-center
+         {:style {:height "134px"}}]
+        body))
+(defn cell-icon [icon-class width height]
+  [:.bg-center.bg-contain.bg-no-repeat.mb1
+   {:style {:height height :width width}
+    :class icon-class}])
+(def cell-text :.h1.light.dark-gray)
+(def cell-description :.h4.navy.medium)
+
+(defn help-component [{:keys [sms-number]} owner]
   (om/component
    (html
-    [:div.padded-container
-     [:h2.header-bar-heading.left-text "Customer Service"]
-     [:div#help-content
-      [:div#help-summary
-       [:div.hours-icon-container [:figure.hours-icon]]
-       [:p.spaced-help.hours "HOURS: Monday - Friday, 9-5 PST"]
-       [:p.spaced-help.shipment-schedule
-        "Orders placed before 10am PST ship that day"]]
-      [:h4.manage-account-header.no-top-space "Get In Touch"]
-      [:div.solid-line-divider]
-      [:div#help-methods
-       [:a.help-link {:href "http://help.mayvenn.com" :target "_blank"}
-        [:div.help-method-row
-         [:div.help-method-icon.faq]
-         [:div.help-method-details-container
-          [:div.help-method-details
-           [:p.help-method "Frequently Asked Questions"]
-           [:p.help-method-means.emphasized "Visit our FAQ and help center"]]]]]
-       [:div.solid-line-divider]
-       [:a.help-link {:href "tel://+18885627952"}
-        [:div.help-method-row
-         [:div.help-method-icon.call]
-         [:div.help-method-details-container
-          [:div.help-method-details
-           [:p.help-method "Call"]
-           [:p.help-method-means "1-888-562-7952"]]]]]
-       [:div.solid-line-divider]
-       (let [number (get-in data keypaths/sms-number)]
-         [:a.help-link (when number {:href (str "sms://+1" number)})
-          [:div.help-method-row
-           [:div.help-method-icon.sms]
-           [:div.help-method-details-container
-            [:div.help-method-details
-             [:p.help-method "Text"]
-             [:p.help-method-means
-              (if number
-                (display-sms number)
-                "Loading...")]]]]])
-       [:div.solid-line-divider]
-       [:a.help-link {:href "mailto:help@mayvenn.com"}
-        [:div.help-method-row
-         [:div.help-method-icon.email]
-         [:div.help-method-details-container
-          [:div.help-method-details
-           [:p.help-method "Email"]
-           [:p.help-method-means "help@mayvenn.com"]]]]]
-       [:div.solid-line-divider]]]])))
+    [:div
+     [:div.py4.bg-white.center
+      [:.h1.navy.mb2 "Get in touch"]
+      [:.h3.dark-gray.light "Have a problem?"]
+      [:.h3.dark-gray.light "Need advice on a style or product?"]
+      [:.h3.dark-gray.light "Here are a few ways to get a hold of us."]]
+
+     [:.bg-pure-white.center
+      [:.mx1
+       [:.border-bottom.border-width-2.border-dark-white.py2.line-height-4.mxp3
+        [:.h4.dark-black "Monday to Friday from 9am to 5pm PST"]
+        [:.h4.dark-black "Orders placed before 10am PST ship that day"]]]
+      [:.px1.py2
+       [:.col.col-6.pp3
+        [:a.navy {:href "http://help.mayvenn.com" :target "_blank"}
+         (cell-border
+          (cell-icon "img-faqs-icon" "44px" "52px")
+          [cell-text "FAQs"]
+          [cell-description "Visit our help center"])]]
+       [:.col.col-6.pp3
+        [:a.navy {:href "tel://+18885627952"}
+         (cell-border
+          (cell-icon "img-phone-icon" "45px" "52px")
+          [cell-text "Call"]
+          [cell-description "1-888-562-7952"])]]
+       [:.col.col-6.pp3
+        [:a.navy (when sms-number {:href (str "sms://+1" sms-number)})
+         (cell-border
+          (cell-icon "img-text-icon" "54px" "52px")
+          [cell-text "Text"]
+          [cell-description
+           (if sms-number
+             (display-sms sms-number)
+             "Loading...")])]]
+       [:.col.col-6.pp3
+        [:a.navy {:href "mailto:help@mayvenn.com"}
+         (cell-border
+          (cell-icon "img-email-icon" "49px" "52px")
+          [cell-text "Email"]
+          [cell-description "help@mayvenn.com"])]]]
+      [:.clearfix.mb4]]])))

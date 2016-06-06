@@ -7,7 +7,8 @@
             [clojure.string :as str]
             [sablono.core :refer-macros [html]]))
 
-;; TODO: when the old CSS is gone, perhaps this can go on body
+;; TODO: when the old CSS is gone, perhaps this can be refactored
+;;       note that some pages do not use this
 (defn container [& content]
   [:.bg-light-white.light-black.sans-serif
    (into [:.p2.m-auto] content)])
