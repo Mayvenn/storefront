@@ -180,9 +180,9 @@
     (when taxon
       (ui/container
        [:.clearfix.mxn2.md-mx0
-        [:.md-col.md-col-7.px2
+        [:.md-up-col.md-up-col-7.px2
          [:.to-md-hide (carousel carousel-images taxon)]]
-        [:.md-col.md-col-5.px2
+        [:.md-up-col.md-up-col-5.px2
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)

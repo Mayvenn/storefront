@@ -71,7 +71,7 @@
       [:.my2.h1 ui/spinner]
       [:.mx-auto.container {:data-test "bonuses-panel"}
        [:.clearfix.mb3
-        [:.sm-col.sm-col-8
+        [:.sm-up-col.sm-up-col-8
          (when award-amount
            [:div
             [:.center.px1.py2
@@ -108,7 +108,7 @@
                  (apply utils/route-to navigate-hair-message)
                  "Shop now " ui/rarr]]])])]
 
-        [:.sm-col-right.sm-col-4
+        [:.sm-up-col-right.sm-up-col-4
          (when (pos? lifetime-total)
            (show-lifetime-total lifetime-total))]]]))))
 

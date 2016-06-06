@@ -13,7 +13,7 @@
    (into [:.p2.m-auto] content)])
 
 (defn narrow-container [& content]
-  (apply container {:class [:md-col-8 :lg-col-6]} content))
+  (apply container {:class [:md-up-col-8 :lg-up-col-6]} content))
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"

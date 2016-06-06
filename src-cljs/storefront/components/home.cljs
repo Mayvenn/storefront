@@ -49,8 +49,8 @@
        [:.border.border-width-2.my3.py2.center.medium.green.border-green
         "Free Shipping + 30 Day Money Back Guarantee"]
 
-       [:.col-12.lg-col-6 [:.h3.center.black.mb1 "Pick your style"]]
-       [:.col.col-12.lg-col-6
+       [:.col-12.lg-up-col-6 [:.h3.center.black.mb1 "Pick your style"]]
+       [:.col.col-12.lg-up-col-6
         (om/build categories-component {:taxons taxons})
         [:.clearfix]]
        [:.col.col-6.to-lg-hide

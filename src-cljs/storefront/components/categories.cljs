@@ -15,7 +15,7 @@
     (utils/route-to events/navigate-category
                    {:taxon-slug slug})
     (when (<= index 5)
-      {:class "lg-col-4"}))
+      {:class "lg-up-col-4"}))
    [:.bg-no-repeat.bg-top.bg-cover.flex.items-center
     {:class (str "img-" slug (when (and (#{"straight"} slug)
                                         redesigned?)

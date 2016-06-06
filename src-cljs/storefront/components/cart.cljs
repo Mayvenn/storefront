@@ -40,14 +40,14 @@
       "Review your order"]
 
      [:.py2.md-flex.justify-between
-      [:.md-col-6
+      [:.md-up-col-6
        {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
                                                     delete-line-item-requests
                                                     redesigned?)]
-      [:.md-col-5
+      [:.md-up-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:.pt2.flex.items-center

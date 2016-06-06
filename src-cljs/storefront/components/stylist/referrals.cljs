@@ -116,18 +116,18 @@
       [:.my2.h1 ui/spinner]
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
-        [:.sm-col-right.sm-col-4
+        [:.sm-up-col-right.sm-up-col-4
          (when bonus-amount
            (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
-        [:.sm-col.sm-col-8
+        [:.sm-up-col.sm-up-col-8
          (when (seq referrals)
            [:div
             (for [referral referrals]
               (show-referral earning-amount referral))
             (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
          (when (zero? pages) empty-referrals)]
-        [:.sm-col-right.sm-col-4.clearfix
+        [:.sm-up-col-right.sm-up-col-4.clearfix
          (when (and (seq referrals) (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
 

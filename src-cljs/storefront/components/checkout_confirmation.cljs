@@ -35,11 +35,11 @@
      (om/build checkout-steps/component checkout-steps)
 
      [:.clearfix.mxn3
-      [:.md-col.md-col-6.px3
+      [:.md-up-col.md-up-col-6.px3
        [:.h2.left-align "Order Summary"]
        [:.mb2
         (summary/display-line-items (orders/product-items order) products redesigned?)]]
-      [:.md-col.md-col-6.px3
+      [:.md-up-col.md-up-col-6.px3
        (om/build checkout-delivery/component delivery)
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
