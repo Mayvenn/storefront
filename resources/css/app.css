@@ -541,6 +541,10 @@ html { line-height: 1.2; }
 .img-no-chat-icon { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
 .img-share-icon   { background-image: url('/images/icons/share.png'); }
+.img-faqs-icon    { background-image: url('/images/icons/faqs.svg'); }
+.img-phone-icon   { background-image: url('/images/icons/phone.svg'); }
+.img-text-icon    { background-image: url('/images/icons/text.svg'); }
+.img-email-icon   { background-image: url('/images/icons/email.svg'); }
 .img-spinner      { background-image: url('/images/spinner.svg'); }
 .img-left-arrow   {
     background-image: url('/images/carousel/arrow.svg');
