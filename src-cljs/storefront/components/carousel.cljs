@@ -32,8 +32,11 @@
   false)
 
 (defn index-of [coll item]
-  (ffirst (filter (comp #{item} second)
-                  (map-indexed vector coll))))
+  (->> coll
+       (map :id)
+       (map-indexed vector)
+       (filter (comp #{(:id item)} second))
+       ffirst))
 
 (defn swipe-component [{:keys [items continuous]} owner {:keys [starting-item dot-location]}]
   (reify
@@ -46,7 +49,8 @@
           :swiper         (js/Swipe. (om/get-ref owner "items")
                                      #js {:continuous (or continuous false)
                                           :startSlide index
-                                          :callback   (fn [i] (set-selected-item owner (get-in (om/get-state owner) [:items i])))})
+                                          :callback   (fn [i]
+                                                        (set-selected-item owner (get-in (om/get-state owner) [:items i])))})
           :selected-item starting-item})))
     om/IWillUnmount
     (will-unmount [this]
