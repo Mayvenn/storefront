@@ -86,4 +86,4 @@
        [:.bg-darken-bottom-2
         (om/build carousel/swipe-component {:items items}
                   {:react-key "stat-swiper"
-                   :opts {:start-index 1}})]]))))
+                   :opts {:starting-item (nth items 1)}})]]))))
