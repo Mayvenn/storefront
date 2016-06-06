@@ -51,11 +51,11 @@
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (asset-path "/css/app.css"))]
    [:body
-    [:div.sans-serif.lg-col-6.mx-auto.flex.flex-column.items-center
+    [:div.sans-serif.lg-up-col-6.mx-auto.flex.flex-column.items-center
      [:img.py2 {:src (asset-path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (asset-path "/images/not_found_head.png")
                           :style "max-width: 80%"}]
      [:div.h2.mt3.mb2.center "We can't seem to find the page you're looking for."]
-     [:a.mx-auto.btn.btn-large.btn-primary.bg-green.col-10
+     [:a.mx-auto.btn.btn-primary.col-10
       {:href "/"}
       [:div.h3.p1.letter-spacing-1 "Return to Homepage"]]]]))

@@ -2,17 +2,7 @@
  * styles, so disabling for now.
 /* @import 'basscss-basic'; */
 
-/* All common modules */
-@import 'basscss';
-
-/* Optional Modules (not included in Basscss by default) */
-
-@import 'basscss-addons/modules/responsive-margin';
-
-@import 'basscss-addons/modules/responsive-padding';
-
-/* Would like to use this, but .input interferes with existing forms */
-/* @import 'basscss-addons/modules/forms'; */
+/* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
 @import 'basscss-addons/modules/btn';
 
@@ -21,6 +11,19 @@
 @import 'basscss-addons/modules/btn-outline';
 
 @import 'basscss-addons/modules/btn-sizes';
+
+/* Would like to use this, but .input interferes with existing forms */
+/* @import 'basscss-addons/modules/forms'; */
+
+/* Basscss Core */
+
+@import 'basscss';
+
+/* Optional Modules (extensions to Basscss Core) */
+
+@import 'basscss-addons/modules/responsive-margin';
+
+@import 'basscss-addons/modules/responsive-padding';
 
 @import 'basscss-addons/modules/colors';
 
@@ -51,13 +54,13 @@
 
 /* From basscss v7 */
 
-/* implemented with flex in v8? */
-/* @import 'basscss-ui-utility-groups'; */
+@import 'basscss-ui-utility-groups';
 
 /* Custom type-scale */
 
 /* We want h00 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in ems. 5.25em is 63px... close enough. */
+
 
 html { line-height: 1.2; }
 
@@ -75,7 +78,7 @@ html { line-height: 1.2; }
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500; }
-.light { font-weight: 300; }
+.light       { font-weight: 300; }
 
 .titleize { text-transform: capitalize; }
 .shout { text-transform: uppercase; }
@@ -127,26 +130,14 @@ html { line-height: 1.2; }
 .container { max-width: 640px; }
 
 .home-container { width: 320px; }
-@media (--breakpoint-md) {
-    .home-container { width: 427px; }
-}
-@media (--breakpoint-lg) {
-    .home-container { width: 768px; }
-}
-@media (--breakpoint-xl) {
-    .home-container { width: 100%; }
-}
+@media (--breakpoint-md) { .home-container { width: 427px; } }
+@media (--breakpoint-lg) { .home-container { width: 768px; } }
+@media (--breakpoint-xl) { .home-container { width: 100%; } }
 
 .banner-container { height: 216px; }
-@media (--breakpoint-md) {
-    .banner-container { height: 288px; }
-}
-@media (--breakpoint-lg) {
-    .banner-container { height: 326px; }
-}
-@media (--breakpoint-xl) {
-    .banner-container { height: 432px; }
-}
+@media (--breakpoint-md) { .banner-container { height: 288px; } }
+@media (--breakpoint-lg) { .banner-container { height: 326px; } }
+@media (--breakpoint-xl) { .banner-container { height: 432px; } }
 
 /* Custom align */
 
@@ -206,6 +197,86 @@ html { line-height: 1.2; }
 .pp6, .pyp6 { padding-top: 6px; padding-bottom: 6px; }
 
 /* Custom grid */
+
+/* TODO: stop depending on basscss/grid (which has both non-responsive and
+   responsive versions, but the responsive versions have confusing names) and
+   only use basscss/lib/grid (non-responsive). We define better responsive names
+   here. */
+
+@media (--breakpoint-sm-up) {
+  .sm-up-col {
+    float: left;
+    box-sizing: border-box;
+  }
+
+  .sm-up-col-right {
+    float: right;
+    box-sizing: border-box;
+  }
+
+  .sm-up-col-1  { width: calc(1/12 * 100%); }
+  .sm-up-col-2  { width: calc(2/12 * 100%); }
+  .sm-up-col-3  { width: calc(3/12 * 100%); }
+  .sm-up-col-4  { width: calc(4/12 * 100%); }
+  .sm-up-col-5  { width: calc(5/12 * 100%); }
+  .sm-up-col-6  { width: calc(6/12 * 100%); }
+  .sm-up-col-7  { width: calc(7/12 * 100%); }
+  .sm-up-col-8  { width: calc(8/12 * 100%); }
+  .sm-up-col-9  { width: calc(9/12 * 100%); }
+  .sm-up-col-10 { width: calc(10/12 * 100%); }
+  .sm-up-col-11 { width: calc(11/12 * 100%); }
+  .sm-up-col-12 { width: 100%; }
+}
+
+@media (--breakpoint-md-up) {
+  .md-up-col {
+    float: left;
+    box-sizing: border-box;
+  }
+
+  .md-up-col-right {
+    float: right;
+    box-sizing: border-box;
+  }
+
+  .md-up-col-1  { width: calc(1/12 * 100%); }
+  .md-up-col-2  { width: calc(2/12 * 100%); }
+  .md-up-col-3  { width: calc(3/12 * 100%); }
+  .md-up-col-4  { width: calc(4/12 * 100%); }
+  .md-up-col-5  { width: calc(5/12 * 100%); }
+  .md-up-col-6  { width: calc(6/12 * 100%); }
+  .md-up-col-7  { width: calc(7/12 * 100%); }
+  .md-up-col-8  { width: calc(8/12 * 100%); }
+  .md-up-col-9  { width: calc(9/12 * 100%); }
+  .md-up-col-10 { width: calc(10/12 * 100%); }
+  .md-up-col-11 { width: calc(11/12 * 100%); }
+  .md-up-col-12 { width: 100%; }
+}
+
+@media (--breakpoint-lg-up) {
+  .lg-up-col {
+    float: left;
+    box-sizing: border-box;
+  }
+
+  .lg-up-col-right {
+    float: right;
+    box-sizing: border-box;
+  }
+
+  .lg-up-col-1  { width: calc(1/12 * 100%); }
+  .lg-up-col-2  { width: calc(2/12 * 100%); }
+  .lg-up-col-3  { width: calc(3/12 * 100%); }
+  .lg-up-col-4  { width: calc(4/12 * 100%); }
+  .lg-up-col-5  { width: calc(5/12 * 100%); }
+  .lg-up-col-6  { width: calc(6/12 * 100%); }
+  .lg-up-col-7  { width: calc(7/12 * 100%); }
+  .lg-up-col-8  { width: calc(8/12 * 100%); }
+  .lg-up-col-9  { width: calc(9/12 * 100%); }
+  .lg-up-col-10 { width: calc(10/12 * 100%); }
+  .lg-up-col-11 { width: calc(11/12 * 100%); }
+  .lg-up-col-12 { width: 100%; }
+}
 
 /* Custom flexbox */
 
@@ -276,16 +347,15 @@ html { line-height: 1.2; }
 .border-width-bottom-0 { border-bottom-width: 0; }
 
 .capped { border-radius: 1000px; }
-.rounded-1 { border-radius: 4px; }
-.rounded-2 { border-radius: 8px; }
-.rounded-top-1, .rounded-left-1, .rounded-top-left-1 { border-top-left-radius: 4px; }
-.rounded-top-1, .rounded-right-1, .rounded-top-right-1 { border-top-right-radius: 4px; }
-.rounded-bottom-1, .rounded-left-1, .rounded-bottom-left-1 { border-bottom-left-radius: 4px; }
-.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: 4px; }
-.rounded-top-2, .rounded-left-2, .rounded-top-left-2 { border-top-left-radius: 8px; }
-.rounded-top-2, .rounded-right-2, .rounded-top-right-2 { border-top-right-radius: 8px; }
-.rounded-bottom-2, .rounded-left-2, .rounded-bottom-left-2 { border-bottom-left-radius: 8px; }
-.rounded-bottom-2, .rounded-right-2, .rounded-bottom-right-2 { border-bottom-right-radius: 8px; }
+.rounded-top-left     { border-top-left-radius:     var(--border-radius); }
+.rounded-top-right    { border-top-right-radius:    var(--border-radius); }
+.rounded-bottom-left  { border-bottom-left-radius:  var(--border-radius); }
+.rounded-bottom-right { border-bottom-right-radius: var(--border-radius); }
+.rounded-1 { border-radius: var(--border-radius-1); }
+.rounded-top-1,    .rounded-left-1,  .rounded-top-left-1     { border-top-left-radius:     var(--border-radius-1); }
+.rounded-top-1,    .rounded-right-1, .rounded-top-right-1    { border-top-right-radius:    var(--border-radius-1); }
+.rounded-bottom-1, .rounded-left-1,  .rounded-bottom-left-1  { border-bottom-left-radius:  var(--border-radius-1); }
+.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
 
 
 /* Custom responsive hide */
@@ -304,50 +374,21 @@ html { line-height: 1.2; }
                           to-lg   |   lg-up
 
 */
-@media (--breakpoint-to-sm) {
-  .to-sm-hide { display: none !important }
-}
+@media (--breakpoint-to-sm) { .to-sm-hide { display: none !important } }
+@media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
+@media (--breakpoint-to-lg) { .to-lg-hide { display: none !important } }
+@media (--breakpoint-sm-up) { .sm-up-hide { display: none !important } }
+@media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
+@media (--breakpoint-lg-up) { .lg-up-hide { display: none !important } }
+@media (--breakpoint-sm-md) { .sm-md-hide { display: none !important } }
+@media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
 
-@media (--breakpoint-to-md) {
-  .to-md-hide { display: none !important }
-}
-
-@media (--breakpoint-to-lg) {
-  .to-lg-hide { display: none !important }
-}
-
-@media (--breakpoint-sm) {
-  .sm-up-hide { display: none !important }
-}
-
-@media (--breakpoint-md-up) {
-  .md-up-hide { display: none !important }
-}
-
-@media (--breakpoint-lg) {
-  .lg-up-hide { display: none !important }
-}
-
-@media (--breakpoint-sm-md) {
-  .sm-md-hide { display: none !important }
-}
-
-@media (--breakpoint-md-lg) {
-  .md-lg-hide { display: none !important }
-}
 
 /* Custom responsive-margin */
 
 /* Custom responsive-padding */
 
 /* Custom forms */
-
-input[type=button].reset, input[type=submit].reset {
-  -webkit-appearance: none;
-  display: inline-block;
-  outline: none;
-  line-height: 1.2;
-}
 
 .floating-label .floated-label {
   position: relative;
@@ -375,24 +416,23 @@ input[type=button].reset, input[type=submit].reset {
 
 /* Custom btn */
 
-.btn { text-align: center; }
+.btn {
+  text-align: center;
+  border-radius: var(--button-border-radius);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
 
 /* Custom btn-primary */
 
-.btn-primary {
-  border: none;
-  border-radius: 4px;
-  background-image: none;
-  text-shadow: none;
-  box-shadow: none;
-}
-
 .btn-primary:active {
-  box-shadow: none; /* override default from basscss */
-  background-image: none;
+  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
 }
 
 /* Custom btn-outline */
+
+.btn-outline:active {
+  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
+}
 
 /* Custom btn-sizes */
 
@@ -407,14 +447,11 @@ input[type=button].reset, input[type=submit].reset {
 .light-black  { color: var(--light-black); }
 .dark-black   { color: var(--dark-black); }
 
-
 /* Custom background-sizes */
 
 .bg-full { background-size: 100%; }
 
 /* Custom background-colors */
-
-.bg-top-white { background-image: var(--top-white); }
 
 .bg-darken-bottom-1 { background-image: var(--darken-bottom-1); }
 .bg-darken-bottom-2 { background-image: var(--darken-bottom-2); }
@@ -462,6 +499,10 @@ input[type=button].reset, input[type=submit].reset {
 .stroke-green        { stroke: var(--green); }
 .stroke-navy         { stroke: var(--navy); }
 
+.fill-teal  { fill: var(--teal); }
+.fill-green { fill: var(--green); }
+.fill-navy  { fill: var(--navy); }
+
 .stroke-pure-white   { stroke: var(--pure-white); }
 .stroke-white        { stroke: var(--white); }
 .stroke-light-white  { stroke: var(--light-white); }
@@ -499,6 +540,7 @@ input[type=button].reset, input[type=submit].reset {
 .img-receipt-icon { background-image: url('/images/icons/receipt.png'); }
 .img-no-chat-icon { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon   { background-image: url('/images/icons/coins.png'); }
+.img-share-icon   { background-image: url('/images/icons/share.png'); }
 .img-spinner      { background-image: url('/images/spinner.svg'); }
 .img-left-arrow   {
     background-image: url('/images/carousel/arrow.svg');
@@ -542,10 +584,6 @@ input[type=button].reset, input[type=submit].reset {
 .img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
 .img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
 
-.fill-teal { fill: var(--teal); }
-.fill-navy { fill: var(--navy); }
-.fill-black { fill: var(--black); }
-
 /* Custom interaction */
 
 .pointer { cursor: pointer; }
@@ -577,11 +615,11 @@ input[type=button].reset, input[type=submit].reset {
 @custom-media --breakpoint-xl (min-width: 1024px);
 
 @custom-media --breakpoint-to-sm (max-width: 479px);
-/* sm-up is the same as sm */
+@custom-media --breakpoint-sm-up (min-width: 480px); /* sm-up is the same as sm */
 @custom-media --breakpoint-to-md (max-width: 639px);
 @custom-media --breakpoint-md-up (min-width: 640px);
 @custom-media --breakpoint-to-lg (max-width: 767px);
-/* lg-up is the same as lg */
+@custom-media --breakpoint-lg-up (min-width: 768px); /* lg-up is the same as lg */
 
 @custom-media --breakpoint-sm-md (min-width: 480px) and (max-width: 639px);
 @custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
@@ -603,10 +641,13 @@ input[type=button].reset, input[type=submit].reset {
     --heading-font-family: var(--sans-serif);
 
     --button-font-weight: inherit;
-    --button-background-color: var(--teal);
+    --button-line-height: 1.2;
+    --button-background-color: var(--green);
+    --button-border-radius: var(--border-radius);
     --button-big-padding-y: .75rem;
 
-    --border-radius: 2px;
+    --border-radius: 4px;
+    --border-radius-1: 8px;
 
     --teal:        #36b4d4;
     --green:       #40CBAC;
@@ -630,8 +671,6 @@ input[type=button].reset, input[type=submit].reset {
     --paypal-blue:   #49bbf0;
 
     --inset-top-2: 0 -1px 0 var(--darken-2);
-
-    --top-white: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--white));
 
     --darken-bottom-1: linear-gradient(0deg, var(--darken-1), rgba(255, 255, 255, 0));
     --darken-bottom-2: linear-gradient(0deg, var(--darken-2), rgba(255, 255, 255, 0));

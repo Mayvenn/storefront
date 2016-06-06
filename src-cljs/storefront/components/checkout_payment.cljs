@@ -35,7 +35,7 @@
                      {:max-length    19
                       :data-test     "payment-form-number"
                       :auto-complete "off"
-                      :class         "cardNumber rounded-1"
+                      :class         "cardNumber rounded"
                       :type          "tel"
                       :required      true})
       [:.flex.col-12
@@ -45,7 +45,7 @@
                                {:max-length    9
                                 :data-test     "payment-form-expiry"
                                 :auto-complete "off"
-                                :class         "cardExpiry rounded-left-1"
+                                :class         "cardExpiry rounded-left"
                                 :type          "tel"
                                 :required      true})]
        [:.col-6 (ui/text-field "Security Code"
@@ -54,7 +54,7 @@
                                {:max-length    4
                                 :auto-complete "off"
                                 :data-test     "payment-form-code"
-                                :class         "cardCode rounded-right-1 border-width-left-0"
+                                :class         "cardCode rounded-right border-width-left-0"
                                 :type          "tel"
                                 :required      true})]]]])))
 

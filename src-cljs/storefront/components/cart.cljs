@@ -4,13 +4,15 @@
             [storefront.accessors.navigation :as navigation]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
+            [storefront.accessors.stylists :as stylists]
             [storefront.components.order-summary :as order-summary]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn- pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
@@ -23,6 +25,8 @@
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
+                              redesigned?
+                              share-carts?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
@@ -36,21 +40,22 @@
       "Review your order"]
 
      [:.py2.md-flex.justify-between
-      [:.md-col-6
+      [:.md-up-col-6
        {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
-                                                    delete-line-item-requests)]
-      [:.md-col-5
+                                                    delete-line-item-requests
+                                                    redesigned?)]
+      [:.md-up-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:.pt2.flex.items-center
          [:.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
          [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
-                                                  events/control-cart-update-coupon
-                                                  {:disabled? updating?
+                                                  {:on-click      (utils/send-event-callback events/control-cart-update-coupon)
+                                                   :disabled?     updating?
                                                    :show-spinner? applying-coupon?})]]]
 
        (order-summary/display-order-summary order)
@@ -61,15 +66,28 @@
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
        [:div.h4.gray.center.py2 "OR"]
-       [:div.pb4 (ui/button
+       [:div.pb2 (ui/button
                   [:.col-12.flex.items-center.justify-center
                    [:.right-align.mr1 "Check out with"]
                    [:.h2.medium.sans-serif.italic "PayPal™"]]
-                  events/control-checkout-cart-paypal-setup
-                  {:show-spinner? redirecting-to-paypal?
-                   :disabled? updating?
-                   :color "bg-paypal-blue"
-                   :data-test "paypal-checkout"})]]]))))
+                  {:on-click      (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                   :show-spinner? redirecting-to-paypal?
+                   :disabled?     updating?
+                   :color         "bg-paypal-blue"
+                   :data-test     "paypal-checkout"})]
+
+       (when share-carts?
+         [:div.border-top.border-bottom.border-light-silver.py2
+          (ui/button [:.flex.items-center.justify-center
+                      [:.img-share-icon.bg-center.bg-contain.mr2
+                       {:style {:width "24px"
+                                :height "18px"}}]
+                      "Share your bag"]
+                     {:btn-type "btn-outline"
+                      :color "bg-white"
+                      :border "border-navy"
+                      :text-color "navy"})
+          [:.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
@@ -87,7 +105,7 @@
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/button "Shop Now" [] (apply utils/route-to shop-now-nav-message))))))
+     (ui/button "Shop Now" (apply utils/route-to shop-now-nav-message))))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -113,6 +131,8 @@
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
+     :redesigned?               (experiments/product-page-redesign? data)
+     :share-carts?              (and (experiments/share-carts? data) (stylists/own-store? data))
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 

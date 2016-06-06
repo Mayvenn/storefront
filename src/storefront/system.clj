@@ -2,8 +2,9 @@
   (:require [taoensso.timbre :as timbre]
             [com.stuartsierra.component :as component]
             [tocsin.core :as tocsin]
-            [storefront.config :as config]
             [ring.component.jetty :refer [jetty-server]]
+            [storefront.jetty :as jetty]
+            [storefront.config :as config]
             [storefront.handler :refer [create-handler]]))
 
 (defrecord AppHandler [logger exception-handler storeback environment prerender-token]
@@ -30,7 +31,8 @@
   (component/system-map
    :logger (logger (config :logging))
    :app-handler (map->AppHandler (select-keys config [:storeback :environment :prerender-token]))
-   :embedded-server (jetty-server (config :server-opts))
+   :embedded-server (jetty-server (merge (:server-opts config)
+                                         {:configurator jetty/configurator}))
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (defn dependency-map []

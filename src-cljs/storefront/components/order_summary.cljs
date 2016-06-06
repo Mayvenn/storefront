@@ -1,7 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.components.formatters :refer [as-money as-money-or-free]]
+            [storefront.components.formatters :refer [as-money as-money-without-cents as-money-or-free]]
             [storefront.components.ui :as ui]
             [storefront.components.utils :as utils]
             [storefront.events :as events]))
@@ -55,11 +55,12 @@
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id product-name variant-attrs unit-price] :as line-item}
-                                              thumbnail
-                                              quantity-line]
+                                   thumbnail
+                                   quantity-line
+                                   redesigned?]
   [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
    [:a.left.mr1
-    [:img.border.border-light-silver.rounded-1
+    [:img.border.border-light-silver.rounded
      {:src   thumbnail
       :alt   product-name
       :style {:width  "7.33em"
@@ -69,17 +70,21 @@
     [:.mt1.h5.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div "Price: " (as-money unit-price)]
+     [:div "Price: "
+      (if redesigned?
+        (as-money-without-cents unit-price)
+        (as-money unit-price))]
      quantity-line]]])
 
-(defn display-line-items [line-items products]
+(defn display-line-items [line-items products redesigned?]
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
      (products/thumbnail-url products product-id)
-     [:div "Quantity: " quantity])))
+     [:div "Quantity: " quantity]
+     redesigned?)))
 
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
+(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests redesigned?]
   (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
     (let [updating? (get update-line-item-requests variant-id)
           removing? (get delete-line-item-requests variant-id)]
@@ -96,4 +101,5 @@
                      (utils/send-event-callback events/control-cart-line-item-dec
                                                 {:variant-id variant-id})
                      (utils/send-event-callback events/control-cart-line-item-inc
-                                                {:variant-id variant-id}))]]))))
+                                                {:variant-id variant-id}))]]
+       redesigned?))))

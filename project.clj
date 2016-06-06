@@ -13,6 +13,7 @@
                  [ring/ring-json "0.3.1"]
                  [ring/ring-defaults "0.1.4"]
                  [ring-jetty-component "0.3.1"]
+                 [org.eclipse.jetty/jetty-server "9.3.9.v20160517"]
                  [ring-logging "0.2.1"]
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]

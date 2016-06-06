@@ -3,7 +3,8 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.components.utils :as utils]))
 
 (def ^:private order-complete-check
   (html (svg/adjustable-check {:class "stroke-navy" :width "80px" :height "80px"})))
@@ -24,7 +25,7 @@
         [:p.my2.gray
          "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
 
-     (ui/button "Return to Homepage" events/navigate-home)))))
+     (ui/button "Return to Homepage" (utils/route-to events/navigate-home))))))
 
 (defn built-component [data _]
   (om/component (html (om/build component {}))))

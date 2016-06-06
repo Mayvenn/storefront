@@ -2,8 +2,11 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]))
 
+(defn selected-variants [data]
+  (get-in data keypaths/bundle-builder-selected-variants))
+
 (defn selected-variant [data]
-  (let [variants (get-in data keypaths/bundle-builder-selected-variants)]
+  (let [variants (selected-variants data)]
     (when (= 1 (count variants))
       (first variants))))
 

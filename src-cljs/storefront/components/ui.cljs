@@ -13,7 +13,7 @@
    (into [:.p2.m-auto] content)])
 
 (defn narrow-container [& content]
-  (apply container {:class [:md-col-8 :lg-col-6]} content))
+  (apply container {:class [:md-up-col-8 :lg-up-col-6]} content))
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"
@@ -22,26 +22,27 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  ([content event]
-   (button content event {}))
-  ([content event {:keys [show-spinner? disabled? color on-click data-test] :or {color "bg-green"}}]
-   [:.reset.border.btn-large.btn-primary.col-12.h3.px1.py2.letter-spacing-1
-    {:class (conj [color]
-                  (when disabled? "is-disabled"))
-     :data-test data-test
-     :on-click (or on-click
-                   (if (or disabled? show-spinner?)
-                     utils/noop-callback
-                     (utils/send-event-callback event)))}
-    [:.flex.items-center.justify-center
-     (if show-spinner? spinner content)]]))
+  [content {:keys [show-spinner? disabled? color btn-type border text-color on-click data-test]
+            :or {color "bg-green"
+                 text-color ""
+                 btn-type "btn-primary"
+                 on-click utils/noop-callback}}]
+  [:.btn.col-12.h3.px1.py2.letter-spacing-1
+   {:class (conj [color text-color btn-type border]
+                 (when disabled? "is-disabled"))
+    :data-test data-test
+    :on-click (if (or disabled? show-spinner?)
+                utils/noop-callback
+                on-click)}
+   [:.flex.items-center.justify-center
+    (if show-spinner? spinner content)]])
 
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
-     (button nil nil {:show-spinner? true})
-     [:input.reset.border.btn-large.btn-primary.bg-green.col-12.h3.py2.px1.letter-spacing-1
+     (button nil {:show-spinner? true})
+     [:input.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
       {:type "submit"
        :data-test data-test
        :value title
@@ -61,9 +62,9 @@
     [:label.floated-label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
-   [:input.col-12.h3.border.border-width-1.border-light-silver.glow.floating-input
+   [:input.col-12.h3.border.border-light-silver.glow.floating-input
     (cond-> (merge {:key label
-                    :class "rounded-1"
+                    :class "rounded"
                     :placeholder label}
                    (utils/change-text keypath value)
                    input-attributes)
@@ -89,7 +90,7 @@
      (for [{name :name val :abbr} options]
        [:option {:key val :value val}
         (str name)])]]
-   [:.bg-pure-white.border.border-width-1.border-light-silver.rounded-1.p1
+   [:.bg-pure-white.border.border-light-silver.rounded.p1
     [:label.col-12.h6.navy.relative
      (merge
       {:for (name (:id select-attributes))}
@@ -136,9 +137,9 @@
    (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
-  [:.border.rounded-1
+  [:.border.rounded
    {:class (str "bg-" color " border-" color)
     :data-test data-test}
-   [:.bg-lighten-4.rounded-1
+   [:.bg-lighten-4.rounded
     contents]])
 

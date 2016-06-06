@@ -199,7 +199,7 @@
         [:.my2.h1 ui/spinner]
         [:.mx-auto.container {:data-test "commissions-panel"}
          [:.clearfix
-          [:.sm-col.sm-col-9
+          [:.sm-up-col.sm-up-col-9
            (when-let [history (seq history)]
              [:.mb3
               (for [commission history]
@@ -207,7 +207,7 @@
               (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
            (when (zero? pages) empty-commissions)]
 
-          [:.sm-col.sm-col-3
+          [:.sm-up-col.sm-up-col-3
            (when rate (show-commission-rate rate))]]])))))
 
 (defn stylist-commissions-query [data]

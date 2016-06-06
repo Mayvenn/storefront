@@ -15,11 +15,12 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.messages :as messages]
-            [storefront.components.carousel :as carousel]))
+            [storefront.components.carousel :as carousel]
+            [storefront.hooks.experiments :as experiments]))
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.border.border-silver.p1.block.center.flex.flex-column.justify-center.rounded-1.light
+  [:label.btn.border-silver.p1.flex.flex-column.justify-center.light
    {:style {:width "100%"
             :height "100%"}
     :class (cond
@@ -91,10 +92,10 @@
                                           {:path keypaths/browse-variant-quantity})
                (utils/send-event-callback events/control-counter-inc
                                           {:path keypaths/browse-variant-quantity}))
-   (as-money (:price variant))))
+   (as-money-without-cents (:price variant))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
-  [:.border.border-light-gray.p2.rounded-1
+  [:.border.border-light-gray.p2.rounded
    [:.h3.medium.navy.shout "Description"]
    [:.clearfix.my2
     (let [attrs (->> [["Color" colors]
@@ -112,13 +113,14 @@
 (def checkout-button
   (html
    [:.cart-button ; for scrolling
-    (ui/button "Check out" events/navigate-cart)]))
+    (ui/button "Check out" (utils/route-to events/navigate-cart))]))
 
 (defn add-to-bag-button [adding-to-bag?]
   (ui/button
    "Add to bag"
-   events/control-build-add-to-bag
-   {:show-spinner? adding-to-bag? :color "bg-navy"}))
+   {:on-click      (utils/send-event-callback events/control-build-add-to-bag)
+    :show-spinner? adding-to-bag?
+    :color         "bg-navy"}))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -127,10 +129,10 @@
    {:style {:background-image (css-url image)
             :height "31rem"}}])
 
-(defn carousel [{:keys [images slug]}]
+(defn carousel [images {:keys [slug]}]
   (let [items (->> images
                    (map-indexed (fn [idx image]
-                                  {:id   idx
+                                  {:id   (.substring image (max 0 (- (.-length image) 50)))
                                    :body (carousel-image image)}))
                    vec)]
     ;; The mxn2 pairs with the p2 of the ui/container, to make the carousel full
@@ -140,7 +142,7 @@
      (om/build carousel/swipe-component
                {:items      items
                 :continuous true}
-               {:react-key (str "category-swiper-" slug)
+               {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))
                 :opts      {:dot-location :left}})]))
 
 (defn taxon-title [taxon]
@@ -170,6 +172,7 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
+                         carousel-images
                          bagged-variants]}
                  owner]
   (om/component
@@ -177,13 +180,13 @@
     (when taxon
       (ui/container
        [:.clearfix.mxn2
-        [:.md-col.md-col-7.px2
-         [:.to-md-hide (carousel taxon)]]
-        [:.md-col.md-col-5.px2
+        [:.md-up-col.md-up-col-7.px2
+         [:.to-md-hide (carousel carousel-images taxon)]]
+        [:.md-up-col.md-up-col-5.px2
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)
-          [:.md-up-hide.my2 (carousel taxon)]
+          [:.md-up-hide.my2 (carousel carousel-images taxon)]
           (when-not fetching-variants?
             (starting-at variants))]
          (if fetching-variants?
@@ -209,6 +212,13 @@
          (taxon-description (:description taxon))]]
        (om/build reviews/reviews-component reviews))))))
 
+(defn images-from-variants [data]
+  (let [taxon (taxons/current-taxon data)
+        variants (products/selected-variants data)]
+    (if (and (#{"blonde" "closures" "frontals"} (:name taxon)) (seq variants))
+      (vec (set (map #(get-in % [:images 0 :large_url]) variants)))
+      (:images taxon))))
+
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
@@ -220,7 +230,8 @@
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)}))
+     :reviews            (reviews/query data)
+     :carousel-images    (images-from-variants data)}))
 
 (defn built-component [data]
   (om/build component (query data)))

@@ -44,7 +44,7 @@
                                :name      "shipping-first-name"
                                :data-test "shipping-first-name"
                                :id        "shipping-first-name"
-                               :class     "rounded-left-1"
+                               :class     "rounded-left"
                                :required  true})]
 
       [:.col-6 (ui/text-field "Last Name"
@@ -54,7 +54,7 @@
                                :name      "shipping-last-name"
                                :id        "shipping-last-name"
                                :data-test "shipping-last-name"
-                               :class     "rounded-right-1 border-width-left-0"
+                               :class     "rounded-right border-width-left-0"
                                :required  true})]]
 
      (when guest?
@@ -92,7 +92,7 @@
                                  {:type      "text"
                                   :name      "shipping-address2"
                                   :data-test "shipping-address2"
-                                  :class     "rounded-left-1"
+                                  :class     "rounded-left"
                                   :id        "shipping-address2"})]
          [:.col-6 (ui/text-field "Zip Code"
                                  keypaths/checkout-shipping-address-zip
@@ -101,7 +101,7 @@
                                   :name       "shipping-zip"
                                   :id         "shipping-zip"
                                   :data-test  "shipping-zip"
-                                  :class      "rounded-right-1 border-width-left-0"
+                                  :class      "rounded-right border-width-left-0"
                                   :required   true
                                   :max-length 5
                                   :min-length 5
@@ -154,7 +154,7 @@
                           :name      "billing-first-name"
                           :id        "billing-first-name"
                           :data-test "billing-first-name"
-                          :class     "rounded-left-1"
+                          :class     "rounded-left"
                           :required  true})]
 
          [:.col-6
@@ -165,7 +165,7 @@
                           :name      "billing-last-name"
                           :id        "billing-last-name"
                           :data-test "billing-last-name"
-                          :class     "rounded-right-1 border-width-left-0"
+                          :class     "rounded-right border-width-left-0"
                           :required  true})]]
 
         (ui/text-field "Mobile Phone"
@@ -192,7 +192,7 @@
                                     (:address2 billing-address)
                                     {:type      "text"
                                      :name      "billing-address2"
-                                     :class     "rounded-left-1"
+                                     :class     "rounded-left"
                                      :id        "billing-address2"
                                      :data-test "billing-address2" })]
             [:.col-6 (ui/text-field "Zip Code"
@@ -202,7 +202,7 @@
                                      :name       "billing-zip"
                                      :id         "billing-zip"
                                      :data-test  "billing-zip"
-                                     :class      "rounded-right-1 border-width-left-0"
+                                     :class      "rounded-right border-width-left-0"
                                      :required   true
                                      :max-length 5
                                      :min-length 5

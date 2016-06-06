@@ -89,11 +89,11 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.muted.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary.bg-green {:href mailto :target "_top"} "Refer"]]]
+      [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary {:href mailto :target "_top"} "Refer"]]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.bg-green.btn-big {:href mailto :target "_top"} "Refer"]]
+      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big {:href mailto :target "_top"} "Refer"]]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
 (def empty-referrals
@@ -116,18 +116,18 @@
       [:.my2.h1 ui/spinner]
       [:.mx-auto.container {:data-test "referrals-panel"}
        [:.clearfix.mb3
-        [:.sm-col-right.sm-col-4
+        [:.sm-up-col-right.sm-up-col-4
          (when bonus-amount
            (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
-        [:.sm-col.sm-col-8
+        [:.sm-up-col.sm-up-col-8
          (when (seq referrals)
            [:div
             (for [referral referrals]
               (show-referral earning-amount referral))
             (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
          (when (zero? pages) empty-referrals)]
-        [:.sm-col-right.sm-col-4.clearfix
+        [:.sm-up-col-right.sm-up-col-4.clearfix
          (when (and (seq referrals) (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
 
