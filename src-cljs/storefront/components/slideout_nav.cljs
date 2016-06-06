@@ -184,7 +184,7 @@
          [:.fixed.overlay.bg-darken-4.z3
           ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
           {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-2
+         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
           {:style {:max-height "100%"}}
           [section-outer-darker menu-x [:.p2 logo]]
           (cond

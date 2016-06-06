@@ -54,7 +54,7 @@
 
 /* From basscss v7 */
 
-/* @import 'basscss-ui-utility-groups'; */
+@import 'basscss-ui-utility-groups';
 
 /* Custom type-scale */
 
@@ -267,16 +267,15 @@ html { line-height: 1.2; }
 .border-width-bottom-0 { border-bottom-width: 0; }
 
 .capped { border-radius: 1000px; }
+.rounded-top-left     { border-top-left-radius:     var(--border-radius); }
+.rounded-top-right    { border-top-right-radius:    var(--border-radius); }
+.rounded-bottom-left  { border-bottom-left-radius:  var(--border-radius); }
+.rounded-bottom-right { border-bottom-right-radius: var(--border-radius); }
 .rounded-1 { border-radius: var(--border-radius-1); }
-.rounded-2 { border-radius: var(--border-radius-2); }
 .rounded-top-1,    .rounded-left-1,  .rounded-top-left-1     { border-top-left-radius:     var(--border-radius-1); }
 .rounded-top-1,    .rounded-right-1, .rounded-top-right-1    { border-top-right-radius:    var(--border-radius-1); }
 .rounded-bottom-1, .rounded-left-1,  .rounded-bottom-left-1  { border-bottom-left-radius:  var(--border-radius-1); }
 .rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
-.rounded-top-2,    .rounded-left-2,  .rounded-top-left-2     { border-top-left-radius:     var(--border-radius-2); }
-.rounded-top-2,    .rounded-right-2, .rounded-top-right-2    { border-top-right-radius:    var(--border-radius-2); }
-.rounded-bottom-2, .rounded-left-2,  .rounded-bottom-left-2  { border-bottom-left-radius:  var(--border-radius-2); }
-.rounded-bottom-2, .rounded-right-2, .rounded-bottom-right-2 { border-bottom-right-radius: var(--border-radius-2); }
 
 
 /* Custom responsive hide */
@@ -586,12 +585,11 @@ html { line-height: 1.2; }
     --button-font-weight: inherit;
     --button-line-height: 1.2;
     --button-background-color: var(--green);
-    --button-border-radius: var(--border-radius-1);
+    --button-border-radius: var(--border-radius);
     --button-big-padding-y: .75rem;
 
-    --border-radius: 2px;
-    --border-radius-1: 4px;
-    --border-radius-2: 8px;
+    --border-radius: 4px;
+    --border-radius-1: 8px;
 
     --teal:        #36b4d4;
     --green:       #40CBAC;

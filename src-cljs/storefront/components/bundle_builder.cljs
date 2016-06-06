@@ -95,7 +95,7 @@
    (as-money-without-cents (:price variant))))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
-  [:.border.border-light-gray.p2.rounded-1
+  [:.border.border-light-gray.p2.rounded
    [:.h3.medium.navy.shout "Description"]
    [:.clearfix.my2
     (let [attrs (->> [["Color" colors]

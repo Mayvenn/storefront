@@ -60,7 +60,7 @@
                                    redesigned?]
   [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
    [:a.left.mr1
-    [:img.border.border-light-silver.rounded-1
+    [:img.border.border-light-silver.rounded
      {:src   thumbnail
       :alt   product-name
       :style {:width  "7.33em"

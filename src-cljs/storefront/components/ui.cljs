@@ -62,9 +62,9 @@
     [:label.floated-label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
-   [:input.col-12.h3.border.border-width-1.border-light-silver.glow.floating-input
+   [:input.col-12.h3.border.border-light-silver.glow.floating-input
     (cond-> (merge {:key label
-                    :class "rounded-1"
+                    :class "rounded"
                     :placeholder label}
                    (utils/change-text keypath value)
                    input-attributes)
@@ -90,7 +90,7 @@
      (for [{name :name val :abbr} options]
        [:option {:key val :value val}
         (str name)])]]
-   [:.bg-pure-white.border.border-width-1.border-light-silver.rounded-1.p1
+   [:.bg-pure-white.border.border-light-silver.rounded.p1
     [:label.col-12.h6.navy.relative
      (merge
       {:for (name (:id select-attributes))}
@@ -137,9 +137,9 @@
    (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
-  [:.border.rounded-1
+  [:.border.rounded
    {:class (str "bg-" color " border-" color)
     :data-test data-test}
-   [:.bg-lighten-4.rounded-1
+   [:.bg-lighten-4.rounded
     contents]])
 

@@ -90,7 +90,7 @@
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
 (defn social-link [img-attrs href title]
-  [:a.f4.navy.block.p1.rounded-bottom-2.border-top.border-light-silver.bg-white {:href href}
+  [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href href}
    [:.flex.items-center
     [:.mr1 {:style {:width "15px"}}
      [:.bg-no-repeat.bg-contain img-attrs]]
@@ -113,7 +113,7 @@
        [:.truncate.fit.f3.navy {:data-test "nickname"} nickname]]
       [:.relative navy-carrot-bottom]]]
     [:.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
-     [:.relative.border.border-light-silver.rounded-2.bg-pure-white.top-lit
+     [:.relative.border.border-light-silver.rounded-1.bg-pure-white.top-lit
       notch-up
       [:div
        [:.p1.f5
@@ -137,12 +137,12 @@
     [:.black.flex-auto.right-align.h5 link]
     [:.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:.absolute.right-0 {:style {:max-width "140px"}}
-    [:.relative.border.border-light-silver.rounded-2.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
+    [:.relative.border.border-light-silver.rounded-1.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:.absolute {:style {:right "15px"}} notch-up]
-     [:.h6.bg-pure-white.rounded-2
+     [:.h6.bg-pure-white.rounded-1
       (into [:.px2.py1.line-height-4] menu)
       [:.border-bottom.border-light-silver]
-      [:a.navy.block.py1.center.bg-white.rounded-bottom-2
+      [:a.navy.block.py1.center.bg-white.rounded-bottom-1
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
