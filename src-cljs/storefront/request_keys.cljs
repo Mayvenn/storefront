@@ -4,7 +4,6 @@
 (def get-store [:get-store])
 (def get-promotions [:get-promotions])
 (def get-products [:get-products])
-(def get-product [:get-product])
 (def get-states [:get-states])
 
 (def sign-in [:sign-in])

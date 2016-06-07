@@ -112,23 +112,25 @@
       (wrap-resource "public")
       (wrap-content-type)))
 
-(def not-404 (comp (partial not= 404) :status))
-(defn resource-exists [storeback-config nav-event params req]
-  (let [token (get-in req [:cookies "token" :value])]
-    (condp = nav-event
-      events/navigate-category (not-404 (fetch/category storeback-config (:taxon-slug params) token))
-      events/navigate-product (not-404 (fetch/product storeback-config (:product-slug params) token))
-      true)))
+(defn respond-with-index [req storeback-config environment]
+  (-> (views/index req storeback-config environment)
+      response
+      (content-type "text/html")))
 
 (defn site-routes
   [{:keys [storeback-config environment]}]
   (fn [{:keys [uri] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
-      (when (and nav-event
-                 (resource-exists storeback-config (bidi->edn nav-event) params req))
-        (-> (views/index req storeback-config environment)
-            response
-            (content-type "text/html"))))))
+    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
+          token                                     (get-in req [:cookies "user-token" :value])]
+      (when nav-event
+        (condp = (bidi->edn nav-event)
+          events/navigate-product  (some-> (fetch/product storeback-config (:product-slug params) token)
+                                           ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
+                                           :url-path
+                                           redirect)
+          events/navigate-category (when (fetch/category storeback-config (:taxon-slug params) token)
+                                     (respond-with-index req storeback-config environment))
+          (respond-with-index req storeback-config environment))))))
 
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)

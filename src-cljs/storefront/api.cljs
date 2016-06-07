@@ -152,23 +152,12 @@
   (api-req
    GET
    "/products"
-   request-keys/get-product
+   (conj request-keys/get-products (sorted-set product-ids))
    {:params {:ids product-ids
              :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-products
                               (select-keys % [:products]))}))
-
-(defn get-product [product-slug user-token]
-  (api-req
-   GET
-   "/products"
-   request-keys/get-product
-   {:params {:slug product-slug
-             :user-token user-token}
-    :handler
-    #(messages/handle-message events/api-success-product
-                              {:product %})}))
 
 (defn get-states [cache]
   (cache-req

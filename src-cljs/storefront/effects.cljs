@@ -121,13 +121,6 @@
                       taxon-slug
                       (get-in app-state keypaths/user-token))))
 
-(defn redirect-to-canonical-product-url [app-state product]
-  (apply routes/enqueue-redirect
-         (routes/navigation-message-for (:url-path product))))
-
-(defmethod perform-effects events/navigate-product [_ event {:keys [product-slug]} app-state]
-  (api/get-product product-slug (get-in app-state keypaths/user-token)))
-
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect events/navigate-sign-in)))
@@ -603,9 +596,6 @@
                     {:message "Account updated"
                      :navigation [events/navigate-stylist-manage-account {}]})
     (handle-message events/flash-dismiss-failure)))
-
-(defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (redirect-to-canonical-product-url app-state product))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]

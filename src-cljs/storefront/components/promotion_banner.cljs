@@ -8,7 +8,6 @@
 (def allowed-navigation-events
   #{events/navigate-home
     events/navigate-category
-    events/navigate-product
     events/navigate-cart})
 
 (defn promotion-to-advertise [data]

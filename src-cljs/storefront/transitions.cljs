@@ -193,9 +193,6 @@
       (assoc-in keypaths/taxons (:taxons args))
       (swap-straight-image)))
 
-(defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
-  (assoc-in app-state (conj keypaths/products (:id product)) product))
-
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (update-in app-state keypaths/products merge (key-by :id products)))
 

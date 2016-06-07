@@ -16,14 +16,14 @@ This allows a clean separation of concerns.
 Events are collections of keywords that transitions and effects operate on [reductions][10] of these collections.
 This allows for some common tasks to be abstracted cleanly.
 
-For example, lets say the [navigate-product][3] event, equivilant to ```[:navigate :product]``` is triggered:
+For example, lets say the [navigate-category][3] event, equivalent to ```[:navigate :category]``` is triggered:
  1. The event will propagate to [transitions][11] and the ```:navigate``` transition will run.
- 2. Still in [transitions][5], the transition for ```[:navigate :product]``` will run, and some page nav information will be moved into the app state.
+ 2. Still in [transitions][5], the transition for ```[:navigate :category]``` will run, and some page nav information will be moved into the app state.
  3. The event will propagate to [effects][12] and the ```:navigate``` effect will run.  It will start API calls for various information that needs to be loaded on every page change.
- 4. Still in [effects][6], the ```[:navigate :product]``` effect will execute and an API call to fetch the product is started.
- 5. (**ASYNC**) Upon success, a callback that triggers the [api-success-product][4] is called.  The other API calls from step 3 have similar functionality, so lets skip them for now.
- 6. The api success event is then processed by [transitions][7] and the product is moved into the application state.
- 7. Via the magic of Om (and therefore react) bindings, the product information is bound from the application state.
+ 4. Still in [effects][6], the ```[:navigate :category]``` effect will execute and an API call to fetch the category is started.
+ 5. (**ASYNC**) Upon success, a callback that triggers the [api-success-category][4] is called.  The other API calls from step 3 have similar functionality, so lets skip them for now.
+ 6. The api success event is then processed by [transitions][7] and the category is moved into the application state.
+ 7. Via the magic of Om (and therefore react) bindings, the category information is bound from the application state.
 
 
 [Here is some more information about effects and transitions][8]

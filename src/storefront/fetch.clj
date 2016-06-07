@@ -19,9 +19,17 @@
       (catch java.io.IOException e
         ::storeback-unavailable))))
 
+(def not-404 (comp (partial not= 404) :status))
+
+;; TODO Fetch the taxon not the products for the taxon (not currently possible in storeback)
 (defn category [storeback-config taxon-slug user-token]
-  (storeback-fetch storeback-config "/products" {:taxon-slug taxon-slug
-                                                 :user-token user-token}))
+  (let [response (storeback-fetch storeback-config "/products" {:taxon-slug taxon-slug
+                                                                :user-token user-token})]
+    (when (not-404 response)
+      (:products (:body response)))))
 
 (defn product [storeback-config product-slug user-token]
-  (storeback-fetch storeback-config "/products" {:slug product-slug :user-token user-token}))
+  (let [response (storeback-fetch storeback-config "/products" {:slug product-slug
+                                                                :user-token user-token})]
+    (when (not-404 response)
+      (:body response))))
