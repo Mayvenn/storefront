@@ -26,7 +26,7 @@
 (defn help-component [{:keys [sms-number]} owner]
   (om/component
    (html
-    [:div
+    [:div.sans-serif
      [:div.py4.bg-white.center
       [:.h1.navy.mb2 "Get in touch"]
       [:.h3.dark-gray.light "Have a problem?"]
