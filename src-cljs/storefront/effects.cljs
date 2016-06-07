@@ -626,6 +626,8 @@
                                                                       :large_url)]
                                               (str "http:" image-url))})
         (when-let [variants (seq (:variants product))]
+          ;; NOTE: this is only used by kits, and at the moment, there is only
+          ;; one kit variant, so this could be simplified
           (when-let [variant (or (->> variants (filter :can_supply?) first)
                                  (first variants))]
             (handle-message events/control-browse-variant-select
