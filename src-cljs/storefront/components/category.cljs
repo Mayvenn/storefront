@@ -117,7 +117,10 @@
   (let [saving (utils/requesting? data request-keys/add-to-bag)]
     [:button.large.primary.alternate#add-to-cart-button
      {:on-click (when-not saving
-                  (utils/send-event-callback events/control-build-add-to-bag))
+                  (utils/send-event-callback events/control-add-to-bag
+                                             {:product (products/selected-product data)
+                                              :variant (products/selected-variant data)
+                                              :quantity (get-in data keypaths/browse-variant-quantity)}))
       :class (when saving "saving")}
      "ADD TO CART"]))
 

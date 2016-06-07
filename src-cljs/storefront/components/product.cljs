@@ -79,9 +79,9 @@
                [:a.large.primary.alternate#add-to-cart-button
                 {:on-click
                  (when-not adding-to-bag?
-                   (utils/send-event-callback events/control-browse-add-to-bag {:product  product
-                                                                                :variant  selected-variant
-                                                                                :quantity variant-quantity}))
+                   (utils/send-event-callback events/control-add-to-bag {:product  product
+                                                                         :variant  selected-variant
+                                                                         :quantity variant-quantity}))
                  :class (when adding-to-bag? "saving")}
                 "Add to Cart"]]]]
 

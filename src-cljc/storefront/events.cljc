@@ -77,9 +77,7 @@
 
 (defpath control-browse-variant)
 (defpath control-browse-variant-select)
-(defpath control-browse-add-to-bag)
-
-(defpath control-build-add-to-bag)
+(defpath control-add-to-bag)
 
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)

@@ -115,10 +115,13 @@
    [:.cart-button ; for scrolling
     (ui/button "Check out" (utils/route-to events/navigate-cart))]))
 
-(defn add-to-bag-button [adding-to-bag?]
+(defn add-to-bag-button [adding-to-bag? product variant quantity]
   (ui/button
    "Add to bag"
-   {:on-click      (utils/send-event-callback events/control-build-add-to-bag)
+   {:on-click      (utils/send-event-callback events/control-add-to-bag
+                                              {:product product
+                                               :variant variant
+                                               :quantity quantity})
     :show-spinner? adding-to-bag?
     :color         "bg-navy"}))
 
@@ -168,6 +171,7 @@
                          fetching-variants?
                          selected-options
                          flow
+                         selected-product
                          selected-variant
                          variant-quantity
                          reviews
@@ -204,7 +208,7 @@
                                  :variant-quantity variant-quantity})
                (no-variant-summary (bundle-builder/next-step flow selected-options)))
              (when selected-variant
-               (add-to-bag-button adding-to-bag?))
+               (add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
              (when (seq bagged-variants)
                [:div
                 (map-indexed redesigned-display-bagged-variant bagged-variants)
@@ -226,6 +230,7 @@
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
+     :selected-product   (products/selected-product data)
      :selected-variant   (products/selected-variant data)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)

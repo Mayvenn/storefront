@@ -332,7 +332,10 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home))
 
-(defn api-add-to-bag [app-state product variant quantity]
+(defmethod perform-effects events/control-add-to-bag [_ event {:keys [product variant quantity]} app-state]
+  (when (bundle-builder/included-product? product)
+    (analytics/track-page
+     (str (routes/current-path app-state) "/add_to_bag")))
   (api/add-to-bag
    {:variant variant
     :product product
@@ -342,18 +345,6 @@
     :number (get-in app-state keypaths/order-number)
     :user-id (get-in app-state keypaths/user-id)
     :user-token (get-in app-state keypaths/user-token)}))
-
-;; TODO Unify bundle builder and kits to use same control for add-to-bag
-(defmethod perform-effects events/control-browse-add-to-bag [_ event {:keys [product variant quantity]} app-state]
-  (api-add-to-bag app-state product variant quantity))
-
-(defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
-  (let [product (products/selected-product app-state)
-        variant (products/selected-variant app-state)
-        quantity (get-in app-state keypaths/browse-variant-quantity)]
-    (analytics/track-page
-     (str (routes/current-path app-state) "/add_to_bag"))
-    (api-add-to-bag app-state product variant quantity)))
 
 (defmethod perform-effects events/control-bundle-option-select
   [_ event _ app-state]
