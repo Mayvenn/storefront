@@ -2,6 +2,7 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]))
 
+;; TODO: move this to accessors.bundle-builder
 (defn selected-variants [data]
   (get-in data keypaths/bundle-builder-selected-variants))
 
@@ -11,8 +12,7 @@
       (first variants))))
 
 (defn selected-products [data]
-  (let [variants (get-in data keypaths/bundle-builder-selected-variants)
-        product-ids (set (map :product_id variants))]
+  (let [product-ids (set (map :product_id (selected-variants data)))]
     (select-keys (get-in data keypaths/products) product-ids)))
 
 (defn selected-product [data]
