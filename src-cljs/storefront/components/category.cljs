@@ -1,7 +1,7 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
-            [storefront.components.product :refer [display-bagged-variant]]
-            [storefront.components.formatters :refer [as-money-without-cents as-money]]
+            [storefront.components.product :as product-component :refer [display-bagged-variant]]
+            [storefront.components.formatters :refer [as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
@@ -17,37 +17,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
-
-(defn display-product [product]
-  [:a (utils/route-to events/navigate-product
-                      {:product-slug (:slug product)})
-   [:div.taxon-product-container
-    (when-let [medium-image (->> product
-                                 :images
-                                 first
-                                 :product_url)]
-      [:div.taxon-product-image-container
-       {:style {:background-image (str "url('" medium-image "')")}}
-       [:img {:src medium-image}]])
-    [:div.taxon-product-title-container
-     [:div.taxon-product-title
-      (:name product)]]]])
-
-(defn kits-component [data owner]
-  (om/component
-   (html
-    (when-let [taxon (taxons/current-taxon data)]
-      [:div
-       [:div.taxon-products-banner.stylist-products]
-       [:div.taxon-products-container
-        [:div.taxon-products-list-container
-         (let [products (products/ordered-products-for-category data taxon)]
-           (if (utils/requesting? data (conj request-keys/get-products
-                                             (:slug taxon)))
-             [:.spinner]
-             (map display-product products)))]]]))))
-
-;; Bundle builder below
 
 (def display-product-images-for-taxon? #{"blonde" "closures" "frontals"})
 
@@ -275,15 +244,8 @@
 (defn category-component [data owner]
   (om/component
    (html
-    (let [redesigned? (experiments/product-page-redesign? data)]
-      [:div
-       (if (accessors.bundle-builder/included-taxon? (taxons/current-taxon data))
-         (if redesigned?
-           (bundle-builder/built-component data)
-           (om/build bundle-builder-category-component data))
-         (om/build kits-component data))
-       (when-not redesigned?
-         [:div.gold-features
-          [:figure.guarantee-feature]
-          [:figure.free-shipping-feature]
-          [:figure.triple-bundle-feature]])]))))
+    (if (accessors.bundle-builder/included-taxon? (taxons/current-taxon data))
+      (if (experiments/product-page-redesign? data)
+        (bundle-builder/built-component data)
+        (om/build bundle-builder-category-component data))
+      (product-component/built-component data)))))

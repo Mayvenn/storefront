@@ -68,17 +68,9 @@
   (-> app-state
       (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
       (assoc-in keypaths/browse-recently-added-variants [])
+      (assoc-in keypaths/browse-variant-query nil)
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
-
-(defmethod transition-state events/navigate-product [_ event {:keys [product-slug query-params]} app-state]
-  (let [taxon-id (js/parseInt (:taxon-id query-params))]
-    (-> app-state
-        (assoc-in keypaths/browse-taxon-query {:id taxon-id})
-        (assoc-in keypaths/browse-product-query {:slug product-slug})
-        (assoc-in keypaths/browse-variant-query nil)
-        (assoc-in keypaths/browse-variant-quantity 1)
-        (assoc-in keypaths/browse-recently-added-variants []))))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
@@ -202,12 +194,10 @@
       (swap-straight-image)))
 
 (defmethod transition-state events/api-success-product [_ event {:keys [product]} app-state]
-  (-> app-state
-      (assoc-in (conj keypaths/products (:id product)) product)))
+  (assoc-in app-state (conj keypaths/products (:id product)) product))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
-  (-> app-state
-      (update-in keypaths/products merge (key-by :id products))))
+  (update-in app-state keypaths/products merge (key-by :id products)))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))

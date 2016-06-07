@@ -121,17 +121,12 @@
                       taxon-slug
                       (get-in app-state keypaths/user-token))))
 
-(defn bundle-builder-redirect [app-state product]
+(defn redirect-to-canonical-product-url [app-state product]
   (apply routes/enqueue-redirect
          (routes/navigation-message-for (:url-path product))))
 
 (defmethod perform-effects events/navigate-product [_ event {:keys [product-slug]} app-state]
-  (api/get-product product-slug (get-in app-state keypaths/user-token))
-  (reviews/insert-reviews)
-  (let [product (query/get (get-in app-state keypaths/browse-product-query)
-                           (vals (get-in app-state keypaths/products)))]
-    (when (and product (bundle-builder/included-product? product))
-      (bundle-builder-redirect app-state product))))
+  (api/get-product product-slug (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -344,23 +339,28 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home))
 
-(defn api-add-to-bag [app-state product variant]
+(defn api-add-to-bag [app-state product variant quantity]
   (api/add-to-bag
    {:variant variant
     :product product
-    :quantity (get-in app-state keypaths/browse-variant-quantity)
+    :quantity quantity
     :stylist-id (get-in app-state keypaths/store-stylist-id)
     :token (get-in app-state keypaths/order-token)
     :number (get-in app-state keypaths/order-number)
     :user-id (get-in app-state keypaths/user-id)
     :user-token (get-in app-state keypaths/user-token)}))
 
-(defmethod perform-effects events/control-browse-add-to-bag [_ event _ app-state]
-  (let [product (query/get (get-in app-state keypaths/browse-product-query)
-                           (vals (get-in app-state keypaths/products)))
-        variant (query/get (get-in app-state keypaths/browse-variant-query)
-                           (:variants product))]
-    (api-add-to-bag app-state product variant)))
+;; TODO Unify bundle builder and kits to use same control for add-to-bag
+(defmethod perform-effects events/control-browse-add-to-bag [_ event {:keys [product variant quantity]} app-state]
+  (api-add-to-bag app-state product variant quantity))
+
+(defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
+  (let [product (products/selected-product app-state)
+        variant (products/selected-variant app-state)
+        quantity (get-in app-state keypaths/browse-variant-quantity)]
+    (analytics/track-page
+     (str (routes/current-path app-state) "/add_to_bag"))
+    (api-add-to-bag app-state product variant quantity)))
 
 (defmethod perform-effects events/control-bundle-option-select
   [_ event _ app-state]
@@ -369,13 +369,6 @@
     (when (and step-name (step-name selected-options))
       (analytics/track-page
        (str (routes/current-path app-state) "/choose_" (clj->js step-name))))))
-
-(defmethod perform-effects events/control-build-add-to-bag [_ event args app-state]
-  (let [product (products/selected-product app-state)
-        variant (products/selected-variant app-state)]
-    (analytics/track-page
-     (str (routes/current-path app-state) "/add_to_bag"))
-    (api-add-to-bag app-state product variant)))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/forgot-password-email)))
@@ -612,26 +605,7 @@
     (handle-message events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-product [_ event {:keys [product]} app-state]
-  (if (and (bundle-builder/included-product? product)
-           (= events/navigate-product (get-in app-state keypaths/navigation-event)))
-    (bundle-builder-redirect app-state product)
-    (do
-      (when (and (= events/navigate-product (get-in app-state keypaths/navigation-event))
-                 (= (:slug product)
-                    (:product-slug (get-in app-state keypaths/navigation-args))))
-        (opengraph/set-product-tags {:name (:name product)
-                                     :image (when-let [image-url (->> product
-                                                                      :images
-                                                                      first
-                                                                      :large_url)]
-                                              (str "http:" image-url))})
-        (when-let [variants (seq (:variants product))]
-          ;; NOTE: this is only used by kits, and at the moment, there is only
-          ;; one kit variant, so this could be simplified
-          (when-let [variant (or (->> variants (filter :can_supply?) first)
-                                 (first variants))]
-            (handle-message events/control-browse-variant-select
-                            {:variant variant})))))))
+  (redirect-to-canonical-product-url app-state product))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]

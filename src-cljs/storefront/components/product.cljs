@@ -79,7 +79,9 @@
                [:a.large.primary.alternate#add-to-cart-button
                 {:on-click
                  (when-not adding-to-bag?
-                   (utils/send-event-callback events/control-browse-add-to-bag))
+                   (utils/send-event-callback events/control-browse-add-to-bag {:product  product
+                                                                                :variant  selected-variant
+                                                                                :quantity variant-quantity}))
                  :class (when adding-to-bag? "saving")}
                 "Add to Cart"]]]]
 
@@ -108,7 +110,8 @@
              (:variants product)))
 
 (defn query [data]
-  (let [product (query/get (get-in data keypaths/browse-product-query)
+  (let [product-id (first (:product-ids (taxons/current-taxon data)))
+        product (query/get {:id product-id}
                            (vals (get-in data keypaths/products)))]
     {:product          product
      :selected-variant (selected-variant data product)
@@ -116,5 +119,5 @@
      :adding-to-bag?   (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants  (get-in data keypaths/browse-recently-added-variants)}))
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (query data)))))
+(defn built-component [data]
+  (om/build component (query data)))

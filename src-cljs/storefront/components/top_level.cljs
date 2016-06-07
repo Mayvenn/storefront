@@ -67,7 +67,6 @@
              events/navigate-cart                           cart/built-component
              events/navigate-categories                     categories-page-component
              events/navigate-category                       category-component
-             events/navigate-product                        product/built-component
              events/navigate-guarantee                      thirty-day-guarantee-component
              events/navigate-help                           help-component
              events/navigate-sign-in                        sign-in/built-component

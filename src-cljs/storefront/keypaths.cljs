@@ -54,7 +54,6 @@
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))
 (def browse-taxon-query (conj ui :browse-taxon-query))
-(def browse-product-query (conj ui :browse-product-query))
 (def browse-variant-query (conj ui :browse-variant-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
