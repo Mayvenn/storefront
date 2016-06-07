@@ -168,7 +168,7 @@
                          fetching-variants?
                          selected-options
                          flow
-                         variant
+                         selected-variant
                          variant-quantity
                          reviews
                          adding-to-bag?
@@ -198,12 +198,12 @@
                                              variants)]
               (step-html step))
             [:.py2.border-top.border-dark-white.border-width-2
-             (if variant
+             (if selected-variant
                (variant-summary {:flow             flow
-                                 :variant          variant
+                                 :variant          selected-variant
                                  :variant-quantity variant-quantity})
                (no-variant-summary (bundle-builder/next-step flow selected-options)))
-             (when variant
+             (when selected-variant
                (add-to-bag-button adding-to-bag?))
              (when (seq bagged-variants)
                [:div
@@ -226,7 +226,7 @@
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
-     :variant            (products/selected-variant data)
+     :selected-variant   (products/selected-variant data)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
