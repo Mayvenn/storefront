@@ -62,8 +62,8 @@
 
         (when-let [html-description (:description product)]
           [:.border.border-light-gray.p2.rounded.mt2
-           [:.h3.medium.navy.shout "Description"]
-           [:.h5.dark-gray.line-height-2.mt2
+           [:.mb2.h3.medium.navy.shout "Description"]
+           [:div
             {:item-prop "description" :dangerouslySetInnerHTML {:__html html-description}}]])])))))
 
 (defn- selected-variant [app-state product]
