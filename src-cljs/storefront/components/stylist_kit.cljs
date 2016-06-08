@@ -59,14 +59,14 @@
             :show-spinner? adding-to-bag?
             :color         "bg-navy"})]
 
-         [:.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h5
-          "Free shipping & 30 day guarantee"]
-
          (when (seq bagged-variants)
            [:div
             (map-indexed product/redesigned-display-bagged-variant bagged-variants)
             [:.cart-button ; for scrolling
              (ui/button "Check out" (utils/route-to events/navigate-cart))]])
+
+         [:.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h5
+          "Free shipping & 30 day guarantee"]
 
          (when-let [html-description (:description product)]
            [:.border.border-light-gray.p2.rounded.mt2
