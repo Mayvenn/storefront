@@ -11,13 +11,6 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]] ))
 
-(defn css-url [url] (str "url(" url ")"))
-
-(defn carousel-image [image]
-  [:.bg-cover.bg-no-repeat.bg-center.col-12
-   {:style {:background-image (css-url image)
-            :height "31rem"}}])
-
 (defn component [{:keys [product variant-quantity selected-variant adding-to-bag? bagged-variants]} owner]
   (om/component
    (html
@@ -27,7 +20,9 @@
        [:div {:item-type "http://schema.org/Product"}
         [:.center
          [:h1.medium.titleize.navy.h2.line-height-2 {:item-prop "name"} (:name product)]
-         [:.my2.mxn2.md-m0 (carousel-image (->> product :images first :product_url))]]
+         [:.mxn2.md-m0
+          [:img.my2.col-12 {:src (->> product :images first :large_url)
+                            :alt "Contents of stylist kit, including sample bundle rings, and other Mayvenn stylist resources"}]]]
         [:div {:item-prop "offers"
                :item-scope ""
                :item-type "http://schema.org/Offer"}
