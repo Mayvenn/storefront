@@ -11,12 +11,12 @@
       [:.bg-white.p2
        [:.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
       [:.center.px2.dark-black
-       [:.border-bottom.border-dark-white.border-width-2.py2
+       [:.border-bottom.border-light-silver.border-width-1.py2
         "We guarantee that you'll love Mayvenn hair!"]
-       [:.border-bottom.border-dark-white.border-width-2.py2
+       [:.border-bottom.border-light-silver.border-width-1.py2
         "Buy " [:div.green.inline "RISK FREE"] " with easy returns and exchanges."]]
       [:.line-height-3.px2
-       [:.border-bottom.border-dark-white.border-width-2.py2.px2
+       [:.border-bottom.border-light-silver.border-width-1.py2.px2
         [:.medium.navy "EXCHANGES"]
         [:div "Wear it, dye it, even flat iron it. "
          "If you do not love your Mayvenn hair we will exchange it within 30 days of purchase. "

@@ -35,7 +35,7 @@
 
      [:.bg-pure-white.center
       [:.mx1
-       [:.border-bottom.border-width-2.border-dark-white.py2.line-height-4.mxp3
+       [:.border-bottom.border-width-1.border-light-silver.py2.line-height-4.mxp3
         [:.h4.dark-black "Monday to Friday from 9am to 5pm PST"]
         [:.h4.dark-black "Orders placed before 10am PST ship that day"]]]
       [:.px1.py2
