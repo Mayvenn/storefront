@@ -243,7 +243,11 @@
              (into [:ul.category-description]
                    (for [description (category-descriptions taxon)]
                      [:li description]))])]
-         (taxon-review-full data)])))))
+         (taxon-review-full data)
+         [:div.gold-features
+          [:figure.guarantee-feature]
+          [:figure.free-shipping-feature]
+          [:figure.triple-bundle-feature]]])))))
 
 (defn category-component [data owner]
   (om/component
