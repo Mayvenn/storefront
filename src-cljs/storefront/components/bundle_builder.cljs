@@ -1,7 +1,7 @@
 (ns storefront.components.bundle-builder
   (:require [storefront.components.utils :as utils]
-            [storefront.components.product :refer [redesigned-display-bagged-variant]]
-            [storefront.components.formatters :refer [as-money-without-cents as-money]]
+            [storefront.components.product :as product]
+            [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
@@ -14,9 +14,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.messages :as messages]
-            [storefront.components.carousel :as carousel]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.components.carousel :as carousel]))
 
 (defn option-html [later-step?
                    {:keys [option-name price-delta checked? sold-out? selections]}]
@@ -58,72 +56,49 @@
     (str (if (vowel? (first word)) "an " "a ")
          word)))
 
-(defn summary-format [variant flow]
+(defn variant-name [variant flow]
   (let [flow (conj (vec flow) :category)]
     (->> flow
          (map variant)
          (string/join " ")
          string/upper-case)))
 
-(defn summary-structure [desc counter price]
+(defn summary-structure [desc quantity-and-price]
   [:div
    [:h3.regular.h2.light "Summary"]
    [:.navy desc]
-   [:.right-align.light-gray.h5 "PRICE"]
-   [:.flex.h1 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
-    [:.flex-auto counter]
-    [:.navy price]]
-   [:.center.p2.navy promos/bundle-discount-description]])
+   quantity-and-price])
 
 (defn no-variant-summary [next-step]
   (summary-structure
    (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
-   ui/nbsp
-   "$--.--"))
+   (product/quantity-and-price-structure ui/nbsp "$--.--")))
 
 (defn variant-summary [{:keys [flow
                                variant
                                variant-quantity]}]
   (summary-structure
-   (summary-format variant flow)
-   (ui/counter variant-quantity
-               false
-               (utils/send-event-callback events/control-counter-dec
-                                          {:path keypaths/browse-variant-quantity})
-               (utils/send-event-callback events/control-counter-inc
-                                          {:path keypaths/browse-variant-quantity}))
-   (as-money-without-cents (:price variant))))
+   (variant-name variant flow)
+   (product/counter-and-price variant variant-quantity)))
+
+(def triple-bundle-upsell
+  (html [:.center.p2.navy promos/bundle-discount-description]))
 
 (defn taxon-description [{:keys [colors weights materials commentary]}]
-  [:.border.border-light-gray.p2.rounded
-   [:.h3.medium.navy.shout "Description"]
-   [:.clearfix.my2
-    (let [attrs (->> [["Color" colors]
-                      ["Weight" weights]
-                      ["Material" materials]]
-                     (filter second))
-          size (str "col-" (/ 12 (count attrs)))]
-      (for [[title value] attrs]
-        [:.col {:class size
-                :key title}
-         [:.dark-gray.shout.h5 title]
-         [:.h4.navy.medium.pr2 value]]))]
-   [:.h5.dark-gray.line-height-2 (first commentary)]])
-
-(def checkout-button
-  (html
-   [:.cart-button ; for scrolling
-    (ui/button "Check out" (utils/route-to events/navigate-cart))]))
-
-(defn add-to-bag-button [adding-to-bag? product variant quantity]
-  (ui/button
-   "Add to bag"
-   {:on-click      (utils/send-event-callback events/control-add-to-bag
-                                              {:product product
-                                               :variant variant
-                                               :quantity quantity})
-    :show-spinner? adding-to-bag?
-    :color         "bg-navy"}))
+  (product/description-structure
+   [:div
+    [:.clearfix.my2
+     (let [attrs (->> [["Color" colors]
+                       ["Weight" weights]
+                       ["Material" materials]]
+                      (filter second))
+           size (str "col-" (/ 12 (count attrs)))]
+       (for [[title value] attrs]
+         [:.col {:class size
+                 :key title}
+          [:.dark-gray.shout.h5 title]
+          [:.h4.navy.medium.pr2 value]]))]
+    [:.h5.dark-gray.line-height-2 (first commentary)]]))
 
 (defn css-url [url] (str "url(" url ")"))
 
@@ -145,17 +120,19 @@
                :opts      {:dot-location :left}})))
 
 (defn taxon-title [taxon]
-  [:h1.medium.titleize.navy.h2.line-height-2
-   (:name taxon)
-   ;; TODO: if experiments/product-page-redesign? succeeds, put the word "Hair"
-   ;; into cellar.
-   (when-not (taxons/is-closure? taxon) " Hair")])
+  (product/title
+   (str
+    (:name taxon)
+    ;; TODO: if experiments/product-page-redesign? succeeds, put the word "Hair"
+    ;; into cellar.
+    (when-not (taxons/is-closure? taxon) " Hair"))))
 
 (defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:.center
      [:.silver.f5 "Starting at"]
      [:.dark-gray.f1.light
+      {:item-prop "price"}
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews]
@@ -179,18 +156,14 @@
    (html
     (when taxon
       (ui/container
-       [:.clearfix.mxn2
-        [:.md-up-col.md-up-col-7.px2
-         [:.to-md-hide (carousel carousel-images taxon)]]
-        [:.md-up-col.md-up-col-5.px2
+       (product/page
+        (carousel carousel-images taxon)
+        [:div
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)
-          ;; The mxn2 pairs with the p2 of the ui/container, to make the
-          ;; carousel full width on mobile.
-          [:.md-up-hide.mxn2.my2 (carousel carousel-images taxon)]
-          (when-not fetching-variants?
-            (starting-at variants))]
+          (product/full-bleed-narrow (carousel carousel-images taxon))
+          (when-not fetching-variants? (starting-at variants))]
          (if fetching-variants?
            [:.h1.mb2 ui/spinner]
            [:div
@@ -200,18 +173,17 @@
                                              variants)]
               (step-html step))
             [:.py2.border-top.border-dark-white.border-width-2
+             product/schema-org-offer-props
              (if selected-variant
                (variant-summary {:flow             flow
                                  :variant          selected-variant
                                  :variant-quantity variant-quantity})
                (no-variant-summary (bundle-builder/next-step flow selected-options)))
+             triple-bundle-upsell
              (when selected-variant
-               (add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
-             (when (seq bagged-variants)
-               [:div
-                (map-indexed redesigned-display-bagged-variant bagged-variants)
-                checkout-button])]])
-         (taxon-description (:description taxon))]]
+               (product/add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
+             (product/bagged-variants-and-checkout bagged-variants)]])
+         (taxon-description (:description taxon))])
        (om/build reviews/reviews-component reviews))))))
 
 (defn images-from-variants [data]

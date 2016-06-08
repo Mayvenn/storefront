@@ -68,7 +68,6 @@
   (-> app-state
       (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
       (assoc-in keypaths/browse-recently-added-variants [])
-      (assoc-in keypaths/browse-variant-query nil)
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
 
@@ -129,9 +128,6 @@
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))
-
-(defmethod transition-state events/control-browse-variant-select [_ event {:keys [variant]} app-state]
-  (assoc-in app-state keypaths/browse-variant-query {:id (:id variant)}))
 
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
   (update-in app-state (:path args) inc))
