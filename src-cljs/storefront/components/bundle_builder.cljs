@@ -138,15 +138,11 @@
                                   {:id   (.substring image (max 0 (- (.-length image) 50)))
                                    :body (carousel-image image)}))
                    vec)]
-    ;; The mxn2 pairs with the p2 of the ui/container, to make the carousel full
-    ;; width on mobile. On desktop, we don't need the full-width effect, hence
-    ;; the md-m0.
-    [:.mxn2.md-m0
-     (om/build carousel/swipe-component
-               {:items      items
-                :continuous true}
-               {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))
-                :opts      {:dot-location :left}})]))
+    (om/build carousel/swipe-component
+              {:items      items
+               :continuous true}
+              {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))
+               :opts      {:dot-location :left}})))
 
 (defn taxon-title [taxon]
   [:h1.medium.titleize.navy.h2.line-height-2
@@ -190,7 +186,9 @@
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)
-          [:.md-up-hide.my2 (carousel carousel-images taxon)]
+          ;; The mxn2 pairs with the p2 of the ui/container, to make the
+          ;; carousel full width on mobile.
+          [:.md-up-hide.mxn2.my2 (carousel carousel-images taxon)]
           (when-not fetching-variants?
             (starting-at variants))]
          (if fetching-variants?
