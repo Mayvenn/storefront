@@ -49,6 +49,7 @@
                               redesigned?
                               share-carts?
                               share-popup?
+                              requesting-shared-cart?
                               update-line-item-requests
                               delete-line-item-requests
                               share-link]} owner]
@@ -113,7 +114,8 @@
                       :color "bg-white"
                       :border "border-navy"
                       :text-color "navy"
-                      :on-click (utils/send-event-callback events/control-cart-share-show)})
+                      :on-click (utils/send-event-callback events/control-cart-share-show)
+                      :show-spinner? requesting-shared-cart?})
           [:.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
@@ -162,6 +164,7 @@
      :share-carts?              (and (experiments/share-carts? data) (stylists/own-store? data))
      :share-popup?              (get-in data keypaths/share-link-popup)
      :share-link                (query-share-link data)
+     :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart-id)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
