@@ -121,6 +121,7 @@
           :menu-expanded false
           :account-menu-expanded false
           :store-info-expanded false
+          :share-link-popup false
 
           :expanded-commission-order-id #{nil}
 

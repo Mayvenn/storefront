@@ -82,6 +82,8 @@
 (defpath control-cart-line-item-inc)
 (defpath control-cart-line-item-dec)
 (defpath control-cart-remove)
+(defpath control-cart-share-show)
+(defpath control-cart-share-hide)
 
 (defpath control-counter-inc)
 (defpath control-counter-dec)
@@ -133,6 +135,8 @@
 (defpath api-success-get-order)
 (defpath api-success-get-completed-order)
 (defpath api-success-sms-number)
+
+(defpath api-success-shared-cart-id)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-update-address)

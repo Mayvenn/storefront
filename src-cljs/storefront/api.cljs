@@ -624,3 +624,12 @@
    {:params {:number number :token token :code promo-code}
     :handler #(messages/handle-message events/api-success-update-order-remove-promotion-code
                                        {:order %})}))
+
+(defn create-shared-cart-id [order-number order-token]
+  (api-req
+   POST
+   "/create-shared-cart-id"
+   request-keys/create-shared-cart-id
+   {:params {:number order-number :token order-token}
+    :handler #(messages/handle-message events/api-success-shared-cart-id
+                                       {:cart %})}))

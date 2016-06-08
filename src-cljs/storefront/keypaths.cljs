@@ -60,6 +60,7 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
+(def share-link-popup (conj ui :share-link-popup))
 (def header-menus #{account-menu-expanded
                     shop-menu-expanded
                     store-info-expanded})
@@ -97,6 +98,8 @@
 (def manage-account-email (conj manage-account :email))
 (def manage-account-password (conj manage-account :password))
 (def manage-account-password-confirmation (conj manage-account :password-confirmation))
+
+(def shared-cart-url (conj ui :shared-cart-url))
 
 (def cart (conj ui :cart))
 (def cart-quantities (conj cart :quantities))

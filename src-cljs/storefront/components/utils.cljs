@@ -101,3 +101,22 @@
   []
   {:href (or (fastpass/community-url) "#")
    :on-click (send-event-callback events/external-redirect-community)})
+
+(defn select-all-text [e]
+  (let [el (.-target e)
+        length (.-length (.-value el))]
+    (cond
+      (.-createTextRange el)
+      (doto (.createTextRange el)
+        (.collapse true)
+        (.moveStart "character" 0)
+        (.moveEnd "character" length)
+        (.select))
+
+      (.-setSelectionRange el)
+      (.setSelectionRange el 0 length)
+
+      :else
+      (do
+        (set! (.-selectionStart el) 0)
+        (set! (.-selectionEnd el) length)))))

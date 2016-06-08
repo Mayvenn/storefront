@@ -401,6 +401,10 @@
                               coupon-code
                               false))))
 
+(defmethod perform-effects events/control-cart-share-show [_ event args app-state]
+  (api/create-shared-cart-id (get-in app-state keypaths/order-number)
+                             (get-in app-state keypaths/order-token)))
+
 (defn- modify-cart [app-state args f]
   (f (get-in app-state keypaths/order)
      args))
