@@ -414,6 +414,10 @@ html { line-height: 1.2; }
   outline-color: var(--green);
 }
 
+.no-glow {
+  outline: none;
+}
+
 /* Custom btn */
 
 .btn {
