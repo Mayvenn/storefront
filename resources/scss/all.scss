@@ -7,7 +7,7 @@
 @import 'colors';
 @import 'mixins';
 
-@import 'layout';
+@import 'layout'; /* includes desktop scss */
 @import 'header';
 @import 'flash';
 @import 'forms';
@@ -15,7 +15,6 @@
 @import 'product_show';
 @import 'account';
 @import 'categories';
-@import 'category';
 
 @import 'stylist_edit';
 

@@ -80,21 +80,6 @@ p {
   border-radius: 0;
   -webkit-border-radius: 0;
 
-
-  &.half {
-    display: inline-block;
-    width: (290rem / $default-font-size);
-    margin: 0 (10rem / $default-font-size);
-
-    &.first {
-      margin-left: 0;
-    }
-
-    &.last {
-      margin-right: 0;
-    }
-  }
-
   &.primary {
     background-color: $roi_orange;
 
@@ -130,28 +115,6 @@ p {
   height: 100%;
 }
 
-.centered-content {
-  width: 100%;
-
-  h1 {
-    @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-
-    margin: 4rem 0 1.5rem 0;
-    padding: 0.75rem;
-    color: white;
-    font-size: 1rem;
-    text-transform: uppercase;
-  }
-
-  p {
-    color: $dark_grey;
-  }
-
-  .center {
-    text-align: center;
-  }
-}
-
 // Desktop Layout
 @media screen and (min-width: 1024px) {
   html {
@@ -168,33 +131,6 @@ p {
     padding-bottom: 2em;
   }
 
-  .centered-content {
-    width: 25rem;
-    margin: 0 auto;
-
-    h1 {
-      @include linear-gradient(to right, $main_gradient_dark, $main_gradient_light);
-
-      margin: 4rem 0 1.5rem 0;
-      padding: 0.75rem;
-      color: white;
-      font-size: 16px;
-      text-transform: uppercase;
-    }
-
-    p {
-      color: $dark_grey;
-    }
-
-    .center {
-      text-align: center;
-    }
-  }
-
-  .left-half {
-    width: 47%;
-  }
-
   div.advertised-promo {
     font-size: 12px;
   }
@@ -208,10 +144,6 @@ p {
 
 // Mobile Layout
 @media screen and (max-width: 1023px) {
-  .line-item-attr.item-form.price {
-    display: none;
-  }
-
   @import 'footer';
 }
 

@@ -1,51 +1,8 @@
-.guarantee-banner {
-  display: none;
-}
-
-.product-show {
-  margin-bottom: 2em;
-}
-
-div#product-images {
-  margin: 23px 54px 51px 54px;
-  width: 420px;
-  float: left;
-}
-
-.product-title {
-    background-color: #a0a0a0;
-    color: white;
-    text-align: left;
-    padding: 12px;
-}
-
 #add-to-cart-button {
   margin-top: 38px;
 }
 
-div.product-description {
-  margin: 0 54px;
-  width: 427px;
-
-  .sub-header {
-    background-image: none;
-  }
-}
-
-#inside-product-cart-form {
-  width: 420px;
-}
-
-div.price-container {
-  margin-top: 31px;
-}
-
-.left-of-reviews-wrapper {
-  float: left;
-  margin-bottom: 50px;
-}
-
-div.cart-form-container,  .product-reviews {
+.product-reviews {
   margin-right: 45px;
   margin-bottom: 2rem;
 }
@@ -82,8 +39,4 @@ div.quantity-selector {
     height: 2.35em;
     border: solid #d3d4d4 2px
   }
-}
-
-div.product-price {
-  padding: 16px 0 9px;
 }

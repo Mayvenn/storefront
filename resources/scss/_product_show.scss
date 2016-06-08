@@ -1,87 +1,6 @@
-// FIXME - Override Spree style
-#product-images {
-  position: relative;
-  margin: 0 auto;
-  height: (290em / 12);
-  width: (320em / 12);
-
-  #main-image {
-    border: none;
-    height: 100%;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}
-
-.product-title {
-    color: $dark_text;
-    text-align: center;
-    font-family: $secondary_font;
-    font-style: italic;
-    font-weight: normal;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: white;
-    opacity: 0.75;
-    text-align: center;
-    font-size: (15em / 12);
-    padding: 0.56em 0;
-}
-
-.guarantee-banner {
-  width: 100%;
-  background-image: url('/images/30_day_banner_bg.png');
-  background-size: 100% 100%;
-  height: (57em / 12);
-}
-
-.guarantee-banner-image {
-  background-image: url('/images/30_day_banner.png');
-  @include stretch-bg;
-  margin: 0 auto;
-  height: 100%;
-  width: (320em / 12);
-}
-
-.sub-header {
-  color: $gold_text;
-  font-family: $secondary_font;
-  font-style: italic;
-  font-weight: normal;
-  padding-top: 0.5em;
-  margin: 1em 0;
-  background-image: url('/images/gold_band_divider.png');
-  background-repeat: no-repeat;
-  font-size: (15em / 12);
-  line-height: 1em;
-  background-size: (300em / 15) (2.5em / 15);
-}
-
-.product-description, .cart-form-container, #after-add {
+#after-add {
   margin: 0 auto;
   width: (300rem / 12);
-}
-
-.product-description-text {
-  background-color: white; // work around android 4.0 bug
-  margin-bottom: 3rem;
-}
-
-.product-description-text {
-  color: $dark_text;
-  line-height: (17em / 12);
-}
-
-.quantity-label {
-  color: $medium_text;
-  text-align: center;
-  margin-bottom: (5em / 12);
-  font-size: 1em;
-  line-height: 1em;
 }
 
 .quantity-selector {
@@ -145,30 +64,6 @@ a.pm-link {
   width: 12em;
 }
 
-.product-price {
-  float: left;
-  text-align: center;
-  padding-top: (19em / 12);
-  width: 13em;
-}
-
-.price-label {
-  margin-right: 0.5em;
-}
-
-.price-label, span.price.selling {
-  font-weight: normal;
-  line-height: 3.3846em;
-  text-transform: uppercase;
-  color: $dark_text;
-  font-size: (13em / 12);
-  font-family: $primary_font_medium;
-}
-
-.price-container {
-  margin-top: 1.5em;
-}
-
 .go-to-checkout {
   width: (284em / 16);
   margin: 0 auto;
@@ -178,31 +73,6 @@ a.pm-link {
   background-color: $roi_orange;
   position: relative;
   margin-bottom: 3em;
-}
-
-.checkout-cart {
-  position: absolute;
-  background-image: url('/images/cart_go_to.png');
-  @include stretch-bg;
-  top: (22rem / $default-font-size);
-  right: (194em / 32);
-  width: (50rem / $default-font-size);
-  height: (44rem / $default-font-size);
-}
-
-.checkout-guarantee {
-  position: absolute;
-  top: (-61em / 64);
-  right: (22em / 32);
-  height: (149em / 32);
-  width: (149em / 32);
-  border-radius: 50%;
-  background-image: url('/images/30_day_seal.png');
-  @include stretch-bg;
-
-  .cart-button {
-    border-radius: 50%;
-  }
 }
 
 .added-to-bag-container {
