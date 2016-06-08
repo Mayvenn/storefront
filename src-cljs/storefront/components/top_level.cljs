@@ -16,7 +16,6 @@
             [storefront.components.help :refer [help-component]]
             [storefront.components.home :refer [home-component]]
             [storefront.components.manage-account :refer [manage-account-component]]
-            [storefront.components.product :as product]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [storefront.components.reset-password :as reset-password]
             [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]

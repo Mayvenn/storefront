@@ -1,6 +1,7 @@
 (ns storefront.components.category
   (:require [storefront.components.utils :as utils]
-            [storefront.components.product :as product-component :refer [display-bagged-variant]]
+            [storefront.components.stylist-kit :as stylist-kit]
+            [storefront.components.product :refer [display-bagged-variant]]
             [storefront.components.formatters :refer [as-money]]
             [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
@@ -251,4 +252,4 @@
       (if (experiments/product-page-redesign? data)
         (bundle-builder/built-component data)
         (om/build bundle-builder-category-component data))
-      (product-component/built-component data)))))
+      (stylist-kit/built-component data)))))
