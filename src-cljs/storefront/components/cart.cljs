@@ -106,10 +106,11 @@
        (when share-carts?
          [:div.border-top.border-bottom.border-light-silver.py2
           (ui/button [:.flex.items-center.justify-center
-                      [:.img-share-icon.bg-center.bg-contain.mr2
+                      [:.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
                        {:style {:width "24px"
                                 :height "18px"}}]
-                      "Share your bag"]
+                      ;; col-12 is needed for mobile safari
+                      [:.col-12 "Share your bag"]]
                      {:btn-type "btn-outline"
                       :color "bg-white"
                       :border "border-navy"
