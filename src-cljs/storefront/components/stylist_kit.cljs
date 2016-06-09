@@ -10,6 +10,7 @@
 
 (defn kit-image [product]
   [:img.col-12 {:src (->> product :images first :large_url)
+                :item-prop "image"
                 :alt "Contents of stylist kit, including sample bundle rings, and other Mayvenn stylist resources"}])
 
 (def shipping-and-guarantee

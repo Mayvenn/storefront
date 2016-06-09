@@ -162,6 +162,7 @@
          [:.center
           (taxon-title taxon)
           (reviews-summary reviews)
+          [:meta {:item-prop "image" :content (first carousel-images)}]
           (product/full-bleed-narrow (carousel carousel-images taxon))
           (when-not fetching-variants? (starting-at variants))]
          (if fetching-variants?
