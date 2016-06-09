@@ -6,10 +6,11 @@
 (defn thirty-day-guarantee-component [data owner]
   (om/component
    (html
-    (ui/narrow-container
-     [:.sans-serif.dark-gray
-      [:.bg-white.p2
-       [:.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
+    [:.sans-serif.dark-gray
+     [:.bg-white.p2
+      [:.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
+     [:.mx-auto
+      {:style {:max-width "768px"}}
       [:.center.px2.dark-black
        [:.border-bottom.border-light-silver.border-width-1.py2
         "We guarantee that you'll love Mayvenn hair!"]
@@ -27,4 +28,4 @@
         "If you are not completely happy with your Mayvenn hair before it is installed, "
         "we will refund your purchase if the bundle is unopened and the hair is in its original condition. "
         "Just call us:"
-        [:a.medium.navy.block {:href "tel:1-888-562-7952"} "1-888-562-7952"]]]]))))
+        [:a.medium.navy.block {:href "tel:1-888-562-7952"} "1-888-562-7952"]]]]])))
