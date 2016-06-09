@@ -22,20 +22,18 @@
 (defn share-link-component [{:keys [share-url]} owner {:keys [on-close]}]
   (om/component
    (html
-    [:div
-     [:.fixed.overlay.bg-darken-4.z3
-      {:on-click on-close}]
-     [:.fixed.z3.bg-light-white.rounded.p3.center.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5
-      [:.h2.black.medium "Share your bag"]
-      [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-      [:.border-top.border-bottom.border-light-silver.py2.my1
-       [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
-        {:type "text"
-         :value share-url
-         :on-click utils/select-all-text}]]
-      [:.navy.h5.my2 "(select and copy link to share)"]
-      (ui/button "Close" {:color "bg-navy"
-                          :on-click on-close})]])))
+    (ui/modal on-close
+              [:.bg-light-white.rounded.p3.center
+               [:.h2.black.medium "Share your bag"]
+               [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
+               [:.border-top.border-bottom.border-light-silver.py2.my1
+                [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
+                 {:type "text"
+                  :value share-url
+                  :on-click utils/select-all-text}]]
+               [:.navy.h5.my2 "(select and copy link to share)"]
+               (ui/button "Close" {:color "bg-navy"
+                                   :on-click on-close})]))))
 
 (defn query-share-link [data]
   {:share-url (get-in data keypaths/shared-cart-url)})
