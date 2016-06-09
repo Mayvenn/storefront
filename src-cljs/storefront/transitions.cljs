@@ -287,7 +287,7 @@
 
 (defmethod transition-state events/api-success-shared-cart-id [_ event {:keys [cart]} app-state]
   (-> app-state
-      (assoc-in keypaths/shared-cart-url (str "https://" (.-host js/location) "/c/" (:number cart)))
+      (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
 
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
