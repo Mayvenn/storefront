@@ -60,7 +60,7 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))
 (def shop-menu-expanded (conj ui :shop-menu-expanded))
-(def share-link-popup (conj ui :share-link-popup))
+(def popup (conj ui :popup))
 (def header-menus #{account-menu-expanded
                     shop-menu-expanded
                     store-info-expanded})

@@ -24,6 +24,7 @@
             [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
             [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
+            [storefront.components.utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -45,6 +46,12 @@
       [:div.legacy-container
        (om/build (requires-sign-in data redirect-getsat-component) data)]]])))
 
+(defn popup-component [data]
+  (condp = (get-in data keypaths/popup)
+    :share-cart (om/build cart/share-link-component (cart/query-share-link data)
+                          {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
+    nil))
+
 (defn top-level-component [data owner]
   (om/component
    (html
@@ -52,6 +59,7 @@
       (om/build getsat-top-level-component data)
       [:div
        (om/build promotion-banner-component data)
+       (popup-component data)
        [:div.page-wrap
         [:div.border-bottom.border-light-silver
          (header/built-component data)

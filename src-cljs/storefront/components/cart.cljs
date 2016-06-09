@@ -25,7 +25,7 @@
     [:div
      [:.fixed.overlay.bg-darken-4.z3
       {:on-click on-close}]
-     [:.fixed.z3.col-11.mx-auto.bg-light-white.rounded.p3.center
+     [:.fixed.z3.bg-light-white.rounded.p3.center.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5
       [:.h2.black.medium "Share your bag"]
       [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
       [:.border-top.border-bottom.border-light-silver.py2.my1
@@ -48,17 +48,12 @@
                               redirecting-to-paypal?
                               redesigned?
                               share-carts?
-                              share-popup?
                               requesting-shared-cart?
                               update-line-item-requests
-                              delete-line-item-requests
-                              share-link]} owner]
+                              delete-line-item-requests]} owner]
   (om/component
    (html
     (ui/container
-     (when share-popup?
-       (om/build share-link-component share-link {:opts {:on-close (utils/send-event-callback events/control-cart-share-hide)}}))
-
      [:.h2.center.py3.silver.sans-serif
       "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]
 
@@ -163,8 +158,6 @@
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :redesigned?               (experiments/product-page-redesign? data)
      :share-carts?              (and (experiments/share-carts? data) (stylists/own-store? data))
-     :share-popup?              (get-in data keypaths/share-link-popup)
-     :share-link                (query-share-link data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart-id)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
