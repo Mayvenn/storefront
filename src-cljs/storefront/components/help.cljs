@@ -12,16 +12,24 @@
        (string/join "-")
        (str "1-")))
 
+(defn cells [& body]
+  [:.my2.lg-col-8.mx-auto
+   (into [:.clearfix.mxnp3] body)])
+(defn cell [& body]
+  (into [:.col.col-6.lg-up-col-3.pp3] body))
+
+(def link :a.dark-gray)
+
 (defn cell-border [& body]
-  (into [:.border.border-silver.rounded.px1.py2.flex.flex-column.justify-between.items-center
-         {:style {:height "134px"}}]
+  (into [:.btn.btn-outline.border-silver.pxp6.py2.flex.flex-column.justify-between.items-center.mx-auto
+         {:style {:height "134px" :max-width "142px"}}]
         body))
 (defn cell-icon [icon-class width height]
   [:.bg-center.bg-contain.bg-no-repeat.mb1
    {:style {:height height :width width}
     :class icon-class}])
-(def cell-text :.h1.light.dark-gray)
-(def cell-description :.h4.navy.medium)
+(def cell-text :.f1.light.dark-gray)
+(def cell-description :.f4.navy.medium)
 
 (defn help-component [{:keys [sms-number]} owner]
   (om/component
@@ -29,41 +37,41 @@
     [:div.sans-serif
      [:div.py4.bg-white.center
       [:.h1.navy.mb2 "Get in touch"]
-      [:.h3.dark-gray.light "Have a problem?"]
-      [:.h3.dark-gray.light "Need advice on a style or product?"]
-      [:.h3.dark-gray.light "Here are a few ways to get a hold of us."]]
+      [:.h3.dark-gray.light
+       [:div "Have a problem?"]
+       [:div "Need advice on a style or product?"]
+       [:div "Here are a few ways to get a hold of us."]]]
 
-     [:.bg-pure-white.center
-      [:.mx1
-       [:.border-bottom.border-width-1.border-light-silver.py2.line-height-4.mxp3
-        [:.h4.dark-black "Monday to Friday from 9am to 5pm PST"]
-        [:.h4.dark-black "Orders placed before 10am PST ship that day"]]]
-      [:.px1.py2
-       [:.col.col-6.pp3
-        [:a.navy {:href "http://help.mayvenn.com" :target "_blank"}
+     [:.m2.bg-pure-white.center
+      [:.border-bottom.border-light-silver.py2.h4.line-height-4
+       [:div "Monday to Friday from 9am to 5pm PST"]
+       [:div "Orders placed before 10am PST ship that day"]]
+      (cells
+       (cell
+        [link {:href "http://help.mayvenn.com" :target "_blank"}
          (cell-border
           (cell-icon "img-faqs-icon" "44px" "52px")
           [cell-text "FAQs"]
-          [cell-description "Visit our help center"])]]
-       [:.col.col-6.pp3
-        [:a.navy {:href "tel://+18885627952"}
+          [cell-description "Visit our help center"])])
+       (cell
+        [link {:href "tel://+18885627952"}
          (cell-border
           (cell-icon "img-phone-icon" "45px" "52px")
           [cell-text "Call"]
-          [cell-description "1-888-562-7952"])]]
-       [:.col.col-6.pp3
-        [:a.navy (when sms-number {:href (str "sms://+1" sms-number)})
+          [cell-description "1-888-562-7952"])])
+       (cell
+        [link (when sms-number {:href (str "sms://+1" sms-number)})
          (cell-border
           (cell-icon "img-text-icon" "54px" "52px")
           [cell-text "Text"]
           [cell-description
            (if sms-number
              (display-sms sms-number)
-             "Loading...")])]]
-       [:.col.col-6.pp3
-        [:a.navy {:href "mailto:help@mayvenn.com"}
+             "Loading...")])])
+       (cell
+        [link {:href "mailto:help@mayvenn.com"}
          (cell-border
           (cell-icon "img-email-icon" "49px" "52px")
           [cell-text "Email"]
-          [cell-description "help@mayvenn.com"])]]]
-      [:.clearfix.mb4]]])))
+          [cell-description
+           [:span {:style {:word-break "break-all"}} "help@mayvenn.com"]])]))]])))
