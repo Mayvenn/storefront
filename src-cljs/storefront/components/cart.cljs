@@ -28,8 +28,8 @@
      [:.fixed.z3.col-11.mx-auto.bg-light-white.rounded.p3.center
       [:.h2.black.medium "Share your bag"]
       [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-      [:.border-top.border-bottom.border-width-1.border-light-silver.py2.my1
-       [:input.border.border-width-1.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
+      [:.border-top.border-bottom.border-light-silver.py2.my1
+       [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
         {:type "text"
          :value share-url
          :on-click utils/select-all-text}]]

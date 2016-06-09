@@ -42,8 +42,8 @@
        [:div "Need advice on a style or product?"]
        [:div "Here are a few ways to get a hold of us."]]]
 
-     [:.m2.bg-pure-white.center
-      [:.border-bottom.border-light-silver.py2.h4.line-height-4
+     [:.m2.center
+      [:.border-bottom.border-light-silver.py2.line-height-4
        [:div "Monday to Friday from 9am to 5pm PST"]
        [:div "Orders placed before 10am PST ship that day"]]
       (cells
