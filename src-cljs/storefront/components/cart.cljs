@@ -23,7 +23,7 @@
   (om/component
    (html
     (ui/modal on-close
-              [:.bg-light-white.rounded.p3.center
+              [:.bg-light-white.rounded.p3.center.mt3
                [:.h2.black.medium "Share your bag"]
                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
                [:.border-top.border-bottom.border-light-silver.py2.my1

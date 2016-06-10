@@ -7,6 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.request-keys :as request-keys]
+            [storefront.hooks.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -80,20 +81,28 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn show-refer-ad [sales-rep-email bonus-amount earning-amount]
-  (let [mailto (str "mailto:" sales-rep-email "?Subject=Referral&body=name:%0D%0Aemail:%0D%0Aphone:")
-        message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
+(defn refer-button [refer-to-leads? sales-rep-email link-attrs]
+  (let [mailto (str "mailto:" sales-rep-email "?Subject=Referral&body=name:%0D%0Aemail:%0D%0Aphone:")]
+    [:a.col-12.btn.btn-primary
+     (merge (if refer-to-leads?
+              (utils/fake-href events/control-popup-show-refer-stylists)
+              {:href mailto :target "_top"})
+            link-attrs)
+     "Refer"]))
+
+(defn show-refer-ad [refer-to-leads? sales-rep-email bonus-amount earning-amount]
+  (let [message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
                                     (f/as-money-without-cents bonus-amount)
                                     (f/as-money-without-cents earning-amount))]
     [:div
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.muted.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 [:a.col-12.btn.btn-primary {:href mailto :target "_top"} "Refer"]]]
+      [:.h3.col-8.mx-auto.mb3 (refer-button refer-to-leads? sales-rep-email {})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 [:a.col-12.btn.btn-primary.btn-big {:href mailto :target "_top"} "Refer"]]
+      [:.right.ml2.m1.h3.col-4 (refer-button refer-to-leads? sales-rep-email {:class "btn-big"})]
       [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
 
 (def empty-referrals
@@ -109,7 +118,8 @@
                                            referrals
                                            page
                                            pages
-                                           fetching?]} _]
+                                           fetching?
+                                           refer-to-leads?]} _]
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
@@ -118,7 +128,7 @@
        [:.clearfix.mb3
         [:.sm-up-col-right.sm-up-col-4
          (when bonus-amount
-           (show-refer-ad sales-rep-email bonus-amount earning-amount))]
+           (show-refer-ad refer-to-leads? sales-rep-email bonus-amount earning-amount))]
 
         [:.sm-up-col.sm-up-col-8
          (when (seq referrals)
@@ -139,4 +149,77 @@
    :referrals       (get-in data keypaths/stylist-referral-program-referrals)
    :page            (get-in data keypaths/stylist-referral-program-page)
    :pages           (get-in data keypaths/stylist-referral-program-pages)
+   :refer-to-leads? (experiments/stylist-referrals? data)
    :fetching?       (utils/requesting? data request-keys/get-stylist-referral-program)})
+
+(def ordinal ["first" "second" "third" "fourth" "fifth"])
+
+(defn refer-component [{:keys [bonus-amount earning-amount referrals]}
+                       owner
+                       {:keys [on-close]}]
+  (om/component
+   (html
+    (ui/modal on-close
+              [:.bg-light-white.rounded.p2.mt3.sans-serif
+               [:.clearfix
+                [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close}
+                 [:div {:alt "Close"} (svg/counter-inc {:fill :fill-dark-silver})]]]
+               [:.p1
+                [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
+                [:p.light.dark-gray.line-height-3.my2
+                 "Do you know a stylist that would be a great Mayvenn?"
+                 " Enter their information below and when they sell " (f/as-money-without-cents earning-amount)
+                 " of Mayvenn products you will earn " (f/as-money-without-cents bonus-amount) "!"]
+                (for [[idx referral] (map-indexed vector referrals)]
+                  [:.py2.border-top.border-light-silver
+                   {:key idx}
+                   [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"]
+                   [:.flex.col-12
+                    [:.col-6 (ui/text-field "First Name"
+                                            (conj keypaths/stylist-referrals idx :first-name)
+                                            (:first-name referral)
+                                            {:autofocus "autofocus"
+                                             :type      "text"
+                                             :name      (str "referral["idx"][first-name]")
+                                             :data-test (str "referral-first-name-"idx)
+                                             :id        (str "referral-first-name-"idx)
+                                             :class     "rounded-left"
+                                             :required  true})]
+
+                    [:.col-6 (ui/text-field "Last Name"
+                                            (conj keypaths/stylist-referrals idx :last-name)
+                                            (:last-name referral)
+                                            {:type      "text"
+                                             :name      (str "referral["idx"][last-name]")
+                                             :id        (str "referral-last-name-"idx)
+                                             :data-test (str "referral-last-name-"idx)
+                                             :class     "rounded-right border-width-left-0"})]]
+                   [:.col-12 (ui/text-field "Mobile Phone (required)"
+                                            (conj keypaths/stylist-referrals idx :phone)
+                                            (:phone referral)
+                                            {:type      "tel"
+                                             :name      (str "referral["idx"][phone]")
+                                             :id        (str "referral-phone-"idx)
+                                             :data-test (str "referral-phone-"idx)
+                                             :class     "rounded"
+                                             :required  true})]
+                   [:.col-12 (ui/text-field "Email"
+                                            (conj keypaths/stylist-referrals idx :email)
+                                            (:email referral)
+                                            {:type      "email"
+                                             :name      (str "referral["idx"][email]")
+                                             :id        (str "referral-email-"idx)
+                                             :data-test (str "referral-email-"idx)
+                                             :class     "rounded"})]])
+                (when (< (count referrals) 5)
+                  [:.py3.border-top.border-light-silver.center
+                   [:a.col-10.mx-auto.btn.btn-outline.dark-gray.border-light-silver.p2
+                    (utils/fake-href events/control-stylist-referral-add-another)
+                    [:.flex.items-center.justify-center.h3.line-height-1
+                     [:.mr1.flex.items-center (svg/counter-inc)]
+                     [:.medium "Add Another Referral"]]]])]]))))
+
+(defn query-refer [data]
+  {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
+   :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
+   :referrals      (get-in data keypaths/stylist-referrals)})

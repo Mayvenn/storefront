@@ -185,6 +185,8 @@
 (def stylist-referral-program-page (conj stylist-referral-program :page))
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
+(def stylist-referrals (conj stylist :referrals))
+
 (def validation-errors (conj ui :validation-errors))
 (def validation-errors-message (conj validation-errors :error-message))
 (def validation-errors-details (conj validation-errors :details))

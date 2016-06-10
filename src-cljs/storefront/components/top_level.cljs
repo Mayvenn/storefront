@@ -22,6 +22,7 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
+            [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.utils :as utils]
@@ -50,6 +51,8 @@
   (condp = (get-in data keypaths/popup)
     :share-cart (om/build cart/share-link-component (cart/query-share-link data)
                           {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
+    :refer-stylist (om/build stylist.referrals/refer-component (stylist.referrals/query-refer data)
+                             {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
     nil))
 
 (defn top-level-component [data owner]

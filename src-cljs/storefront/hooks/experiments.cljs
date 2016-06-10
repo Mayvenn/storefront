@@ -47,6 +47,9 @@
 (defn share-carts? [data]
   (display-variation data "share-carts"))
 
+(defn stylist-referrals? [data]
+  (display-variation data "stylist-referrals"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

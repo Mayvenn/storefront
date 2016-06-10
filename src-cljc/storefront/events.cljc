@@ -83,7 +83,9 @@
 (defpath control-cart-line-item-dec)
 (defpath control-cart-remove)
 (defpath control-cart-share-show)
+
 (defpath control-popup-hide)
+(defpath control-popup-show-refer-stylists)
 
 (defpath control-counter-inc)
 (defpath control-counter-dec)
@@ -99,6 +101,8 @@
 (defpath control-checkout-confirmation-submit)
 
 (defpath control-stylist-profile-picture)
+
+(defpath control-stylist-referral-add-another)
 
 (defpath control-stylist-manage-account-submit)
 

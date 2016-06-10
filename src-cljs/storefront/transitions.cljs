@@ -290,6 +290,12 @@
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
 
+(defmethod transition-state events/control-stylist-referral-add-another [_ event args app-state]
+  (update-in app-state keypaths/stylist-referrals conj state/empty-referral))
+
+(defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
+  (assoc-in app-state keypaths/popup :refer-stylist))
+
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))
 

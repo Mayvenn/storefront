@@ -32,6 +32,8 @@
    :selected-shipping-method {}
    :use-store-credits false})
 
+(def empty-referral {})
+
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
@@ -76,6 +78,7 @@
                                   :referrals []
                                   :page 0
                                   :pages nil}
+               :referrals [empty-referral]
                :manage-account {:email nil
                                 :id 10
                                 :birth-date-1i nil

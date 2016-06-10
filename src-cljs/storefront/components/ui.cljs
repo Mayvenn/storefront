@@ -112,6 +112,13 @@
       [:.fixed.overlay]
       menu])])
 
+(defn modal [on-close & body]
+  [:div
+   [:.fixed.overlay.bg-darken-4.z3
+    {:on-click on-close}]
+   (into [:.fixed.z3.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5.overflow-auto {:style {:max-height "100%"}}]
+         body)])
+
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]
@@ -133,9 +140,9 @@
 
 (defn counter [value spinning? dec-fn inc-fn]
   [:div
-   (counter-button spinning? dec-fn svg/counter-dec)
+   (counter-button spinning? dec-fn (svg/counter-dec))
    (counter-value spinning? value)
-   (counter-button spinning? inc-fn svg/counter-inc)])
+   (counter-button spinning? inc-fn (svg/counter-inc))])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:.border.rounded
@@ -143,10 +150,3 @@
     :data-test data-test}
    [:.bg-lighten-4.rounded
     contents]])
-
-(defn modal [on-close & body]
-  [:div
-   [:.fixed.overlay.bg-darken-4.z3
-    {:on-click on-close}]
-   (into [:.fixed.z3.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5.overflow-auto {:style {:max-height "100%"}}]
-         body)])
