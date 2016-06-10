@@ -210,13 +210,18 @@
                     {:message error-msg
                      :navigation (get-in app-state keypaths/navigation-message)})))
 
+(defmethod perform-effects events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
+  (api/create-order-from-shared-cart shared-cart-id
+                                     (get-in app-state keypaths/user-id)
+                                     (get-in app-state keypaths/store-stylist-id)))
+
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
     (routes/enqueue-redirect events/navigate-cart)
 
     (not (or (= event events/navigate-checkout-sign-in)
-             (get-in app-state keypaths/user-token)
+             (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
     (routes/enqueue-redirect events/navigate-checkout-sign-in)))
 
@@ -402,8 +407,8 @@
                               false))))
 
 (defmethod perform-effects events/control-cart-share-show [_ event args app-state]
-  (api/create-shared-cart-id (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/order-token)))
+  (api/create-shared-cart (get-in app-state keypaths/order-number)
+                          (get-in app-state keypaths/order-token)))
 
 (defn- modify-cart [app-state args f]
   (f (get-in app-state keypaths/order)

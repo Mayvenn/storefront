@@ -285,7 +285,7 @@
       (assoc-in keypaths/cart-quantities (updated-cart-quantities order))
       (update-in keypaths/order merge order)))
 
-(defmethod transition-state events/api-success-shared-cart-id [_ event {:keys [cart]} app-state]
+(defmethod transition-state events/api-success-shared-cart [_ event {:keys [cart]} app-state]
   (-> app-state
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))

@@ -387,13 +387,13 @@
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
-      {:handler #(messages/handle-message events/api-success-stylist-manage-account-profile-picture
-                                          (merge {:updated true}
-                                                 {:stylist (select-keys % [:profile_picture_url])}))
-       :error-handler default-error-handler
-       :params form-data
-       :response-format (json-response-format {:keywords? true})
-       :timeout 10000})))
+         {:handler #(messages/handle-message events/api-success-stylist-manage-account-profile-picture
+                                             (merge {:updated true}
+                                                    {:stylist (select-keys % [:profile_picture_url])}))
+          :error-handler default-error-handler
+          :params form-data
+          :response-format (json-response-format {:keywords? true})
+          :timeout 10000})))
 
 (defn get-stylist-stats [user-token]
   (api-req
@@ -461,11 +461,11 @@
           (callback [resp] (messages/handle-message events/api-success-sms-number
                                                     {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
-      {:handler callback
-       :headers {"Accepts" "application/json"
-                 "X-Publishable-Key" send-sonar-publishable-key}
-       :format :json
-       :response-format (json-response-format {:keywords? true})})))
+         {:handler callback
+          :headers {"Accepts" "application/json"
+                    "X-Publishable-Key" send-sonar-publishable-key}
+          :format :json
+          :response-format (json-response-format {:keywords? true})})))
 
 (defn place-order [order]
   (api-req
@@ -625,11 +625,23 @@
     :handler #(messages/handle-message events/api-success-update-order-remove-promotion-code
                                        {:order %})}))
 
-(defn create-shared-cart-id [order-number order-token]
+(defn create-shared-cart [order-number order-token]
   (api-req
    POST
-   "/create-shared-cart-id"
-   request-keys/create-shared-cart-id
-   {:params {:number order-number :token order-token}
-    :handler #(messages/handle-message events/api-success-shared-cart-id
+   "/create-shared-cart"
+   request-keys/create-shared-cart
+   {:params  {:order-number order-number
+              :order-token  order-token}
+    :handler #(messages/handle-message events/api-success-shared-cart
+                                       {:cart %})}))
+
+(defn create-order-from-shared-cart [shared-cart-id user-id stylist-id]
+  (api-req
+   POST
+   "/create-order-from-shared-cart"
+   request-keys/create-order-from-shared-cart
+   {:params  {:shared-cart-id shared-cart-id
+              :user-id        user-id
+              :stylist-id     stylist-id}
+    :handler #(messages/handle-message events/api-success-order-from-shared-cart
                                        {:cart %})}))

@@ -27,6 +27,7 @@
 (defpath navigate-forgot-password)
 (defpath navigate-reset-password)
 (defpath navigate-cart)
+(defpath navigate-shared-cart)
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
@@ -140,7 +141,8 @@
 (defpath api-success-get-completed-order)
 (defpath api-success-sms-number)
 
-(defpath api-success-shared-cart-id)
+(defpath api-success-shared-cart)
+(defpath api-success-order-from-shared-cart)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-update-address)
