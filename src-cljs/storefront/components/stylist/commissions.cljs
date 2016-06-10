@@ -176,14 +176,14 @@
    [:.center
     [:.p2.border-bottom.border-dark-white
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
-     [:p.h2.gray.muted "Looks like you don't have any commissions yet."]]
+     [:p.h2.silver "Looks like you don't have any commissions yet."]]
     [:.py3.h3
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylists/store-url]]]))
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:.h6.muted
+    [:.h6.dark-silver
      [:.p2.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]

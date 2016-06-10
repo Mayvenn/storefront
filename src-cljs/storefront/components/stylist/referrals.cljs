@@ -30,7 +30,7 @@
     (html
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
      [:.relative
-      [:.h6.gray.muted.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
+      [:.h6.silver.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
       [:.border-dashed.border-silver.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
@@ -73,7 +73,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
                                     (f/as-money-without-cents lifetime-total))]
-    [:.h6.muted
+    [:.h6.dark-silver
      [:.p3.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
@@ -97,19 +97,19 @@
     [:div
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
-      [:p.py1.h5.muted.line-height-2 message]
+      [:p.py1.h5.dark-silver.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 (refer-button refer-to-leads? sales-rep-email {})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
       [:.right.ml2.m1.h3.col-4 (refer-button refer-to-leads? sales-rep-email {:class "btn-big"})]
-      [:p.overflow-hidden.py1.h5.muted.line-height-2 message]]]))
+      [:p.overflow-hidden.py1.h5.dark-silver.line-height-2 message]]]))
 
 (def empty-referrals
   (html
    [:.center.p3.to-sm-hide
     [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
-    [:p.h2.gray.muted "Looks like you haven't" [:br] "referred anyone yet."]]))
+    [:p.h2.silver "Looks like you haven't" [:br] "referred anyone yet."]]))
 
 (defn stylist-referrals-component [{:keys [sales-rep-email
                                            earning-amount
