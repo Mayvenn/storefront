@@ -102,7 +102,6 @@
 (def shared-cart-url (conj ui :shared-cart-url))
 
 (def cart (conj ui :cart))
-(def cart-quantities (conj cart :quantities))
 (def cart-coupon-code (conj cart :coupon-code))
 
 (def cart-paypal-redirect (conj cart :paypal-redirect))

@@ -260,19 +260,14 @@
                     keypaths/reset-password-token)
       (assoc-in keypaths/sign-in-remember true)))
 
-(defn updated-cart-quantities [order]
-  (into {} (map (juxt :id :quantity) (orders/product-items order))))
-
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj requested)
       (assoc-in keypaths/browse-variant-quantity 1)
-      (assoc-in keypaths/cart-quantities (updated-cart-quantities order))
       (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
-      (assoc-in keypaths/cart-quantities (updated-cart-quantities order))
       (update-in keypaths/order merge order)))
 
 (defmethod transition-state events/api-success-shared-cart [_ event {:keys [cart]} app-state]
@@ -297,8 +292,7 @@
         (assoc-in keypaths/order order)
         (assoc-in keypaths/checkout-selected-shipping-method
                   (merge (first (get-in app-state keypaths/shipping-methods))
-                         (orders/shipping-item order)))
-        (assoc-in keypaths/cart-quantities (updated-cart-quantities order)))
+                         (orders/shipping-item order))))
     (assoc-in app-state keypaths/order {})))
 
 (defmethod transition-state events/api-success-messenger-token [_ event {:keys [messenger_token]} app-state]
