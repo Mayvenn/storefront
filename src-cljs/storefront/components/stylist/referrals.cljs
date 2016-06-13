@@ -163,7 +163,7 @@
               [:.bg-light-white.rounded.p2.mt3.sans-serif
                [:.clearfix
                 [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close}
-                 [:div {:alt "Close"} (svg/counter-inc {:fill :fill-dark-silver})]]]
+                 [:.fill-dark-silver {:alt "Close"} svg/counter-inc]]]
                [:.p1
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
@@ -216,7 +216,7 @@
                    [:a.col-10.mx-auto.btn.btn-outline.dark-gray.border-light-silver.p2
                     (utils/fake-href events/control-stylist-referral-add-another)
                     [:.flex.items-center.justify-center.h3.line-height-1
-                     [:.mr1.flex.items-center (svg/counter-inc)]
+                     [:.mr1.flex.items-center.fill-light-silver svg/counter-inc]
                      [:.medium "Add Another Referral"]]]])]]))))
 
 (defn query-refer [data]

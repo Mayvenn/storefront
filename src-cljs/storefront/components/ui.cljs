@@ -139,10 +139,10 @@
    (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:div
-   (counter-button spinning? dec-fn (svg/counter-dec))
+  [:.fill-light-silver
+   (counter-button spinning? dec-fn svg/counter-dec)
    (counter-value spinning? value)
-   (counter-button spinning? inc-fn (svg/counter-inc))])
+   (counter-button spinning? inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:.border.rounded
