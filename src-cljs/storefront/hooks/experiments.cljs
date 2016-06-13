@@ -41,9 +41,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn product-page-redesign? [data]
-  (display-variation data "product-css"))
-
 (defn share-carts? [data]
   (display-variation data "share-carts"))
 

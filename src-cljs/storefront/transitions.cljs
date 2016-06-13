@@ -176,18 +176,8 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
-(defn swap-straight-image [app-state]
-  (if (experiments/product-page-redesign? app-state)
-    (update-in app-state keypaths/taxons
-               (fn [taxons] (query/update-where taxons
-                                               #(= "straight" (:name %))
-                                               #(assoc-in % [:images 0] "//d275k6vjijb2m1.cloudfront.net/cellar/straight/1-alt/640x580.jpg"))))
-    app-state))
-
 (defmethod transition-state events/api-success-taxons [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/taxons (:taxons args))
-      (swap-straight-image)))
+  (assoc-in app-state keypaths/taxons (:taxons args)))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (update-in app-state keypaths/products merge (key-by :id products)))
@@ -405,9 +395,7 @@
 
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
-  (-> app-state
-      (update-in keypaths/optimizely-variations conj variation)
-      (swap-straight-image)))
+  (update-in app-state keypaths/optimizely-variations conj variation))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
   (assoc-in app-state keypaths/loaded-optimizely true))

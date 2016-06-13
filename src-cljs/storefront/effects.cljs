@@ -682,9 +682,7 @@
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
-  (let [expected-reviews-count (if (experiments/product-page-redesign? app-state)
-                                 2
-                                 3)
+  (let [expected-reviews-count 2
         actual-reviews-count (get-in app-state keypaths/review-components-count)]
     (when (= expected-reviews-count actual-reviews-count)
       (reviews/start))))
