@@ -135,12 +135,6 @@
 (defmethod transition-state events/control-counter-dec [_ event args app-state]
   (update-in app-state (:path args) (comp (partial max 1) dec)))
 
-(defmethod transition-state events/control-counter-set [_ event {:keys [path value-str]} app-state]
-  (assoc-in app-state path
-            (-> (js/parseInt value-str 10)
-                (Math/abs)
-                (max 1))))
-
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
   (let [selected-variants (products/filter-variants-by-selections
