@@ -14,6 +14,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
+            [storefront.components.stylist-kit :as stylist-kit]
             [storefront.components.carousel :as carousel]))
 
 (defn option-html [later-step?
@@ -211,3 +212,10 @@
 
 (defn built-component [data]
   (om/build component (query data)))
+
+(defn category-component [data owner]
+  (om/component
+   (html
+    (if (bundle-builder/included-taxon? (taxons/current-taxon data))
+      (built-component data)
+      (stylist-kit/built-component data)))))

@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.cart :as cart]
             [storefront.components.categories :refer [categories-page-component]]
-            [storefront.components.category :refer [category-component]]
+            [storefront.components.bundle-builder :refer [category-component]]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.checkout-complete :as checkout-complete]
             [storefront.components.checkout-confirmation :as checkout-confirmation]
