@@ -87,7 +87,8 @@
    [:.my1
     (for [{:keys [name slug]} taxons]
       [:a
-       (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
+       (merge {:key slug :data-test (str "menu-" slug)}
+              (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
         (when (new-taxon? slug) ui/new-flag)
         [:.green.titleize
