@@ -126,9 +126,10 @@
     (merge {:style {:width width :height width}} attrs)
     [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
 
-(defn ^:private counter-button [spinning? f content]
+(defn ^:private counter-button [spinning? data-test f content]
   [:a.col
    {:href "#"
+    :data-test data-test
     :disabled spinning?
     :on-click (if spinning? utils/noop-callback f)}
    content])
@@ -140,9 +141,9 @@
 
 (defn counter [value spinning? dec-fn inc-fn]
   [:.fill-light-silver
-   (counter-button spinning? dec-fn svg/counter-dec)
+   (counter-button spinning? "quantity-dec" dec-fn svg/counter-dec)
    (counter-value spinning? value)
-   (counter-button spinning? inc-fn svg/counter-inc)])
+   (counter-button spinning? "quantity-inc" inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:.border.rounded

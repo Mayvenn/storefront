@@ -52,9 +52,10 @@
   (ui/button
    "Add to bag"
    {:on-click      (utils/send-event-callback events/control-add-to-bag
-                                              {:product product
-                                               :variant variant
+                                              {:product  product
+                                               :variant  variant
                                                :quantity quantity})
+    :data-test     "add-to-bag"
     :show-spinner? adding-to-bag?
     :color         "bg-navy"}))
 
@@ -64,7 +65,8 @@
 
 (defn redesigned-display-bagged-variant [idx {:keys [quantity product variant]}]
   [:.h6.line-height-3.my1.p1.caps.gray.bg-dark-white.medium.center
-   {:key idx}
+   {:key idx
+    :data-test "items-added"}
    "Added to bag: "
    (number->words quantity)
    " "
@@ -77,7 +79,9 @@
 
 (def checkout-button
   (html
-   [:.cart-button ; for scrolling
+   [:div
+    {:data-test "cart-button"
+     :data-scroll "cart-button"}
     (ui/button "Check out" (utils/route-to events/navigate-cart))]))
 
 (defn bagged-variants-and-checkout [bagged-variants]

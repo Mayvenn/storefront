@@ -678,7 +678,7 @@
     (handle-later events/added-to-bag)))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
-  (when-let [el (.querySelector js/document ".cart-button")]
+  (when-let [el (.querySelector js/document "[data-scroll=cart-button]")]
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]
