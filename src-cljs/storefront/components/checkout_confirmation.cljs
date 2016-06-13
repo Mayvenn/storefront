@@ -25,7 +25,6 @@
            saving-card?
            placing-order?
            requires-additional-payment?
-           redesigned?
            payment delivery order
            products]}
    owner]
@@ -38,7 +37,7 @@
       [:.md-up-col.md-up-col-6.px3
        [:.h2.left-align "Order Summary"]
        [:.mb2
-        (summary/display-line-items (orders/product-items order) products redesigned?)]]
+        (summary/display-line-items (orders/product-items order) products)]]
       [:.md-up-col.md-up-col-6.px3
        (om/build checkout-delivery/component delivery)
        [:form
@@ -62,7 +61,6 @@
    :saving-card?                 (checkout-payment/saving-card? data)
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
-   :redesigned?                  (experiments/product-page-redesign? data)
    :checkout-steps               (checkout-steps/query data)
    :errors                       (get-in data keypaths/validation-errors)
    :products                     (get-in data keypaths/products)
