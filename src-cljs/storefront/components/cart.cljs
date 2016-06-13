@@ -44,7 +44,6 @@
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
-                              redesigned?
                               share-carts?
                               requesting-shared-cart?
                               update-line-item-requests
@@ -65,8 +64,7 @@
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
-                                                    delete-line-item-requests
-                                                    redesigned?)]
+                                                    delete-line-item-requests)]
       [:.md-up-col-5
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
@@ -154,7 +152,6 @@
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-     :redesigned?               (experiments/product-page-redesign? data)
      :share-carts?              (and (experiments/share-carts? data) (stylists/own-store? data))
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)

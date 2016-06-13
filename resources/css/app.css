@@ -552,8 +552,7 @@ html { line-height: 1.2; }
 }
 .img-right-arrow  { background-image: url('/images/carousel/arrow.svg'); }
 
-.img-straight     { background-image: url('/images/style_images/category_images/StraightCategoryImage.png'); }
-.img-straight-alt { background-image: url('/images/style_images/category_images/StraightCategoryAltImage.jpg'); }
+.img-straight     { background-image: url('/images/style_images/category_images/StraightCategoryImage.jpg'); }
 .img-blonde       { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
 .img-curly        { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
 .img-deep-wave    { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }

@@ -11,21 +11,6 @@
 
 (defn css-url [url] (str "url(" url ")"))
 
-(defn carousel-component [data owner {:keys [index-path images]}]
-  (om/component
-   (html
-    (let [idx (get-in data index-path)]
-      [:.carousel-component
-       [:.hair-category-image {:style {:background-image (css-url (get images idx))}}]
-       [:.left {:on-click
-                (utils/send-event-callback events/control-carousel-move
-                                           {:index-path index-path
-                                            :index (mod (dec idx) (count images))})}]
-       [:.right {:on-click
-                 (utils/send-event-callback events/control-carousel-move
-                                            {:index-path index-path
-                                             :index (mod (inc idx) (count images))})}]]))))
-
 (defn set-selected-item [owner i]
   (om/set-state! owner :selected-item i)
   false)

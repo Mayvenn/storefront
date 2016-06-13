@@ -1,7 +1,3 @@
-#add-to-cart-button {
-  margin-top: 38px;
-}
-
 .product-reviews {
   margin-right: 45px;
   margin-bottom: 2rem;
@@ -11,32 +7,3 @@ div.product-reviews {
   padding: 0;
 }
 
-div#after-add {
-  width: 100%;
-
-  .go-to-checkout {
-    margin-bottom: 0;
-  }
-}
-
-div.go-to-checkout {
-  width: auto;
-}
-
-div.quantity-selector {
-  width: 174px;
-  height: 3.125em;
-
-  .plus, .minus {
-    width: 1.705em;
-    height: 1.705em;
-    line-height: 1.705em;
-    background-color: #d3d4d4;
-  }
-
-  input.quantity-selector-input {
-    left: 2.35em;
-    height: 2.35em;
-    border: solid #d3d4d4 2px
-  }
-}

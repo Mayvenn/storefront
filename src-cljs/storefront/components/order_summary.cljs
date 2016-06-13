@@ -56,8 +56,7 @@
 
 (defn ^:private display-line-item [{:keys [id product-name variant-attrs unit-price] :as line-item}
                                    thumbnail
-                                   quantity-line
-                                   redesigned?]
+                                   quantity-line]
   [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
    [:a.left.mr1
     [:img.border.border-light-silver.rounded
@@ -71,20 +70,17 @@
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: "
-      (if redesigned?
-        (as-money-without-cents unit-price)
-        (as-money unit-price))]
+      (as-money-without-cents unit-price)]
      quantity-line]]])
 
-(defn display-line-items [line-items products redesigned?]
+(defn display-line-items [line-items products]
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
      (products/thumbnail-url products product-id)
-     [:div "Quantity: " quantity]
-     redesigned?)))
+     [:div "Quantity: " quantity])))
 
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests redesigned?]
+(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
   (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
     (let [updating? (get update-line-item-requests variant-id)
           removing? (get delete-line-item-requests variant-id)]
@@ -101,5 +97,4 @@
                      (utils/send-event-callback events/control-cart-line-item-dec
                                                 {:variant-id variant-id})
                      (utils/send-event-callback events/control-cart-line-item-inc
-                                                {:variant-id variant-id}))]]
-       redesigned?))))
+                                                {:variant-id variant-id}))]]))))

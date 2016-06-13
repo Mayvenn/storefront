@@ -64,7 +64,7 @@ p {
   background-color: $roi_orange;
 }
 
-.button.continue, .button, .large {
+.button.continue, .button {
   width: 100%;
   font-size: 1.3333em;
   height: 2.75em;
@@ -82,30 +82,6 @@ p {
 
   &.primary {
     background-color: $roi_orange;
-
-    &.alternate {
-      background-color: $roi_navy;
-    }
-  }
-
-  &.saving { // fixme: only works when button is a div
-    color: transparent;
-    position: relative;
-    cursor: default;
-
-    &::after {
-      content: "";
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: url("/images/spinner.svg");
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: contain;
-    }
   }
 }
 
@@ -139,7 +115,6 @@ p {
   @import 'desktop_taxons';
   @import 'desktop_product_show';
   @import 'desktop_stylist_edit';
-  @import 'desktop_bundle_builder';
 }
 
 // Mobile Layout
