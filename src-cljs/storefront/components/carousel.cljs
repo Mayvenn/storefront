@@ -14,6 +14,21 @@
        (filter (comp #{(:id item)} second))
        ffirst))
 
+(defn arrow [{:keys [class on-click]}]
+  [:a.block.absolute.bg-no-repeat.bg-center.cursor.to-md-hide.top-0.bottom-0.pointer
+   {:class class
+    :style    {:width           "5rem"
+               :background-size "30px"}
+    :on-click on-click}])
+
+(defn dot [{:keys [key on-click selected?]}]
+  [:.pointer.pxp2
+   {:key      key
+    :on-click on-click}
+   [:.bg-white.border.border-dark-gray.circle.bg-lighten-3
+    {:class (when selected? "bg-dark-gray")
+     :style {:width "7px" :height "7px"}}]])
+
 (defn swipe-component [{:keys [items continuous]} owner {:keys [starting-item dot-location]}]
   (reify
     om/IDidMount
@@ -52,29 +67,22 @@
                (:body item)])]]
           (when (> (count items) 1)
             [:div
-             [:a.block.absolute.img-left-arrow.bg-no-repeat.bg-center.cursor.to-md-hide.top-0.bottom-0.left-0.pointer
-              {:style    {:width           "5rem"
-                          :background-size "30px"}
-               :on-click (fn [_]
-                           (set-selected-item owner (get items (if (= 0 selected-index)
-                                                                 (dec (count items))
-                                                                 (dec selected-index)))))}]
-             [:a.block.absolute.img-right-arrow.bg-no-repeat.bg-center.cursor.to-md-hide.top-0.bottom-0.right-0.pointer
-              {:style    {:width           "5rem"
-                          :background-size "30px"}
-               :on-click (fn [_]
-                           (set-selected-item owner (get items (if (= selected-index (dec (count items)))
-                                                                 0
-                                                                 (inc selected-index)))))}]
+             (arrow {:class "img-left-arrow left-0"
+                     :on-click (fn [_]
+                                 (set-selected-item owner (get items (if (= 0 selected-index)
+                                                                       (dec (count items))
+                                                                       (dec selected-index)))))})
+             (arrow {:class "img-right-arrow right-0"
+                     :on-click (fn [_]
+                                 (set-selected-item owner (get items (if (= selected-index (dec (count items)))
+                                                                       0
+                                                                       (inc selected-index)))))})
              [:.flex.block.absolute
               {:style {:bottom "1rem"
                        :left   "1.5rem"
                        :right  "1.5rem"}
                :class (when-not (= :left dot-location) "justify-center")}
               (for [[i item] (map-indexed vector items)]
-                [:.pointer.pxp2
-                 {:key      i
-                  :on-click (fn [_] (set-selected-item owner item))}
-                 [:.bg-white.border.border-dark-gray.circle.bg-lighten-3
-                  {:class (when (= selected-index i) "bg-dark-gray")
-                   :style {:width "7px" :height "7px"}}]])]])])))))
+                (dot {:key i
+                      :on-click (fn [_] (set-selected-item owner item))
+                      :selected? (= selected-index i)}))]])])))))
