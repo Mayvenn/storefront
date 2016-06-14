@@ -162,6 +162,7 @@
                        "Disallow: /stylist"
                        "Disallow: /cart"
                        "Disallow: /m/"
+                       "Disallow: /c/"
                        "Disallow: /admin"])
     (string/join "\n" ["User-agent: googlebot"
                        "Disallow: /"])))
