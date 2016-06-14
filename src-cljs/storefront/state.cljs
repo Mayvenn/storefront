@@ -32,6 +32,11 @@
    :selected-shipping-method {}
    :use-store-credits false})
 
+(def initial-cart-state
+  {:coupon-code ""
+   :source nil
+   :paypal-redirecting false})
+
 (def empty-referral {})
 
 (defn initial-state []
@@ -141,9 +146,7 @@
           :manage-account {:email ""
                            :password ""
                            :password-confirmation ""}
-          :cart {:quantities {}
-                 :coupon-code ""
-                 :paypal-redirecting false}
+          :cart initial-cart-state
           :checkout initial-checkout-state
           :flash {:success {:message nil
                             :navigation []}

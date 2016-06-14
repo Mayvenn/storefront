@@ -132,7 +132,8 @@
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
           token                                     (get-in req [:cookies "user-token" :value])
           user-id                                   (get-in req [:cookies "id" :value])
-          store-id                                  (get-in req [:store :stylist_id])]
+          store-id                                  (get-in req [:store :stylist_id])
+          store-slug                                (get-in req [:store :store_slug])]
       (when nav-event
         (condp = (bidi->edn nav-event)
           events/navigate-product     (some-> (fetch/product storeback-config (:product-slug params) token)
@@ -142,12 +143,13 @@
           events/navigate-category    (when (fetch/category storeback-config (:taxon-slug params) token)
                                         (respond-with-index req storeback-config environment))
           events/navigate-shared-cart (when-let [order (fetch/create-order-from-cart storeback-config (:shared-cart-id params) user-id token store-id)]
-                                        (let [cookie-config {:secure (not (config/development? environment))
-                                                             :path "/"
+                                        (let [cookie-config {:secure  (not (config/development? environment))
+                                                             :path    "/"
                                                              :max-age (* 60 60 24 7 4)}]
-                                          (-> (redirect "/cart")
+                                          (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
+                                                                                          :utm_medium store-slug})))
                                               (assoc :cookies {:number (merge cookie-config {:value (:number order)})
-                                                               :token (merge cookie-config {:value (:token order)})})
+                                                               :token  (merge cookie-config {:value (:token order)})})
                                               (cookies/cookies-response {:encoder dumb-encoder}))))
           (respond-with-index req storeback-config environment))))))
 

@@ -103,6 +103,7 @@
 
 (def cart (conj ui :cart))
 (def cart-coupon-code (conj cart :coupon-code))
+(def cart-source (conj cart :source))
 
 (def cart-paypal-redirect (conj cart :paypal-redirect))
 

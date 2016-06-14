@@ -82,6 +82,16 @@
 (defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
   (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
 
+(defn cart-source [code app-state]
+  (case code
+    "sharecart" (str (get-in app-state (conj keypaths/store :store_nickname) "We") " made this bag just for you!")
+    nil))
+
+(defmethod transition-state events/navigate-cart [_ event args app-state]
+  (if-let [source (-> args :query-params :utm_source (cart-source app-state))]
+    (assoc-in app-state keypaths/cart-source source)
+    app-state))
+
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
     (get-in app-state keypaths/user-email)
@@ -351,6 +361,7 @@
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/checkout state/initial-checkout-state)
+      (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/order {})
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
