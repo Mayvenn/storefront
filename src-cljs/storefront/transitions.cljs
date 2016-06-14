@@ -278,6 +278,9 @@
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))
 
+(defmethod transition-state events/api-success-order-from-shared-cart [_ event {:keys [order]} app-state]
+  (assoc-in app-state keypaths/order order))
+
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
     (-> app-state

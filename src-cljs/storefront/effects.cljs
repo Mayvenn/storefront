@@ -602,6 +602,9 @@
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code number token pending-promo-code true)))
 
+(defmethod perform-effects events/api-success-order-from-shared-cart [_ event args app-state]
+  (routes/enqueue-navigate events/navigate-cart))
+
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (ensure-products app-state (map :product-id (orders/product-items order)))
   (if (and (orders/incomplete? order)

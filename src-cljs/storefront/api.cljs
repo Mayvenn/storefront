@@ -644,5 +644,4 @@
               :user-id        user-id
               :user-token     user-token
               :stylist-id     stylist-id}
-    :handler #(messages/handle-message events/api-success-order-from-shared-cart
-                                       {:cart %})}))
+    :handler #(messages/handle-message events/api-success-order-from-shared-cart {:order %})}))
