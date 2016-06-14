@@ -166,31 +166,15 @@
     (string/join "\n" ["User-agent: googlebot"
                        "Disallow: /"])))
 
-;; TODO: move me to fetch
-(defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
-  (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
-                            {:form-params {:number number
-                                           :token order-token
-                                           :session-id sid}
-                             :headers {"X-Forwarded-For" ip-addr}
-                             :content-type :json
-                             :throw-exceptions false
-                             :socket-timeout 10000
-                             :conn-timeout 10000
-                             :as :json
-                             :coerce :always})]
-    (when-not (<= 200 (:status response) 299)
-      (-> response :body :error-code (or "paypal-incomplete")))))
-
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-        (if-let [error-code (verify-paypal-payment storeback-config number order-token
-                                                   (let [headers (:headers request)]
-                                                     (or (headers "x-forwarded-for")
-                                                         (headers "remote-addr")
-                                                         "localhost"))
-                                                   (:query-params request))]
+        (if-let [error-code (fetch/verify-paypal-payment storeback-config number order-token
+                                                         (let [headers (:headers request)]
+                                                           (or (headers "x-forwarded-for")
+                                                               (headers "remote-addr")
+                                                               "localhost"))
+                                                         (:query-params request))]
           (redirect (str "/cart?error=" error-code))
           (redirect (str "/orders/"
                          number
