@@ -46,6 +46,5 @@
 (def add-user-in-order [:add-user-in-order])
 (def place-order [:place-order])
 (def create-shared-cart [:create-shared-cart])
-(def create-order-from-shared-cart [:create-order-from-shared-cart])
 
 (def stripe-create-token [:stripe-create-token])

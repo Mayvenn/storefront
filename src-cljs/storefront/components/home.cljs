@@ -41,7 +41,7 @@
   (om/component
    (html
     (let [taxons (remove taxons/is-stylist-product? (get-in data keypaths/taxons))]
-      [:.home-container.m-auto.sans-serif
+      [:.home-container.m-auto.sans-serif.clearfix
        [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
         (apply utils/route-to (navigation/shop-now-navigation-message data))]
        [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
@@ -59,6 +59,4 @@
                 (apply utils/route-to (navigation/shop-now-navigation-message data)))]
         [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
          {:style {:height "72px"}}
-         "Introducing Peruvian In All Textures"]]
-
-       [:.clearfix]]))))
+         "Introducing Peruvian In All Textures"]]]))))

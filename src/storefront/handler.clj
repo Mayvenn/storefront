@@ -16,6 +16,7 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.cookies :as cookies]
             [ring.util.codec :as codec]
             [ring-logging.core :as ring-logging]
             [storefront.prerender :refer [wrap-prerender]]))
@@ -117,19 +118,37 @@
       response
       (content-type "text/html")))
 
+(defn dumb-encoder
+  "Our cookies have colons at the beginning of their names (e.g. ':token'). But
+  the default cookie encoder is codec/form-encode, which escapes colons. It is
+  only safe to use this encoder if you know the cookie names are URL safe"
+  [map-entry]
+  (let [[k v] (first map-entry)]
+    (str k "=" v)))
+
 (defn site-routes
   [{:keys [storeback-config environment]}]
   (fn [{:keys [uri] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
-          token                                     (get-in req [:cookies "user-token" :value])]
+          token                                     (get-in req [:cookies "user-token" :value])
+          user-id                                   (get-in req [:cookies "id" :value])
+          store-id                                  (get-in req [:store :stylist_id])]
       (when nav-event
         (condp = (bidi->edn nav-event)
-          events/navigate-product  (some-> (fetch/product storeback-config (:product-slug params) token)
-                                           ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
-                                           :url-path
-                                           redirect)
-          events/navigate-category (when (fetch/category storeback-config (:taxon-slug params) token)
-                                     (respond-with-index req storeback-config environment))
+          events/navigate-product     (some-> (fetch/product storeback-config (:product-slug params) token)
+                                              ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
+                                              :url-path
+                                              redirect)
+          events/navigate-category    (when (fetch/category storeback-config (:taxon-slug params) token)
+                                        (respond-with-index req storeback-config environment))
+          events/navigate-shared-cart (when-let [order (fetch/create-order-from-cart storeback-config (:shared-cart-id params) user-id token store-id)]
+                                        (let [cookie-config {:secure (not (config/development? environment))
+                                                             :path "/"
+                                                             :max-age (* 60 60 24 7 4)}]
+                                          (-> (redirect "/cart")
+                                              (assoc :cookies {:number (merge cookie-config {:value (:number order)})
+                                                               :token (merge cookie-config {:value (:token order)})})
+                                              (cookies/cookies-response {:encoder dumb-encoder}))))
           (respond-with-index req storeback-config environment))))))
 
 (defn robots [{:keys [subdomains]}]
@@ -145,6 +164,7 @@
     (string/join "\n" ["User-agent: googlebot"
                        "Disallow: /"])))
 
+;; TODO: move me to fetch
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [response (http/post (str (:endpoint storeback-config) "/v2/place-order")
                             {:form-params {:number number

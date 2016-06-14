@@ -1,3 +1,4 @@
+;; TODO: rename me to api
 (ns storefront.fetch
   (:require [clj-http.client :as http]))
 
@@ -8,6 +9,16 @@
              :socket-timeout 10000
              :conn-timeout 10000
              :as :json}))
+
+(defn storeback-post [storeback-config path params]
+  (http/post (str (:endpoint storeback-config) path)
+             {:form-params params
+              :content-type :json
+              :throw-exceptions false
+              :socket-timeout 10000
+              :conn-timeout 10000
+              :as :json
+              :coerce :always}))
 
 (defn store [storeback-config store-slug]
   (when (seq store-slug)
@@ -33,3 +44,10 @@
                                                                 :user-token user-token})]
     (when (not-404 response)
       (:body response))))
+
+(defn create-order-from-cart [storeback-config shared-cart-id user-id user-token stylist-id]
+  (let [response (storeback-post storeback-config "/create-order-from-shared-cart" {:shared-cart-id shared-cart-id
+                                                                                    :user-id        user-id
+                                                                                    :user-token     user-token
+                                                                                    :stylist-id     stylist-id})]
+    (:body response)))

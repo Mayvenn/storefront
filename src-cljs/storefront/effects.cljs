@@ -210,12 +210,6 @@
                     {:message error-msg
                      :navigation (get-in app-state keypaths/navigation-message)})))
 
-(defmethod perform-effects events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
-  (api/create-order-from-shared-cart shared-cart-id
-                                     (get-in app-state keypaths/user-id)
-                                     (get-in app-state keypaths/user-token)
-                                     (get-in app-state keypaths/store-stylist-id)))
-
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
@@ -601,9 +595,6 @@
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code number token pending-promo-code true)))
-
-(defmethod perform-effects events/api-success-order-from-shared-cart [_ event args app-state]
-  (routes/enqueue-navigate events/navigate-cart))
 
 (defmethod perform-effects events/api-success-get-order [_ event order app-state]
   (ensure-products app-state (map :product-id (orders/product-items order)))
