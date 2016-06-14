@@ -186,14 +186,6 @@
     @include display(flex);
     @include justify-content(space-between);
 
-    .mayvenn_stylist_user_password label {
-      margin-top: 2.4em;
-    }
-
-    .mayvenn_stylist_user_password-confirmation label {
-      margin-top: 2.4em;
-    }
-
     div.input {
       @include flex-grow-better(1);
       margin-left: 1em;
