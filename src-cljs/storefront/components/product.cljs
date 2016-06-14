@@ -63,7 +63,7 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn redesigned-display-bagged-variant [idx {:keys [quantity product variant]}]
+(defn display-bagged-variant [idx {:keys [quantity product variant]}]
   [:.h6.line-height-3.my1.p1.caps.gray.bg-dark-white.medium.center
    {:key idx
     :data-test "items-added"}
@@ -73,9 +73,6 @@
    (some-> variant :variant_attrs :length)
    " "
    (:name product)])
-
-(defn redesigned-bagged-variants [bagged-variants]
-  (map-indexed redesigned-display-bagged-variant bagged-variants))
 
 (def checkout-button
   (html
@@ -87,7 +84,7 @@
 (defn bagged-variants-and-checkout [bagged-variants]
   (when (seq bagged-variants)
     [:div
-     (redesigned-bagged-variants bagged-variants)
+     (map-indexed display-bagged-variant bagged-variants)
      checkout-button]))
 
 (defn description-structure [body]
