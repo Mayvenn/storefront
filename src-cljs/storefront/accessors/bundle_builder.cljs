@@ -62,7 +62,7 @@
   (case name
     "frontals" '(:style :material :origin :length)
     "closures" '(:style :material :origin :length)
-    "blonde" '(:color :origin :length)
+    "blonde hair" '(:color :origin :length)
     '(:origin :length)))
 
 (def included-product? (complement :stylist_only?))
