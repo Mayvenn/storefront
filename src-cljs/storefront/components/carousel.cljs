@@ -1,15 +1,7 @@
 (ns storefront.components.carousel
-  (:require [storefront.events :as events]
-            [storefront.components.utils :as utils]
-            [storefront.keypaths :as keypaths]
-            [storefront.messages :as messages]
-            [storefront.request-keys :as request-keys]
-            [sablono.core :refer-macros [html]]
+  (:require [sablono.core :refer-macros [html]]
             [swipe :as swipe]
-            [om.core :as om]
-            [storefront.components.ui :as ui]))
-
-(defn css-url [url] (str "url(" url ")"))
+            [om.core :as om]))
 
 (defn set-selected-item [owner i]
   (om/set-state! owner :selected-item i)
