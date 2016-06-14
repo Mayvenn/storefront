@@ -635,13 +635,14 @@
     :handler #(messages/handle-message events/api-success-shared-cart
                                        {:cart %})}))
 
-(defn create-order-from-shared-cart [shared-cart-id user-id stylist-id]
+(defn create-order-from-shared-cart [shared-cart-id user-id user-token stylist-id]
   (api-req
    POST
    "/create-order-from-shared-cart"
    request-keys/create-order-from-shared-cart
    {:params  {:shared-cart-id shared-cart-id
               :user-id        user-id
+              :user-token     user-token
               :stylist-id     stylist-id}
     :handler #(messages/handle-message events/api-success-order-from-shared-cart
                                        {:cart %})}))

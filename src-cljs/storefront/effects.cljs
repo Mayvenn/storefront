@@ -213,6 +213,7 @@
 (defmethod perform-effects events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (api/create-order-from-shared-cart shared-cart-id
                                      (get-in app-state keypaths/user-id)
+                                     (get-in app-state keypaths/user-token)
                                      (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
