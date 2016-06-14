@@ -2,7 +2,7 @@
   (:require [storefront.config :as config]
             [storefront.app-routes :refer [app-routes bidi->edn]]
             [storefront.events :as events]
-            [storefront.fetch :as fetch]
+            [storefront.api :as api]
             [storefront.views :as views]
             [clojure.string :as string]
             [compojure.core :refer :all]
@@ -47,7 +47,7 @@
 (defn wrap-fetch-store [h storeback-config]
   (fn [{:keys [subdomains] :as req}]
     (h (merge req
-              {:store (fetch/store storeback-config (last subdomains))}))))
+              {:store (api/store storeback-config (last subdomains))}))))
 
 (defn parse-domain [{:keys [server-name server-port]}]
   (str (parse-tld server-name) ":" server-port))
@@ -62,7 +62,7 @@
       (redirect (str "http://" store-slug "." domain (query-string req)))
 
       ;; TODO: render an unavailable page
-      (= store :storefront.fetch/storeback-unavailable)
+      (= store :storefront.api/storeback-unavailable)
       (h req)
 
       store-slug
@@ -136,13 +136,13 @@
           store-slug                                (get-in req [:store :store_slug])]
       (when nav-event
         (condp = (bidi->edn nav-event)
-          events/navigate-product     (some-> (fetch/product storeback-config (:product-slug params) token)
+          events/navigate-product     (some-> (api/product storeback-config (:product-slug params) token)
                                               ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
                                               :url-path
                                               redirect)
-          events/navigate-category    (when (fetch/category storeback-config (:taxon-slug params) token)
+          events/navigate-category    (when (api/category storeback-config (:taxon-slug params) token)
                                         (respond-with-index req storeback-config environment))
-          events/navigate-shared-cart (when-let [order (fetch/create-order-from-cart storeback-config (:shared-cart-id params) user-id token store-id)]
+          events/navigate-shared-cart (when-let [order (api/create-order-from-cart storeback-config (:shared-cart-id params) user-id token store-id)]
                                         (let [cookie-config {:secure  (not (config/development? environment))
                                                              :path    "/"
                                                              :max-age (* 60 60 24 7 4)}]
@@ -170,12 +170,12 @@
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-        (if-let [error-code (fetch/verify-paypal-payment storeback-config number order-token
-                                                         (let [headers (:headers request)]
-                                                           (or (headers "x-forwarded-for")
-                                                               (headers "remote-addr")
-                                                               "localhost"))
-                                                         (:query-params request))]
+        (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
+                                                       (let [headers (:headers request)]
+                                                         (or (headers "x-forwarded-for")
+                                                             (headers "remote-addr")
+                                                             "localhost"))
+                                                       (:query-params request))]
           (redirect (str "/cart?error=" error-code))
           (redirect (str "/orders/"
                          number

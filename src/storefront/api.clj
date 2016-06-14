@@ -1,5 +1,4 @@
-;; TODO: rename me to api
-(ns storefront.fetch
+(ns storefront.api
   (:require [clj-http.client :as http]))
 
 (defn storeback-fetch [storeback-config path params]
