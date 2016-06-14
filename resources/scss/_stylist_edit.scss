@@ -1,3 +1,51 @@
+.simple_form {
+
+  .input {
+    margin: 0.5em 0;
+  }
+
+  .control-label {
+    font-size: to-rem(28);
+  }
+
+  input[type=text],
+  input[type=tel],
+  input[type=password],
+  input[type=email] {
+    height: to-rem(60);
+    font-size: to-rem(28);
+    padding: 0 0.5em;
+  }
+
+  .field_with_errors {
+
+    input {
+      border: 1px solid $errors;
+    }
+  }
+
+  .error {
+    display: block;
+    color: $errors;
+    font-family: $primary_font_regular;
+    font-size: to-rem(24);
+    margin: 0.5em 0;
+  }
+}
+
+.big-button {
+  display: block;
+  text-align: center;
+  font-size: 1.3333em;
+  line-height: 2.75em;
+  height: 2.75em;
+  color: white;
+  width: 100%;
+  margin-top: 2em;
+  border: none;
+  background-color: $roi_orange;
+}
+
 .header-bar-heading {
   font-family: $secondary_font;
   font-style: italic;

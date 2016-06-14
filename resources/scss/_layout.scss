@@ -44,53 +44,6 @@ p {
   margin: 0;
 }
 
-.errorExplanation {
-  margin: 1em;
-  padding: 1em;
-  color: white;
-  background-color: $error_color;
-}
-
-.big-button {
-  display: block;
-  text-align: center;
-  font-size: 1.3333em;
-  line-height: 2.75em;
-  height: 2.75em;
-  color: white;
-  width: 100%;
-  margin-top: 2em;
-  border: none;
-  background-color: $roi_orange;
-}
-
-.button.continue, .button {
-  width: 100%;
-  font-size: 1.3333em;
-  height: 2.75em;
-  line-height: 2.75em;
-  color: white;
-  background-color: $default_grey;
-  border: none;
-  margin: (26em / 32) 0;
-  text-align: center;
-  cursor: pointer;
-  text-transform:capitalize;
-  -webkit-appearance: none;
-  border-radius: 0;
-  -webkit-border-radius: 0;
-
-  &.primary {
-    background-color: $roi_orange;
-  }
-}
-
-.full-link {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 // Desktop Layout
 @media screen and (min-width: 1024px) {
   html {
@@ -105,10 +58,6 @@ p {
 
   .legacy-container {
     padding-bottom: 2em;
-  }
-
-  div.advertised-promo {
-    font-size: 12px;
   }
 
   @import 'desktop_footer';

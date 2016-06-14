@@ -18,3 +18,10 @@
     color: white;
   }
 }
+
+.errorExplanation {
+  margin: 1em;
+  padding: 1em;
+  color: white;
+  background-color: $error_color;
+}
