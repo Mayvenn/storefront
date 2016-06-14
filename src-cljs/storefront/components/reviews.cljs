@@ -90,8 +90,8 @@ Lengths: 14\" to 26\""
       (html
        [:div
         (when loaded?
-          [:div.product-reviews
-           [:div.yotpo.yotpo-main-widget
+          [:.mx-auto.mb3
+           [:.yotpo.yotpo-main-widget
             (merge
              (product-options-for taxon)
              {:data-url url})]])]))))
@@ -113,12 +113,12 @@ Lengths: 14\" to 26\""
       (html
        [:div
         (when loaded?
-          [:div.product-reviews-summary
-           [:div.yotpo.bottomLine.star-summary
+          [:.clearfix
+           [:.col.yotpo.bottomLine
             (merge
              (product-options-for taxon)
              {:data-url url})]
-           [:div.yotpo.QABottomLine.question-summary
+           [:.col.ml2.yotpo.QABottomLine
             (product-options-for taxon)]])]))))
 
 (defn reviews-summary-component [{:keys [taxon] :as args} owner]

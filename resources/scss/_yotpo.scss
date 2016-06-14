@@ -1,6 +1,8 @@
 div.yotpo {
   $primary_color: #43b4d1;
 
+  clear: none;
+
   div, span, p, a, img, i, strong, sup, ul, li, form, label {
     font-family: $primary_font_regular !important;
     line-height: (17em / 12) !important;
