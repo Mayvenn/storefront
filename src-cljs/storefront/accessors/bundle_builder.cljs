@@ -58,11 +58,11 @@
                                        :step-variants        step-variants
                                        :step-min-price       (min-price step-variants)})}))
 
-(defn selection-flow [{:keys [name]}]
-  (case name
+(defn selection-flow [{:keys [slug]}]
+  (case slug
     "frontals" '(:style :material :origin :length)
     "closures" '(:style :material :origin :length)
-    "blonde hair" '(:color :origin :length)
+    "blonde" '(:color :origin :length)
     '(:origin :length)))
 
 (def included-product? (complement :stylist_only?))
