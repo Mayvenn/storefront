@@ -113,11 +113,6 @@
       (wrap-resource "public")
       (wrap-content-type)))
 
-(defn respond-with-index [req storeback-config environment]
-  (-> (views/index req storeback-config environment)
-      response
-      (content-type "text/html")))
-
 (defn dumb-encoder
   "Our cookies have colons at the beginning of their names (e.g. ':token'). But
   the default cookie encoder is codec/form-encode, which escapes colons. It is
@@ -126,31 +121,55 @@
   (let [[k v] (first map-entry)]
     (str k "=" v)))
 
-(defn site-routes
-  [{:keys [storeback-config environment]}]
+(defn expire-cookie [resp name] (assoc-in resp [:cookies name] {:value "" :max-age 0 :path "/"}))
+
+(defn respond-with-index [req storeback-config environment]
+  (-> (views/index req storeback-config environment)
+      response
+      (content-type "text/html")))
+
+(defn redirect-product->canonical-url
+  "Checks that the product exists, and redirects to its canonical url"
+  [{:keys [storeback-config]} req {:keys [product-slug]}]
+  (let [token (get-in req [:cookies "user-token" :value])]
+    (some-> (api/product storeback-config product-slug token)
+            ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
+            :url-path
+            redirect)))
+
+(defn render-category
+  "Checks that the category exists"
+  [{:keys [storeback-config environment]} req {:keys [taxon-slug]}]
+  (let [token (get-in req [:cookies "user-token" :value])]
+    (when (api/category storeback-config taxon-slug token)
+      (respond-with-index req storeback-config environment))))
+
+(defn create-order-from-shared-cart [{:keys [storeback-config environment]} {:keys [cookies store]} {:keys [shared-cart-id]}]
+  (let [token      (get-in cookies ["user-token" :value])
+        user-id    (get-in cookies ["id" :value])
+        {:keys [number token error-code]} (api/create-order-from-cart storeback-config shared-cart-id user-id token (:stylist_id store))
+        cookie-config {:secure  (not (config/development? environment))
+                       :path    "/"
+                       :max-age (* 60 60 24 7 4)}]
+    (if number
+      (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
+                                                      :utm_medium (:store_slug store)})))
+          (assoc :cookies {:number (merge cookie-config {:value number})
+                           :token  (merge cookie-config {:value token})})
+          (cookies/cookies-response {:encoder dumb-encoder}))
+      (-> (redirect (str "/cart?" (codec/form-encode {:error "share-cart-failed"})))
+          (expire-cookie :number)
+          (expire-cookie :token)
+          (cookies/cookies-response {:encoder dumb-encoder})))))
+
+(defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
-          token                                     (get-in req [:cookies "user-token" :value])
-          user-id                                   (get-in req [:cookies "id" :value])
-          store-id                                  (get-in req [:store :stylist_id])
-          store-slug                                (get-in req [:store :store_slug])]
+    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
       (when nav-event
         (condp = (bidi->edn nav-event)
-          events/navigate-product     (some-> (api/product storeback-config (:product-slug params) token)
-                                              ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
-                                              :url-path
-                                              redirect)
-          events/navigate-category    (when (api/category storeback-config (:taxon-slug params) token)
-                                        (respond-with-index req storeback-config environment))
-          events/navigate-shared-cart (when-let [order (api/create-order-from-cart storeback-config (:shared-cart-id params) user-id token store-id)]
-                                        (let [cookie-config {:secure  (not (config/development? environment))
-                                                             :path    "/"
-                                                             :max-age (* 60 60 24 7 4)}]
-                                          (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
-                                                                                          :utm_medium store-slug})))
-                                              (assoc :cookies {:number (merge cookie-config {:value (:number order)})
-                                                               :token  (merge cookie-config {:value (:token order)})})
-                                              (cookies/cookies-response {:encoder dumb-encoder}))))
+          events/navigate-product     (redirect-product->canonical-url ctx req params)
+          events/navigate-category    (render-category ctx req params)
+          events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
           (respond-with-index req storeback-config environment))))))
 
 (defn robots [{:keys [subdomains]}]

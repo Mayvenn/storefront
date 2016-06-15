@@ -200,7 +200,8 @@
 
 (def cart-error-codes
   {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
-   "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
+   "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."
+   "share-cart-failed"      "The bag that has been shared with you has items that are no longer available.  Please ask your stylist for a new link or 'Shop Now' below"})
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
   (refresh-current-order app-state)
