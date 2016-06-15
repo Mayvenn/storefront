@@ -119,6 +119,11 @@
    (into [:.fixed.z3.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5.overflow-auto {:style {:max-height "100%"}}]
          body)])
 
+(defn modal-close [{:keys [data-test on-close]}]
+  [:.clearfix
+   [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
+    [:.fill-dark-silver {:alt "Close"} svg/counter-inc]]])
+
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]

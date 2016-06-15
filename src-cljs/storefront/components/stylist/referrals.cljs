@@ -161,9 +161,7 @@
    (html
     (ui/modal on-close
               [:.bg-light-white.rounded.p2.mt3.sans-serif
-               [:.clearfix
-                [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close}
-                 [:.fill-dark-silver {:alt "Close"} svg/counter-inc]]]
+               (ui/modal-close {:on-close on-close})
                [:.p1
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2

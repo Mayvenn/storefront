@@ -23,19 +23,18 @@
   (om/component
    (html
     (ui/modal on-close
-              [:.bg-light-white.rounded.p3.center.mt3
-               [:.h2.black.medium "Share your bag"]
-               [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-               [:.border-top.border-bottom.border-light-silver.py2.my1
-                [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
-                 {:type "text"
-                  :value share-url
-                  :data-test "share-url"
-                  :on-click utils/select-all-text}]]
-               [:.navy.h5.my2 "(select and copy link to share)"]
-               (ui/button "Close" {:color "bg-navy"
-                                   :on-click on-close
-                                   :data-test "share-url-close"})]))))
+              [:.bg-light-white.rounded.p2.center.mt3
+               (ui/modal-close {:on-close on-close :data-test "share-url-close"})
+               [:.p1
+                [:.h2.navy.medium "Share your bag"]
+                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.border-top.border-bottom.border-light-silver.py2
+                 [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
+                  {:type "text"
+                   :value share-url
+                   :data-test "share-url"
+                   :on-click utils/select-all-text}]]
+                [:.navy.my2 "(select and copy link to share)"]]]))))
 
 (defn query-share-link [data]
   {:share-url (get-in data keypaths/shared-cart-url)})
