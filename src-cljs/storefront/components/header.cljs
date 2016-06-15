@@ -5,7 +5,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.taxons :refer [new-taxon? slug->name is-closure? is-extension? is-stylist-product?]]
+            [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
@@ -192,8 +192,9 @@
        (row
         (when (new-taxon? slug) ui/new-flag)
         [:span.green.titleize
-         (when (current-page? events/navigate-category {:taxon-slug slug}) {:class padded-selected-link})
-         (get slug->name slug name)])])]])
+         (when (current-page? events/navigate-category {:taxon-slug slug})
+           {:class padded-selected-link})
+         name])])]])
 
 (defn shop-panel [stylist? expanded? current-page? taxons]
   [:.absolute.col-12.bg-white.to-lg-hide.z1.top-lit

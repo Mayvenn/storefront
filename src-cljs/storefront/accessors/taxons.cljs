@@ -8,9 +8,6 @@
 
 (def new-taxon? #{"frontals"})
 
-(def slug->name
-  {"stylist-products" "kits"})
-
 (def is-closure? (comp #{"frontals" "closures"} :slug))
 (def is-stylist-product? :stylist_only?)
 (defn is-extension? [taxon]
