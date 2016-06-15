@@ -153,7 +153,8 @@
                        :max-age (* 60 60 24 7 4)}]
     (if number
       (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
-                                                      :utm_medium (:store_slug store)})))
+                                                      :utm_medium (:store_slug store)
+                                                      :message "shared-cart"})))
           (assoc :cookies {:number (merge cookie-config {:value number})
                            :token  (merge cookie-config {:value token})})
           (cookies/cookies-response {:encoder dumb-encoder}))

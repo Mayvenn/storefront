@@ -82,13 +82,13 @@
 (defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
   (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
 
-(defn cart-source [code app-state]
+(defn cart-message [code app-state]
   (case code
-    "sharecart" (str (get-in app-state (conj keypaths/store :store_nickname) "We") " made this bag just for you!")
+    "shared-cart" (str (get-in app-state (conj keypaths/store :store_nickname) "We") " made this bag just for you!")
     nil))
 
 (defmethod transition-state events/navigate-cart [_ event args app-state]
-  (if-let [source (-> args :query-params :utm_source (cart-source app-state))]
+  (if-let [source (-> args :query-params :message (cart-message app-state))]
     (assoc-in app-state keypaths/cart-source source)
     app-state))
 
