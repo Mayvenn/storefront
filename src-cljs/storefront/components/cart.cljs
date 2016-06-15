@@ -30,10 +30,12 @@
                 [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
                  {:type "text"
                   :value share-url
+                  :data-test "share-url"
                   :on-click utils/select-all-text}]]
                [:.navy.h5.my2 "(select and copy link to share)"]
                (ui/button "Close" {:color "bg-navy"
-                                   :on-click on-close})]))))
+                                   :on-click on-close
+                                   :data-test "share-url-close"})]))))
 
 (defn query-share-link [data]
   {:share-url (get-in data keypaths/shared-cart-url)})
@@ -110,7 +112,8 @@
                       :border "border-navy"
                       :text-color "navy"
                       :on-click (utils/send-event-callback events/control-cart-share-show)
-                      :show-spinner? requesting-shared-cart?})
+                      :show-spinner? requesting-shared-cart?
+                      :data-test "share-cart"})
           [:.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
