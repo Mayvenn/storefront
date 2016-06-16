@@ -102,6 +102,7 @@
 
 (defpath control-stylist-profile-picture)
 
+(defpath control-stylist-referral-submit)
 (defpath control-stylist-referral-add-another)
 
 (defpath control-stylist-manage-account-submit)
@@ -132,6 +133,8 @@
 (defpath api-success-stylist-commissions)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
+(defpath api-success-send-stylist-referrals)
+(defpath api-partial-success-send-stylist-referrals)
 (defpath api-success-messenger-token)
 
 (defpath api-success-add-to-bag)
@@ -171,6 +174,9 @@
 (defpath flash-dismiss-success)
 (defpath flash-show-failure)
 (defpath flash-dismiss-failure)
+
+(defpath referral-thank-you-show)
+(defpath referral-thank-you-hide)
 
 (defpath added-to-bag)
 
