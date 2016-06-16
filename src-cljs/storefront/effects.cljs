@@ -198,6 +198,11 @@
       (api/get-stylist-referral-program user-token
                                         {:page page}))))
 
+(defmethod perform-effects events/control-stylist-referral-submit [_ event args app-state]
+  (api/send-referrals
+   {:referring-stylist-id (get-in app-state keypaths/store-stylist-id)
+    :referrals (map #(select-keys % [:fullname :email :phone]) (get-in app-state keypaths/stylist-referrals))}))
+
 (def cart-error-codes
   {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."
@@ -594,6 +599,9 @@
                     {:message "Account updated"
                      :navigation [events/navigate-stylist-manage-account {}]})
     (handle-message events/flash-dismiss-failure)))
+
+(defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
+  (handle-later events/control-popup-hide {} 3000))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
