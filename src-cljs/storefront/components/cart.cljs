@@ -170,7 +170,9 @@
 (defn built-component [data owner]
   (om/component
    (html
-    (let [item-count (orders/product-quantity (get-in data keypaths/order))]
-      (if (zero? item-count)
-        (om/build empty-component (empty-cart-query data))
-        (om/build full-component (query data)))))))
+    (if (utils/requesting? data request-keys/get-order)
+      [:.py3.h1 ui/spinner]
+      (let [item-count (orders/product-quantity (get-in data keypaths/order))]
+        (if (zero? item-count)
+          (om/build empty-component (empty-cart-query data))
+          (om/build full-component (query data))))))))
