@@ -121,12 +121,7 @@
                :opts      {:dot-location :left}})))
 
 (defn taxon-title [taxon]
-  (product/title
-   (str
-    (:name taxon)
-    ;; TODO: if experiments/product-page-redesign? succeeds, put the word "Hair"
-    ;; into cellar.
-    (when-not (taxons/is-closure? taxon) " Hair"))))
+  (product/title (str (:name taxon) (when-not (taxons/is-closure? taxon) " Hair"))))
 
 (defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]

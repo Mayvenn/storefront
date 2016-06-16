@@ -196,11 +196,6 @@ html { line-height: 1.2; }
 
 /* Custom grid */
 
-/* TODO: stop depending on basscss/grid (which has both non-responsive and
-   responsive versions, but the responsive versions have confusing names) and
-   only use basscss/lib/grid (non-responsive). We define better responsive names
-   here. */
-
 @media (--breakpoint-sm-up) {
   .sm-up-col {
     float: left;

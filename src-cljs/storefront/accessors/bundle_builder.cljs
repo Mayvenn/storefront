@@ -64,7 +64,7 @@
                                 step-min-price]}]
   (for [option-name option-names
         :let        [option-selection {step-name option-name}
-                     option-variants  (products/filter-variants-by-selections option-selection step-variants)]
+                     option-variants  (filter-variants-by-selections option-selection step-variants)]
         ;; There are no Silk Blonde closures, so hide Silk when Blonde has been
         ;; selected, even though Silk Straight closures exist.
         :when       (seq option-variants)]
@@ -89,7 +89,7 @@
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
         :let                    [prior-selections (select-keys all-selections prior-steps)
-                                 step-variants    (products/filter-variants-by-selections prior-selections variants)]]
+                                 step-variants    (filter-variants-by-selections prior-selections variants)]]
     {:step-name     step-name
      :later-step?   (> (count prior-steps) (count all-selections))
      :options       (options-for-step (step->option-names step-name)

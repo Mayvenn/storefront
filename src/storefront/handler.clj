@@ -61,7 +61,6 @@
       (= "www" (first subdomains))
       (redirect (str "http://" store-slug "." domain (query-string req)))
 
-      ;; TODO: render an unavailable page
       (= store :storefront.api/storeback-unavailable)
       (h req)
 
