@@ -165,7 +165,7 @@
                 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
-                 "Do you know a stylist that would be a great Mayvenn?"
+                 "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (f/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (f/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
