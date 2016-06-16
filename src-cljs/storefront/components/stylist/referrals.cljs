@@ -213,6 +213,11 @@
                 [:.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 
+(defn thanks-component [_ owner {:keys [on-close]}]
+  (om/component
+   (html
+    (ui/modal on-close [:.p4.bg-white.rounded "This is where the thank you would be."]))))
+
 (defn query-refer [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
