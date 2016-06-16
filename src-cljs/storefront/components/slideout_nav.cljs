@@ -179,19 +179,19 @@
 (defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner]
   (om/component
    (html
-    (when slid-out?
-      (let [selectable? (partial selectable current-navigation-message)]
-        [:.h3.lg-up-hide
-         [:.fixed.overlay.bg-darken-4.z3
-          ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
-          {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-         [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
-          {:style {:max-height "100%"}}
-          [section-outer-darker menu-x [:.p2 logo]]
-          (cond
-            stylist?   (stylist-content selectable? data)
-            user-email (customer-content selectable? data)
-            :else      (guest-content selectable? data))]])))))
+    (let [selectable? (partial selectable current-navigation-message)]
+      [:.h3.lg-up-hide
+       {:class (when-not slid-out? "hide")}
+       [:.fixed.overlay.bg-darken-4.z3
+        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
+        {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
+       [:.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
+        {:style {:max-height "100%"}}
+        [section-outer-darker menu-x [:.p2 logo]]
+        (cond
+          stylist?   (stylist-content selectable? data)
+          user-email (customer-content selectable? data)
+          :else      (guest-content selectable? data))]]))))
 
 
 (defn query [data]
