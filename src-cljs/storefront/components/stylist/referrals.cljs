@@ -34,9 +34,8 @@
       [:.border-dashed.border-silver.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
-  (let [width (str state-diameter "px")]
-    (html
-     (svg/adjustable-check {:class "stroke-green" :width width :height width}))))
+  (html
+   (svg/adjustable-check {:class "stroke-green" :width state-diameter :height state-diameter})))
 
 (defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
 (defmethod state-icon :referred [_ _ _] no-sales-icon)

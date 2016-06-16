@@ -11,11 +11,13 @@
             [storefront.components.utils :as utils]
             [storefront.components.ui :as ui]))
 
+(def check-svg
+  (html (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})))
+
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
-   [:.mr1
-    (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})]
+   [:.mr1 check-svg]
    [:.flex-auto.h5
     "Credit Earned: " (f/as-money-without-cents amount) " on " (f/epoch-date created-at)]
    [:.h3.ml1.mr1.strike (f/as-money-without-cents revenue-surpassed)]])
