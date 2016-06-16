@@ -419,6 +419,7 @@ html { line-height: 1.2; }
   text-align: center;
   border-radius: var(--button-border-radius);
   -webkit-tap-highlight-color: rgba(0,0,0,0);
+  user-select: none;
 }
 
 /* Custom btn-primary */
