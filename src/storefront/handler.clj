@@ -141,6 +141,9 @@
       response
       (content-type "text/html")))
 
+(defn redirect-to-cart [query-params]
+  (redirect (str "/cart?" (codec/form-encode query-params))))
+
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
@@ -165,13 +168,13 @@
                                                                       (get-cookie req "user-token")
                                                                       stylist-id)]
     (if number
-      (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
-                                                      :utm_medium store-slug
-                                                      :message "shared-cart"})))
+      (-> (redirect-to-cart {:utm_source "sharecart"
+                             :utm_medium store-slug
+                             :message "shared-cart"})
           (set-cookie environment :number number)
           (set-cookie environment :token token)
           encode-cookies)
-      (-> (redirect (str "/cart?" (codec/form-encode {:error "share-cart-failed"})))
+      (-> (redirect-to-cart {:error "share-cart-failed"})
           (expire-cookie environment :number)
           (expire-cookie environment :token)
           encode-cookies))))
