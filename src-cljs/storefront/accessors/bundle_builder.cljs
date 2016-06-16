@@ -1,5 +1,46 @@
 (ns storefront.accessors.bundle-builder
-  (:require [storefront.accessors.products :as products]))
+  (:require [storefront.keypaths :as keypaths]
+            [storefront.accessors.taxons :as taxons]))
+
+(defn selected-variants [data]
+  (get-in data keypaths/bundle-builder-selected-variants))
+
+(defn selected-variant [data]
+  (let [variants (selected-variants data)]
+    (when (= 1 (count variants))
+      (first variants))))
+
+(defn selected-products [data]
+  (let [product-ids (set (map :product_id (selected-variants data)))]
+    (select-keys (get-in data keypaths/products) product-ids)))
+
+(defn selected-product [data]
+  (let [selected (selected-products data)]
+    (when (= 1 (count selected))
+      (last (first selected)))))
+
+(defn- build-variants [product]
+  (map (fn [variant]
+         (-> variant
+             (merge (:variant_attrs variant))
+             (assoc :price (js/parseFloat (:price variant))
+                    :sold-out? (not (:can_supply? variant)))))
+       (:variants product)))
+
+(defn- ordered-products-for-category [app-state {:keys [product-ids]}]
+  (remove nil? (map (get-in app-state keypaths/products) product-ids)))
+
+(defn current-taxon-variants [data]
+  (->> (taxons/current-taxon data)
+       (ordered-products-for-category data)
+       (mapcat build-variants)))
+
+(defn filter-variants-by-selections [selections variants]
+  (filter (fn [variant]
+            (every? (fn [[step-name option-name]]
+                      (= (step-name variant) option-name))
+                    selections))
+          variants))
 
 (defn last-step [flow selections]
   (let [finished-step? (set (keys selections))]

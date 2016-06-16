@@ -147,9 +147,9 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
-  (let [selected-variants (products/filter-variants-by-selections
+  (let [selected-variants (bundle-builder/filter-variants-by-selections
                            selected-options
-                           (products/current-taxon-variants app-state))
+                           (bundle-builder/current-taxon-variants app-state))
         last-step (-> (taxons/current-taxon app-state)
                       bundle-builder/selection-flow
                       (bundle-builder/last-step selected-options))]

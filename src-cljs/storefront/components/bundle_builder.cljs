@@ -2,7 +2,6 @@
   (:require [storefront.components.utils :as utils]
             [storefront.components.product :as product]
             [storefront.components.formatters :refer [as-money-without-cents]]
-            [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
             [storefront.components.reviews :as reviews]
@@ -191,7 +190,7 @@
 
 (defn images-from-variants [data]
   (let [taxon (taxons/current-taxon data)
-        variants (products/selected-variants data)]
+        variants (bundle-builder/selected-variants data)]
     (if (and (#{"blonde" "closures" "frontals"} (:name taxon)) (seq variants))
       (vec (set (map #(get-in % [:images 0 :large_url]) variants)))
       (:images taxon))))
@@ -199,12 +198,12 @@
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
-     :variants           (products/current-taxon-variants data)
+     :variants           (bundle-builder/current-taxon-variants data)
      :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
-     :selected-product   (products/selected-product data)
-     :selected-variant   (products/selected-variant data)
+     :selected-product   (bundle-builder/selected-product data)
+     :selected-variant   (bundle-builder/selected-variant data)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
