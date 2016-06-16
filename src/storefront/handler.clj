@@ -121,6 +121,9 @@
   (let [[k v] (first map-entry)]
     (str k "=" v)))
 
+(defn encode-cookies [resp]
+  (cookies/cookies-response resp {:encoder dumb-encoder}))
+
 (defn get-cookie [req name] (get-in req [:cookies name :value]))
 (defn expire-cookie [resp environment name]
   (assoc-in resp [:cookies name] {:value   ""
@@ -167,11 +170,11 @@
                                                       :message "shared-cart"})))
           (set-cookie environment :number number)
           (set-cookie environment :token token)
-          (cookies/cookies-response {:encoder dumb-encoder}))
+          encode-cookies)
       (-> (redirect (str "/cart?" (codec/form-encode {:error "share-cart-failed"})))
           (expire-cookie environment :number)
           (expire-cookie environment :token)
-          (cookies/cookies-response {:encoder dumb-encoder})))))
+          encode-cookies))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri] :as req}]
