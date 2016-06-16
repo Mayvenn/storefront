@@ -200,7 +200,7 @@
                        "Disallow: /m/"
                        "Disallow: /c/"
                        "Disallow: /admin"])
-    (string/join "\n" ["User-agent: googlebot"
+    (string/join "\n" ["User-agent: *"
                        "Disallow: /"])))
 
 (defn paypal-routes [{:keys [storeback-config]}]
