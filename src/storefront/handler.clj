@@ -121,7 +121,17 @@
   (let [[k v] (first map-entry)]
     (str k "=" v)))
 
-(defn expire-cookie [resp name] (assoc-in resp [:cookies name] {:value "" :max-age 0 :path "/"}))
+(defn get-cookie [req name] (get-in req [:cookies name :value]))
+(defn expire-cookie [resp environment name]
+  (assoc-in resp [:cookies name] {:value   ""
+                                  :max-age 0
+                                  :secure  (not (config/development? environment))
+                                  :path    "/"}))
+(defn set-cookie [resp environment name value]
+  (assoc-in resp [:cookies name] {:value   value
+                                  :max-age (* 60 60 24 7 4)
+                                  :secure  (not (config/development? environment))
+                                  :path    "/"}))
 
 (defn respond-with-index [req storeback-config environment]
   (-> (views/index req storeback-config environment)
@@ -131,36 +141,36 @@
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
-  (let [token (get-in req [:cookies "user-token" :value])]
-    (some-> (api/product storeback-config product-slug token)
-            ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
-            :url-path
-            redirect)))
+  (some-> (api/product storeback-config product-slug (get-cookie req "user-token"))
+          ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
+          :url-path
+          redirect))
 
 (defn render-category
   "Checks that the category exists"
   [{:keys [storeback-config environment]} req {:keys [taxon-slug]}]
-  (let [token (get-in req [:cookies "user-token" :value])]
-    (when (api/category storeback-config taxon-slug token)
-      (respond-with-index req storeback-config environment))))
+  (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
+    (respond-with-index req storeback-config environment)))
 
-(defn create-order-from-shared-cart [{:keys [storeback-config environment]} {:keys [cookies store]} {:keys [shared-cart-id]}]
-  (let [token      (get-in cookies ["user-token" :value])
-        user-id    (get-in cookies ["id" :value])
-        {:keys [number token error-code]} (api/create-order-from-cart storeback-config shared-cart-id user-id token (:stylist_id store))
-        cookie-config {:secure  (not (config/development? environment))
-                       :path    "/"
-                       :max-age (* 60 60 24 7 4)}]
+(defn create-order-from-shared-cart [{:keys [storeback-config environment]}
+                                     {:keys [store] :as req}
+                                     {:keys [shared-cart-id]}]
+  (let [{stylist-id :stylist_id store-slug :store_slug} store
+        {:keys [number token error-code]} (api/create-order-from-cart storeback-config
+                                                                      shared-cart-id
+                                                                      (get-cookie req "id")
+                                                                      (get-cookie req "user-token")
+                                                                      stylist-id)]
     (if number
       (-> (redirect (str "/cart?" (codec/form-encode {:utm_source "sharecart"
-                                                      :utm_medium (:store_slug store)
+                                                      :utm_medium store-slug
                                                       :message "shared-cart"})))
-          (assoc :cookies {:number (merge cookie-config {:value number})
-                           :token  (merge cookie-config {:value token})})
+          (set-cookie environment :number number)
+          (set-cookie environment :token token)
           (cookies/cookies-response {:encoder dumb-encoder}))
       (-> (redirect (str "/cart?" (codec/form-encode {:error "share-cart-failed"})))
-          (expire-cookie :number)
-          (expire-cookie :token)
+          (expire-cookie environment :number)
+          (expire-cookie environment :token)
           (cookies/cookies-response {:encoder dumb-encoder})))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
