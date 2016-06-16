@@ -60,8 +60,7 @@
 (defn filter-nil [m]
   (into {} (filter (comp not nil? val) m)))
 
-(def default-req-opts {:headers {"Accepts" "application/json"}
-                       :format :json
+(def default-req-opts {:format :json
                        :response-format (header-json-response-format {:keywords? true})})
 
 (defn merge-req-opts [req-key req-id {:keys [handler error-handler] :as request-opts}]
@@ -462,8 +461,7 @@
                                                     {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
          {:handler callback
-          :headers {"Accepts" "application/json"
-                    "X-Publishable-Key" send-sonar-publishable-key}
+          :headers {"X-Publishable-Key" send-sonar-publishable-key}
           :format :json
           :response-format (json-response-format {:keywords? true})})))
 
