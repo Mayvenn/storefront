@@ -44,13 +44,11 @@
 
 (defn adjustable-check [svg-options]
   [:svg (merge {:viewBox "0 0 14 14"} svg-options)
-   [:g
-    {:transform "translate(1 1)"
-     :fill "none"
-     :stroke-width ".5"
-     :stroke-linecap "round"}
-    [:path {:d "M8.61 4.17L4.7 7.83 3.39 6.52"}]
-    [:circle {:r "6" :cx "6" :cy "6"}]]])
+   [:g {:fill "none"
+        :stroke-width ".5"
+        :stroke-linecap "round"}
+    [:path {:d "M9.61 5.17L5.7 8.83 4.39 7.52"}]
+    [:circle {:r "6" :cx "7" :cy "7"}]]])
 
 (defn bag [opts quantity]
   [:svg (merge {:width "25" :height "28" :viewBox "0 0 24 28"} opts)
