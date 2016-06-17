@@ -168,7 +168,7 @@
                                                                       stylist-id)]
     (if number
       (-> (redirect-to-cart {:utm_source "sharecart"
-                             :utm_medium store-slug
+                             :utm_content store-slug
                              :message "shared-cart"})
           (set-cookie environment :number number)
           (set-cookie environment :token token)
