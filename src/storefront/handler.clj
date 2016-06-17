@@ -188,19 +188,22 @@
           events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
           (respond-with-index req storeback-config environment))))))
 
+(def private-disalloweds ["User-agent: *"
+                          "Disallow: /account"
+                          "Disallow: /checkout"
+                          "Disallow: /orders"
+                          "Disallow: /stylist"
+                          "Disallow: /cart"
+                          "Disallow: /m/"
+                          "Disallow: /c/"
+                          "Disallow: /admin"])
+
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
-    (string/join "\n" ["User-agent: *"
-                       "Disallow: /account"
-                       "Disallow: /checkout"
-                       "Disallow: /orders"
-                       "Disallow: /stylist"
-                       "Disallow: /cart"
-                       "Disallow: /m/"
-                       "Disallow: /c/"
-                       "Disallow: /admin"])
-    (string/join "\n" ["User-agent: *"
-                       "Disallow: /"])))
+    (string/join "\n" private-disalloweds)
+    (string/join "\n" (concat ["User-agent: googlebot"
+                               "Disallow: /"]
+                              private-disalloweds))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes
