@@ -55,13 +55,13 @@
          [:div.footer-container
           [:ul.sm-list
            [:li.sm-icon.icon-facebook
-            [:a.full-link {:href "https://www.facebook.com/MayvennHair"}]]
+            [:a.full-link.sm-icon {:href "https://www.facebook.com/MayvennHair"}]]
            [:li.sm-icon.icon-instagram
-            [:a.full-link {:href "http://instagram.com/mayvennhair"}]]
+            [:a.full-link.sm-icon {:href "http://instagram.com/mayvennhair"}]]
            [:li.sm-icon.icon-pinterest
-            [:a.full-link {:href "http://www.pinterest.com/mayvennhair/"}]]
+            [:a.full-link.sm-icon {:href "http://www.pinterest.com/mayvennhair/"}]]
            [:li.sm-icon.icon-twitter
-            [:a.full-link {:href "https://twitter.com/MayvennHair"}]]]]]
+            [:a.full-link.sm-icon {:href "https://twitter.com/MayvennHair"}]]]]]
         [:div.legal
          [:div.copyright copy " Mayvenn " (.getFullYear (js/Date.))]
          [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
