@@ -409,7 +409,7 @@
 
 (defmethod perform-effects events/control-cart-share-show [_ event args app-state]
   (analytics/track-page
-   (str (routes/current-path app-state) "/share"))
+   (str (routes/current-path app-state) "/Share_cart"))
   (api/create-shared-cart (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
