@@ -202,7 +202,8 @@
   (if (#{["shop"] ["www"] []} subdomains)
     (string/join "\n" private-disalloweds)
     (string/join "\n" (concat ["User-agent: googlebot"
-                               "Disallow: /"]
+                               "Disallow: /"
+                               ""]
                               private-disalloweds))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
