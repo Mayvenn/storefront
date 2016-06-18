@@ -1,0 +1,24 @@
+.light-white  { color: var(--light-white); }
+.dark-white   { color: var(--dark-white); }
+.light-silver { color: var(--light-silver); }
+.dark-silver  { color: var(--dark-silver); }
+.light-gray   { color: var(--light-gray); }
+.dark-gray    { color: var(--dark-gray); }
+.light-black  { color: var(--light-black); }
+.dark-black   { color: var(--dark-black); }
+
+:root {
+  --pure-white:   #ffffff;
+  --light-white:  #fcfcfc;
+  --white:        #fafafa;
+  --dark-white:   #e6e6e6;
+  --light-silver: #d2d2d2;
+  --silver:       #bebebe;
+  --dark-silver:  #aaaaaa;
+  --light-gray:   #969696;
+  --gray:         #828282;
+  --dark-gray:    #6e6e6e;
+  --light-black:  #5a5a5a;
+  --black:        #464646;
+  --dark-black:   #323232;
+}

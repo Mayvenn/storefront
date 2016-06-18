@@ -1,0 +1,13 @@
+.pp1, .pxp1 { padding-left: 1px; padding-right: 1px; }
+.pp2, .pxp2 { padding-left: 2px; padding-right: 2px; }
+.pp3, .pxp3 { padding-left: 3px; padding-right: 3px; }
+.pp4, .pxp4 { padding-left: 4px; padding-right: 4px; }
+.pp5, .pxp5 { padding-left: 5px; padding-right: 5px; }
+.pp6, .pxp6 { padding-left: 6px; padding-right: 6px; }
+.pp1, .pyp1 { padding-top: 1px; padding-bottom: 1px; }
+.pp2, .pyp2 { padding-top: 2px; padding-bottom: 2px; }
+.pp3, .pyp3 { padding-top: 3px; padding-bottom: 3px; }
+.pp4, .pyp4 { padding-top: 4px; padding-bottom: 4px; }
+.pp5, .pyp5 { padding-top: 5px; padding-bottom: 5px; }
+.pp6, .pyp6 { padding-top: 6px; padding-bottom: 6px; }
+

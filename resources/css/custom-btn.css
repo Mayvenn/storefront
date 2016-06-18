@@ -1,0 +1,11 @@
+.btn {
+  text-align: center;
+  border-radius: var(--button-border-radius);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  user-select: none;
+}
+
+:root {
+    --button-border-radius: var(--border-radius);
+    --border-radius: 2px;
+}

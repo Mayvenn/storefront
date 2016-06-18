@@ -1,0 +1,7 @@
+.btn-primary:active {
+  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
+}
+
+:root {
+    --darken-3: rgba(0, 0, 0, .375);
+}

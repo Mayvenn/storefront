@@ -1,0 +1,38 @@
+.invisible { visibility: hidden; }
+
+/* WARNING: Avoid the basscss helpers (xs-hide sm-hide md-hide lg-hide), they
+ * may be removed.
+ * They are too hard to remember... these are better.
+
+
+        480px       640px       768px
+  to-sm   |   sm-up
+  to-sm   |   sm-md   |   md-up
+              to-md   |   md-lg   |   lg-up
+                          to-lg   |   lg-xl | xl-up
+                                      to-xl | xl-up
+
+*/
+@media (--breakpoint-to-sm) { .to-sm-hide { display: none !important } }
+@media (--breakpoint-sm-up) { .sm-up-hide { display: none !important } }
+@media (--breakpoint-sm-md) { .sm-md-hide { display: none !important } }
+@media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
+@media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
+@media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
+@media (--breakpoint-to-lg) { .to-lg-hide { display: none !important } }
+@media (--breakpoint-lg-up) { .lg-up-hide { display: none !important } }
+@media (--breakpoint-lg-xl) { .lg-xl-hide { display: none !important } }
+@media (--breakpoint-to-xl) { .to-xl-hide { display: none !important } }
+@media (--breakpoint-xl-up) { .xl-up-hide { display: none !important } }
+
+@custom-media --breakpoint-to-sm (max-width: 479px);
+@custom-media --breakpoint-sm-up (min-width: 480px); /* sm-up is the same as sm */
+@custom-media --breakpoint-sm-md (min-width: 480px) and (max-width: 639px);
+@custom-media --breakpoint-to-md (max-width: 639px);
+@custom-media --breakpoint-md-up (min-width: 640px);
+@custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
+@custom-media --breakpoint-to-lg (max-width: 767px);
+@custom-media --breakpoint-lg-up (min-width: 768px); /* lg-up is the same as lg */
+@custom-media --breakpoint-lg-xl (min-width: 768px) and (max-width: 1023px);
+@custom-media --breakpoint-to-xl (max-width: 1023px);
+@custom-media --breakpoint-xl-up (min-width: 1024px);

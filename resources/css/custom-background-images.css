@@ -1,0 +1,52 @@
+.bg-full { background-size: 100%; }
+
+.img-receipt-icon   { background-image: url('/images/icons/receipt.png'); }
+.img-no-chat-icon   { background-image: url('/images/icons/no-chat.png'); }
+.img-coins-icon     { background-image: url('/images/icons/coins.png'); }
+.img-share-icon     { background-image: url('/images/icons/share.png'); }
+.img-faqs-icon      { background-image: url('/images/icons/faqs.svg'); }
+.img-phone-icon     { background-image: url('/images/icons/phone.svg'); }
+.img-text-icon      { background-image: url('/images/icons/text.svg'); }
+.img-email-icon     { background-image: url('/images/icons/email.svg'); }
+.img-guarantee-icon { background-image: url('/images/icons/guarantee.svg'); }
+.img-spinner        { background-image: url('/images/spinner.svg'); }
+.img-left-arrow     {
+    background-image: url('/images/carousel/arrow.svg');
+    transform: rotate(180deg);
+}
+.img-right-arrow  { background-image: url('/images/carousel/arrow.svg'); }
+
+.img-straight     { background-image: url('/images/style_images/category_images/StraightCategoryImage.jpg'); }
+.img-blonde       { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
+.img-curly        { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
+.img-deep-wave    { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }
+.img-loose-wave   { background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png'); }
+.img-body-wave    { background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png'); }
+.img-closures     { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.jpg'); }
+.img-frontals     { background-image: url('/images/style_images/category_images/FrontalsCategoryImage.jpg'); }
+
+.img-homepage-straight   { background-image: url('/images/straight.jpg'); }
+.img-homepage-blonde     { background-image: url('/images/blonde.jpg'); }
+.img-homepage-curly      { background-image: url('/images/curly.jpg'); }
+.img-homepage-deep-wave  { background-image: url('/images/deep_wave.jpg'); }
+.img-homepage-loose-wave { background-image: url('/images/loose_wave.jpg'); }
+.img-homepage-body-wave  { background-image: url('/images/body_wave.jpg'); }
+.img-homepage-closures   { background-image: url('/images/loose_wave.jpg'); }
+.img-homepage-frontals   { background-image: url('/images/loose_wave.jpg'); }
+
+.img-text-straight   { background-image: url('/images/desktop_assets/knockout/straight-knockout.png'); }
+.img-text-blonde     { background-image: url('/images/desktop_assets/knockout/blonde-knockout.png'); }
+.img-text-curly      { background-image: url('/images/desktop_assets/knockout/curly-knockout.png'); }
+.img-text-deep-wave  { background-image: url('/images/desktop_assets/knockout/deep-wave-knockout.png'); }
+.img-text-loose-wave { background-image: url('/images/desktop_assets/knockout/loose-wave-knockout.png'); }
+.img-text-body-wave  { background-image: url('/images/desktop_assets/knockout/body-wave-knockout.png'); }
+.img-text-closures   { background-image: url('/images/desktop_assets/knockout/closures-knockout.png'); }
+.img-text-frontals   { background-image: url('/images/desktop_assets/knockout/frontals-knockout.png'); }
+
+.img-logo { background-image: url('/images/header_logo.png'); }
+.img-instagram { background-image: url('/images/icons/instagram.png'); }
+.img-styleseat { background-image: url('/images/icons/styleseat.png'); }
+
+.img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
+.img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
+.img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }

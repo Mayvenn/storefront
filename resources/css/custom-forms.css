@@ -1,0 +1,27 @@
+.floating-label .floated-label {
+  position: relative;
+  top: 1em;
+  left: 1em;
+  display: none;
+}
+
+.floating-label .floated-label.has-value {
+  display: block;
+}
+
+.floating-label .floating-input {
+  padding: 1em 0.5em;
+}
+
+.floating-label .floating-input.has-value {
+  padding-top: 1.5em;
+  padding-bottom: 0.5em;
+}
+
+.glow:focus {
+  outline-color: var(--green);
+}
+
+:root {
+  --green: #40CBAC;
+}

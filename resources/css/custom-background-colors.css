@@ -1,0 +1,34 @@
+.bg-fb-blue     { background-color: var(--facebook-blue); }
+.bg-paypal-blue { background-color: var(--paypal-blue); }
+
+.bg-pure-white   { background-color: var(--pure-white); }
+.bg-light-white  { background-color: var(--light-white); }
+.bg-dark-white   { background-color: var(--dark-white); }
+.bg-light-silver { background-color: var(--light-silver); }
+.bg-dark-silver  { background-color: var(--dark-silver); }
+.bg-light-gray   { background-color: var(--light-gray); }
+.bg-dark-gray    { background-color: var(--dark-gray); }
+.bg-light-black  { background-color: var(--light-black); }
+.bg-dark-black   { background-color: var(--dark-black); }
+
+.bg-pink-gradient {
+  border-color: #f865a5;
+  background-image: linear-gradient(to right,#f865a5,#ff6562);
+}
+
+:root {
+  --pure-white:   #ffffff;
+  --light-white:  #fcfcfc;
+  --dark-white:   #e6e6e6;
+  --light-silver: #d2d2d2;
+  --dark-silver:  #aaaaaa;
+  --light-gray:   #969696;
+  --dark-gray:    #6e6e6e;
+  --light-black:  #5a5a5a;
+  --dark-black:   #323232;
+
+  --facebook-blue: #3b5998;
+  --paypal-blue:   #49bbf0;
+}
+
+

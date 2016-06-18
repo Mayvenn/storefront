@@ -1,0 +1,14 @@
+html { line-height: 1.2; }
+
+/* We want h00 to be 64px on small screens. But to have it grow on large screens
+ * we need to specify it in ems. 5.25em is 63px... close enough. */
+
+.h00 { font-size: 5.25em; }
+
+.f1 { font-size: 24px; }
+.f2 { font-size: 18px; }
+.f3 { font-size: 15px; }
+.f4 { font-size: 12px; }
+.f5 { font-size: 10px; }
+.f6 { font-size: 8px; }
+

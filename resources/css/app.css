@@ -5,611 +5,64 @@
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
 @import 'basscss-addons/modules/btn';
-
+@import 'custom-btn.css';
 @import 'basscss-addons/modules/btn-primary';
-
+@import 'custom-btn-primary.css';
 @import 'basscss-addons/modules/btn-outline';
-
+@import 'custom-btn-outline.css';
 @import 'basscss-addons/modules/btn-sizes';
 
 /* Would like to use this, but .input interferes with existing forms */
 /* @import 'basscss-addons/modules/forms'; */
+@import 'custom-forms.css';
 
 /* Basscss Core */
 
 @import 'basscss';
 
+@import 'custom-type-scale.css';
+@import 'custom-typography.css';
+@import 'custom-layout.css';
+@import 'custom-margin.css';
+@import 'custom-padding.css';
+@import 'custom-grid.css';
+@import 'custom-position.css';
+@import 'custom-border.css';
+@import 'custom-hide.css';
+
 /* Optional Modules (extensions to Basscss Core) */
 
 @import 'basscss-addons/modules/responsive-margin';
-
 @import 'basscss-addons/modules/responsive-padding';
-
 @import 'basscss-addons/modules/colors';
-
+@import 'custom-colors.css';
 @import 'basscss-addons/modules/background-colors';
-
+@import 'custom-background-colors.css';
 @import 'basscss-addons/modules/border-colors';
-
+@import 'custom-border-colors.css';
 @import 'basscss-addons/modules/darken';
-
+@import 'custom-darken.css';
 @import 'basscss-addons/modules/lighten';
+@import 'custom-lighten.css';
+@import 'custom-svg-colors.css';
+@import 'custom-interaction.css';
 
 /* basscss-addons hasn't released the latest version, so import directly from NPM */
 /* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
+@import 'custom-background-images.css';
 
 /* More from v8 */
 /*
-
 @import 'basscss-addons/modules/media-object';  flexbox based media-object... for basic cases use .overflow-hidden
-
 @import 'basscss-addons/modules/all';
-
 @import 'basscss-addons/modules/input-range';
-
 @import 'basscss-addons/modules/progress';
-
 */
 
 /* From basscss v7 */
 
 @import 'basscss-ui-utility-groups';
-
-/* Custom type-scale */
-
-/* We want h00 to be 64px on small screens. But to have it grow on large screens
- * we need to specify it in ems. 5.25em is 63px... close enough. */
-
-html { line-height: 1.2; }
-
-.h00 { font-size: 5.25em; }
-
-.f1 { font-size: 24px; }
-.f2 { font-size: 18px; }
-.f3 { font-size: 15px; }
-.f4 { font-size: 12px; }
-.f5 { font-size: 10px; }
-.f6 { font-size: 8px; }
-
-/* Custom typography */
-
-.serif       { font-family: var(--serif); }
-.sans-serif  { font-family: var(--sans-serif); }
-.medium      { font-weight: 500; }
-.light       { font-weight: 300; }
-
-.titleize { text-transform: capitalize; }
-.shout { text-transform: uppercase; }
-.strike { text-decoration: line-through; }
-
-.shadow { text-shadow: 1px 1px #000; }
-.engrave-2 { text-shadow: var(--inset-top-2); }
-
-.letter-spacing-1 { letter-spacing: 1px; }
-.letter-spacing-2 { letter-spacing: 2px; }
-.letter-spacing-3 { letter-spacing: 3px; }
-
-/* Use customized Graphik fonts when applying .medium or .bold */
-/* This was broken in old styles. */
-@font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Light.woff') format('woff');
-  font-weight:  300;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Regular-Web.woff') format('woff');
-  font-weight:  400;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Medium-Web.woff') format('woff');
-  font-weight:  500;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Bold-Web.woff') format('woff');
-  font-weight:  700;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-/* Custom layout */
-
-.container { max-width: 640px; }
-
-.home-container { width: 320px; }
-@media (--breakpoint-md-up) { .home-container { width: 427px; } }
-@media (--breakpoint-lg-up) { .home-container { width: 768px; } }
-@media (--breakpoint-xl-up) { .home-container { width: 100%; } }
-
-.banner-container { height: 216px; }
-@media (--breakpoint-md-up) { .banner-container { height: 288px; } }
-@media (--breakpoint-lg-up) { .banner-container { height: 326px; } }
-@media (--breakpoint-xl-up) { .banner-container { height: 432px; } }
-
-/* Custom align */
-
-/* Custom margin */
-
-.mtn1 { margin-top: -var(--space-1); }
-.mtn2 { margin-top: -var(--space-2); }
-.mtn3 { margin-top: -var(--space-3); }
-.mtn4 { margin-top: -var(--space-4); }
-.m-auto { margin: auto; }
-
-.mp1, .mtp1, .myp1 { margin-top: 1px; }
-.mp2, .mtp2, .myp2 { margin-top: 2px; }
-.mp3, .mtp3, .myp3 { margin-top: 3px; }
-.mp4, .mtp4, .myp4 { margin-top: 4px; }
-.mp5, .mtp5, .myp5 { margin-top: 5px; }
-.mp6, .mtp6, .myp6 { margin-top: 6px; }
-.mp1, .mrp1, .mxp1 { margin-right: 1px; }
-.mp2, .mrp2, .mxp2 { margin-right: 2px; }
-.mp3, .mrp3, .mxp3 { margin-right: 3px; }
-.mp4, .mrp4, .mxp4 { margin-right: 4px; }
-.mp5, .mrp5, .mxp5 { margin-right: 5px; }
-.mp6, .mrp6, .mxp6 { margin-right: 6px; }
-.mp1, .mbp1, .myp1 { margin-bottom: 1px; }
-.mp2, .mbp2, .myp2 { margin-bottom: 2px; }
-.mp3, .mbp3, .myp3 { margin-bottom: 3px; }
-.mp4, .mbp4, .myp4 { margin-bottom: 4px; }
-.mp5, .mbp5, .myp5 { margin-bottom: 5px; }
-.mp6, .mbp6, .myp6 { margin-bottom: 6px; }
-.mp1, .mlp1, .mxp1 { margin-left: 1px; }
-.mp2, .mlp2, .mxp2 { margin-left: 2px; }
-.mp3, .mlp3, .mxp3 { margin-left: 3px; }
-.mp4, .mlp4, .mxp4 { margin-left: 4px; }
-.mp5, .mlp5, .mxp5 { margin-left: 5px; }
-.mp6, .mlp6, .mxp6 { margin-left: 6px; }
-.mxnp1 { margin-left: -1px; margin-right: -1px; }
-.mxnp2 { margin-left: -2px; margin-right: -2px; }
-.mxnp3 { margin-left: -3px; margin-right: -3px; }
-.mxnp4 { margin-left: -4px; margin-right: -4px; }
-.mxnp5 { margin-left: -5px; margin-right: -5px; }
-.mxnp6 { margin-left: -6px; margin-right: -6px; }
-
-/* Custom padding */
-
-.pp1, .pxp1 { padding-left: 1px; padding-right: 1px; }
-.pp2, .pxp2 { padding-left: 2px; padding-right: 2px; }
-.pp3, .pxp3 { padding-left: 3px; padding-right: 3px; }
-.pp4, .pxp4 { padding-left: 4px; padding-right: 4px; }
-.pp5, .pxp5 { padding-left: 5px; padding-right: 5px; }
-.pp6, .pxp6 { padding-left: 6px; padding-right: 6px; }
-.pp1, .pyp1 { padding-top: 1px; padding-bottom: 1px; }
-.pp2, .pyp2 { padding-top: 2px; padding-bottom: 2px; }
-.pp3, .pyp3 { padding-top: 3px; padding-bottom: 3px; }
-.pp4, .pyp4 { padding-top: 4px; padding-bottom: 4px; }
-.pp5, .pyp5 { padding-top: 5px; padding-bottom: 5px; }
-.pp6, .pyp6 { padding-top: 6px; padding-bottom: 6px; }
-
-/* Custom grid */
-
-/* TODO: stop depending on basscss/grid (which has both non-responsive and
-   responsive versions, but the responsive versions have confusing names) and
-   only use basscss/lib/grid (non-responsive). We define better responsive names
-   here. */
-
-@media (--breakpoint-sm-up) {
-  .sm-up-col {
-    float: left;
-    box-sizing: border-box;
-  }
-
-  .sm-up-col-right {
-    float: right;
-    box-sizing: border-box;
-  }
-
-  .sm-up-col-1  { width: calc(1/12 * 100%); }
-  .sm-up-col-2  { width: calc(2/12 * 100%); }
-  .sm-up-col-3  { width: calc(3/12 * 100%); }
-  .sm-up-col-4  { width: calc(4/12 * 100%); }
-  .sm-up-col-5  { width: calc(5/12 * 100%); }
-  .sm-up-col-6  { width: calc(6/12 * 100%); }
-  .sm-up-col-7  { width: calc(7/12 * 100%); }
-  .sm-up-col-8  { width: calc(8/12 * 100%); }
-  .sm-up-col-9  { width: calc(9/12 * 100%); }
-  .sm-up-col-10 { width: calc(10/12 * 100%); }
-  .sm-up-col-11 { width: calc(11/12 * 100%); }
-  .sm-up-col-12 { width: 100%; }
-}
-
-@media (--breakpoint-md-up) {
-  .md-up-col {
-    float: left;
-    box-sizing: border-box;
-  }
-
-  .md-up-col-right {
-    float: right;
-    box-sizing: border-box;
-  }
-
-  .md-up-col-1  { width: calc(1/12 * 100%); }
-  .md-up-col-2  { width: calc(2/12 * 100%); }
-  .md-up-col-3  { width: calc(3/12 * 100%); }
-  .md-up-col-4  { width: calc(4/12 * 100%); }
-  .md-up-col-5  { width: calc(5/12 * 100%); }
-  .md-up-col-6  { width: calc(6/12 * 100%); }
-  .md-up-col-7  { width: calc(7/12 * 100%); }
-  .md-up-col-8  { width: calc(8/12 * 100%); }
-  .md-up-col-9  { width: calc(9/12 * 100%); }
-  .md-up-col-10 { width: calc(10/12 * 100%); }
-  .md-up-col-11 { width: calc(11/12 * 100%); }
-  .md-up-col-12 { width: 100%; }
-}
-
-@media (--breakpoint-lg-up) {
-  .lg-up-col {
-    float: left;
-    box-sizing: border-box;
-  }
-
-  .lg-up-col-right {
-    float: right;
-    box-sizing: border-box;
-  }
-
-  .lg-up-col-1  { width: calc(1/12 * 100%); }
-  .lg-up-col-2  { width: calc(2/12 * 100%); }
-  .lg-up-col-3  { width: calc(3/12 * 100%); }
-  .lg-up-col-4  { width: calc(4/12 * 100%); }
-  .lg-up-col-5  { width: calc(5/12 * 100%); }
-  .lg-up-col-6  { width: calc(6/12 * 100%); }
-  .lg-up-col-7  { width: calc(7/12 * 100%); }
-  .lg-up-col-8  { width: calc(8/12 * 100%); }
-  .lg-up-col-9  { width: calc(9/12 * 100%); }
-  .lg-up-col-10 { width: calc(10/12 * 100%); }
-  .lg-up-col-11 { width: calc(11/12 * 100%); }
-  .lg-up-col-12 { width: 100%; }
-}
-
-/* Custom flexbox */
-
-/* Custom position */
-
-.overlay { top: 0; right: 0; bottom: 0; left: 0; }
-.sticky { position: sticky; } /* only works in FF, Safari and mobile Safari */
-
-/* Custom border */
-
-.border-dashed {
-  border-style: dashed;
-  border-width: var(--border-width);
-}
-
-.border-dashed-top {
-  border-top-style: dashed;
-  border-top-width: var(--border-width);
-}
-
-.border-dashed-right {
-  border-right-style: dashed;
-  border-right-width: var(--border-width);
-}
-
-.border-dashed-bottom {
-  border-bottom-style: dashed;
-  border-bottom-width: var(--border-width);
-}
-
-.border-dashed-left {
-  border-left-style: dashed;
-  border-left-width: var(--border-width);
-}
-
-.border-dotted {
-  border-style: dotted;
-  border-width: var(--border-width);
-}
-
-.border-dotted-top {
-  border-top-style: dotted;
-  border-top-width: var(--border-width);
-}
-
-.border-dotted-right {
-  border-right-style: dotted;
-  border-right-width: var(--border-width);
-}
-
-.border-dotted-bottom {
-  border-bottom-style: dotted;
-  border-bottom-width: var(--border-width);
-}
-
-.border-dotted-left {
-  border-left-style: dotted;
-  border-left-width: var(--border-width);
-}
-
-.border-width-2 {
-    border-width: 2px;
-}
-
-.border-width-right-0 { border-right-width: 0; }
-.border-width-left-0 { border-left-width: 0; }
-.border-width-top-0 { border-top-width: 0; }
-.border-width-bottom-0 { border-bottom-width: 0; }
-
-.capped { border-radius: 1000px; }
-.rounded-top-left     { border-top-left-radius:     var(--border-radius); }
-.rounded-top-right    { border-top-right-radius:    var(--border-radius); }
-.rounded-bottom-left  { border-bottom-left-radius:  var(--border-radius); }
-.rounded-bottom-right { border-bottom-right-radius: var(--border-radius); }
-.rounded-1 { border-radius: var(--border-radius-1); }
-.rounded-top-1,    .rounded-left-1,  .rounded-top-left-1     { border-top-left-radius:     var(--border-radius-1); }
-.rounded-top-1,    .rounded-right-1, .rounded-top-right-1    { border-top-right-radius:    var(--border-radius-1); }
-.rounded-bottom-1, .rounded-left-1,  .rounded-bottom-left-1  { border-bottom-left-radius:  var(--border-radius-1); }
-.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
-
-
-/* Custom hide */
-
-.invisible { visibility: hidden; }
-
-/* WARNING: Avoid the basscss helpers (xs-hide sm-hide md-hide lg-hide), they
- * may be removed.
- * They are too hard to remember... these are better.
-
-
-        480px       640px       768px
-  to-sm   |   sm-up
-  to-sm   |   sm-md   |   md-up
-              to-md   |   md-lg   |   lg-up
-                          to-lg   |   lg-xl | xl-up
-                                      to-xl | xl-up
-
-*/
-@media (--breakpoint-to-sm) { .to-sm-hide { display: none !important } }
-@media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
-@media (--breakpoint-to-lg) { .to-lg-hide { display: none !important } }
-@media (--breakpoint-sm-up) { .sm-up-hide { display: none !important } }
-@media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
-@media (--breakpoint-lg-up) { .lg-up-hide { display: none !important } }
-@media (--breakpoint-sm-md) { .sm-md-hide { display: none !important } }
-@media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
-@media (--breakpoint-lg-xl) { .lg-xl-hide { display: none !important } }
-@media (--breakpoint-to-xl) { .to-xl-hide { display: none !important } }
-@media (--breakpoint-xl-up) { .xl-up-hide { display: none !important } }
-
-
-/* Custom responsive-margin */
-
-/* Custom responsive-padding */
-
-/* Custom forms */
-
-.floating-label .floated-label {
-  position: relative;
-  top: 1em;
-  left: 1em;
-  display: none;
-}
-
-.floating-label .floated-label.has-value {
-  display: block;
-}
-
-.floating-label .floating-input {
-  padding: 1em 0.5em;
-}
-
-.floating-label .floating-input.has-value {
-  padding-top: 1.5em;
-  padding-bottom: 0.5em;
-}
-
-.glow:focus {
-  outline-color: var(--green);
-}
-
-/* Custom btn */
-
-.btn {
-  text-align: center;
-  border-radius: var(--button-border-radius);
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-  user-select: none;
-}
-
-/* Custom btn-primary */
-
-.btn-primary:active {
-  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
-}
-
-/* Custom btn-outline */
-
-.btn-outline:active {
-  box-shadow: 0 0 0 3px var(--darken-3); /* override default from basscss: match :focus outline, instead of having an inset */
-}
-
-/* Custom btn-sizes */
-
-/* Custom colors */
-
-.light-white  { color: var(--light-white); }
-.dark-white   { color: var(--dark-white); }
-.light-silver { color: var(--light-silver); }
-.dark-silver  { color: var(--dark-silver); }
-.light-gray   { color: var(--light-gray); }
-.dark-gray    { color: var(--dark-gray); }
-.light-black  { color: var(--light-black); }
-.dark-black   { color: var(--dark-black); }
-
-/* Custom background-sizes */
-
-.bg-full { background-size: 100%; }
-
-/* Custom background-colors */
-
-.bg-darken-bottom-1 { background-image: var(--darken-bottom-1); }
-.bg-darken-bottom-2 { background-image: var(--darken-bottom-2); }
-.bg-darken-bottom-3 { background-image: var(--darken-bottom-3); }
-.bg-darken-bottom-4 { background-image: var(--darken-bottom-4); }
-
-.bg-pure-white { background-color: var(--pure-white); }
-.bg-fb-blue { background-color: var(--facebook-blue); }
-.bg-paypal-blue { background-color: var(--paypal-blue); }
-
-.bg-light-white  { background-color: var(--light-white); }
-.bg-dark-white   { background-color: var(--dark-white); }
-.bg-light-silver { background-color: var(--light-silver); }
-.bg-dark-silver  { background-color: var(--dark-silver); }
-.bg-light-gray   { background-color: var(--light-gray); }
-.bg-dark-gray    { background-color: var(--dark-gray); }
-.bg-light-black  { background-color: var(--light-black); }
-.bg-dark-black   { background-color: var(--dark-black); }
-
-.top-lit { box-shadow: 0 4px 8px 0 var(--darken-2)}
-.lit     { box-shadow: 0   0 4px 0 var(--darken-3)}
-
-.bg-pink-gradient {
-  border-color: #f865a5;
-  background-image: linear-gradient(to right,#f865a5,#ff6562);
-}
-
-/* Custom border-colors */
-
-.border-pure-white   { border-color: var(--pure-white); }
-.border-light-white  { border-color: var(--light-white); }
-.border-dark-white   { border-color: var(--dark-white); }
-.border-light-silver { border-color: var(--light-silver); }
-.border-dark-silver  { border-color: var(--dark-silver); }
-.border-light-gray   { border-color: var(--light-gray); }
-.border-dark-gray    { border-color: var(--dark-gray); }
-.border-light-black  { border-color: var(--light-black); }
-.border-dark-black   { border-color: var(--dark-black); }
-
-.debug * { outline: 1px solid gold; }
-
-/* Custom svg */
-
-.stroke-teal         { stroke: var(--teal); }
-.stroke-green        { stroke: var(--green); }
-.stroke-navy         { stroke: var(--navy); }
-
-.fill-teal  { fill: var(--teal); }
-.fill-green { fill: var(--green); }
-.fill-navy  { fill: var(--navy); }
-
-.stroke-pure-white   { stroke: var(--pure-white); }
-.stroke-white        { stroke: var(--white); }
-.stroke-light-white  { stroke: var(--light-white); }
-.stroke-dark-white   { stroke: var(--dark-white); }
-.stroke-light-silver { stroke: var(--light-silver); }
-.stroke-silver       { stroke: var(--silver); }
-.stroke-dark-silver  { stroke: var(--dark-silver); }
-.stroke-light-gray   { stroke: var(--light-gray); }
-.stroke-gray         { stroke: var(--gray); }
-.stroke-dark-gray    { stroke: var(--dark-gray); }
-.stroke-light-black  { stroke: var(--light-black); }
-.stroke-black        { stroke: var(--black); }
-.stroke-dark-black   { stroke: var(--dark-black); }
-
-.fill-pure-white   { fill: var(--pure-white); }
-.fill-white        { fill: var(--white); }
-.fill-light-white  { fill: var(--light-white); }
-.fill-dark-white   { fill: var(--dark-white); }
-.fill-light-silver { fill: var(--light-silver); }
-.fill-silver       { fill: var(--silver); }
-.fill-dark-silver  { fill: var(--dark-silver); }
-.fill-light-gray   { fill: var(--light-gray); }
-.fill-gray         { fill: var(--gray); }
-.fill-dark-gray    { fill: var(--dark-gray); }
-.fill-light-black  { fill: var(--light-black); }
-.fill-black        { fill: var(--black); }
-.fill-dark-black   { fill: var(--dark-black); }
-
-/* Custom darken */
-
-/* Custom lighten */
-
-/* Custom background-image */
-
-.img-receipt-icon   { background-image: url('/images/icons/receipt.png'); }
-.img-no-chat-icon   { background-image: url('/images/icons/no-chat.png'); }
-.img-coins-icon     { background-image: url('/images/icons/coins.png'); }
-.img-share-icon     { background-image: url('/images/icons/share.png'); }
-.img-faqs-icon      { background-image: url('/images/icons/faqs.svg'); }
-.img-phone-icon     { background-image: url('/images/icons/phone.svg'); }
-.img-text-icon      { background-image: url('/images/icons/text.svg'); }
-.img-email-icon     { background-image: url('/images/icons/email.svg'); }
-.img-guarantee-icon { background-image: url('/images/icons/guarantee.svg'); }
-.img-spinner        { background-image: url('/images/spinner.svg'); }
-.img-left-arrow     {
-    background-image: url('/images/carousel/arrow.svg');
-    transform: rotate(180deg);
-}
-.img-right-arrow  { background-image: url('/images/carousel/arrow.svg'); }
-
-.img-straight     { background-image: url('/images/style_images/category_images/StraightCategoryImage.jpg'); }
-.img-blonde       { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
-.img-curly        { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
-.img-deep-wave    { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }
-.img-loose-wave   { background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png'); }
-.img-body-wave    { background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png'); }
-.img-closures     { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.jpg'); }
-.img-frontals     { background-image: url('/images/style_images/category_images/FrontalsCategoryImage.jpg'); }
-
-.img-homepage-straight   { background-image: url('/images/straight.jpg'); }
-.img-homepage-blonde     { background-image: url('/images/blonde.jpg'); }
-.img-homepage-curly      { background-image: url('/images/curly.jpg'); }
-.img-homepage-deep-wave  { background-image: url('/images/deep_wave.jpg'); }
-.img-homepage-loose-wave { background-image: url('/images/loose_wave.jpg'); }
-.img-homepage-body-wave  { background-image: url('/images/body_wave.jpg'); }
-.img-homepage-closures   { background-image: url('/images/loose_wave.jpg'); }
-.img-homepage-frontals   { background-image: url('/images/loose_wave.jpg'); }
-
-.img-text-straight   { background-image: url('/images/desktop_assets/knockout/straight-knockout.png'); }
-.img-text-blonde     { background-image: url('/images/desktop_assets/knockout/blonde-knockout.png'); }
-.img-text-curly      { background-image: url('/images/desktop_assets/knockout/curly-knockout.png'); }
-.img-text-deep-wave  { background-image: url('/images/desktop_assets/knockout/deep-wave-knockout.png'); }
-.img-text-loose-wave { background-image: url('/images/desktop_assets/knockout/loose-wave-knockout.png'); }
-.img-text-body-wave  { background-image: url('/images/desktop_assets/knockout/body-wave-knockout.png'); }
-.img-text-closures   { background-image: url('/images/desktop_assets/knockout/closures-knockout.png'); }
-.img-text-frontals   { background-image: url('/images/desktop_assets/knockout/frontals-knockout.png'); }
-
-.img-logo { background-image: url('/images/header_logo.png'); }
-.img-instagram { background-image: url('/images/icons/instagram.png'); }
-.img-styleseat { background-image: url('/images/icons/styleseat.png'); }
-
-.img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
-.img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
-.img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
-
-/* Custom interaction */
-
-.pointer { cursor: pointer; }
-
-.transition-ease        { transition-timing-function: ease; }
-.transition-ease-in     { transition-timing-function: ease-in; }
-.transition-ease-in-out { transition-timing-function: ease-in-out; }
-.transition-1           { transition-duration: 0.25s; }
-.transition-2           { transition-duration: 0.5s; }
-.transition-3           { transition-duration: 1s; }
-.transition-4           { transition-duration: 2s; }
-
-.commission-order                                                      { max-height: 35rem; }
-.commission-order.commission-order-enter                               { max-height: 0px; }
-.commission-order.commission-order-enter.commission-order-enter-active { max-height: 35rem; }
-.commission-order.commission-order-leave                               { max-height: 35rem; }
-.commission-order.commission-order-leave.commission-order-leave-active { max-height: 0px; }
-
-.rotate-45 { transform: rotate(45deg); }
 
 /* Custom media queries */
 

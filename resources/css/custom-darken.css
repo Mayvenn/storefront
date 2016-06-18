@@ -1,0 +1,16 @@
+.bg-darken-bottom-1 { background-image: var(--darken-bottom-1); }
+.bg-darken-bottom-2 { background-image: var(--darken-bottom-2); }
+.bg-darken-bottom-3 { background-image: var(--darken-bottom-3); }
+.bg-darken-bottom-4 { background-image: var(--darken-bottom-4); }
+
+:root {
+  --darken-bottom-1: linear-gradient(0deg, var(--darken-1), rgba(255, 255, 255, 0));
+  --darken-bottom-2: linear-gradient(0deg, var(--darken-2), rgba(255, 255, 255, 0));
+  --darken-bottom-3: linear-gradient(0deg, var(--darken-3), rgba(255, 255, 255, 0));
+  --darken-bottom-4: linear-gradient(0deg, var(--darken-4), rgba(255, 255, 255, 0));
+
+  --darken-1: rgba(0, 0, 0, .075);
+  --darken-2: rgba(0, 0, 0, .125);
+  --darken-3: rgba(0, 0, 0, .375);
+  --darken-4: rgba(0, 0, 0, .625);
+}

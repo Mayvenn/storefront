@@ -1,0 +1,23 @@
+.border-pure-white   { border-color: var(--pure-white); }
+.border-light-white  { border-color: var(--light-white); }
+.border-dark-white   { border-color: var(--dark-white); }
+.border-light-silver { border-color: var(--light-silver); }
+.border-dark-silver  { border-color: var(--dark-silver); }
+.border-light-gray   { border-color: var(--light-gray); }
+.border-dark-gray    { border-color: var(--dark-gray); }
+.border-light-black  { border-color: var(--light-black); }
+.border-dark-black   { border-color: var(--dark-black); }
+
+.debug * { outline: 1px solid gold; }
+
+:root {
+  --pure-white:   #ffffff;
+  --light-white:  #fcfcfc;
+  --dark-white:   #e6e6e6;
+  --light-silver: #d2d2d2;
+  --dark-silver:  #aaaaaa;
+  --light-gray:   #969696;
+  --dark-gray:    #6e6e6e;
+  --light-black:  #5a5a5a;
+  --dark-black:   #323232;
+}

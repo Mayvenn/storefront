@@ -1,0 +1,16 @@
+.pointer { cursor: pointer; }
+
+.transition-ease        { transition-timing-function: ease; }
+.transition-ease-in     { transition-timing-function: ease-in; }
+.transition-ease-in-out { transition-timing-function: ease-in-out; }
+.transition-1           { transition-duration: 0.25s; }
+.transition-2           { transition-duration: 0.5s; }
+.transition-3           { transition-duration: 1s; }
+.transition-4           { transition-duration: 2s; }
+
+.commission-order                                                      { max-height: 35rem; }
+.commission-order.commission-order-enter                               { max-height: 0px; }
+.commission-order.commission-order-enter.commission-order-enter-active { max-height: 35rem; }
+.commission-order.commission-order-leave                               { max-height: 35rem; }
+.commission-order.commission-order-leave.commission-order-leave-active { max-height: 0px; }
+

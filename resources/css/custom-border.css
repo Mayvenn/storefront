@@ -1,0 +1,75 @@
+.border-dashed {
+  border-style: dashed;
+  border-width: var(--border-width);
+}
+
+.border-dashed-top {
+  border-top-style: dashed;
+  border-top-width: var(--border-width);
+}
+
+.border-dashed-right {
+  border-right-style: dashed;
+  border-right-width: var(--border-width);
+}
+
+.border-dashed-bottom {
+  border-bottom-style: dashed;
+  border-bottom-width: var(--border-width);
+}
+
+.border-dashed-left {
+  border-left-style: dashed;
+  border-left-width: var(--border-width);
+}
+
+.border-dotted {
+  border-style: dotted;
+  border-width: var(--border-width);
+}
+
+.border-dotted-top {
+  border-top-style: dotted;
+  border-top-width: var(--border-width);
+}
+
+.border-dotted-right {
+  border-right-style: dotted;
+  border-right-width: var(--border-width);
+}
+
+.border-dotted-bottom {
+  border-bottom-style: dotted;
+  border-bottom-width: var(--border-width);
+}
+
+.border-dotted-left {
+  border-left-style: dotted;
+  border-left-width: var(--border-width);
+}
+
+.border-width-2 {
+  border-width: 2px;
+}
+
+.border-width-right-0 { border-right-width: 0; }
+.border-width-left-0 { border-left-width: 0; }
+.border-width-top-0 { border-top-width: 0; }
+.border-width-bottom-0 { border-bottom-width: 0; }
+
+.capped { border-radius: 1000px; }
+.rounded-top-left     { border-top-left-radius:     var(--border-radius); }
+.rounded-top-right    { border-top-right-radius:    var(--border-radius); }
+.rounded-bottom-left  { border-bottom-left-radius:  var(--border-radius); }
+.rounded-bottom-right { border-bottom-right-radius: var(--border-radius); }
+.rounded-1 { border-radius: var(--border-radius-1); }
+.rounded-top-1,    .rounded-left-1,  .rounded-top-left-1     { border-top-left-radius:     var(--border-radius-1); }
+.rounded-top-1,    .rounded-right-1, .rounded-top-right-1    { border-top-right-radius:    var(--border-radius-1); }
+.rounded-bottom-1, .rounded-left-1,  .rounded-bottom-left-1  { border-bottom-left-radius:  var(--border-radius-1); }
+.rounded-bottom-1, .rounded-right-1, .rounded-bottom-right-1 { border-bottom-right-radius: var(--border-radius-1); }
+
+:root {
+  --border-width: 1px;
+  --border-radius: 3px;
+  --border-radius-1: 6px;
+}
