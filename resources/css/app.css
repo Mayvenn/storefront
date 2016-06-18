@@ -1,5 +1,5 @@
 /* basscss-basic is a reasonable reset and basic styles, but it interferes with legacy
- * styles, so disabling for now.
+ * styles, so disabling for now. Probably need a normalize too.
 /* @import 'basscss-basic'; */
 
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
@@ -18,16 +18,25 @@
 
 /* Basscss Core */
 
-@import 'basscss';
-
+@import 'basscss/node_modules/basscss-type-scale';
 @import 'custom-type-scale.css';
+@import 'basscss/node_modules/basscss-typography';
 @import 'custom-typography.css';
+@import 'basscss/node_modules/basscss-layout';
 @import 'custom-layout.css';
+@import 'basscss/node_modules/basscss-align';
+@import 'basscss/node_modules/basscss-margin';
 @import 'custom-margin.css';
+@import 'basscss/node_modules/basscss-padding';
 @import 'custom-padding.css';
+@import 'basscss/node_modules/basscss-grid';
 @import 'custom-grid.css';
+@import 'basscss/node_modules/basscss-flexbox';
+@import 'basscss/node_modules/basscss-position';
 @import 'custom-position.css';
+@import 'basscss/node_modules/basscss-border';
 @import 'custom-border.css';
+/* @import 'basscss/node_modules/basscss-hide'; */ /* deprecated in favor of custom names */
 @import 'custom-hide.css';
 
 /* Optional Modules (extensions to Basscss Core) */
@@ -66,13 +75,25 @@
 
 /* Custom media queries */
 
-/* Bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
+/* WARNING: We try not to use these, but basscss needs them.
+ * Better to use the responsive breakpoints defined below.
+ * Also, bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
  * with how our fonts change size at different screen widths. Use px instead: */
-@custom-media --breakpoint-xs (max-width: 479px); /* needed for (deprecated) .xs-hide, same as to-sm */
 @custom-media --breakpoint-sm (min-width: 480px);
 @custom-media --breakpoint-md (min-width: 640px);
 @custom-media --breakpoint-lg (min-width: 768px);
 @custom-media --breakpoint-xl (min-width: 1024px);
+
+/* Responsive hide breakpoints and names:
+
+        480px       640px       768px     1024px
+  to-sm   |   sm-up
+  to-sm   |   sm-md   |   md-up
+              to-md   |   md-lg   |   lg-up
+                          to-lg   |   lg-xl  |  xl-up
+                                      to-xl  |  xl-up
+
+*/
 
 @custom-media --breakpoint-to-sm (max-width: 479px);
 @custom-media --breakpoint-sm-up (min-width: 480px); /* sm-up is the same as sm */

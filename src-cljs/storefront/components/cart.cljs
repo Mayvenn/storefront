@@ -62,14 +62,14 @@
       {:data-test "order-summary"}
       "Review your order"]
 
-     [:.py2.md-flex.justify-between
-      [:.md-up-col-6
+     [:.py2.clearfix.mxn4
+      [:.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
                                                     delete-line-item-requests)]
-      [:.md-up-col-5
+      [:.md-up-col.md-up-col-6.px4
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:.pt2.flex.items-center
