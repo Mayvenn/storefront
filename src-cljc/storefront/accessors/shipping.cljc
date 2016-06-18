@@ -1,5 +1,4 @@
-(ns storefront.accessors.shipping
-  (:require [storefront.hooks.experiments :as experiments]))
+(ns storefront.accessors.shipping)
 
 (defn timeframe [rate-sku]
   (case rate-sku

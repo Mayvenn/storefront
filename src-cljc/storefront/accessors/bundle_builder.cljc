@@ -1,5 +1,6 @@
 (ns storefront.accessors.bundle-builder
   (:require [storefront.keypaths :as keypaths]
+            [storefront.platform.numbers :as numbers]
             [storefront.accessors.taxons :as taxons]))
 
 (defn selected-variants [data]
@@ -23,7 +24,7 @@
   (map (fn [variant]
          (-> variant
              (merge (:variant_attrs variant))
-             (assoc :price (js/parseFloat (:price variant))
+             (assoc :price (numbers/parse-float (:price variant))
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 

@@ -4,6 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.messages :refer [handle-message]]
             [storefront.routes :as routes]
+            [storefront.app-routes :as app-routes]
             [storefront.utils.query :as query]))
 
 (defn position [pred coll]
@@ -25,7 +26,7 @@
   (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
 (defn route-to [navigation-event & [args]]
-  {:href (routes/path-for navigation-event args)
+  {:href (app-routes/path-for navigation-event args)
    :on-click
    (fn [e]
      (.preventDefault e)

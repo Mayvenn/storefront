@@ -1,13 +1,14 @@
 (ns storefront.app-routes
   (:require [bidi.bidi :as bidi]
             [storefront.events :as events]
+            [storefront.platform.uri :as uri]
             #?(:cljs [cljs.reader :refer [read-string]])))
 
 (defn edn->bidi [value]
   (keyword (prn-str value)))
 
 (defn bidi->edn [value]
-  (read-string (name value)))
+   (read-string (name value)))
 
 (def app-routes
   ["" {"/"                               (edn->bidi events/navigate-home)
@@ -37,3 +38,13 @@
        "/checkout/payment"               (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm"               (edn->bidi events/navigate-checkout-confirmation)
        ["/orders/" :number "/complete"]  (edn->bidi events/navigate-order-complete)}])
+
+(defn path-for [navigation-event & [args]]
+  (let [query-params (:query-params args)
+        args         (dissoc args :query-params)
+        path         (apply bidi/path-for
+                            app-routes
+                            (edn->bidi navigation-event)
+                            (apply concat (seq args)))]
+    (when path
+      (uri/set-query-string path query-params))))

@@ -4,7 +4,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
@@ -179,7 +179,7 @@
      [:p.h2.silver "Looks like you don't have any commissions yet."]]
     [:.py3.h3
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
-     [:p.medium stylists/store-url]]]))
+     [:p.medium stylist-urls/store-url]]]))
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]

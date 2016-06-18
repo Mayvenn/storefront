@@ -135,8 +135,8 @@
                                   :secure  (not (config/development? environment))
                                   :path    "/"}))
 
-(defn respond-with-index [req storeback-config environment]
-  (-> (views/index req storeback-config environment)
+(defn html-response [render-ctx view]
+  (-> (view render-ctx)
       response
       (content-type "text/html")))
 
@@ -153,9 +153,9 @@
 
 (defn render-category
   "Checks that the category exists"
-  [{:keys [storeback-config environment]} req {:keys [taxon-slug]}]
+  [{:keys [storeback-config] :as render-ctx} req {:keys [taxon-slug]}]
   (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
-    (respond-with-index req storeback-config environment)))
+    (html-response render-ctx views/index)))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -179,14 +179,18 @@
           encode-cookies))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
-  (fn [{:keys [uri] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+  (fn [{:keys [uri store] :as req}]
+    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
+          render-ctx {:store store
+                      :storeback-config storeback-config
+                      :environment environment}]
       (when nav-event
         (condp = (bidi->edn nav-event)
           events/navigate-product     (redirect-product->canonical-url ctx req params)
-          events/navigate-category    (render-category ctx req params)
+          events/navigate-category    (render-category render-ctx req params)
           events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
-          (respond-with-index req storeback-config environment))))))
+          events/navigate-home        (html-response render-ctx views/home-page)
+          (html-response render-ctx views/index))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
