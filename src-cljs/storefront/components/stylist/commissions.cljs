@@ -27,7 +27,7 @@
    [:.col.col-3.px1 d]])
 
 (defn show-item [products {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
-  [:.py2.clearfix
+  [:.py2.clearfix {:key product-id}
    [:img.left.border.border-dark-white.mr3
     {:style {:width "5rem"}
      :src   (products/thumbnail-url products product-id)
@@ -88,7 +88,7 @@
                                      (discount-subtotals order)
                                      (shipping-subtotals shipping-methods order)
                                      (store-credit-subtotals order))]
-    [:.clearfix.mxn1.my2
+    [:.clearfix.mxn1.my2 {:key name}
      [:.px1.col.col-8
       {:class (when (neg? price) "green")}
       name]
