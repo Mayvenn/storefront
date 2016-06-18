@@ -58,12 +58,12 @@
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
 (defn text-field [label keypath value input-attributes]
-  [:.col-12.floating-label.mb2
+  [:.col-12.mb2
    [:.absolute
-    [:label.floated-label.col-12.h6.navy.relative
+    [:label.floating-label--label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
-   [:input.col-12.h3.border.border-light-silver.glow.floating-input
+   [:input.floating-label--input.col-12.h3.border.border-light-silver.glow
     (cond-> (merge {:key label
                     :class "rounded"
                     :placeholder label}
@@ -78,14 +78,13 @@
            (.-selectedIndex elem)))))
 
 (defn select-field [label value options select-attributes]
-  [:.col-12.floating-label.mb2.mx-auto
+  [:.col-12.mb2.mx-auto
    [:.relative.z1
-    [:select.col-12.h2.glow.floating-input.absolute.border-none
+    [:select.col-12.h2.glow.absolute.border-none
      (merge {:key         label
              :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
              :placeholder label
              :value       value}
-            (when (seq value) {:class "has-value"})
             select-attributes)
      [:option ""]
      (for [{name :name val :abbr} options]
@@ -93,12 +92,10 @@
         (str name)])]]
    [:.bg-pure-white.border.border-light-silver.rounded.p1
     [:label.col-12.h6.navy.relative
-     (merge
-      {:for (name (:id select-attributes))}
-      (when (seq value) {:class "has-value"}))
+     {:for (name (:id select-attributes))}
      label]
     [:.h3.black.relative
-     (or (:name (first (filter (comp (partial = value) :abbr) options)))
+     (or (->> options (filter (comp #{value} :abbr)) first :name)
          nbsp)]]])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]

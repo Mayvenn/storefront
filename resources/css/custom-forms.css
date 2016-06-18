@@ -1,19 +1,19 @@
-.floating-label .floated-label {
+.floating-label--label {
   position: relative;
   top: 1em;
   left: 1em;
   display: none;
 }
 
-.floating-label .floated-label.has-value {
+.floating-label--label.has-value {
   display: block;
 }
 
-.floating-label .floating-input {
+.floating-label--input {
   padding: 1em 0.5em;
 }
 
-.floating-label .floating-input.has-value {
+.floating-label--input.has-value {
   padding-top: 1.5em;
   padding-bottom: 0.5em;
 }

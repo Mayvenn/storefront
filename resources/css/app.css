@@ -10,9 +10,7 @@
 @import 'basscss-addons/modules/btn-outline';
 @import 'custom-btn-outline.css';
 @import 'basscss-addons/modules/btn-sizes';
-
-/* Would like to use this, but .input interferes with existing forms */
-/* @import 'basscss-addons/modules/forms'; */
+/* @import 'basscss-addons/modules/forms'; */ /* Would like to use this, but .input interferes with existing forms */
 @import 'custom-forms.css';
 
 /* Basscss Core */
