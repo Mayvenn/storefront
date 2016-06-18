@@ -4,8 +4,7 @@
 
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
-@import 'basscss-addons/modules/btn';
-@import 'custom-btn.css';
+@import 'custom-btn.css'; /* Borrowed from basscss-addons/modules/btn */
 @import 'basscss-addons/modules/btn-primary';
 @import 'custom-btn-primary.css';
 @import 'basscss-addons/modules/btn-outline';

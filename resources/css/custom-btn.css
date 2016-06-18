@@ -1,11 +1,52 @@
+/* Inspired by Basscss Btn */
+
 .btn {
+  font-family: var(--button-font-family);
+  font-size: var(--button-font-size);
+  font-weight: var(--button-font-weight);
+  text-decoration: none;
   text-align: center;
+  cursor: pointer;
+  display: inline-block;
+  line-height: var(--button-line-height);
+  padding: var(--button-padding-y) var(--button-padding-x);
+  height: auto;
+  border: var(--border-width) solid transparent;
   border-radius: var(--button-border-radius);
+  vertical-align: middle;
+  -webkit-appearance: none;
+  color: inherit;
+  background-color: transparent;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   user-select: none;
 }
 
+.btn:hover {
+  text-decoration: none;
+}
+
+.btn:focus {
+  outline: none;
+  border-color: var(--darken-2);
+  box-shadow: 0 0 0 3px var(--darken-3);
+}
+
+::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
 :root {
-    --button-border-radius: var(--border-radius);
-    --border-radius: 2px;
+  --border-width: 1px;
+  --button-border-radius: var(--border-radius);
+  --border-radius: 2px;
+  --bold-font-weight: bold;
+  --button-font-family: inherit;
+  --button-font-size: inherit;
+  --button-font-weight: var(--bold-font-weight);
+  --button-line-height: 1.125rem;
+  --button-padding-y: .5rem;
+  --button-padding-x: 1rem;
+  --darken-2: rgba(0, 0, 0, .125);
+  --darken-3: rgba(0, 0, 0, .25);
 }
