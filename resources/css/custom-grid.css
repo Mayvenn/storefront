@@ -1,7 +1,4 @@
-/* TODO: stop depending on basscss/grid (which has both non-responsive and
-   responsive versions, but the responsive versions have confusing names) and
-   only use basscss/lib/grid (non-responsive). We define better responsive names
-   here. */
+/* responsive grid helpers */
 
 @media (--breakpoint-sm-up) {
   .sm-up-col {
@@ -78,8 +75,6 @@
   .lg-up-col-12 { width: 100%; }
 }
 
-@custom-media --breakpoint-sm-up (min-width: 480px); /* sm-up is the same as sm */
+@custom-media --breakpoint-sm-up (min-width: 480px);
 @custom-media --breakpoint-md-up (min-width: 640px);
-@custom-media --breakpoint-lg-up (min-width: 768px); /* lg-up is the same as lg */
-@custom-media --breakpoint-xl-up (min-width: 1024px);
-
+@custom-media --breakpoint-lg-up (min-width: 768px);

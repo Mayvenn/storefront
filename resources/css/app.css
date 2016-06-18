@@ -29,8 +29,8 @@
 @import 'custom-margin.css';
 @import 'basscss/node_modules/basscss-padding';
 @import 'custom-padding.css';
-@import 'basscss/node_modules/basscss-grid';
-@import 'custom-grid.css';
+@import 'basscss/node_modules/basscss-grid/lib/grid.css';
+@import 'custom-grid.css'; /* responsive helpers preferred over basscss-grid/lib/*-grid.css */
 @import 'basscss/node_modules/basscss-flexbox';
 @import 'basscss/node_modules/basscss-position';
 @import 'custom-position.css';
