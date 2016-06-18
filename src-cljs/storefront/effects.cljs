@@ -77,7 +77,6 @@
 
 (defmethod perform-effects events/navigate [_ _ _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    (api/get-taxons (get-in app-state keypaths/api-cache))
     (refresh-account app-state)
     (api/get-sms-number)
     (api/get-promotions (get-in app-state keypaths/api-cache)

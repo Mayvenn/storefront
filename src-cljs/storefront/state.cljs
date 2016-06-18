@@ -53,7 +53,7 @@
      :promotions []
 
      :store (js->clj js/store :keywordize-keys true)
-     :taxons []
+     :taxons (js->clj js/taxons :keywordize-keys true)
      :products {}
      :states []
      :shipping-methods []

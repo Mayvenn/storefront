@@ -182,6 +182,7 @@
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
           render-ctx {:store store
+                      :taxons (api/taxons storeback-config)
                       :storeback-config storeback-config
                       :environment environment}]
       (when nav-event

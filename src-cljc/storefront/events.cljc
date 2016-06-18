@@ -117,7 +117,6 @@
 (defpath api-success)
 (defpath api-success-cache)
 
-(defpath api-success-taxons)
 (defpath api-success-products)
 (defpath api-success-states)
 (defpath api-success-sign-in)

@@ -4,7 +4,9 @@
 
 
 (defn set-query-string [s query-params]
-  (.. (URIBuilder. s)
-      (setParameters (map #(BasicNameValuePair. %1 %2) query-params))
-      (build)
-      (toString)))
+  (if (seq query-params)
+    (.. (URIBuilder. s)
+        (setParameters (map #(BasicNameValuePair. %1 %2) query-params))
+        (build)
+        (toString))
+    s))

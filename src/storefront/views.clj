@@ -1,6 +1,7 @@
 (ns storefront.views
   (:require [storefront.assets :refer [asset-path]]
             [storefront.components.home :refer [home-component]]
+            [storefront.component :as component]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]
             [hiccup.page :as page]
@@ -19,7 +20,7 @@
                        "background-position: center center;"
                        "background-repeat: no-repeat;")}]]])
 
-(defn layout [{:keys [store storeback-config environment]} initial-content]
+(defn layout [{:keys [store taxons storeback-config environment]} initial-content]
   (page/html5
    [:head
     [:title "Shop | Mayvenn"]
@@ -35,7 +36,8 @@
      (str "Bugsnag.releaseStage = \"" environment "\";"
           "Bugsnag.notifyReleaseStages = ['acceptance', 'production'];")]
     [:script {:type "text/javascript"}
-     (str "store = " (generate-string store) ";")]
+     (str "store = " (generate-string store) ";"
+          "taxons = " (generate-string taxons) ";")]
     (page/include-css (asset-path "/css/all.css"))
     (page/include-css (asset-path "/css/app.css"))]
    [:body
@@ -50,7 +52,7 @@
   (layout render-ctx spinner-content))
 
 (defn home-page [render-ctx]
-  (layout render-ctx (html (home-component {} nil {}))))
+  (layout render-ctx (html (first (component/normalize-elements (home-component render-ctx nil {}))))))
 
 (def not-found
   (page/html5

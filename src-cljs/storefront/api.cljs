@@ -118,15 +118,6 @@
                          (messages/handle-message events/api-success-cache {key result})
                          (handler result))})))))
 
-(defn get-taxons [cache]
-  (cache-req
-   cache
-   GET
-   "/bundle-builder-nav-taxonomy"
-   request-keys/get-taxons
-   {:handler
-    #(messages/handle-message events/api-success-taxons (select-keys % [:taxons]))}))
-
 (defn get-promotions [cache promo-code]
   (cache-req
    cache

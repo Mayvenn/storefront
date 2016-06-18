@@ -180,9 +180,6 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
-(defmethod transition-state events/api-success-taxons [_ event args app-state]
-  (assoc-in app-state keypaths/taxons (:taxons args)))
-
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (update-in app-state keypaths/products merge (key-by :id products)))
 
