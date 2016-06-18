@@ -2,6 +2,7 @@
   (:require [storefront.assets :refer [asset-path]]
             [storefront.components.home :refer [home-component]]
             [storefront.component :as component]
+            [storefront.keypaths :as keypaths]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]
             [hiccup.page :as page]
@@ -20,7 +21,7 @@
                        "background-position: center center;"
                        "background-repeat: no-repeat;")}]]])
 
-(defn layout [{:keys [store taxons storeback-config environment]} initial-content]
+(defn layout [{:keys [storeback-config environment]} {:keys [store taxons]} initial-content]
   (page/html5
    [:head
     [:title "Shop | Mayvenn"]
@@ -48,11 +49,11 @@
                                  "var apiUrl=\"" (:endpoint storeback-config) "\";"))
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
-(defn index [render-ctx]
+(defn index [render-ctx data]
   (layout render-ctx spinner-content))
 
-(defn home-page [render-ctx]
-  (layout render-ctx (html (first (component/normalize-elements (home-component render-ctx nil {}))))))
+(defn home-page [render-ctx data]
+  (layout render-ctx data (html (first (component/normalize-elements (home-component data nil {}))))))
 
 (def not-found
   (page/html5

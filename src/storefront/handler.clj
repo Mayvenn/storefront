@@ -4,6 +4,7 @@
             [storefront.events :as events]
             [storefront.api :as api]
             [storefront.views :as views]
+            [storefront.keypaths :as keypaths]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -135,8 +136,8 @@
                                   :secure  (not (config/development? environment))
                                   :path    "/"}))
 
-(defn html-response [render-ctx view]
-  (-> (view render-ctx)
+(defn html-response [render-ctx data view]
+  (-> (view render-ctx data)
       response
       (content-type "text/html")))
 
@@ -153,9 +154,9 @@
 
 (defn render-category
   "Checks that the category exists"
-  [{:keys [storeback-config] :as render-ctx} req {:keys [taxon-slug]}]
+  [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
   (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
-    (html-response render-ctx views/index)))
+    (html-response render-ctx data views/index)))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -181,17 +182,18 @@
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
-          render-ctx {:store store
-                      :taxons (api/taxons storeback-config)
-                      :storeback-config storeback-config
-                      :environment environment}]
+          render-ctx {:storeback-config storeback-config
+                      :environment environment}
+          data (-> {}
+                   (assoc-in keypaths/store store)
+                   (assoc-in keypaths/taxons (api/taxons storeback-config)))]
       (when nav-event
         (condp = (bidi->edn nav-event)
           events/navigate-product     (redirect-product->canonical-url ctx req params)
-          events/navigate-category    (render-category render-ctx req params)
+          events/navigate-category    (render-category render-ctx data req params)
           events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
-          events/navigate-home        (html-response render-ctx views/home-page)
-          (html-response render-ctx views/index))))))
+          events/navigate-home        (html-response render-ctx data views/home-page)
+          (html-response render-ctx data views/index))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
