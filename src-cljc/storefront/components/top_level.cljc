@@ -74,6 +74,7 @@
                 [events/navigate-category                       category-component
                  events/navigate-sign-in                        sign-in/built-component
                  events/navigate-sign-up                        sign-up/built-component
+                 events/navigate-forgot-password                forgot-password/built-component
                  events/navigate-reset-password                 reset-password/built-component
                  events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
                  events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
