@@ -10,9 +10,12 @@
     (update-in attrs [:style] map->styles)
     attrs))
 
+(defn remove-handlers [m]
+  (into {} (remove (fn [[k v]] (.startsWith (name k) "on-")) m)))
+
 (defn normalize-attrs [attrs]
   (-> attrs
-      (select-keys [:class :id :style])
+      remove-handlers
       normalize-style))
 
 (declare normalize-elements)
