@@ -1,7 +1,7 @@
 (ns storefront.components.order-summary
   (:require [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.components.formatters :refer [as-money as-money-without-cents as-money-or-free]]
+            [storefront.components.money-formatters :refer [as-money as-money-without-cents as-money-or-free]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]))

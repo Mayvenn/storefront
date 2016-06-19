@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.accessors.shipping :as shipping]
-            [storefront.components.formatters
+            [storefront.components.money-formatters
              :refer
              [as-money-without-cents-or-free]]
             [storefront.platform.component-utils :as utils]

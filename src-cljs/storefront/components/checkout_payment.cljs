@@ -4,7 +4,7 @@
             [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-steps :as checkout-steps]
-            [storefront.components.formatters :refer [as-money]]
+            [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.components.validation-errors :as validation-errors]

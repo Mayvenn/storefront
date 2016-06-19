@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.referrals
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
@@ -45,8 +46,8 @@
   [:.relative
    [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
-    [:.h2.green.light {:style {:font-size "18px"}} (f/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (f/as-money-without-cents earning-amount)]]
+    [:.h2.green.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
@@ -66,12 +67,12 @@
        [:.h6.gray.line-height-4
         [:div.silver "Joined " (f/long-date join-date)]
         (when (= state :paid)
-          [:div "Credit Earned: " [:span.navy (f/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
+          [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
       [:.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
-                                    (f/as-money-without-cents lifetime-total))]
+                                    (mf/as-money-without-cents lifetime-total))]
     [:.h6.dark-silver
      [:.p3.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
@@ -91,8 +92,8 @@
 
 (defn show-refer-ad [refer-to-leads? sales-rep-email bonus-amount earning-amount]
   (let [message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
-                                    (f/as-money-without-cents bonus-amount)
-                                    (f/as-money-without-cents earning-amount))]
+                                    (mf/as-money-without-cents bonus-amount)
+                                    (mf/as-money-without-cents earning-amount))]
     [:div
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
@@ -163,11 +164,11 @@
                (ui/modal-close {:on-close on-close})
                [:form.p1
                 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
-                [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
+                [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"
-                 " Enter their information below and when they sell " (f/as-money-without-cents earning-amount)
-                 " of Mayvenn products you will earn " (f/as-money-without-cents bonus-amount) "!"]
+                 " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
+                 " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
                   [:.py2.border-top.border-light-silver
                    {:key idx}

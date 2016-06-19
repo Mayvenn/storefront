@@ -1,7 +1,7 @@
 (ns storefront.components.product
   (:require [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.formatters :refer [as-money-without-cents]]
+            [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [sablono.core :refer-macros [html]]))

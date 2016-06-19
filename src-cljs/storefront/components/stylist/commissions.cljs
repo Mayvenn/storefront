@@ -6,6 +6,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.components.stylist.pagination :as pagination]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
@@ -37,7 +38,7 @@
     [:.line-height-3.h4.mt1
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div "Price: " (f/as-money unit-price)]
+     [:div "Price: " (mf/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
 
 (defn short-shipping-name [shipping-methods shipping-item]
@@ -94,11 +95,11 @@
       name]
      [:.px1.col.col-4.medium.right-align
       {:class (if (neg? price) "green" "navy")}
-      (f/as-money price)]]))
+      (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
   [:.h2.p2.col-12.right-align.navy.border-top.border-dark-white
-   (f/as-money commissionable-amount)])
+   (mf/as-money commissionable-amount)])
 
 (defn show-order [products shipping-methods order]
   [:.px2
@@ -117,10 +118,10 @@
    (if (= status "paid")
      [:.bg-navy
       (payout-bar
-       (f/as-money amount) " paid on " (f/long-date payout-date))]
+       (mf/as-money amount) " paid on " (f/long-date payout-date))]
      [:.bg-green
       (payout-bar
-       (f/as-money amount) " has been added to your next payment.")])])
+       (mf/as-money amount) " has been added to your next payment.")])])
 
 (defn toggle-expanded-commission [expanded? number]
   (utils/send-event-callback events/control-commission-order-expand
@@ -135,7 +136,7 @@
     [:.px1.h5.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
-     (when (= status "paid") "+") (f/as-money amount)]
+     (when (= status "paid") "+") (mf/as-money amount)]
     [:.h2.navy (:full-name order)]]
 
    [:.silver.h5

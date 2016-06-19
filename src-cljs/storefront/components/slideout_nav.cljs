@@ -10,7 +10,7 @@
             [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
-            [storefront.components.formatters :refer [as-money]]
+            [storefront.components.money-formatters :refer [as-money]]
             [storefront.app-routes :as app-routes]
             [storefront.hooks.experiments :as experiments]))
 

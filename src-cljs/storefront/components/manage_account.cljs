@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.components.facebook :as facebook]
-            [storefront.components.formatters :refer [as-money]]
+            [storefront.components.money-formatters :refer [as-money]]
             [storefront.platform.component-utils :as utils]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]

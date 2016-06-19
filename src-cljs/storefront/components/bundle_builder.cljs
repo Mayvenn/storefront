@@ -1,7 +1,7 @@
 (ns storefront.components.bundle-builder
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.product :as product]
-            [storefront.components.formatters :refer [as-money-without-cents]]
+            [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
             [storefront.components.reviews :as reviews]

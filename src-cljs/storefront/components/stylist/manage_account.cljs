@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [clojure.string :refer [join capitalize]]
-            [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :refer [as-money]]
             [storefront.platform.component-utils :as utils]
             [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :as validation-errors]
@@ -228,7 +228,7 @@
           [:.solid-line-divider]
           [:div.password-reset
            [:p.password-instructions
-            "Available store credit is " (f/as-money available-credit)]]])
+            "Available store credit is " (as-money available-credit)]]])
 
        [:div.my3
         (om/build facebook/messenger-business-opt-in-component (facebook/query data))]]]])))
