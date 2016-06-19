@@ -12,9 +12,6 @@
 (defn as-money-without-cents [amount]
   (let [amount (int amount)
         format (if (< amount 0) "-$%s" "$%s")]
-    (prn (num/abs amount))
-    (prn (number-with-commas (num/abs amount)))
-    (prn (str/format format (number-with-commas (num/abs amount))))
     (str/format format (number-with-commas (num/abs amount)))))
 
 (defn as-money-cents-only [amount]
