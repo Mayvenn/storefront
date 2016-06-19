@@ -1,18 +1,16 @@
 (ns storefront.components.slideout-nav
+  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
-            [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            #?@(:clj [[storefront.component :as component]])
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
             [storefront.platform.messages :as messages]
             [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.app-routes :as app-routes]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.app-routes :as app-routes]))
 
 (def section-inner :div.ml3.py2)
 (def section-outer :div.border-bottom.border-light-silver.bg-pure-white.black)
@@ -26,7 +24,7 @@
     [:div.col.col-10.line-height-3 right]]))
 
 (def menu-x
-  (html
+  (component/html
    [:div.absolute {:style {:width "60px"}}
     [:div.relative.rotate-45.p2 {:style {:height "60px"}
                               :on-click #(messages/handle-message events/control-menu-collapse-all)}
@@ -34,7 +32,7 @@
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
-  (html
+  (component/html
    [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.green.pp3
     (merge {:style {:height "30px"}
             :title "Mayvenn"
@@ -120,7 +118,7 @@
     (stylist-products-section selectable? taxons)]])
 
 (defn help-section [selectable?]
-  (html
+  (component/html
    [section-outer-darker
     [section-inner
      [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
@@ -130,7 +128,7 @@
       (row (selectable? events/navigate-help "Contact Us"))]]]))
 
 (def sign-in-section
-  (html
+  (component/html
    [section-outer-darker
     [section-inner
      [:div.clearfix
@@ -147,7 +145,7 @@
         "Sign Up"]]]]]))
 
 (def sign-out-section
-  (html
+  (component/html
    [:a.block.navy.center.col-12.p3.bg-white
     (merge {:data-test "sign-out"}
            (utils/fake-href events/control-sign-out))
@@ -178,21 +176,20 @@
    sign-out-section])
 
 (defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner]
-  (om/component
-   (html
-    (let [selectable? (partial selectable current-navigation-message)]
-      [:div.h3.lg-up-hide
-       {:class (when-not slid-out? "hide")}
-       [:div.fixed.overlay.bg-darken-4.z3
-        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
-        {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-       [:div.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
-        {:style {:max-height "100%"}}
-        [section-outer-darker menu-x [:div.p2 logo]]
-        (cond
-          stylist?   (stylist-content selectable? data)
-          user-email (customer-content selectable? data)
-          :else      (guest-content selectable? data))]]))))
+  (component/create
+   (let [selectable? (partial selectable current-navigation-message)]
+     [:div.h3.lg-up-hide
+      {:class (when-not slid-out? "hide")}
+      [:div.fixed.overlay.bg-darken-4.z3
+       ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
+       {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
+      [:div.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
+       {:style {:max-height "100%"}}
+       [section-outer-darker menu-x [:div.p2 logo]]
+       (cond
+         stylist?   (stylist-content selectable? data)
+         user-email (customer-content selectable? data)
+         :else      (guest-content selectable? data))]])))
 
 
 (defn query [data]
@@ -205,4 +202,4 @@
    :taxons                     (get-in data keypaths/taxons)})
 
 (defn built-component [data]
-  (om/build component (query data)))
+  (component/build component (query data) nil))
