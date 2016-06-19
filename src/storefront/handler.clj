@@ -188,20 +188,20 @@
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
-          nav-event (bidi->edn nav-event)
-          render-ctx {:storeback-config storeback-config
-                      :environment environment}
-          data (-> {}
-                   (assoc-in keypaths/store store)
-                   (assoc-in keypaths/taxons (api/taxons storeback-config))
-                   (assoc-in keypaths/navigation-message [nav-event params]))]
+    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
       (when nav-event
-        (condp = nav-event
-          events/navigate-product     (redirect-product->canonical-url ctx req params)
-          events/navigate-category    (render-category render-ctx data req params)
-          events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
-          (html-response render-ctx data))))))
+        (let [nav-event (bidi->edn nav-event)
+              render-ctx {:storeback-config storeback-config
+                          :environment environment}
+              data (-> {}
+                       (assoc-in keypaths/store store)
+                       (assoc-in keypaths/taxons (api/taxons storeback-config))
+                       (assoc-in keypaths/navigation-message [nav-event params]))]
+          (condp = nav-event
+            events/navigate-product     (redirect-product->canonical-url ctx req params)
+            events/navigate-category    (render-category render-ctx data req params)
+            events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
+            (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
