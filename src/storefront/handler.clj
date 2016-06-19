@@ -136,10 +136,15 @@
                                   :secure  (not (config/development? environment))
                                   :path    "/"}))
 
-(defn html-response [render-ctx data view]
-  (-> (view render-ctx data)
-      response
-      (content-type "text/html")))
+(def server-render-pages
+  #{events/navigate-home
+    events/navigate-guarantee})
+
+(defn html-response [render-ctx data]
+  (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
+    (-> ((if prerender? views/prerendered-page views/index) render-ctx data)
+        response
+        (content-type "text/html"))))
 
 (defn redirect-to-cart [query-params]
   (redirect (str "/cart?" (codec/form-encode query-params))))
@@ -156,7 +161,7 @@
   "Checks that the category exists"
   [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
   (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
-    (html-response render-ctx data views/index)))
+    (html-response render-ctx data)))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -182,18 +187,19 @@
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)
+          nav-event (bidi->edn nav-event)
           render-ctx {:storeback-config storeback-config
                       :environment environment}
           data (-> {}
                    (assoc-in keypaths/store store)
-                   (assoc-in keypaths/taxons (api/taxons storeback-config)))]
+                   (assoc-in keypaths/taxons (api/taxons storeback-config))
+                   (assoc-in keypaths/navigation-message [nav-event params]))]
       (when nav-event
-        (condp = (bidi->edn nav-event)
+        (condp = nav-event
           events/navigate-product     (redirect-product->canonical-url ctx req params)
           events/navigate-category    (render-category render-ctx data req params)
           events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
-          events/navigate-home        (html-response render-ctx data views/home-page)
-          (html-response render-ctx data views/index))))))
+          (html-response render-ctx data))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"

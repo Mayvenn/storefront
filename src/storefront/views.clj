@@ -52,7 +52,7 @@
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
 
-(defn home-page [render-ctx data]
+(defn prerendered-page [render-ctx data]
   (layout render-ctx data (html (first (component/normalize-elements (top-level-component data nil {}))))))
 
 (def not-found

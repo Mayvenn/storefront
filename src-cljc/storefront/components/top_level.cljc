@@ -19,14 +19,14 @@
                        [storefront.components.help :refer [help-component]]
                        [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
                        [storefront.components.sign-up :as sign-up]
-                       [storefront.components.popup :refer [popup-component]]
-                       [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]])
+                       [storefront.components.popup :refer [popup-component]]])
 
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -70,27 +70,28 @@
         [:div.legacy-container
          (component/build
           (condp = (get-in data keypaths/navigation-event)
+            #?@(:cljs
+                [events/navigate-categories                     categories-page-component
+                 events/navigate-category                       category-component
+                 events/navigate-help                           help-component
+                 events/navigate-sign-in                        sign-in/built-component
+                 events/navigate-sign-up                        sign-up/built-component
+                 events/navigate-reset-password                 reset-password/built-component
+                 events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
+                 events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
+                 events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
+                 events/navigate-stylist-manage-account         stylist-manage-account-component
+                 events/navigate-account-manage                 (requires-sign-in data manage-account-component)
+                 events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
+                 events/navigate-friend-referrals               friend-referrals-component
+                 events/navigate-cart                           cart/built-component
+                 events/navigate-checkout-sign-in               checkout-sign-in/built-component
+                 events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address/built-component)
+                 events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
+                 events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
+                 events/navigate-order-complete                 checkout-complete/built-component])
             events/navigate-home                           home-component
-            #?@(:cljs [events/navigate-categories                     categories-page-component
-                       events/navigate-category                       category-component
-                       events/navigate-guarantee                      thirty-day-guarantee-component
-                       events/navigate-help                           help-component
-                       events/navigate-sign-in                        sign-in/built-component
-                       events/navigate-sign-up                        sign-up/built-component
-                       events/navigate-reset-password                 reset-password/built-component
-                       events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
-                       events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
-                       events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-                       events/navigate-stylist-manage-account         stylist-manage-account-component
-                       events/navigate-account-manage                 (requires-sign-in data manage-account-component)
-                       events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
-                       events/navigate-friend-referrals               friend-referrals-component
-                       events/navigate-cart                           cart/built-component
-                       events/navigate-checkout-sign-in               checkout-sign-in/built-component
-                       events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address/built-component)
-                       events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
-                       events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
-                       events/navigate-order-complete                 checkout-complete/built-component])
+            events/navigate-guarantee                      thirty-day-guarantee-component
             home-component)
           data nil)]]
        (component/build footer/footer-component (footer/footer-query data) nil)]])))
