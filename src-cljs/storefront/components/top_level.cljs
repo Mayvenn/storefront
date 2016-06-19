@@ -25,7 +25,7 @@
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

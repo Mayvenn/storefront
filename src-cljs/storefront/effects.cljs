@@ -26,7 +26,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [handle-message handle-later]]
+            [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.routes :as routes]
             [storefront.utils.query :as query]))
 

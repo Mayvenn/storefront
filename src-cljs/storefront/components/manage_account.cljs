@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.facebook :as facebook]
             [storefront.components.formatters :refer [as-money]]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))

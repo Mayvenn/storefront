@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [clojure.string :refer [join capitalize]]
             [storefront.components.formatters :as f]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.facebook :as facebook]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]

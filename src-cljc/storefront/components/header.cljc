@@ -1,15 +1,15 @@
 (ns storefront.components.header
-  (:require [storefront.components.utils :as utils]
+  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
+  (:require [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [om.core :as om]
-            [sablono.core :refer-macros [html]]
             [storefront.events :as events]
+            #?@(:clj [[storefront.component :as component]])
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
-            [storefront.hooks.experiments :as experiments]
-            [storefront.components.utils :as utils]
+            [storefront.app-routes :as app-routes]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [clojure.string :as str]))
 
@@ -21,7 +21,7 @@
 (def sans-stylist? #{"store" "shop"})
 
 (def hamburger
-  (html
+  (component/html
    [:a.block (merge {:style {:width "60px" :padding "18px 12px"}}
                     {:data-test "hamburger"}
                     (fake-href-menu-expand keypaths/menu-expanded))
@@ -29,7 +29,7 @@
     [:.border-bottom.border-black {:style {:height "12px"}}]]))
 
 (defn logo [height]
-  (html
+  (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.green.pp3
     (merge {:style {:height height}
             :title "Mayvenn"}
@@ -79,11 +79,11 @@
      (triangle-down inner-width bg-color)]))
 
 (def navy-carrot-bottom
-  (html
+  (component/html
    (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-navy"})))
 
 (def notch-up
-  (html
+  (component/html
    (carrot-top {:width-px 5 :bg-color "border-pure-white" :border-color "border-light-silver"})))
 
 (def selected-link        "border-navy border-bottom border-width-2")
@@ -170,7 +170,7 @@
    (account-link (current-page? events/navigate-account-referrals) events/navigate-account-referrals "Refer a Friend")))
 
 (def guest-account
-  (html
+  (component/html
    [:.right-align.h6.sans-serif
     [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
     [:.inline-block.pxp4.black "|"]
@@ -241,30 +241,29 @@
                                  store
                                  taxons
                                  user-email]} _]
-  (om/component
-   (html
-    (let [current-page? (partial utils/current-page? nav-message)]
-      [:.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
-       [:.flex.items-stretch.bg-white.clearfix {:style {:min-height "60px"}}
-        [:.col-4
-         [:div {:style {:height "60px"}} [:.lg-up-hide hamburger]]
-         (lower-left-desktop-nav current-page?)]
-        (into [:.col-4.flex.flex-column.justify-center {:style {:min-width "188px"}}]
-              (if (sans-stylist? (:store_slug store))
-                (list (logo "40px"))
-                (list
-                 (logo "30px")
-                 (store-dropdown store-expanded? store))))
-        [:.col-4
-         [:.flex.justify-end.items-center
-          [:.flex-auto.to-lg-hide.pr2
-           (cond
-             stylist?   (stylist-account account-expanded? current-page? store)
-             user-email (customer-account account-expanded? current-page? user-email)
-             :else      guest-account)]
-          (shopping-bag cart-quantity)]
-         (lower-right-desktop-nav current-page?)]]
-       (shop-panel stylist? shop-expanded? current-page? taxons)]))))
+  (component/create
+   (let [current-page? (partial app-routes/current-page? nav-message)]
+     [:.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+      [:.flex.items-stretch.bg-white.clearfix {:style {:min-height "60px"}}
+       [:.col-4
+        [:div {:style {:height "60px"}} [:.lg-up-hide hamburger]]
+        (lower-left-desktop-nav current-page?)]
+       (into [:.col-4.flex.flex-column.justify-center {:style {:min-width "188px"}}]
+             (if (sans-stylist? (:store_slug store))
+               (list (logo "40px"))
+               (list
+                (logo "30px")
+                (store-dropdown store-expanded? store))))
+       [:.col-4
+        [:.flex.justify-end.items-center
+         [:.flex-auto.to-lg-hide.pr2
+          (cond
+            stylist?   (stylist-account account-expanded? current-page? store)
+            user-email (customer-account account-expanded? current-page? user-email)
+            :else      guest-account)]
+         (shopping-bag cart-quantity)]
+        (lower-right-desktop-nav current-page?)]]
+      (shop-panel stylist? shop-expanded? current-page? taxons)])))
 
 (defn query [data]
   {:store             (get-in data keypaths/store)
@@ -278,4 +277,4 @@
    :taxons            (get-in data keypaths/taxons)})
 
 (defn built-component [data]
-  (om/build component (query data)))
+  (component/build component (query data) nil))

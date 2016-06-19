@@ -6,7 +6,7 @@
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.formatters :refer [as-money]]
             [storefront.components.ui :as ui]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

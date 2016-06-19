@@ -3,11 +3,11 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
 (defn ^:private places-component [{:keys [id address-keypath keypath value data-test]} owner]

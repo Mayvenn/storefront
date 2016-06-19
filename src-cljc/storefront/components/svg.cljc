@@ -1,5 +1,6 @@
 (ns storefront.components.svg
-  (:require [sablono.core :refer-macros [html]]))
+  #?@(:cljs [(:require [storefront.component-macros :refer-macros [html]])]
+      :clj [(:require [storefront.component :refer [html]])]))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's

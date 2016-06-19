@@ -1,7 +1,7 @@
 (ns storefront.components.promotion-banner
-  (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
-            [storefront.accessors.promos :as promos]
+  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
+  (:require [storefront.accessors.promos :as promos]
+            #?@(:clj [[storefront.component :as component]])
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]))
 
@@ -17,9 +17,8 @@
         (promos/default-advertised-promotion promotions))))
 
 (defn promotion-banner-component [data owner]
-  (om/component
-   (html
-    (when-let [promo (promotion-to-advertise data)]
-      (when (allowed-navigation-events (get-in data keypaths/navigation-event))
-        [:div.advertised-promo
-         (:description promo)])))))
+  (component/create
+   (when-let [promo (promotion-to-advertise data)]
+     (when (allowed-navigation-events (get-in data keypaths/navigation-event))
+       [:div.advertised-promo
+        (:description promo)]))))

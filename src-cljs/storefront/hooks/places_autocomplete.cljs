@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [clojure.set :as set]
-            [storefront.messages :as m]
+            [storefront.platform.messages :as m]
             [storefront.config :as config]
             [om.core :as om]))
 

@@ -1,5 +1,5 @@
 (ns storefront.components.categories
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.hooks.experiments :as experiments]
             [storefront.accessors.taxons :as taxons]

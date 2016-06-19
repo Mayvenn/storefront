@@ -35,3 +35,6 @@
 
 (defmacro build [component data opts]
   `(~component ~data nil ~opts))
+
+(defmacro html [content]
+  content)

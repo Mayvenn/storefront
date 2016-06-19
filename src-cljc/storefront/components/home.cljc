@@ -1,6 +1,6 @@
 (ns storefront.components.home
   #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             #?@(:clj [[storefront.component :as component]])
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]

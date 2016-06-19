@@ -4,7 +4,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.components.utils :as utils]))
+            [storefront.platform.component-utils :as utils]))
 
 (def ^:private order-complete-check
   (html (svg/adjustable-check {:class "stroke-navy" :width "80px" :height "80px"})))

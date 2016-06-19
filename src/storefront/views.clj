@@ -50,7 +50,7 @@
     [:script {:src (asset-path "/js/out/main.js")}]]))
 
 (defn index [render-ctx data]
-  (layout render-ctx spinner-content))
+  (layout render-ctx data spinner-content))
 
 (defn home-page [render-ctx data]
   (layout render-ctx data (html (first (component/normalize-elements (home-component data nil {}))))))

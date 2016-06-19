@@ -48,3 +48,7 @@
                             (apply concat (seq args)))]
     (when path
       (uri/set-query-string path query-params))))
+
+(defn current-page? [[current-event current-args] target-event & [args]]
+  (and (= (take (count target-event) current-event) target-event)
+       (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))

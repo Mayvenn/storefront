@@ -1,11 +1,12 @@
 (ns storefront.components.ui
-  (:require [storefront.components.utils :as utils]
+  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
+  (:require [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :refer [handle-message]]
-            [clojure.string :as str]
-            [sablono.core :refer-macros [html]]))
+            #?@(:clj [[storefront.component :as component]])
+            [storefront.platform.messages :refer [handle-message]]
+            [clojure.string :as str]))
 
 (defn container [& content]
   [:.bg-light-white.light-black.sans-serif
@@ -16,7 +17,7 @@
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"
-  (html
+  (component/html
    [:.img-spinner.bg-no-repeat.bg-center.bg-contain
     {:style {:height "1.2em" :width "100%"}}]))
 
@@ -47,10 +48,10 @@
        :value title
        :disabled (boolean disabled?)}])))
 
-(def nbsp (html [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}]))
-(def rarr (html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
+(def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}]))
+(def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def new-flag
-  (html
+  (component/html
    [:.pyp1.right
     [:.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))

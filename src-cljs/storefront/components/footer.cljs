@@ -1,9 +1,9 @@
 (ns storefront.components.footer
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.hooks.experiments :as experiments]
             [goog.string.format]
             [storefront.keypaths :as keypaths]))

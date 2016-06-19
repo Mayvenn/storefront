@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

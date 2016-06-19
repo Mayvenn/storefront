@@ -1,16 +1,17 @@
 (ns storefront.components.slideout-nav
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.messages :as messages]
+            [storefront.platform.messages :as messages]
             [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :refer [as-money]]
+            [storefront.app-routes :as app-routes]
             [storefront.hooks.experiments :as experiments]))
 
 (def section-inner :.ml3.py2)
@@ -45,7 +46,7 @@
    (selectable current-navigation-message event-name {} content))
   ([current-navigation-message event-name event-args content]
    [:span
-    (when (utils/current-page? current-navigation-message event-name event-args)
+    (when (app-routes/current-page? current-navigation-message event-name event-args)
       {:class "border-navy border-bottom border-width-2 bold pyp1"})
     content]))
 

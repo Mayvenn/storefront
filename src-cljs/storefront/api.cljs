@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [clojure.set :refer [subset?]]
             [storefront.events :as events]
-            [storefront.messages :as messages]
+            [storefront.platform.messages :as messages]
             [storefront.accessors.states :as states]
             [storefront.accessors.orders :as orders]
             [clojure.set :refer [rename-keys]]

@@ -6,7 +6,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
             [storefront.hooks.exception-handler :as exception-handler]
-            [storefront.messages :as messages]
+            [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [om.core :as om]

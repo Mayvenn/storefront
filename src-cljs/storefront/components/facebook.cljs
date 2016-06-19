@@ -1,7 +1,7 @@
 (ns storefront.components.facebook
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.facebook :as facebook]

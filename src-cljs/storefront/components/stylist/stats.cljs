@@ -4,7 +4,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.messages :as messages]
+            [storefront.platform.messages :as messages]
             [storefront.components.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])

@@ -3,7 +3,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.app-routes :refer [edn->bidi bidi->edn app-routes path-for]]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [clojure.walk :refer [keywordize-keys]]
             [goog.events]
             [goog.history.EventType :as EventType]

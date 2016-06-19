@@ -1,6 +1,6 @@
 (ns storefront.components.stylist-kit
   (:require [storefront.components.product :as product]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]

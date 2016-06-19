@@ -8,7 +8,7 @@
             [storefront.events :as events]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]))
 
 (def check-svg

@@ -5,7 +5,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.components.utils :as utils]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn component [sign-in-form-data owner]
   (om/component

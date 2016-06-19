@@ -1,5 +1,5 @@
 (ns storefront.components.stylist.pagination
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]))
 
 (defn more-pages? [page pages]

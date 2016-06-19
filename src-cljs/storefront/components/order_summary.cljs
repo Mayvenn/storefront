@@ -3,7 +3,7 @@
             [storefront.accessors.products :as products]
             [storefront.components.formatters :refer [as-money as-money-without-cents as-money-or-free]]
             [storefront.components.ui :as ui]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]))
 
 (defn ^:private summary-row

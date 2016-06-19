@@ -5,7 +5,7 @@
             [storefront.components.formatters
              :refer
              [as-money-without-cents-or-free]]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

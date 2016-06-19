@@ -1,8 +1,8 @@
-(ns storefront.components.utils
+(ns storefront.platform.component-utils
   (:require [storefront.events :as events]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.app-routes :as app-routes]
             [storefront.utils.query :as query]))
@@ -32,10 +32,6 @@
      (.preventDefault e)
      (handle-message events/control-menu-collapse-all)
      (routes/enqueue-navigate navigation-event args))})
-
-(defn current-page? [[current-event current-args] target-event & [args]]
-  (and (= (take (count target-event) current-event) target-event)
-       (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
 
 (defn requesting?
   ([data request-key] (requesting? data :request-key request-key))

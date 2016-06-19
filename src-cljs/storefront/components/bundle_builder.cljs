@@ -1,5 +1,5 @@
 (ns storefront.components.bundle-builder
-  (:require [storefront.components.utils :as utils]
+  (:require [storefront.platform.component-utils :as utils]
             [storefront.components.product :as product]
             [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]

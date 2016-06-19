@@ -4,7 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.orders :refer [add-rounded-floats]]
             [clojure.set :as set]
-            [storefront.messages :as m]
+            [storefront.platform.messages :as m]
             [storefront.config :as config]))
 
 (defn insert []

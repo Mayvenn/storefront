@@ -1,6 +1,6 @@
 (ns storefront.components.product
   (:require [storefront.components.ui :as ui]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.formatters :refer [as-money-without-cents]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

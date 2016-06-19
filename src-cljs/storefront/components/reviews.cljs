@@ -4,7 +4,7 @@
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]))
 
