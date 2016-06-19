@@ -240,7 +240,7 @@
                                  cart-quantity
                                  store
                                  taxons
-                                 user-email]} _]
+                                 user-email]} _ _]
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
      [:div.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}

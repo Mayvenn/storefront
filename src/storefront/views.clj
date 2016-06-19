@@ -1,6 +1,6 @@
 (ns storefront.views
   (:require [storefront.assets :refer [asset-path]]
-            [storefront.components.home :refer [home-component]]
+            [storefront.components.top-level :refer [top-level-component]]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]
@@ -53,7 +53,7 @@
   (layout render-ctx data spinner-content))
 
 (defn home-page [render-ctx data]
-  (layout render-ctx data (html (first (component/normalize-elements (home-component data nil {}))))))
+  (layout render-ctx data (html (first (component/normalize-elements (top-level-component data nil {}))))))
 
 (def not-found
   (page/html5

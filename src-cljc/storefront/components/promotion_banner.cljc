@@ -16,7 +16,7 @@
         (promos/find-promotion-by-code promotions (get-in data keypaths/pending-promo-code))
         (promos/default-advertised-promotion promotions))))
 
-(defn promotion-banner-component [data owner]
+(defn promotion-banner-component [data owner opts]
   (component/create
    (when-let [promo (promotion-to-advertise data)]
      (when (allowed-navigation-events (get-in data keypaths/navigation-event))

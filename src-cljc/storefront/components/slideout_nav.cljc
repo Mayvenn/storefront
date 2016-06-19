@@ -175,7 +175,7 @@
    (help-section selectable?)
    sign-out-section])
 
-(defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner]
+(defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner opts]
   (component/create
    (let [selectable? (partial selectable current-navigation-message)]
      [:div.h3.lg-up-hide
