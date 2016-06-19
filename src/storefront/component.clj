@@ -1,13 +1,19 @@
 (ns storefront.component
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [storefront.safe-hiccup :refer [raw]]))
 
 (defn map->styles [m]
   (str/join (map (fn [[k v]] (str (name k) ":" v ";")) m)))
 
-(defn normalize-attrs [{:keys [style] :as attrs}]
+(defn normalize-style [{:keys [style] :as attrs}]
   (if style
     (update-in attrs [:style] map->styles)
     attrs))
+
+(defn normalize-attrs [attrs]
+  (-> attrs
+      (select-keys [:class :id :style])
+      normalize-style))
 
 (declare normalize-elements)
 
@@ -15,9 +21,10 @@
   (let [[attrs body] (if (map? (first content))
                        [(first content) (apply normalize-elements (next content))]
                        [nil (apply normalize-elements content)])]
-    (if attrs
-      `[~tag ~(normalize-attrs attrs) ~@body]
-      `[~tag ~@body])))
+    (cond
+      (:dangerouslySetInnerHTML attrs) [tag (normalize-attrs attrs) (raw (-> attrs :dangerouslySetInnerHTML :__html))]
+      attrs `[~tag ~(normalize-attrs attrs) ~@body]
+      :else `[~tag ~@body])))
 
 (defn element? [v]
   (and (vector? v) (keyword? (first v))))
