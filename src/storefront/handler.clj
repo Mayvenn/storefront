@@ -138,7 +138,8 @@
 
 (def server-render-pages
   #{events/navigate-home
-    events/navigate-guarantee})
+    events/navigate-guarantee
+    events/navigate-help})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
