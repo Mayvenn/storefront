@@ -39,22 +39,22 @@
 
 
 #?(:cljs
-   (defn getsat-top-level-component [data owner]
+   (defn getsat-top-level-component [data owner opts]
      (component/create
       [:.page-wrap
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
        (component/build flash-component
                         {:success (get-in data keypaths/flash-success-message)
                          :failure (get-in data keypaths/flash-failure-message)}
-                        nil)
+                        opts)
        [:main {:role "main"}
         [:div.legacy-container
-         (component/build (requires-sign-in data redirect-getsat-component) data nil)]]])))
+         (component/build (requires-sign-in data redirect-getsat-component) data opts)]]])))
 
 (defn top-level-component [data owner opts]
   (component/create
    (if (get-in data keypaths/get-satisfaction-login?)
-     [:div #?(:cljs (component/build getsat-top-level-component data nil))]
+     [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
@@ -65,7 +65,7 @@
        (component/build flash-component
                         {:success (get-in data keypaths/flash-success-message)
                          :failure (get-in data keypaths/flash-failure-message)}
-                        nil)
+                        opts)
        [:main {:role "main"}
         [:div.legacy-container
          (component/build
@@ -95,5 +95,5 @@
             events/navigate-sign-up                        sign-up/built-component
             events/navigate-forgot-password                forgot-password/built-component
             home-component)
-          data nil)]]
-       (component/build footer/footer-component (footer/footer-query data) nil)]])))
+          data opts)]]
+       (component/build footer/footer-component (footer/footer-query data) opts)]])))
