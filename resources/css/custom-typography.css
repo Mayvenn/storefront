@@ -8,7 +8,7 @@
 .strike { text-decoration: line-through; }
 
 .shadow { text-shadow: 1px 1px #000; }
-.engrave-2 { text-shadow: var(--inset-top-2); }
+.engrave-2 { text-shadow: 0 -1px 0 var(--darken-2); }
 
 .letter-spacing-1 { letter-spacing: 1px; }
 .letter-spacing-2 { letter-spacing: 2px; }
@@ -54,8 +54,6 @@
 
     --serif: var(--font-family-fortescue);
     --sans-serif: var(--font-family-graphik);
-
-    --inset-top-2: 0 -1px 0 var(--darken-2);
 
     --darken-2: rgba(0, 0, 0, .125);
 }

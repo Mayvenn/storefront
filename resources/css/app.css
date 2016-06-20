@@ -149,13 +149,6 @@
     --facebook-blue: #3b5998;
     --paypal-blue:   #49bbf0;
 
-    --inset-top-2: 0 -1px 0 var(--darken-2);
-
-    --darken-bottom-1: linear-gradient(0deg, var(--darken-1), rgba(255, 255, 255, 0));
-    --darken-bottom-2: linear-gradient(0deg, var(--darken-2), rgba(255, 255, 255, 0));
-    --darken-bottom-3: linear-gradient(0deg, var(--darken-3), rgba(255, 255, 255, 0));
-    --darken-bottom-4: linear-gradient(0deg, var(--darken-4), rgba(255, 255, 255, 0));
-
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);
     --lighten-3: rgba(255, 255, 255, .625);
