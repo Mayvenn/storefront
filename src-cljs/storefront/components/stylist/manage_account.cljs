@@ -4,7 +4,7 @@
             [clojure.string :refer [join capitalize]]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.facebook :as facebook]
+            [storefront.components.facebook-messenger :as facebook]
             [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
