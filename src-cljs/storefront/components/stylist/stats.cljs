@@ -6,7 +6,7 @@
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.components.carousel :as carousel]))
+            [storefront.platform.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 

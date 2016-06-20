@@ -10,7 +10,7 @@
        (apply str)))
 
 (defn as-money-without-cents [amount]
-  (let [amount (int amount)
+  (let [amount (num/parse-int amount)
         format (if (< amount 0) "-$%s" "$%s")]
     (str/format format (number-with-commas (num/abs amount)))))
 

@@ -5,6 +5,9 @@
             [storefront.api :as api]
             [storefront.views :as views]
             [storefront.keypaths :as keypaths]
+            [storefront.cache :as cache]
+            [storefront.utils.combinators :refer [key-by]]
+            [storefront.accessors.taxons :as taxons]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -143,7 +146,8 @@
     events/navigate-categories
     events/navigate-sign-in
     events/navigate-sign-up
-    events/navigate-forgot-password})
+    events/navigate-forgot-password
+    events/navigate-category})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
@@ -165,8 +169,12 @@
 (defn render-category
   "Checks that the category exists"
   [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
-  (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
-    (html-response render-ctx data)))
+  (when-let [products (api/category storeback-config taxon-slug (get-cookie req "user-token"))]
+    (html-response render-ctx (-> data
+                                  (assoc-in keypaths/products (key-by :id products))
+                                  (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
+                                  (assoc-in keypaths/browse-variant-quantity 1)
+                                  (assoc-in (conj keypaths/api-cache (taxons/cache-key taxon-slug)) {:products products})))))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}

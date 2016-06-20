@@ -30,3 +30,7 @@
 
 (defn collapse-menus-callback [menus]
   noop-callback)
+
+(defn requesting?
+  ([data request-key] false)
+  ([data request-search request-key] false))

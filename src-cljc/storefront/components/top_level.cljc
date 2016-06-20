@@ -9,7 +9,6 @@
                        [storefront.components.checkout-sign-in :as checkout-sign-in :refer [requires-sign-in-or-guest]]
                        [storefront.components.manage-account :refer [manage-account-component]]
                        [storefront.components.reset-password :as reset-password]
-                       [storefront.components.bundle-builder :refer [category-component]]
                        [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
                        [storefront.components.stylist.referrals :as stylist.referrals]
                        [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
@@ -20,6 +19,7 @@
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
             [storefront.components.categories :refer [categories-page-component]]
+            [storefront.components.bundle-builder :refer [category-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
@@ -71,8 +71,7 @@
          (component/build
           (condp = (get-in data keypaths/navigation-event)
             #?@(:cljs
-                [events/navigate-category                       category-component
-                 events/navigate-reset-password                 reset-password/built-component
+                [events/navigate-reset-password                 reset-password/built-component
                  events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
                  events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
                  events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
@@ -86,8 +85,10 @@
                  events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
                  events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
                  events/navigate-order-complete                 checkout-complete/built-component])
+
             events/navigate-home                           home-component
             events/navigate-categories                     categories-page-component
+            events/navigate-category                       category-component
             events/navigate-guarantee                      thirty-day-guarantee-component
             events/navigate-help                           help-component
             events/navigate-sign-in                        sign-in/built-component

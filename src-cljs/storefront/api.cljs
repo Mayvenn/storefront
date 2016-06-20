@@ -5,8 +5,9 @@
             [storefront.platform.messages :as messages]
             [storefront.accessors.states :as states]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.taxons :as taxons]
+            [storefront.cache :as c]
             [clojure.set :refer [rename-keys]]
-            [clojure.walk :refer [postwalk]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
@@ -91,21 +92,9 @@
                                                :request-key req-key
                                                :request-id req-id})))
 
-;;  Neccessary for a frustrating bug in Clojurescript that doesn't seem to be
-;;  able to hash a deep map correctly. Feel free to delete this when
-;;  ClojureScript fixes this error.
-(defn unique-serialize
-  "Walks a collection and converts every map within into a sorted map, then
-  serializes the entirity of it into a string."
-  [coll]
-  (let [sort-if-map
-        #(if (map? %) (into (sorted-map) %) %)]
-    (pr-str
-     (postwalk sort-if-map coll))))
-
 (defn cache-req
-  [cache method path req-key {:keys [handler params] :as request-opts}]
-  (let [key (pr-str (unique-serialize [path params]))
+  [cache method path req-key {:keys [handler params cache-key] :as request-opts}]
+  (let [key (or cache-key (c/cache-key [path params]))
         res (cache key)]
     (if res
       (handler res)
@@ -133,7 +122,8 @@
    GET
    "/products"
    (conj request-keys/get-products taxon-slug)
-   {:params
+   {:cache-key (taxons/cache-key taxon-slug)
+    :params
     {:taxon-slug taxon-slug
      :user-token user-token}
     :handler

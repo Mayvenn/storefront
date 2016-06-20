@@ -1,4 +1,4 @@
-(ns storefront.components.carousel
+(ns storefront.platform.carousel
   (:require [sablono.core :refer-macros [html]]
             [swipe :as swipe]
             [om.core :as om]))
@@ -22,10 +22,10 @@
     :on-click on-click}])
 
 (defn dot [{:keys [key on-click selected?]}]
-  [:.pointer.pxp2
+  [:div.pointer.pxp2
    {:key      key
     :on-click on-click}
-   [:.bg-white.border.border-dark-gray.circle.bg-lighten-3
+   [:div.bg-white.border.border-dark-gray.circle.bg-lighten-3
     {:class (when selected? "bg-dark-gray")
      :style {:width "7px" :height "7px"}}]])
 
@@ -58,12 +58,12 @@
                 (dotimes [_ delta] (.prev swiper))
                 (dotimes [_ (- delta)] (.next swiper))))))
         (html
-         [:.center.relative
-          [:.overflow-hidden.relative.invisible
+         [:div.center.relative
+          [:div.overflow-hidden.relative.invisible
            {:ref "items"}
-           [:.overflow-hidden.relative
+           [:div.overflow-hidden.relative
             (for [item items]
-              [:.left.col-12.relative {:key (:id item)}
+              [:div.left.col-12.relative {:key (:id item)}
                (:body item)])]]
           (when (> (count items) 1)
             [:div
@@ -77,7 +77,7 @@
                                  (set-selected-item owner (get items (if (= selected-index (dec (count items)))
                                                                        0
                                                                        (inc selected-index)))))})
-             [:.flex.block.absolute
+             [:div.flex.block.absolute
               {:style {:bottom "1rem"
                        :left   "1.5rem"
                        :right  "1.5rem"}

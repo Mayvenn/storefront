@@ -1,4 +1,4 @@
-(ns storefront.components.reviews
+(ns storefront.platform.reviews
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
             [storefront.accessors.taxons :as taxons]
@@ -79,7 +79,7 @@ Lengths: 14\" to 26\""
 (defn product-options-for [{:keys [slug]}]
   (get product-options-by-taxon (keyword slug)))
 
-(defn reviews-component-inner [{:keys [loaded? taxon url]}]
+(defn reviews-component-inner [{:keys [loaded? taxon url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -96,13 +96,13 @@ Lengths: 14\" to 26\""
              (product-options-for taxon)
              {:data-url url})]])]))))
 
-(defn reviews-component [{:keys [taxon] :as args}]
+(defn reviews-component [{:keys [taxon] :as args} owner opts]
   (om/component
    (html
     [:div {:key (:slug taxon)}
-     (om/build reviews-component-inner args)])))
+     (om/build reviews-component-inner args opts)])))
 
-(defn reviews-summary-component-inner [{:keys [loaded? taxon url]} owner]
+(defn reviews-summary-component-inner [{:keys [loaded? taxon url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -121,11 +121,11 @@ Lengths: 14\" to 26\""
            [:.col.ml2.yotpo.QABottomLine
             (product-options-for taxon)]])]))))
 
-(defn reviews-summary-component [{:keys [taxon] :as args} owner]
+(defn reviews-summary-component [{:keys [taxon] :as args} owner opts]
   (om/component
    (html
     [:div {:key (:slug taxon)}
-     (om/build reviews-summary-component-inner args)])))
+     (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
   {:url     (routes/current-path data)

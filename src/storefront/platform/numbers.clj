@@ -1,7 +1,10 @@
 (ns storefront.platform.numbers)
 
 (defn parse-float [s]
-  (Float/parseFloat s))
+  (Float/parseFloat (str s)))
+
+(defn parse-int [s]
+  (Math/round (Math/floor (parse-float (str s)))))
 
 (def to-float float)
 

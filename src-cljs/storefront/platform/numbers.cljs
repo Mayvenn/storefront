@@ -3,6 +3,9 @@
 (defn parse-float [s]
   (js/parseFloat s))
 
+(defn parse-int [s]
+  (int s))
+
 (def to-float parse-float)
 
 (defn abs [x]

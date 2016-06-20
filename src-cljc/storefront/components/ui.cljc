@@ -28,8 +28,8 @@
                  btn-type "btn-primary"
                  on-click utils/noop-callback}}]
   [:div.btn.col-12.h3.px1.py2.letter-spacing-1
-   {:class (conj [color text-color btn-type border]
-                 (when disabled? "is-disabled"))
+   {:class (str/join " " (conj [color text-color btn-type border]
+                               (when disabled? "is-disabled")))
     :data-test data-test
     :on-click (if (or disabled? show-spinner?)
                 utils/noop-callback
