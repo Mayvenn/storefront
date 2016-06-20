@@ -50,7 +50,7 @@
    (let [message [event args]]
      ;; rename transition to transition-log to log messages
      (try
-       (om/transact! (om/root-cursor app-state) #(transition % message))
+       (om/transact! (om/root-cursor app-state) #(transition-log % message))
        (effects @app-state message)
        (catch :default e
          (exception-handler/report e))))))
@@ -68,8 +68,17 @@
    {:target (.getElementById js/document "content")})
   (reload-app app-state))
 
+(defn deep-merge
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))
+
 (defonce main (memoize main-))
-(defonce app-state (atom (merge (state/initial-state) (js->clj js/data :keywordize-keys true))))
+(defonce app-state (atom (deep-merge (state/initial-state)
+                                     (update-in (js->clj js/data :keywordize-keys true)
+                                                (butlast keypaths/navigation-message)
+                                                dissoc (last keypaths/navigation-message)))))
 
 (defn debug-force-token [token]
   (swap! app-state assoc-in keypaths/user-token "f766e9e3ea1f7b8bf25f1753f395cf7bd34cef0430360b7d"))

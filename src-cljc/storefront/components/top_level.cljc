@@ -15,7 +15,6 @@
                        [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
                        [storefront.components.forgot-password :as forgot-password]
                        [storefront.components.friend-referrals :refer [friend-referrals-component]]
-                       [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
                        [storefront.components.sign-up :as sign-up]
                        [storefront.components.popup :refer [popup-component]]])
 
@@ -27,6 +26,7 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
             [storefront.components.help :refer [help-component]]
+            [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -72,7 +72,6 @@
           (condp = (get-in data keypaths/navigation-event)
             #?@(:cljs
                 [events/navigate-category                       category-component
-                 events/navigate-sign-in                        sign-in/built-component
                  events/navigate-sign-up                        sign-up/built-component
                  events/navigate-forgot-password                forgot-password/built-component
                  events/navigate-reset-password                 reset-password/built-component
@@ -93,6 +92,7 @@
             events/navigate-categories                     categories-page-component
             events/navigate-guarantee                      thirty-day-guarantee-component
             events/navigate-help                           help-component
+            events/navigate-sign-in                        sign-in/built-component
             home-component)
           data nil)]]
        (component/build footer/footer-component (footer/footer-query data) nil)]])))

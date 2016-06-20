@@ -9,16 +9,16 @@
             [clojure.string :as str]))
 
 (defn container [& content]
-  [:.bg-light-white.light-black.sans-serif
-   (into [:.p2.m-auto] content)])
+  [:div.bg-light-white.light-black.sans-serif
+   (into [:div.p2.m-auto] content)])
 
 (defn narrow-container [& content]
-  (apply container {:class [:md-up-col-8 :lg-up-col-6]} content))
+  (apply container {:class "md-up-col-8 lg-up-col-6"} content))
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"
   (component/html
-   [:.img-spinner.bg-no-repeat.bg-center.bg-contain
+   [:div.img-spinner.bg-no-repeat.bg-center.bg-contain
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
@@ -27,14 +27,14 @@
                  text-color ""
                  btn-type "btn-primary"
                  on-click utils/noop-callback}}]
-  [:.btn.col-12.h3.px1.py2.letter-spacing-1
+  [:div.btn.col-12.h3.px1.py2.letter-spacing-1
    {:class (conj [color text-color btn-type border]
                  (when disabled? "is-disabled"))
     :data-test data-test
     :on-click (if (or disabled? show-spinner?)
                 utils/noop-callback
                 on-click)}
-   [:.flex.items-center.justify-center
+   [:div.flex.items-center.justify-center
     (if show-spinner? spinner content)]])
 
 (defn submit-button
@@ -52,13 +52,13 @@
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def new-flag
   (component/html
-   [:.pyp1.right
-    [:.inline-block.border.border-navy.navy.pp2.medium
+   [:div.pyp1.right
+    [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
 (defn text-field [label keypath value input-attributes]
-  [:.col-12.floating-label.mb2
-   [:.absolute
+  [:div.col-12.floating-label.mb2
+   [:div.absolute
     [:label.floated-label.col-12.h6.navy.relative
      (when (seq value) {:class "has-value"})
      label]]
@@ -77,8 +77,8 @@
            (.-selectedIndex elem)))))
 
 (defn select-field [label value options select-attributes]
-  [:.col-12.floating-label.mb2.mx-auto
-   [:.relative.z1
+  [:div.col-12.floating-label.mb2.mx-auto
+   [:div.relative.z1
     [:select.col-12.h2.glow.floating-input.absolute.border-none
      (merge {:key         label
              :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
@@ -90,13 +90,13 @@
      (for [{name :name val :abbr} options]
        [:option {:key val :value val}
         (str name)])]]
-   [:.bg-pure-white.border.border-light-silver.rounded.p1
+   [:div.bg-pure-white.border.border-light-silver.rounded.p1
     [:label.col-12.h6.navy.relative
      (merge
       {:for (name (:id select-attributes))}
       (when (seq value) {:class "has-value"}))
      label]
-    [:.h3.black.relative
+    [:div.h3.black.relative
      (or (:name (first (filter (comp (partial = value) :abbr) options)))
          nbsp)]]])
 
@@ -106,27 +106,27 @@
           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
          link-contents)
    (when expanded?
-     [:.relative.z2
+     [:div.relative.z2
       {:on-click #(handle-message events/control-menu-collapse-all)}
-      [:.fixed.overlay]
+      [:div.fixed.overlay]
       menu])])
 
 (defn modal [on-close & body]
   [:div
-   [:.fixed.overlay.bg-darken-4.z3
+   [:div.fixed.overlay.bg-darken-4.z3
     {:on-click on-close}]
-   (into [:.fixed.z3.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5.overflow-auto {:style {:max-height "100%"}}]
+   (into [:div.fixed.z3.left-0.right-0.mx-auto.col-11.md-col-7.lg-col-5.overflow-auto {:style {:max-height "100%"}}]
          body)])
 
 (defn modal-close [{:keys [data-test on-close]}]
-  [:.clearfix
+  [:div.clearfix
    [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
-    [:.fill-dark-silver {:alt "Close"} svg/counter-inc]]])
+    [:div.fill-dark-silver {:alt "Close"} svg/counter-inc]]])
 
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]
-   [:.circle.bg-silver.overflow-hidden
+   [:div.circle.bg-silver.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
     [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
 
@@ -139,19 +139,19 @@
    content])
 
 (defn ^:private counter-value [spinning? value]
-  [:.left.center.mx1 {:style {:width "1.2em"}
+  [:div.left.center.mx1 {:style {:width "1.2em"}
                       :data-test "line-item-quantity"}
    (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:.fill-light-silver
+  [:div.fill-light-silver
    (counter-button spinning? "quantity-dec" dec-fn svg/counter-dec)
    (counter-value spinning? value)
    (counter-button spinning? "quantity-inc" inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
-  [:.border.rounded
+  [:div.border.rounded
    {:class (str "bg-" color " border-" color)
     :data-test data-test}
-   [:.bg-lighten-4.rounded
+   [:div.bg-lighten-4.rounded
     contents]])

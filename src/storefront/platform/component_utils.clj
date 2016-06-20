@@ -17,6 +17,11 @@
 (defn send-event-callback [event & [args]]
   noop-callback)
 
+(defn toggle-checkbox [keypath value]
+  (let [checked-val (when value "checked")]
+    {:checked checked-val
+     :value checked-val}))
+
 (defn navigate-community []
   {:href "#"})
 

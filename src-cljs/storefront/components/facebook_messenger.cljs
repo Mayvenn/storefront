@@ -1,26 +1,9 @@
-(ns storefront.components.facebook
+(ns storefront.components.facebook-messenger
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.platform.component-utils :as utils]
             [storefront.config :as config]
-            [storefront.events :as events]
             [storefront.hooks.facebook :as facebook]
             [storefront.keypaths :as keypaths]))
-
-(defn- button [loaded? click-event]
-  (if loaded?
-    [:.btn.btn-primary.bg-fb-blue.col-12
-     {:on-click (utils/send-event-callback click-event)}
-     [:.flex.items-center.justify-center.white.items-center
-      [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
-      [:.h3.py1 "Sign in with Facebook"]]]
-    [:div {:style {:height "3.25rem"}}]))
-
-(defn sign-in-button [loaded?]
-  (button loaded? events/control-facebook-sign-in))
-
-(defn reset-button [loaded?]
-  (button loaded? events/control-facebook-reset))
 
 (defn opt-in-component [{:keys [user-id loaded-facebook?]} _]
   (reify

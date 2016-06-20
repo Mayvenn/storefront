@@ -140,7 +140,8 @@
   #{events/navigate-home
     events/navigate-guarantee
     events/navigate-help
-    events/navigate-categories})
+    events/navigate-categories
+    events/navigate-sign-in})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
