@@ -147,9 +147,9 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
-  (let [selected-variants (products/filter-variants-by-selections
+  (let [selected-variants (bundle-builder/filter-variants-by-selections
                            selected-options
-                           (products/current-taxon-variants app-state))
+                           (bundle-builder/current-taxon-variants app-state))
         last-step (-> (taxons/current-taxon app-state)
                       bundle-builder/selection-flow
                       (bundle-builder/last-step selected-options))]
@@ -229,6 +229,24 @@
       (assoc-in keypaths/stylist-referral-program-pages (or pages 0))
       (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
+
+
+(defmethod transition-state events/api-partial-success-send-stylist-referrals
+  [_ event {:keys [results] :as x} app-state]
+  (update-in app-state
+             keypaths/stylist-referrals
+             (fn [old-referrals]
+               (->> (map (fn [n o] [n o]) results old-referrals)
+                    (filter (fn [[nr or]]
+                              (seq (:error nr))))
+                    (map last)
+                    vec))))
+
+(defmethod transition-state events/api-success-send-stylist-referrals
+  [_ event {:keys [results] :as x} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-referrals [{}])
+      (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defn sign-in-user
   [app-state {:keys [email token store_slug id total_available_store_credit]}]

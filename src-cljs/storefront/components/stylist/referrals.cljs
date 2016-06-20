@@ -161,36 +161,27 @@
     (ui/modal on-close
               [:.bg-light-white.rounded.p2.mt3.sans-serif
                (ui/modal-close {:on-close on-close})
-               [:.p1
+               [:form.p1
+                {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (f/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
-                 "Do you know a stylist that would be a great Mayvenn?"
+                 "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (f/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (f/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
                   [:.py2.border-top.border-light-silver
                    {:key idx}
                    [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"]
-                   [:.flex.col-12
-                    [:.col-6 (ui/text-field "First Name"
-                                            (conj keypaths/stylist-referrals idx :first-name)
-                                            (:first-name referral)
+                    [:.col-12 (ui/text-field "Name"
+                                            (conj keypaths/stylist-referrals idx :fullname)
+                                            (:fullname referral)
                                             {:autofocus "autofocus"
                                              :type      "text"
-                                             :name      (str "referral["idx"][first-name]")
-                                             :data-test (str "referral-first-name-"idx)
-                                             :id        (str "referral-first-name-"idx)
+                                             :name      (str "referral["idx"][fullname]")
+                                             :data-test (str "referral-fullname-"idx)
+                                             :id        (str "referral-fullname-"idx)
                                              :class     "rounded-left"
                                              :required  true})]
-
-                    [:.col-6 (ui/text-field "Last Name"
-                                            (conj keypaths/stylist-referrals idx :last-name)
-                                            (:last-name referral)
-                                            {:type      "text"
-                                             :name      (str "referral["idx"][last-name]")
-                                             :id        (str "referral-last-name-"idx)
-                                             :data-test (str "referral-last-name-"idx)
-                                             :class     "rounded-right border-width-left-0"})]]
                    [:.col-12 (ui/text-field "Mobile Phone (required)"
                                             (conj keypaths/stylist-referrals idx :phone)
                                             (:phone referral)
@@ -209,12 +200,23 @@
                                              :data-test (str "referral-email-"idx)
                                              :class     "rounded"})]])
                 (when (< (count referrals) 5)
-                  [:.py3.border-top.border-light-silver.center
-                   [:a.col-10.mx-auto.btn.btn-outline.dark-gray.border-light-silver.p2
-                    (utils/fake-href events/control-stylist-referral-add-another)
-                    [:.flex.items-center.justify-center.h3.line-height-1
-                     [:.mr1.flex.items-center.fill-light-silver svg/counter-inc]
-                     [:.medium "Add Another Referral"]]]])]]))))
+                  [:.py3.border-top.border-light-silver
+                   [:.col-10.mx-auto
+                    (ui/button
+                     [:.flex.items-center.justify-center.h3.line-height-1
+                      [:.mr1.flex.items-center.fill-light-silver svg/counter-inc]
+                      [:div "Add Another Referral"]]
+                     (merge (utils/fake-href events/control-stylist-referral-add-another)
+                            {:color      "bg-white"
+                             :text-color "dark-gray"
+                             :border     "border-light-silver"}))]])
+                [:.col-8.mx-auto
+                 (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
+
+(defn thanks-component [_ owner {:keys [on-close]}]
+  (om/component
+   (html
+    (ui/modal on-close [:.p4.bg-white.rounded "This is where the thank you would be."]))))
 
 (defn query-refer [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)

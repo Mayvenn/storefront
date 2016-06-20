@@ -33,7 +33,6 @@
 
 (def not-404 (comp (partial not= 404) :status))
 
-;; TODO Fetch the taxon not the products for the taxon (not currently possible in storeback)
 (defn category [storeback-config taxon-slug user-token]
   (let [response (storeback-fetch storeback-config "/products"
                                   {:query-params {:taxon-slug taxon-slug

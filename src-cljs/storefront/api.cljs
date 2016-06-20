@@ -47,6 +47,9 @@
       :else
       (messages/handle-message events/api-failure-bad-server-response response))))
 
+(defn modal-error-handler [response]
+  (prn "not sure what to do with this yet..." response))
+
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
 
@@ -60,8 +63,7 @@
 (defn filter-nil [m]
   (into {} (filter (comp not nil? val) m)))
 
-(def default-req-opts {:headers {"Accepts" "application/json"}
-                       :format :json
+(def default-req-opts {:format :json
                        :response-format (header-json-response-format {:keywords? true})})
 
 (defn merge-req-opts [req-key req-id {:keys [handler error-handler] :as request-opts}]
@@ -462,8 +464,7 @@
                                                     {:number (-> resp :available_number normalize-number)}))]
     (GET (str send-sonar-base-url "/phone_numbers/available")
          {:handler callback
-          :headers {"Accepts" "application/json"
-                    "X-Publishable-Key" send-sonar-publishable-key}
+          :headers {"X-Publishable-Key" send-sonar-publishable-key}
           :format :json
           :response-format (json-response-format {:keywords? true})})))
 
@@ -634,3 +635,17 @@
               :order-token  order-token}
     :handler #(messages/handle-message events/api-success-shared-cart
                                        {:cart %})}))
+(defn send-referrals [referral]
+  (api-req
+   POST
+   "/leads/referrals"
+   request-keys/create-shared-cart
+   {:params referral
+    :error-handler (fn [resp]
+                     (if (= 207 (:status resp))
+                       (messages/handle-message events/api-partial-success-send-stylist-referrals
+                                                (-> resp :response :body))
+
+                       (modal-error-handler resp)))
+    :handler #(messages/handle-message events/api-success-send-stylist-referrals
+                                      {:referrals %})}))

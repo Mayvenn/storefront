@@ -53,6 +53,7 @@
                           {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
     :refer-stylist (om/build stylist.referrals/refer-component (stylist.referrals/query-refer data)
                              {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
+    :refer-stylist-thanks (om/build stylist.referrals/thanks-component nil nil)
     nil))
 
 (defn top-level-component [data owner]

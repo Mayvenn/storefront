@@ -61,7 +61,6 @@
       (= "www" (first subdomains))
       (redirect (str "http://" store-slug "." domain (query-string req)))
 
-      ;; TODO: render an unavailable page
       (= store :storefront.api/storeback-unavailable)
       (h req)
 
@@ -169,7 +168,7 @@
                                                                       stylist-id)]
     (if number
       (-> (redirect-to-cart {:utm_source "sharecart"
-                             :utm_medium store-slug
+                             :utm_content store-slug
                              :message "shared-cart"})
           (set-cookie environment :number number)
           (set-cookie environment :token token)
@@ -189,19 +188,23 @@
           events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
           (respond-with-index req storeback-config environment))))))
 
+(def private-disalloweds ["User-agent: *"
+                          "Disallow: /account"
+                          "Disallow: /checkout"
+                          "Disallow: /orders"
+                          "Disallow: /stylist"
+                          "Disallow: /cart"
+                          "Disallow: /m/"
+                          "Disallow: /c/"
+                          "Disallow: /admin"])
+
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
-    (string/join "\n" ["User-agent: *"
-                       "Disallow: /account"
-                       "Disallow: /checkout"
-                       "Disallow: /orders"
-                       "Disallow: /stylist"
-                       "Disallow: /cart"
-                       "Disallow: /m/"
-                       "Disallow: /c/"
-                       "Disallow: /admin"])
-    (string/join "\n" ["User-agent: googlebot"
-                       "Disallow: /"])))
+    (string/join "\n" private-disalloweds)
+    (string/join "\n" (concat ["User-agent: googlebot"
+                               "Disallow: /"
+                               ""]
+                              private-disalloweds))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes

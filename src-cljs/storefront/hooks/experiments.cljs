@@ -41,9 +41,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn share-carts? [data]
-  (display-variation data "share-carts"))
-
 (defn stylist-referrals? [data]
   (display-variation data "stylist-referrals"))
 
