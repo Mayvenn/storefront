@@ -140,14 +140,7 @@
                                   :path    "/"}))
 
 (def server-render-pages
-  #{events/navigate-home
-    events/navigate-guarantee
-    events/navigate-help
-    events/navigate-categories
-    events/navigate-sign-in
-    events/navigate-sign-up
-    events/navigate-forgot-password
-    events/navigate-category})
+  #{})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
