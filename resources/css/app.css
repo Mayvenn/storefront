@@ -15,25 +15,25 @@
 
 /* Basscss Core */
 
-@import 'basscss/node_modules/basscss-type-scale';
+@import 'basscss-type-scale';
 @import 'custom-type-scale.css';
-@import 'basscss/node_modules/basscss-typography';
+@import 'basscss-typography';
 @import 'custom-typography.css';
-@import 'basscss/node_modules/basscss-layout';
+@import 'basscss-layout';
 @import 'custom-layout.css';
-@import 'basscss/node_modules/basscss-align';
-@import 'basscss/node_modules/basscss-margin';
+@import 'basscss-align';
+@import 'basscss-margin';
 @import 'custom-margin.css';
-@import 'basscss/node_modules/basscss-padding';
+@import 'basscss-padding';
 @import 'custom-padding.css';
-@import 'basscss/node_modules/basscss-grid/lib/grid.css';
+@import 'basscss-grid/lib/grid.css';
 @import 'custom-grid.css'; /* responsive helpers preferred over basscss-grid/lib/*-grid.css */
-@import 'basscss/node_modules/basscss-flexbox';
-@import 'basscss/node_modules/basscss-position';
+@import 'basscss-flexbox';
+@import 'basscss-position';
 @import 'custom-position.css';
-@import 'basscss/node_modules/basscss-border';
+@import 'basscss-border';
 @import 'custom-border.css';
-/* @import 'basscss/node_modules/basscss-hide'; */ /* deprecated in favor of custom names */
+/* @import 'basscss-hide'; */ /* deprecated in favor of custom names */
 @import 'custom-hide.css';
 
 /* Optional Modules (extensions to Basscss Core) */
