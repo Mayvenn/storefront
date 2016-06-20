@@ -34,11 +34,10 @@
 
 (defn normalize-elements [& content]
   (for [expr content]
-    (do
-      (cond
-        (element? expr) (normalize-element expr)
-        (sequential? expr) (apply normalize-elements expr)
-        :else expr))))
+    (cond
+      (element? expr) (normalize-element expr)
+      (sequential? expr) (apply normalize-elements expr)
+      :else expr)))
 
 (defmacro create [content]
   content)
