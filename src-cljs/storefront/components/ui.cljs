@@ -9,7 +9,7 @@
 
 (defn container [& content]
   [:.bg-light-white.light-black.sans-serif
-   (into [:.p2.m-auto] content)])
+   (into [:.p2.m-auto.overflow-hidden] content)])
 
 (defn narrow-container [& content]
   (apply container {:class [:md-up-col-8 :lg-up-col-6]} content))
