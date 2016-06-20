@@ -3,12 +3,13 @@
             [sablono.core :refer-macros [html]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]))
 
 (def check-svg
@@ -19,8 +20,8 @@
    {:key revenue-surpassed}
    [:.mr1 check-svg]
    [:.flex-auto.h5
-    "Credit Earned: " (f/as-money-without-cents amount) " on " (f/epoch-date created-at)]
-   [:.h3.ml1.mr1.strike (f/as-money-without-cents revenue-surpassed)]])
+    "Credit Earned: " (mf/as-money-without-cents amount) " on " (f/epoch-date created-at)]
+   [:.h3.ml1.mr1.strike (mf/as-money-without-cents revenue-surpassed)]])
 
 (defn bonus-history-component [{:keys [history page pages fetching?]}]
   (om/component
@@ -48,7 +49,7 @@
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
-                                    (f/as-money-without-cents lifetime-total))]
+                                    (mf/as-money-without-cents lifetime-total))]
     [:.h6.dark-silver
      [:.p3.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
@@ -78,18 +79,18 @@
            [:div
             [:.center.px1.py2
              (cond
-               history                [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
-               (pos? progress-amount) [:.h3 "Sell " (f/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
-               :else                  [:.h3 "Sell " (f/as-money-without-cents milestone-amount) " to earn your first bonus!"])
+               history                [:.h3 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+               (pos? progress-amount) [:.h3 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
+               :else                  [:.h3 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
              (pending-bonus-progress {:progress  progress-amount
                                       :milestone milestone-amount})
 
              [:.h6.gray
               "You earn "
-              (f/as-money-without-cents award-amount)
+              (mf/as-money-without-cents award-amount)
               " in credit for every "
-              (f/as-money-without-cents milestone-amount)
+              (mf/as-money-without-cents milestone-amount)
               " in sales you make."]]
 
             (om/build bonus-history-component
@@ -101,7 +102,7 @@
             (when (pos? available-credit)
               [:.center.bg-white.p2.line-height-2
                [:p
-                "Bonus credits available " [:span.navy (f/as-money available-credit)]
+                "Bonus credits available " [:span.navy (mf/as-money available-credit)]
                 [:br]
                 "Why not treat yourself?"]
 

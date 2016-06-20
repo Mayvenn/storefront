@@ -1,12 +1,11 @@
 (ns storefront.components.stylist.dashboard
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.components.formatters :as f]
             [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.stylist.commissions :as commissions]
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.referrals :as referrals]
-            [storefront.components.utils :as utils]
+            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

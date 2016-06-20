@@ -8,6 +8,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -25,7 +26,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [handle-message handle-later]]
+            [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.routes :as routes]
             [storefront.utils.query :as query]))
 
@@ -76,7 +77,6 @@
 
 (defmethod perform-effects events/navigate [_ _ _ app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    (api/get-taxons (get-in app-state keypaths/api-cache))
     (refresh-account app-state)
     (api/get-sms-number)
     (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -448,13 +448,13 @@
                  (assoc-in [:cart-payments]
                            {:paypal {:amount (get-in app-state keypaths/order-total)
                                      :mobile-checkout? (not (device/isDesktop))
-                                     :return-url (str stylists/store-url "/orders/" (:number order) "/paypal/"
+                                     :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
                                                       (url-encode (url-encode (:token order)))
                                                       "?sid="
                                                       (url-encode (get-in app-state keypaths/session-id)))
                                      :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
                                                         "&order-token=" (url-encode (:token order)))
-                                     :cancel-url (str stylists/store-url "/cart?error=paypal-cancel")}}))
+                                     :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]

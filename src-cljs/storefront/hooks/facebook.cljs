@@ -5,7 +5,7 @@
             [storefront.events :as events]
             [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
-            [storefront.messages :refer [handle-message]]))
+            [storefront.platform.messages :refer [handle-message]]))
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id

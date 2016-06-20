@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :as tags]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.messages :as m]
+            [storefront.platform.messages :as m]
             [storefront.config :as config]))
 
 (def stylist-odd?  (comp odd? :stylist_id))

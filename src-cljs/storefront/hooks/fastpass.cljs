@@ -3,7 +3,7 @@
                                              insert-tag-with-callback
                                              remove-tags-by-class
                                              src-tag]]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]))
 
 (defn community-url []

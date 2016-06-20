@@ -6,7 +6,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.routes :as routes]
             [storefront.hooks.exception-handler :as exception-handler]
-            [storefront.messages :as messages]
+            [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
             [om.core :as om]
@@ -68,8 +68,17 @@
    {:target (.getElementById js/document "content")})
   (reload-app app-state))
 
+(defn deep-merge
+  [& maps]
+  (if (every? map? maps)
+    (apply merge-with deep-merge maps)
+    (last maps)))
+
 (defonce main (memoize main-))
-(defonce app-state (atom (state/initial-state)))
+(defonce app-state (atom (deep-merge (state/initial-state)
+                                     (update-in (js->clj js/data :keywordize-keys true)
+                                                (butlast keypaths/navigation-message)
+                                                dissoc (last keypaths/navigation-message)))))
 
 (defn debug-force-token [token]
   (swap! app-state assoc-in keypaths/user-token "f766e9e3ea1f7b8bf25f1753f395cf7bd34cef0430360b7d"))

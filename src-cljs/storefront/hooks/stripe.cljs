@@ -1,7 +1,7 @@
 (ns storefront.hooks.stripe
   (:require [storefront.browser.tags :refer [insert-tag-with-callback
                                              src-tag]]
-            [storefront.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [storefront.config :as config]

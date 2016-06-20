@@ -33,6 +33,11 @@
 
 (def not-404 (comp (partial not= 404) :status))
 
+(defn taxons [storeback-config]
+  (let [response (storeback-fetch storeback-config "/bundle-builder-nav-taxonomy" {})]
+    (when (not-404 response)
+      (:taxons (:body response)))))
+
 (defn category [storeback-config taxon-slug user-token]
   (let [response (storeback-fetch storeback-config "/products"
                                   {:query-params {:taxon-slug taxon-slug

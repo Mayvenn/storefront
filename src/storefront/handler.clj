@@ -4,6 +4,10 @@
             [storefront.events :as events]
             [storefront.api :as api]
             [storefront.views :as views]
+            [storefront.keypaths :as keypaths]
+            [storefront.cache :as cache]
+            [storefront.utils.combinators :refer [key-by]]
+            [storefront.accessors.taxons :as taxons]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -135,10 +139,14 @@
                                   :secure  (not (config/development? environment))
                                   :path    "/"}))
 
-(defn respond-with-index [req storeback-config environment]
-  (-> (views/index req storeback-config environment)
-      response
-      (content-type "text/html")))
+(def server-render-pages
+  #{})
+
+(defn html-response [render-ctx data]
+  (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
+    (-> ((if prerender? views/prerendered-page views/index) render-ctx data)
+        response
+        (content-type "text/html"))))
 
 (defn redirect-to-cart [query-params]
   (redirect (str "/cart?" (codec/form-encode query-params))))
@@ -153,9 +161,13 @@
 
 (defn render-category
   "Checks that the category exists"
-  [{:keys [storeback-config environment]} req {:keys [taxon-slug]}]
-  (when (api/category storeback-config taxon-slug (get-cookie req "user-token"))
-    (respond-with-index req storeback-config environment)))
+  [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
+  (when-let [products (api/category storeback-config taxon-slug (get-cookie req "user-token"))]
+    (html-response render-ctx (-> data
+                                  (assoc-in keypaths/products (key-by :id products))
+                                  (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
+                                  (assoc-in keypaths/browse-variant-quantity 1)
+                                  (assoc-in (conj keypaths/api-cache (taxons/cache-key taxon-slug)) {:products products})))))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -179,14 +191,21 @@
           encode-cookies))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
-  (fn [{:keys [uri] :as req}]
+  (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
       (when nav-event
-        (condp = (bidi->edn nav-event)
-          events/navigate-product     (redirect-product->canonical-url ctx req params)
-          events/navigate-category    (render-category ctx req params)
-          events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
-          (respond-with-index req storeback-config environment))))))
+        (let [nav-event (bidi->edn nav-event)
+              render-ctx {:storeback-config storeback-config
+                          :environment environment}
+              data (-> {}
+                       (assoc-in keypaths/store store)
+                       (assoc-in keypaths/taxons (api/taxons storeback-config))
+                       (assoc-in keypaths/navigation-message [nav-event params]))]
+          (condp = nav-event
+            events/navigate-product     (redirect-product->canonical-url ctx req params)
+            events/navigate-category    (render-category render-ctx data req params)
+            events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
+            (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"

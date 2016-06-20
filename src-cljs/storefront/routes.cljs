@@ -2,14 +2,13 @@
   (:require [bidi.bidi :as bidi]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.app-routes :refer [edn->bidi bidi->edn app-routes]]
-            [storefront.messages :refer [handle-message]]
+            [storefront.app-routes :refer [edn->bidi bidi->edn app-routes path-for]]
+            [storefront.platform.messages :refer [handle-message]]
             [clojure.walk :refer [keywordize-keys]]
             [goog.events]
             [goog.history.EventType :as EventType]
-            [cemerick.url :refer [map->query url]])
-  (:import [goog.history Html5History]
-           [goog Uri]))
+            [cemerick.url :refer [url]])
+  (:import [goog.history Html5History]))
 
 ;; Html5History transformer defaults to always appending location.search
 ;; to any token we give it.
@@ -32,13 +31,6 @@
 
 (def app-history)
 
-(defn- set-query-string [s query-params]
-  (-> (Uri.parse s)
-      (.setQueryData (map->query (if (seq query-params)
-                                   query-params
-                                   {})))
-      .toString))
-
 (defn navigation-message-for
   ([uri] (navigation-message-for uri nil))
   ([uri query-params]
@@ -47,16 +39,6 @@
       (-> params
           (merge (when query-params {:query-params query-params}))
           keywordize-keys)])))
-
-(defn path-for [navigation-event & [args]]
-  (let [query-params (:query-params args)
-        args         (dissoc args :query-params)
-        path         (apply bidi/path-for
-                            app-routes
-                            (edn->bidi navigation-event)
-                            (apply concat (seq args)))]
-    (when path
-      (set-query-string path query-params))))
 
 (defn set-current-page []
   (let [uri          (.getToken app-history)

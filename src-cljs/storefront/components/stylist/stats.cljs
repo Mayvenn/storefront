@@ -1,18 +1,19 @@
 (ns storefront.components.stylist.stats
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            [storefront.messages :as messages]
-            [storefront.components.carousel :as carousel]))
+            [storefront.platform.messages :as messages]
+            [storefront.platform.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 
 (defn ^:private money-with-cents [amount]
   [:.flex.justify-center.line-height-1
-   (f/as-money-without-cents amount)
-   [:span.h5 {:style {:margin "5px 3px"}} (f/as-money-cents-only amount)]])
+   (mf/as-money-without-cents amount)
+   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
 
 (def payday 3) ;; 3 -> Wednesday in JS
 
@@ -63,7 +64,7 @@
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (f/as-money-without-cents amount)]
+      [:.py2.h00 re-center-money (mf/as-money-without-cents amount)]
       [:div "Sales since you joined Mayvenn"]]
      [:div
       [:.py2 svg/large-percent]
