@@ -1,7 +1,7 @@
 (ns storefront.components.promotion-banner
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.accessors.promos :as promos]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]))
 

@@ -1,6 +1,6 @@
 (ns storefront.components.top-level
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
-  (:require #?@(:clj [[storefront.component :as component]])
+  (:require #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             #?@(:cljs [[storefront.components.cart :as cart]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]

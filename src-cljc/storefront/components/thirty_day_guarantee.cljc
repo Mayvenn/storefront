@@ -1,7 +1,7 @@
 (ns storefront.components.thirty-day-guarantee
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.components.ui :as ui]
-            #?@(:clj [[storefront.component :as component]])))
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])))
 
 (def section :div.border-bottom.border-light-silver.py2)
 

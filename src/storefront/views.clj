@@ -1,7 +1,7 @@
 (ns storefront.views
   (:require [storefront.assets :refer [asset-path]]
             [storefront.components.top-level :refer [top-level-component]]
-            [storefront.component :as component]
+            [storefront.component-shim :as component]
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]

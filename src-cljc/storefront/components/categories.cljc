@@ -1,9 +1,9 @@
 (ns storefront.components.categories
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.events :as events]))
 
 (defn category [index {:keys [name slug]}]

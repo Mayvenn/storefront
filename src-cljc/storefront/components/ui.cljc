@@ -1,10 +1,10 @@
 (ns storefront.components.ui
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.platform.messages :refer [handle-message]]
             [clojure.string :as str]))
 

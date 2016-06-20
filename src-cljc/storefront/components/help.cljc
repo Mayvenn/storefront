@@ -1,7 +1,7 @@
 (ns storefront.components.help
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.keypaths :as keypaths]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [clojure.string :as string]
             [storefront.components.ui :as ui]))
 

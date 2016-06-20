@@ -1,7 +1,7 @@
 (ns storefront.components.home
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.navigation :as navigation]

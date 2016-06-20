@@ -1,9 +1,9 @@
 (ns storefront.components.header
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
             [storefront.accessors.stylists :refer [own-store?]]

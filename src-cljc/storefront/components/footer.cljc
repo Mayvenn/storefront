@@ -1,7 +1,7 @@
 (ns storefront.components.footer
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]

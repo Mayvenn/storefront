@@ -1,7 +1,7 @@
 (ns storefront.components.slideout-nav
-  #?@(:cljs [(:require-macros [storefront.component-macros :as component])])
   (:require [storefront.platform.component-utils :as utils]
-            #?@(:clj [[storefront.component :as component]])
+            #?(:clj [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
