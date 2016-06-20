@@ -69,7 +69,7 @@
   (reload-app app-state))
 
 (defonce main (memoize main-))
-(defonce app-state (atom (state/initial-state)))
+(defonce app-state (atom (merge (state/initial-state) (js->clj js/data :keywordize-keys true))))
 
 (defn debug-force-token [token]
   (swap! app-state assoc-in keypaths/user-token "f766e9e3ea1f7b8bf25f1753f395cf7bd34cef0430360b7d"))

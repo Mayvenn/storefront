@@ -31,10 +31,13 @@
         (replace ">" "&gt;"))
     v))
 
-(defn sanitize-map [m]
-  (zipmap (keys m) (map escape-js-string (vals m))))
+(defn sanitize [v]
+  (cond
+    (sequential? v) (map sanitize v)
+    (map? v) (zipmap (keys v) (map sanitize (vals v)))
+    :else (escape-js-string v)))
 
-(defn layout [{:keys [storeback-config environment]} {:keys [store taxons]} initial-content]
+(defn layout [{:keys [storeback-config environment]} data initial-content]
   (html5
    [:head
     [:title "Shop | Mayvenn"]
@@ -50,8 +53,7 @@
      (raw (str "Bugsnag.releaseStage = \"" environment "\";"
                "Bugsnag.notifyReleaseStages = ['acceptance', 'production'];"))]
     [:script {:type "text/javascript"}
-     (raw (str "store = " (generate-string (sanitize-map store)) ";"
-               "taxons = " (generate-string (map sanitize-map taxons)) ";"))]
+     (raw (str "data = " (generate-string data) ";"))]
     (page/include-css (asset-path "/css/all.css"))
     (page/include-css (asset-path "/css/app.css"))]
    [:body

@@ -52,8 +52,8 @@
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
 
-     :store (js->clj js/store :keywordize-keys true)
-     :taxons (js->clj js/taxons :keywordize-keys true)
+     :store {}
+     :taxons []
      :products {}
      :states []
      :shipping-methods []
