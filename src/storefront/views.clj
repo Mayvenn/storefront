@@ -53,7 +53,7 @@
      (raw (str "Bugsnag.releaseStage = \"" environment "\";"
                "Bugsnag.notifyReleaseStages = ['acceptance', 'production'];"))]
     [:script {:type "text/javascript"}
-     (raw (str "data = " (generate-string data) ";"))]
+     (raw (str "data = " (generate-string (sanitize data)) ";"))]
     (page/include-css (asset-path "/css/all.css"))
     (page/include-css (asset-path "/css/app.css"))]
    [:body

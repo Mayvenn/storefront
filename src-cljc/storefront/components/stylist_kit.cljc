@@ -19,11 +19,18 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn kit-description [{:keys [description]}]
-  (when description
-    (product/description-structure
-     [:div.mt1 {:dangerouslySetInnerHTML {:__html description}}])))
+  (product/description-structure
+   [:div.mt1.dark-gray
+    [:div.mbp3.h6 "Includes:"]
+    [:ul.list-reset.m0.mb2.navy.h5.medium
+     (for [[idx item] (map-indexed vector (:summary description))]
+       [:li.mbp3 {:key idx} item])]
 
-(defn component [{:keys [product variant-quantity selected-variant adding-to-bag? bagged-variants]} owner opts]
+    [:div.line-height-2
+     (for [[idx item] (map-indexed vector (:commentary description))]
+       [:p.mt2 {:key idx} item])]]))
+
+(defn component [{:keys [taxon product variant-quantity selected-variant adding-to-bag? bagged-variants]} owner opts]
   (component/create
    (when product
      (ui/container
@@ -40,14 +47,16 @@
 
         (product/bagged-variants-and-checkout bagged-variants)
         shipping-and-guarantee
-        (kit-description product)])))))
+        (kit-description taxon)])))))
 
 (defn query [data]
   ;; Assume the kits taxon has only one product, which has only one variant
-  (let [product-id       (first (:product-ids (taxons/current-taxon data)))
+  (let [taxon            (taxons/current-taxon data)
+        product-id       (first (:product-ids taxon))
         product          (get-in data (conj keypaths/products product-id))
         selected-variant (first (:variants product))]
-    {:product          product
+    {:taxon            taxon
+     :product          product
      :selected-variant selected-variant
      :variant-quantity (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?   (utils/requesting? data request-keys/add-to-bag)
