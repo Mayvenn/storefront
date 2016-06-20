@@ -6,6 +6,7 @@
             [storefront.views :as views]
             [storefront.keypaths :as keypaths]
             [storefront.cache :as cache]
+            [storefront.cookies :as cookies]
             [storefront.utils.combinators :refer [key-by]]
             [storefront.accessors.taxons :as taxons]
             [clojure.string :as string]
@@ -20,7 +21,6 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.cookies :as cookies]
             [ring.util.codec :as codec]
             [ring-logging.core :as ring-logging]
             [storefront.prerender :refer [wrap-prerender]]))
@@ -56,15 +56,24 @@
 (defn parse-domain [{:keys [server-name server-port]}]
   (str (parse-tld server-name) ":" server-port))
 
-(defn wrap-stylist-not-found-redirect [h]
+(defn wrap-remove-superfluous-www [h]
   (fn [{domain :domain
+       uri :uri
        subdomains :subdomains
        {store-slug :store_slug :as store} :store
        :as req}]
-    (cond
-      (= "www" (first subdomains))
-      (redirect (str "http://" store-slug "." domain (query-string req)))
+    (if (= "www" (first subdomains))
+      (redirect (str "http://" store-slug "." domain uri (query-string req)))
+      (h req))))
 
+(defn wrap-stylist-not-found-redirect [h environment]
+  (fn [{domain :domain
+       uri :uri
+       subdomains :subdomains
+       server-name :server-name
+       {store-slug :store_slug :as store} :store
+       :as req}]
+    (cond
       (= store :storefront.api/storeback-unavailable)
       (h req)
 
@@ -72,7 +81,8 @@
       (h req)
 
       :else
-      (redirect (str "http://store." domain (query-string req))))))
+      (-> (redirect (str "http://store." domain uri (query-string req)))
+          (cookies/expire-root-cookie (str "." (parse-tld server-name)) environment "preferred-store-slug")))))
 
 (defn wrap-known-subdomains-redirect [h]
   (fn [{:keys [subdomains domain] :as req}]
@@ -102,6 +112,20 @@
       (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
       ring-logging/wrap-trace-request))
 
+(defn wrap-set-preferred-store [handler environment]
+  (fn [{:keys [server-name server-port store] :as req}]
+    (when-let [res (handler req)]
+      (cookies/set-root-cookie res (str "." (parse-tld server-name)) environment "preferred-store-slug" (:store_slug store)))))
+
+(defn wrap-redirect-to-preferred-store [handler environment]
+  (fn [{:keys [subdomains server-name scheme domain uri] :as req}]
+    (if-let [preferred-store-slug (cookies/get-cookie req "preferred-store-slug")]
+      (if (and (#{"store" "shop"} (last subdomains))
+                 (not (#{nil "" "store" "shop"} preferred-store-slug)))
+        (redirect (str (name scheme) "://" preferred-store-slug "." domain uri))
+        (handler req))
+      (handler req))))
+
 (defn wrap-site-routes
   [routes {:keys [storeback-config environment prerender-token]}]
   (-> routes
@@ -109,35 +133,25 @@
                       prerender-token
                       (partial prerender-original-request-url
                                (config/development? environment)))
+      (wrap-set-preferred-store environment)
+      (wrap-redirect-to-preferred-store environment)
+      (wrap-stylist-not-found-redirect environment)
+      ;; Keep defaults higher up to avoid SSL certificate error. SSL redirect
+      ;; must happen *after* www trimming since our SSL certificate doesn't
+      ;; support multiple subdomains. Example incorrect behavior would be:
+      ;;
+      ;; - User goes to http://www.store.mayvenn.com
+      ;; - defaults redirects to https://www.store.mayvenn.com
+      ;; - browser sees SSL certificate as invalid and refuses to request page
+      ;;
+      ;; Because of this, we must always leave wrap-defaults above wrap-remove-superfluous-www.
+      ;; TODO: needs a test
       (wrap-defaults (storefront-site-defaults environment))
-      (wrap-stylist-not-found-redirect)
+      (wrap-remove-superfluous-www)
       (wrap-fetch-store storeback-config)
       (wrap-known-subdomains-redirect)
       (wrap-resource "public")
       (wrap-content-type)))
-
-(defn dumb-encoder
-  "Our cookies have colons at the beginning of their names (e.g. ':token'). But
-  the default cookie encoder is codec/form-encode, which escapes colons. It is
-  only safe to use this encoder if you know the cookie names are URL safe"
-  [map-entry]
-  (let [[k v] (first map-entry)]
-    (str k "=" v)))
-
-(defn encode-cookies [resp]
-  (cookies/cookies-response resp {:encoder dumb-encoder}))
-
-(defn get-cookie [req name] (get-in req [:cookies name :value]))
-(defn expire-cookie [resp environment name]
-  (assoc-in resp [:cookies name] {:value   ""
-                                  :max-age 0
-                                  :secure  (not (config/development? environment))
-                                  :path    "/"}))
-(defn set-cookie [resp environment name value]
-  (assoc-in resp [:cookies name] {:value   value
-                                  :max-age (* 60 60 24 7 4)
-                                  :secure  (not (config/development? environment))
-                                  :path    "/"}))
 
 (def server-render-pages
   #{})
@@ -154,7 +168,7 @@
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
-  (some-> (api/product storeback-config product-slug (get-cookie req "user-token"))
+  (some-> (api/product storeback-config product-slug (cookies/get-cookie req "user-token"))
           ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
           :url-path
           redirect))
@@ -162,7 +176,7 @@
 (defn render-category
   "Checks that the category exists"
   [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
-  (when-let [products (api/category storeback-config taxon-slug (get-cookie req "user-token"))]
+  (when-let [products (api/category storeback-config taxon-slug (cookies/get-cookie req "user-token"))]
     (html-response render-ctx (-> data
                                   (assoc-in keypaths/products (key-by :id products))
                                   (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
@@ -175,20 +189,20 @@
   (let [{stylist-id :stylist_id store-slug :store_slug} store
         {:keys [number token error-code]} (api/create-order-from-cart storeback-config
                                                                       shared-cart-id
-                                                                      (get-cookie req "id")
-                                                                      (get-cookie req "user-token")
+                                                                      (cookies/get-cookie req "id")
+                                                                      (cookies/get-cookie req "user-token")
                                                                       stylist-id)]
     (if number
       (-> (redirect-to-cart {:utm_source "sharecart"
                              :utm_content store-slug
                              :message "shared-cart"})
-          (set-cookie environment :number number)
-          (set-cookie environment :token token)
-          encode-cookies)
+          (cookies/set-cookie environment :number number)
+          (cookies/set-cookie environment :token token)
+          cookies/encode-cookies)
       (-> (redirect-to-cart {:error "share-cart-failed"})
-          (expire-cookie environment :number)
-          (expire-cookie environment :token)
-          encode-cookies))))
+          (cookies/expire-cookie environment :number)
+          (cookies/expire-cookie environment :token)
+          cookies/encode-cookies))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]

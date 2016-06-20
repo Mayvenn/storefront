@@ -16,6 +16,15 @@
       (status 404)
       (content-type "application/json")))
 
+(def storeback-shop-response
+  (-> (generate-string {:store_slug "shop"
+                        :store_name "Mayvenn Hair"
+                        :instagram_account nil
+                        :profile_picture_url nil})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
 (def storeback-stylist-response
   (-> (generate-string {:store_slug "bob"
                         :store_name "Bob's Hair Emporium"
@@ -61,7 +70,7 @@
    storeback-no-stylist-response
    (fn [resp]
      (is (= 302 (:status resp)))
-     (is (= "http://store.mayvenn.com:8080?yo=lo&mo=fo"
+     (is (= "http://store.mayvenn.com:8080/?yo=lo&mo=fo"
             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-www-prefixed-stylists-to-stylist-without-prefix
@@ -69,8 +78,8 @@
    {:server-name "www.bob.mayvenn.com"}
    storeback-stylist-response
    (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://bob.mayvenn.com:8080"
+     (is (= 302 (:status resp)) (pr-str resp))
+     (is (= "http://bob.mayvenn.com:8080/"
             (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-www-to-welcome-preserving-query-params
@@ -89,6 +98,28 @@
       (is (= "http://welcome.mayvenn.com:8080/hello?world=true"
              (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
+  (assert-request {:server-name "shop.mayvenn.com"
+                   :uri         "/categories/hair/straight?utm_source=cats"
+                   :headers     {"cookie" "preferred-store-slug=bob"}}
+                  storeback-shop-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "http://bob.mayvenn.com:8080/categories/hair/straight?utm_source=cats"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
+  (assert-request {:server-name "shop.mayvenn.com"
+                   :uri         "/categories/hair/straight?utm_source=cats"
+                   :headers     {"cookie" "preferred-store-slug=non-existent-stylist"}}
+                  storeback-no-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "http://store.mayvenn.com:8080/categories/hair/straight?utm_source=cats"
+                           (get-in resp [:headers "Location"])))
+                    (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
+                      (is (.contains cookie "preferred-store-slug=;Max-Age=0;") cookie)))))
+
 (deftest redirects-vistaprint
   (with-handler handler
     (let [resp (handler (merge default-req-params {:server-name "vistaprint.mayvenn.com"}))]
@@ -96,9 +127,10 @@
       (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
              (get-in resp [:headers "Location"]))))))
 
-(deftest renders-page-when-matches-stylist-subdomain
+(deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (assert-request
    {:server-name "bob.mayvenn.com"}
    storeback-stylist-response
    (fn [resp]
-     (is (= 200 (:status resp))))))
+     (is (= 200 (:status resp)))
+     (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
