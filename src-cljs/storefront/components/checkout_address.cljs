@@ -133,7 +133,7 @@
    (html
     [:.flex.flex-column.items-center.col-12
      [:.h3.black.col-12.my1 "Billing Address"]
-     [:.col-12
+     [:.col-12.my1
       [:label.h5.gray.py1
        [:input.mr1
         (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address
