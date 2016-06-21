@@ -1,5 +1,5 @@
-.bg-fb-blue     { background-color: var(--facebook-blue); }
-.bg-paypal-blue { background-color: var(--paypal-blue); }
+.bg-fb-blue      { background-color: var(--facebook-blue); }
+.bg-paypal-blue  { background-color: var(--paypal-blue); }
 
 .bg-pure-white   { background-color: var(--pure-white); }
 .bg-light-white  { background-color: var(--light-white); }
@@ -10,6 +10,8 @@
 .bg-dark-gray    { background-color: var(--dark-gray); }
 .bg-light-black  { background-color: var(--light-black); }
 .bg-dark-black   { background-color: var(--dark-black); }
+
+.bg-lighten-5    { background-color: var(--lighten-5); }
 
 .bg-pink-gradient {
   border-color: #f865a5;
@@ -29,6 +31,8 @@
 
   --facebook-blue: #3b5998;
   --paypal-blue:   #49bbf0;
+
+  --lighten-5: rgba(255, 255, 255, .925);
 }
 
 

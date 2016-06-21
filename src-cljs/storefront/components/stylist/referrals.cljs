@@ -162,8 +162,13 @@
     (ui/modal on-close
               [:.bg-light-white.rounded.p2.mt3.sans-serif
                (ui/modal-close {:on-close on-close})
-               [:form.p1
-                {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
+               [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
+                (when (seq errors)
+                  [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
+                   [:div.px2.py1.bg-lighten-5.rounded
+                    "Oops! Please fix the errors below."
+                    [:div.img-error-icon.bg-no-repeat.bg-contain.right
+                     {:style {:width "1.25rem" :height "1.25rem"}}]]])
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"
