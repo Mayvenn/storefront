@@ -34,10 +34,13 @@
         (assoc-in [:security :hsts] false)
         (assoc-in [:static :resources] false))))
 
-(defn parse-tld [server-name]
+(defn parse-root-domain [server-name]
   (->> (string/split server-name #"\.")
        (take-last 2)
        (string/join ".")))
+
+(defn cookie-root-domain [server-name]
+  (str "." (parse-root-domain server-name)))
 
 (defn query-string [req]
   (let [query-str (:query-string req)]
@@ -48,32 +51,30 @@
   (->> (string/split server-name #"\.")
        (drop-last 2)))
 
-(defn wrap-fetch-store [h storeback-config]
-  (fn [{:keys [subdomains] :as req}]
-    (h (merge req
-              {:store (api/store storeback-config (last subdomains))}))))
+(defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
+  (str (name scheme) "://"
+       store-slug "." (parse-root-domain server-name)
+       ":" (if (config/development? environment) server-port 443)))
 
-(defn parse-domain [{:keys [server-name server-port]}]
-  (str (parse-tld server-name) ":" server-port))
+(defn store-url [store-slug environment {:keys [uri] :as req}]
+  (str (store-scheme-and-authority store-slug environment req)
+       uri
+       (query-string req)))
 
-(defn wrap-remove-superfluous-www [h]
-  (fn [{domain :domain
-       uri :uri
-       subdomains :subdomains
-       {store-slug :store_slug :as store} :store
+(defn wrap-add-domains [h]
+  (fn [req]
+    (h (merge req {:subdomains (parse-subdomains (:server-name req))}))))
+
+(defn wrap-remove-superfluous-www-redirect [h environment]
+  (fn [{subdomains :subdomains
+       {store-slug :store_slug} :store
        :as req}]
     (if (= "www" (first subdomains))
-      (redirect (str "http://" store-slug "." domain uri (query-string req)))
+      (redirect (store-url store-slug environment req))
       (h req))))
 
-(defn parse-root-domain [server-name]
-  (str "." (parse-tld server-name)))
-
 (defn wrap-stylist-not-found-redirect [h environment]
-  (fn [{domain :domain
-       uri :uri
-       subdomains :subdomains
-       server-name :server-name
+  (fn [{server-name :server-name
        {store-slug :store_slug :as store} :store
        :as req}]
     (cond
@@ -84,30 +85,40 @@
       (h req)
 
       :else
-      (-> (redirect (str "http://store." domain uri (query-string req)))
-          (cookies/expire environment (parse-root-domain server-name) "preferred-store-slug")))))
+      (-> (redirect (store-url "store" environment req))
+          (cookies/expire environment (cookie-root-domain server-name) "preferred-store-slug")))))
 
-(defn wrap-known-subdomains-redirect [h]
-  (fn [{:keys [subdomains domain] :as req}]
+(defn wrap-known-subdomains-redirect [h environment]
+  (fn [{:keys [subdomains server-name server-port] :as req}]
     (cond
       (= "vistaprint" (first subdomains))
       (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
       (#{[] ["www"]} subdomains)
-      (redirect (str "http://welcome." domain "/hello" (query-string req)))
+      ;; TODO: when the removal of /hello has been deployed in leads, remove it here too
+      (redirect (str (store-scheme-and-authority "welcome" environment req) "/hello" (query-string req)))
 
       :else
       (h req))))
 
-(defn wrap-add-domains [h]
-  (fn [req]
-    (h (merge req {:subdomains (parse-subdomains (:server-name req))
-                   :domain (parse-domain req)}))))
+(defn wrap-set-preferred-store [handler environment]
+  (fn [{:keys [server-name server-port store] :as req}]
+    (when-let [resp (handler req)]
+      (cookies/set resp environment (cookie-root-domain server-name) "preferred-store-slug" (:store_slug store)))))
 
-(defn prerender-original-request-url [development? req]
-  (str (name (:scheme req)) "://shop."
-       (parse-tld (:server-name req))
-       ":" (if development? (:server-port req) 443) (:uri req)))
+(defn wrap-preferred-store-redirect [handler environment]
+  (fn [{:keys [subdomains] :as req}]
+    (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
+      (if (and (#{"store" "shop"} (last subdomains))
+                 (not (#{nil "" "store" "shop"} preferred-store-slug)))
+        (redirect (store-url preferred-store-slug environment req))
+        (handler req))
+      (handler req))))
+
+(defn wrap-fetch-store [h storeback-config]
+  (fn [{:keys [subdomains] :as req}]
+    (h (merge req
+              {:store (api/store storeback-config (last subdomains))}))))
 
 (defn wrap-logging [handler logger]
   (-> handler
@@ -115,32 +126,14 @@
       (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
       ring-logging/wrap-trace-request))
 
-(defn wrap-set-preferred-store [handler environment]
-  (fn [{:keys [server-name server-port store] :as req}]
-    (when-let [resp (handler req)]
-      (cookies/set resp environment (parse-root-domain server-name) "preferred-store-slug" (:store_slug store)))))
-
-(defn wrap-redirect-to-preferred-store [handler environment]
-  (fn [{:keys [subdomains server-name server-port scheme uri] :as req}]
-    (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
-      (if (and (#{"store" "shop"} (last subdomains))
-                 (not (#{nil "" "store" "shop"} preferred-store-slug)))
-        (redirect (str (name scheme) "://"
-                       preferred-store-slug "." (parse-tld server-name)
-                       ":" (if (config/development? environment) server-port 443)
-                       uri))
-        (handler req))
-      (handler req))))
-
 (defn wrap-site-routes
   [routes {:keys [storeback-config environment prerender-token]}]
   (-> routes
       (wrap-prerender (config/development? environment)
                       prerender-token
-                      (partial prerender-original-request-url
-                               (config/development? environment)))
+                      (partial store-url "shop" environment))
       (wrap-set-preferred-store environment)
-      (wrap-redirect-to-preferred-store environment)
+      (wrap-preferred-store-redirect environment)
       (wrap-stylist-not-found-redirect environment)
       ;; Keep defaults higher up to avoid SSL certificate error. SSL redirect
       ;; must happen *after* www trimming since our SSL certificate doesn't
@@ -153,9 +146,9 @@
       ;; Because of this, we must always leave wrap-defaults above wrap-remove-superfluous-www.
       ;; TODO: needs a test
       (wrap-defaults (storefront-site-defaults environment))
-      (wrap-remove-superfluous-www)
+      (wrap-remove-superfluous-www-redirect environment)
       (wrap-fetch-store storeback-config)
-      (wrap-known-subdomains-redirect)
+      (wrap-known-subdomains-redirect environment)
       (wrap-resource "public")
       (wrap-content-type)))
 
