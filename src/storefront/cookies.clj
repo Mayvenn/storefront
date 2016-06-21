@@ -1,4 +1,5 @@
 (ns storefront.cookies
+  (:refer-clojure :exclude [get set])
   (:require [storefront.config :as config]
             [ring.middleware.cookies :as cookies]))
 
@@ -10,28 +11,31 @@
   (let [[k v] (first map-entry)]
     (str k "=" v)))
 
-(defn encode-cookies [resp]
+(defn encode [resp]
   (cookies/cookies-response resp {:encoder dumb-encoder}))
 
-(defn get-cookie [req name] (get-in req [:cookies name :value]))
-(defn expire-cookie [resp environment name]
-  (assoc-in resp [:cookies name] {:value   ""
-                                  :max-age 0
-                                  :secure  (not (config/development? environment))
-                                  :path    "/"}))
-(defn set-cookie [resp environment name value]
-  (assoc-in resp [:cookies name] {:value   value
-                                  :max-age (* 60 60 24 7 4)
-                                  :secure  (not (config/development? environment))
-                                  :path    "/"}))
-(defn set-root-cookie [resp domain environment name value]
-  (-> resp
-      (set-cookie environment name value)
-      (assoc-in [:cookies name :domain] domain)
-      (assoc-in [:cookies name :http-only] true)))
+(defn get [req name] (get-in req [:cookies name :value]))
+(defn expire
+  ([resp environment name]
+   (assoc-in resp [:cookies name] {:value   ""
+                                   :max-age 0
+                                   :secure  (not (config/development? environment))
+                                   :path    "/"}))
+  ([resp environment domain name]
+   (-> resp
+       (expire environment name)
+       (assoc-in [:cookies name :domain] domain)
+       (assoc-in [:cookies name :http-only] true))))
 
-(defn expire-root-cookie [resp domain environment name]
-  (-> resp
-      (expire-cookie environment name)
-      (assoc-in [:cookies name :domain] domain)
-      (assoc-in [:cookies name :http-only] true)))
+(defn set
+  ([resp environment name value]
+   (assoc-in resp [:cookies name] {:value   value
+                                   :max-age (* 60 60 24 7 4)
+                                   :secure  (not (config/development? environment))
+                                   :path    "/"}))
+  ([resp environment domain name value]
+   (-> resp
+       (set environment name value)
+       (assoc-in [:cookies name :domain] domain)
+       (assoc-in [:cookies name :http-only] true))))
+

@@ -66,6 +66,9 @@
       (redirect (str "http://" store-slug "." domain uri (query-string req)))
       (h req))))
 
+(defn parse-root-domain [server-name]
+  (str "." (parse-tld server-name)))
+
 (defn wrap-stylist-not-found-redirect [h environment]
   (fn [{domain :domain
        uri :uri
@@ -82,7 +85,7 @@
 
       :else
       (-> (redirect (str "http://store." domain uri (query-string req)))
-          (cookies/expire-root-cookie (str "." (parse-tld server-name)) environment "preferred-store-slug")))))
+          (cookies/expire environment (parse-root-domain server-name) "preferred-store-slug")))))
 
 (defn wrap-known-subdomains-redirect [h]
   (fn [{:keys [subdomains domain] :as req}]
@@ -114,12 +117,12 @@
 
 (defn wrap-set-preferred-store [handler environment]
   (fn [{:keys [server-name server-port store] :as req}]
-    (when-let [res (handler req)]
-      (cookies/set-root-cookie res (str "." (parse-tld server-name)) environment "preferred-store-slug" (:store_slug store)))))
+    (when-let [resp (handler req)]
+      (cookies/set resp environment (parse-root-domain server-name) "preferred-store-slug" (:store_slug store)))))
 
 (defn wrap-redirect-to-preferred-store [handler environment]
   (fn [{:keys [subdomains server-name server-port scheme uri] :as req}]
-    (if-let [preferred-store-slug (cookies/get-cookie req "preferred-store-slug")]
+    (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
       (if (and (#{"store" "shop"} (last subdomains))
                  (not (#{nil "" "store" "shop"} preferred-store-slug)))
         (redirect (str (name scheme) "://"
@@ -171,7 +174,7 @@
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
-  (some-> (api/product storeback-config product-slug (cookies/get-cookie req "user-token"))
+  (some-> (api/product storeback-config product-slug (cookies/get req "user-token"))
           ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
           :url-path
           redirect))
@@ -179,7 +182,7 @@
 (defn render-category
   "Checks that the category exists"
   [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
-  (when-let [products (api/category storeback-config taxon-slug (cookies/get-cookie req "user-token"))]
+  (when-let [products (api/category storeback-config taxon-slug (cookies/get req "user-token"))]
     (html-response render-ctx (-> data
                                   (assoc-in keypaths/products (key-by :id products))
                                   (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
@@ -192,20 +195,20 @@
   (let [{stylist-id :stylist_id store-slug :store_slug} store
         {:keys [number token error-code]} (api/create-order-from-cart storeback-config
                                                                       shared-cart-id
-                                                                      (cookies/get-cookie req "id")
-                                                                      (cookies/get-cookie req "user-token")
+                                                                      (cookies/get req "id")
+                                                                      (cookies/get req "user-token")
                                                                       stylist-id)]
     (if number
       (-> (redirect-to-cart {:utm_source "sharecart"
                              :utm_content store-slug
                              :message "shared-cart"})
-          (cookies/set-cookie environment :number number)
-          (cookies/set-cookie environment :token token)
-          cookies/encode-cookies)
+          (cookies/set environment :number number)
+          (cookies/set environment :token token)
+          cookies/encode)
       (-> (redirect-to-cart {:error "share-cart-failed"})
-          (cookies/expire-cookie environment :number)
-          (cookies/expire-cookie environment :token)
-          cookies/encode-cookies))))
+          (cookies/expire environment :number)
+          (cookies/expire environment :token)
+          cookies/encode))))
 
 (defn site-routes [{:keys [storeback-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
