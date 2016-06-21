@@ -164,7 +164,7 @@
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (seq errors)
-                  [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
+                  [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1.mb2
                    [:div.px2.py1.bg-lighten-5.rounded
                     "Oops! Please fix the errors below."
                     [:div.img-error-icon.bg-no-repeat.bg-contain.right
