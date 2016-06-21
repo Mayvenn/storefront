@@ -118,11 +118,14 @@
       (cookies/set-root-cookie res (str "." (parse-tld server-name)) environment "preferred-store-slug" (:store_slug store)))))
 
 (defn wrap-redirect-to-preferred-store [handler environment]
-  (fn [{:keys [subdomains server-name scheme domain uri] :as req}]
+  (fn [{:keys [subdomains server-name server-port scheme uri] :as req}]
     (if-let [preferred-store-slug (cookies/get-cookie req "preferred-store-slug")]
       (if (and (#{"store" "shop"} (last subdomains))
                  (not (#{nil "" "store" "shop"} preferred-store-slug)))
-        (redirect (str (name scheme) "://" preferred-store-slug "." domain uri))
+        (redirect (str (name scheme) "://"
+                       preferred-store-slug "." (parse-tld server-name)
+                       ":" (if (config/development? environment) server-port 443)
+                       uri))
         (handler req))
       (handler req))))
 
