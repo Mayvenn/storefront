@@ -39,6 +39,48 @@
 
 (def empty-referral {})
 
+(def initial-stylist-state
+  {:sales-rep-email nil
+   :stats {:previous-payout {:amount 0 :date nil}
+           :next-payout {:amount 0}
+           :lifetime-payouts {:amount 0}}
+   :commissions {:rate nil
+                 :page 0
+                 :pages nil
+                 :history (sorted-set-by
+                           (fn [a b]
+                             (let [date-and-id (juxt :commission_date :id)]
+                               (compare (date-and-id b) (date-and-id a)))))}
+   :bonus-credits {:bonus-amount nil
+                   :earning-amount nil
+                   :commissioned-revenue nil
+                   :lifetime-total nil
+                   :available-credit nil
+                   :bonuses []
+                   :page 0
+                   :pages nil}
+   :referral-program {:bonus-amount nil
+                      :earning-amount nil
+                      :lifetime-total nil
+                      :referrals []
+                      :page 0
+                      :pages nil}
+   :referrals [empty-referral]
+   :manage-account {:email nil
+                    :id 10
+                    :birth-date-1i nil
+                    :birth-date-2i nil
+                    :birth-date-3i nil
+                    :address {:firstname nil
+                              :lastname nil
+                              :address1 nil
+                              :address2 nil
+                              :city nil
+                              :state_id nil
+                              :country_id nil
+                              :zipcode nil
+                              :phone nil}}})
+
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
@@ -58,46 +100,7 @@
      :states []
      :shipping-methods []
      :sms-number nil
-     :stylist {:sales-rep-email nil
-               :stats {:previous-payout {:amount 0 :date nil}
-                       :next-payout {:amount 0}
-                       :lifetime-payouts {:amount 0}}
-               :commissions {:rate nil
-                             :page 0
-                             :pages nil
-                             :history (sorted-set-by
-                                       (fn [a b]
-                                         (let [date-and-id (juxt :commission_date :id)]
-                                           (compare (date-and-id b) (date-and-id a)))))}
-               :bonus-credits {:bonus-amount nil
-                               :earning-amount nil
-                               :commissioned-revenue nil
-                               :lifetime-total nil
-                               :available-credit nil
-                               :bonuses []
-                               :page 0
-                               :pages nil}
-               :referral-program {:bonus-amount nil
-                                  :earning-amount nil
-                                  :lifetime-total nil
-                                  :referrals []
-                                  :page 0
-                                  :pages nil}
-               :referrals [empty-referral]
-               :manage-account {:email nil
-                                :id 10
-                                :birth-date-1i nil
-                                :birth-date-2i nil
-                                :birth-date-3i nil
-                                :address {:firstname nil
-                                          :lastname nil
-                                          :address1 nil
-                                          :address2 nil
-                                          :city nil
-                                          :state_id nil
-                                          :country_id nil
-                                          :zipcode nil
-                                          :phone nil}}}
+     :stylist initial-stylist-state
      :api-cache {}
 
      :billing-address {:firstname ""

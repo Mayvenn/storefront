@@ -129,7 +129,7 @@
   (-> app-state
       (assoc-in keypaths/user {})
       (assoc-in keypaths/order nil)
-      (assoc-in keypaths/stylist {})
+      (assoc-in keypaths/stylist state/initial-stylist-state)
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/billing-address {})
       (assoc-in keypaths/shipping-address {})
@@ -242,7 +242,7 @@
 (defmethod transition-state events/api-success-send-stylist-referrals
   [_ event {:keys [results] :as x} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-referrals [{}])
+      (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defn sign-in-user
