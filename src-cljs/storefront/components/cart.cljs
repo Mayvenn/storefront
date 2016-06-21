@@ -75,7 +75,7 @@
         [:.pt2.flex.items-center
          [:.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-         [:.col-4.pl1.mb2.inline-block (ui/button "Apply"
+         [:.col-4.pl1.mb3.inline-block (ui/button "Apply"
                                                   {:on-click      (utils/send-event-callback events/control-cart-update-coupon)
                                                    :disabled?     updating?
                                                    :show-spinner? applying-coupon?})]]]
