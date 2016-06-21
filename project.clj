@@ -49,8 +49,8 @@
      :compiler {:main "storefront.core"
                 :asset-path "/js/out"
                 :output-to "resources/public/js/out/main.js"
-                :pretty-print true
                 :output-dir "resources/public/js/out"
+                :pretty-print true
                 :foreign-libs [{:file "storefront/swipe.js"
                                 :provides ["swipe"]}]
                 :externs ["externs/riskified.js"
@@ -63,7 +63,8 @@
                           "externs/talkable.js"
                           "externs/swipe.js"]}}
     :release
-    {:compiler {:main "storefront.core"
+    {:source-paths ["src-cljc" "src-cljs"]
+     :compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
                 :output-dir "target/release/js/out"
                 :source-map "target/release/js/out/main.js.map"
