@@ -8,3 +8,4 @@ Swipe.stop = function() {}
 Swipe.getPos = function() {}
 Swipe.getNumSlides = function() {}
 Swipe.kill = function() {}
+Swipe.getPos = function() {}
