@@ -25,8 +25,8 @@
   [:div.pointer.pxp2
    {:key      key
     :on-click on-click}
-   [:div.bg-white.border.border-dark-gray.circle.bg-lighten-3
-    {:class (when selected? "bg-dark-gray")
+   [:div.bg-white.border.border-dark-gray.circle
+    {:class (if selected? "bg-dark-gray" "bg-lighten-3")
      :style {:width "7px" :height "7px"}}]])
 
 (defn swipe-component [{:keys [items continuous]} owner {:keys [starting-item dot-location]}]
