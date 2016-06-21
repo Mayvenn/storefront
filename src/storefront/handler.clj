@@ -74,9 +74,9 @@
       (h req))))
 
 (defn wrap-stylist-not-found-redirect [h environment]
-  (fn [{server-name :server-name
+  (fn [{server-name                        :server-name
        {store-slug :store_slug :as store} :store
-       :as req}]
+       :as                                req}]
     (cond
       (= store :storefront.api/storeback-unavailable)
       (h req)
@@ -86,7 +86,10 @@
 
       :else
       (-> (redirect (store-url "store" environment req))
-          (cookies/expire environment (cookie-root-domain server-name) "preferred-store-slug")))))
+          (cookies/expire environment
+                          "preferred-store-slug"
+                          {:http-only true
+                           :domain    (cookie-root-domain server-name)})))))
 
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains server-name server-port] :as req}]
@@ -102,9 +105,14 @@
       (h req))))
 
 (defn wrap-set-preferred-store [handler environment]
-  (fn [{:keys [server-name server-port store] :as req}]
+  (fn [{:keys [server-name store] :as req}]
     (when-let [resp (handler req)]
-      (cookies/set resp environment (cookie-root-domain server-name) "preferred-store-slug" (:store_slug store)))))
+      (-> resp
+          (cookies/set environment
+                       "preferred-store-slug" (:store_slug store)
+                       {:http-only true
+                        :max-age   (cookies/days 365)
+                        :domain    (cookie-root-domain server-name)})))))
 
 (defn wrap-preferred-store-redirect [handler environment]
   (fn [{:keys [subdomains] :as req}]

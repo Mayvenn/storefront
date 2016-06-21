@@ -14,28 +14,24 @@
 (defn encode [resp]
   (cookies/cookies-response resp {:encoder dumb-encoder}))
 
+(defn days [n]
+  (* 60 60 24 n))
+
 (defn get [req name] (get-in req [:cookies name :value]))
 (defn expire
-  ([resp environment name]
-   (assoc-in resp [:cookies name] {:value   ""
-                                   :max-age 0
-                                   :secure  (not (config/development? environment))
-                                   :path    "/"}))
-  ([resp environment domain name]
-   (-> resp
-       (expire environment name)
-       (assoc-in [:cookies name :domain] domain)
-       (assoc-in [:cookies name :http-only] true))))
+  ([resp environment name] (expire resp environment name {}))
+  ([resp environment name overrides]
+   (assoc-in resp [:cookies name] (merge {:value   ""
+                                          :max-age (days 0)
+                                          :secure  (not (config/development? environment))
+                                          :path    "/"}
+                                         overrides))))
 
 (defn set
-  ([resp environment name value]
-   (assoc-in resp [:cookies name] {:value   value
-                                   :max-age (* 60 60 24 7 4)
-                                   :secure  (not (config/development? environment))
-                                   :path    "/"}))
-  ([resp environment domain name value]
-   (-> resp
-       (set environment name value)
-       (assoc-in [:cookies name :domain] domain)
-       (assoc-in [:cookies name :http-only] true))))
-
+  ([resp environment name value] (set resp environment name value {}))
+  ([resp environment name value overrides]
+   (assoc-in resp [:cookies name] (merge {:value   value
+                                          :max-age (days 28)
+                                          :secure  (not (config/development? environment))
+                                          :path    "/"}
+                                         overrides))))
