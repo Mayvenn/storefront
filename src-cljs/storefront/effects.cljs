@@ -601,7 +601,7 @@
     (handle-message events/flash-dismiss-failure)))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
-  (handle-later events/control-popup-hide {} 3000))
+  (handle-later events/control-popup-hide {} 2000))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]

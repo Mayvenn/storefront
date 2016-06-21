@@ -232,7 +232,8 @@
 (defn thanks-component [_ owner {:keys [on-close]}]
   (om/component
    (html
-    (ui/modal {:on-close on-close}
+    (ui/modal {:on-close on-close
+               :bg-class "bg-darken-4"}
               [:.flex.flex-column.items-center.justify-center.pt4.mt4
                         [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
                         [:.h1.white "Thank you for your referral!"]]))))
