@@ -57,6 +57,7 @@
       (assoc-in keypaths/previous-navigation-message
                 (get-in app-state keypaths/navigation-message))
       (assoc-in keypaths/validation-errors {})
+      (assoc-in keypaths/errors {})
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]
@@ -230,8 +231,7 @@
 
 (defmethod transition-state events/api-partial-success-send-stylist-referrals
   [_ event {:keys [results] :as x} app-state]
-  (update-in app-state
-             keypaths/stylist-referrals
+  (update-in app-state keypaths/stylist-referrals
              (fn [old-referrals]
                (->> (map (fn [n o] [n o]) results old-referrals)
                     (filter (fn [[nr or]]
@@ -243,6 +243,7 @@
   [_ event {:keys [results] :as x} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
+      (assoc-in keypaths/errors {})
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defn sign-in-user
