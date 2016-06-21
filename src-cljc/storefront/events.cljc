@@ -160,6 +160,7 @@
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
+(defpath api-failure-errors)
 (defpath api-failure-validation-errors)
 (defpath api-failure-pending-promo-code)
 

@@ -386,6 +386,9 @@
 (defmethod transition-state events/api-success-cache [_ event new-data app-state]
   (update-in app-state keypaths/api-cache merge new-data))
 
+(defmethod transition-state events/api-failure-errors [_ event errors app-state]
+  (assoc-in app-state keypaths/errors (group-by :path errors)))
+
 (defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
   (assoc-in app-state keypaths/validation-errors validation-errors))
 

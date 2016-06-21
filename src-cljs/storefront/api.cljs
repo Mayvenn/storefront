@@ -22,6 +22,10 @@
       (zero? (:status response))
       (messages/handle-message events/api-failure-no-network-connectivity response)
 
+      (= (:error-schema response-body) 3)
+      (messages/handle-message events/api-failure-errors
+                               (-> response-body :errors))
+
       ;; standard rails error response
       (or (seq (:error response-body))
           (seq (:errors response-body)))
@@ -47,9 +51,6 @@
 
       :else
       (messages/handle-message events/api-failure-bad-server-response response))))
-
-(defn modal-error-handler [response]
-  (prn "not sure what to do with this yet..." response))
 
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
@@ -622,11 +623,5 @@
    "/leads/referrals"
    request-keys/create-shared-cart
    {:params referral
-    :error-handler (fn [resp]
-                     (if (= 207 (:status resp))
-                       (messages/handle-message events/api-partial-success-send-stylist-referrals
-                                                (-> resp :response :body))
-
-                       (modal-error-handler resp)))
     :handler #(messages/handle-message events/api-success-send-stylist-referrals
                                       {:referrals %})}))

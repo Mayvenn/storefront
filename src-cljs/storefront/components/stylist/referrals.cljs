@@ -154,7 +154,7 @@
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 
-(defn refer-component [{:keys [bonus-amount earning-amount referrals]}
+(defn refer-component [{:keys [bonus-amount earning-amount referrals errors]}
                        owner
                        {:keys [on-close]}]
   (om/component
@@ -178,27 +178,30 @@
                                             (:fullname referral)
                                             {:autofocus "autofocus"
                                              :type      "text"
-                                             :name      (str "referral["idx"][fullname]")
-                                             :data-test (str "referral-fullname-"idx)
-                                             :id        (str "referral-fullname-"idx)
+                                             :name      (str "referrals[" idx "][fullname]")
+                                             :data-test (str "referral-fullname-" idx)
+                                             :id        (str "referral-fullname-" idx)
                                              :class     "rounded-left"
+                                             :errors    (get errors ["referrals" idx "fullname"])
                                              :required  true})]
                    [:.col-12 (ui/text-field "Mobile Phone (required)"
                                             (conj keypaths/stylist-referrals idx :phone)
                                             (:phone referral)
                                             {:type      "tel"
-                                             :name      (str "referral["idx"][phone]")
-                                             :id        (str "referral-phone-"idx)
-                                             :data-test (str "referral-phone-"idx)
+                                             :name      (str "referrals[" idx "][phone]")
+                                             :id        (str "referral-phone-" idx)
+                                             :data-test (str "referral-phone-" idx)
                                              :class     "rounded"
+                                             :errors    (get errors ["referrals" idx "phone"])
                                              :required  true})]
                    [:.col-12 (ui/text-field "Email"
                                             (conj keypaths/stylist-referrals idx :email)
                                             (:email referral)
                                             {:type      "email"
-                                             :name      (str "referral["idx"][email]")
-                                             :id        (str "referral-email-"idx)
-                                             :data-test (str "referral-email-"idx)
+                                             :name      (str "referrals[" idx "][email]")
+                                             :id        (str "referral-email-" idx)
+                                             :data-test (str "referral-email-" idx)
+                                             :errors    (get errors ["referrals" idx "email"])
                                              :class     "rounded"})]])
                 (when (< (count referrals) 5)
                   [:.py3.border-top.border-light-silver
@@ -222,4 +225,5 @@
 (defn query-refer [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
+   :errors         (get-in data keypaths/errors)
    :referrals      (get-in data keypaths/stylist-referrals)})

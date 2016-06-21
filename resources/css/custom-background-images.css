@@ -9,6 +9,7 @@
 .img-text-icon      { background-image: url('/images/icons/text.svg'); }
 .img-email-icon     { background-image: url('/images/icons/email.svg'); }
 .img-guarantee-icon { background-image: url('/images/icons/guarantee.svg'); }
+.img-error-icon     { background-image: url('/images/icons/error.svg'); }
 .img-spinner        { background-image: url('/images/spinner.svg'); }
 .img-left-arrow     {
     background-image: url('/images/carousel/arrow.svg');

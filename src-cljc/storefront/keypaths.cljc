@@ -191,6 +191,8 @@
 (def validation-errors-message (conj validation-errors :error-message))
 (def validation-errors-details (conj validation-errors :details))
 
+(def errors (conj ui :errors))
+
 (def review-components-count (conj ui :review-components-count))
 
 (def loaded (conj ui :loaded))

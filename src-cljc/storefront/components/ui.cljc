@@ -56,19 +56,34 @@
     [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
-(defn text-field [label keypath value input-attributes]
-  [:div.col-12.mb2
-   [:div.absolute
-    [:label.floating-label--label.col-12.h6.navy.relative
-     (when (seq value) {:class "has-value"})
-     label]]
-   [:input.floating-label--input.col-12.h3.border.border-light-silver.glow
-    (cond-> (merge {:key label
-                    :class "rounded"
-                    :placeholder label}
-                   (utils/change-text keypath value)
-                   input-attributes)
-      (seq value) (update :class #(str %1 " " %2) "has-value"))]])
+(defn text-field [label keypath value {:keys [errors] :as input-attributes}]
+  (let [error (first errors)]
+    [:div.col-12.mb1
+     [:div.right.relative
+      (when error
+        [:div.absolute
+         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
+         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
+          {:style {:width "2.25rem" :height "2.25rem"}}]])]
+     [:div.absolute
+      [:label.floating-label--label.col-12.h6.navy.relative
+       {:class (str/join " " (map str
+                                  [(when (seq value)
+                                     "has-value")
+                                   (when error
+                                     "orange")]))}
+       label]]
+     [:input.floating-label--input.col-12.h3.border
+      (cond-> (merge {:key label
+                      :class "rounded"
+                      :placeholder label}
+                     (utils/change-text keypath value)
+                     input-attributes)
+        ;; TODO: needs refactor
+        (nil? error) (update :class #(str %1 " " %2) "border-light-silver glow-green")
+        error (update :class #(str %1 " " %2) "border-orange border-width-2 pr4 glow-orange")
+        (seq value) (update :class #(str %1 " " %2) "has-value"))]
+     [:div.orange.mtp2.mb1 (or (:long-message error) nbsp)]]))
 
 (defn selected-value [evt]
   (let [elem (.-target evt)]
@@ -79,7 +94,7 @@
 (defn select-field [label value options select-attributes]
   [:div.col-12.mb2.mx-auto
    [:div.relative.z1
-    [:select.col-12.h2.glow.absolute.border-none
+    [:select.col-12.h2.glow-green.absolute.border-none
      (merge {:key         label
              :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
              :placeholder label

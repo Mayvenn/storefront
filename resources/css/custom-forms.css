@@ -18,8 +18,12 @@
   padding-bottom: 0.5em;
 }
 
-.glow:focus {
-  outline-color: var(--green);
+.glow-green:focus {
+   outline-color: var(--green);
+}
+
+.glow-orange:focus {
+   outline-color: var(--orange);
 }
 
 :root {
