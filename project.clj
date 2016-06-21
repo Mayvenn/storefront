@@ -71,6 +71,7 @@
                 :source-map-path "/js/out"
                 :pretty-print false
                 :foreign-libs [{:file "storefront/swipe.js"
+                                :file-min "target/min-js/swipe.js" ;; created by gulp
                                 :provides ["swipe"]}]
                 :externs ["externs/riskified.js"
                           "externs/bugsnag.js"

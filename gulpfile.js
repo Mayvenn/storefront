@@ -13,6 +13,7 @@ var runSequence = require('run-sequence');
 var shell = require('gulp-shell');
 var del = require('del');
 var postcss = require("gulp-postcss");
+var uglify = require('gulp-uglify');
 
 gulp.task('sass', function () {
   return gulp.src('./resources/scss/*.scss')
@@ -46,6 +47,14 @@ gulp.task('watch', ['sass', 'css'], function () {
 });
 
 gulp.task('default', ['sass', 'css']);
+
+gulp.task('minify-js', function () {
+  del(['./target/min-js']);
+
+  gulp.src('src-cljs/storefront/*.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('target/min-js/'));
+});
 
 gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
 
@@ -98,5 +107,5 @@ gulp.task('sourcemaps', function () {
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence('sass', 'css', 'cljs-build', 'copy-release-assets', 'cdn', 'sourcemaps', cb);
+  runSequence('sass', 'css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'sourcemaps', cb);
 });
