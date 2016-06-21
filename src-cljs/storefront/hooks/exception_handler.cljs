@@ -1,6 +1,7 @@
 (ns storefront.hooks.exception-handler
   (:require [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
-            [storefront.config :as config]))
+            [storefront.config :as config]
+            [bugsnag]))
 
 (defn tracking-enabled? []
   (not config/development?))

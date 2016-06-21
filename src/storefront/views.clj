@@ -46,12 +46,6 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    [:script.bugsnag-script-src {:type "text/javascript"
-                                 :src "//d2wy8f7a9ursnm.cloudfront.net/bugsnag-2.min.js"
-                                 :data-apikey "acbe770e8c0942f8bf97bd9c107483b1"}]
-    [:script.bugsnag-script-src {:type "text/javascript"}
-     (raw (str "Bugsnag.releaseStage = \"" environment "\";"
-               "Bugsnag.notifyReleaseStages = ['acceptance', 'production'];"))]
     [:script {:type "text/javascript"}
      (raw (str "data = " (generate-string (sanitize data)) ";"))]
     (page/include-css (asset-path "/css/all.css"))

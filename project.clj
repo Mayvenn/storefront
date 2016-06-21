@@ -52,7 +52,9 @@
                 :output-dir "resources/public/js/out"
                 :pretty-print true
                 :foreign-libs [{:file "storefront/swipe.js"
-                                :provides ["swipe"]}]
+                                :provides ["swipe"]}
+                               {:file "storefront/bugsnag-2.5.0.js"
+                                :provides ["bugsnag"]}]
                 :externs ["externs/riskified.js"
                           "externs/bugsnag.js"
                           "externs/yotpo.js"
@@ -72,7 +74,10 @@
                 :pretty-print false
                 :foreign-libs [{:file "storefront/swipe.js"
                                 :file-min "target/min-js/swipe.js" ;; created by gulp
-                                :provides ["swipe"]}]
+                                :provides ["swipe"]}
+                               {:file "storefront/bugsnag-2.5.0.js"
+                                :file-min "target/min-js/bugsnag-2.5.0.js"
+                                :provides ["bugsnag"]}]
                 :externs ["externs/riskified.js"
                           "externs/bugsnag.js"
                           "externs/yotpo.js"
