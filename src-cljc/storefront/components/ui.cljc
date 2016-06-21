@@ -123,10 +123,11 @@
       [:div.fixed.overlay]
       menu])])
 
-(defn modal [on-close & body]
+(defn modal [{:keys [on-close bg-class] :as attrs} & body]
   [:div
    [:div.fixed.overlay.bg-darken-4.z3
-    {:on-click on-close}]
+    {:on-click on-close}
+    [:div.fixed.overlay {:class bg-class}]]
    (into [:div.fixed.z3.left-0.right-0.mx-auto.col-11.md-up-col-7.lg-up-col-5.overflow-auto {:style {:max-height "100%"}}]
          body)])
 

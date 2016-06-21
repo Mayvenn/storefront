@@ -159,7 +159,7 @@
                        {:keys [on-close]}]
   (om/component
    (html
-    (ui/modal on-close
+    (ui/modal {:on-close on-close}
               [:.bg-light-white.rounded.p2.mt3.sans-serif
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
@@ -222,13 +222,17 @@
                 [:.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 
-(defn thanks-component [_ owner {:keys [on-close]}]
-  (om/component
-   (html
-    (ui/modal on-close [:.p4.bg-white.rounded "This is where the thank you would be."]))))
-
 (defn query-refer [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
    :errors         (get-in data keypaths/errors)
    :referrals      (get-in data keypaths/stylist-referrals)})
+
+
+(defn thanks-component [_ owner {:keys [on-close]}]
+  (om/component
+   (html
+    (ui/modal {:on-close on-close}
+              [:.flex.flex-column.items-center.justify-center.pt4.mt4
+                        [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
+                        [:.h1.white "Thank you for your referral!"]]))))

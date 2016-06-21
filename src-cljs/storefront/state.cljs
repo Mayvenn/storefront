@@ -37,7 +37,9 @@
    :source nil
    :paypal-redirecting false})
 
-(def empty-referral {})
+(def empty-referral {:fullname ""
+                     :phone ""
+                     :email ""})
 
 (def initial-stylist-state
   {:sales-rep-email nil

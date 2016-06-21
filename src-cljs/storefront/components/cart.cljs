@@ -22,7 +22,7 @@
 (defn share-link-component [{:keys [share-url]} owner {:keys [on-close]}]
   (om/component
    (html
-    (ui/modal on-close
+    (ui/modal {:on-close on-close}
               [:.bg-light-white.rounded.p2.center.mt3
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
