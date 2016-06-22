@@ -55,8 +55,7 @@
            "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     [:script (merge {:src (asset-path "/js/out/main.js")} (when-not (config/development? environment) {:async true}))]
-    (page/include-css (asset-path "/css/all.css"))
-    (page/include-css (asset-path "/css/app.css"))]
+    (page/include-css (asset-path "/css/full.css"))]
    [:body
     [:div#content initial-content]]))
 
