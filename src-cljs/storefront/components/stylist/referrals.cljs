@@ -177,7 +177,10 @@
                 (for [[idx referral] (map-indexed vector referrals)]
                   [:.py2.border-top.border-light-silver
                    {:key idx}
-                   [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"]
+                   [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"
+                    (when (pos? idx) [:a.mr1.flex.items-center.fill-light-silver.right
+                                      (utils/fake-href events/control-stylist-referral-remove {:index idx})
+                                      svg/counter-dec])]
                     [:.col-12 (ui/text-field "Name"
                                             (conj keypaths/stylist-referrals idx :fullname)
                                             (:fullname referral)

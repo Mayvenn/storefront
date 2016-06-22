@@ -298,6 +298,11 @@
 (defmethod transition-state events/control-stylist-referral-add-another [_ event args app-state]
   (update-in app-state keypaths/stylist-referrals conj state/empty-referral))
 
+(defmethod transition-state events/control-stylist-referral-remove [_ event {:keys [index]} app-state]
+  (update-in app-state
+             keypaths/stylist-referrals
+             #(vec (remove nil? (assoc % index nil)))))
+
 (defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
   (assoc-in app-state keypaths/popup :refer-stylist))
 

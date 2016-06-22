@@ -103,6 +103,7 @@
 (defpath control-stylist-profile-picture)
 
 (defpath control-stylist-referral-submit)
+(defpath control-stylist-referral-remove)
 (defpath control-stylist-referral-add-another)
 
 (defpath control-stylist-manage-account-submit)
