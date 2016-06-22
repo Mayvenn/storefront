@@ -60,6 +60,12 @@
   (handle-message app-state events/app-start)
   (routes/set-current-page))
 
+(defn dom-ready [f]
+  (if (not= (.-readyState js/document)
+            "loading")
+    (f)
+    (.addEventListener js/document "DOMContentLoaded" f)))
+
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
   (routes/start-history)
@@ -103,4 +109,4 @@
                     (map keyword event)
                     (js->clj args :keywordize-keys true))))
 
-(main app-state)
+(dom-ready (main app-state))
