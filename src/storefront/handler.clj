@@ -161,7 +161,11 @@
       (wrap-content-type)))
 
 (def server-render-pages
-  #{events/navigate-guarantee})
+  #{events/navigate-home
+    events/navigate-categories
+    events/navigate-category
+    events/navigate-help
+    events/navigate-guarantee})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
