@@ -56,12 +56,13 @@
          (exception-handler/report e))))))
 
 (defn reload-app [app-state]
-  (set! messages/handle-message (partial handle-message app-state))
-  (routes/start-history)
+  (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
   (routes/set-current-page))
 
 (defn main- [app-state]
+  (set! messages/handle-message (partial handle-message app-state))
+  (routes/start-history)
   (om/root
    top-level-component
    app-state
