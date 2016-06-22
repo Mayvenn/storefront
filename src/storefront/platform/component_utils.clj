@@ -9,6 +9,7 @@
   ;; new style
   ([keypath value])
   ;; old style
+  ;; TODO: remove this signature when the last of the old forms are gone
   ([app-state owner keypath]))
 
 (defn fake-href [event & [args]]

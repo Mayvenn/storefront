@@ -44,6 +44,9 @@
 (defn stylist-referrals? [data]
   (display-variation data "stylist-referrals"))
 
+(defn color-option? [data]
+  (display-variation data "color-option"))
+
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

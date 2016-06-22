@@ -6,6 +6,7 @@
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.stylist-urls :as stylist-urls]
@@ -352,13 +353,28 @@
     :user-id (get-in app-state keypaths/user-id)
     :user-token (get-in app-state keypaths/user-token)}))
 
+(defn only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
+
 (defmethod perform-effects events/control-bundle-option-select
   [_ event _ app-state]
   (let [selected-options (get-in app-state keypaths/bundle-builder-selected-options)
         step-name        (get-in app-state keypaths/bundle-builder-previous-step)]
     (when (and step-name (step-name selected-options))
       (analytics/track-page
-       (str (routes/current-path app-state) "/choose_" (clj->js step-name))))))
+       (str (routes/current-path app-state) "/choose_" (clj->js step-name))))
+    (when (experiments/color-option? app-state)
+      (when-let [next-step (-> (taxons/current-taxon app-state)
+                               bundle-builder/selection-flow
+                               (bundle-builder/next-step selected-options))]
+        (when-let [next-option (->> (get-in app-state keypaths/bundle-builder-selected-variants)
+                                    (remove :sold-out?)
+                                    (map next-step)
+                                    set
+                                    only)]
+          (handle-message events/control-bundle-option-select
+                          {:selected-options (assoc selected-options next-step next-option)}))))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/forgot-password-email)))
