@@ -54,10 +54,13 @@
       (str "var environment=\"" environment "\";"
            "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
-    [:script (merge {:src (asset-path "/js/out/main.js")} (when-not (config/development? environment) {:async true}))]
+    (when-not (config/development? environment)
+      [:script {:src (asset-path "/js/out/main.js") :async true}])
     (page/include-css (asset-path "/css/full.css"))]
    [:body
-    [:div#content initial-content]]))
+    [:div#content initial-content]
+    (when (config/development? environment)
+      [:script {:src (asset-path "/js/out/main.js")}])]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
