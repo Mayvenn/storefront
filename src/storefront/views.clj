@@ -3,6 +3,7 @@
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.component-shim :as component]
             [storefront.keypaths :as keypaths]
+            [storefront.config :as config]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]
             [storefront.safe-hiccup :refer [html5 raw]]
@@ -48,16 +49,16 @@
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script {:type "text/javascript"}
      (raw (str "data = " (generate-string (sanitize data)) ";"))]
-    (page/include-css (asset-path "/css/all.css"))
-    (page/include-css (asset-path "/css/app.css"))]
-   [:body
-    [:div#content initial-content]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
            "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
-    [:script {:src (asset-path "/js/out/main.js")}]]))
+    [:script (merge {:src (asset-path "/js/out/main.js")} (when-not (config/development? environment) {:async true}))]
+    (page/include-css (asset-path "/css/all.css"))
+    (page/include-css (asset-path "/css/app.css"))]
+   [:body
+    [:div#content initial-content]]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
