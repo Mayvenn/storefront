@@ -15,6 +15,7 @@
 
 (defn normalize-attrs [attrs]
   (-> attrs
+      (dissoc :dangerouslySetInnerHTML :key)
       remove-handlers
       normalize-style))
 
