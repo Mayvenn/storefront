@@ -109,4 +109,4 @@
                     (map keyword event)
                     (js->clj args :keywordize-keys true))))
 
-(dom-ready (main app-state))
+(dom-ready #(main app-state))
