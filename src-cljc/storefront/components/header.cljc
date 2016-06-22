@@ -36,9 +36,9 @@
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
-  [:a.relative.pointer (merge {:style {:height "60px" :width "60px"}}
-                              {:data-test "cart"}
-                              (utils/route-to events/navigate-cart))
+  [:a.relative.pointer.block (merge {:style {:height "60px" :width "60px"}}
+                                    {:data-test "cart"}
+                                    (utils/route-to events/navigate-cart))
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "10px"}}
@@ -244,17 +244,17 @@
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
      [:div.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
-      [:div.flex.items-stretch.bg-white.clearfix {:style {:min-height "60px"}}
-       [:div.col-4
+      [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
+       [:div.flex-auto
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
         (lower-left-desktop-nav current-page?)]
-       (into [:div.col-4.flex.flex-column.justify-center {:style {:min-width "188px"}}]
+       (into [:div.flex.flex-column.justify-center.flex-auto {:style {:min-width "188px"}}]
              (if (sans-stylist? (:store_slug store))
                (list (logo "40px"))
                (list
                 (logo "30px")
                 (store-dropdown store-expanded? store))))
-       [:div.col-4
+       [:div.flex-auto
         [:div.flex.justify-end.items-center
          [:div.flex-auto.to-lg-hide.pr2
           (cond
