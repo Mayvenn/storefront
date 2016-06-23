@@ -106,8 +106,7 @@
       (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
       (#{[] ["www"]} subdomains)
-      ;; TODO: when the removal of /hello has been deployed in leads, remove it here too
-      (redirect (str (store-scheme-and-authority "welcome" environment req) "/hello" (query-string req)))
+      (redirect (str (store-scheme-and-authority "welcome" environment req) "/" (query-string req)))
 
       :else
       (h req))))
