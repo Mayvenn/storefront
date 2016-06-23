@@ -2,7 +2,7 @@
   (:require [clj-http.client :as http]))
 
 (defn storeback-fetch [storeback-config path params]
-  (http/get (str (:endpoint storeback-config) path)
+  (http/get (str (:internal-endpoint storeback-config) path)
             (merge
              {:throw-exceptions false
               :socket-timeout 10000
@@ -11,7 +11,7 @@
              params)))
 
 (defn storeback-post [storeback-config path params]
-  (http/post (str (:endpoint storeback-config) path)
+  (http/post (str (:internal-endpoint storeback-config) path)
              (merge {:content-type :json
                      :throw-exceptions false
                      :socket-timeout 10000

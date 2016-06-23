@@ -14,7 +14,8 @@
 
 (def env-config {:environment (env :environment)
                  :bugsnag-token (env :bugsnag-token)
-                 :storeback {:endpoint (env :storeback-endpoint)}
+                 :storeback {:endpoint (env :storeback-endpoint)
+                             :internal-endpoint (env :storeback-internal-endpoint)}
                  :prerender-token (env :prerender-token)})
 
 (defn deep-merge
