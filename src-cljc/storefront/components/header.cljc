@@ -5,7 +5,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
+            [storefront.accessors.taxons :as taxons]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.app-routes :as app-routes]
@@ -190,7 +190,7 @@
     (for [{:keys [name slug]} taxons]
       [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
-        (when (new-taxon? slug) ui/new-flag)
+        (when (taxons/new-taxon? slug) ui/new-flag)
         [:span.green.titleize
          (when (current-page? events/navigate-category {:taxon-slug slug})
            {:class padded-selected-link})
@@ -200,10 +200,10 @@
   [:div.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
    [:div.flex.items-start {:style {:padding "1em 10% 2em"}}
-    [:div.col-4 (products-section current-page? "Hair Extensions" (filter is-extension? taxons))]
-    [:div.col-4 (products-section current-page? "Closures" (filter is-closure? taxons))]
+    [:div.col-4 (products-section current-page? "Hair Extensions" (filter taxons/is-extension? taxons))]
+    [:div.col-4 (products-section current-page? "Closures" (filter taxons/is-closure? taxons))]
     (when stylist?
-      [:div.col-4 (products-section current-page? "Stylist Products" (filter is-stylist-product? taxons))])]])
+      [:div.col-4 (products-section current-page? "Stylist Products" (filter taxons/is-stylist-product? taxons))])]])
 
 (defn desktop-nav-link-options [current-page? nav-event]
   (merge

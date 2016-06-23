@@ -6,7 +6,7 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.taxons :refer [new-taxon? is-closure? is-extension? is-stylist-product?]]
+            [storefront.accessors.taxons :as taxons]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.accessors.navigation :as navigation]
             [storefront.components.money-formatters :refer [as-money]]
@@ -89,18 +89,18 @@
        (merge {:key slug :data-test (str "menu-" slug)}
               (utils/route-to events/navigate-category {:taxon-slug slug}))
        (row
-        (when (new-taxon? slug) ui/new-flag)
+        (when (taxons/new-taxon? slug) ui/new-flag)
         [:div.green.titleize
          (selectable? events/navigate-category {:taxon-slug slug} name)])])]])
 
 (defn extensions-section [selectable? taxons]
-  (products-section selectable? "Extensions" (filter is-extension? taxons)))
+  (products-section selectable? "Extensions" (filter taxons/is-extension? taxons)))
 
 (defn closures-section [selectable? taxons]
-  (products-section selectable? "Closures" (filter is-closure? taxons)))
+  (products-section selectable? "Closures" (filter taxons/is-closure? taxons)))
 
 (defn stylist-products-section [selectable? taxons]
-  (products-section selectable? "Stylist Products" (filter is-stylist-product? taxons)))
+  (products-section selectable? "Stylist Products" (filter taxons/is-stylist-product? taxons)))
 
 (defn customer-shop-section [selectable? taxons]
   [section-outer
