@@ -34,7 +34,7 @@ gulp.task('css', function () {
       require('postcss-calc')(),
       require('postcss-color-function')(),
       require('postcss-discard-comments')(),
-      require('autoprefixer')(),
+      require('autoprefixer')({browsers: ['last 3 versions']}),
       /* require('postcss-reporter')(), */
       /* comment out cssnano to see uncompressed css */
       require('cssnano')()
