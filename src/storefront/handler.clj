@@ -53,6 +53,12 @@
        (drop-last 2)))
 
 (defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
+  ;; TODO: we need better tests here. A quick-fix solution was written to correctly:
+  ;;   visiting http://mayvenn.com/ -> http://mayven.com:443/hello
+  ;; The hotfix redirects to:
+  ;;   visiting http://mayvenn.com/ -> https://mayven.com:443/hello
+  ;;
+  ;; This should be improved more
   (let [dev? (config/development? environment)]
     (str (if dev? (name scheme) "https") "://"
          store-slug "." (parse-root-domain server-name)
