@@ -56,7 +56,7 @@
     [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
-(defn text-field [label keypath value {:keys [errors] :as input-attributes}]
+(defn text-field [label keypath value {:keys [errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
      [:div.right.relative
@@ -83,7 +83,9 @@
         (nil? error) (update :class #(str %1 " " %2) "border-light-silver glow-green")
         error (update :class #(str %1 " " %2) "border-orange border-width-2 pr4 glow-orange")
         (seq value) (update :class #(str %1 " " %2) "has-value"))]
-     [:div.orange.mtp2.mb1 (or (:long-message error) nbsp)]]))
+     [:div.orange.mtp2.mb1
+      {:data-test (str data-test "-error")}
+      (or (:long-message error) nbsp)]]))
 
 (defn selected-value [evt]
   (let [elem (.-target evt)]

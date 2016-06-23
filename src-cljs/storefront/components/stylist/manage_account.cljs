@@ -85,6 +85,7 @@
   (om/component
    (html
     [:div
+     {:data-test "manage-account-page"}
      [:h2.header-bar-heading "Manage Account"]
 
      (om/build validation-errors/component (get-in data keypaths/validation-errors-details))

@@ -86,7 +86,8 @@
     [:a.col-12.btn.btn-primary
      (merge (if refer-to-leads?
               (utils/fake-href events/control-popup-show-refer-stylists)
-              {:href mailto :target "_top"})
+              {:href mailto
+               :target "_top"})
             link-attrs)
      "Refer"]))
 
@@ -98,11 +99,12 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.dark-silver.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 (refer-button refer-to-leads? sales-rep-email {})]]
+      [:.h3.col-8.mx-auto.mb3 (refer-button refer-to-leads? sales-rep-email {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 (refer-button refer-to-leads? sales-rep-email {:class "btn-big"})]
+      [:.right.ml2.m1.h3.col-4 (refer-button refer-to-leads? sales-rep-email {:class "btn-big"
+                                                                              :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h5.dark-silver.line-height-2 message]]]))
 
 (def empty-referrals
@@ -166,6 +168,7 @@
                 (when (seq errors)
                   [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1.mb2
                    [:div.px2.py1.bg-lighten-5.rounded
+                    {:data-test "form-errors"}
                     "Oops! Please fix the errors below."
                     [:div.img-error-icon.bg-no-repeat.bg-contain.right
                      {:style {:width "1.25rem" :height "1.25rem"}}]]])
@@ -176,10 +179,11 @@
                  " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
                   [:.py2.border-top.border-light-silver
-                   {:key idx}
+                   {:key idx :data-test "referral-entry"}
                    [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"
                     (when (pos? idx) [:a.mr1.flex.items-center.fill-light-silver.right
-                                      (utils/fake-href events/control-stylist-referral-remove {:index idx})
+                                      (merge (utils/fake-href events/control-stylist-referral-remove {:index idx})
+                                             {:data-test (str "remove-referral-button-" idx)})
                                       svg/counter-dec])]
                     [:.col-12 (ui/text-field "Name"
                                             (conj keypaths/stylist-referrals idx :fullname)
@@ -221,7 +225,8 @@
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:color      "bg-white"
                              :text-color "dark-gray"
-                             :border     "border-light-silver"}))]])
+                             :border     "border-light-silver"
+                             :data-test  "another-referral-button"}))]])
                 [:.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 
@@ -239,4 +244,4 @@
                :bg-class "bg-darken-4"}
               [:.flex.flex-column.items-center.justify-center.pt4.mt4
                         [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
-                        [:.h1.white "Thank you for your referral!"]]))))
+                        [:.h1.white {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
