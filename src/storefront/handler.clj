@@ -9,6 +9,7 @@
             [storefront.cookies :as cookies]
             [storefront.utils.combinators :refer [key-by]]
             [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.products :as products]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -186,14 +187,19 @@
           redirect))
 
 (defn render-category
-  "Checks that the category exists"
-  [{:keys [storeback-config] :as render-ctx} data req {:keys [taxon-slug]}]
-  (when-let [products (api/category storeback-config taxon-slug (cookies/get req "user-token"))]
-    (html-response render-ctx (-> data
-                                  (assoc-in keypaths/products (key-by :id products))
-                                  (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
-                                  (assoc-in keypaths/browse-variant-quantity 1)
-                                  (assoc-in (conj keypaths/api-cache (taxons/cache-key taxon-slug)) {:products products})))))
+  "Checks that the category exists, and that customer has access to its products"
+  [{:keys [storeback-config] :as render-ctx}
+   {:keys [taxons] :as data}
+   req
+   {:keys [taxon-slug]}]
+  (let [data (assoc-in data (conj keypaths/browse-taxon-query :slug) taxon-slug)]
+    (when-let [taxon (taxons/current-taxon data)]
+      (let [{:keys [product-ids]} taxon
+            user-token            (cookies/get req "user-token")]
+        (when-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
+          (html-response render-ctx (-> data
+                                        (assoc-in keypaths/browse-variant-quantity 1)
+                                        (assoc-in keypaths/products (key-by :id products)))))))))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -225,7 +231,8 @@
                           :environment environment}
               data (-> {}
                        (assoc-in keypaths/store store)
-                       (assoc-in keypaths/taxons (api/taxons storeback-config))
+                       (assoc-in keypaths/taxons (api/named-searches storeback-config))
+                       (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-original) true)
                        (assoc-in keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product     (redirect-product->canonical-url ctx req params)

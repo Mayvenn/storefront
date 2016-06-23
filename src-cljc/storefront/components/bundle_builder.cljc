@@ -5,6 +5,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.products :as products]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.components.ui :as ui]
@@ -194,7 +195,7 @@
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
      :variants           (bundle-builder/current-taxon-variants data)
-     :fetching-variants? (utils/requesting? data (conj request-keys/get-products (:slug taxon)))
+     :fetching-variants? (not-every? (products/loaded-ids data) (:product-ids taxon))
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
      :selected-product   (bundle-builder/selected-product data)

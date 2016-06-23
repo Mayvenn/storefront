@@ -37,7 +37,7 @@
 
 (defn home-component [data owner opts]
   (component/create
-   (let [taxons (remove taxons/is-stylist-product? (get-in data keypaths/taxons))]
+   (let [taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))]
      [:div.home-container.m-auto.sans-serif.clearfix
       [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
        (apply utils/route-to (navigation/shop-now-navigation-message data))]

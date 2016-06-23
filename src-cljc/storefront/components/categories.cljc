@@ -26,7 +26,7 @@
    [:div
     [:h1.regular.py2.center.black "Select your favorite style"]
     [:div.clearfix.mxn1.center
-     (->> (get-in data keypaths/taxons)
+     (->> (taxons/current-taxons data)
           (remove taxons/is-stylist-product?)
           (map-indexed category))]]))
 

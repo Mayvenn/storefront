@@ -100,12 +100,17 @@
                                        :step-variants        step-variants
                                        :step-min-price       (min-price step-variants)})}))
 
-(defn selection-flow [{:keys [slug]}]
-  (case slug
-    "frontals" '(:style :material :origin :length)
-    "closures" '(:style :material :origin :length)
-    "blonde" '(:color :origin :length)
-    '(:origin :length)))
+(defn selection-flow [{:keys [slug experiment-color-option-variation]}]
+  (if experiment-color-option-variation
+    (case slug
+      "frontals" '(:style :material :origin :length)
+      "closures" '(:style :material :origin :length)
+      '(:color :origin :length))
+    (case slug
+      "frontals" '(:style :material :origin :length)
+      "closures" '(:style :material :origin :length)
+      "blonde" '(:color :origin :length)
+      '(:origin :length))))
 
 (def included-product? (complement :stylist_only?))
 (def included-taxon? (complement :stylist_only?))

@@ -33,14 +33,14 @@
 
 (def not-404 (comp (partial not= 404) :status))
 
-(defn taxons [storeback-config]
-  (let [response (storeback-fetch storeback-config "/bundle-builder-nav-taxonomy" {})]
+(defn named-searches [storeback-config]
+  (let [response (storeback-fetch storeback-config "/named-searches" {})]
     (when (not-404 response)
-      (:taxons (:body response)))))
+      (:searches (:body response)))))
 
-(defn category [storeback-config taxon-slug user-token]
+(defn products-by-ids [storeback-config product-ids user-token]
   (let [response (storeback-fetch storeback-config "/products"
-                                  {:query-params {:taxon-slug taxon-slug
+                                  {:query-params {:ids (vec (into (sorted-set) product-ids))
                                                   :user-token user-token}})]
     (when (not-404 response)
       (:products (:body response)))))

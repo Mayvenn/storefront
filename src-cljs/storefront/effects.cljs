@@ -48,11 +48,20 @@
                              user-token
                              stylist-id))))
 
+(defn refresh-products [app-state product-ids]
+  (api/get-products-by-ids product-ids
+                           (get-in app-state keypaths/user-token)))
+
 (defn ensure-products [app-state product-ids]
-  (let [not-cached (filter #(not (get-in app-state (conj keypaths/products %))) product-ids)
-        user-token (get-in app-state keypaths/user-token)]
-    (when (seq not-cached)
-      (api/get-products-by-ids not-cached user-token))))
+  (when-let [not-cached (->> (set product-ids)
+                             (remove (products/loaded-ids app-state))
+                             seq)]
+    (refresh-products app-state not-cached)))
+
+(defn refresh-taxon-products
+  "Intentionally bypass ensure-products whenever we navigate to a category"
+  [app-state]
+  (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -115,12 +124,9 @@
         (experiments/track-event path)
         (exception-handler/refresh)))))
 
-(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
-  (do
-    (reviews/insert-reviews)
-    (api/get-products (get-in app-state keypaths/api-cache)
-                      taxon-slug
-                      (get-in app-state keypaths/user-token))))
+(defmethod perform-effects events/navigate-category [_ event args app-state]
+  (reviews/insert-reviews)
+  (refresh-taxon-products app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -732,9 +738,11 @@
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
-(defmethod perform-effects events/optimizely [_ event args app-state]
+(defmethod perform-effects events/optimizely [_ event {:keys [variation]} app-state]
   (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" (:variation args)))
+  (analytics/track-event "optimizely-experiment" variation)
+  (when (= "color-option" variation)
+    (refresh-taxon-products app-state)))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)

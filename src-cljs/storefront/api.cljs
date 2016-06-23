@@ -5,7 +5,7 @@
             [storefront.platform.messages :as messages]
             [storefront.accessors.states :as states]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.products :as products]
             [storefront.cache :as c]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
@@ -94,8 +94,8 @@
                                                :request-id req-id})))
 
 (defn cache-req
-  [cache method path req-key {:keys [handler params cache-key] :as request-opts}]
-  (let [key (or cache-key (c/cache-key [path params]))
+  [cache method path req-key {:keys [handler params] :as request-opts}]
+  (let [key (c/cache-key [path params])
         res (cache key)]
     (if res
       (handler res)
@@ -117,31 +117,17 @@
    {:params {:additional-promo-code promo-code}
     :handler #(messages/handle-message events/api-success-promotions %)}))
 
-(defn get-products [cache taxon-slug user-token]
-  (cache-req
-   cache
-   GET
-   "/products"
-   (conj request-keys/get-products taxon-slug)
-   {:cache-key (taxons/cache-key taxon-slug)
-    :params
-    {:taxon-slug taxon-slug
-     :user-token user-token}
-    :handler
-    #(messages/handle-message events/api-success-products
-                              (merge (select-keys % [:products])
-                                     {:taxon-slug taxon-slug}))}))
-
 (defn get-products-by-ids [product-ids user-token]
-  (api-req
-   GET
-   "/products"
-   (conj request-keys/get-products (sorted-set product-ids))
-   {:params {:ids product-ids
-             :user-token user-token}
-    :handler
-    #(messages/handle-message events/api-success-products
-                              (select-keys % [:products]))}))
+  (let [product-ids (->> product-ids (into (sorted-set)) vec)]
+    (api-req
+     GET
+     "/products"
+     (conj request-keys/get-products product-ids)
+     {:params {:ids product-ids
+               :user-token user-token}
+      :handler
+      #(messages/handle-message events/api-success-products
+                                (select-keys % [:products]))})))
 
 (defn get-states [cache]
   (cache-req

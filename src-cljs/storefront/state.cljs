@@ -128,7 +128,7 @@
           :previous-navigation-message []
           :validation-errors {:error-message nil
                               :details {}}
-          :browse-taxon-query nil
+          :browse-taxon-query {:experiment-color-option-original true}
           :browse-variant-quantity 1
           :browse-recently-added-variants []
           :menu-expanded false

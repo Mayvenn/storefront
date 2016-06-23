@@ -199,7 +199,7 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :taxons                     (get-in data keypaths/taxons)})
+   :taxons                     (taxons/current-taxons data)})
 
 (defn built-component [data]
   (component/build component (query data) nil))

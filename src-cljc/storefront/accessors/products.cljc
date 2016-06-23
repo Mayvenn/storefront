@@ -2,6 +2,9 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]))
 
+(defn loaded-ids [data]
+  (set (keys (get-in data keypaths/products))))
+
 (defn not-black-color [attr]
   (when (not= "black" (:color attr))
     (:color attr)))

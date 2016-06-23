@@ -274,7 +274,7 @@
    :stylist?          (own-store? data)
    :nav-message       (get-in data keypaths/navigation-message)
    :user-email        (get-in data keypaths/user-email)
-   :taxons            (get-in data keypaths/taxons)})
+   :taxons            (taxons/current-taxons data)})
 
 (defn built-component [data]
   (component/build component (query data) nil))

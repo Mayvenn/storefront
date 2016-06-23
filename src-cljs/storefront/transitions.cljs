@@ -67,7 +67,7 @@
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (-> app-state
-      (assoc-in keypaths/browse-taxon-query {:slug taxon-slug})
+      (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
       (assoc-in keypaths/browse-recently-added-variants [])
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)))
@@ -416,9 +416,18 @@
 (defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
   (assoc-in app-state keypaths/flash-failure nil))
 
+(defn set-color-option-variation [app-state variation]
+  (if (= "color-option" variation)
+    (-> app-state
+        (update-in keypaths/browse-taxon-query dissoc :experiment-color-option-original)
+        (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true))
+    app-state))
+
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
-  (update-in app-state keypaths/optimizely-variations conj variation))
+  (-> app-state
+      (update-in keypaths/optimizely-variations conj variation)
+      (set-color-option-variation variation)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
   (assoc-in app-state keypaths/loaded-optimizely true))

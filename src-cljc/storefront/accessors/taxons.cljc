@@ -7,8 +7,9 @@
   (query/get (get-in app-state keypaths/browse-taxon-query)
              (get-in app-state keypaths/taxons)))
 
-(defn cache-key [taxon-slug]
-  (keyword (str "products" "-" taxon-slug)))
+(defn current-taxons [app-state]
+  (query/all (dissoc (get-in app-state keypaths/browse-taxon-query) :slug)
+             (get-in app-state keypaths/taxons)))
 
 (def new-taxon? #{"frontals"})
 
