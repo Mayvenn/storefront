@@ -52,9 +52,10 @@
        (drop-last 2)))
 
 (defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
-  (str (name scheme) "://"
-       store-slug "." (parse-root-domain server-name)
-       ":" (if (config/development? environment) server-port 443)))
+  (let [dev? (config/development? environment)]
+    (str (if dev? (name scheme) "https") "://"
+         store-slug "." (parse-root-domain server-name)
+         ":" (if dev? server-port 443))))
 
 (defn store-url [store-slug environment {:keys [uri] :as req}]
   (str (store-scheme-and-authority store-slug environment req)
