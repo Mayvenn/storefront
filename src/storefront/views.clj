@@ -48,7 +48,7 @@
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script {:type "text/javascript"}
-     (raw (str "data = " (generate-string (sanitize data)) ";"))]
+     (raw (str "data = " (generate-string (pr-str (sanitize data))) ";"))]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"

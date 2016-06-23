@@ -8,7 +8,7 @@
              (get-in app-state keypaths/taxons)))
 
 (defn cache-key [taxon-slug]
-  (keyword (str "/products" "-" taxon-slug)))
+  (keyword (str "products" "-" taxon-slug)))
 
 (def new-taxon? #{"frontals"})
 
