@@ -48,17 +48,24 @@
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script {:type "text/javascript"}
+     ;; need to make sure the edn which has double quotes is validly escaped as
+     ;; json as it goes into the JS file
      (raw (str "data = " (generate-string (pr-str (sanitize data))) ";"))]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
            "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
+    ;; in production, we want to load the script tag asynchronously which has better
+    ;; support when that script tag is in the <head>
     (when-not (config/development? environment)
       [:script {:src (asset-path "/js/out/main.js") :async true}])
     (page/include-css (asset-path "/css/full.css"))]
    [:body
     [:div#content initial-content]
+    ;; in development, figwheel uses document.write which can't be done asynchronously
+    ;; additionally, we want developers to see the server side render, so we don't want
+    ;; to put this tag in <head> and be synchronous
     (when (config/development? environment)
       [:script {:src (asset-path "/js/out/main.js")}])]))
 
