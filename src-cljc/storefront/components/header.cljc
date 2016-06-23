@@ -248,7 +248,7 @@
        [:div.flex-auto
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
         (lower-left-desktop-nav current-page?)]
-       (into [:div.flex.flex-column.justify-center.flex-auto {:style {:min-width "188px"}}]
+       (into [:div.flex.flex-column.justify-center.flex-auto]
              (if (sans-stylist? (:store_slug store))
                (list (logo "40px"))
                (list
