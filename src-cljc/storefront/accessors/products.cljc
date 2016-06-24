@@ -1,6 +1,5 @@
 (ns storefront.accessors.products
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.accessors.taxons :as taxons]))
+  (:require [storefront.keypaths :as keypaths]))
 
 (defn loaded-ids [data]
   (set (keys (get-in data keypaths/products))))

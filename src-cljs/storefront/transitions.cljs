@@ -65,12 +65,40 @@
       (assoc-in keypaths/get-satisfaction-login? true)
       (assoc-in keypaths/return-navigation-message [event args])))
 
+(defn only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
+
+(declare set-bundle-builder)
+(defn auto-select-next-step [app-state {:keys [selected-options selected-variants] :as bundle-builder}]
+  (or (when (experiments/color-option? app-state)
+        (when-let [next-step (-> (taxons/current-taxon app-state)
+                                 bundle-builder/selection-flow
+                                 (bundle-builder/next-step selected-options))]
+          (when-let [next-option (->> selected-variants (remove :sold-out?) (map next-step) set only)]
+            (set-bundle-builder app-state (assoc-in bundle-builder [:selected-options next-step] next-option)))))
+      app-state))
+
+(defn set-bundle-builder [app-state bundle-builder]
+  (-> app-state
+      (assoc-in keypaths/bundle-builder bundle-builder)
+      (auto-select-next-step bundle-builder)))
+
+(defn initialize-bundle-builder [app-state]
+  (if (and (nil? (get-in app-state keypaths/bundle-builder))
+           (taxons/products-loaded? app-state (taxons/current-taxon app-state)))
+    (set-bundle-builder app-state {:selected-options  {}
+                                   :previous-step     nil
+                                   :selected-variants (bundle-builder/current-taxon-variants app-state)})
+    app-state))
+
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
       (assoc-in keypaths/browse-recently-added-variants [])
       (assoc-in keypaths/browse-variant-quantity 1)
-      (assoc-in keypaths/bundle-builder nil)))
+      (assoc-in keypaths/bundle-builder nil)
+      (initialize-bundle-builder)))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
@@ -151,13 +179,12 @@
   (let [selected-variants (bundle-builder/filter-variants-by-selections
                            selected-options
                            (bundle-builder/current-taxon-variants app-state))
-        last-step (-> (taxons/current-taxon app-state)
-                      bundle-builder/selection-flow
-                      (bundle-builder/last-step selected-options))]
-    (-> app-state
-        (assoc-in keypaths/bundle-builder-selected-options selected-options)
-        (assoc-in keypaths/bundle-builder-previous-step last-step)
-        (assoc-in keypaths/bundle-builder-selected-variants selected-variants))))
+        last-step         (-> (taxons/current-taxon app-state)
+                              bundle-builder/selection-flow
+                              (bundle-builder/last-step selected-options))]
+    (set-bundle-builder app-state {:selected-options  selected-options
+                                   :previous-step     last-step
+                                   :selected-variants selected-variants})))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -182,7 +209,9 @@
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
-  (update-in app-state keypaths/products merge (key-by :id products)))
+  (-> app-state
+    (update-in keypaths/products merge (key-by :id products))
+    initialize-bundle-builder))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
@@ -420,7 +449,8 @@
   (if (= "color-option" variation)
     (-> app-state
         (update-in keypaths/browse-taxon-query dissoc :experiment-color-option-original)
-        (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true))
+        (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true)
+        (auto-select-next-step (get-in app-state keypaths/bundle-builder)))
     app-state))
 
 (defmethod transition-state events/optimizely

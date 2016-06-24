@@ -186,16 +186,19 @@
 
 (defn images-from-variants [data]
   (let [taxon (taxons/current-taxon data)
-        variants (bundle-builder/selected-variants data)]
-    (if (and (#{"blonde" "closures" "frontals"} (:name taxon)) (seq variants))
-      (vec (set (map #(get-in % [:images 0 :large_url]) variants)))
+        selected-options (get-in data keypaths/bundle-builder-selected-options)
+        selected-variants (bundle-builder/selected-variants data)]
+    (if (and (#{"blonde" "closures" "frontals"} (:name taxon))
+             (seq selected-options)
+             (seq selected-variants))
+      (vec (set (map #(get-in % [:images 0 :large_url]) selected-variants)))
       (:images taxon))))
 
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
     {:taxon              taxon
      :variants           (bundle-builder/current-taxon-variants data)
-     :fetching-variants? (not-every? (products/loaded-ids data) (:product-ids taxon))
+     :fetching-variants? (not (taxons/products-loaded? data taxon))
      :selected-options   (get-in data keypaths/bundle-builder-selected-options)
      :flow               (bundle-builder/selection-flow taxon)
      :selected-product   (bundle-builder/selected-product data)
