@@ -137,48 +137,6 @@
   [:div.inline-block.h5
    (component/build reviews/reviews-summary-component reviews opts)])
 
-(defn component [{:keys [taxon
-                         bundle-builder
-                         fetching-variants?
-                         selected-product
-                         selected-variant
-                         variant-quantity
-                         reviews
-                         adding-to-bag?
-                         carousel-images
-                         bagged-variants]}
-                 owner opts]
-  (component/create
-   (when taxon
-     (ui/container
-      (product/page
-       (carousel carousel-images taxon)
-       [:div
-        [:div.center
-         (taxon-title taxon)
-         (reviews-summary reviews opts)
-         [:meta {:item-prop "image" :content (first carousel-images)}]
-         (product/full-bleed-narrow (carousel carousel-images taxon))
-         (when-not fetching-variants? (starting-at (:initial-variants bundle-builder)))]
-        (if fetching-variants?
-          [:div.h1.mb2 ui/spinner]
-          [:div
-           (for [step (bundle-builder/steps bundle-builder)]
-             (step-html step))
-           [:div.py2.border-top.border-dark-white.border-width-2
-            product/schema-org-offer-props
-            (if selected-variant
-              (variant-summary {:flow             (:flow bundle-builder)
-                                :variant          selected-variant
-                                :variant-quantity variant-quantity})
-              (no-variant-summary (bundle-builder/next-step bundle-builder)))
-            triple-bundle-upsell
-            (when selected-variant
-              (product/add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
-            (product/bagged-variants-and-checkout bagged-variants)]])
-        (taxon-description (:description taxon))])
-      (component/build reviews/reviews-component reviews opts)))))
-
 (defn images-from-variants
   "For some taxons, when a selection has been made, show detailed product images"
   [taxon {:keys [selected-options selected-variants]}]
@@ -187,19 +145,60 @@
     (vec (set (map #(get-in % [:images 0 :large_url]) selected-variants)))
     (:images taxon)))
 
+(defn component [{:keys [taxon
+                         bundle-builder
+                         fetching-variants?
+                         selected-product
+                         variant-quantity
+                         reviews
+                         adding-to-bag?
+                         bagged-variants]}
+                 owner opts]
+  (let [selected-variant (bundle-builder/selected-variant bundle-builder)
+        carousel-images  (images-from-variants taxon bundle-builder)]
+    (component/create
+     (when taxon
+       (ui/container
+        (product/page
+         (carousel carousel-images taxon)
+         [:div
+          [:div.center
+           (taxon-title taxon)
+           (reviews-summary reviews opts)
+           [:meta {:item-prop "image" :content (first carousel-images)}]
+           (product/full-bleed-narrow (carousel carousel-images taxon))
+           (when-not fetching-variants? (starting-at (:initial-variants bundle-builder)))]
+          (if fetching-variants?
+            [:div.h1.mb2 ui/spinner]
+            [:div
+             (for [step (bundle-builder/steps bundle-builder)]
+               (step-html step))
+             [:div.py2.border-top.border-dark-white.border-width-2
+              product/schema-org-offer-props
+              (if selected-variant
+                (variant-summary {:flow             (:flow bundle-builder)
+                                  :variant          selected-variant
+                                  :variant-quantity variant-quantity})
+                (no-variant-summary (bundle-builder/next-step bundle-builder)))
+              triple-bundle-upsell
+              (when selected-variant
+                (product/add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
+              (product/bagged-variants-and-checkout bagged-variants)]])
+          (taxon-description (:description taxon))])
+        (component/build reviews/reviews-component reviews opts))))))
+
 (defn query [data]
-  (let [taxon (taxons/current-taxon data)
+  (let [taxon          (taxons/current-taxon data)
         bundle-builder (get-in data keypaths/bundle-builder)]
     {:taxon              taxon
      :bundle-builder     bundle-builder
      :fetching-variants? (not (taxons/products-loaded? data taxon))
+     ;; TODO: can the add-to-bag button work without a selected-product?
      :selected-product   (bundle-builder/selected-product bundle-builder (get-in data keypaths/products))
-     :selected-variant   (bundle-builder/selected-variant bundle-builder)
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)
-     :carousel-images    (images-from-variants taxon bundle-builder)}))
+     :reviews            (reviews/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

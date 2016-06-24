@@ -73,6 +73,7 @@
    " "
    (some-> variant :variant_attrs :length)
    " "
+   ;; TODO: could this be products/summary? (it only needs a variant)
    (:name product)])
 
 (def checkout-button
