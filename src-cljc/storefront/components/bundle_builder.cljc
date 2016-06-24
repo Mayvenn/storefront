@@ -140,7 +140,7 @@
 (defn images-from-variants
   "For some taxons, when a selection has been made, show detailed product images"
   [taxon {:keys [selected-options selected-variants]}]
-  (if (and (#{"blonde" "closures" "frontals"} (:name taxon))
+  (if (and (#{"blonde" "closures" "frontals"} (:slug taxon))
            (seq selected-options))
     (vec (set (map #(get-in % [:images 0 :large_url]) selected-variants)))
     (:images taxon)))
