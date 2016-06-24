@@ -60,7 +60,7 @@
          word)))
 
 (defn variant-name [variant flow]
-  (let [flow (conj (vec flow) :category)]
+  (let [flow (conj (vec flow) :style)]
     (->> flow
          (map variant)
          (string/join " ")
