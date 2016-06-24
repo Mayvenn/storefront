@@ -361,11 +361,10 @@
 
 (defmethod perform-effects events/control-bundle-option-select
   [_ event _ app-state]
-  (let [selected-options (get-in app-state keypaths/bundle-builder-selected-options)
-        step-name        (get-in app-state keypaths/bundle-builder-previous-step)]
-    (when (and step-name (step-name selected-options))
-      (analytics/track-page
-       (str (routes/current-path app-state) "/choose_" (clj->js step-name))))))
+  (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
+    (analytics/track-page (str (routes/current-path app-state)
+                               "/choose_"
+                               (clj->js last-step)))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/forgot-password-email)))
@@ -676,19 +675,13 @@
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
-(defmethod perform-effects events/api-success-add-to-bag [_ _ {:keys [requested]} app-state]
-  (let [{:keys [product quantity variant]} requested]
-    (save-cookie app-state)
-    (add-pending-promo-code app-state (get-in app-state keypaths/order))
-    (when (bundle-builder/included-product? product)
-      (when-let [last-step (get-in app-state keypaths/bundle-builder-previous-step)]
-        (let [current-selections (get-in app-state keypaths/bundle-builder-selected-options)]
-          (handle-message events/control-bundle-option-select
-                          {:selected-options (dissoc current-selections last-step)}))))
-    (when (stylists/own-store? app-state)
-      (experiments/set-dimension "stylist-own-store" "stylists"))
-    (experiments/track-event "add-to-bag")
-    (handle-later events/added-to-bag)))
+(defmethod perform-effects events/api-success-add-to-bag [_ _ args app-state]
+  (save-cookie app-state)
+  (add-pending-promo-code app-state (get-in app-state keypaths/order))
+  (when (stylists/own-store? app-state)
+    (experiments/set-dimension "stylist-own-store" "stylists"))
+  (experiments/track-event "add-to-bag")
+  (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
   (when-let [el (.querySelector js/document "[data-scroll=cart-button]")]

@@ -3,52 +3,33 @@
             [storefront.platform.numbers :as numbers]
             [storefront.accessors.taxons :as taxons]))
 
-(defn selected-variants [data]
-  (get-in data keypaths/bundle-builder-selected-variants))
+(defn only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
 
-(defn selected-variant [data]
-  (let [variants (selected-variants data)]
-    (when (= 1 (count variants))
-      (first variants))))
+(defn selected-variant [bundle-builder]
+  (only (:selected-variants bundle-builder)))
 
-(defn selected-products [data]
-  (let [product-ids (set (map :product_id (selected-variants data)))]
-    (select-keys (get-in data keypaths/products) product-ids)))
+(defn ^:private selected-products [{:keys [selected-variants]} products]
+  (let [product-ids (set (map :product_id selected-variants))]
+    (map products product-ids)))
 
-(defn selected-product [data]
-  (let [selected (selected-products data)]
-    (when (= 1 (count selected))
-      (last (first selected)))))
+(defn selected-product [bundle-builder products]
+  (only (selected-products bundle-builder products)))
 
-(defn- build-variants [product]
-  (map (fn [variant]
-         (-> variant
-             (merge (:variant_attrs variant))
-             (assoc :price (numbers/parse-float (:price variant))
-                    :sold-out? (not (:can_supply? variant)))))
-       (:variants product)))
-
-(defn- ordered-products-for-category [app-state {:keys [product-ids]}]
-  (remove nil? (map (get-in app-state keypaths/products) product-ids)))
-
-(defn current-taxon-variants [data]
-  (->> (taxons/current-taxon data)
-       (ordered-products-for-category data)
-       (mapcat build-variants)))
-
-(defn filter-variants-by-selections [selections variants]
+(defn ^:private filter-variants-by-selections [selections variants]
   (filter (fn [variant]
             (every? (fn [[step-name option-name]]
                       (= (step-name variant) option-name))
                     selections))
           variants))
 
-(defn last-step [flow selections]
-  (let [finished-step? (set (keys selections))]
+(defn last-step [{:keys [flow selected-options]}]
+  (let [finished-step? (set (keys selected-options))]
     (last (take-while finished-step? flow))))
 
-(defn next-step [flow selections]
-  (let [finished-step? (set (keys selections))]
+(defn next-step [{:keys [flow selected-options]}]
+  (let [finished-step? (set (keys selected-options))]
     (first (drop-while finished-step? flow))))
 
 (defn min-price [variants]
@@ -83,25 +64,25 @@
   The options are hardest to generate because they have to take into
   consideration the position in which the step appears in the flow, the list of
   variants in the step, and the seletions the user has chosen so far."
-  [flow step->option-names all-selections variants]
+  [{:keys [flow selected-options initial-variants step->option-names]}]
   (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
         ;; The variants that represent a step are tricky. Even if a user has
         ;; selected Lace, the Deep Wave variants include Lace and Silk, because
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
-        :let                    [prior-selections (select-keys all-selections prior-steps)
-                                 step-variants    (filter-variants-by-selections prior-selections variants)]]
+        :let                    [prior-selections (select-keys selected-options prior-steps)
+                                 step-variants    (filter-variants-by-selections prior-selections initial-variants)]]
     {:step-name     step-name
-     :later-step?   (> (count prior-steps) (count all-selections))
+     :later-step?   (> (count prior-steps) (count selected-options))
      :options       (options-for-step (step->option-names step-name)
                                       {:prior-selections     prior-selections
-                                       :selected-option-name (get all-selections step-name nil)
+                                       :selected-option-name (get selected-options step-name nil)
                                        :step-name            step-name
                                        :step-variants        step-variants
                                        :step-min-price       (min-price step-variants)})}))
 
-(defn selection-flow [{:keys [slug experiment-color-option-variation]}]
-  (if experiment-color-option-variation
+(defn ^:private selection-flow [{:keys [slug]} include-color-in-styles?]
+  (if include-color-in-styles?
     (case slug
       "frontals" '(:style :material :origin :length)
       "closures" '(:style :material :origin :length)
@@ -112,5 +93,50 @@
       "blonde" '(:color :origin :length)
       '(:origin :length))))
 
+(defn ^:private build-variants [product]
+  (map (fn [variant]
+         (-> variant
+             (merge (:variant_attrs variant))
+             (assoc :price (numbers/parse-float (:price variant))
+                    :sold-out? (not (:can_supply? variant)))))
+       (:variants product)))
+
 (def included-product? (complement :stylist_only?))
 (def included-taxon? (complement :stylist_only?))
+
+(declare select-option)
+(defn ^:private auto-advance [{:keys [flow selected-options selected-variants auto-advance?] :as bundle-builder}]
+  (or (when auto-advance?
+        (when-let [next-step (next-step bundle-builder)]
+          (when-let [next-option (->> selected-variants
+                                      (remove :sold-out?)
+                                      (map next-step)
+                                      set
+                                      only)]
+            (select-option bundle-builder next-step next-option))))
+      bundle-builder))
+
+(defn reset-options [{:keys [initial-variants] :as bundle-builder} selected-options]
+  (let [selected-variants (filter-variants-by-selections selected-options initial-variants)
+        revised-state (assoc bundle-builder
+                             :selected-options selected-options
+                             :selected-variants selected-variants)]
+    (auto-advance revised-state)))
+
+(defn select-option [{:keys [selected-options] :as bundle-builder} option value]
+  (reset-options bundle-builder (assoc selected-options option value)))
+
+(defn rollback [{:keys [selected-options] :as bundle-builder}]
+  (if-let [last-step (last-step bundle-builder)]
+    (reset-options bundle-builder (dissoc selected-options last-step))
+    bundle-builder))
+
+(defn initialize [taxon products color-option?]
+  (let [initial-variants (->> (map products (:product-ids taxon))
+                              (remove nil?)
+                              (mapcat build-variants))
+        initial-state    {:flow               (selection-flow taxon color-option?)
+                          :auto-advance?      color-option?
+                          :initial-variants   initial-variants
+                          :step->option-names (:product_facets taxon)}]
+    (reset-options initial-state {})))

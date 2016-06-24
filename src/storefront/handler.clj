@@ -10,6 +10,7 @@
             [storefront.utils.combinators :refer [key-by]]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [clojure.string :as string]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -202,9 +203,11 @@
       (let [{:keys [product-ids]} taxon
             user-token            (cookies/get req "user-token")]
         (when-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
-          (html-response render-ctx (-> data
-                                        (assoc-in keypaths/browse-variant-quantity 1)
-                                        (assoc-in keypaths/products (key-by :id products)))))))))
+          (let [products-by-id (key-by :id products)]
+            (html-response render-ctx (-> data
+                                          (assoc-in keypaths/browse-variant-quantity 1)
+                                          (assoc-in keypaths/products products-by-id)
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id false))))))))))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}

@@ -56,7 +56,6 @@
 
 (defpath control-change-state)
 
-(defpath control-carousel-move)
 (defpath control-stylist-commissions-fetch)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)

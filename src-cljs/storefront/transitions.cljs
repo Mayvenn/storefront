@@ -65,32 +65,15 @@
       (assoc-in keypaths/get-satisfaction-login? true)
       (assoc-in keypaths/return-navigation-message [event args])))
 
-(defn only [coll]
-  (when (= 1 (count coll))
-    (first coll)))
-
-(declare set-bundle-builder)
-(defn auto-select-next-step [app-state {:keys [selected-options selected-variants] :as bundle-builder}]
-  (or (when (experiments/color-option? app-state)
-        (when-let [next-step (-> (taxons/current-taxon app-state)
-                                 bundle-builder/selection-flow
-                                 (bundle-builder/next-step selected-options))]
-          (when-let [next-option (->> selected-variants (remove :sold-out?) (map next-step) set only)]
-            (set-bundle-builder app-state (assoc-in bundle-builder [:selected-options next-step] next-option)))))
-      app-state))
-
-(defn set-bundle-builder [app-state bundle-builder]
-  (-> app-state
-      (assoc-in keypaths/bundle-builder bundle-builder)
-      (auto-select-next-step bundle-builder)))
-
 (defn initialize-bundle-builder [app-state]
-  (if (and (nil? (get-in app-state keypaths/bundle-builder))
-           (taxons/products-loaded? app-state (taxons/current-taxon app-state)))
-    (set-bundle-builder app-state {:selected-options  {}
-                                   :previous-step     nil
-                                   :selected-variants (bundle-builder/current-taxon-variants app-state)})
-    app-state))
+  (let [taxon (taxons/current-taxon app-state)]
+    (if (and (nil? (get-in app-state keypaths/bundle-builder))
+             (taxons/products-loaded? app-state taxon))
+      (assoc-in app-state
+                keypaths/bundle-builder (bundle-builder/initialize taxon
+                                                                   (get-in app-state keypaths/products)
+                                                                   (experiments/color-option? app-state)))
+      app-state)))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (-> app-state
@@ -98,7 +81,7 @@
       (assoc-in keypaths/browse-recently-added-variants [])
       (assoc-in keypaths/browse-variant-quantity 1)
       (assoc-in keypaths/bundle-builder nil)
-      (initialize-bundle-builder)))
+      initialize-bundle-builder))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
@@ -176,21 +159,11 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
-  (let [selected-variants (bundle-builder/filter-variants-by-selections
-                           selected-options
-                           (bundle-builder/current-taxon-variants app-state))
-        last-step         (-> (taxons/current-taxon app-state)
-                              bundle-builder/selection-flow
-                              (bundle-builder/last-step selected-options))]
-    (set-bundle-builder app-state {:selected-options  selected-options
-                                   :previous-step     last-step
-                                   :selected-variants selected-variants})))
+  (update-in app-state
+             keypaths/bundle-builder bundle-builder/reset-options selected-options))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
-
-(defmethod transition-state events/control-carousel-move [_ event {:keys [index]} app-state]
-  (assoc-in app-state keypaths/bundle-builder-carousel-index index))
 
 (defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
   (assoc-in app-state keypaths/checkout-as-guest true))
@@ -310,10 +283,11 @@
       (assoc-in keypaths/sign-in-remember true)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
-  (-> app-state
-      (update-in keypaths/browse-recently-added-variants conj requested)
-      (assoc-in keypaths/browse-variant-quantity 1)
-      (update-in keypaths/order merge order)))
+  (cond-> app-state
+    true (update-in keypaths/browse-recently-added-variants conj requested)
+    true (assoc-in keypaths/browse-variant-quantity 1)
+    true (update-in keypaths/order merge order)
+    (bundle-builder/included-product? (:product requested)) (update-in keypaths/bundle-builder bundle-builder/rollback)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
@@ -446,12 +420,13 @@
   (assoc-in app-state keypaths/flash-failure nil))
 
 (defn set-color-option-variation [app-state variation]
-  (if (= "color-option" variation)
+  (if (not= "color-option" variation)
+    app-state
     (-> app-state
         (update-in keypaths/browse-taxon-query dissoc :experiment-color-option-original)
         (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true)
-        (auto-select-next-step (get-in app-state keypaths/bundle-builder)))
-    app-state))
+        (assoc-in keypaths/bundle-builder nil)
+        initialize-bundle-builder)))
 
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]
