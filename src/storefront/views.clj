@@ -34,9 +34,11 @@
 
 (defn sanitize [v]
   (cond
+    (vector? v)     (mapv sanitize v)
+    (set? v)        (into #{} (map sanitize v))
     (sequential? v) (map sanitize v)
-    (map? v) (zipmap (keys v) (map sanitize (vals v)))
-    :else (escape-js-string v)))
+    (map? v)        (zipmap (keys v) (map sanitize (vals v)))
+    :else           (escape-js-string v)))
 
 (defn layout [{:keys [storeback-config environment]} data initial-content]
   (html5
