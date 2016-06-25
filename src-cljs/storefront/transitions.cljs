@@ -283,11 +283,11 @@
       (assoc-in keypaths/sign-in-remember true)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
-  (cond-> app-state
-    true (update-in keypaths/browse-recently-added-variants conj requested)
-    true (assoc-in keypaths/browse-variant-quantity 1)
-    true (update-in keypaths/order merge order)
-    (bundle-builder/included-product? (:product requested)) (update-in keypaths/bundle-builder bundle-builder/rollback)))
+  (-> app-state
+      (update-in keypaths/browse-recently-added-variants conj requested)
+      (assoc-in keypaths/browse-variant-quantity 1)
+      (update-in keypaths/order merge order)
+      (update-in keypaths/bundle-builder bundle-builder/rollback)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
