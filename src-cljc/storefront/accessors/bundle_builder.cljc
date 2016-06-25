@@ -1,7 +1,5 @@
 (ns storefront.accessors.bundle-builder
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.platform.numbers :as numbers]
-            [storefront.accessors.taxons :as taxons]))
+  (:require [storefront.platform.numbers :as numbers]))
 
 (defn only [coll]
   (when (= 1 (count coll))
@@ -11,8 +9,7 @@
   (only (:selected-variants bundle-builder)))
 
 (defn ^:private selected-products [{:keys [selected-variants]} products]
-  (let [product-ids (set (map :product_id selected-variants))]
-    (map products product-ids)))
+  (->> selected-variants (map :product_id) set (map products)))
 
 (defn selected-product [bundle-builder products]
   (only (selected-products bundle-builder products)))
