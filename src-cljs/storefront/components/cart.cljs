@@ -11,8 +11,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.request-keys :as request-keys]))
 
 (defn- pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))

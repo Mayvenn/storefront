@@ -3,7 +3,6 @@
             [om.core :as om]
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
-            [storefront.hooks.experiments :as experiments]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]))

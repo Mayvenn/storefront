@@ -3,7 +3,6 @@
             [storefront.browser.tags :refer [insert-tag-with-src]]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.hooks.experiments :as experiments]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]))
 

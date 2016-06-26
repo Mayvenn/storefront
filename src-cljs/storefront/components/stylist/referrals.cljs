@@ -8,7 +8,7 @@
             [storefront.components.ui :as ui]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.request-keys :as request-keys]
-            [storefront.hooks.experiments :as experiments]
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

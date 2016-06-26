@@ -6,7 +6,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.bundle-builder :as bundle-builder]
-            [storefront.hooks.experiments :as experiments]
+            [storefront.accessors.experiments :as experiments]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.query :as query]

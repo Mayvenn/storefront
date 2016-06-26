@@ -10,8 +10,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
-            [storefront.hooks.experiments :as experiments]))
+            [storefront.request-keys :as request-keys]))
 
 (defn requires-additional-payment? [data]
   (and (nil? (get-in data keypaths/order-cart-payments-stripe))
