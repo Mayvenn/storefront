@@ -201,7 +201,7 @@
    (when-not expanded? {:class "hide"})
    [:div.flex.items-start {:style {:padding "1em 10% 2em"}}
     [:div.col-4 (products-section current-page? "Hair Extensions" (filter taxons/is-extension? taxons))]
-    [:div.col-4 (products-section current-page? "Closures" (filter taxons/is-closure? taxons))]
+    [:div.col-4 (products-section current-page? "Closures" (filter taxons/is-closure-or-frontal? taxons))]
     (when stylist?
       [:div.col-4 (products-section current-page? "Stylist Products" (filter taxons/is-stylist-product? taxons))])]])
 

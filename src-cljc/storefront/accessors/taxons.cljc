@@ -17,8 +17,12 @@
 
 (def new-taxon? #{"frontals"})
 
-(def is-closure? (comp #{"frontals" "closures"} :slug))
+(defn is-closure? [taxon] (some-> taxon :search :category set (contains? "closures")))
+(defn is-frontal? [taxon] (some-> taxon :search :category set (contains? "frontals")))
+(defn is-extension? [taxon] (some-> taxon :search :category set (contains? "hair")))
+(defn is-closure-or-frontal? [taxon] (or (is-closure? taxon) (is-frontal? taxon)))
+(defn is-hair? [taxon] (or (is-extension? taxon) (is-closure-or-frontal? taxon)))
+
 (def is-stylist-product? :stylist_only?)
-(defn is-extension? [taxon]
-  (not (or (is-closure? taxon)
-           (is-stylist-product? taxon))))
+(def eligible-for-reviews? (complement is-stylist-product?))
+(def eligible-for-triple-bundle-discount? is-hair?)

@@ -97,7 +97,7 @@
   (products-section selectable? "Extensions" (filter taxons/is-extension? taxons)))
 
 (defn closures-section [selectable? taxons]
-  (products-section selectable? "Closures" (filter taxons/is-closure? taxons)))
+  (products-section selectable? "Closures" (filter taxons/is-closure-or-frontal? taxons)))
 
 (defn stylist-products-section [selectable? taxons]
   (products-section selectable? "Stylist Products" (filter taxons/is-stylist-product? taxons)))

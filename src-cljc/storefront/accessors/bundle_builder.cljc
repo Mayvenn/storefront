@@ -5,6 +5,9 @@
   (when (= 1 (count coll))
     (first coll)))
 
+(defn ^:private update-keys [m f & args]
+  (reduce (fn [r [k v]] (assoc r (apply f k args) v)) {} m))
+
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
@@ -78,17 +81,11 @@
                                        :step-variants        step-variants
                                        :step-min-price       (min-price step-variants)})}))
 
-(defn ^:private selection-flow [{:keys [slug]} include-color-in-styles?]
-  (if include-color-in-styles?
-    (case slug
-      "frontals" '(:style :material :origin :length)
-      "closures" '(:style :material :origin :length)
-      '(:color :origin :length))
-    (case slug
-      "frontals" '(:style :material :origin :length)
-      "closures" '(:style :material :origin :length)
-      "blonde" '(:color :origin :length)
-      '(:origin :length))))
+(defn ^:private ordered-steps [{:keys [result-facets]}]
+  (map (comp keyword first) result-facets))
+
+(defn ^:private ordered-options-by-step [{:keys [result-facets]}]
+  (update-keys result-facets keyword))
 
 (defn ^:private build-variants [product]
   (map (fn [variant]
@@ -132,8 +129,8 @@
   (let [initial-variants (->> (map products (:product-ids taxon))
                               (remove nil?)
                               (mapcat build-variants))
-        initial-state    {:flow               (selection-flow taxon color-option?)
+        initial-state    {:flow               (ordered-steps taxon)
                           :auto-advance?      color-option?
                           :initial-variants   initial-variants
-                          :step->option-names (:product_facets taxon)}]
+                          :step->option-names (ordered-options-by-step taxon)}]
     (reset-options initial-state {})))
