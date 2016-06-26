@@ -300,5 +300,8 @@
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)}))
 
-(defn product-component [data owner opts]
+(defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defn product-component [data owner opts]
+  (component/create (built-component data opts)))
