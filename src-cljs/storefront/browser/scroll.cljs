@@ -17,7 +17,10 @@
   ([elem y] (set! (.. elem -scrollTop) y)))
 
 (defn scroll-to-top []
-  (set-scroll-top 0))
+  (set-scroll-top 0)
+  ;; NodeList is not seqable
+  (.forEach (js/document.querySelectorAll "[data-scrollable=modal]")
+            (fn [elem] (set-scroll-top elem 0))))
 
 (defn scroll-to [y]
   (let [body (.-body js/document)
