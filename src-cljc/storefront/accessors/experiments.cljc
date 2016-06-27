@@ -5,9 +5,6 @@
   (contains? (get-in data keypaths/optimizely-variations)
              variation))
 
-(defn stylist-referrals? [data]
-  (display-variation data "stylist-referrals"))
-
 (defn color-option? [data]
   (display-variation data "color-option"))
 

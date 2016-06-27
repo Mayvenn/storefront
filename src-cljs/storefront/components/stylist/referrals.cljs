@@ -81,17 +81,14 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn refer-button [refer-to-leads? sales-rep-email link-attrs]
+(defn refer-button [sales-rep-email link-attrs]
   (let [mailto (str "mailto:" sales-rep-email "?Subject=Referral&body=name:%0D%0Aemail:%0D%0Aphone:")]
     [:a.col-12.btn.btn-primary
-     (merge (if refer-to-leads?
-              (utils/fake-href events/control-popup-show-refer-stylists)
-              {:href mailto
-               :target "_top"})
+     (merge (utils/fake-href events/control-popup-show-refer-stylists)
             link-attrs)
      "Refer"]))
 
-(defn show-refer-ad [refer-to-leads? sales-rep-email bonus-amount earning-amount]
+(defn show-refer-ad [sales-rep-email bonus-amount earning-amount]
   (let [message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
                                     (mf/as-money-without-cents bonus-amount)
                                     (mf/as-money-without-cents earning-amount))]
@@ -99,12 +96,12 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.dark-silver.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 (refer-button refer-to-leads? sales-rep-email {:data-test "refer-button-desktop"})]]
+      [:.h3.col-8.mx-auto.mb3 (refer-button sales-rep-email {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 (refer-button refer-to-leads? sales-rep-email {:class "btn-big"
-                                                                              :data-test "refer-button-mobile"})]
+      [:.right.ml2.m1.h3.col-4 (refer-button sales-rep-email {:class "btn-big"
+                                                              :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h5.dark-silver.line-height-2 message]]]))
 
 (def empty-referrals
@@ -120,8 +117,7 @@
                                            referrals
                                            page
                                            pages
-                                           fetching?
-                                           refer-to-leads?]} _]
+                                           fetching?]} _]
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
@@ -130,7 +126,7 @@
        [:.clearfix.mb3
         [:.sm-up-col-right.sm-up-col-4
          (when bonus-amount
-           (show-refer-ad refer-to-leads? sales-rep-email bonus-amount earning-amount))]
+           (show-refer-ad sales-rep-email bonus-amount earning-amount))]
 
         [:.sm-up-col.sm-up-col-8
          (when (seq referrals)
@@ -151,7 +147,6 @@
    :referrals       (get-in data keypaths/stylist-referral-program-referrals)
    :page            (get-in data keypaths/stylist-referral-program-page)
    :pages           (get-in data keypaths/stylist-referral-program-pages)
-   :refer-to-leads? (experiments/stylist-referrals? data)
    :fetching?       (utils/requesting? data request-keys/get-stylist-referral-program)})
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
