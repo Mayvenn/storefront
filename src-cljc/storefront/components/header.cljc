@@ -233,28 +233,28 @@
      "Contact Us"]]])
 
 (defn component [{:keys [nav-message
-                                 account-expanded?
-                                 shop-expanded?
-                                 store-expanded?
-                                 stylist?
-                                 cart-quantity
-                                 store
-                                 taxons
-                                 user-email]} _ _]
+                         account-expanded?
+                         shop-expanded?
+                         store-expanded?
+                         stylist?
+                         cart-quantity
+                         store
+                         taxons
+                         user-email]} _ _]
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
      [:div.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
       [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
-       [:div.flex-auto
+       [:div.flex-auto.col-4
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
         (lower-left-desktop-nav current-page?)]
-       (into [:div.flex.flex-column.justify-center.flex-auto]
+       (into [:div.flex.flex-column.justify-center.flex-auto.col-4]
              (if (sans-stylist? (:store_slug store))
                (list (logo "40px"))
                (list
                 (logo "30px")
                 (store-dropdown store-expanded? store))))
-       [:div.flex-auto
+       [:div.flex-auto.col-4
         [:div.flex.justify-end.items-center
          [:div.flex-auto.to-lg-hide.pr2
           (cond
