@@ -119,23 +119,25 @@
        "+" (as-money-without-cents price-delta)])]])
 
 (defn step-html [{:keys [step-name selected-option later-step? options]} color-option?]
-  [:div.my2 {:key step-name}
-   [:div.f3
-    [:span.navy.medium.shout (name step-name)]
-    (when (and color-option? selected-option)
-      [:span.light-gray
-       " - "
-       (or (:long-name selected-option)
-           [:span.titleize (:name selected-option)])])]
-   [:div.flex.flex-wrap.content-stretch.mxnp3
-    (for [{:keys [name] :as option} options]
-      [:div.flex.flex-column.justify-center.pp3
-       {:key   (string/replace (str name step-name) #"\W+" "-")
-        :style {:height "72px"}
-        :class (case step-name
-                 :length "col-4"
-                 "col-6")}
-       (option-html later-step? option color-option?)])]])
+  (let [selected? (and color-option? selected-option)]
+    [:div.my2 {:key step-name}
+     [:div.clearfix.f3
+      [:div.left.navy.medium.shout
+       (name step-name)
+       (when selected? [:span.inline-block.mxp2.light-gray " - "])]
+      (when selected?
+        [:div.overflow-hidden.light-gray
+         (or (:long-name selected-option)
+             [:span.titleize (:name selected-option)])])]
+     [:div.flex.flex-wrap.content-stretch.mxnp3
+      (for [{:keys [name] :as option} options]
+        [:div.flex.flex-column.justify-center.pp3
+         {:key   (string/replace (str name step-name) #"\W+" "-")
+          :style {:height "72px"}
+          :class (case step-name
+                   :length "col-4"
+                   "col-6")}
+         (option-html later-step? option color-option?)])]]))
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
