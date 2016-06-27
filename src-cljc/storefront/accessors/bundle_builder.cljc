@@ -33,7 +33,6 @@
 (defn clean-options [{:keys [flow step->options]} unsafe-options]
   (->> flow
        (map (fn [step]
-              (prn step step->options)
               (let [unsafe-option (get unsafe-options step)
                     safe? (some #{unsafe-option} (map :name (step step->options)))]
                 [step (when safe? unsafe-option)])))
