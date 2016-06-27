@@ -89,6 +89,9 @@
 (def selected-link        "border-navy border-bottom border-width-2")
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
+;; Sharing this width ensure the popup is centered on mobile
+(def popup-width          "188px")
+
 (defn social-link [img-attrs href title]
   [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href href}
    [:div.flex.items-center
@@ -112,7 +115,7 @@
        [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
        [:div.truncate.fit.f3.navy {:data-test "nickname"} nickname]]
       [:div.relative navy-carrot-bottom]]]
-    [:div.absolute.left-0.right-0.mx-auto {:style {:width "188px"}}
+    [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
      [:div.relative.border.border-light-silver.rounded-1.bg-pure-white.top-lit
       notch-up
       [:div
@@ -248,7 +251,7 @@
        [:div.flex-auto.col-4
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
         (lower-left-desktop-nav current-page?)]
-       (into [:div.flex.flex-column.justify-center.flex-auto.col-4]
+       (into [:div.flex.flex-column.justify-center.flex-auto.col-4 {:style {:min-width popup-width}}]
              (if (sans-stylist? (:store_slug store))
                (list (logo "40px"))
                (list
