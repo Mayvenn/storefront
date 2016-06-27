@@ -318,8 +318,19 @@
              keypaths/stylist-referrals
              #(vec (remove nil? (assoc % index nil)))))
 
+(defn clear-errors [app-state]
+  (-> app-state
+      (assoc-in keypaths/flash-failure nil)
+      (assoc-in keypaths/validation-errors {:error-message nil :details {}})
+      (assoc-in keypaths/errors {})))
+
+(defmethod transition-state events/control-stylist-referral-submit [_ event args app-state]
+  (clear-errors app-state))
+
 (defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
-  (assoc-in app-state keypaths/popup :refer-stylist))
+  (-> app-state
+      (assoc-in keypaths/popup :refer-stylist)
+      clear-errors))
 
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))

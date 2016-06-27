@@ -156,7 +156,7 @@
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 
-(defn refer-component [{:keys [bonus-amount earning-amount referrals errors]}
+(defn refer-component [{:keys [bonus-amount earning-amount referrals errors flash-failure]}
                        owner
                        {:keys [on-close]}]
   (om/component
@@ -165,13 +165,17 @@
               [:.bg-light-white.rounded.p2.mt3.sans-serif
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
-                (when (seq errors)
+                (when (or (seq errors) flash-failure)
                   [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1.mb2
                    [:div.px2.py1.bg-lighten-5.rounded
                     {:data-test "form-errors"}
-                    "Oops! Please fix the errors below."
                     [:div.img-error-icon.bg-no-repeat.bg-contain.right
-                     {:style {:width "1.25rem" :height "1.25rem"}}]]])
+                     {:style {:width "1.25rem" :height "1.25rem"}}]
+                    [:div.mr3
+                     (when (seq errors)
+                       "Oops! Please fix the errors below.")
+                     (when flash-failure
+                       flash-failure)]]])
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"
@@ -234,6 +238,7 @@
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
    :errors         (get-in data keypaths/errors)
+   :flash-failure  (get-in data keypaths/flash-failure-message)
    :referrals      (get-in data keypaths/stylist-referrals)})
 
 
