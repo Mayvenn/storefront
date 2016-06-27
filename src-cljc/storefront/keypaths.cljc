@@ -56,6 +56,7 @@
 (def browse-taxon-query (conj ui :browse-taxon-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
+(def saved-bundle-builder-options (conj ui :saved-bundle-builder-options))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))

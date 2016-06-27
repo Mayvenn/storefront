@@ -1,9 +1,13 @@
 (ns storefront.accessors.bundle-builder
-  (:require [storefront.platform.numbers :as numbers]))
+  (:require [storefront.platform.numbers :as numbers]
+            [clojure.set :as set]))
 
 (defn only [coll]
   (when (= 1 (count coll))
     (first coll)))
+
+(defn ^:private update-vals [m f & args]
+  (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
 (defn ^:private update-keys [m f & args]
   (reduce (fn [r [k v]] (assoc r (apply f k args) v)) {} m))
@@ -16,6 +20,24 @@
 
 (defn selected-product [bundle-builder products]
   (only (selected-products bundle-builder products)))
+
+(defn constrained-options [{:keys [selected-variants]}]
+  (->> selected-variants
+       (map :variant_attrs)
+       (map #(update-vals % (comp set vector)))
+       (reduce (partial merge-with set/union))
+       (map (juxt first (comp only second)))
+       (filter second)
+       (into {})))
+
+(defn clean-options [{:keys [flow step->option-names]} unsafe-options]
+  (->> flow
+       (map (fn [step]
+          (let [unsafe-option (get unsafe-options step)
+                safe? (some #{unsafe-option} (step step->option-names))]
+            [step (when safe? unsafe-option)])))
+       (take-while second)
+       (into {})))
 
 (defn ^:private filter-variants-by-selections [selections variants]
   (filter (fn [variant]
@@ -111,7 +133,8 @@
       bundle-builder))
 
 (defn reset-options [{:keys [initial-variants] :as bundle-builder} selected-options]
-  (let [selected-variants (filter-variants-by-selections selected-options initial-variants)
+  (let [selected-options (clean-options bundle-builder selected-options)
+        selected-variants (filter-variants-by-selections selected-options initial-variants)
         revised-state (assoc bundle-builder
                              :selected-options selected-options
                              :selected-variants selected-variants)]

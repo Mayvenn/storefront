@@ -66,22 +66,34 @@
       (assoc-in keypaths/return-navigation-message [event args])))
 
 (defn initialize-bundle-builder [app-state]
-  (let [taxon (taxons/current-taxon app-state)]
-    (if (and (nil? (get-in app-state keypaths/bundle-builder))
-             (taxons/products-loaded? app-state taxon))
-      (assoc-in app-state
-                keypaths/bundle-builder (bundle-builder/initialize taxon
-                                                                   (get-in app-state keypaths/products)
-                                                                   (experiments/color-option? app-state)))
-      app-state)))
+  (let [bundle-builder (bundle-builder/initialize (taxons/current-taxon app-state)
+                                                  (get-in app-state keypaths/products)
+                                                  (experiments/color-option? app-state))
+        saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
+    (if saved-options
+      (bundle-builder/reset-options bundle-builder saved-options)
+      bundle-builder)))
+
+(defn ensure-bundle-builder [app-state]
+  (if (and (nil? (get-in app-state keypaths/bundle-builder))
+           (taxons/products-loaded? app-state (taxons/current-taxon app-state)))
+    (-> app-state
+        (assoc-in keypaths/bundle-builder (initialize-bundle-builder app-state))
+        (update-in keypaths/ui dissoc :saved-bundle-builder-options))
+    app-state))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
-  (-> app-state
-      (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
-      (assoc-in keypaths/browse-recently-added-variants [])
-      (assoc-in keypaths/browse-variant-quantity 1)
-      (assoc-in keypaths/bundle-builder nil)
-      initialize-bundle-builder))
+  (let [bundle-builder-options (when (experiments/option-memory? app-state)
+                                 (-> (get-in app-state keypaths/bundle-builder)
+                                     bundle-builder/constrained-options
+                                     (dissoc :length)))]
+    (-> app-state
+        (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
+        (assoc-in keypaths/browse-recently-added-variants [])
+        (assoc-in keypaths/browse-variant-quantity 1)
+        (assoc-in keypaths/bundle-builder nil)
+        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-options)
+        ensure-bundle-builder)))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
@@ -184,7 +196,7 @@
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
     (update-in keypaths/products merge (key-by :id products))
-    initialize-bundle-builder))
+    ensure-bundle-builder))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
@@ -426,7 +438,7 @@
         (update-in keypaths/browse-taxon-query dissoc :experiment-color-option-original)
         (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true)
         (assoc-in keypaths/bundle-builder nil)
-        initialize-bundle-builder)))
+        ensure-bundle-builder)))
 
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation]} app-state]

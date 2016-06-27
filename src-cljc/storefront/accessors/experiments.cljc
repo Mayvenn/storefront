@@ -10,3 +10,6 @@
 
 (defn color-option? [data]
   (display-variation data "color-option"))
+
+(defn option-memory? [data]
+  (display-variation data "option-memory"))
