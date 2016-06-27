@@ -12,19 +12,19 @@
 (defn categories-component [{:keys [taxons]} owner opts]
   (component/create
    [:div
-    (let [height 9
-          rem #(str % "rem")]
-      (for [[index {:keys [slug]}] (map-indexed vector taxons)]
-        [:a.col (merge {:key slug
-                        :data-test (str "taxon-" slug)}
-                       (utils/route-to events/navigate-category
-                                       {:taxon-slug slug})
-                       (if (> index 5)
-                         {:class "col-6"}
-                         {:class "col-4"}))
+    (let [height   9
+          rem      #(str % "rem")
+          row-size 3] ;; Must evenly divide 12
+      (for [taxon-group    (partition-all row-size taxons)
+            {:keys [slug]} taxon-group
+            :let           [group-size (count taxon-group)]]
+        [:a.col (merge {:key       slug
+                        :data-test (str "taxon-" slug)
+                        :class     (str "col-" (/ 12 group-size))}
+                       (utils/route-to events/navigate-category {:taxon-slug slug}))
          [:div.mp1.flex.items-center.justify-center.bg-cover.bg-no-repeat.bg-center
           {:class (str "img-homepage-" slug)
-           :style (if (> index 5)
+           :style (if (< group-size row-size)
                     {:height (rem (float (/ height 2)))}
                     {:height (rem height)})}
           ;; duplicate element to emulate old styles without custom special-cased classes
