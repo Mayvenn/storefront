@@ -63,7 +63,7 @@
 
 (defn options-for-step [options
                         {:keys [prior-selections
-                                selected-option-name
+                                selected-option
                                 step-name
                                 step-variants
                                 step-min-price]}]
@@ -75,7 +75,7 @@
         :when                     (seq option-variants)]
     (merge option
            {:price-delta   (- (min-price option-variants) step-min-price)
-            :checked?      (= selected-option-name name)
+            :checked?      (= selected-option option)
             :sold-out?     (every? :sold-out? option-variants)
             :selections    (merge prior-selections option-selection)})))
 
@@ -94,15 +94,19 @@
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
         :let                    [prior-selections (select-keys selected-options prior-steps)
-                                 step-variants    (filter-variants-by-selections prior-selections initial-variants)]]
-    {:step-name     step-name
-     :later-step?   (> (count prior-steps) (count selected-options))
-     :options       (options-for-step (step->options step-name)
-                                      {:prior-selections     prior-selections
-                                       :selected-option-name (get selected-options step-name nil)
-                                       :step-name            step-name
-                                       :step-variants        step-variants
-                                       :step-min-price       (min-price step-variants)})}))
+                                 step-variants    (filter-variants-by-selections prior-selections initial-variants)
+                                 selected-option-name (get selected-options step-name nil)
+                                 options (step->options step-name)
+                                 selected-option (only (filter #(= selected-option-name (:name %)) options))]]
+    {:step-name       step-name
+     :selected-option selected-option
+     :later-step?     (> (count prior-steps) (count selected-options))
+     :options         (options-for-step options
+                                        {:prior-selections prior-selections
+                                         :selected-option  selected-option
+                                         :step-name        step-name
+                                         :step-variants    step-variants
+                                         :step-min-price   (min-price step-variants)})}))
 
 (defn ^:private ordered-steps [{:keys [result-facets]}]
   (map (comp keyword :step) result-facets))

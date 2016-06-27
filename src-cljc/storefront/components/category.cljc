@@ -118,9 +118,15 @@
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name later-step? options]} color-option?]
+(defn step-html [{:keys [step-name selected-option later-step? options]} color-option?]
   [:div.my2 {:key step-name}
-   [:div.navy.f3.medium.shout (name step-name)]
+   [:div.f3
+    [:span.navy.medium.shout (name step-name)]
+    (when (and color-option? selected-option)
+      [:span.light-gray
+       " - "
+       (or (:long-name selected-option)
+           [:span.titleize (:name selected-option)])])]
    [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [name] :as option} options]
       [:div.flex.flex-column.justify-center.pp3
