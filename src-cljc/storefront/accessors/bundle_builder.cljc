@@ -30,12 +30,13 @@
        (filter second)
        (into {})))
 
-(defn clean-options [{:keys [flow step->option-names]} unsafe-options]
+(defn clean-options [{:keys [flow step->options]} unsafe-options]
   (->> flow
        (map (fn [step]
-          (let [unsafe-option (get unsafe-options step)
-                safe? (some #{unsafe-option} (step step->option-names))]
-            [step (when safe? unsafe-option)])))
+              (prn step step->options)
+              (let [unsafe-option (get unsafe-options step)
+                    safe? (some #{unsafe-option} (map :name (step step->options)))]
+                [step (when safe? unsafe-option)])))
        (take-while second)
        (into {})))
 
@@ -60,23 +61,23 @@
          (map :price)
          (apply min))))
 
-(defn options-for-step [option-names
+(defn options-for-step [options
                         {:keys [prior-selections
                                 selected-option-name
                                 step-name
                                 step-variants
                                 step-min-price]}]
-  (for [option-name option-names
-        :let        [option-selection {step-name option-name}
-                     option-variants  (filter-variants-by-selections option-selection step-variants)]
+  (for [{:keys [name] :as option} options
+        :let                      [option-selection {step-name name}
+                                   option-variants  (filter-variants-by-selections option-selection step-variants)]
         ;; There are no Silk Blonde closures, so hide Silk when Blonde has been
         ;; selected, even though Silk Straight closures exist.
-        :when       (seq option-variants)]
-    {:option-name option-name
-     :price-delta (- (min-price option-variants) step-min-price)
-     :checked?    (= selected-option-name option-name)
-     :sold-out?   (every? :sold-out? option-variants)
-     :selections  (merge prior-selections option-selection)}))
+        :when                     (seq option-variants)]
+    (merge option
+           {:price-delta   (- (min-price option-variants) step-min-price)
+            :checked?      (= selected-option-name name)
+            :sold-out?     (every? :sold-out? option-variants)
+            :selections    (merge prior-selections option-selection)})))
 
 (defn steps
   "We are going to build the steps of the bundle builder. A 'step' is a name and
@@ -86,7 +87,7 @@
   The options are hardest to generate because they have to take into
   consideration the position in which the step appears in the flow, the list of
   variants in the step, and the seletions the user has chosen so far."
-  [{:keys [flow selected-options initial-variants step->option-names]}]
+  [{:keys [flow selected-options initial-variants step->options]}]
   (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
         ;; The variants that represent a step are tricky. Even if a user has
         ;; selected Lace, the Deep Wave variants include Lace and Silk, because
@@ -96,7 +97,7 @@
                                  step-variants    (filter-variants-by-selections prior-selections initial-variants)]]
     {:step-name     step-name
      :later-step?   (> (count prior-steps) (count selected-options))
-     :options       (options-for-step (step->option-names step-name)
+     :options       (options-for-step (step->options step-name)
                                       {:prior-selections     prior-selections
                                        :selected-option-name (get selected-options step-name nil)
                                        :step-name            step-name
@@ -104,10 +105,12 @@
                                        :step-min-price       (min-price step-variants)})}))
 
 (defn ^:private ordered-steps [{:keys [result-facets]}]
-  (map (comp keyword first) result-facets))
+  (map (comp keyword :step) result-facets))
 
 (defn ^:private ordered-options-by-step [{:keys [result-facets]}]
-  (update-keys result-facets keyword))
+  (->> result-facets
+       (map (juxt (comp keyword :step) :options))
+       (into {})))
 
 (defn ^:private build-variants [product]
   (map (fn [variant]
@@ -152,8 +155,8 @@
   (let [initial-variants (->> (map products (:product-ids taxon))
                               (remove nil?)
                               (mapcat build-variants))
-        initial-state    {:flow               (ordered-steps taxon)
-                          :auto-advance?      color-option?
-                          :initial-variants   initial-variants
-                          :step->option-names (ordered-options-by-step taxon)}]
+        initial-state    {:flow             (ordered-steps taxon)
+                          :auto-advance?    color-option?
+                          :initial-variants initial-variants
+                          :step->options    (ordered-options-by-step taxon)}]
     (reset-options initial-state {})))

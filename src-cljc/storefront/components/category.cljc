@@ -3,6 +3,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.components.ui :as ui]
@@ -92,9 +93,10 @@
      checkout-button]))
 
 (defn option-html [later-step?
-                   {:keys [option-name price-delta checked? sold-out? selections]}]
-  [:label.btn.border-silver.p1.flex.flex-column.justify-center.light
-   {:data-test (str "option-" (string/replace option-name #"\W+" ""))
+                   {:keys [name image price-delta checked? sold-out? selections]}
+                   color-option?]
+  [:label.btn.border-silver.p1.flex.flex-column.justify-center.items-center.light
+   {:data-test (str "option-" (string/replace name #"\W+" ""))
     :style {:width "100%"
             :height "100%"}
     :class (cond
@@ -107,25 +109,27 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   [:div.f2.titleize option-name]
+   (if (and color-option? image)
+     [:img.mbp4.content-box.circle.border-white {:src image :width 30 :height 30 :class (when checked? "border")}]
+     [:div.f2.titleize name])
    [:div.f4.line-height-2
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name later-step? options]}]
+(defn step-html [{:keys [step-name later-step? options]} color-option?]
   [:div.my2 {:key step-name}
    [:div.navy.f3.medium.shout (name step-name)]
    [:div.flex.flex-wrap.content-stretch.mxnp3
-    (for [{:keys [option-name] :as option} options]
+    (for [{:keys [name] :as option} options]
       [:div.flex.flex-column.justify-center.pp3
-       {:key   (string/replace (str option-name step-name) #"\W+" "-")
+       {:key   (string/replace (str name step-name) #"\W+" "-")
         :style {:height "72px"}
         :class (case step-name
                  :length "col-4"
                  "col-6")}
-       (option-html later-step? option)])]])
+       (option-html later-step? option color-option?)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
@@ -244,6 +248,7 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
+                         color-option?
                          bagged-variants]}
                  owner opts]
   (let [selected-variant  (bundle-builder/selected-variant bundle-builder)
@@ -270,7 +275,7 @@
              (when needs-selections?
                [:div.border-bottom.border-dark-white.border-width-2
                 (for [step (bundle-builder/steps bundle-builder)]
-                  (step-html step))])
+                  (step-html step color-option?))])
              [:div schema-org-offer-props
               [:div.my2
                (if selected-variant
@@ -297,6 +302,7 @@
      :selected-product   (bundle-builder/selected-product bundle-builder (get-in data keypaths/products))
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
+     :color-option?      (experiments/color-option? data)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)}))
 
