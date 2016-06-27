@@ -1,4 +1,4 @@
-(ns storefront.components.product
+(ns storefront.components.category
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
@@ -303,5 +303,5 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn product-component [data owner opts]
+(defn category-component [data owner opts]
   (component/create (built-component data opts)))

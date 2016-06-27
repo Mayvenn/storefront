@@ -19,7 +19,7 @@
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
             [storefront.components.categories :refer [categories-page-component]]
-            [storefront.components.product :refer [product-component]]
+            [storefront.components.category :refer [category-component]]
             [storefront.components.promotion-banner :refer [promotion-banner-component]]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
@@ -88,7 +88,7 @@
 
             events/navigate-home                           home-component
             events/navigate-categories                     categories-page-component
-            events/navigate-category                       product-component
+            events/navigate-category                       category-component
             events/navigate-guarantee                      thirty-day-guarantee-component
             events/navigate-help                           help-component
             events/navigate-sign-in                        sign-in/built-component
