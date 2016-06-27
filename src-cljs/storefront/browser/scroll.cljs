@@ -12,10 +12,12 @@
       (start-fn)
       (.addEventListener el end-event listener))))
 
-(defn set-scroll-top [y]
-  (set! (.. js/document -body -scrollTop) y))
+(defn set-scroll-top
+  ([y] (set-scroll-top (.-body js/document) y))
+  ([elem y] (set! (.. elem -scrollTop) y)))
 
-(def scroll-to-top (partial set-scroll-top 0))
+(defn scroll-to-top []
+  (set-scroll-top 0))
 
 (defn scroll-to [y]
   (let [body (.-body js/document)
