@@ -243,5 +243,5 @@
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
               [:.flex.flex-column.items-center.justify-center.pt4.mt4
-                        [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
-                        [:.h1.white {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
+               [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
+               [:.h2.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
