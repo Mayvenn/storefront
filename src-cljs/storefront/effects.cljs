@@ -16,7 +16,8 @@
             [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.hooks.analytics :as analytics]
+            [storefront.analytics :as analytics]
+            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
@@ -74,7 +75,7 @@
 (defmethod perform-effects events/app-start [_ event args app-state]
   (experiments/insert-optimizely (get-in app-state keypaths/store))
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
-  (analytics/insert-tracking)
+  (google-analytics/insert-tracking)
   (talkable/insert)
   (refresh-account app-state)
   (refresh-current-order app-state))
@@ -82,7 +83,7 @@
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)
   (riskified/remove-beacon)
-  (analytics/remove-tracking))
+  (google-analytics/remove-tracking))
 
 (defmethod perform-effects events/external-redirect-community [_ event args app-state]
   (set! (.-location js/window) (fastpass/community-url)))
@@ -90,7 +91,7 @@
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
-(defmethod perform-effects events/navigate [_ _ _ app-state]
+(defmethod perform-effects events/navigate [dispatch event args app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (refresh-account app-state)
     (api/get-sms-number)
@@ -122,11 +123,10 @@
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
         (handle-message events/flash-dismiss-failure)))
 
+    (analytics/track dispatch event args app-state)
+
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (let [path (routes/current-path app-state)]
-        (riskified/track-page path)
-        (analytics/track-page path)
-        (experiments/track-event path)
         (exception-handler/refresh)))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
@@ -351,10 +351,8 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home))
 
-(defmethod perform-effects events/control-add-to-bag [_ event {:keys [product variant quantity]} app-state]
-  (when (bundle-builder/included-product? product)
-    (analytics/track-page
-     (str (routes/current-path app-state) "/add_to_bag")))
+(defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [product variant quantity] :as args} app-state]
+  (analytics/track dispatch event args app-state)
   (api/add-to-bag
    {:variant variant
     :product product
@@ -364,13 +362,6 @@
     :number (get-in app-state keypaths/order-number)
     :user-id (get-in app-state keypaths/user-id)
     :user-token (get-in app-state keypaths/user-token)}))
-
-(defmethod perform-effects events/control-bundle-option-select
-  [_ event _ app-state]
-  (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
-    (analytics/track-page (str (routes/current-path app-state)
-                               "/choose_"
-                               (clj->js last-step)))))
 
 (defmethod perform-effects events/control-forgot-password-submit [_ event args app-state]
   (api/forgot-password (get-in app-state keypaths/forgot-password-email)))
@@ -419,9 +410,8 @@
                               coupon-code
                               false))))
 
-(defmethod perform-effects events/control-cart-share-show [_ event args app-state]
-  (analytics/track-page
-   (str (routes/current-path app-state) "/Share_cart"))
+(defmethod perform-effects events/control-cart-share-show [dispatch event args app-state]
+  (analytics/track dispatch event args app-state)
   (api/create-shared-cart (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
@@ -632,12 +622,8 @@
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} app-state]
   (handle-message events/order-completed order))
 
-(defmethod perform-effects events/order-completed [_ event order app-state]
-  (when (stylists/own-store? app-state)
-    (experiments/set-dimension "stylist-own-store" "stylists"))
-  (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
-  (analytics/track-event "orders" "placed_total" nil (int (:total order)))
-  (analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
+(defmethod perform-effects events/order-completed [dispatch event order app-state]
+  (analytics/track dispatch event order app-state)
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
   (talkable/show-pending-offer app-state))
 
@@ -684,12 +670,10 @@
 (defmethod perform-effects events/api-failure-errors [_ event args app-state]
   (scroll/snap-to-top))
 
-(defmethod perform-effects events/api-success-add-to-bag [_ _ args app-state]
+(defmethod perform-effects events/api-success-add-to-bag [dispatch event args app-state]
   (save-cookie app-state)
   (add-pending-promo-code app-state (get-in app-state keypaths/order))
-  (when (stylists/own-store? app-state)
-    (experiments/set-dimension "stylist-own-store" "stylists"))
-  (experiments/track-event "add-to-bag")
+  (analytics/track dispatch event args app-state)
   (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
@@ -725,9 +709,8 @@
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
-(defmethod perform-effects events/optimizely [_ event {:keys [variation]} app-state]
-  (experiments/activate-universal-analytics)
-  (analytics/track-event "optimizely-experiment" variation)
+(defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
+  (analytics/track dispatch event args app-state)
   (when-let [taxon-slug (:taxon-slug (get-in app-state keypaths/navigation-args))]
     (blonde->straight app-state taxon-slug))
   (when (= "color-option" variation)
