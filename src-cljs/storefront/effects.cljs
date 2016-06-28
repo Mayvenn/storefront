@@ -682,8 +682,7 @@
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-failure-errors [_ event args app-state]
-  (when-let [el (.querySelector js/document "[data-scrollable=modal]")]
-    (scroll/set-scroll-top el 0)))
+  (scroll/scroll-to-top))
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ args app-state]
   (save-cookie app-state)
