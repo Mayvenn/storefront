@@ -49,19 +49,23 @@
                              stylist-id))))
 
 (defn refresh-products [app-state product-ids]
-  (api/get-products-by-ids product-ids
-                           (get-in app-state keypaths/user-token)))
+  (when (seq product-ids)
+    (api/get-products-by-ids product-ids
+                             (get-in app-state keypaths/user-token))))
 
 (defn ensure-products [app-state product-ids]
-  (when-let [not-cached (->> (set product-ids)
-                             (remove (products/loaded-ids app-state))
-                             seq)]
+  (let [not-cached (remove (products/loaded-ids app-state) (set product-ids))]
     (refresh-products app-state not-cached)))
 
 (defn refresh-taxon-products
   "Intentionally bypass ensure-products whenever we navigate to a category"
   [app-state]
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
+
+(defn blonde->straight [app-state taxon-slug]
+  (when (and (experiments/color-option? app-state)
+             (= taxon-slug "blonde"))
+    (routes/enqueue-redirect events/navigate-category {:taxon-slug "straight"})))
 
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -124,9 +128,10 @@
         (experiments/track-event path)
         (exception-handler/refresh)))))
 
-(defmethod perform-effects events/navigate-category [_ event args app-state]
+(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
   (reviews/insert-reviews)
-  (refresh-taxon-products app-state))
+  (refresh-taxon-products app-state)
+  (blonde->straight app-state taxon-slug))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -723,6 +728,8 @@
 (defmethod perform-effects events/optimizely [_ event {:keys [variation]} app-state]
   (experiments/activate-universal-analytics)
   (analytics/track-event "optimizely-experiment" variation)
+  (when-let [taxon-slug (:taxon-slug (get-in app-state keypaths/navigation-args))]
+    (blonde->straight app-state taxon-slug))
   (when (= "color-option" variation)
     (refresh-taxon-products app-state)))
 
