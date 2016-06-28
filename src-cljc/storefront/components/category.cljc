@@ -136,8 +136,8 @@
         [:div.flex.flex-column.justify-center.pp3
          {:key   (string/replace (str name step-name) #"\W+" "-")
           :style {:height "72px"}
-          :class (case step-name
-                   :length "col-4"
+          :class (if (#{:length :color} step-name)
+                   "col-4"
                    "col-6")}
          (option-html later-step? option color-option?)])]]))
 
