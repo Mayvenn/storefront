@@ -110,7 +110,9 @@
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
    (if (and color-option? image)
-     [:img.mbp4.content-box.circle.border-white {:src image :width 30 :height 30 :class (when checked? "border")}]
+     [:img.mbp4.content-box.circle.border-white
+      {:src image :width 30 :height 30 :class (cond checked? "border"
+                                                    sold-out? "muted")}]
      [:div.f2.titleize name])
    [:div.f4.line-height-2
     (if sold-out?
