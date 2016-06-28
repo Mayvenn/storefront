@@ -249,7 +249,8 @@
   [taxon {:keys [selected-options selected-variants]}]
   (if (and (#{"blonde" "closures" "frontals"} (:slug taxon))
            (seq selected-options))
-    (vec (set (map #(get-in % [:images 0 :large_url]) selected-variants)))
+    (let [sorted-variants (reverse (sort-by #(-> % :variant_attrs :style) selected-variants))]
+      (vec (distinct (map #(get-in % [:images 0 :large_url]) sorted-variants))))
     (:images taxon)))
 
 (defn component [{:keys [taxon
