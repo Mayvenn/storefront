@@ -136,9 +136,10 @@
         [:div.flex.flex-column.justify-center.pp3
          {:key   (string/replace (str name step-name) #"\W+" "-")
           :style {:height "72px"}
-          :class (if (#{:length :color} step-name)
-                   "col-4"
-                   "col-6")}
+          :class (cond
+                   (= :length step-name) "col-4"
+                   (and color-option? (= :color step-name)) "col-4"
+                   :else "col-6")}
          (option-html later-step? option color-option?)])]]))
 
 (defn indefinite-articalize [word]
