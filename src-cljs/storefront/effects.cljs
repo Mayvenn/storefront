@@ -103,7 +103,7 @@
       (api/get-order order-number
                      (get-in app-state keypaths/order-token)))
     (opengraph/set-site-tags)
-    (scroll/scroll-to-top)
+    (scroll/snap-to-top)
 
     (when-let [pending-promo-code (-> nav-args :query-params :sha)]
       (cookie-jar/save-pending-promo-code
@@ -669,11 +669,11 @@
                    :navigation (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/flash-show [_ event args app-state]
-  (scroll/scroll-to-top))
+  (scroll/snap-to-top))
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
   (handle-message events/flash-dismiss-success)
-  (scroll/scroll-to-top)
+  (scroll/snap-to-top)
   (handle-message events/flash-show-failure
                   {:message (:error-message validation-errors)
                    :navigation (get-in app-state keypaths/navigation-message)}))
@@ -682,7 +682,7 @@
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-failure-errors [_ event args app-state]
-  (scroll/scroll-to-top))
+  (scroll/snap-to-top))
 
 (defmethod perform-effects events/api-success-add-to-bag [_ _ args app-state]
   (save-cookie app-state)
@@ -693,7 +693,7 @@
   (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
-  (when-let [el (.querySelector js/document "[data-scroll=cart-button]")]
+  (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
     (scroll/scroll-to-elem el)))
 
 (defmethod perform-effects events/reviews-component-mounted [_ event args app-state]

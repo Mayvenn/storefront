@@ -131,11 +131,12 @@
     {:on-click on-close}
     [:div.fixed.overlay {:class bg-class}]]
    (into [:div.fixed.z3.left-0.right-0.mx-auto.col-11.md-up-col-7.lg-up-col-5.overflow-auto {:style {:max-height "100%"}
-                                                                                             :data-scrollable "modal"}]
+                                                                                             :data-snap-to "top"}]
          body)])
 
 (defn modal-close [{:keys [data-test on-close]}]
   [:div.clearfix
+   {:data-scrollable "not-a-modal"}
    [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
     [:div.fill-dark-silver {:alt "Close"} svg/counter-inc]]])
 

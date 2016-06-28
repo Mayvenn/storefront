@@ -13,13 +13,11 @@
       (.addEventListener el end-event listener))))
 
 (defn set-scroll-top
-  ([y] (set-scroll-top (.-body js/document) y))
-  ([elem y] (set! (.. elem -scrollTop) y)))
+  [elem y] (set! (.. elem -scrollTop) y))
 
-(defn scroll-to-top []
-  (set-scroll-top 0)
+(defn snap-to-top []
   ;; NodeList is not seqable
-  (let [elements (js/document.querySelectorAll "[data-scrollable]")]
+  (let [elements (js/document.querySelectorAll "[data-snap-to=top]")]
     (dotimes [i (.-length elements)]
       (set-scroll-top (aget elements i) 0))))
 
@@ -32,7 +30,7 @@
      "transitionend"
      #(do
         (set! (.. body -style -marginTop) (str dy "px"))
-        (set-scroll-top y)
+        (set-scroll-top js/document.body y)
         (set! (.. body -style -transition) "margin-top 1s ease")
         (set! (.. body -style -marginTop) 0))
      #(when (= (.-target %) (.-currentTarget %))

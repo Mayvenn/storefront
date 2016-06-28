@@ -83,7 +83,7 @@
   (component/html
    [:div
     {:data-test "cart-button"
-     :data-scroll "cart-button"}
+     :data-ref "cart-button"}
     (ui/button "Check out" (utils/route-to events/navigate-cart))]))
 
 (defn bagged-variants-and-checkout [bagged-variants]
