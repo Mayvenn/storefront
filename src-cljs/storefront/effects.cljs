@@ -18,6 +18,7 @@
             [storefront.events :as events]
             [storefront.analytics :as analytics]
             [storefront.hooks.google-analytics :as google-analytics]
+            [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
@@ -72,10 +73,12 @@
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
-(defmethod perform-effects events/app-start [_ event args app-state]
+(defmethod perform-effects events/app-start [dispatch event args app-state]
   (experiments/insert-optimizely (get-in app-state keypaths/store))
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (google-analytics/insert-tracking)
+  (facebook-analytics/insert-tracking)
+  (analytics/track dispatch event args app-state)
   (talkable/insert)
   (refresh-account app-state)
   (refresh-current-order app-state))
@@ -83,7 +86,8 @@
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (experiments/remove-optimizely)
   (riskified/remove-beacon)
-  (google-analytics/remove-tracking))
+  (google-analytics/remove-tracking)
+  (facebook-analytics/remove-tracking))
 
 (defmethod perform-effects events/external-redirect-community [_ event args app-state]
   (set! (.-location js/window) (fastpass/community-url)))

@@ -12,12 +12,18 @@
 
 (defmethod track :default [dispatch event args app-state])
 
+(defn- track-page-view [app-state]
+  (let [path (routes/current-path app-state)]
+    (riskified/track-page path)
+    (google-analytics/track-page path)
+    (experiments/track-event path)))
+
+(defmethod track events/app-start [_ event args app-state]
+  (track-page-view app-state))
+
 (defmethod track events/navigate [_ event args app-state]
   (when-not (= [event args] (get-in app-state keypaths/previous-navigation-message))
-    (let [path (routes/current-path app-state)]
-      (riskified/track-page path)
-      (google-analytics/track-page path)
-      (experiments/track-event path))))
+    (track-page-view app-state)))
 
 (defmethod track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
