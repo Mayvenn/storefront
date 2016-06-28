@@ -37,13 +37,6 @@
   (when (.hasOwnProperty js/window "optimizely")
     (.push js/optimizely (clj->js ["trackEvent" event-name opts]))))
 
-(defn display-variation [data variation]
-  (contains? (get-in data keypaths/optimizely-variations)
-             variation))
-
-(defn color-option? [data]
-  (display-variation data "color-option"))
-
 (defn activate-universal-analytics []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

@@ -5,6 +5,7 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
+            [storefront.accessors.experiments :refer [color-option?]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
@@ -63,7 +64,7 @@
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
 (defn blonde->straight [app-state taxon-slug]
-  (when (and (experiments/color-option? app-state)
+  (when (and (color-option? app-state)
              (= taxon-slug "blonde"))
     (routes/enqueue-redirect events/navigate-category {:taxon-slug "straight"})))
 
