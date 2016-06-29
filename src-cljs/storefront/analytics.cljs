@@ -36,7 +36,6 @@
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
 (defmethod track events/order-completed [_ event order app-state]
-  (prn "in order completed")
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
   (facebook-analytics/track-event "Purchase" {:value (str (:total order)) :currency "USD"})
