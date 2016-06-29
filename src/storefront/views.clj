@@ -63,7 +63,7 @@
     (when-not (config/development? environment)
       [:script {:src (asset-path "/js/out/main.js") :async true}])
     (page/include-css (asset-path "/css/full.css"))]
-   [:body
+   [:body {:data-snap-to "top"}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want
