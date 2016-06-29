@@ -15,6 +15,7 @@
                        [storefront.components.friend-referrals :refer [friend-referrals-component]]
                        [storefront.components.popup :refer [popup-component]]])
 
+            [storefront.components.ui :as ui]
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
             [storefront.components.home :refer [home-component]]
@@ -35,7 +36,14 @@
   (component/create
    [:div
     (when success [:div.flash.success success])
-    (when failure [:div.flash.error failure])]))
+    (when failure
+      (ui/narrow-container
+       [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
+        [:div.px2.py1.bg-lighten-5.rounded {:data-test "flash-error"}
+         [:div.img-error-icon.bg-no-repeat.bg-contain.right
+          {:style {:width "1.25rem" :height "1.25rem"}}]
+         [:ul.m0.ml1.px2
+          [:li.mr3 failure]]]]))]))
 
 
 #?(:cljs
