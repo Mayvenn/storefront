@@ -81,14 +81,13 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn refer-button [sales-rep-email link-attrs]
-  (let [mailto (str "mailto:" sales-rep-email "?Subject=Referral&body=name:%0D%0Aemail:%0D%0Aphone:")]
-    [:a.col-12.btn.btn-primary
-     (merge (utils/fake-href events/control-popup-show-refer-stylists)
-            link-attrs)
-     "Refer"]))
+(defn refer-button [link-attrs]
+  [:a.col-12.btn.btn-primary
+   (merge (utils/fake-href events/control-popup-show-refer-stylists)
+          link-attrs)
+   "Refer"])
 
-(defn show-refer-ad [sales-rep-email bonus-amount earning-amount]
+(defn show-refer-ad [bonus-amount earning-amount]
   (let [message (goog.string/format "Earn %s in credit when each stylist sells their first %s"
                                     (mf/as-money-without-cents bonus-amount)
                                     (mf/as-money-without-cents earning-amount))]
@@ -96,12 +95,12 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h5.dark-silver.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 (refer-button sales-rep-email {:data-test "refer-button-desktop"})]]
+      [:.h3.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 (refer-button sales-rep-email {:class "btn-big"
-                                                              :data-test "refer-button-mobile"})]
+      [:.right.ml2.m1.h3.col-4 (refer-button {:class "btn-big"
+                                              :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h5.dark-silver.line-height-2 message]]]))
 
 (def empty-referrals
@@ -110,8 +109,7 @@
     [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
     [:p.h2.silver "Looks like you haven't" [:br] "referred anyone yet."]]))
 
-(defn stylist-referrals-component [{:keys [sales-rep-email
-                                           earning-amount
+(defn stylist-referrals-component [{:keys [earning-amount
                                            bonus-amount
                                            lifetime-total
                                            referrals
@@ -126,7 +124,7 @@
        [:.clearfix.mb3
         [:.sm-up-col-right.sm-up-col-4
          (when bonus-amount
-           (show-refer-ad sales-rep-email bonus-amount earning-amount))]
+           (show-refer-ad bonus-amount earning-amount))]
 
         [:.sm-up-col.sm-up-col-8
          (when (seq referrals)
@@ -140,8 +138,7 @@
            (show-lifetime-total lifetime-total))]]]))))
 
 (defn stylist-referrals-query [data]
-  {:sales-rep-email (get-in data keypaths/stylist-sales-rep-email)
-   :earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
+  {:earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
    :lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)
    :referrals       (get-in data keypaths/stylist-referral-program-referrals)
