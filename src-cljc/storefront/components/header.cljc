@@ -92,11 +92,10 @@
 ;; Sharing this width ensure the popup is centered on mobile
 (def popup-width          "188px")
 
-(defn social-link [img-attrs href title]
+(defn social-link [img href title]
   [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href href}
    [:div.flex.items-center
-    [:div.mr1 {:style {:width "15px"}}
-     [:div.bg-no-repeat.bg-contain img-attrs]]
+    [:div.mr1 {:style {:width "15px"}} img]
     [:div.pp2 title]]])
 
 (defn store-dropdown [expanded?
@@ -124,16 +123,15 @@
           [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
         [:h3.f3.medium store-name]]
        (when instagram-account
-         [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href (str "http://instagram.com/" instagram-account)}
-          [:div.flex.items-center
-           [:div.mr1 {:style {:width "15px"}}
-            [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}}
-             svg/instagram]]
-           [:div.pp2 "Follow me on Instagram"]]])
+         (social-link
+          [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}} svg/instagram]
+          (str "http://instagram.com/" instagram-account)
+          "Follow me on Instagram"))
        (when styleseat-account
-         (social-link {:class "img-styleseat" :style {:width "15px" :height "14px"}}
-                      (str "https://www.styleseat.com/v/" styleseat-account)
-                      "Book me on StyleSeat"))]]])])
+         (social-link
+          [:div.bg-no-repeat.bg-contain.img-styleseat {:style {:width "15px" :height "14px"}}]
+          (str "https://www.styleseat.com/v/" styleseat-account)
+          "Book me on StyleSeat"))]]])])
 
 (defn account-dropdown [expanded? link & menu]
   (ui/drop-down
