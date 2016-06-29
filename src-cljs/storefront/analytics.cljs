@@ -7,6 +7,7 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.riskified :as riskified]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]))
 
 (defmulti track identity)
@@ -61,3 +62,9 @@
 
 (defmethod track events/control-checkout-cart-paypal-setup [_ event _ app-state]
   (facebook-analytics/track-event "InitiateCheckout"))
+
+(defmethod track events/control-bundle-option-select [_ event _ app-state]
+  (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
+    (google-analytics/track-page (str (routes/current-path app-state)
+                                      "/choose_"
+                                      (clj->js last-step)))))

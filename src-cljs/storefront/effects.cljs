@@ -356,6 +356,9 @@
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home))
 
+(defmethod perform-effects events/control-bundle-option-select [dispatch event args app-state]
+  (analytics/track dispatch event args app-state))
+
 (defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [product variant quantity] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (api/add-to-bag
