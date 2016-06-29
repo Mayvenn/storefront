@@ -189,7 +189,7 @@
                                              :name      (str "referrals[" idx "][fullname]")
                                              :data-test (str "referral-fullname-" idx)
                                              :id        (str "referral-fullname-" idx)
-                                             :class     "rounded-left"
+                                             :class     "rounded"
                                              :errors    (get errors ["referrals" idx "fullname"])
                                              :required  true})]
                    [:.col-12 (ui/text-field "Mobile Phone (required)"
