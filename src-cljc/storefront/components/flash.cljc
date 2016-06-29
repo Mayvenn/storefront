@@ -48,7 +48,7 @@
          [:li.mr3 (or validation-message failure)]]))
 
       ;; TODO: ensure error messages are cleared when success flash is assoced-in
-      success [:div.flash.success success])]))
+      success [:div.flash.success {:data-test "flash-success"} success])]))
 
 (defn query [data]
   {:success            (get-in data keypaths/flash-success-message)
