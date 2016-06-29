@@ -5,14 +5,26 @@
             [storefront.platform.messages :as m]
             [storefront.config :as config]))
 
-(def stylist-odd?  (comp odd? :stylist_id))
-(def stylist-even? (comp even? :stylist_id))
-(def no-stylist?   (comp #{"shop" "store"} :store_slug))
+(def stylist-shop? (comp #{"shop"} :store_slug))
+(def stylist-store? (comp #{"store"} :store_slug))
+(defn stylist-mod? [m v]
+  (fn [stylist]
+    (= (mod (:stylist_id stylist) m) v)))
+
+(def control-1 0)
+(def control-2 1)
+(def color-variation 2)
+(def shop-variation 3)
+(def store-variation 4)
 
 (def experiment->buckets
-  {:experiment-id [[no-stylist? 2]
-                   [stylist-odd? 0]
-                   [stylist-even? 1]]})
+  (if (or config/development? config/acceptance?)
+    {6368621011 [[stylist-shop?      shop-variation]
+                 [stylist-store?     store-variation]
+                 [(stylist-mod? 3 0) control-1]
+                 [(stylist-mod? 3 1) control-2]
+                 [(stylist-mod? 3 2) color-variation]]}
+    {}))
 
 (defn- bucket [store experiment-id]
   (some->> (get experiment->buckets experiment-id)
@@ -21,7 +33,8 @@
            (conj ["bucketVisitor" experiment-id])))
 
 (defn insert-optimizely [store]
-  (set! (.-optimizely js/window) (clj->js (keep (partial bucket store) (keys experiment->buckets))))
+  (when (seq experiment->buckets)
+    (set! (.-optimizely js/window) (clj->js (keep (partial bucket store) (keys experiment->buckets)))))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn.optimizely.com/js/" config/optimizely-app-id ".js") "optimizely")
                                  #(m/handle-message events/inserted-optimizely))
   (js/setTimeout #(m/handle-message events/inserted-optimizely) 15000))
