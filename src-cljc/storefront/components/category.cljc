@@ -244,13 +244,33 @@
   [:div.inline-block.h5
    (component/build reviews/reviews-summary-component reviews opts)])
 
-(defn images-from-variants
+(defn taxon-uses-product-images [color-option? taxon-slug]
+  ((if color-option?
+     #{"blonde" "closures" "frontals" "straight"}
+     #{"blonde" "closures" "frontals"}) taxon-slug))
+
+(defn ensure-model-img-first [[product model & others :as images]]
+  ;;Model images should be shown first if they exist.
+  ;;Currently model images are at index 1.
+  ;;TODO: cellar should be able differentiate between model and product images
+  (if (and product model)
+    (into [model product] others)
+    images))
+
+(defn distinct-variant-images [selected-variants]
+  (->> (sort-by #(-> % :variant_attrs :style) selected-variants)
+       reverse ;;List straight styles first
+       (mapcat #(map :large_url (:images %)))
+       distinct
+       vec
+       ensure-model-img-first))
+
+(defn ^:private images-from-variants
   "For some taxons, when a selection has been made, show detailed product images"
-  [taxon {:keys [selected-options selected-variants]}]
-  (if (and (#{"blonde" "closures" "frontals"} (:slug taxon))
+  [taxon {:keys [selected-options selected-variants]} color-option?]
+  (if (and (taxon-uses-product-images color-option? (:slug taxon))
            (seq selected-options))
-    (let [sorted-variants (reverse (sort-by #(-> % :variant_attrs :style) selected-variants))]
-      (vec (distinct (map #(get-in % [:images 0 :large_url]) sorted-variants))))
+    (distinct-variant-images selected-variants)
     (:images taxon)))
 
 (defn component [{:keys [taxon
@@ -264,7 +284,7 @@
                          bagged-variants]}
                  owner opts]
   (let [selected-variant  (bundle-builder/selected-variant bundle-builder)
-        carousel-images   (images-from-variants taxon bundle-builder)
+        carousel-images   (images-from-variants taxon bundle-builder color-option?)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
         review?           (taxons/eligible-for-reviews? taxon)]
     (component/create
