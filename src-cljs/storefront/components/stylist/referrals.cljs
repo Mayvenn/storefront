@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
+            [storefront.components.flash :as flash]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
@@ -158,16 +159,13 @@
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (or (seq errors) flash-failure)
-                  [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1.mb2
-                   [:div.px2.py1.bg-lighten-5.rounded
+                  [:div.mb2
+                   (flash/error-box
                     {:data-test "form-errors"}
-                    [:div.img-error-icon.bg-no-repeat.bg-contain.right
-                     {:style {:width "1.25rem" :height "1.25rem"}}]
                     [:div.mr3
                      (when (seq errors)
                        "Oops! Please fix the errors below.")
-                     (when flash-failure
-                       flash-failure)]]])
+                     (when flash-failure flash-failure)])])
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"

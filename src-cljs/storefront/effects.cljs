@@ -116,16 +116,16 @@
        pending-promo-code)
       (routes/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
 
-    (let [[flash-event flash-args] (get-in app-state keypaths/flash-success-nav)]
+    (let [[flash-event flash-args :as flash-message] (get-in app-state keypaths/flash-success-nav)]
       (when-not (or
-                 (empty? (get-in app-state keypaths/flash-success-nav))
+                 (empty? flash-message)
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
-        (handle-message events/flash-dismiss-success)))
-    (let [[flash-event flash-args] (get-in app-state keypaths/flash-failure-nav)]
+        (handle-message events/flash-dismiss)))
+    (let [[flash-event flash-args :as flash-message] (get-in app-state keypaths/flash-failure-nav)]
       (when-not (or
-                 (empty? (get-in app-state keypaths/flash-failure-nav))
+                 (empty? flash-message)
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
-        (handle-message events/flash-dismiss-failure)))
+        (handle-message events/flash-dismiss)))
 
     (analytics/track dispatch event args app-state)
 
@@ -528,7 +528,7 @@
                          args)))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args app-state]
-  (handle-message events/flash-dismiss-failure)
+  (handle-message events/flash-dismiss)
   (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))
         covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
@@ -609,8 +609,7 @@
   (when (:updated args)
     (handle-message events/flash-show-success
                     {:message "Account updated"
-                     :navigation [events/navigate-stylist-manage-account {}]})
-    (handle-message events/flash-dismiss-failure)))
+                     :navigation [events/navigate-stylist-manage-account {}]})))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
   (handle-later events/control-popup-hide {} 2000))
@@ -668,11 +667,7 @@
   (scroll/snap-to-top))
 
 (defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
-  (handle-message events/flash-dismiss-success)
-  (scroll/snap-to-top)
-  (handle-message events/flash-show-failure
-                  {:message (:error-message validation-errors)
-                   :navigation (get-in app-state keypaths/navigation-message)}))
+  (scroll/snap-to-top))
 
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
@@ -708,7 +703,7 @@
   (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
 
 (defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
-  (handle-message events/flash-dismiss-failure)
+  (handle-message events/flash-dismiss)
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]

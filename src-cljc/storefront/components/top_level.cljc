@@ -18,6 +18,7 @@
             [storefront.components.ui :as ui]
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
+            [storefront.components.flash :as flash]
             [storefront.components.home :refer [home-component]]
             [storefront.components.categories :refer [categories-page-component]]
             [storefront.components.category :refer [category-component]]
@@ -32,29 +33,12 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn flash-component [{:keys [success failure]} _ _]
-  (component/create
-   [:div
-    (when success [:div.flash.success success])
-    (when failure
-      (ui/narrow-container
-       [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
-        [:div.px2.py1.bg-lighten-5.rounded {:data-test "flash-error"}
-         [:div.img-error-icon.bg-no-repeat.bg-contain.right
-          {:style {:width "1.25rem" :height "1.25rem"}}]
-         [:ul.m0.ml1.px2
-          [:li.mr3 failure]]]]))]))
-
-
 #?(:cljs
    (defn getsat-top-level-component [data owner opts]
      (component/create
       [:.page-wrap
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
-       (component/build flash-component
-                        {:success (get-in data keypaths/flash-success-message)
-                         :failure (get-in data keypaths/flash-failure-message)}
-                        opts)
+       (component/build flash/component (flash/query data) opts)
        [:main {:role "main"}
         [:div.legacy-container
          (component/build (requires-sign-in data redirect-getsat-component) data opts)]]])))
@@ -70,10 +54,7 @@
        [:div.border-bottom.border-light-silver
         (header/built-component data)
         (slideout-nav/built-component data)]
-       (component/build flash-component
-                        {:success (get-in data keypaths/flash-success-message)
-                         :failure (get-in data keypaths/flash-failure-message)}
-                        opts)
+       (component/build flash/component (flash/query data) opts)
        [:main {:role "main"}
         [:div.legacy-container
          (component/build
@@ -94,14 +75,14 @@
                  events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
                  events/navigate-order-complete                 checkout-complete/built-component])
 
-            events/navigate-home                           home-component
-            events/navigate-categories                     categories-page-component
-            events/navigate-category                       category-component
-            events/navigate-guarantee                      thirty-day-guarantee-component
-            events/navigate-help                           help-component
-            events/navigate-sign-in                        sign-in/built-component
-            events/navigate-sign-up                        sign-up/built-component
-            events/navigate-forgot-password                forgot-password/built-component
+            events/navigate-home            home-component
+            events/navigate-categories      categories-page-component
+            events/navigate-category        category-component
+            events/navigate-guarantee       thirty-day-guarantee-component
+            events/navigate-help            help-component
+            events/navigate-sign-in         sign-in/built-component
+            events/navigate-sign-up         sign-up/built-component
+            events/navigate-forgot-password forgot-password/built-component
             home-component)
           data opts)]]
        (component/build footer/footer-component (footer/footer-query data) opts)]])))

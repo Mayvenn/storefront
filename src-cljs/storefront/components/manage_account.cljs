@@ -4,7 +4,6 @@
             [storefront.components.facebook-messenger :as facebook]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -12,7 +11,6 @@
   (om/component
    (html
     [:div
-     (om/build validation-errors/component (get-in data keypaths/validation-errors-details))
      [:div#edit-account
       [:form
        {:on-submit (utils/send-event-callback events/control-manage-account-submit)}

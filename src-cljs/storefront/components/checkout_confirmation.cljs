@@ -18,8 +18,7 @@
           (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
 
 (defn component
-  [{:keys [errors
-           checkout-steps
+  [{:keys [checkout-steps
            updating-shipping?
            saving-card?
            placing-order?
@@ -61,7 +60,6 @@
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
    :checkout-steps               (checkout-steps/query data)
-   :errors                       (get-in data keypaths/validation-errors)
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
    :payment                      (checkout-payment/credit-card-form-query data)

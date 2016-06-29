@@ -23,6 +23,13 @@
            app-state
            (or menus keypaths/menus))))
 
+(defn clear-flash [app-state]
+  (-> app-state
+      (assoc-in keypaths/flash-success nil)
+      (assoc-in keypaths/flash-failure nil)
+      (assoc-in keypaths/validation-errors {:error-message nil :details {}})
+      (assoc-in keypaths/errors {})))
+
 (defmulti transition-state identity)
 
 (defmethod transition-state :default [dispatch event args app-state]
@@ -56,8 +63,7 @@
       (add-pending-promo-code args)
       (assoc-in keypaths/previous-navigation-message
                 (get-in app-state keypaths/navigation-message))
-      (assoc-in keypaths/validation-errors {})
-      (assoc-in keypaths/errors {})
+      clear-flash
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]
@@ -204,7 +210,6 @@
 (defmethod transition-state events/api-success-stylist-manage-account
   [_ event {:keys [stylist]} app-state]
   (-> app-state
-      (assoc-in keypaths/validation-errors {})
       (update-in keypaths/stylist-manage-account merge (assoc stylist :original_payout_method (:chosen_payout_method stylist)))
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
 
@@ -318,19 +323,13 @@
              keypaths/stylist-referrals
              #(vec (remove nil? (assoc % index nil)))))
 
-(defn clear-errors [app-state]
-  (-> app-state
-      (assoc-in keypaths/flash-failure nil)
-      (assoc-in keypaths/validation-errors {:error-message nil :details {}})
-      (assoc-in keypaths/errors {})))
-
 (defmethod transition-state events/control-stylist-referral-submit [_ event args app-state]
-  (clear-errors app-state))
+  (clear-flash app-state))
 
 (defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/popup :refer-stylist)
-      clear-errors))
+      clear-flash))
 
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))
@@ -422,7 +421,9 @@
   (assoc-in app-state keypaths/errors (group-by :path errors)))
 
 (defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
-  (assoc-in app-state keypaths/validation-errors validation-errors))
+  (-> app-state
+      clear-flash
+      (assoc-in keypaths/validation-errors validation-errors)))
 
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
   (assoc-in app-state keypaths/pending-promo-code nil))
@@ -431,16 +432,17 @@
   (assoc-in app-state keypaths/order nil))
 
 (defmethod transition-state events/flash-show-success [_ event args app-state]
-  (assoc-in app-state keypaths/flash-success (select-keys args [:message :navigation])))
+  (-> app-state
+      clear-flash
+      (assoc-in keypaths/flash-success (select-keys args [:message :navigation]))))
 
-(defmethod transition-state events/flash-dismiss-success [_ event args app-state]
-  (assoc-in app-state keypaths/flash-success nil))
+(defmethod transition-state events/flash-dismiss [_ event args app-state]
+  (clear-flash app-state))
 
 (defmethod transition-state events/flash-show-failure [_ event args app-state]
-  (assoc-in app-state keypaths/flash-failure (select-keys args [:message :navigation])))
-
-(defmethod transition-state events/flash-dismiss-failure [_ event args app-state]
-  (assoc-in app-state keypaths/flash-failure nil))
+  (-> app-state
+      clear-flash
+      (assoc-in keypaths/flash-failure (select-keys args [:message :navigation]))))
 
 (defn set-color-option-variation [app-state variation]
   (if (not= "color-option" variation)

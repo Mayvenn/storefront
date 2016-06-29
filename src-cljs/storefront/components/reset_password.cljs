@@ -4,16 +4,14 @@
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [reset-password reset-password-confirmation errors loaded-facebook?]} owner]
+(defn component [{:keys [reset-password reset-password-confirmation loaded-facebook?]} owner]
   (om/component
    (html
     (ui/narrow-container
      [:.h2.center.my2 "Update Your Password"]
-     (om/build validation-errors/component errors)
      [:form.col-12
       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
       (ui/text-field "Password"
@@ -36,7 +34,6 @@
 (defn query [data]
   {:reset-password              (get-in data keypaths/reset-password-password)
    :reset-password-confirmation (get-in data keypaths/reset-password-password-confirmation)
-   :errors                      (get-in data keypaths/validation-errors-details)
    :loaded-facebook?            (get-in data keypaths/loaded-facebook)})
 
 (defn built-component [data owner]

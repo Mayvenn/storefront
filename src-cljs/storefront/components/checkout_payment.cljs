@@ -7,7 +7,6 @@
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
@@ -69,13 +68,11 @@
            saving?
            loaded-stripe?
            store-credit
-           errors
            credit-card]}
    owner]
   (om/component
    (html
     (ui/narrow-container
-     (om/build validation-errors/component errors)
      (om/build checkout-steps/component step-bar)
 
      (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
@@ -117,7 +114,6 @@
                        :fully-covered?    (orders/fully-covered-by-store-credit?
                                            (get-in data keypaths/order)
                                            (get-in data keypaths/user))}
-      :errors         (get-in data keypaths/validation-errors-details)
       :saving?        (saving-card? data)
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)}

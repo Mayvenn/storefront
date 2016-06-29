@@ -4,7 +4,6 @@
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.validation-errors :as validation-errors]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
@@ -229,11 +228,10 @@
                                                           :value   (ui/selected-value %)})})])])])))
 
 (defn component
-  [{:keys [saving? errors step-bar billing-address-data shipping-address-data]} owner]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
   (om/component
    (html
     (ui/narrow-container
-     (om/build validation-errors/component errors)
      (om/build checkout-steps/component step-bar)
 
      [:form.col-12.flex.flex-column.items-center
@@ -251,7 +249,6 @@
   (let [places-loaded? (get-in data keypaths/loaded-places)
         states         (get-in data keypaths/states)]
     {:saving?              (utils/requesting? data request-keys/update-addresses)
-     :errors               (get-in data keypaths/validation-errors-details)
      :step-bar             (checkout-steps/query data)
      :billing-address-data {:billing-address           (get-in data keypaths/checkout-billing-address)
                             :states                    states

@@ -171,9 +171,7 @@
 (defpath flash-show)
 (defpath flash-dismiss)
 (defpath flash-show-success)
-(defpath flash-dismiss-success)
 (defpath flash-show-failure)
-(defpath flash-dismiss-failure)
 
 (defpath referral-thank-you-show)
 (defpath referral-thank-you-hide)
