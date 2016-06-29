@@ -18,8 +18,13 @@ fbq('init', '721931104522825');"
   ;; fb inserts more tags (as expected); remove them to help prevent so many additional ones in development
   (remove-tag-by-src "//connect.facebook.net/en_US/fbevents.js"))
 
-(defn track-event [category action & [label value]])
+(defn track-event
+  ([action]
+   (when (.hasOwnProperty js/window "fbq")
+     (js/fbq "track" action)))
+  ([action args]
+   (when (.hasOwnProperty js/window "fbq")
+     (js/fbq "track" action (clj->js args)))))
 
 (defn track-page [path]
-  (when (.hasOwnProperty js/window "fbq")
-    (js/fbq "track" "PageView")))
+  (track-event "PageView"))

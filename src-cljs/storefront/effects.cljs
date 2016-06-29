@@ -133,7 +133,8 @@
       (let [path (routes/current-path app-state)]
         (exception-handler/refresh)))))
 
-(defmethod perform-effects events/navigate-category [_ event {:keys [taxon-slug]} app-state]
+(defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
+  (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)
   (refresh-taxon-products app-state)
   (blonde->straight app-state taxon-slug))
@@ -435,10 +436,12 @@
 (defmethod perform-effects events/control-checkout-as-guest-submit [_ event _ app-state]
   (redirect-to-return-navigation app-state))
 
-(defmethod perform-effects events/control-checkout-cart-submit [_ event _ app-state]
+(defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
+  (analytics/track dispatch event args app-state)
   (routes/enqueue-navigate events/navigate-checkout-address))
 
-(defmethod perform-effects events/control-checkout-cart-paypal-setup [_ event _ app-state]
+(defmethod perform-effects events/control-checkout-cart-paypal-setup [dispatch event args app-state]
+  (analytics/track dispatch event args app-state)
   (let [order (get-in app-state keypaths/order)]
     (api/update-cart-payments
      {:order (-> app-state
