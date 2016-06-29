@@ -124,9 +124,12 @@
           [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
         [:h3.f3.medium store-name]]
        (when instagram-account
-         (social-link {:class "img-instagram mlp1" :style {:width "12px" :height "12px"}}
-                      (str "http://instagram.com/" instagram-account)
-                      "Follow me on Instagram"))
+         [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href (str "http://instagram.com/" instagram-account)}
+          [:div.flex.items-center
+           [:div.mr1 {:style {:width "15px"}}
+            [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}}
+             svg/instagram]]
+           [:div.pp2 "Follow me on Instagram"]]])
        (when styleseat-account
          (social-link {:class "img-styleseat" :style {:width "15px" :height "14px"}}
                       (str "https://www.styleseat.com/v/" styleseat-account)
