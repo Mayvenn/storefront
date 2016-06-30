@@ -260,10 +260,10 @@
 (defn distinct-variant-images [selected-variants]
   (->> (sort-by #(-> % :variant_attrs :style) selected-variants)
        reverse ;;List straight styles first
-       (mapcat #(map :large_url (:images %)))
+       (map #(map :large_url (:images %)))
+       (mapcat ensure-model-img-first)
        distinct
-       vec
-       ensure-model-img-first))
+       vec))
 
 (defn ^:private images-from-variants
   "For some taxons, when a selection has been made, show detailed product images"
