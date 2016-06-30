@@ -6,7 +6,7 @@
 (def stylist-store? (comp #{"store"} :store_slug :store))
 (defn stylist-mod? [m v]
   (fn [data]
-    (-> data :store :stylist_id (mod m) (= v))))
+    (some-> data :store :stylist_id (mod m) (= v))))
 
 (def control-1 0)
 (def control-2 1)
