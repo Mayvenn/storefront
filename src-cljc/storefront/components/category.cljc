@@ -139,6 +139,7 @@
           :class (cond
                    (= :length step-name) "col-4"
                    (and color-option? (= :color step-name)) "col-4"
+                   (= :style step-name) "col-4"
                    :else "col-6")}
          (option-html later-step? option color-option?)])]]))
 
