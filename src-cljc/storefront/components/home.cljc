@@ -84,5 +84,5 @@
       (merge {:style {:height "300px"}}
              (apply utils/route-to (navigation/shop-now-navigation-message data)))]
      [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
-      {:style {:height "72px"}}
+      {:style {:height (if (experiments/color-option? data) "29px" "72px")}}
       "Introducing Peruvian In All Textures"]]]))
