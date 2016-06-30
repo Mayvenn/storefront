@@ -38,4 +38,6 @@
     (clojure.string/join " " strs)))
 
 (defn thumbnail-url [products product-id]
-  (get-in products [product-id :images 0 :small_url]))
+  (first (keep (fn [{:keys [type small_url]}]
+                 (when (= type "product") small_url))
+               (get-in products [product-id :images]))))

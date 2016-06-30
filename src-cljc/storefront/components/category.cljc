@@ -246,19 +246,19 @@
 (defn taxon-uses-product-images [taxon-slug]
   (#{"blonde" "closures" "frontals" "straight"} taxon-slug))
 
-(defn ensure-model-img-first [[product-img model-img & other-imgs :as images]]
-  ;;Model images should be shown first if they exist.
-  ;;Currently model images are at index 1.
-  ;;TODO: cellar should be able differentiate between model and product images
-  (if (and product-img model-img)
-    (into [model-img product-img] other-imgs)
-    images))
+(def image-types ["model" "product" "social"])
+
+(defn sort-images [images]
+  (for [image-type image-types
+        {:keys [type large_url]} images
+        :when (and (= type image-type) large_url)]
+    large_url))
 
 (defn distinct-variant-images [selected-variants]
   (->> (sort-by #(-> % :variant_attrs :style) selected-variants)
        reverse ;;List straight styles first
-       (map #(map :large_url (:images %)))
-       (mapcat ensure-model-img-first)
+       (map :images)
+       (mapcat sort-images)
        distinct
        vec))
 
