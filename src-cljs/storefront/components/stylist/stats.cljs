@@ -4,16 +4,12 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.platform.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
-
-(defn ^:private money-with-cents [amount]
-  [:.flex.justify-center.line-height-1
-   (mf/as-money-without-cents amount)
-   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
 
 (def payday 3) ;; 3 -> Wednesday in JS
 
@@ -40,7 +36,7 @@
    [:.p1 "LAST PAYMENT"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (money-with-cents amount)]
+      [:.py2.h00 re-center-money (ui/big-money amount)]
       [:div "On " (f/long-date date)]]
      [:div
       [:div {:style {:padding "18px"}} svg/large-payout]
@@ -52,7 +48,7 @@
    [:.p1 "NEXT PAYMENT"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (money-with-cents amount)]
+      [:.py2.h00 re-center-money (ui/big-money amount)]
       [:div "Payment " (in-x-days)]]
      [:div
       [:.py2 svg/large-dollar]

@@ -12,9 +12,11 @@
                        [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
                        [storefront.components.stylist.referrals :as stylist.referrals]
                        [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
+                       [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.friend-referrals :refer [friend-referrals-component]]
                        [storefront.components.popup :refer [popup-component]]])
 
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
@@ -64,7 +66,9 @@
                  events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
                  events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
                  events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-                 events/navigate-stylist-manage-account         stylist-manage-account-component
+                 events/navigate-stylist-manage-account         (if (experiments/accounts-redesign? data)
+                                                                  stylist.account/built-component
+                                                                  stylist-manage-account-component)
                  events/navigate-account-manage                 (requires-sign-in data manage-account-component)
                  events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
                  events/navigate-friend-referrals               friend-referrals-component

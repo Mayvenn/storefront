@@ -6,6 +6,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.messages :refer [handle-message]]
+            [storefront.components.money-formatters :as mf]
             [clojure.string :as str]))
 
 (defn container [& content]
@@ -172,3 +173,8 @@
     :data-test data-test}
    [:div.bg-lighten-4.rounded
     contents]])
+
+(defn big-money [amount]
+  [:div.flex.justify-center.line-height-1
+   (mf/as-money-without-cents amount)
+   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])

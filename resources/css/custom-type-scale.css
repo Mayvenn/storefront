@@ -4,6 +4,7 @@ html { line-height: 1.2; }
  * we need to specify it in ems. 5.25em is 63px... close enough. */
 
 .h00 { font-size: 5.25em; }
+.h0 { font-size: 3rem; }
 
 .f1 { font-size: 24px; }
 .f2 { font-size: 18px; }
