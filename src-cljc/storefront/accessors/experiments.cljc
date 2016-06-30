@@ -14,13 +14,13 @@
 (def shop-control 3)
 (def store-control 4)
 
-(def color-option-experiment-prod -1)
-(def color-option-experiment-dev 6368621011)
+(def color-option-experiment-prod 6407130806)
+(def color-option-experiment-sandbox 6368621011)
 
 (defn experiments [environment]
   [{:name    "color-option"
     :id      (if (#{"development" "acceptance"} environment)
-               color-option-experiment-dev
+               color-option-experiment-sandbox
                color-option-experiment-prod)
     :buckets [[stylist-shop?      shop-control]
               [stylist-store?     store-control]
@@ -29,7 +29,7 @@
               [(stylist-mod? 3 2) variation]]}])
 
 (def experiment->features
-  {[color-option-experiment-dev variation]  #{"color-option"}
+  {[color-option-experiment-sandbox variation]  #{"color-option"}
    [color-option-experiment-prod variation] #{"color-option"}})
 
 (defn bucket-applies [data [pred variation-index]]
