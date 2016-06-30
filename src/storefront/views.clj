@@ -4,6 +4,7 @@
             [storefront.component-shim :as component]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]
+            [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]
             [storefront.safe-hiccup :refer [html5 raw]]
@@ -52,11 +53,12 @@
     [:script {:type "text/javascript"}
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
-     (raw (str "data = " (generate-string (pr-str (sanitize data))) ";"))]
+     (raw (str "var data = " (generate-string (pr-str (sanitize data))) ";"))]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
            "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
+           "window.optimizely=" (generate-string (into ["bucketVisitor"] (get-in data keypaths/optimizely-buckets))) ";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     ;; in production, we want to load the script tag asynchronously which has better
     ;; support when that script tag is in the <head>

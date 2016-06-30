@@ -3,7 +3,8 @@
 (def cookie [:cookie])
 
 (def optimizely [:optimizely])
-(def optimizely-variations [:optimizely :variations])
+(def optimizely-buckets [:optimizely :buckets])
+(def features [:features])
 
 (def session-id [:session-id])
 

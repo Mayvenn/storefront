@@ -1,12 +1,67 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [clojure.set :as set]))
 
-(defn display-variation [data variation]
-  (contains? (get-in data keypaths/optimizely-variations)
-             variation))
+(def stylist-shop? (comp #{"shop"} :store_slug :store))
+(def stylist-store? (comp #{"store"} :store_slug :store))
+(defn stylist-mod? [m v]
+  (fn [data]
+    (-> data :store :stylist_id (mod m) (= v))))
+
+(def control-1 0)
+(def control-2 1)
+(def variation 2)
+(def shop-control 3)
+(def store-control 4)
+
+(def color-option-experiment-prod -1)
+(def color-option-experiment-dev 6368621011)
+
+(defn experiments [environment]
+  [{:name    "color-option"
+    :id      (if (#{"development" "acceptance"} environment)
+               color-option-experiment-dev
+               color-option-experiment-prod)
+    :buckets [[stylist-shop?      shop-control]
+              [stylist-store?     store-control]
+              [(stylist-mod? 3 0) control-1]
+              [(stylist-mod? 3 1) control-2]
+              [(stylist-mod? 3 2) variation]]}])
+
+(def experiment->features
+  {[color-option-experiment-dev variation]  #{"color-option"}
+   [color-option-experiment-prod variation] #{"color-option"}})
+
+(defn bucket-applies [data [pred variation-index]]
+  (when (pred data) variation-index))
+
+(defn experiment-applies [data {:keys [buckets id]}]
+  (when-let [variation-index (some (partial bucket-applies data) buckets)]
+    [id variation-index]))
+
+(defn applicable-experiments [experiment-config data]
+  (doall (keep (partial experiment-applies data) experiment-config)))
+
+(defn determine-experiments [data environment]
+  (assoc-in data
+            keypaths/optimizely-buckets
+            (applicable-experiments (experiments environment) data)))
+
+(defn determine-features [data]
+  (let [features (->> (get-in data keypaths/optimizely-buckets)
+                      (map experiment->features)
+                      (apply set/union))]
+    (assoc-in data keypaths/features features)))
+
+(defn display-feature? [data feature]
+  ((set (get-in data keypaths/features)) feature))
 
 (defn color-option? [data]
-  (display-variation data "color-option"))
+  (display-feature? data "color-option"))
 
 (defn option-memory? [data]
-  (display-variation data "option-memory"))
+  (display-feature? data "option-memory"))
+
+
+
+

@@ -454,9 +454,9 @@
         ensure-bundle-builder)))
 
 (defmethod transition-state events/optimizely
-  [_ event {:keys [variation]} app-state]
+  [_ event {:keys [variation feature]} app-state]
   (-> app-state
-      (update-in keypaths/optimizely-variations conj variation)
+      (update-in keypaths/features conj (or feature variation))
       (set-color-option-variation variation)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]

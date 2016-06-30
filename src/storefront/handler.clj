@@ -8,6 +8,7 @@
             [storefront.cache :as cache]
             [storefront.cookies :as cookies]
             [storefront.utils.combinators :refer [key-by]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
             [storefront.accessors.bundle-builder :as bundle-builder]
@@ -237,11 +238,16 @@
         (let [nav-event (bidi->edn nav-event)
               render-ctx {:storeback-config storeback-config
                           :environment environment}
-              data (-> {}
-                       (assoc-in keypaths/store store)
-                       (assoc-in keypaths/taxons (api/named-searches storeback-config))
-                       (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-original) true)
-                       (assoc-in keypaths/navigation-message [nav-event params]))]
+              data (as-> {} data
+                     (assoc-in data keypaths/store store)
+                     (experiments/determine-experiments data environment)
+                     (experiments/determine-features data)
+                     (assoc-in data keypaths/taxons (api/named-searches storeback-config))
+                     (assoc-in data keypaths/browse-taxon-query
+                               (if (experiments/color-option? data)
+                                 {:experiment-color-option-variation true}
+                                 {:experiment-color-option-original true}))
+                     (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product     (redirect-product->canonical-url ctx req params)
             events/navigate-category    (render-category render-ctx data req params)
