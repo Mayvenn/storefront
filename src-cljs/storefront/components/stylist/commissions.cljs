@@ -45,6 +45,7 @@
   (-> shipping-methods
       (orders/shipping-method-details shipping-item)
       :name
+      str
       (str/replace #"^Free " "")))
 
 (defn store-credit-subtotals [order]
