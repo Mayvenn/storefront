@@ -4,13 +4,9 @@
 (defn loaded-ids [data]
   (set (keys (get-in data keypaths/products))))
 
-(defn not-black-color [attr]
-  (when (not= "black" (:color attr))
-    (:color attr)))
-
-(def ^:private frontal-summary [:style :material :origin :length (constantly "frontal")])
-(def ^:private closure-summary [:style :material :origin :length (constantly "closure")])
-(def ^:private bundle-summary [not-black-color :origin :length :style])
+(def ^:private frontal-summary [:color :style :material :origin :length (constantly "frontal")])
+(def ^:private closure-summary [:color :style :material :origin :length (constantly "closure")])
+(def ^:private bundle-summary [:color :origin :length :style])
 
 (defn closure? [variant]
   (= "closures" (get-in variant [:variant-attrs :category])))
@@ -29,9 +25,9 @@
         strs (filter identity ((apply juxt summary-fns) variant-attrs))]
     (clojure.string/join " " strs)))
 
-(def ^:private frontal-product-title [:origin :style :material (constantly "frontal")])
-(def ^:private closure-product-title [:origin :style :material (constantly "closure")])
-(def ^:private bundle-product-title [not-black-color :origin :style])
+(def ^:private frontal-product-title [:color :origin :style :material (constantly "frontal")])
+(def ^:private closure-product-title [:color :origin :style :material (constantly "closure")])
+(def ^:private bundle-product-title [:color :origin :style])
 
 (defn product-title [{:keys [variant-attrs product-name] :as variant}]
   (let [title-fns (cond (closure? variant) closure-product-title
