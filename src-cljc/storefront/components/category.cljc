@@ -249,12 +249,12 @@
      #{"blonde" "closures" "frontals" "straight"}
      #{"blonde" "closures" "frontals"}) taxon-slug))
 
-(defn ensure-model-img-first [[product model & others :as images]]
+(defn ensure-model-img-first [[product-img model-img & other-imgs :as images]]
   ;;Model images should be shown first if they exist.
   ;;Currently model images are at index 1.
   ;;TODO: cellar should be able differentiate between model and product images
-  (if (and product model)
-    (into [model product] others)
+  (if (and product-img model-img)
+    (into [model-img product-img] other-imgs)
     images))
 
 (defn distinct-variant-images [selected-variants]
