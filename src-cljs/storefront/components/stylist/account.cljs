@@ -26,7 +26,11 @@
    [:div.green.h0 (ui/big-money available-credit)]
    [:div.mb1 ui/nbsp]])
 
-(defn component [{:keys [profile-picture-url available-credit]} owner opts]
+(defn component [{:keys [profile-picture-url
+                         available-credit
+                         address
+                         user
+                         birth-date]} owner opts]
   (component/create
    [:div.bg-pure-white.light-black.sans-serif
     [:div.p2.m-auto.overflow-hidden
@@ -39,73 +43,75 @@
 
 
      [:div.bg-white.mt3.mxn2 ;; Oppose margin from ui/container
-      (component/build tabs/component {:selected-tab 1}
+      (component/build tabs/component {:selected-tab 0}
                        {:opts {:tab-refs ["profile" "password" "commission" "social"]
                                :labels   ["Profile" "Password" "Commission" "Social"]
                                :tabs     [0 1 2 3]}})]
 
-     [:form
+     [:form {:on-submit
+             (utils/send-event-callback events/control-stylist-manage-account-submit)}
       [:.flex.flex-column.items-center.col-12
        [:h1.h2.light.col-12.my3.center "Update your info"]
        [:.flex.col-12
         [:.col-6 (ui/text-field "First Name"
-                                keypaths/checkout-shipping-address-first-name
-                                ""
+                                (conj keypaths/stylist-manage-account :address :firstname)
+                                (:firstname address)
                                 {:autofocus "autofocus"
                                  :type      "text"
-                                 :name      "shipping-first-name"
-                                 :data-test "shipping-first-name"
-                                 :id        "shipping-first-name"
+                                 :name      "account-first-name"
+                                 :data-test "account-first-name"
+                                 :id        "account-first-name"
                                  :class     "rounded-left"
                                  :required  true})]
 
         [:.col-6 (ui/text-field "Last Name"
-                                keypaths/checkout-shipping-address-last-name
-                                ""
+                                (conj keypaths/stylist-manage-account :address :lastname)
+                                (:lastname address)
                                 {:type      "text"
-                                 :name      "shipping-last-name"
-                                 :id        "shipping-last-name"
-                                 :data-test "shipping-last-name"
+                                 :name      "account-last-name"
+                                 :id        "account-last-name"
+                                 :data-test "account-last-name"
                                  :class     "rounded-right border-width-left-0"
                                  :required  true})]]
 
        (ui/text-field "Mobile Phone"
-                      keypaths/checkout-shipping-address-phone
-                      ""
+                      (conj keypaths/stylist-manage-account :address :phone)
+                      (:phone address)
                       {:type      "tel"
-                       :name      "shipping-phone"
-                       :id        "shipping-phone"
-                       :data-test "shipping-phone"
+                       :name      "account-phone"
+                       :id        "account-phone"
+                       :data-test "account-phone"
                        :required  true})
 
        (ui/text-field "Email"
-                      keypaths/checkout-guest-email
-                      "a"
+                      (conj keypaths/stylist-manage-account :user :email)
+                      (:email user)
                       {:type      "email"
-                       :name      "shipping-email"
-                       :id        "shipping-email"
-                       :data-test "shipping-email"
+                       :name      "account-email"
+                       :id        "account-email"
+                       :data-test "account-email"
                        :required  true})
 
        [:.flex.flex-column.items-center.col-12
         (ui/text-field "Birthday"
-                       keypaths/checkout-guest-email
-                       "1"
+                       (conj keypaths/stylist-manage-account :birth-date)
+                       birth-date
                        {:type      "date"
-                        :id        :shipping-state
-                        :name      "shipping-state"
-                        :data-test "shipping-state"
+                        :id        "account-birth-date"
+                        :name      "account-birth-date"
+                        :data-test "account-birth-date"
                         :required  true})]
 
 
        [:.my2.col-12
         (ui/submit-button "Update" {:spinning? false
-                                    :data-test "address-form-submit"})]]]]]))
+                                    :data-test "account-form-submit"})]]]]]))
 
 (defn query [data]
-  {:profile-picture-url (get-in data
-                                (conj keypaths/stylist-manage-account
-                                      :profile_picture_url))
+  {:profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
+   :address             (get-in data (conj keypaths/stylist-manage-account :address))
+   :birth-date          (get-in data (conj keypaths/stylist-manage-account :birth-date))
+   :user                (get-in data (conj keypaths/stylist-manage-account :user))
    :available-credit    (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data owner opts]

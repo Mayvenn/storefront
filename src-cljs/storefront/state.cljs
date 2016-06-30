@@ -70,9 +70,7 @@
    :referrals [empty-referral]
    :manage-account {:email nil
                     :id 10
-                    :birth-date-1i nil
-                    :birth-date-2i nil
-                    :birth-date-3i nil
+                    :birth-date nil
                     :address {:firstname nil
                               :lastname nil
                               :address1 nil

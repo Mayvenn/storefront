@@ -309,15 +309,18 @@
     :handler identity}))
 
 (defn select-stylist-account-keys [args]
-  (select-keys args [:birth_date_1i :birth_date_2i :birth_date_3i
-                     :profile_picture_url
-                     :chosen_payout_method
-                     :venmo_payout_attributes
-                     :paypal_payout_attributes
-                     :instagram_account
-                     :styleseat_account
-                     :user
-                     :address]))
+  (-> args
+      (select-keys [:birth_date_1i :birth_date_2i :birth_date_3i
+                    :birth-date
+                    :profile_picture_url
+                    :chosen_payout_method
+                    :venmo_payout_attributes
+                    :paypal_payout_attributes
+                    :instagram_account
+                    :styleseat_account
+                    :user
+                    :address])
+      (assoc :original_payout_method (:chosen_payout_method args))))
 
 (defn get-stylist-account [user-token]
   (api-req
