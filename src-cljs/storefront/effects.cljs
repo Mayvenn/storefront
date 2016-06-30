@@ -349,12 +349,12 @@
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
   (cookie-jar/clear (get-in app-state keypaths/cookie))
-  (handle-message events/flash-show-success
-                  {:message "Logged out successfully"
-                   :navigation [events/navigate-home {}]})
   (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))
-  (routes/enqueue-navigate events/navigate-home))
+  (routes/enqueue-navigate events/navigate-home)
+  (handle-message events/flash-show-success
+                  {:message "Logged out successfully"
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/control-bundle-option-select [dispatch event args app-state]
   (analytics/track dispatch event args app-state))
