@@ -12,9 +12,9 @@
 
 (defn edit-photo [profile-picture-url]
   [:label.navy
-   [:div.mx-auto.circle.border-green.border.mb2.content-box {:style {:width "8.3333em" :height "8.3333em" :border-width "3px"}}
-    [:div.circle.border-white.border.content-box {:style {:width "8em" :height "8em" :border-width "2px"}}
-     (ui/circle-picture {:width "8em"} profile-picture-url)]]
+   [:div.mx-auto.circle.border-green.border.mb2.content-box {:style {:width "100px" :height "100px" :border-width "3px"}}
+    [:div.circle.border-white.border.content-box {:style {:width "96px" :height "96px" :border-width "2px"}}
+     (ui/circle-picture {:width "96px"} profile-picture-url)]]
     "Change Photo"
     [:input.hide
      (merge (utils/change-file events/control-stylist-profile-picture)
