@@ -162,9 +162,9 @@
                   [:div.mb2
                    (flash/error-box
                     {:data-test "form-errors"}
-                    [:div.mr3
-                     (when (seq errors)
-                       "Oops! Please fix the errors below.")
+                    [:div
+                     (when (seq errors) "Oops! Please fix the errors below.")
+                     " "
                      (when flash-failure flash-failure)])])
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2

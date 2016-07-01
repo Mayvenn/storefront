@@ -22,7 +22,7 @@
 (defn error-box [box-opts body]
   [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
    [:div.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.img-error-icon.bg-no-repeat.bg-contain.right
+    [:div.img-error-icon.bg-no-repeat.bg-contain.right.ml1.mb1
      {:style {:width "1.25rem" :height "1.25rem"}}]
     body]])
 
@@ -39,14 +39,14 @@
                [error-index error] (map-indexed vector errors)]
            (let [field-names (map field->human-name (string/split (name field) #"\."))
                  name (string/capitalize (string/join " " field-names))]
-             [:li.mr3 {:key (str field-index "-" error-index)} (str name " " error)]))]))
+             [:li {:key (str field-index "-" error-index)} (str name " " error)]))]))
 
       (or validation-message failure)
       (ui/narrow-container
        (error-box
         {:data-test "flash-error"}
         [:ul.m0.ml1.px2
-         [:li.mr3 (or validation-message failure)]]))
+         [:li (or validation-message failure)]]))
 
       success [:div.flash.success {:data-test "flash-success"} success])]))
 
