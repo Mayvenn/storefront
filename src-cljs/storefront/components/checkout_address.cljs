@@ -247,7 +247,7 @@
 
 (defn query [data]
   (let [places-loaded? (get-in data keypaths/loaded-places)
-        states         (get-in data keypaths/states)]
+        states         (map (juxt :name :abbr) (get-in data keypaths/states))]
     {:saving?              (utils/requesting? data request-keys/update-addresses)
      :step-bar             (checkout-steps/query data)
      :billing-address-data {:billing-address           (get-in data keypaths/checkout-billing-address)

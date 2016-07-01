@@ -95,25 +95,29 @@
            (.-selectedIndex elem)))))
 
 (defn select-field [label value options select-attributes]
-  [:div.col-12.mb2.mx-auto
-   [:div.relative.z1
-    [:select.col-12.h2.glow-green.absolute.border-none
-     (merge {:key         label
-             :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
-             :placeholder label
-             :value       value}
-            select-attributes)
-     [:option ""]
-     (for [{name :name val :abbr} options]
-       [:option {:key val :value val}
-        (str name)])]]
-   [:div.bg-pure-white.border.border-light-silver.rounded.p1
-    [:label.col-12.h6.navy.relative
-     {:for (name (:id select-attributes))}
-     label]
-    [:div.h3.black.relative
-     (or (->> options (filter (comp #{value} :abbr)) first :name)
-         nbsp)]]])
+  (let [option-text  first
+        option-value second]
+    [:div.col-12.mb2.mx-auto
+     [:div.relative.z1
+      [:select.col-12.h2.glow-green.absolute.border-none
+       (merge {:key         label
+               :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
+               :placeholder label
+               :value       value}
+              select-attributes)
+       [:option ""]
+       (for [option options]
+         [:option
+          {:key   (option-value option)
+           :value (option-value option)}
+          (option-text option)])]]
+     [:div.bg-pure-white.border.border-light-silver.rounded.p1
+      [:label.col-12.h6.navy.relative
+       {:for (name (:id select-attributes))}
+       label]
+      [:div.h3.black.relative
+       (or (->> options (filter (comp #{value} option-value)) first option-text)
+           nbsp)]]]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
