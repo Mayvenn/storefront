@@ -6,7 +6,7 @@
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]))
 
-(defn- field->human-name [key]
+(defn- field-component->human-name [key]
   (get {"billing-address"       "Billing Address"
         "shipping-address"      "Shipping Address"
         "address1"              "Street Address"
@@ -19,6 +19,12 @@
         "password_confirmation" "Password confirmation"}
        key
        key))
+
+(defn- field->human-name [field]
+  (->> (string/split (name field) #"\.")
+       (map field-component->human-name)
+       (string/join " ")
+       string/capitalize))
 
 (def success-img
   (component/html (svg/adjustable-check {:class "stroke-green" :width "1.25rem" :height "1.25rem"})))
@@ -46,22 +52,24 @@
         (seq validation-errors)
         (error-box
          {:data-test "flash-error"}
-         [:ul.m0.ml1.px2
-          (for [[field-index [field errors]] (map-indexed vector (sort-by first validation-errors))
-                [error-index error]          (map-indexed vector errors)]
-            (let [field-names (map field->human-name (string/split (name field) #"\."))
-                  name        (string/capitalize (string/join " " field-names))]
-              [:li {:key (str field-index "-" error-index)} name " " error]))])
+         (if (and (= 1 (count validation-errors))
+                  (= 1 (count (second (first validation-errors)))))
+           (let [[field [error]] (first validation-errors)]
+             [:div.px2 (field->human-name field) " " error])
+           [:ul.m0.ml1.px2
+            (for [[field-index [field errors]] (map-indexed vector (sort-by first validation-errors))
+                  [error-index error]          (map-indexed vector errors)]
+              [:li {:key (str field-index "-" error-index)} (field->human-name field) " " error])]))
 
         (or validation-message failure)
         (error-box
          {:data-test "flash-error"}
-         [:ul.m0.ml1.px2 [:li (or validation-message failure)]])
+         [:div.px2 (or validation-message failure)])
 
         success
         (success-box
          {:data-test "flash-success"}
-         [:ul.m0.ml1.px2 [:li success]]))))))
+         [:div.px2 success]))))))
 
 (defn query [data]
   {:success            (get-in data keypaths/flash-success-message)

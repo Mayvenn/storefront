@@ -162,7 +162,7 @@
                   [:div.mb2
                    (flash/error-box
                     {:data-test "form-errors"}
-                    [:div
+                    [:div.px2
                      (when (seq errors) "Oops! Please fix the errors below.")
                      " "
                      (when flash-failure flash-failure)])])
