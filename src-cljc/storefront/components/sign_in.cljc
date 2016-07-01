@@ -3,6 +3,7 @@
                :cljs [storefront.component :as component])
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
+            [storefront.components.flash :as flash]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -86,5 +87,7 @@
     (if (or (nil? (get-in data keypaths/user))
             (get-in data keypaths/user-store-slug))
       [:div.page-heading.center "Signing in to the Mayvenn Stylist Community..."]
-      [:div.flash.error
-       "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"]))))
+      (flash/error-box
+       {:data-test "flash-error"}
+       [:div.px2
+        "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])))))

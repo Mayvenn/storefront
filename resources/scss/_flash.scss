@@ -8,20 +8,8 @@
   font-size: 0.917rem;
   font-family: $primary_font_medium;
 
-  &.error {
-    background-color: $error_color;
-    color: white;
-  }
-
   &.success {
     background-color: $dark_green;
     color: white;
   }
-}
-
-.errorExplanation {
-  margin: 1em;
-  padding: 1em;
-  color: white;
-  background-color: $error_color;
 }
