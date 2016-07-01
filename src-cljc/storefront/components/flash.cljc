@@ -20,23 +20,23 @@
        key
        key))
 
-(def success-check
+(def success-img
   (component/html (svg/adjustable-check {:class "stroke-green" :width "1.25rem" :height "1.25rem"})))
 
-(def error-x
+(def error-img
   (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width "1.25rem" :height "1.25rem"}}]))
 
 (defn success-box [box-opts body]
   [:div.green.bg-green.border.border-green.rounded.light.letter-spacing-1
-   [:div.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.right.ml1.mb1 success-check]
-    body]])
+   [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
+    [:div.right.ml1 success-img]
+    [:div.overflow-hidden body]]])
 
 (defn error-box [box-opts body]
   [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
-   [:div.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.right.ml1.mb1 error-x]
-    body]])
+   [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
+    [:div.right.ml1 error-img]
+    [:div.overflow-hidden body]]])
 
 (defn component [{:keys [success failure validation-errors validation-message]} _ _]
   (component/create
