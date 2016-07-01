@@ -60,37 +60,34 @@
        [:main {:role "main"}
         [:div.legacy-container
          (component/build
-          (let [stylist-account-component (if (experiments/accounts-redesign? data)
-                                            stylist.account/built-component
-                                            stylist-manage-account-component)]
-            (condp = (get-in data keypaths/navigation-event)
-              #?@(:cljs
-                  [events/navigate-reset-password                 reset-password/built-component
-                   events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
-                   events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
-                   events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-                   events/navigate-stylist-account-profile        stylist-account-component
-                   events/navigate-stylist-account-password       stylist-account-component
-                   events/navigate-stylist-account-commission     stylist-account-component
-                   events/navigate-stylist-account-social         stylist-account-component
-                   events/navigate-account-manage                 (requires-sign-in data manage-account-component)
-                   events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
-                   events/navigate-friend-referrals               friend-referrals-component
-                   events/navigate-cart                           cart/built-component
-                   events/navigate-checkout-sign-in               checkout-sign-in/built-component
-                   events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address/built-component)
-                   events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
-                   events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
-                   events/navigate-order-complete                 checkout-complete/built-component])
+          (condp = (get-in data keypaths/navigation-event)
+            #?@(:cljs
+                [events/navigate-reset-password                 reset-password/built-component
+                 events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
+                 events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
+                 events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
+                 events/navigate-stylist-account-profile        (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
+                 events/navigate-stylist-account-password       (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
+                 events/navigate-stylist-account-commission     (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
+                 events/navigate-stylist-account-social         (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
+                 events/navigate-account-manage                 (requires-sign-in data manage-account-component)
+                 events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
+                 events/navigate-friend-referrals               friend-referrals-component
+                 events/navigate-cart                           cart/built-component
+                 events/navigate-checkout-sign-in               checkout-sign-in/built-component
+                 events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address/built-component)
+                 events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
+                 events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
+                 events/navigate-order-complete                 checkout-complete/built-component])
 
-              events/navigate-home            home-component
-              events/navigate-categories      categories-page-component
-              events/navigate-category        category-component
-              events/navigate-guarantee       thirty-day-guarantee-component
-              events/navigate-help            help-component
-              events/navigate-sign-in         sign-in/built-component
-              events/navigate-sign-up         sign-up/built-component
-              events/navigate-forgot-password forgot-password/built-component
-              home-component))
+            events/navigate-home            home-component
+            events/navigate-categories      categories-page-component
+            events/navigate-category        category-component
+            events/navigate-guarantee       thirty-day-guarantee-component
+            events/navigate-help            help-component
+            events/navigate-sign-in         sign-in/built-component
+            events/navigate-sign-up         sign-up/built-component
+            events/navigate-forgot-password forgot-password/built-component
+            home-component)
           data opts)]]
        (component/build footer/footer-component (footer/footer-query data) opts)]])))
