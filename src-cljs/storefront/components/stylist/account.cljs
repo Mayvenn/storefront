@@ -1,11 +1,12 @@
 (ns storefront.components.stylist.account
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]
-            [storefront.components.ui :as ui]
+  (:require [storefront.component :as component]
+            [storefront.components.stylist.account.password :as account.password]
+            [storefront.components.stylist.account.profile :as account.profile]
             [storefront.components.tabs :as tabs]
-            [storefront.components.stylist.account.profile :as account.profile]))
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defn edit-photo [profile-picture-url]
   [:label.navy
@@ -26,7 +27,8 @@
 (defn component [{:keys [current-nav-event
                          profile-picture-url
                          available-credit
-                         profile]} owner opts]
+                         profile
+                         password]} owner opts]
   (component/create
    [:div.bg-pure-white.light-black.sans-serif
     [:div.p2.m-auto.overflow-hidden
@@ -51,13 +53,17 @@
        events/navigate-stylist-account-profile
        (component/build account.profile/component profile opts)
 
+       events/navigate-stylist-account-password
+       (component/build account.password/component password opts)
+
        nil)]]))
 
 (defn query [data]
   {:current-nav-event   (get-in data keypaths/navigation-event)
    :profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
-   :profile             (account.profile/query data)})
+   :profile             (account.profile/query data)
+   :password            (account.password/query data)})
 
 (defn built-component [data owner opts]
   (component/create (component/build component (query data) opts)))
