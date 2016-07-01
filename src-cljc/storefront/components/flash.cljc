@@ -27,7 +27,7 @@
        string/capitalize))
 
 (def success-img
-  (component/html (svg/adjustable-check {:class "stroke-green" :width "1.25rem" :height "1.25rem"})))
+  (component/html [:div.line-height-1 (svg/adjustable-check {:class "stroke-green align-middle" :width "1.25em" :height "1.25em"})]))
 
 (def error-img
   (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width "1.25rem" :height "1.25rem"}}]))
