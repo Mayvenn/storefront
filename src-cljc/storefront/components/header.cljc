@@ -119,8 +119,7 @@
       notch-up
       [:div
        [:div.p1.f5
-        (when store-photo
-          [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)])
+        [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
         [:h3.f3.medium store-name]]
        (when instagram-account
          (social-link

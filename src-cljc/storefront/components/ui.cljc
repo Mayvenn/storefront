@@ -144,9 +144,11 @@
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-silver.overflow-hidden
+   [:div.circle.bg-white.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
-    [:img {:style {:width width :height width :object-fit "cover"} :src src}]]))
+    (if src
+      [:img {:style {:width width :height width :object-fit "cover"} :src src}]
+      (svg/missing-profile-picture {:width width :height width}))]))
 
 (defn ^:private counter-button [spinning? data-test f content]
   [:a.col

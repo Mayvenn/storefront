@@ -68,8 +68,7 @@
   (let [{store-photo :profile_picture_url nickname :store_nickname} store]
     [:div
      (row
-      (when store-photo
-        [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)])
+      [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
       [:div nickname])
      [:div
       [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
