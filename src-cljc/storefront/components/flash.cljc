@@ -3,52 +3,65 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]))
 
 (defn- field->human-name [key]
-  (get {"billing-address" "Billing Address"
-        "shipping-address" "Shipping Address"
-        "address1" "Street Address"
-        "address2" "Street Address (cont'd)"
-        "first-name" "First Name"
-        "last-name" "Last Name"
-        "firstname" "First Name"
-        "lastname" "Last Name"
-        "reset_password_token" "The reset password link"
+  (get {"billing-address"       "Billing Address"
+        "shipping-address"      "Shipping Address"
+        "address1"              "Street Address"
+        "address2"              "Street Address (cont'd)"
+        "first-name"            "First Name"
+        "last-name"             "Last Name"
+        "firstname"             "First Name"
+        "lastname"              "Last Name"
+        "reset_password_token"  "The reset password link"
         "password_confirmation" "Password confirmation"}
        key
        key))
 
+(def success-check
+  (component/html (svg/adjustable-check {:class "stroke-green" :width "1.25rem" :height "1.25rem"})))
+
+(def error-x
+  (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width "1.25rem" :height "1.25rem"}}]))
+
+(defn success-box [box-opts body]
+  [:div.green.bg-green.border.border-green.rounded.light.letter-spacing-1
+   [:div.px2.py1.bg-lighten-5.rounded box-opts
+    [:div.right.ml1.mb1 success-check]
+    body]])
+
 (defn error-box [box-opts body]
   [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
    [:div.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.img-error-icon.bg-no-repeat.bg-contain.right.ml1.mb1
-     {:style {:width "1.25rem" :height "1.25rem"}}]
+    [:div.right.ml1.mb1 error-x]
     body]])
 
 (defn component [{:keys [success failure validation-errors validation-message]} _ _]
   (component/create
-   [:div
-    (cond
-      (seq validation-errors)
-      (ui/narrow-container
-       (error-box
-        {:data-test "flash-error"}
-        [:ul.m0.ml1.px2
-         (for [[field-index [field errors]] (map-indexed vector (sort-by first validation-errors))
-               [error-index error] (map-indexed vector errors)]
-           (let [field-names (map field->human-name (string/split (name field) #"\."))
-                 name (string/capitalize (string/join " " field-names))]
-             [:li {:key (str field-index "-" error-index)} (str name " " error)]))]))
+   (when (or success failure validation-message (seq validation-errors))
+     (ui/narrow-container
+      (cond
+        (seq validation-errors)
+        (error-box
+         {:data-test "flash-error"}
+         [:ul.m0.ml1.px2
+          (for [[field-index [field errors]] (map-indexed vector (sort-by first validation-errors))
+                [error-index error]          (map-indexed vector errors)]
+            (let [field-names (map field->human-name (string/split (name field) #"\."))
+                  name        (string/capitalize (string/join " " field-names))]
+              [:li {:key (str field-index "-" error-index)} name " " error]))])
 
-      (or validation-message failure)
-      (ui/narrow-container
-       (error-box
-        {:data-test "flash-error"}
-        [:ul.m0.ml1.px2
-         [:li (or validation-message failure)]]))
+        (or validation-message failure)
+        (error-box
+         {:data-test "flash-error"}
+         [:ul.m0.ml1.px2 [:li (or validation-message failure)]])
 
-      success [:div.flash.success {:data-test "flash-success"} success])]))
+        success
+        (success-box
+         {:data-test "flash-success"}
+         [:ul.m0.ml1.px2 [:li success]]))))))
 
 (defn query [data]
   {:success            (get-in data keypaths/flash-success-message)
