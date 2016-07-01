@@ -151,7 +151,7 @@
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect events/navigate-sign-in)))
 
-(defmethod perform-effects events/navigate-stylist-manage-account [_ event args app-state]
+(defmethod perform-effects events/navigate-stylist-account [_ event args app-state]
   (facebook/insert)
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-states (get-in app-state keypaths/api-cache))
@@ -604,12 +604,25 @@
                   {:message "Account updated"
                    :navigation [events/navigate-home {}]}))
 
+;; TODO: remove this after stylist account redesign is released
 (defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
   (save-cookie app-state)
   (when (:updated args)
     (handle-message events/flash-show-success
                     {:message "Account updated"
-                     :navigation [events/navigate-stylist-manage-account {}]})))
+                     :navigation [events/navigate-stylist-account-profile {}]})))
+
+(defmethod perform-effects events/api-success-stylist-account-profile [_ event args app-state]
+  (save-cookie app-state)
+  (handle-message events/flash-show-success
+                  {:message "Profile updated"
+                   :navigation [events/navigate-stylist-account-profile {}]}))
+
+(defmethod perform-effects events/api-success-stylist-account-password [_ event args app-state]
+  (save-cookie app-state)
+  (handle-message events/flash-show-success
+                  {:message "Password updated"
+                   :navigation [events/navigate-stylist-account-password {}]}))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
   (handle-later events/control-popup-hide {} 2000))

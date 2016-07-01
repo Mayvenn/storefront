@@ -74,8 +74,8 @@
       [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
        (row (selectable? events/navigate-stylist-dashboard
                          [:span {:data-test "dashboard"} "Dashboard"]))]
-      [:a.green.block (utils/route-to events/navigate-stylist-manage-account)
-       (row (selectable? events/navigate-stylist-manage-account
+      [:a.green.block (utils/route-to events/navigate-stylist-account-profile)
+       (row (selectable? events/navigate-stylist-account
                          [:span {:data-test "account-settings"} "Account Settings"]))]
       [:a.green.block (utils/navigate-community) (row "Community")]]]))
 

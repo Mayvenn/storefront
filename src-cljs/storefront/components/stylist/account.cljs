@@ -2,13 +2,10 @@
   (:require [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :refer [handle-message]]
             [storefront.component :as component]
-            [clojure.string :refer [join capitalize]]
             [storefront.components.ui :as ui]
             [storefront.components.tabs :as tabs]
-            [storefront.components.money-formatters :refer [as-money]]
-            [storefront.components.facebook-messenger :as facebook]))
+            [storefront.components.stylist.account.profile :as account.profile]))
 
 (defn edit-photo [profile-picture-url]
   [:label.navy
@@ -26,11 +23,10 @@
    [:div.green.h0 (ui/big-money available-credit)]
    [:div.mb1 ui/nbsp]])
 
-(defn component [{:keys [profile-picture-url
+(defn component [{:keys [current-nav-event
+                         profile-picture-url
                          available-credit
-                         address
-                         user
-                         birth-date]} owner opts]
+                         profile]} owner opts]
   (component/create
    [:div.bg-pure-white.light-black.sans-serif
     [:div.p2.m-auto.overflow-hidden
@@ -42,77 +38,26 @@
        (store-credit available-credit)]]
 
 
-     [:div.bg-white.mt3.mxn2 ;; Oppose margin from ui/container
-      (component/build tabs/component {:selected-tab 0}
+     [:div.bg-white.mt3.mxn2 ;; Oppose padding on page
+      (component/build tabs/component {:selected-tab current-nav-event}
                        {:opts {:tab-refs ["profile" "password" "commission" "social"]
                                :labels   ["Profile" "Password" "Commission" "Social"]
-                               :tabs     [0 1 2 3]}})]
+                               :tabs     [events/navigate-stylist-account-profile
+                                          events/navigate-stylist-account-password
+                                          events/navigate-stylist-account-commission
+                                          events/navigate-stylist-account-social]}})]
 
-     [:form {:on-submit
-             (utils/send-event-callback events/control-stylist-manage-account-submit)}
-      [:.flex.flex-column.items-center.col-12
-       [:h1.h2.light.col-12.my3.center "Update your info"]
-       [:.flex.col-12
-        [:.col-6 (ui/text-field "First Name"
-                                (conj keypaths/stylist-manage-account :address :firstname)
-                                (:firstname address)
-                                {:autofocus "autofocus"
-                                 :type      "text"
-                                 :name      "account-first-name"
-                                 :data-test "account-first-name"
-                                 :id        "account-first-name"
-                                 :class     "rounded-left"
-                                 :required  true})]
+     (condp = current-nav-event
+       events/navigate-stylist-account-profile
+       (component/build account.profile/component profile opts)
 
-        [:.col-6 (ui/text-field "Last Name"
-                                (conj keypaths/stylist-manage-account :address :lastname)
-                                (:lastname address)
-                                {:type      "text"
-                                 :name      "account-last-name"
-                                 :id        "account-last-name"
-                                 :data-test "account-last-name"
-                                 :class     "rounded-right border-width-left-0"
-                                 :required  true})]]
-
-       (ui/text-field "Mobile Phone"
-                      (conj keypaths/stylist-manage-account :address :phone)
-                      (:phone address)
-                      {:type      "tel"
-                       :name      "account-phone"
-                       :id        "account-phone"
-                       :data-test "account-phone"
-                       :required  true})
-
-       (ui/text-field "Email"
-                      (conj keypaths/stylist-manage-account :user :email)
-                      (:email user)
-                      {:type      "email"
-                       :name      "account-email"
-                       :id        "account-email"
-                       :data-test "account-email"
-                       :required  true})
-
-       [:.flex.flex-column.items-center.col-12
-        (ui/text-field "Birthday"
-                       (conj keypaths/stylist-manage-account :birth-date)
-                       birth-date
-                       {:type      "date"
-                        :id        "account-birth-date"
-                        :name      "account-birth-date"
-                        :data-test "account-birth-date"
-                        :required  true})]
-
-
-       [:.my2.col-12
-        (ui/submit-button "Update" {:spinning? false
-                                    :data-test "account-form-submit"})]]]]]))
+       nil)]]))
 
 (defn query [data]
-  {:profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
-   :address             (get-in data (conj keypaths/stylist-manage-account :address))
-   :birth-date          (get-in data (conj keypaths/stylist-manage-account :birth-date))
-   :user                (get-in data (conj keypaths/stylist-manage-account :user))
-   :available-credit    (get-in data keypaths/user-total-available-store-credit)})
+  {:current-nav-event   (get-in data keypaths/navigation-event)
+   :profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
+   :available-credit    (get-in data keypaths/user-total-available-store-credit)
+   :profile             (account.profile/query data)})
 
 (defn built-component [data owner opts]
   (component/create (component/build component (query data) opts)))

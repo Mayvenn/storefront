@@ -31,7 +31,11 @@
        "/stylist/commissions"            (edn->bidi events/navigate-stylist-dashboard-commissions)
        "/stylist/store_credits"          (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
        "/stylist/referrals"              (edn->bidi events/navigate-stylist-dashboard-referrals)
-       "/stylist/edit"                   (edn->bidi events/navigate-stylist-manage-account)
+       "/stylist/edit"                   (edn->bidi events/navigate-stylist-account-profile) ;; TODO redirect
+       "/stylist/account/profile"        (edn->bidi events/navigate-stylist-account-profile)
+       "/stylist/account/password"       (edn->bidi events/navigate-stylist-account-password)
+       "/stylist/account/commission"     (edn->bidi events/navigate-stylist-account-commission)
+       "/stylist/account/social"         (edn->bidi events/navigate-stylist-account-social)
        "/share"                          (edn->bidi events/navigate-friend-referrals)
        "/checkout/login"                 (edn->bidi events/navigate-checkout-sign-in)
        "/checkout/address"               (edn->bidi events/navigate-checkout-address)

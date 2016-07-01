@@ -207,11 +207,18 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
+;; TODO: remove this after stylist account redesign is released
 (defmethod transition-state events/api-success-stylist-manage-account
   [_ event {:keys [stylist]} app-state]
   (-> app-state
       (update-in keypaths/stylist-manage-account merge stylist)
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :profile_picture_url]))))
+
+(defmethod transition-state events/api-success-stylist-account
+  [_ event {:keys [stylist]} app-state]
+  (-> app-state
+      (update-in keypaths/stylist-manage-account merge stylist)
+      (update-in keypaths/store merge (select-keys stylist [:instagram_account :styleseat_account :profile_picture_url]))))
 
 (defmethod transition-state events/api-success-stylist-stats [_ events stats app-state]
   (-> app-state

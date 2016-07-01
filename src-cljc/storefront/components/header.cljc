@@ -163,7 +163,7 @@
     [:div.truncate store-nickname]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.green.block (utils/navigate-community) "Community"]
-   (account-link (current-page? events/navigate-stylist-manage-account) events/navigate-stylist-manage-account "Account Settings")))
+   (account-link (current-page? events/navigate-stylist-account) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
   (account-dropdown
