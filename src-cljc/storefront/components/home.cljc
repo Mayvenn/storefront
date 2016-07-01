@@ -61,7 +61,7 @@
            (color-option-home-grid taxons)
            (original-home-grid taxons))]))
 
-(defn home-query [data]
+(defn categories-query [data]
   {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))
    :color-option? (experiments/color-option? data)})
 
@@ -77,7 +77,7 @@
 
     [:div.col-12.lg-up-col-6 [:div.h3.center.black.mb1 "Pick your style"]]
     [:div.col.col-12.lg-up-col-6
-     (component/build categories-component (home-query data) nil)
+     (component/build categories-component (categories-query data) nil)
      [:div.clearfix]]
     [:div.col.col-6.to-lg-hide
      [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
