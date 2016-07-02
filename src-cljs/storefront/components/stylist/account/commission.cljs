@@ -23,14 +23,12 @@
 
     [:div
      (ui/select-field "Payout Method"
+                      (conj keypaths/stylist-manage-account :chosen_payout_method)
                       payout-method
                       payout-methods
                       {:id        "payout-method"
                        :data-test "payout-method"
-                       :required  true
-                       :on-change #(handle-message events/control-change-state
-                                                   {:keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
-                                                    :value   (ui/selected-value %)})})
+                       :required  true})
 
 
      (condp = payout-method
@@ -95,15 +93,13 @@
                      :required  true})
 
      (ui/select-field "State"
+                      (conj keypaths/stylist-manage-account :address :state_id)
                       state-id
                       states
                       {:id          :account-state
                        :data-test   "account-state"
                        :placeholder "State"
-                       :required    true
-                       :on-change   #(handle-message events/control-change-state
-                                                     {:keypath (conj keypaths/stylist-manage-account :address :state_id)
-                                                      :value   (ui/selected-value %)})})
+                       :required    true})
 
      [:.my2.col-12
       (ui/submit-button "Update" {:spinning? false

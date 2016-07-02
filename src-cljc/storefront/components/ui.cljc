@@ -94,7 +94,7 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn select-field [label value options select-attributes]
+(defn select-field [label keypath value options select-attributes]
   (let [option-text  first
         option-value (comp str second)]
     [:div.col-12.mb2.mx-auto
@@ -103,7 +103,10 @@
        (merge {:key         label
                :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
                :placeholder label
-               :value       value}
+               :value       value
+               :on-change   #(handle-message events/control-change-state
+                                             {:keypath keypath
+                                              :value   (selected-value %)})}
               select-attributes)
        (when-let [placeholder (:placeholder select-attributes)]
          [:option {:disabled "disabled"} placeholder])

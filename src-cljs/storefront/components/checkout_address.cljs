@@ -117,15 +117,13 @@
                         :required  true})
 
         (ui/select-field "State"
+                         keypaths/checkout-shipping-address-state
                          (:state shipping-address)
                          states
                          {:id          :shipping-state
                           :data-test   "shipping-state"
                           :placeholder "State"
-                          :required    true
-                          :on-change   #(handle-message events/control-change-state
-                                                        {:keypath keypaths/checkout-shipping-address-state
-                                                         :value   (ui/selected-value %)})})])])))
+                          :required    true})])])))
 
 (defn ^:private billing-address-component
   [{:keys [billing-address states bill-to-shipping-address? places-loaded? billing-expanded?]} owner]
@@ -219,15 +217,13 @@
                            :required  true})
 
            (ui/select-field "State"
+                            keypaths/checkout-billing-address-state
                             (:state billing-address)
                             states
                             {:id          :billing-state
                              :data-test   "billing-state"
                              :placeholder "State"
-                             :required    true
-                             :on-change   #(handle-message events/control-change-state
-                                                           {:keypath keypaths/checkout-billing-address-state
-                                                            :value   (ui/selected-value %)})})])])])))
+                             :required    true})])])])))
 
 (defn component
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
