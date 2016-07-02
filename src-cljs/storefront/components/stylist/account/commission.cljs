@@ -73,8 +73,7 @@
                                :name      "account-address2"
                                :data-test "account-address2"
                                :id        "account-address2"
-                               :class     "rounded-left"
-                               :required  true})]
+                               :class     "rounded-left"})]
 
       [:.col-6 (ui/text-field "Zip Code"
                               (conj keypaths/stylist-manage-account :address :zipcode)
