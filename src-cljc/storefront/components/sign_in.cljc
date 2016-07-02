@@ -86,8 +86,9 @@
     ;; effects injects GetSat JS that will redirect / close this window as needed
     (if (or (nil? (get-in data keypaths/user))
             (get-in data keypaths/user-store-slug))
-      [:div.page-heading.center "Signing in to the Mayvenn Stylist Community..."]
+      (flash/success-box
+       {:data-test "flash-notice"}
+       [:div.px2 "Signing in to the Mayvenn Stylist Community..."])
       (flash/error-box
        {:data-test "flash-error"}
-       [:div.px2
-        "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])))))
+       [:div.px2 "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])))))
