@@ -25,36 +25,36 @@
      (ui/select-field "Payout Method"
                       payout-method
                       payout-methods
-                      {:id           "payout-method"
-                       :data-test    "payout-method"
-                       :required     true
-                       :on-change    #(handle-message events/control-change-state
-                                                      {:keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
-                                                       :value   (ui/selected-value %)})})]
+                      {:id        "payout-method"
+                       :data-test "payout-method"
+                       :required  true
+                       :on-change #(handle-message events/control-change-state
+                                                   {:keypath (conj keypaths/stylist-manage-account :chosen_payout_method)
+                                                    :value   (ui/selected-value %)})})
 
 
-    (condp = payout-method
-      "venmo"         (ui/text-field "Venmo Phone #"
-                                     (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
-                                     venmo-phone
-                                     {:type      "tel"
-                                      :name      "venmo-phone"
-                                      :id        "venmo-phone"
-                                      :data-test "venmo-phone"
-                                      :required  true})
-      "paypal"        (ui/text-field "PayPal Email"
-                                     (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
-                                     paypal-email
-                                     {:type      "email"
-                                      :name      "paypal-email"
-                                      :id        "paypal-email"
-                                      :data-test "paypal-email"
-                                      :required  true})
-      "mayvenn_debit" [:div [:p "A prepaid Visa debit card will be mailed to the below address"]]
-      "check"         [:div [:p "Checks will mail to the below address"]]
-      [:div [:p "Checks will mail to the below address"]])
+     (condp = payout-method
+       "venmo"         (ui/text-field "Venmo Phone #"
+                                      (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
+                                      venmo-phone
+                                      {:type      "tel"
+                                       :name      "venmo-phone"
+                                       :id        "venmo-phone"
+                                       :data-test "venmo-phone"
+                                       :required  true})
+       "paypal"        (ui/text-field "PayPal Email"
+                                      (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
+                                      paypal-email
+                                      {:type      "email"
+                                       :name      "paypal-email"
+                                       :id        "paypal-email"
+                                       :data-test "paypal-email"
+                                       :required  true})
+       "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the below address"]
+       "check"         [:p.ml1.mb3 "Checks will mail to the below address"]
+       [:p.ml1.mb3 "Checks will mail to the below address"])]
 
-    [:div.border-top.border-light-silver.py3.mt3
+    [:div.border-top.border-light-silver.py3
      (ui/text-field "Address"
                     (conj keypaths/stylist-manage-account :address :address1)
                     address1
@@ -118,7 +118,7 @@
 (defn query [data]
   {:payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
    :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method)))
-   :paypal-email    (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
+   :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
    :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone))
    :address1       (get-in data (conj keypaths/stylist-manage-account :address :address1))
    :address2       (get-in data (conj keypaths/stylist-manage-account :address :address2))
