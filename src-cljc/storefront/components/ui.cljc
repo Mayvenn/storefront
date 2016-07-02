@@ -96,7 +96,7 @@
 
 (defn select-field [label value options select-attributes]
   (let [option-text  first
-        option-value second]
+        option-value (comp str second)]
     [:div.col-12.mb2.mx-auto
      [:div.relative.z1
       [:select.col-12.h2.glow-green.absolute.border-none
@@ -105,7 +105,8 @@
                :placeholder label
                :value       value}
               select-attributes)
-       [:option ""]
+       (when-let [placeholder (:placeholder select-attributes)]
+         [:option {:disabled "disabled"} placeholder])
        (for [option options]
          [:option
           {:key   (option-value option)
@@ -116,7 +117,7 @@
        {:for (name (:id select-attributes))}
        label]
       [:div.h3.black.relative
-       (or (->> options (filter (comp #{value} option-value)) first option-text)
+       (or (->> options (filter (comp #{(str value)} option-value)) first option-text)
            nbsp)]]]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
