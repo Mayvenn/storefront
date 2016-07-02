@@ -98,12 +98,13 @@
      (ui/select-field "State"
                       state-id
                       states
-                      {:id        :account-state
-                       :data-test "account-state"
-                       :required  true
-                       :on-change #(handle-message events/control-change-state
-                                                   {:keypath (conj keypaths/stylist-manage-account :address :state_id)
-                                                    :value   (ui/selected-value %)})})
+                      {:id          :account-state
+                       :data-test   "account-state"
+                       :placeholder "State"
+                       :required    true
+                       :on-change   #(handle-message events/control-change-state
+                                                     {:keypath (conj keypaths/stylist-manage-account :address :state_id)
+                                                      :value   (ui/selected-value %)})})
 
      [:.my2.col-12
       (ui/submit-button "Update" {:spinning? false

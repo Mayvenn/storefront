@@ -119,12 +119,13 @@
         (ui/select-field "State"
                          (:state shipping-address)
                          states
-                         {:id        :shipping-state
-                          :data-test "shipping-state"
-                          :required  true
-                          :on-change #(handle-message events/control-change-state
-                                                      {:keypath keypaths/checkout-shipping-address-state
-                                                       :value   (ui/selected-value %)})})])])))
+                         {:id          :shipping-state
+                          :data-test   "shipping-state"
+                          :placeholder "State"
+                          :required    true
+                          :on-change   #(handle-message events/control-change-state
+                                                        {:keypath keypaths/checkout-shipping-address-state
+                                                         :value   (ui/selected-value %)})})])])))
 
 (defn ^:private billing-address-component
   [{:keys [billing-address states bill-to-shipping-address? places-loaded? billing-expanded?]} owner]
@@ -220,12 +221,13 @@
            (ui/select-field "State"
                             (:state billing-address)
                             states
-                            {:id        :billing-state
-                             :data-test "billing-state"
-                             :required  true
-                             :on-change #(handle-message events/control-change-state
-                                                         {:keypath keypaths/checkout-billing-address-state
-                                                          :value   (ui/selected-value %)})})])])])))
+                            {:id          :billing-state
+                             :data-test   "billing-state"
+                             :placeholder "State"
+                             :required    true
+                             :on-change   #(handle-message events/control-change-state
+                                                           {:keypath keypaths/checkout-billing-address-state
+                                                            :value   (ui/selected-value %)})})])])])))
 
 (defn component
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
