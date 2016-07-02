@@ -16,7 +16,8 @@
         "firstname"             "First Name"
         "lastname"              "Last Name"
         "reset_password_token"  "The reset password link"
-        "password_confirmation" "Password confirmation"}
+        "password_confirmation" "Password confirmation"
+        "payout_method"         "Payout method"}
        key
        key))
 
