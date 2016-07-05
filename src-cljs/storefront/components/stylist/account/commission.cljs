@@ -18,90 +18,98 @@
                          state-id
                          states]} owner opts]
   (component/create
-   [:form {:on-submit
-           (utils/send-event-callback events/control-stylist-account-commission-submit)}
-    [:h1.h2.light.col-12.my3.center "Update commission info"]
+   [:form
+    {:on-submit
+     (utils/send-event-callback events/control-stylist-account-commission-submit)}
+    [:div.col.col-12.md-up-col-6
+     [:h1.h2.light.my3.center.col-12 "Update commission info"]
 
-    [:div
-     (ui/select-field "Payout Method"
-                      (conj keypaths/stylist-manage-account :chosen_payout_method)
-                      payout-method
-                      payout-methods
-                      {:id        "payout-method"
-                       :data-test "payout-method"
-                       :required  true})
+     [:div.col-12.md-up-col-10.mx-auto
+      (ui/select-field "Payout Method"
+                       (conj keypaths/stylist-manage-account :chosen_payout_method)
+                       payout-method
+                       payout-methods
+                       {:id        "payout-method"
+                        :data-test "payout-method"
+                        :required  true})
 
-     (condp = payout-method
-       "venmo"         (ui/text-field "Venmo Phone #"
-                                      (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
-                                      venmo-phone
-                                      {:type      "tel"
-                                       :name      "venmo-phone"
-                                       :id        "venmo-phone"
-                                       :data-test "venmo-phone"
-                                       :required  true})
-       "paypal"        (ui/text-field "PayPal Email"
-                                      (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
-                                      paypal-email
-                                      {:type      "email"
-                                       :name      "paypal-email"
-                                       :id        "paypal-email"
-                                       :data-test "paypal-email"
-                                       :required  true})
-       "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address below"]
-       "check"         [:p.ml1.mb3 "Checks will mail to the address below"]
-       [:p.ml1.mb3 "Checks will mail to the address below"])]
+      (condp = payout-method
+        "venmo"         (ui/text-field "Venmo Phone #"
+                                       (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
+                                       venmo-phone
+                                       {:type      "tel"
+                                        :name      "venmo-phone"
+                                        :id        "venmo-phone"
+                                        :data-test "venmo-phone"
+                                        :required  true})
+        "paypal"        (ui/text-field "PayPal Email"
+                                       (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
+                                       paypal-email
+                                       {:type      "email"
+                                        :name      "paypal-email"
+                                        :id        "paypal-email"
+                                        :data-test "paypal-email"
+                                        :required  true})
+        "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address below"]
+        "check"         [:p.ml1.mb3 "Checks will mail to the address below"]
+        [:p.ml1.mb3 "Checks will mail to the address below"])]]
 
-    [:div.border-top.border-light-silver.py3
-     (ui/text-field "Address"
-                    (conj keypaths/stylist-manage-account :address :address1)
-                    address1
-                    {:autofocus "autofocus"
-                     :type      "text"
-                     :name      "account-address1"
-                     :id        "account-address1"
-                     :data-test "account-address1"
-                     :required  true})
 
-     [:div.flex.col-12
-      [:div.col-6 (ui/text-field "Apt/Suite"
-                              (conj keypaths/stylist-manage-account :address :address2)
-                              address2
-                              {:type      "text"
-                               :name      "account-address2"
-                               :data-test "account-address2"
-                               :id        "account-address2"
-                               :class     "rounded-left"})]
+    [:div.col.col-12.md-up-col-6
+     [:div.mx-auto.col-12.md-up-col-10
+      [:div.border-dark-white.border-top.md-up-hide.mb3]
+      (ui/text-field "Address"
+                     (conj keypaths/stylist-manage-account :address :address1)
+                     address1
+                     {:autofocus "autofocus"
+                      :type      "text"
+                      :name      "account-address1"
+                      :id        "account-address1"
+                      :data-test "account-address1"
+                      :required  true})
 
-      [:div.col-6 (ui/text-field "Zip Code"
-                              (conj keypaths/stylist-manage-account :address :zipcode)
-                              zipcode
-                              {:type      "text"
-                               :name      "account-zipcode"
-                               :id        "account-zipcode"
-                               :data-test "account-zipcode"
-                               :class     "rounded-right border-width-left-0"
-                               :required  true})]]
+      [:div.flex.col-12
+       [:div.col-6 (ui/text-field "Apt/Suite"
+                                  (conj keypaths/stylist-manage-account :address :address2)
+                                  address2
+                                  {:type      "text"
+                                   :name      "account-address2"
+                                   :data-test "account-address2"
+                                   :id        "account-address2"
+                                   :class     "rounded-left"})]
 
-     (ui/text-field "City"
-                    (conj keypaths/stylist-manage-account :address :city)
-                    city
-                    {:type      "text"
-                     :name      "account-password-city"
-                     :id        "account-password-city"
-                     :data-test "account-password-city"
-                     :required  true})
+       [:div.col-6 (ui/text-field "Zip Code"
+                                  (conj keypaths/stylist-manage-account :address :zipcode)
+                                  zipcode
+                                  {:type      "text"
+                                   :name      "account-zipcode"
+                                   :id        "account-zipcode"
+                                   :data-test "account-zipcode"
+                                   :class     "rounded-right border-width-left-0"
+                                   :required  true})]]
 
-     (ui/select-field "State"
-                      (conj keypaths/stylist-manage-account :address :state_id)
-                      state-id
-                      states
-                      {:id          :account-state
-                       :data-test   "account-state"
-                       :placeholder "State"
-                       :required    true})
+      (ui/text-field "City"
+                     (conj keypaths/stylist-manage-account :address :city)
+                     city
+                     {:type      "text"
+                      :name      "account-password-city"
+                      :id        "account-password-city"
+                      :data-test "account-password-city"
+                      :required  true})
 
-     [:div.my2.col-12
+      (ui/select-field "State"
+                       (conj keypaths/stylist-manage-account :address :state_id)
+                       state-id
+                       states
+                       {:id          :account-state
+                        :data-test   "account-state"
+                        :placeholder "State"
+                        :required    true})]]
+
+    [:div.my2.col-12.clearfix
+     ui/nbsp
+     [:div.border-dark-white.border-top.to-md-hide.mb3]
+     [:div.col-12.md-up-col-5.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

@@ -13,9 +13,10 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-social-submit)}
-    [:div.flex.flex-column.items-center.col-12
-     [:h1.h2.light.col-12.my3.center "Update your password"]
 
+    [:h1.h2.light.my3.center.col.col-12.md-up-col-6 "Update your password"]
+
+    [:div.col.col-12.md-up-col-6
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
        {:style {:width "2.5rem" :height "2.5rem"}
@@ -44,9 +45,12 @@
                        :name      "account-styleseat"
                        :id        "account-styleseat"
                        :data-test "account-styleseat"
-                       :required  true})]]
+                       :required  true})]]]
 
-     [:div.my2.col-12
+    [:div.my2.col-12.clearfix
+     ui/nbsp
+     [:div.border-dark-white.border-top.to-md-hide.mb3]
+     [:div.col-12.md-up-col-5.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

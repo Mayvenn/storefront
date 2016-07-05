@@ -56,7 +56,8 @@
                                           events/navigate-stylist-account-social]}})]
 
      (if fetching?
-      [:.my2.h1 ui/spinner]
+      [:div.my2.h1 ui/spinner]
+      [:div.my2
        (condp = current-nav-event
          events/navigate-stylist-account-profile
          (component/build account.profile/component profile opts)
@@ -70,7 +71,7 @@
          events/navigate-stylist-account-social
          (component/build account.social/component social opts)
 
-         nil))]]))
+         nil)])]]))
 
 (defn query [data]
   {:fetching?           (utils/requesting? data request-keys/get-stylist-account)
