@@ -11,7 +11,6 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
                        [storefront.components.stylist.referrals :as stylist.referrals]
-                       [storefront.components.stylist.manage-account :refer [stylist-manage-account-component]]
                        [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.friend-referrals :refer [friend-referrals-component]]
                        [storefront.components.popup :refer [popup-component]]])
@@ -66,10 +65,10 @@
                  events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
                  events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
                  events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-                 events/navigate-stylist-account-profile        (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
-                 events/navigate-stylist-account-password       (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
-                 events/navigate-stylist-account-commission     (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
-                 events/navigate-stylist-account-social         (if (experiments/accounts-redesign? data) stylist.account/built-component stylist-manage-account-component)
+                 events/navigate-stylist-account-profile        stylist.account/built-component
+                 events/navigate-stylist-account-password       stylist.account/built-component
+                 events/navigate-stylist-account-commission     stylist.account/built-component
+                 events/navigate-stylist-account-social         stylist.account/built-component
                  events/navigate-account-manage                 (requires-sign-in data manage-account-component)
                  events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
                  events/navigate-friend-referrals               friend-referrals-component

@@ -104,13 +104,11 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 
-(defpath control-stylist-profile-picture)
-
 (defpath control-stylist-referral-submit)
 (defpath control-stylist-referral-remove)
 (defpath control-stylist-referral-add-another)
 
-(defpath control-stylist-manage-account-submit)
+(defpath control-stylist-account-photo-pick)
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)
 (defpath control-stylist-account-commission-submit)
@@ -135,9 +133,8 @@
 
 (defpath api-success-account)
 (defpath api-success-manage-account)
-(defpath api-success-stylist-manage-account)
-(defpath api-success-stylist-manage-account-profile-picture)
 (defpath api-success-stylist-account)
+(defpath api-success-stylist-account-photo)
 (defpath api-success-stylist-account-profile)
 (defpath api-success-stylist-account-password)
 (defpath api-success-stylist-account-commission)

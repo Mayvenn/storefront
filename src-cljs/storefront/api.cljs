@@ -330,7 +330,7 @@
    {:params
     {:user-token user-token}
     :handler
-    #(messages/handle-message events/api-success-stylist-manage-account
+    #(messages/handle-message events/api-success-stylist-account
                               {:updated false
                                :stylist (select-stylist-account-keys %)})}))
 
@@ -352,7 +352,7 @@
     {:user-token user-token
      :stylist stylist-account}
     :handler
-    #(messages/handle-message events/api-success-stylist-manage-account
+    #(messages/handle-message events/api-success-stylist-account
                               {:updated true
                                :stylist (select-stylist-account-keys %)})}))
 
@@ -396,12 +396,12 @@
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-profile-picture [user-token profile-picture]
+(defn update-stylist-account-photo [user-token profile-picture]
   (let [form-data (doto (js/FormData.)
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
     (PUT (str api-base-url "/stylist/profile-picture")
-         {:handler #(messages/handle-message events/api-success-stylist-manage-account-profile-picture
+         {:handler #(messages/handle-message events/api-success-stylist-account-photo
                                              (merge {:updated true}
                                                     {:stylist (select-keys % [:profile_picture_url])}))
           :error-handler default-error-handler

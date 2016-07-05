@@ -18,8 +18,9 @@
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
     "Change Photo"
     [:input.hide
-     (merge (utils/change-file events/control-stylist-profile-picture)
-            {:name "mayvenn_stylist[profile_picture]" :type "file"})]])
+     (merge (utils/change-file events/control-stylist-account-photo-pick)
+            {:name "mayvenn_stylist[profile_picture]"
+             :type "file"})]])
 
 (defn store-credit [available-credit]
   [:div.mb3
@@ -44,7 +45,6 @@
 
       [:div.ml3
        (store-credit available-credit)]]
-
 
      [:div.bg-white.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}

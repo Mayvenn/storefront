@@ -489,18 +489,10 @@
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-social user-token stylist-account)))
 
-(defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
+(defmethod perform-effects events/control-stylist-account-photo-pick [_ events args app-state]
   (let [user-token      (get-in app-state keypaths/user-token)
         profile-picture (:file args)]
-    (api/update-stylist-account-profile user-token profile-picture)))
-
-(defmethod perform-effects events/control-stylist-manage-account-submit [_ events args app-state]
-  (let [user-token (get-in app-state keypaths/user-token)
-        stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account user-token stylist-account)
-    ;; TODO when removing old manage account for stylists, don't save everything when updating photo
-    (when (stylist-account :profile-picture)
-      (api/update-stylist-account-profile-picture user-token stylist-account))))
+    (api/update-stylist-account-photo user-token profile-picture)))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
@@ -625,14 +617,6 @@
                   {:message "Account updated"
                    :navigation [events/navigate-home {}]}))
 
-;; TODO: remove this after stylist account redesign is released
-(defmethod perform-effects events/api-success-stylist-manage-account [_ event args app-state]
-  (save-cookie app-state)
-  (when (:updated args)
-    (handle-message events/flash-show-success
-                    {:message "Account updated"
-                     :navigation [events/navigate-stylist-account-profile {}]})))
-
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args app-state]
   (save-cookie app-state)
   (handle-message events/flash-show-success
@@ -644,6 +628,24 @@
   (handle-message events/flash-show-success
                   {:message "Password updated"
                    :navigation [events/navigate-stylist-account-password {}]}))
+
+(defmethod perform-effects events/api-success-stylist-account-commission [_ event args app-state]
+  (save-cookie app-state)
+  (handle-message events/flash-show-success
+                  {:message "Commission settings updated"
+                   :navigation [events/navigate-stylist-account-commission {}]}))
+
+(defmethod perform-effects events/api-success-stylist-account-social [_ event args app-state]
+  (save-cookie app-state)
+  (handle-message events/flash-show-success
+                  {:message "Social settings updated"
+                   :navigation [events/navigate-stylist-account-social {}]}))
+
+(defmethod perform-effects events/api-success-stylist-account-photo [_ event args app-state]
+  (save-cookie app-state)
+  (handle-message events/flash-show-success
+                  {:message "Photo updated"
+                   :navigate (get-in app-state keypaths/navigation-message)}))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
   (handle-later events/control-popup-hide {} 2000))
