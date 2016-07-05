@@ -27,11 +27,13 @@
        (string/join " ")
        string/capitalize))
 
+(def flash-line-height "1.25em")
+
 (def success-img
-  (component/html [:div.line-height-1 (svg/adjustable-check {:class "stroke-green align-middle" :width "1.25em" :height "1.25em"})]))
+  (component/html [:div (svg/adjustable-check {:class "stroke-green align-middle" :width flash-line-height :height flash-line-height})]))
 
 (def error-img
-  (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width "1.25rem" :height "1.25rem"}}]))
+  (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width flash-line-height :height flash-line-height}}]))
 
 (defn success-box [box-opts body]
   [:div.green.bg-green.border.border-green.rounded.light.letter-spacing-1
@@ -65,12 +67,14 @@
         (or validation-message failure)
         (error-box
          {:data-test "flash-error"}
-         [:div.px2 (or validation-message failure)])
+         [:div.px2 {:style {:line-height flash-line-height}}
+          (or validation-message failure)])
 
         success
         (success-box
          {:data-test "flash-success"}
-         [:div.px2 success]))))))
+         [:div.px2 {:style {:line-height flash-line-height}}
+          success]))))))
 
 (defn query [data]
   {:success            (get-in data keypaths/flash-success-message)
