@@ -294,6 +294,8 @@
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
+               (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
+               (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
