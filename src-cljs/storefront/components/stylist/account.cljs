@@ -1,14 +1,15 @@
 (ns storefront.components.stylist.account
   (:require [storefront.component :as component]
-            [storefront.components.stylist.account.social :as account.social]
             [storefront.components.stylist.account.commission :as account.commission]
             [storefront.components.stylist.account.password :as account.password]
             [storefront.components.stylist.account.profile :as account.profile]
+            [storefront.components.stylist.account.social :as account.social]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn edit-photo [profile-picture-url]
   [:label.navy
@@ -26,7 +27,8 @@
    [:div.green.h0 (ui/big-money available-credit)]
    [:div.mb1 ui/nbsp]])
 
-(defn component [{:keys [current-nav-event
+(defn component [{:keys [fetching?
+                         current-nav-event
                          profile-picture-url
                          available-credit
                          profile
@@ -53,23 +55,26 @@
                                           events/navigate-stylist-account-commission
                                           events/navigate-stylist-account-social]}})]
 
-     (condp = current-nav-event
-       events/navigate-stylist-account-profile
-       (component/build account.profile/component profile opts)
+     (if fetching?
+      [:.my2.h1 ui/spinner]
+       (condp = current-nav-event
+         events/navigate-stylist-account-profile
+         (component/build account.profile/component profile opts)
 
-       events/navigate-stylist-account-password
-       (component/build account.password/component password opts)
+         events/navigate-stylist-account-password
+         (component/build account.password/component password opts)
 
-       events/navigate-stylist-account-commission
-       (component/build account.commission/component commission opts)
+         events/navigate-stylist-account-commission
+         (component/build account.commission/component commission opts)
 
-       events/navigate-stylist-account-social
-       (component/build account.social/component social opts)
+         events/navigate-stylist-account-social
+         (component/build account.social/component social opts)
 
-       nil)]]))
+         nil))]]))
 
 (defn query [data]
-  {:current-nav-event   (get-in data keypaths/navigation-event)
+  {:fetching?           (utils/requesting? data request-keys/get-stylist-account)
+   :current-nav-event   (get-in data keypaths/navigation-event)
    :profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
    :profile             (account.profile/query data)
