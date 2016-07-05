@@ -1,5 +1,6 @@
 (ns storefront.components.stylist.account
   (:require [storefront.component :as component]
+            [storefront.components.stylist.account.social :as account.social]
             [storefront.components.stylist.account.commission :as account.commission]
             [storefront.components.stylist.account.password :as account.password]
             [storefront.components.stylist.account.profile :as account.profile]
@@ -30,7 +31,8 @@
                          available-credit
                          profile
                          password
-                         commission]} owner opts]
+                         commission
+                         social]} owner opts]
   (component/create
    [:div.bg-pure-white.light-black.sans-serif
     [:div.p2.m-auto.overflow-hidden
@@ -61,6 +63,9 @@
        events/navigate-stylist-account-commission
        (component/build account.commission/component commission opts)
 
+       events/navigate-stylist-account-social
+       (component/build account.social/component social opts)
+
        nil)]]))
 
 (defn query [data]
@@ -69,7 +74,8 @@
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
    :profile             (account.profile/query data)
    :password            (account.password/query data)
-   :commission          (account.commission/query data)})
+   :commission          (account.commission/query data)
+   :social              (account.social/query data)})
 
 (defn built-component [data owner opts]
   (component/create (component/build component (query data) opts)))

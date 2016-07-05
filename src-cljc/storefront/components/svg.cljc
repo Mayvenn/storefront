@@ -75,6 +75,11 @@
     [:path {:d "M256 126.635A129.365 129.365 0 1 0 385.365 256 129.365 129.365 0 0 0 256 126.635zm0 213.338A83.973 83.973 0 1 1 339.974 256 83.974 83.974 0 0 1 256 339.973z"}]
     [:circle {:cx "390.476", :cy "121.524", :r "30.23"}]]))
 
+(def styleseat
+  (component/html
+   [:svg {:viewBox "0 0 102 91"}
+    [:path {:d "M49.586 90.024C44.198 67.636 24.042 51 0 51 0 22.833 22.833 0 51 0s51 22.833 51 51c-24.042 0-44.198 16.636-49.586 39.024a41.787 41.787 0 0 0-2.828 0z" :fill-rule "evenodd"}]]))
+
 (defn missing-profile-picture [svg-options]
   [:svg (merge {:viewBox "0 0 96 96"} svg-options)
    [:g {:fill "none" :fill-rule "evenodd"}
