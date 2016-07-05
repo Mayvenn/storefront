@@ -12,10 +12,10 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-manage-account-submit)}
-    [:.flex.flex-column.items-center.col-12
+    [:div.flex.flex-column.items-center.col-12
      [:h1.h2.light.col-12.my3.center "Update your info"]
-     [:.flex.col-12
-      [:.col-6 (ui/text-field "First Name"
+     [:div.flex.col-12
+      [:div.col-6 (ui/text-field "First Name"
                               (conj keypaths/stylist-manage-account :address :firstname)
                               (:firstname address)
                               {:autofocus "autofocus"
@@ -26,7 +26,7 @@
                                :class     "rounded-left"
                                :required  true})]
 
-      [:.col-6 (ui/text-field "Last Name"
+      [:div.col-6 (ui/text-field "Last Name"
                               (conj keypaths/stylist-manage-account :address :lastname)
                               (:lastname address)
                               {:type      "text"
@@ -54,7 +54,7 @@
                      :data-test "account-email"
                      :required  true})
 
-     [:.flex.flex-column.items-center.col-12
+     [:div.flex.flex-column.items-center.col-12
       (ui/text-field "Birthday"
                      (conj keypaths/stylist-manage-account :birth-date)
                      birth-date
@@ -65,7 +65,7 @@
                       :required  true})]
 
 
-     [:.my2.col-12
+     [:div.my2.col-12
       (ui/submit-button "Update" {:spinning? false
                                   :data-test "account-form-submit"})]]]))
 

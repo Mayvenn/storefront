@@ -11,7 +11,7 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-manage-account-submit)}
-    [:.flex.flex-column.items-center.col-12
+    [:div.flex.flex-column.items-center.col-12
      [:h1.h2.light.col-12.my3.center "Update your password"]
 
      (ui/text-field "New Password"
@@ -32,7 +32,7 @@
                      :data-test "account-password-confirmation"
                      :required  true})
 
-     [:.my2.col-12
+     [:div.my2.col-12
       (ui/submit-button "Update" {:spinning? false
                                   :data-test "account-form-submit"})]]]))
 

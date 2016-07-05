@@ -30,7 +30,6 @@
                        :data-test "payout-method"
                        :required  true})
 
-
      (condp = payout-method
        "venmo"         (ui/text-field "Venmo Phone #"
                                       (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
@@ -63,8 +62,8 @@
                      :data-test "account-address1"
                      :required  true})
 
-     [:.flex.col-12
-      [:.col-6 (ui/text-field "Apt/Suite"
+     [:div.flex.col-12
+      [:div.col-6 (ui/text-field "Apt/Suite"
                               (conj keypaths/stylist-manage-account :address :address2)
                               address2
                               {:type      "text"
@@ -73,7 +72,7 @@
                                :id        "account-address2"
                                :class     "rounded-left"})]
 
-      [:.col-6 (ui/text-field "Zip Code"
+      [:div.col-6 (ui/text-field "Zip Code"
                               (conj keypaths/stylist-manage-account :address :zipcode)
                               zipcode
                               {:type      "text"
@@ -101,7 +100,7 @@
                        :placeholder "State"
                        :required    true})
 
-     [:.my2.col-12
+     [:div.my2.col-12
       (ui/submit-button "Update" {:spinning? false
                                   :data-test "account-form-submit"})]]]))
 

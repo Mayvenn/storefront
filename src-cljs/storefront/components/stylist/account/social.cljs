@@ -44,7 +44,7 @@
                        :data-test "account-styleseat"
                        :required  true})]]
 
-     [:.my2.col-12
+     [:div.my2.col-12
       (ui/submit-button "Update" {:spinning? false
                                   :data-test "account-form-submit"})]]]))
 
