@@ -31,7 +31,6 @@
        "/stylist/commissions"            (edn->bidi events/navigate-stylist-dashboard-commissions)
        "/stylist/store_credits"          (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
        "/stylist/referrals"              (edn->bidi events/navigate-stylist-dashboard-referrals)
-       "/stylist/edit"                   (edn->bidi events/navigate-stylist-account-profile) ;; TODO redirect
        "/stylist/account/profile"        (edn->bidi events/navigate-stylist-account-profile)
        "/stylist/account/password"       (edn->bidi events/navigate-stylist-account-password)
        "/stylist/account/commission"     (edn->bidi events/navigate-stylist-account-commission)
