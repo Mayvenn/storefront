@@ -1,16 +1,17 @@
 (ns storefront.components.stylist.account.password
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.components.facebook-messenger :as facebook]))
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn component [{:keys [password
-                         confirmation]} owner opts]
+                         confirmation
+                         saving?]} owner opts]
   (component/create
    [:form {:on-submit
-           (utils/send-event-callback events/control-stylist-manage-account-submit)}
+           (utils/send-event-callback events/control-stylist-account-password-submit)}
     [:div.flex.flex-column.items-center.col-12
      [:h1.h2.light.col-12.my3.center "Update your password"]
 
@@ -33,9 +34,10 @@
                      :required  true})
 
      [:div.my2.col-12
-      (ui/submit-button "Update" {:spinning? false
+      (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 
 (defn query [data]
-  {:password     (get-in data (conj keypaths/stylist-manage-account :user :password))
+  {:saving?      (utils/requesting? data request-keys/update-stylist-account-password)
+   :password     (get-in data (conj keypaths/stylist-manage-account :user :password))
    :confirmation (get-in data (conj keypaths/stylist-manage-account :user :password-confirmation))})

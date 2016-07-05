@@ -1,17 +1,18 @@
 (ns storefront.components.stylist.account.profile
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.components.facebook-messenger :as facebook]))
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [address
+(defn component [{:keys [saving?
+                         address
                          user
                          birth-date]} owner opts]
   (component/create
    [:form {:on-submit
-           (utils/send-event-callback events/control-stylist-manage-account-submit)}
+           (utils/send-event-callback events/control-stylist-account-profile-submit)}
     [:div.flex.flex-column.items-center.col-12
      [:h1.h2.light.col-12.my3.center "Update your info"]
      [:div.flex.col-12
@@ -66,10 +67,11 @@
 
 
      [:div.my2.col-12
-      (ui/submit-button "Update" {:spinning? false
+      (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 
 (defn query [data]
-  {:address    (get-in data (conj keypaths/stylist-manage-account :address))
+  {:saving?    (utils/requesting? data request-keys/update-stylist-account-profile)
+   :address    (get-in data (conj keypaths/stylist-manage-account :address))
    :birth-date (get-in data (conj keypaths/stylist-manage-account :birth-date))
    :user       (get-in data (conj keypaths/stylist-manage-account :user))} )

@@ -111,6 +111,10 @@
 (defpath control-stylist-referral-add-another)
 
 (defpath control-stylist-manage-account-submit)
+(defpath control-stylist-account-profile-submit)
+(defpath control-stylist-account-password-submit)
+(defpath control-stylist-account-commission-submit)
+(defpath control-stylist-account-social-submit)
 
 (defpath control-commission-order-expand)
 

@@ -469,15 +469,36 @@
                                      :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
+(defmethod perform-effects events/control-stylist-account-profile-submit [_ events args app-state]
+  (let [user-token      (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+    (api/update-stylist-account-profile user-token stylist-account)))
+
+(defmethod perform-effects events/control-stylist-account-password-submit [_ events args app-state]
+  (let [user-token      (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+    (api/update-stylist-account-password user-token stylist-account)))
+
+(defmethod perform-effects events/control-stylist-account-commission-submit [_ events args app-state]
+  (let [user-token      (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+    (api/update-stylist-account-commission user-token stylist-account)))
+
+(defmethod perform-effects events/control-stylist-account-social-submit [_ events args app-state]
+  (let [user-token      (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+    (api/update-stylist-account-social user-token stylist-account)))
+
 (defmethod perform-effects events/control-stylist-profile-picture [_ events args app-state]
-  (let [user-token (get-in app-state keypaths/user-token)
+  (let [user-token      (get-in app-state keypaths/user-token)
         profile-picture (:file args)]
-    (api/update-stylist-account-profile-picture user-token profile-picture)))
+    (api/update-stylist-account-profile user-token profile-picture)))
 
 (defmethod perform-effects events/control-stylist-manage-account-submit [_ events args app-state]
   (let [user-token (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account user-token stylist-account)
+    ;; TODO when removing old manage account for stylists, don't save everything when updating photo
     (when (stylist-account :profile-picture)
       (api/update-stylist-account-profile-picture user-token stylist-account))))
 

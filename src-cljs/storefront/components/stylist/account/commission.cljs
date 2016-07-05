@@ -3,10 +3,11 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [payout-method
+(defn component [{:keys [saving?
+                         payout-method
                          payout-methods
                          venmo-phone
                          paypal-email
@@ -18,7 +19,7 @@
                          states]} owner opts]
   (component/create
    [:form {:on-submit
-           (utils/send-event-callback events/control-stylist-manage-account-submit)}
+           (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:h1.h2.light.col-12.my3.center "Update commission info"]
 
     [:div
@@ -101,7 +102,7 @@
                        :required    true})
 
      [:div.my2.col-12
-      (ui/submit-button "Update" {:spinning? false
+      (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 
 (defn payout-methods [original-payout-method]
@@ -111,7 +112,8 @@
     (= original-payout-method "mayvenn_debit") (conj ["Mayvenn Debit" "mayvenn_debit"])))
 
 (defn query [data]
-  {:payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
+  {:saving?        (utils/requesting? data request-keys/update-stylist-account-commission)
+   :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
    :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method)))
    :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
    :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone))

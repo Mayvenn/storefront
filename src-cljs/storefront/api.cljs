@@ -360,7 +360,7 @@
   (api-req
    PUT
    "/stylist"
-   request-keys/update-stylist-account
+   request-keys/update-stylist-account-profile
    {:params {:user-token user-token :stylist stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-profile
@@ -370,10 +370,30 @@
   (api-req
    PUT
    "/stylist"
-   request-keys/update-stylist-account
+   request-keys/update-stylist-account-password
    {:params {:user-token user-token :stylist stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-password
+                              {:stylist (select-stylist-account-keys %)})}))
+
+(defn update-stylist-account-commission [user-token stylist-account]
+  (api-req
+   PUT
+   "/stylist"
+   request-keys/update-stylist-account-commission
+   {:params {:user-token user-token :stylist stylist-account}
+    :handler
+    #(messages/handle-message events/api-success-stylist-account-commission
+                              {:stylist (select-stylist-account-keys %)})}))
+
+(defn update-stylist-account-social [user-token stylist-account]
+  (api-req
+   PUT
+   "/stylist"
+   request-keys/update-stylist-account-social
+   {:params {:user-token user-token :stylist stylist-account}
+    :handler
+    #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn update-stylist-account-profile-picture [user-token profile-picture]
