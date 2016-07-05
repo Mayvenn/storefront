@@ -48,9 +48,9 @@
                                        :id        "paypal-email"
                                        :data-test "paypal-email"
                                        :required  true})
-       "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the below address"]
-       "check"         [:p.ml1.mb3 "Checks will mail to the below address"]
-       [:p.ml1.mb3 "Checks will mail to the below address"])]
+       "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address below"]
+       "check"         [:p.ml1.mb3 "Checks will mail to the address below"]
+       [:p.ml1.mb3 "Checks will mail to the address below"])]
 
     [:div.border-top.border-light-silver.py3
      (ui/text-field "Address"
