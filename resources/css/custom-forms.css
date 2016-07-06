@@ -26,6 +26,10 @@
    outline-color: var(--orange);
 }
 
+input[type=date] {
+   -webkit-appearance: none;
+}
+
 :root {
   --green:  #40CBAC;
   --orange: #e8a50c;
