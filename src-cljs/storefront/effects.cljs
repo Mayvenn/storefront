@@ -699,6 +699,11 @@
                   {:message "Uh oh, an error occurred. Reload the page and try again."
                    :navigation (get-in app-state keypaths/navigation-message)}))
 
+(defmethod perform-effects events/api-failure-stylist-account-photo-too-large [_ event response app-state]
+  (handle-message events/flash-show-failure
+                  {:message "Whoa, the photo you uploaded is too large"
+                   :navigation (get-in app-state keypaths/navigation-message)}))
+
 (defmethod perform-effects events/flash-show [_ event args app-state]
   (scroll/snap-to-top))
 

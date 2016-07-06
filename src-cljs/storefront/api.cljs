@@ -407,7 +407,10 @@
              request-keys/update-stylist-account-photo
              {:params          form-data
               :format          "multipart/form-data"
-              :error-handler   default-error-handler
+              :error-handler   (fn [response]
+                                 (if (= 413 (:status response))
+                                   (messages/handle-message events/api-failure-stylist-account-photo-too-large response)
+                                   (default-error-handler response)))
               :timeout         10000
               :handler         #(messages/handle-message events/api-success-stylist-account-photo
                                                          {:updated true

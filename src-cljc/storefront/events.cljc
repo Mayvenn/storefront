@@ -174,6 +174,7 @@
 (defpath api-failure-errors)
 (defpath api-failure-validation-errors)
 (defpath api-failure-pending-promo-code)
+(defpath api-failure-stylist-account-photo-too-large)
 
 (defpath api-handle)
 (defpath api-handle-order-not-found)
