@@ -29,8 +29,7 @@
                       {:type      "text"
                        :name      "account-instagram"
                        :id        "account-instagram"
-                       :data-test "account-instagram"
-                       :required  true})]]
+                       :data-test "account-instagram"})]]
 
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
@@ -44,8 +43,7 @@
                       {:type      "text"
                        :name      "account-styleseat"
                        :id        "account-styleseat"
-                       :data-test "account-styleseat"
-                       :required  true})]]]
+                       :data-test "account-styleseat"})]]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
