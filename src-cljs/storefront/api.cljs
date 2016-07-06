@@ -63,7 +63,9 @@
                             :app-version (app-version xhrio)}))))
 
 (defn filter-nil [m]
-  (into {} (filter (comp not nil? val) m)))
+  (if (map? m)
+    (into {} (filter (comp not nil? val) m))
+    m))
 
 (def default-req-opts {:format :json
                        :response-format (header-json-response-format {:keywords? true})})
@@ -400,14 +402,16 @@
   (let [form-data (doto (js/FormData.)
                     (.append "file" profile-picture (.-name profile-picture))
                     (.append "user-token" user-token))]
-    (PUT (str api-base-url "/stylist/profile-picture")
-         {:handler #(messages/handle-message events/api-success-stylist-account-photo
-                                             (merge {:updated true}
-                                                    {:stylist (select-keys % [:profile_picture_url])}))
-          :error-handler default-error-handler
-          :params form-data
-          :response-format (json-response-format {:keywords? true})
-          :timeout 10000})))
+    (api-req PUT
+             "/stylist/profile-picture"
+             request-keys/update-stylist-account-photo
+             {:params          form-data
+              :format          "multipart/form-data"
+              :error-handler   default-error-handler
+              :timeout         10000
+              :handler         #(messages/handle-message events/api-success-stylist-account-photo
+                                                         {:updated true
+                                                          :stylist (select-keys % [:profile_picture_url])})})))
 
 (defn get-stylist-stats [user-token]
   (api-req
