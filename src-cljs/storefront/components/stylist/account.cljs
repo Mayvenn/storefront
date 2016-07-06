@@ -18,7 +18,9 @@
       [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
        {:style {:width "130px" :height "130px"
                 :top "-12px" :left "-12px"}}]])
-   [:div.mx-auto.circle.border-green.border.mb2.content-box {:style {:width "100px" :height "100px" :border-width "3px"}}
+   [:div.mx-auto.circle.border.mb2.content-box
+    {:style {:width "100px" :height "100px" :border-width "3px"}
+     :class (if photo-saving? "border-white" "border-green")}
     [:div.circle.border-white.border.content-box {:style {:width "96px" :height "96px" :border-width "2px"}}
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
    "Change Photo"
