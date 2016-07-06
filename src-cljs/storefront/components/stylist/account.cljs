@@ -20,7 +20,8 @@
     [:input.hide
      (merge (utils/change-file events/control-stylist-account-photo-pick)
             {:name "mayvenn_stylist[profile_picture]"
-             :type "file"})]])
+             :type "file"
+             :data-test "profile-photo"})]])
 
 (defn store-credit [available-credit]
   [:div.mb3
