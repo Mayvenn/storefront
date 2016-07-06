@@ -92,9 +92,9 @@
                      (conj keypaths/stylist-manage-account :address :city)
                      city
                      {:type      "text"
-                      :name      "account-password-city"
-                      :id        "account-password-city"
-                      :data-test "account-password-city"
+                      :name      "account-city"
+                      :id        "account-city"
+                      :data-test "account-city"
                       :required  true})
 
       (ui/select-field "State"
