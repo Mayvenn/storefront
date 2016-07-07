@@ -1,9 +1,13 @@
 (ns storefront.seo-tags
   (:require [storefront.platform.images :as images]
             [storefront.keypaths :as keypaths]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.accessors.taxons :as taxons]))
 
 (def tag-class "seo-tag")
+
+(defn add-seo-tag-class [tags]
+  (map #(update-in % [1] assoc :class tag-class) tags))
 
 (def ^:private default-tags
   [[:title {} "Shop | Mayvenn"]
@@ -19,8 +23,9 @@
            :content "Mayvenn sells 100% natural hair extensions backed by a 30-day Quality Guarantee."}]
    [:meta {:property "og:site_name" :content "Mayvenn"}]])
 
-(defn add-seo-tag-class [tags]
-  (map #(update-in % [1] assoc :class tag-class) tags))
+(defn category-tags [data]
+  (let [taxon (taxons/current-taxon data)]
+    [[:title {} (str "Shop " (:name taxon) " | Mayvenn")]]))
 
 (defn tags-for-page [data]
   (add-seo-tag-class
@@ -35,5 +40,7 @@
                                 [:meta {:property "og:description"
                                         :content "Mayvenn ensures satisfaction by guaranteeing your purchase"}]
                                 [:meta {:property "og:site_name" :content "Mayvenn"}]]
+
+     events/navigate-category (category-tags data)
 
      default-tags)))
