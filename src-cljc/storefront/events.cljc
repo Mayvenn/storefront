@@ -73,7 +73,7 @@
 (defpath control-sign-up-submit)
 (defpath control-forgot-password-submit)
 (defpath control-reset-password-submit)
-(defpath control-manage-account-submit)
+(defpath control-account-profile-submit)
 
 (defpath control-facebook-sign-in)
 (defpath control-facebook-reset)

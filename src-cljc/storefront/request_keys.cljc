@@ -15,6 +15,7 @@
 (def get-messenger-token [:get-messenger-token])
 (def update-account [:update-account])
 (def update-account-address [:update-account-address])
+(def update-account-profile [:update-account-profile])
 
 (def get-stylist-account [:get-stylist-account])
 (def update-stylist-account [:update-stylist-account])

@@ -7,7 +7,7 @@
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
                        [storefront.components.checkout-sign-in :as checkout-sign-in :refer [requires-sign-in-or-guest]]
-                       [storefront.components.manage-account :refer [manage-account-component]]
+                       [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
                        [storefront.components.stylist.referrals :as stylist.referrals]
@@ -69,7 +69,7 @@
                  events/navigate-stylist-account-password       stylist.account/built-component
                  events/navigate-stylist-account-commission     stylist.account/built-component
                  events/navigate-stylist-account-social         stylist.account/built-component
-                 events/navigate-account-manage                 (requires-sign-in data manage-account-component)
+                 events/navigate-account-manage                 (requires-sign-in data account/built-component)
                  events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
                  events/navigate-friend-referrals               friend-referrals-component
                  events/navigate-cart                           cart/built-component

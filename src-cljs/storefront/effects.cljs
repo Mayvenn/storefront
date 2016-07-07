@@ -404,12 +404,13 @@
                          (get-in app-state keypaths/order)
                          false))
 
-(defmethod perform-effects events/control-manage-account-submit [_ event args app-state]
-  (api/update-account (get-in app-state keypaths/user-id)
-                      (get-in app-state keypaths/manage-account-email)
-                      (get-in app-state keypaths/manage-account-password)
-                      (get-in app-state keypaths/manage-account-password-confirmation)
-                      (get-in app-state keypaths/user-token)))
+(defmethod perform-effects events/control-account-profile-submit [_ event args app-state]
+  (when (empty? (get-in app-state keypaths/errors))
+    (api/update-account (get-in app-state keypaths/user-id)
+                        (get-in app-state keypaths/manage-account-email)
+                        (get-in app-state keypaths/manage-account-password)
+                        (get-in app-state keypaths/manage-account-password-confirmation)
+                        (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]
   (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
