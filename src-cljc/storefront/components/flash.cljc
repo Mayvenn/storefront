@@ -47,9 +47,9 @@
     [:div.right.ml1 error-img]
     [:div.overflow-hidden body]]])
 
-(defn component [{:keys [success failure validation-errors validation-message]} _ _]
+(defn component [{:keys [success failure validation-errors validation-message errors]} _ _]
   (component/create
-   (when (or success failure validation-message (seq validation-errors))
+   (when (or success failure validation-message (seq validation-errors) (seq errors))
      (ui/narrow-container
       (cond
         (seq validation-errors)
@@ -70,6 +70,12 @@
          [:div.px2 {:style {:line-height flash-line-height}}
           (or validation-message failure)])
 
+        (seq errors)
+        (error-box
+         {:data-test "flash-error"}
+         [:div.px2 {:style {:line-height flash-line-height}}
+          "Whoops, something went wrong. Please refresh the page and try again."])
+
         success
         (success-box
          {:data-test "flash-success"}
@@ -79,5 +85,6 @@
 (defn query [data]
   {:success            (get-in data keypaths/flash-success-message)
    :failure            (get-in data keypaths/flash-failure-message)
+   :errors             (get-in data keypaths/errors)
    :validation-errors  (get-in data keypaths/validation-errors-details)
    :validation-message (get-in data keypaths/validation-errors-message)})
