@@ -411,7 +411,7 @@
                                  (if (= 413 (:status response))
                                    (messages/handle-message events/api-failure-stylist-account-photo-too-large response)
                                    (default-error-handler response)))
-              :timeout         10000
+              :timeout         20000
               :handler         #(messages/handle-message events/api-success-stylist-account-photo
                                                          {:updated true
                                                           :stylist (select-keys % [:profile_picture_url])})})))
