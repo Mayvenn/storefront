@@ -152,6 +152,7 @@
     (routes/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args app-state]
+  (api/get-messenger-token (get-in app-state keypaths/user-id) (get-in app-state keypaths/user-token))
   (facebook/insert)
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-states (get-in app-state keypaths/api-cache))
