@@ -91,48 +91,7 @@
          (component/build profile-component profile opts)
 
 
-          nil)])]]
-   #_[:div
-    [:div#edit-account
-     [:form
-      {:on-submit (utils/send-event-callback events/control-manage-account-submit)}
-      [:label {:for "user-email"} "Email"]
-      [:br]
-      [:input.title#user-email
-       (merge (utils/change-text data owner keypaths/manage-account-email)
-              {:autofocus "autofocus"
-               :type "email"
-               :name "email"
-               :value (if (empty? (get-in data keypaths/manage-account-email))
-                        (get-in data keypaths/user-email)
-                        (get-in data keypaths/manage-account-email))})]
-      [:div#password-credentials
-       [:p
-        [:label {:for "user-password"} "Password"]
-        [:br]
-        [:input.title#user-password
-         (merge (utils/change-text data owner keypaths/manage-account-password)
-                {:type "password"
-                 :name "password"})]]
-       [:p
-        [:label {:for "user-password-confirmation"} "Enter the same password"]
-        [:br]
-        [:input.title#user-password-confirmation
-         (merge (utils/change-text data owner keypaths/manage-account-password-confirmation)
-                {:type "password"
-                 :name "password-confirmation"})]]
-       [:p.user-password-instructions "Leave blank to keep the same password."]]
-
-      [:p
-       [:input.button.primary {:type "submit" :value "Update"}]]]
-
-     (when-let [available-credit (get-in data keypaths/user-total-available-store-credit)]
-       [:fieldset
-        [:legend {:align "center"} "Store Credit"]
-        [:p.user-password-instructions "Available store credit is " (as-money available-credit)]])
-
-     [:div.my2
-      (component/build facebook/messenger-business-opt-in-component (facebook/query data) nil)]]]))
+          nil)])]]))
 
 (defn query [data]
   {:fetching?         (utils/requesting? data request-keys/get-account)
