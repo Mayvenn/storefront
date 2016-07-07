@@ -476,9 +476,10 @@
     (api/update-stylist-account-profile user-token stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-password-submit [_ events args app-state]
-  (let [user-token      (get-in app-state keypaths/user-token)
-        stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-password user-token stylist-account)))
+  (let [user-token            (get-in app-state keypaths/user-token)
+        stylist-account       (get-in app-state keypaths/stylist-manage-account)]
+    (when (empty? (get-in app-state keypaths/errors))
+      (api/update-stylist-account-password user-token stylist-account))))
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ events args app-state]
   (let [user-token      (get-in app-state keypaths/user-token)

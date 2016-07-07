@@ -331,6 +331,16 @@
       (assoc-in keypaths/popup :refer-stylist)
       clear-flash))
 
+(defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
+  (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
+        password              (-> stylist-account :user :password)
+        password-confirmation (-> stylist-account :user :password-confirmation)]
+    (cond-> (assoc-in app-state keypaths/errors nil)
+      (not= password password-confirmation)
+      (assoc-in keypaths/errors (group-by :path [{:path [:stylist :user :password-confirmation] :long-message "Passwords must match!"}]))
+      (> 6 (count password))
+      (assoc-in keypaths/errors (group-by :path [{:path [:stylist :user :password] :long-message "New password must be at least 6 characters"}])))))
+
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))
 
