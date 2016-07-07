@@ -23,7 +23,6 @@
                      :name      "account-password"
                      :id        "account-password"
                      :data-test "account-password"
-                     :required  true
                      :errors (get errors [:stylist :user :password])})
 
      (ui/text-field "Re-type New Password"
@@ -33,7 +32,6 @@
                      :name      "account-password-confirmation"
                      :id        "account-password-confirmation"
                      :data-test "account-password-confirmation"
-                     :required  true
                      :errors (get errors [:stylist :user :password-confirmation])})]
 
     [:div.my2.col-12.clearfix
