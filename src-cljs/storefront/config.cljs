@@ -29,7 +29,7 @@
 
 (def canonical-image (if development?
                        js/canonicalImage
-                       (str "http:" js/canonicalImage)))
+                       (str "https:" js/canonicalImage)))
 
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"

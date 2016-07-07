@@ -22,7 +22,7 @@
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
-            [storefront.hooks.opengraph :as opengraph]
+            [storefront.hooks.seo :as seo]
             [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
@@ -107,7 +107,7 @@
     (when-let [order-number (get-in app-state keypaths/order-number)]
       (api/get-order order-number
                      (get-in app-state keypaths/order-token)))
-    (opengraph/set-site-tags)
+    (seo/set-tags app-state)
     (scroll/snap-to-top)
 
     (when-let [pending-promo-code (-> nav-args :query-params :sha)]

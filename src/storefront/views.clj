@@ -2,6 +2,7 @@
   (:require [storefront.assets :refer [asset-path]]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.component-shim :as component]
+            [storefront.seo-tags :as seo]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]
             [storefront.accessors.experiments :as experiments]
@@ -44,10 +45,10 @@
 (defn layout [{:keys [storeback-config environment]} data initial-content]
   (html5
    [:head
-    [:title "Shop | Mayvenn"]
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+    (into '() (seo/tags-for-page data))
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     [:script {:type "text/javascript"}

@@ -24,13 +24,6 @@
     (classlist/add script-tag class)
     script-tag))
 
-(defn meta-tag [properties class]
-  (let [meta-tag (.createElement js/document "meta")]
-    (classlist/add meta-tag class)
-    (doseq [[k,v] properties]
-      (.setAttribute meta-tag (clj->js k) v))
-    meta-tag))
-
 (defn insert-tag-with-src [src class]
   (insert-body-bottom (src-tag src class)))
 
