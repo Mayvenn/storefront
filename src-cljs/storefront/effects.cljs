@@ -148,8 +148,18 @@
   (facebook/insert))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
-  (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect events/navigate-sign-in)))
+  (cond
+    (not (get-in app-state keypaths/user-token))
+    (routes/enqueue-redirect events/navigate-sign-in)
+
+    (not (stylists/own-store? app-state))
+    (do
+      (routes/enqueue-redirect events/navigate-home)
+      (handle-message events/flash-show-failure
+                      {:message    "Page not found"
+                       :navigation [events/navigate-home {}]}))
+
+    :else nil))
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args app-state]
   (api/get-messenger-token (get-in app-state keypaths/user-id) (get-in app-state keypaths/user-token))

@@ -69,7 +69,7 @@
                       :pages nil}
    :referrals [empty-referral]
    :manage-account {:email nil
-                    :id 10
+                    :id nil
                     :birth-date nil
                     :address {:firstname nil
                               :lastname nil
