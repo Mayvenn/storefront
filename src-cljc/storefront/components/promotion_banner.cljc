@@ -20,5 +20,5 @@
   (component/create
    (when-let [promo (promotion-to-advertise data)]
      (when (allowed-navigation-events (get-in data keypaths/navigation-event))
-       [:div.advertised-promo
+       [:div.white.center.pp5.bg-green.f4
         (:description promo)]))))
