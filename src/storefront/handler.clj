@@ -25,8 +25,7 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.codec :as codec]
-            [ring-logging.core :as ring-logging]
-            [storefront.prerender :refer [wrap-prerender]]))
+            [ring-logging.core :as ring-logging]))
 
 (defn storefront-site-defaults
   [env]
@@ -144,11 +143,8 @@
       ring-logging/wrap-trace-request))
 
 (defn wrap-site-routes
-  [routes {:keys [storeback-config environment prerender-token]}]
+  [routes {:keys [storeback-config environment]}]
   (-> routes
-      (wrap-prerender (config/development? environment)
-                      prerender-token
-                      (partial store-url "shop" environment))
       (wrap-set-preferred-store environment)
       (wrap-preferred-store-redirect environment)
       (wrap-stylist-not-found-redirect environment)
