@@ -21,7 +21,7 @@
    [:meta {:property "og:type"
            :content "website"}]
    [:meta {:property "og:image"
-           :content images/canonical-image}]
+           :content (str "http:" images/canonical-image)}]
    [:meta {:property "og:description"
            :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 

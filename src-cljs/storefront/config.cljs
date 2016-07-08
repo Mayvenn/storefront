@@ -27,10 +27,6 @@
                          "production" 592210561
                          3156430062))
 
-(def canonical-image (if development?
-                       js/canonicalImage
-                       (str "http:" js/canonicalImage)))
-
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))

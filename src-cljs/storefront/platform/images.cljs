@@ -1,4 +1,3 @@
-(ns storefront.platform.images
-  (:require [storefront.config :as config]))
+(ns storefront.platform.images)
 
-(def canonical-image config/canonical-image)
+(def canonical-image js/canonicalImage)
