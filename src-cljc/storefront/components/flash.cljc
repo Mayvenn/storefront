@@ -74,7 +74,7 @@
         (error-box
          {:data-test "flash-error"}
          [:div.px2 {:style {:line-height flash-line-height}}
-          "Whoops, something went wrong. Please refresh the page and try again."])
+          "Oops! Please fix the errors below."])
 
         success
         (success-box
