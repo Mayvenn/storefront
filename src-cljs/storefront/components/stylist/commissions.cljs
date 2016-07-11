@@ -27,8 +27,8 @@
    [:.col.col-3.px1 c]
    [:.col.col-3.px1 d]])
 
-(defn show-item [products {:keys [product-name product-id unit-price variant-attrs quantity] :as item}]
-  [:.py2.clearfix {:key product-id}
+(defn show-item [products {:keys [id product-name product-id unit-price variant-attrs quantity] :as item}]
+  [:.py2.clearfix {:key id}
    [:img.left.border.border-dark-white.mr3
     {:style {:width "5rem"}
      :src   (products/thumbnail-url products product-id)
