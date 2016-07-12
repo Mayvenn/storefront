@@ -107,7 +107,7 @@
       (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
       (#{[] ["www"]} subdomains)
-      (redirect (str (store-scheme-and-authority "welcome" environment req) "/" (query-string req)))
+      (redirect (str (store-scheme-and-authority "shop" environment req) "/" (query-string req)))
 
       :else
       (h req))))

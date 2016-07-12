@@ -88,7 +88,7 @@
     (let [resp (handler (merge default-req-params {:server-name "www.mayvenn.com"
                                                    :query-string "world=true"}))]
       (is (= 302 (:status resp)))
-      (is (= "http://welcome.mayvenn.com:8080/?world=true"
+      (is (= "http://shop.mayvenn.com:8080/?world=true"
              (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-no-subdomain-to-welcome-preserving-query-params
@@ -96,7 +96,7 @@
     (let [resp (handler (merge default-req-params {:server-name "mayvenn.com"
                                                    :query-string "world=true"}))]
       (is (= 302 (:status resp)))
-      (is (= "http://welcome.mayvenn.com:8080/?world=true"
+      (is (= "http://shop.mayvenn.com:8080/?world=true"
              (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
