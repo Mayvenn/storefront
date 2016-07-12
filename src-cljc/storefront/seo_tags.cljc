@@ -13,9 +13,9 @@
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
 
 (def ^:private default-tags
-  [[:title {} "Shop | Mayvenn"]
+  [[:title {} "Human hair extensions - virgin Brazilian hair & remy hair extensions | Mayvenn"]
    [:meta {:name "description"
-           :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country."}]
+           :content "Quality hair extensions trusted & recommended by 60,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
    [:meta {:property "og:title"
            :content "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!"}]
    [:meta {:property "og:type"
@@ -37,11 +37,11 @@
 (defn tags-for-page [data]
   (->
    (condp = (get-in data keypaths/navigation-event)
-     events/navigate-categories [[:title {} "Hair Styles | Mayvenn"]
+     events/navigate-categories [[:title {} "Weave hairstyles & sew-in styles | Mayvenn"]
                                  [:meta {:property "og:title"
                                          :content "100% Virgin Hair Extensions available in Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, Frontals."}]
                                  [:meta {:name "description"
-                                         :content "Choose from Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, & Frontals."}]
+                                         :content "100% Virgin Hair Extensions available in Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, Frontals."}]
                                  [:meta {:property "og:type"
                                          :content "website"}]
                                  [:meta {:property "og:description"
@@ -51,7 +51,7 @@
                                  [:meta {:property "og:title"
                                          :content "100% human hair backed by our 30 Day Quality Guarantee. Sign In to your Mayvenn account."}]
                                  [:meta {:name "description"
-                                         :content "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to edit your email address."}]
+                                         :content "Sign In to your Mayvenn account to see your store credit balance, edit your password, and to update your profile."}]
                                  [:meta {:property "og:type"
                                          :content "website"}]
                                  [:meta {:property "og:description"
@@ -61,7 +61,7 @@
                                  [:meta {:property "og:title"
                                          :content "100% human hair backed by our 30 Day Quality Guarantee. Sign Up for special offers!"}]
                                  [:meta {:name "description"
-                                         :content "Sign Up for a Mayvenn account and we will be able to send you special promotions for discounted hair and other important messages."}]
+                                         :content "Sign up for a Mayvenn account to receive special promotions, exclusive offers, and helpful hair styling tips."}]
                                  [:meta {:property "og:type"
                                          :content "website"}]
                                  [:meta {:property "og:description"
@@ -71,17 +71,17 @@
                                  [:meta {:property "og:title"
                                          :content "Contact Us for any questions, problems, or if you need styling advice!"}]
                                  [:meta {:name "description"
-                                         :content "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]
+                                         :content "We pride ourselves our top-notch customer service. Need help? Call, text, or email us and we will get back to you as quickly as possible."}]
                                  [:meta {:property "og:type"
                                          :content "website"}]
                                  [:meta {:property "og:description"
                                          :content "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]]
 
-     events/navigate-guarantee  [[:title {} "30 Day Quality Guarantee | Mayvenn"]
+     events/navigate-guarantee  [[:title {} "Our 30 Day Quality Guarantee | Mayvenn"]
                                  [:meta {:property "og:title"
                                          :content "Our 30 Day Quality Guarantee - Buy Risk Free With Easy Returns and Exchanges!"}]
                                  [:meta {:name "description"
-                                         :content "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]
+                                         :content "Mayvenn's quality guarantee: wear it, dye it, even flat iron it! If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]
                                  [:meta {:property "og:type"
                                         :content "website"}]
                                  [:meta {:property "og:description"
