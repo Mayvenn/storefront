@@ -23,20 +23,30 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  [content {:keys [show-spinner? disabled? color btn-type border text-color on-click href data-test]
-            :or {color "bg-green"
-                 text-color ""
-                 href "#"
-                 btn-type "btn-primary"
-                 on-click utils/noop-callback}}]
-  [:a.btn.col-12.h3.px1.py2.letter-spacing-1
-   {:class (str/join " " (conj [color text-color btn-type border]
-                               (when disabled? "is-disabled")))
+  [content {:keys [show-spinner?
+                   disabled?
+                   color
+                   btn-type
+                   border
+                   text-color
+                   on-click
+                   data-test
+                   href
+                   padding]
+            :or   {color      "bg-green"
+                   text-color ""
+                   href       "#"
+                   padding    "px1 py2"
+                   btn-type   "btn-primary"
+                   on-click   utils/noop-callback}}]
+  [:div.btn.col-12.h3.letter-spacing-1
+   {:class     (str/join " " (conj [padding color text-color btn-type border]
+                                   (when disabled? "is-disabled")))
     :data-test data-test
-    :href href
-    :on-click (if (or disabled? show-spinner?)
-                utils/noop-callback
-                on-click)}
+    :href      href
+    :on-click  (if (or disabled? show-spinner?)
+                 utils/noop-callback
+                 on-click)}
    [:div.flex.items-center.justify-center
     (if show-spinner? spinner content)]])
 
