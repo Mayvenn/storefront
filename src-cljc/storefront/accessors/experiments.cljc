@@ -67,3 +67,7 @@
 
 (defn stylist-banner? [data]
   (display-feature? data "stylist-banner"))
+
+(defn footer-redesign? [data]
+  (display-feature? data "footer-redesign"))
+

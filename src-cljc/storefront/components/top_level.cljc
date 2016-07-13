@@ -92,4 +92,4 @@
             events/navigate-forgot-password forgot-password/built-component
             home-component)
           data opts)]]
-       (component/build footer/footer-component (footer/footer-query data) opts)]])))
+       (footer/component data)]])))
