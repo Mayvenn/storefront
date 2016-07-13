@@ -235,7 +235,7 @@
               render-ctx {:storeback-config storeback-config
                           :environment environment}
               data (as-> {} data
-                     (assoc-in data keypaths/welcome-url (:endpoint leads-config))
+                     (assoc-in data keypaths/welcome-url (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
                      (assoc-in data keypaths/store store)
                      (experiments/determine-experiments data environment)
                      (experiments/determine-features data)
