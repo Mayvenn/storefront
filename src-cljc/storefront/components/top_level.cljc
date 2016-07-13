@@ -30,7 +30,7 @@
             [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.forgot-password :as forgot-password]
-            [storefront.components.stylist-banner :refer [stylist-banner-component]]
+            [storefront.components.stylist-banner :as stylist-banner]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -51,7 +51,7 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      (component/build stylist-banner-component data nil)
+      (component/build stylist-banner/component (stylist-banner/query data) nil)
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
       [:div.page-wrap
