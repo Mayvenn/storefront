@@ -64,3 +64,6 @@
 
 (defn accounts-redesign? [data]
   (display-feature? data "accounts-redesign"))
+
+(defn stylist-banner? [data]
+  (display-feature? data "stylist-banner"))
