@@ -39,7 +39,7 @@
                    padding    "px1 py2"
                    btn-type   "btn-primary"
                    on-click   utils/noop-callback}}]
-  [:div.btn.col-12.h3.letter-spacing-1
+  [:a.btn.col-12.h3.letter-spacing-1
    {:class     (str/join " " (conj [padding color text-color btn-type border]
                                    (when disabled? "is-disabled")))
     :data-test data-test
