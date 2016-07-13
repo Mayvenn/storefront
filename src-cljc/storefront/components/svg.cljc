@@ -58,9 +58,9 @@
 
 (def counter-inc
   (component/html
-   [:svg.stroke-pure-white {:width "1.2em" :height "1.2em" :viewBox "0 0 49 49" :title "Increment cart item count"}
+   [:svg {:width "1.2em" :height "1.2em" :viewBox "0 0 49 49" :title "Increment cart item count"}
     [:circle {:r "24" :cy "24" :cx "24"}]
-    [:g {:stroke-width "4"} [:path {:d "M24 8v32M8 24h32"}]]]))
+    [:g.stroke-pure-white {:stroke-width "4"} [:path {:d "M24 8v32M8 24h32"}]]]))
 
 (def counter-dec
   (component/html

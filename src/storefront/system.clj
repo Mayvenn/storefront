@@ -7,10 +7,11 @@
             [storefront.config :as config]
             [storefront.handler :refer [create-handler]]))
 
-(defrecord AppHandler [logger exception-handler storeback environment]
+(defrecord AppHandler [logger exception-handler storeback leads environment]
   component/Lifecycle
   (start [c]
     (let [params (merge {:storeback-config storeback
+                         :leads-config leads
                          :environment environment}
                         (select-keys c [:logger :exception-handler]))]
       (assoc c :handler (create-handler params))))
@@ -29,7 +30,7 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :app-handler (map->AppHandler (select-keys config [:storeback :environment]))
+   :app-handler (map->AppHandler (select-keys config [:storeback :leads :environment]))
    :embedded-server (jetty-server (merge (:server-opts config)
                                          {:configurator jetty/configurator}))
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))

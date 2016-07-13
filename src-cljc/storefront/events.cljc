@@ -9,6 +9,7 @@
 (defpath domain)
 (defpath order-completed)
 
+(defpath external-redirect-welcome)
 (defpath external-redirect-community)
 (defpath external-redirect-paypal-setup)
 

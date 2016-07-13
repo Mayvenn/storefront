@@ -42,7 +42,7 @@
     (map? v)        (zipmap (keys v) (map sanitize (vals v)))
     :else           (escape-js-string v)))
 
-(defn layout [{:keys [storeback-config environment]} data initial-content]
+(defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
    [:head
     [:meta {:name "fragment" :content "!"}]

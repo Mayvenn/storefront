@@ -227,7 +227,7 @@
           (cookies/expire environment :token)
           cookies/encode))))
 
-(defn site-routes [{:keys [storeback-config environment] :as ctx}]
+(defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
       (when nav-event
@@ -235,6 +235,7 @@
               render-ctx {:storeback-config storeback-config
                           :environment environment}
               data (as-> {} data
+                     (assoc-in data keypaths/welcome-url (:endpoint leads-config))
                      (assoc-in data keypaths/store store)
                      (experiments/determine-experiments data environment)
                      (experiments/determine-features data)

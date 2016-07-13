@@ -49,6 +49,14 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
+      [:div.bg-dark-black.white.col-12.p2.sans-serif
+       [:div.right (ui/modal-close {:bg-class "fill-dark-gray"})]
+       [:div.col-12.mx-auto.center
+        [:div.h2 "Are you a stylist?"]
+        [:div.h5.py1 "Grow your business & earn extra money by joining Mayvenn!"]
+        [:div.col-6.mx-auto
+         (ui/button "Become a Mayvenn" {:href (get-in data keypaths/welcome-url)
+                                        :on-click (utils/send-event-callback events/external-redirect-welcome)})]]]
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
       [:div.page-wrap

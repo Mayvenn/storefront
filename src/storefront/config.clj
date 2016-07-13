@@ -14,6 +14,7 @@
 
 (def env-config {:environment (env :environment)
                  :bugsnag-token (env :bugsnag-token)
+                 :leads {:endpoint (env :leads-endpoint)}
                  :storeback {:endpoint (env :storeback-endpoint)
                              :internal-endpoint (env :storeback-internal-endpoint)}})
 

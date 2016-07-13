@@ -5,6 +5,7 @@
 (def optimizely [:optimizely])
 (def optimizely-buckets [:optimizely :buckets])
 (def features [:features])
+(def welcome-url [:welcome-url])
 
 (def session-id [:session-id])
 

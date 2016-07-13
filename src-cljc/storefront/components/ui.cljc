@@ -23,15 +23,17 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  [content {:keys [show-spinner? disabled? color btn-type border text-color on-click data-test]
+  [content {:keys [show-spinner? disabled? color btn-type border text-color on-click href data-test]
             :or {color "bg-green"
                  text-color ""
+                 href "#"
                  btn-type "btn-primary"
                  on-click utils/noop-callback}}]
-  [:div.btn.col-12.h3.px1.py2.letter-spacing-1
+  [:a.btn.col-12.h3.px1.py2.letter-spacing-1
    {:class (str/join " " (conj [color text-color btn-type border]
                                (when disabled? "is-disabled")))
     :data-test data-test
+    :href href
     :on-click (if (or disabled? show-spinner?)
                 utils/noop-callback
                 on-click)}
@@ -143,11 +145,14 @@
                                                                                              :data-snap-to "top"}]
          body)])
 
-(defn modal-close [{:keys [data-test on-close]}]
+(defn modal-close [{:keys [data-test on-close bg-class]}]
   [:div.clearfix
    {:data-scrollable "not-a-modal"}
    [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
-    [:div.fill-dark-silver {:alt "Close"} svg/counter-inc]]])
+    [:div
+     {:alt "Close"
+      :class (or bg-class "fill-dark-silver")}
+     svg/counter-inc]]])
 
 (defn circle-picture
   ([src] (circle-picture {} src))

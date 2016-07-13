@@ -89,6 +89,9 @@
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))
 
+(defmethod perform-effects events/external-redirect-welcome [_ event args app-state]
+  (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
+
 (defmethod perform-effects events/external-redirect-community [_ event args app-state]
   (set! (.-location js/window) (fastpass/community-url)))
 
