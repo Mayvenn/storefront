@@ -49,6 +49,7 @@
 (def api-cache [:api-cache])
 
 (def ui [:ui])
+(def stylist-banner-hidden (conj ui :stylist-banner-hidden?))
 (def api-requests (conj ui :api-requests))
 (def return-navigation-message (conj ui :return-navigation-message))
 (def previous-navigation-message (conj ui :previous-navigation-message))

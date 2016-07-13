@@ -109,6 +109,8 @@
 (defpath control-stylist-referral-remove)
 (defpath control-stylist-referral-add-another)
 
+(defpath control-stylist-banner-close)
+
 (defpath control-stylist-account-photo-pick)
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)

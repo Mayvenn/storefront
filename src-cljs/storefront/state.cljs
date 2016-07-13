@@ -134,6 +134,7 @@
           :account-menu-expanded false
           :store-info-expanded false
           :popup nil
+          :stylist-banner-hidden? false
 
           :expanded-commission-order-id #{nil}
 

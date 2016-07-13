@@ -326,6 +326,9 @@
 (defmethod transition-state events/control-stylist-referral-submit [_ event args app-state]
   (clear-flash app-state))
 
+(defmethod transition-state events/control-stylist-banner-close [_ event args app-state]
+  (assoc-in app-state keypaths/stylist-banner-hidden true))
+
 (defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/popup :refer-stylist)
