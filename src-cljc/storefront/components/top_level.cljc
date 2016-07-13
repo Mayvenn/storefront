@@ -54,13 +54,19 @@
       #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
-      [:div.page-wrap
+      [:div (if (experiments/footer-redesign? data)
+              {:style {:min-height "100vh"}
+               :class "flex flex-column"}
+              {:class "page-wrap"})
        [:div.border-bottom.border-light-silver
         (header/built-component data)
         (slideout-nav/built-component data)]
        (component/build flash/component (flash/query data) opts)
-       [:main {:role "main"}
-        [:div.legacy-container
+       [:main (merge {:role "main"}
+                     (when (experiments/footer-redesign? data)
+                       {:class "flex-auto"}))
+        [:div (when-not (experiments/footer-redesign? data)
+                {:class "legacy-container"})
          (component/build
           (condp = (get-in data keypaths/navigation-event)
             #?@(:cljs

@@ -7,6 +7,7 @@
             [storefront.accessors.taxons :as taxons]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.accessors.stylists :refer [own-store?]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
             [storefront.keypaths :as keypaths]))
@@ -74,18 +75,19 @@
    :sms-number (get-in data keypaths/sms-number)})
 
 (defn products-section [taxons]
+  (for [{:keys [name slug]} taxons]
+    [:a (merge {:key slug :data-test (str "footer-" slug)}
+               (utils/route-to events/navigate-category {:taxon-slug slug}))
+     [:div.gray.light.titleize name]]))
+
+(defn shop-section [taxons own-store?]
   [:div.col-12.clearfix
    [:div.medium.border-bottom.border-light-silver.mb1 "Shop"]
    [:div.col.col-6
-    (for [{:keys [name slug]} (filter taxons/is-extension? taxons)]
-      [:a (merge {:key slug :data-test (str "footer-" slug)}
-                 (utils/route-to events/navigate-category {:taxon-slug slug}))
-       [:div.gray.light.titleize name]])]
+    (products-section (filter taxons/is-extension? taxons))]
    [:div.col.col-6
-    (for [{:keys [name slug]} (remove taxons/is-extension? taxons)]
-      [:a (merge {:key slug :data-test (str "footer-" slug)}
-                 (utils/route-to events/navigate-category {:taxon-slug slug}))
-       [:div.gray.light.titleize name]])] ])
+    (products-section (filter #(or (taxons/is-closure-or-frontal? %)
+                                   (and own-store? (taxons/is-stylist-product? %))) taxons))]]) 
 
 (defn contacts-section []
   [:div
@@ -126,10 +128,10 @@
      [:a {:href "http://www.pinterest.com/mayvennhair/"}
       [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]])
 
-(defn experimental-component [{:keys [taxons]}]
+(defn experimental-component [{:keys [taxons own-store?]}]
   (component/create
    [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
-    [:div.px3.my2.line-height-4 (products-section taxons)]
+    [:div.px3.my2.line-height-4 (shop-section taxons own-store?)]
     [:div.px3.my2.line-height-4 (contacts-section)]
     [:div.px3.line-height-4 (social-section)]
     [:div.mt3.bg-black.white.py2.px3.clearfix.h5.light
@@ -140,7 +142,8 @@
       [:a.white {:href "/tos.html"} "Terms of Use"]]]]))
 
 (defn query [data]
-  {:taxons (taxons/current-taxons data)})
+  {:taxons (taxons/current-taxons data)
+   :own-store? (own-store? data)})
 
 
 (defn component [app-state]
