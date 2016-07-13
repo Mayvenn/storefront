@@ -30,6 +30,7 @@
             [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.forgot-password :as forgot-password]
+            [storefront.components.stylist-banner :refer [stylist-banner-component]]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -44,22 +45,13 @@
         [:div.legacy-container
          (component/build (requires-sign-in data redirect-getsat-component) data opts)]]])))
 
+
 (defn top-level-component [data owner opts]
   (component/create
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
-                 (= (get-in data keypaths/store-slug) "shop")
-                 (not (get-in data keypaths/stylist-banner-hidden)))
-        [:div.bg-dark-black.white.col-12.p2.sans-serif
-         [:div.right (ui/modal-close {:bg-class "fill-dark-gray" :on-close (utils/send-event-callback events/control-stylist-banner-close)})]
-         [:div.col-12.mx-auto.center
-          [:div.h2 "Are you a stylist?"]
-          [:div.h5.py1 "Grow your business & earn extra money by joining Mayvenn!"]
-          [:div.col-6.mx-auto
-           (ui/button "Become a Mayvenn" {:href (get-in data keypaths/welcome-url)
-                                          :on-click (utils/send-event-callback events/external-redirect-welcome)})]]])
+      (component/build stylist-banner-component data nil)
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
       [:div.page-wrap
