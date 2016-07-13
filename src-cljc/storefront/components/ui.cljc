@@ -23,38 +23,50 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  [content {:keys [show-spinner?
-                   disabled?
-                   color
-                   btn-type
-                   border
-                   text-color
-                   on-click
-                   data-test
-                   href
-                   padding]
-            :or   {color      "bg-green"
-                   text-color ""
-                   href       "#"
-                   padding    "px1 py2"
-                   btn-type   "btn-primary"
-                   on-click   utils/noop-callback}}]
-  [:a.btn.col-12.h3.letter-spacing-1
-   {:class     (str/join " " (conj [padding color text-color btn-type border]
-                                   (when disabled? "is-disabled")))
-    :data-test data-test
-    :href      href
-    :on-click  (if (or disabled? show-spinner?)
-                 utils/noop-callback
-                 on-click)}
-   [:div.flex.items-center.justify-center
-    (if show-spinner? spinner content)]])
+  [{:keys [disabled spinning?] :as opts} & content]
+  (let [opts    (update opts :on-click #(if (or disabled spinning?)
+                                          utils/noop-callback
+                                          %))
+        content (if spinning?
+                  [:div.h3.letter-spacing-1 spinner]
+                  content)]
+    [:a (merge {:href "#"} opts) content]))
+
+(defn green-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-green white h3 letter-spacing-1")
+          (into [:div] content)))
+
+(defn banner-green-button
+  "Banner green buttons aren't as chunky as the others"
+  [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-primary p1 bg-green white h5 letter-spacing-1")
+          (into [:div] content)))
+
+(defn navy-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-navy white h3 letter-spacing-1")
+          (into [:div] content)))
+
+(defn paypal-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h3 letter-spacing-1")
+          (into [:div] content)))
+
+(defn silver-outline-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h3 dark-gray letter-spacing-1")
+          (into [:div] content)))
+
+(defn navy-outline-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-navy bg-white h3 navy letter-spacing-1")
+          (into [:div] content)))
+
+(defn footer-button [attrs & content]
+  (button (assoc attrs :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h3 letter-spacing-1")
+          (into [:div] content)))
 
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
-     (button nil {:show-spinner? true})
+     (button nil {:spinning? true})
      [:input.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
       {:type "submit"
        :data-test data-test

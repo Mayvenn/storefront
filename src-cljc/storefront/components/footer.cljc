@@ -97,26 +97,19 @@
     " | 9am-5pm PST M-F | "
     [:a.gray {:href (str "mailto:" contact-email)} contact-email]]
 
-   (let [button-opts {:color      "bg-dark-white"
-                      :border     "border border-black"
-                      :padding    "px1 pyp1"
-                      :text-color "black medium my1 py0"}]
-     [:div.py1
-      (ui/button [:div.flex.items-center.justify-center
-                  [:div.p1 svg/phone-ringing]
-                  [:div.left-align.h3 "Call Now"]]
-                 (merge button-opts
-                        {:href (str "tel://" call-number)}))
-      (ui/button [:div.flex.items-center.justify-center
-                  [:div.p1 svg/message]
-                  [:div.left-align.h3 "Send Message"]]
-                 (merge button-opts
-                        {:href (str "tel://" sms-number)}))
-      (ui/button [:div.flex.items-center.justify-center
-                  [:div.p1 svg/mail-envelope]
-                  [:div.left-align.h3 "Send Email"]]
-                 (merge button-opts
-                        {:href (str "mailto:" contact-email)}))])])
+   [:div.py1
+    (ui/footer-button {:href (str "tel://" call-number)}
+                      [:div.flex.items-center.justify-center
+                       [:div.p1 svg/phone-ringing]
+                       [:div.left-align.h3 "Call Now"]])
+    (ui/footer-button {:href (str "tel://" sms-number)}
+                      [:div.flex.items-center.justify-center
+                       [:div.p1 svg/message]
+                       [:div.left-align.h3 "Send Message"]])
+    (ui/footer-button {:href (str "mailto:" contact-email)}
+                      [:div.flex.items-center.justify-center
+                       [:div.p1 svg/mail-envelope]
+                       [:div.left-align.h3 "Send Email"]])]])
 
 (defn social-section []
   [:div.border-top.border-light-silver

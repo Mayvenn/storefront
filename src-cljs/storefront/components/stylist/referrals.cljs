@@ -212,15 +212,12 @@
                 (when (< (count referrals) 5)
                   [:.py3.border-top.border-light-silver
                    [:.col-10.mx-auto
-                    (ui/button
+                    (ui/silver-outline-button
+                     (merge (utils/fake-href events/control-stylist-referral-add-another)
+                            {:data-test  "another-referral-button"})
                      [:.flex.items-center.justify-center.h3.line-height-1
                       [:.mr1.flex.items-center.fill-light-silver svg/counter-inc]
-                      [:div "Add Another Referral"]]
-                     (merge (utils/fake-href events/control-stylist-referral-add-another)
-                            {:color      "bg-white"
-                             :text-color "dark-gray"
-                             :border     "border-light-silver"
-                             :data-test  "another-referral-button"}))]])
+                      [:div "Add Another Referral"]])]])
                 [:.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 

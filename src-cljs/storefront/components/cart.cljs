@@ -74,10 +74,11 @@
         [:.pt2.flex.items-center
          [:.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-         [:.col-4.pl1.mb3.inline-block (ui/button "Apply"
-                                                  {:on-click      (utils/send-event-callback events/control-cart-update-coupon)
-                                                   :disabled?     updating?
-                                                   :show-spinner? applying-coupon?})]]]
+         [:.col-4.pl1.mb3.inline-block
+          (ui/green-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
+                            :disabled? updating?
+                            :spinning? applying-coupon?}
+                           "Apply")]]]
 
        (order-summary/display-order-summary order)
 
@@ -87,50 +88,43 @@
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
        [:div.h4.gray.center.py2 "OR"]
-       [:div.pb2 (ui/button
-                  [:.col-12.flex.items-center.justify-center
-                   [:.right-align.mr1 "Check out with"]
-                   [:.h2.medium.sans-serif.italic "PayPal™"]]
-                  {:on-click      (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                   :show-spinner? redirecting-to-paypal?
-                   :disabled?     updating?
-                   :color         "bg-paypal-blue"
-                   :data-test     "paypal-checkout"})]
+       [:div.pb2 (ui/paypal-button
+                  {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                   :spinning? redirecting-to-paypal?
+                   :disabled? updating?
+                   :data-test "paypal-checkout"}
+                  [:div.flex.items-center.justify-center
+                   [:div.right-align.mr1 "Check out with"]
+                   [:div.h2.medium.sans-serif.italic "PayPal™"]])]
 
        (when share-carts?
          [:div.border-top.border-bottom.border-light-silver.py2
-          (ui/button [:.flex.items-center.justify-center
-                      [:.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                       {:style {:width "24px"
-                                :height "18px"}}]
-                      ;; col-12 is needed for mobile safari
-                      [:.col-12 "Share your bag"]]
-                     {:btn-type "btn-outline"
-                      :color "bg-white"
-                      :border "border-navy"
-                      :text-color "navy"
-                      :on-click (utils/send-event-callback events/control-cart-share-show)
-                      :show-spinner? requesting-shared-cart?
-                      :data-test "share-cart"})
-          [:.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
+          (ui/navy-outline-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                                   :spinning? requesting-shared-cart?
+                                   :data-test "share-cart"}
+                                  [:div.flex.items-center.justify-center
+                                   [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
+                                    {:style {:width  "24px"
+                                             :height "18px"}}]
+                                   [:div.flex-grow "Share your bag"]])
+          [:div.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
-     [:.center
-      {:data-test "empty-bag"}
-      [:.m2
-       (svg/bag {:height "70px" :width "70px"} 1)]
+     [:.center {:data-test "empty-bag"}
+      [:div.m2 (svg/bag {:height "70px" :width "70px"} 1)]
 
       [:p.m2.h1.light "Your bag is empty."]
 
-      [:.m2
+      [:div.m2
        (if-let [promo (promos/default-advertised-promotion promotions)]
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/button "Shop Now" (apply utils/route-to shop-now-nav-message))))))
+     (ui/green-button (apply utils/route-to shop-now-nav-message)
+                      "Shop Now")))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

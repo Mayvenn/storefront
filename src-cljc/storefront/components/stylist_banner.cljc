@@ -21,8 +21,8 @@
         [:div.col-9.mx-auto.f4.mb2.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]]
        [:div.col-12
         [:div.col-7.mx-auto
-         (ui/button "Become a Mayvenn" {:href welcome-url
-                                        :on-click (utils/send-event-callback events/external-redirect-welcome)})]]]
+         (ui/green-button {:href     welcome-url
+                           :on-click (utils/send-event-callback events/external-redirect-welcome)} "Become a Mayvenn")]]]
       ;; Desktop / Tablet layout
       [:div.flex.items-center.col-12.to-md-hide
        [:div.flex-auto
@@ -31,12 +31,10 @@
           [:div.col.col-7.center
            [:div.col-11.mx-auto.f4.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]]
           [:div.col.col-5
-           ;; TODO: update this button when Ryan adds a style guide for different kinds of buttons
-           [:a.btn.btn-primary.col-12.h5.p1.letter-spacing-1.bg-green
-            {:href welcome-url
-             :on-click (utils/send-event-callback events/external-redirect-welcome)}
-            [:div.flex.items-center.justify-center
-             "Become a Mayvenn"]]]
+           (ui/banner-green-button {:href     welcome-url
+                                    :on-click (utils/send-event-callback events/external-redirect-welcome)}
+                                   [:div.flex.items-center.justify-center
+                                    "Become a Mayvenn"])]
           [:div.clearfix]]]]
        [:div.to-md-hide (ui/modal-close {:bg-class "fill-dark-gray" :on-close (utils/send-event-callback events/control-stylist-banner-close)})]]])))
 

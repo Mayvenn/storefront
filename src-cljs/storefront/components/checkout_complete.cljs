@@ -25,7 +25,7 @@
         [:p.my2.gray
          "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
 
-     (ui/button "Return to Homepage" (utils/route-to events/navigate-home))))))
+     (ui/green-button {:on-click (utils/route-to events/navigate-home)} "Return to Homepage")))))
 
 (defn built-component [data _]
   (om/component (html (om/build component {}))))
