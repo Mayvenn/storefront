@@ -4,11 +4,13 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.experiments :as experiments]))
 
-(defn component [{:keys [navigation-event store-slug stylist-banner-hidden? welcome-url]} owner opts]
+(defn component [{:keys [stylist-banner? navigation-event store-slug stylist-banner-hidden? welcome-url]} owner opts]
   (component/create
-   (when (and (= navigation-event events/navigate-home)
+   (when (and stylist-banner?
+              (= navigation-event events/navigate-home)
               (= store-slug "shop")
               (not stylist-banner-hidden?))
      [:div.bg-dark-black.white.col-12.p2.sans-serif
@@ -21,7 +23,8 @@
                                        :on-click (utils/send-event-callback events/external-redirect-welcome)})]]])))
 
 (defn query [data]
-  {:navigation-event       (get-in data keypaths/navigation-event)
+  {:stylist-banner?        (experiments/stylist-banner? data)
+   :navigation-event       (get-in data keypaths/navigation-event)
    :store-slug             (get-in data keypaths/store-slug)
    :stylist-banner-hidden? (get-in data keypaths/stylist-banner-hidden)
    :welcome-url            (get-in data keypaths/welcome-url)})

@@ -51,7 +51,7 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      (component/build stylist-banner/component (stylist-banner/query data) nil)
+      #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
       (component/build promotion-banner-component data nil)
       #?(:cljs (popup-component data))
       [:div.page-wrap
