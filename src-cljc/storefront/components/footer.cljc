@@ -89,13 +89,13 @@
     (products-section (filter #(or (taxons/is-closure-or-frontal? %)
                                    (and own-store? (taxons/is-stylist-product? %))) taxons))]]) 
 
-(defn contacts-section []
+(defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
    [:div.normal.border-bottom.border-light-silver.mb1 "Contact"]
    [:div.gray.light
-    [:a.gray {:href "tel://18885627952"} "+1 (888) 562-7952"]
+    [:a.gray {:href (str "tel://" call-number)} call-number]
     " | 9am-5pm PST M-F | "
-    [:a.gray {:href "mailto:help@mayvenn.com"} "help@mayvenn.com"]]
+    [:a.gray {:href (str "mailto:" contact-email)} contact-email]]
 
    (let [button-opts {:color      "bg-dark-white"
                       :border     "border border-black"
@@ -104,13 +104,19 @@
      [:div.py1
       (ui/button [:div.flex.items-center.justify-center
                   [:div.p1 svg/phone-ringing]
-                  [:div.left-align.h3 "Call Now"]] button-opts)
+                  [:div.left-align.h3 "Call Now"]]
+                 (merge button-opts
+                        {:href (str "tel://" call-number)}))
       (ui/button [:div.flex.items-center.justify-center
                   [:div.p1 svg/message]
-                  [:div.left-align.h3 "Send Message"]] button-opts)
+                  [:div.left-align.h3 "Send Message"]]
+                 (merge button-opts
+                        {:href (str "tel://" sms-number)}))
       (ui/button [:div.flex.items-center.justify-center
                   [:div.p1 svg/mail-envelope]
-                  [:div.left-align.h3 "Send Email"]] button-opts)])])
+                  [:div.left-align.h3 "Send Email"]]
+                 (merge button-opts
+                        {:href (str "mailto:" contact-email)}))])])
 
 (defn social-section []
   [:div.border-top.border-light-silver
@@ -128,11 +134,13 @@
      [:a {:href "http://www.pinterest.com/mayvennhair/"}
       [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]])
 
-(defn experimental-component [{:keys [taxons own-store?]}]
+(defn experimental-component [{:keys [taxons
+                                      contacts
+                                      own-store?]}]
   (component/create
    [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
     [:div.px3.my2.line-height-4 (shop-section taxons own-store?)]
-    [:div.px3.my2.line-height-4 (contacts-section)]
+    [:div.px3.my2.line-height-4 (contacts-section contacts)]
     [:div.px3.line-height-4 (social-section)]
     [:div.mt3.bg-black.white.py2.px3.clearfix.h5.light
      [:div.left "© 2016 Mayvenn"]
@@ -142,7 +150,10 @@
       [:a.white {:href "/tos.html"} "Terms of Use"]]]]))
 
 (defn query [data]
-  {:taxons (taxons/current-taxons data)
+  {:taxons     (taxons/current-taxons data)
+   :contacts   {:sms-number    (get-in data keypaths/sms-number)
+                :call-number   "+1 (888) 562-7952"
+                :contact-email "mailto:help@mayvenn.com"}
    :own-store? (own-store? data)})
 
 
