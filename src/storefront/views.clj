@@ -80,7 +80,7 @@
     ;; trip request. At time of writing this greatly includes our pagespeed score
     (if (config/development? environment)
       (page/include-css (asset-path "/css/full.css"))
-      [:style (css-styles)])]
+      [:style (raw (css-styles))])]
    [:body {:data-snap-to "top"}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
