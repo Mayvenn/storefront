@@ -78,26 +78,33 @@
   (for [{:keys [name slug]} taxons]
     [:a (merge {:key slug :data-test (str "footer-" slug)}
                (utils/route-to events/navigate-category {:taxon-slug slug}))
-     [:div.gray.light.titleize name]]))
+     [:div.dark-gray.light.titleize name]]))
 
 (defn shop-section [taxons own-store?]
-  [:div.col-12.clearfix
-   [:div.medium.border-bottom.border-light-silver.mb1 "Shop"]
-   [:div.col.col-6
-    (products-section (filter taxons/is-extension? taxons))]
-   [:div.col.col-6
-    (products-section (filter #(or (taxons/is-closure-or-frontal? %)
-                                   (and own-store? (taxons/is-stylist-product? %))) taxons))]]) 
+  [:div.col-12
+   [:div.medium.border-bottom.border-light-silver.mb1
+    [:div.to-md-hide.f3 "Shop"]
+    [:div.md-up-hide "Shop"]]
+   [:div.clearfix.f4
+    [:div.col.col-6
+     (products-section (filter taxons/is-extension? taxons))]
+    [:div.col.col-6
+     (products-section (filter #(or (taxons/is-closure-or-frontal? %)
+                                    (and own-store? (taxons/is-stylist-product? %))) taxons))]]]) 
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
-   [:div.normal.border-bottom.border-light-silver.mb1 "Contact"]
-   [:div.gray.light
-    [:a.gray {:href (str "tel://" call-number)} call-number]
-    " | 9am-5pm PST M-F | "
-    [:a.gray {:href (str "mailto:" contact-email)} contact-email]]
+   [:div.medium.border-bottom.border-light-silver.mb1
+    [:div.to-md-hide.f3 "Contact"]
+    [:div.md-up-hide "Contact"]]
+   [:div.dark-gray.light.f4
+    [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+    [:span.to-md-hide call-number] ;; desktop
+    " | 9am-5pm PST M-F"
+    [:div
+     [:a.dark-gray {:href (str "mailto:" contact-email)} contact-email]]]
 
-   [:div.py1
+   [:div.py1.md-up-hide
     (ui/footer-button {:href (str "tel://" call-number)}
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/phone-ringing]
@@ -112,29 +119,35 @@
                        [:div.left-align.h3 "Send Email"]])]])
 
 (defn social-section []
-  [:div.border-top.border-light-silver
-   [:div.clearfix.border-bottom.border-light-silver.p1.flex.items-center.justify-between.py2
-    [:div
-     [:a {:href "https://www.facebook.com/MayvennHair"}
-      [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]]
-    [:div
-     [:a {:href "http://instagram.com/mayvennhair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/instagram]]]
-    [:div
-     [:a {:href "https://twitter.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/twitter]]]
-    [:div
-     [:a {:href "http://www.pinterest.com/mayvennhair/"}
-      [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]])
+  [:div
+   [:div.medium.border-bottom.border-light-silver
+    [:div.to-md-hide ui/nbsp]]
+   [:div
+    [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
+     [:div
+      [:a {:href "https://www.facebook.com/MayvennHair"}
+       [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]]
+     [:div
+      [:a {:href "http://instagram.com/mayvennhair"}
+       [:div {:style {:width "22px" :height "22px"}} svg/instagram]]]
+     [:div
+      [:a {:href "https://twitter.com/MayvennHair"}
+       [:div {:style {:width "22px" :height "22px"}} svg/twitter]]]
+     [:div
+      [:a {:href "http://www.pinterest.com/mayvennhair/"}
+       [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]]])
 
 (defn experimental-component [{:keys [taxons
                                       contacts
                                       own-store?]}]
   (component/create
    [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
-    [:div.px3.my2.line-height-4 (shop-section taxons own-store?)]
-    [:div.px3.my2.line-height-4 (contacts-section contacts)]
-    [:div.px3.line-height-4 (social-section)]
+
+    [:div.col-12.clearfix
+     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section taxons own-store?)]
+     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
+     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
+
     [:div.mt3.bg-black.white.py2.px3.clearfix.h5.light
      [:div.left "© 2016 Mayvenn"]
      [:div.right
@@ -146,7 +159,7 @@
   {:taxons     (taxons/current-taxons data)
    :contacts   {:sms-number    (get-in data keypaths/sms-number)
                 :call-number   "+1 (888) 562-7952"
-                :contact-email "mailto:help@mayvenn.com"}
+                :contact-email "help@mayvenn.com"}
    :own-store? (own-store? data)})
 
 
