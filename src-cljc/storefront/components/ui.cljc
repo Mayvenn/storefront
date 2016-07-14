@@ -24,9 +24,11 @@
 
 (defn button
   [{:keys [disabled spinning?] :as opts} & content]
-  (let [opts    (update opts :on-click #(if (or disabled spinning?)
-                                          utils/noop-callback
-                                          %))
+  (let [opts    (-> opts
+                    (update :on-click #(if (or disabled spinning?)
+                                         utils/noop-callback
+                                         %))
+                    (dissoc :spinning?))
         content (if spinning?
                   [:div.h3.letter-spacing-1 spinner]
                   content)]
@@ -66,7 +68,7 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
-     (button nil {:spinning? true})
+     (button {:spinning? true})
      [:input.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
       {:type "submit"
        :data-test data-test
