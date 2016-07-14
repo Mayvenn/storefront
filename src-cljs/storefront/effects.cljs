@@ -5,7 +5,6 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
-            [storefront.accessors.experiments :refer [color-option?]]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
@@ -66,8 +65,7 @@
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
 (defn blonde->straight [app-state taxon-slug]
-  (when (and (color-option? app-state)
-             (= taxon-slug "blonde"))
+  (when (= taxon-slug "blonde")
     (routes/enqueue-redirect events/navigate-category {:taxon-slug "straight"})))
 
 (defmulti perform-effects identity)
@@ -775,8 +773,8 @@
   (analytics/track dispatch event args app-state)
   (when-let [taxon-slug (:taxon-slug (get-in app-state keypaths/navigation-args))]
     (blonde->straight app-state taxon-slug))
-  (when (= "color-option" variation)
-    (refresh-taxon-products app-state)))
+  ;; color-option?
+  (refresh-taxon-products app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)

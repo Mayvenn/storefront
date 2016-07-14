@@ -18,15 +18,7 @@
 (def color-option-experiment-sandbox 6368621011)
 
 (defn experiments [environment]
-  [{:name    "color-option"
-    :id      (if (#{"development" "acceptance"} environment)
-               color-option-experiment-sandbox
-               color-option-experiment-prod)
-    :buckets [[stylist-shop?      shop-control]
-              [stylist-store?     store-control]
-              [(stylist-mod? 3 0) control-1]
-              [(stylist-mod? 3 1) control-2]
-              [(stylist-mod? 3 2) variation]]}])
+  [])
 
 (def experiment->features
   {[color-option-experiment-sandbox variation]  #{"color-option"}
@@ -55,9 +47,6 @@
 
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
-
-(defn color-option? [data]
-  (display-feature? data "color-option"))
 
 (defn option-memory? [data]
   (display-feature? data "option-memory"))

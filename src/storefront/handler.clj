@@ -204,7 +204,7 @@
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id false))))))))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id))))))))))
 
 (defn create-order-from-shared-cart [{:keys [storeback-config environment]}
                                      {:keys [store] :as req}
@@ -240,10 +240,7 @@
                      (experiments/determine-experiments data environment)
                      (experiments/determine-features data)
                      (assoc-in data keypaths/taxons (api/named-searches storeback-config))
-                     (assoc-in data keypaths/browse-taxon-query
-                               (if (experiments/color-option? data)
-                                 {:experiment-color-option-variation true}
-                                 {:experiment-color-option-original true}))
+                     (assoc-in data keypaths/browse-taxon-query {:experiment-color-option-variation true}) ;; TODO: do we need this?
                      (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product     (redirect-product->canonical-url ctx req params)

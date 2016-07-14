@@ -127,15 +127,14 @@
 (def included-taxon? (complement :stylist_only?))
 
 (declare select-option)
-(defn ^:private auto-advance [{:keys [flow selected-options selected-variants auto-advance?] :as bundle-builder}]
-  (or (when auto-advance?
-        (when-let [next-step (next-step bundle-builder)]
-          (when-let [next-option (->> selected-variants
-                                      (remove :sold-out?)
-                                      (map next-step)
-                                      set
-                                      only)]
-            (select-option bundle-builder next-step next-option))))
+(defn ^:private auto-advance [{:keys [flow selected-options selected-variants] :as bundle-builder}]
+  (or (when-let [next-step (next-step bundle-builder)]
+        (when-let [next-option (->> selected-variants
+                                    (remove :sold-out?)
+                                    (map next-step)
+                                    set
+                                    only)]
+          (select-option bundle-builder next-step next-option)))
       bundle-builder))
 
 (defn reset-options [{:keys [initial-variants] :as bundle-builder} selected-options]
@@ -154,12 +153,11 @@
     (reset-options bundle-builder (dissoc selected-options last-step))
     bundle-builder))
 
-(defn initialize [taxon products color-option?]
+(defn initialize [taxon products]
   (let [initial-variants (->> (map products (:product-ids taxon))
                               (remove nil?)
                               (mapcat build-variants))
         initial-state    {:flow             (ordered-steps taxon)
-                          :auto-advance?    color-option?
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step taxon)}]
     (reset-options initial-state {})))

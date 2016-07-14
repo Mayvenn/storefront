@@ -10,30 +10,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
 
-(defn original-home-grid [taxons]
-  (let [height   9
-        rem      #(str % "rem")
-        row-size 3] ;; Must evenly divide 12
-    (for [taxon-group    (partition-all row-size taxons)
-          {:keys [slug]} taxon-group
-          :let           [group-size (count taxon-group)]]
-      [:a.col (merge {:key       slug
-                      :data-test (str "taxon-" slug)
-                      :class     (str "col-" (/ 12 group-size))}
-                     (utils/route-to events/navigate-category {:taxon-slug slug}))
-       [:div.mp1.flex.items-center.justify-center.bg-cover.bg-no-repeat.bg-center
-        {:class (str "img-homepage-" slug)
-         :style (if (< group-size row-size)
-                  {:height (rem (float (/ height 2)))}
-                  {:height (rem height)})}
-        ;; duplicate element to emulate old styles without custom special-cased classes
-        [:div.bg-contain.bg-no-repeat.bg-center.col-10.md-up-hide
-         {:class (str "img-text-" slug)
-          :style {:height "1.33333rem"}}]
-        [:div.bg-contain.bg-no-repeat.bg-center.col-10.to-md-hide
-         {:class (str "img-text-" slug)
-          :style {:height "25px"}}]]])))
-
 (defn color-option-home-grid [taxons]
   (let [rem #(str % "rem")
         height 10]
@@ -55,15 +31,12 @@
          {:class (str "img-text-" slug)
           :style {:height "25px"}}]]])))
 
-(defn categories-component [{:keys [taxons color-option?]} owner opts]
+(defn categories-component [{:keys [taxons]} owner opts]
   (component/create
-   [:div (if color-option?
-           (color-option-home-grid taxons)
-           (original-home-grid taxons))]))
+   [:div (color-option-home-grid taxons)]))
 
 (defn categories-query [data]
-  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))
-   :color-option? (experiments/color-option? data)})
+  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
 
 (defn home-component [data owner opts]
   (component/create
@@ -84,5 +57,5 @@
       (merge {:style {:height "300px"}}
              (apply utils/route-to (navigation/shop-now-navigation-message data)))]
      [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
-      {:style {:height (if (experiments/color-option? data) "29px" "72px")}}
+      {:style {:height "29px"}}
       "Introducing Peruvian In All Textures"]]]))

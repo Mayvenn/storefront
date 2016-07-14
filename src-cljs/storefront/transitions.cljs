@@ -73,8 +73,7 @@
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (taxons/current-taxon app-state)
-                                                  (get-in app-state keypaths/products)
-                                                  (experiments/color-option? app-state))
+                                                  (get-in app-state keypaths/products))
         saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
     (if saved-options
       (bundle-builder/reset-options bundle-builder saved-options)
@@ -467,13 +466,9 @@
       (assoc-in keypaths/flash-failure (select-keys args [:message :navigation]))))
 
 (defn set-color-option-variation [app-state variation]
-  (if (not= "color-option" variation)
-    app-state
-    (-> app-state
-        (update-in keypaths/browse-taxon-query dissoc :experiment-color-option-original)
-        (assoc-in (conj keypaths/browse-taxon-query :experiment-color-option-variation) true)
-        (assoc-in keypaths/bundle-builder nil)
-        ensure-bundle-builder)))
+  (-> app-state
+      (assoc-in keypaths/bundle-builder nil)
+      ensure-bundle-builder))
 
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation feature]} app-state]

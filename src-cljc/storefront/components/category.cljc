@@ -93,8 +93,7 @@
      checkout-button]))
 
 (defn option-html [later-step?
-                   {:keys [name image price-delta checked? sold-out? selections]}
-                   color-option?]
+                   {:keys [name image price-delta checked? sold-out? selections]}]
   [:label.btn.border-silver.p1.flex.flex-column.justify-center.items-center.light
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :style {:width "100%"
@@ -109,7 +108,7 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
-   (if (and color-option? image)
+   (if image
      [:img.mbp4.content-box.circle.border-white
       {:src image :width 30 :height 30 :class (cond checked? "border"
                                                     sold-out? "muted")}]
@@ -120,28 +119,27 @@
       [:span {:class (when-not checked? "navy")}
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name selected-option later-step? options]} color-option?]
-  (let [selected? (and color-option? selected-option)]
-    [:div.my2 {:key step-name}
-     [:div.clearfix.f3
-      [:div.left.navy.medium.shout
-       (name step-name)
-       (when selected? [:span.inline-block.mxp2.light-gray " - "])]
-      (when selected?
-        [:div.overflow-hidden.light-gray
-         (or (:long-name selected-option)
-             [:span.titleize (:name selected-option)])])]
-     [:div.flex.flex-wrap.content-stretch.mxnp3
-      (for [{:keys [name] :as option} options]
-        [:div.flex.flex-column.justify-center.pp3
-         {:key   (string/replace (str name step-name) #"\W+" "-")
-          :style {:height "72px"}
-          :class (cond
-                   (= :length step-name) "col-4"
-                   (and color-option? (= :color step-name)) "col-4"
-                   (= :style step-name) "col-4"
-                   :else "col-6")}
-         (option-html later-step? option color-option?)])]]))
+(defn step-html [{:keys [step-name selected-option later-step? options]}]
+  [:div.my2 {:key step-name}
+   [:div.clearfix.f3
+    [:div.left.navy.medium.shout
+     (name step-name)
+     (when selected-option [:span.inline-block.mxp2.light-gray " - "])]
+    (when selected-option
+      [:div.overflow-hidden.light-gray
+       (or (:long-name selected-option)
+           [:span.titleize (:name selected-option)])])]
+   [:div.flex.flex-wrap.content-stretch.mxnp3
+    (for [{:keys [name] :as option} options]
+      [:div.flex.flex-column.justify-center.pp3
+       {:key   (string/replace (str name step-name) #"\W+" "-")
+        :style {:height "72px"}
+        :class (cond
+                 (= :length step-name) "col-4"
+                 (= :color step-name) "col-4"
+                 (= :style step-name) "col-4"
+                 :else "col-6")}
+       (option-html later-step? option)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
@@ -245,10 +243,8 @@
   [:div.inline-block.h5
    (component/build reviews/reviews-summary-component reviews opts)])
 
-(defn taxon-uses-product-images [color-option? taxon-slug]
-  ((if color-option?
-     #{"blonde" "closures" "frontals" "straight"}
-     #{"blonde" "closures" "frontals"}) taxon-slug))
+(defn taxon-uses-product-images [taxon-slug]
+  (#{"blonde" "closures" "frontals" "straight"} taxon-slug))
 
 (defn ensure-model-img-first [[product-img model-img & other-imgs :as images]]
   ;;Model images should be shown first if they exist.
@@ -268,8 +264,8 @@
 
 (defn ^:private images-from-variants
   "For some taxons, when a selection has been made, show detailed product images"
-  [taxon {:keys [selected-options selected-variants]} color-option?]
-  (if (and (taxon-uses-product-images color-option? (:slug taxon))
+  [taxon {:keys [selected-options selected-variants]}]
+  (if (and (taxon-uses-product-images (:slug taxon))
            (seq selected-options))
     (distinct-variant-images selected-variants)
     (:images taxon)))
@@ -281,11 +277,10 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
-                         color-option?
                          bagged-variants]}
                  owner opts]
   (let [selected-variant  (bundle-builder/selected-variant bundle-builder)
-        carousel-images   (images-from-variants taxon bundle-builder color-option?)
+        carousel-images   (images-from-variants taxon bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
         review?           (taxons/eligible-for-reviews? taxon)]
     (component/create
@@ -308,7 +303,7 @@
              (when needs-selections?
                [:div.border-bottom.border-dark-white.border-width-2
                 (for [step (bundle-builder/steps bundle-builder)]
-                  (step-html step color-option?))])
+                  (step-html step))])
              [:div schema-org-offer-props
               [:div.my2
                (if selected-variant
@@ -335,7 +330,6 @@
      :selected-product   (bundle-builder/selected-product bundle-builder (get-in data keypaths/products))
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
-     :color-option?      (experiments/color-option? data)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
      :reviews            (reviews/query data)}))
 
