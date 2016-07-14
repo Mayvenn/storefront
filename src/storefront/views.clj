@@ -1,5 +1,5 @@
 (ns storefront.views
-  (:require [storefront.assets :refer [asset-map asset-path]]
+  (:require [storefront.assets :refer [asset-map asset-path cdn-host]]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.component-shim :as component]
             [storefront.seo-tags :as seo]
@@ -62,6 +62,11 @@
     (into '() (seo/tags-for-page data))
 
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+    (when cdn-host
+      [:link {:rel "dns-prefetch" :href (str "//" cdn-host)}])
+    [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
+    [:link {:rel "dns-prefetch" :href "//cdn.optimizely.com"}]
+    [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
     [:script {:type "text/javascript"}
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
