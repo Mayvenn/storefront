@@ -137,9 +137,10 @@
       [:a {:href "http://www.pinterest.com/mayvennhair/"}
        [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]]])
 
-(defn experimental-component [{:keys [taxons
-                                      contacts
-                                      own-store?]}]
+(defn full-experimental-component [{:keys [minimal?
+                                           taxons
+                                           contacts
+                                           own-store?]}]
   (component/create
    [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
 
@@ -155,8 +156,29 @@
       " and "
       [:a.white {:href "/tos.html"} "Terms of Use"]]]]))
 
+(defn minimal-experimental-component [{:keys [call-number contact-email]}]
+  (component/create
+   [:div.sans-serif.border-top.border-light-silver.bg-dark-white
+    [:div.center.px3.my2.line-height-4
+     [:div.medium.f3.dark-gray "Need Help?"]
+     [:div.dark-gray.light.f4
+      [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
+      [:span.to-md-hide call-number]
+      " | 9am-5pm PST M-F"]]]))
+
+(defn experimental-component [{:keys [minimal?] :as data}]
+  (if minimal?
+    (component/build minimal-experimental-component
+                     (:contacts data)
+                     nil)
+    (component/build full-experimental-component
+                     data
+                     nil)))
+
+
 (defn query [data]
-  {:taxons     (taxons/current-taxons data)
+  {:minimal?   (minimal-footer-events (get-in data keypaths/navigation-event))
+   :taxons     (taxons/current-taxons data)
    :contacts   {:sms-number    (get-in data keypaths/sms-number)
                 :call-number   "+1 (888) 562-7952"
                 :contact-email "help@mayvenn.com"}
@@ -165,7 +187,7 @@
 
 (defn component [app-state]
   (if (experiments/footer-redesign? app-state)
-    (component/build experimental-component (query app-state) nil)
+    (experimental-component (query app-state))
     (component/build original-component (original-query app-state) nil)))
 
 
