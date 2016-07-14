@@ -56,7 +56,7 @@
       #?(:cljs (popup-component data))
       [:div (if (experiments/footer-redesign? data)
               {:style {:min-height "100vh"}
-               :class "flex flex-column"}
+               :class "page-wrap flex flex-column"}
               {:class "page-wrap"})
        [:div.border-bottom.border-light-silver
         (header/built-component data)
