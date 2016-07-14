@@ -99,6 +99,16 @@
       (is (= "http://shop.mayvenn.com:8080/?world=true"
              (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-blonde-category-to-straight-hair
+  (assert-request {:server-name "shop.mayvenn.com"
+                   :uri         "/categories/hair/blonde"
+                   :headers     {}}
+                  storeback-shop-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "http://shop.mayvenn.com:8080/categories/hair/straight"
+                           (get-in resp [:headers "Location"]))))))
+
 (deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
   (assert-request {:server-name "shop.mayvenn.com"
                    :uri         "/categories/hair/straight?utm_source=cats"
