@@ -772,9 +772,7 @@
 (defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (when-let [taxon-slug (:taxon-slug (get-in app-state keypaths/navigation-args))]
-    (blonde->straight app-state taxon-slug))
-  ;; color-option?
-  (refresh-taxon-products app-state))
+    (blonde->straight app-state taxon-slug)))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
