@@ -48,9 +48,6 @@
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
 
-(defn option-memory? [data]
-  (display-feature? data "option-memory"))
-
 (defn accounts-redesign? [data]
   (display-feature? data "accounts-redesign"))
 

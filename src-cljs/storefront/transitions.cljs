@@ -88,10 +88,9 @@
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
-  (let [bundle-builder-options (when (experiments/option-memory? app-state)
-                                 (-> (get-in app-state keypaths/bundle-builder)
-                                     bundle-builder/constrained-options
-                                     (dissoc :length)))]
+  (let [bundle-builder-options (-> (get-in app-state keypaths/bundle-builder)
+                                   bundle-builder/constrained-options
+                                   (dissoc :length))]
     (-> app-state
         (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
