@@ -149,12 +149,12 @@
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
 
-    [:div.mt3.bg-black.white.py2.px3.clearfix.h5.light
+    [:div.mt3.bg-black.white.py1.px3.clearfix.f5.light
      [:div.left "© 2016 Mayvenn"]
      [:div.right
-      [:a.white {:href "/privacy.html"} "Privacy Policy"]
+      [:a.white {:target "_blank" :href "/privacy.html"} "Privacy Policy"]
       " and "
-      [:a.white {:href "/tos.html"} "Terms of Use"]]]]))
+      [:a.white {:target "_blank" :href "/tos.html"} "Terms of Use"]]]]))
 
 (defn minimal-experimental-component [{:keys [call-number contact-email]}]
   (component/create
