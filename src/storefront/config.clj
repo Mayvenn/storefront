@@ -3,6 +3,7 @@
             [taoensso.timbre :as timbre]))
 
 (defn development? [env]
+  {:pre [(#{"development" "test" "acceptance" "production"} env)]}
   (= env "development"))
 
 (def default-config {:server-opts {:port 3006}

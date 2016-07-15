@@ -5,9 +5,11 @@
             [standalone-test-server.core :refer :all]
             [cheshire.core :refer [generate-string]]
             [com.stuartsierra.component :as component]
+            [ring.mock.request :as mock]
             [ring.util.response :refer [response status content-type]]))
 
-(def test-overrides {:server-opts {:port 2390}
+(def test-overrides {:environment "test"
+                     :server-opts {:port 2390}
                      :logging (constantly nil)
                      :storeback {:endpoint "http://localhost:4334/"
                                  :internal-endpoint "http://localhost:4334/"}})
@@ -64,83 +66,106 @@
       (with-handler handler
         (asserter (handler (merge default-req-params req)))))))
 
+(deftest redirects-to-https-preserving-query-params
+  (testing "mayvenn.com"
+    (with-handler handler
+      (let [resp (handler (mock/request :get "http://mayvenn.com"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://shop.mayvenn.com/"
+               (get-in resp [:headers "Location"]))))))
+
+  (testing "no www-prefix stylist"
+    (with-handler handler
+      (let [resp (handler (mock/request :get "http://no-stylist.mayvenn.com/?yo=lo&mo=fo"))]
+        (is (= 301 (:status resp)))
+        (is (= "https://no-stylist.mayvenn.com/?yo=lo&mo=fo"
+               (get-in resp [:headers "Location"]))))))
+
+  (testing "www-prefix stylist doesn't redirect to https://www.bob.mayvenn.com - because we don't have a wildcard ssl cert for multiple subdomains"
+    (assert-request (mock/request :get "http://www.bob.mayvenn.com/?yo=lo&mo=fo")
+                    storeback-stylist-response
+                    (fn [resp]
+                      (is (= 302 (:status resp)))
+                      (is (not= "https://www.bob.mayvenn.com/?yo=lo&mo=fo"
+                                (get-in resp [:headers "Location"])))
+                      (is (= "https://bob.mayvenn.com/?yo=lo&mo=fo"
+                             (get-in resp [:headers "Location"])))))) )
+
 (deftest redirects-missing-stylists-to-store-while-preserving-query-params
-  (assert-request
-   {:server-name "no-stylist.mayvenn.com"
-    :query-string "yo=lo&mo=fo"}
-   storeback-no-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)))
-     (is (= "http://store.mayvenn.com:8080/?yo=lo&mo=fo"
-            (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-www-prefixed-stylists-to-stylist-without-prefix
-  (assert-request
-   {:server-name "www.bob.mayvenn.com"}
-   storeback-stylist-response
-   (fn [resp]
-     (is (= 302 (:status resp)) (pr-str resp))
-     (is (= "http://bob.mayvenn.com:8080/"
-            (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-www-to-welcome-preserving-query-params
-  (with-handler handler
-    (let [resp (handler (merge default-req-params {:server-name "www.mayvenn.com"
-                                                   :query-string "world=true"}))]
-      (is (= 302 (:status resp)))
-      (is (= "http://shop.mayvenn.com:8080/?world=true"
-             (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-no-subdomain-to-welcome-preserving-query-params
-  (with-handler handler
-    (let [resp (handler (merge default-req-params {:server-name "mayvenn.com"
-                                                   :query-string "world=true"}))]
-      (is (= 302 (:status resp)))
-      (is (= "http://shop.mayvenn.com:8080/?world=true"
-             (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-blonde-category-to-straight-hair
-  (assert-request {:server-name "shop.mayvenn.com"
-                   :uri         "/categories/hair/blonde"
-                   :headers     {}}
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "http://shop.mayvenn.com:8080/categories/hair/straight"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
-  (assert-request {:server-name "shop.mayvenn.com"
-                   :uri         "/categories/hair/straight?utm_source=cats"
-                   :headers     {"cookie" "preferred-store-slug=bob"}}
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "http://bob.mayvenn.com:8080/categories/hair/straight?utm_source=cats"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
-  (assert-request {:server-name "shop.mayvenn.com"
-                   :uri         "/categories/hair/straight?utm_source=cats"
-                   :headers     {"cookie" "preferred-store-slug=non-existent-stylist"}}
+  (assert-request (mock/request :get "https://no-stylist.mayvenn.com/?yo=lo&mo=fo")
                   storeback-no-stylist-response
                   (fn [resp]
                     (is (= 302 (:status resp)))
-                    (is (= "http://store.mayvenn.com:8080/categories/hair/straight?utm_source=cats"
+                    (is (= "https://store.mayvenn.com/?yo=lo&mo=fo"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-www-prefixed-stylists-to-stylist-without-prefix
+  (assert-request (mock/request :get "https://www.bob.mayvenn.com")
+                  storeback-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)) (pr-str resp))
+                    (is (= "https://bob.mayvenn.com/"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-www-to-shop-preserving-query-params
+  (with-handler handler
+    (let [resp (handler (mock/request :get "https://www.mayvenn.com/?world=true"))]
+      (is (= 302 (:status resp)))
+      (is (= "https://shop.mayvenn.com/?world=true"
+             (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-no-subdomain-to-shop-preserving-query-params
+  (with-handler handler
+    (let [resp (handler (mock/request :get "https://mayvenn.com/?world=true"))]
+      (is (= 302 (:status resp)))
+      (is (= "https://shop.mayvenn.com/?world=true"
+             (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-blonde-category-to-straight-hair
+  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/blonde")
+                  storeback-shop-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)) (pr-str resp))
+                    (is (= "https://shop.mayvenn.com/categories/hair/straight"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
+  (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
+                      (mock/header "cookie" "preferred-store-slug=bob"))
+                  storeback-shop-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "https://bob.mayvenn.com/categories/hair/straight?utm_source=cats"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
+  (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
+                      (mock/header "cookie" "preferred-store-slug=non-existent-stylist"))
+                  storeback-no-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "https://store.mayvenn.com/categories/hair/straight?utm_source=cats"
                            (get-in resp [:headers "Location"])))
                     (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
                       (is (.contains cookie "preferred-store-slug=;Max-Age=0;") cookie)))))
 
 (deftest redirects-vistaprint
   (with-handler handler
-    (let [resp (handler (merge default-req-params {:server-name "vistaprint.mayvenn.com"}))]
-      (is (= 302 (:status resp)))
-      (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
-             (get-in resp [:headers "Location"]))))))
+    (testing "http"
+      (let [resp (handler (mock/request :get "http://vistaprint.mayvenn.com"))]
+        (is (= 302 (:status resp)))
+        (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+               (get-in resp [:headers "Location"])))))
+
+    (testing "https"
+      (let [resp (handler (mock/request :get "https://vistaprint.mayvenn.com"))]
+        (is (= 302 (:status resp)))
+        (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+               (get-in resp [:headers "Location"])))))))
 
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (assert-request
-   {:server-name "bob.mayvenn.com"}
+   (mock/request :get "https://bob.mayvenn.com")
    storeback-stylist-response
    (fn [resp]
      (is (= 200 (:status resp)))

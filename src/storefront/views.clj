@@ -83,7 +83,7 @@
       [:script {:src (asset-path "/js/out/main.js") :async true}])
     ;; inline styles in production because our css file is so small and it avoids another round
     ;; trip request. At time of writing this greatly includes our pagespeed score
-    (if (config/development? environment)
+    (if (#{"development" "test"} environment)
       (page/include-css (asset-path "/css/full.css"))
       [:style (raw (css-styles))])]
    [:body {:data-snap-to "top"}

@@ -63,7 +63,7 @@
   (let [dev? (config/development? environment)]
     (str (if dev? (name scheme) "https") "://"
          store-slug "." (parse-root-domain server-name)
-         ":" (if dev? server-port 443))))
+         (if dev? (str ":" server-port) ""))))
 
 (defn store-url [store-slug environment {:keys [uri] :as req}]
   (str (store-scheme-and-authority store-slug environment req)
@@ -298,7 +298,7 @@
        (wrap-add-domains)
        (wrap-logging logger)
        (wrap-params)
-       (#(if (config/development? environment)
+       (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
                                 :log (comp (partial logger :error) exception-handler)
