@@ -49,13 +49,14 @@
      "Free Shipping + 30 Day Money Back Guarantee"]
 
     [:div.col-12.lg-up-col-6 [:div.h3.center.black.mb1 "Pick your style"]]
-    [:div.col.col-12.lg-up-col-6
-     (component/build categories-component (categories-query data) nil)
-     [:div.clearfix]]
-    [:div.col.col-6.to-lg-hide
-     [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
-      (merge {:style {:height "300px"}}
-             (apply utils/route-to (navigation/shop-now-navigation-message data)))]
-     [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
-      {:style {:height "29px"}}
-      "Introducing Peruvian In All Textures"]]]))
+    [:div.mb2.clearfix
+     [:div.col.col-12.lg-up-col-6
+      (component/build categories-component (categories-query data) nil)
+      [:div.clearfix]]
+     [:div.col.col-6.to-lg-hide
+      [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
+       (merge {:style {:height "300px"}}
+              (apply utils/route-to (navigation/shop-now-navigation-message data)))]
+      [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
+       {:style {:height "29px"}}
+       "Introducing Peruvian In All Textures"]]]]))
