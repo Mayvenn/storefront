@@ -158,7 +158,7 @@
 
 (defn minimal-experimental-component [{:keys [call-number contact-email]}]
   (component/create
-   [:div.sans-serif.border-top.border-light-silver.bg-dark-white
+   [:div.sans-serif.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
      [:div.medium.f3.dark-gray "Need Help?"]
      [:div.dark-gray.light.f4
