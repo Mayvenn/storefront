@@ -18,6 +18,7 @@
     events/navigate-forgot-password
     events/navigate-reset-password
     events/navigate-cart
+    events/navigate-checkout-sign-in
     events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
