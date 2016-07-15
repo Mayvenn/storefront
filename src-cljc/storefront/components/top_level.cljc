@@ -51,18 +51,17 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
-      (component/build promotion-banner-component data nil)
-      #?(:cljs (popup-component data))
-      [:div (if (experiments/footer-redesign? data)
-              {:style {:min-height "100vh"}
-               :class "page-wrap flex flex-column"}
-              {:class "page-wrap"})
+      [:div.page-wrap (when (experiments/footer-redesign? data)
+                        {:style {:min-height "100vh"}
+                         :class "flex flex-column"})
+       #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
+       (component/build promotion-banner-component data nil)
+       #?(:cljs (popup-component data))
        [:div.border-bottom.border-light-silver
         (header/built-component data)
         (slideout-nav/built-component data)]
        (component/build flash/component (flash/query data) opts)
-       [:main (merge {:role "main"}
+       [:main.bg-light-white (merge {:role "main"}
                      (when (experiments/footer-redesign? data)
                        {:class "flex-auto"}))
         [:div (when-not (experiments/footer-redesign? data)
