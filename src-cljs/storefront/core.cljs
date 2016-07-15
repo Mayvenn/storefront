@@ -13,7 +13,7 @@
             [om.core :as om]
             [clojure.data :refer [diff]]))
 
-(when config/development?
+(when config/enable-console-print?
   (enable-console-print!))
 
 (defn- transition [app-state [event args]]

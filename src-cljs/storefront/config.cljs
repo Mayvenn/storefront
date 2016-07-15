@@ -1,9 +1,13 @@
 (ns storefront.config)
 
-(def environment js/environment)
-(def production? (= js/environment "production"))
-(def development? (= js/environment "development"))
-(def acceptance? (= js/environment "acceptance"))
+(def report-errors?
+  (not= "development" js/environment))
+
+(def secure?
+  (not= "development" js/environment))
+
+(def enable-console-print?
+  (= "development" js/environment))
 
 (def allowed-version-drift
   "The number of versions that storefront is allowed to fall behind before requiring a refresh"

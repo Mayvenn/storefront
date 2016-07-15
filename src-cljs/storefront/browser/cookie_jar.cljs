@@ -24,7 +24,6 @@
 
 (def remember-me-age (* 60 60 24 7 4))
 (def session-age (* 60 60 24 7 52))
-(def secure? (not config/development?))
 
 (defn all-keys [spec]
   (concat (:optional-keys spec) (:required-keys spec)))
@@ -51,7 +50,7 @@
    (let [age (if remember? remember-me-age -1)]
      (doseq [attr (all-keys spec)]
        (if-let [val (attr attrs)]
-         (.set cookie attr val age "/" nil secure?)
+         (.set cookie attr val age "/" nil config/secure?)
          (.remove cookie attr))))))
 
 (def clear-user (partial clear-cookie user))
@@ -67,7 +66,7 @@
   (if-let [session-id (.get cookie :session-id)]
     session-id
     (let [created-session-id (str (random-uuid))]
-      (.set cookie :session-id created-session-id session-age "/" nil secure?)
+      (.set cookie :session-id created-session-id session-age "/" nil config/secure?)
       created-session-id)))
 
 (def save-user (partial save-cookie user))
