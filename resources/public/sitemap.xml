@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" >
-  <url> 
+  <url>
     <loc>
       https://mayvenn.com
     </loc>
   </url>
-  <url> 
+  <url>
     <loc>
       https://welcome.mayvenn.com
     </loc>
     <priority>0.60</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com
     </loc>
     <priority>1.0</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/guarantee
     </loc>
     <priority>0.60</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/help
     </loc>
     <priority>0.60</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/straight
     </loc>
     <priority>0.80</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/loose-wave
     </loc>
     <priority>0.80</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/body-wave
     </loc>
     <priority>0.80</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/deep-wave
     </loc>
     <priority>0.80</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/curly
     </loc>
     <priority>0.80</priority>
   </url>
-  <url> 
+  <url>
     <loc>
       https://shop.mayvenn.com/categories/hair/blonde
     </loc>
