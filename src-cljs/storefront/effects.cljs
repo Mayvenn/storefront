@@ -64,6 +64,8 @@
   [app-state]
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
+;; TODO: the blonde -> straight redirect happens on the server side now, so can
+;; this be removed?
 (defn blonde->straight [app-state taxon-slug]
   (when (= taxon-slug "blonde")
     (routes/enqueue-redirect events/navigate-category {:taxon-slug "straight"})))
