@@ -59,10 +59,4 @@
     </loc>
     <priority>0.80</priority>
   </url>
-  <url>
-    <loc>
-      https://shop.mayvenn.com/categories/hair/blonde
-    </loc>
-    <priority>0.80</priority>
-  </url>
 </urlset>
