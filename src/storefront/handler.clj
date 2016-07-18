@@ -142,16 +142,6 @@
       (wrap-set-preferred-store environment)
       (wrap-preferred-store-redirect environment)
       (wrap-stylist-not-found-redirect environment)
-      ;; Keep defaults higher up to avoid SSL certificate error. SSL redirect
-      ;; must happen *after* www trimming since our SSL certificate doesn't
-      ;; support multiple subdomains. Example incorrect behavior would be:
-      ;;
-      ;; - User goes to http://www.store.mayvenn.com
-      ;; - defaults redirects to https://www.store.mayvenn.com
-      ;; - browser sees SSL certificate as invalid and refuses to request page
-      ;;
-      ;; Because of this, we must always leave wrap-defaults above wrap-remove-superfluous-www.
-      ;; TODO: needs a test
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-remove-superfluous-www-redirect environment)
       (wrap-fetch-store storeback-config)
