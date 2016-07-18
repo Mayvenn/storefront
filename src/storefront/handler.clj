@@ -286,4 +286,4 @@
            (wrap-exceptions %)
            (wrap-internal-error %
                                 :log (comp (partial logger :error) exception-handler)
-                                :error-response "{\"error\": \"something went wrong\"}"))))))
+                                :error-response views/error-page))))))

@@ -118,3 +118,15 @@
      [:a.mx-auto.btn.btn-primary.col-10
       {:href "/"}
       [:div.h3.p1.letter-spacing-1 "Return to Homepage"]]]]))
+
+(def error-page
+  (html5
+   [:head
+    [:meta {:name "fragment" :content "!"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
+    [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+    [:title "Something went wrong | Mayvenn"]]
+   [:body
+    [:div
+     [:h3 "Mayvenn Will Be Back Soon"]
+     [:h4 "We apologize for the inconvenience and appricate your patience. Please check back soon."]]]))
