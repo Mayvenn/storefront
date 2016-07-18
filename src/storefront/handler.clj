@@ -53,6 +53,9 @@
   (->> (string/split server-name #"\.")
        (drop-last 2)))
 
+(defn ->html-resp [h]
+  (content-type (response h) "text/html"))
+
 (defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
   (let [dev? (config/development? environment)]
     (str (if dev? (name scheme) "https") "://"
@@ -82,7 +85,7 @@
        :as                                req}]
     (cond
       (= store :storefront.api/storeback-unavailable)
-      (h req)
+      (->html-resp views/error-page)
 
       store-slug
       (h req)
@@ -159,8 +162,7 @@
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
     (-> ((if prerender? views/prerendered-page views/index) render-ctx data)
-        response
-        (content-type "text/html"))))
+        ->html-resp)))
 
 (defn redirect-to-cart [query-params]
   (redirect (str "/cart?" (codec/form-encode query-params))))
