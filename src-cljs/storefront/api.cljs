@@ -343,20 +343,6 @@
    {:handler #(messages/handle-message events/api-success-shipping-methods
                                        (update-in % [:shipping-methods] reverse))}))
 
-;; TODO: remove this, after stylist account redesign is released
-(defn update-stylist-account [user-token stylist-account]
-  (api-req
-   PUT
-   "/stylist"
-   request-keys/update-stylist-account
-   {:params
-    {:user-token user-token
-     :stylist stylist-account}
-    :handler
-    #(messages/handle-message events/api-success-stylist-account
-                              {:updated true
-                               :stylist (select-stylist-account-keys %)})}))
-
 (defn update-stylist-account-profile [user-token stylist-account]
   (api-req
    PUT
