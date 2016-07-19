@@ -64,12 +64,6 @@
   [app-state]
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
-;; TODO: the blonde -> straight redirect happens on the server side now, so can
-;; this be removed?
-(defn blonde->straight [app-state taxon-slug]
-  (when (= taxon-slug "blonde")
-    (routes/enqueue-redirect events/navigate-category {:taxon-slug "straight"})))
-
 (defmulti perform-effects identity)
 (defmethod perform-effects :default [dispatch event args app-state])
 
@@ -139,8 +133,7 @@
 (defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)
-  (refresh-taxon-products app-state)
-  (blonde->straight app-state taxon-slug))
+  (refresh-taxon-products app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -772,9 +765,7 @@
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
-  (analytics/track dispatch event args app-state)
-  (when-let [taxon-slug (:taxon-slug (get-in app-state keypaths/navigation-args))]
-    (blonde->straight app-state taxon-slug)))
+  (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
