@@ -83,6 +83,9 @@
     [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
+(defn- add-classes [attributes classes]
+  (update attributes :class #(str %1 " " %2) classes))
+
 (defn text-field [label keypath value {:keys [errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
@@ -103,13 +106,17 @@
      [:input.floating-label--input.col-12.h3.border
       (cond-> (merge {:key label
                       :class "rounded"
-                      :placeholder label}
-                     (utils/change-text keypath value)
+                      :placeholder label
+                      :value value
+                      :on-change
+                      (fn [e]
+                        (handle-message events/control-change-state
+                                        {:keypath keypath
+                                         :value (.. e -target -value)}))}
                      input-attributes)
-        ;; TODO: needs refactor
-        (nil? error) (update :class #(str %1 " " %2) "border-light-silver glow-green")
-        error (update :class #(str %1 " " %2) "border-orange border-width-2 pr4 glow-orange")
-        (seq value) (update :class #(str %1 " " %2) "has-value"))]
+        (nil? error) (add-classes "border-light-silver glow-green")
+        error (add-classes "border-orange border-width-2 pr4 glow-orange")
+        (seq value) (add-classes "has-value"))]
      [:div.orange.mtp2.mb1
       {:data-test (str data-test "-error")}
       (or (:long-message error) nbsp)]]))

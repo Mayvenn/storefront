@@ -44,25 +44,6 @@
   (when (= 13 (.-keyCode e))
     (.preventDefault e)))
 
-(defn change-text
-  ;; new style
-  ([keypath value]
-   {:value value
-    :on-change
-    (fn [e]
-      (handle-message events/control-change-state
-                      {:keypath keypath
-                       :value (.. e -target -value)}))})
-  ;; old style
-  ;; TODO: remove this signature when the last of the old forms are gone
-  ([app-state owner keypath]
-   {:value (get-in app-state keypath)
-    :on-change
-    (fn [e]
-      (handle-message events/control-change-state
-                      {:keypath keypath
-                       :value (.. e -target -value)}))}))
-
 (defn fake-href [event & [args]]
   {:href "#"
    :on-click (send-event-callback event args)})

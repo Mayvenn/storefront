@@ -5,12 +5,6 @@
   {:href (app-routes/path-for navigation-event args)})
 
 (defn noop-callback [e])
-(defn change-text
-  ;; new style
-  ([keypath value])
-  ;; old style
-  ;; TODO: remove this signature when the last of the old forms are gone
-  ([app-state owner keypath]))
 
 (defn fake-href [event & [args]]
   {:href "#"})
