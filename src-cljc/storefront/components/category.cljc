@@ -238,8 +238,7 @@
    (component/build reviews/reviews-summary-component reviews opts)])
 
 (defn taxon-uses-product-images [taxon-slug]
-  ;; TODO: can we remove "blonde"?
-  (#{"blonde" "closures" "frontals" "straight"} taxon-slug))
+  (#{"closures" "frontals" "straight"} taxon-slug))
 
 (def image-types ["model" "product" "social"])
 
