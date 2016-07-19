@@ -226,7 +226,6 @@
                      (experiments/determine-experiments data environment)
                      (experiments/determine-features data)
                      (assoc-in data keypaths/taxons (api/named-searches storeback-config))
-                     (assoc-in data keypaths/browse-taxon-query {:experiment-color-option-variation true}) ;; TODO: do we need this?
                      (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product     (redirect-product->canonical-url ctx req params)
