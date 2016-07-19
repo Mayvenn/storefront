@@ -1,4 +1,4 @@
-FROM java:8u66-jre
+FROM java:8u91-jre
 
 COPY storefront.jar storefront.jar
 
