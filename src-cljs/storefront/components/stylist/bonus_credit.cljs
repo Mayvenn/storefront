@@ -1,7 +1,6 @@
 (ns storefront.components.stylist.bonus-credit
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.navigation :as navigation]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
@@ -58,8 +57,7 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn stylist-bonuses-component [{:keys [navigate-hair-message
-                                         available-credit
+(defn stylist-bonuses-component [{:keys [available-credit
                                          award-amount
                                          milestone-amount
                                          progress-amount
@@ -108,7 +106,7 @@
 
                [:p.btn.mt1
                 [:a.navy
-                 (apply utils/route-to navigate-hair-message)
+                 (utils/route-to events/navigate-categories)
                  "Shop now " ui/rarr]]])])]
 
         [:.sm-up-col-right.sm-up-col-4
@@ -116,8 +114,7 @@
            (show-lifetime-total lifetime-total))]]]))))
 
 (defn stylist-bonuses-query [data]
-  {:navigate-hair-message (navigation/shop-now-navigation-message data)
-   :available-credit      (get-in data keypaths/user-total-available-store-credit)
+  {:available-credit      (get-in data keypaths/user-total-available-store-credit)
    :award-amount          (get-in data keypaths/stylist-bonuses-award-amount)
    :milestone-amount      (get-in data keypaths/stylist-bonuses-milestone-amount)
    :progress-amount       (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)

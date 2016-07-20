@@ -1,7 +1,6 @@
 (ns storefront.components.cart
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.navigation :as navigation]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.stylists :as stylists]
@@ -109,7 +108,7 @@
                                    [:div.flex-grow "Share your bag"]])
           [:div.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
-(defn empty-component [{:keys [shop-now-nav-message promotions]} owner]
+(defn empty-component [{:keys [promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -123,7 +122,7 @@
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/green-button (apply utils/route-to shop-now-nav-message)
+     (ui/green-button (utils/route-to events/navigate-categories)
                       "Shop Now")))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
@@ -157,8 +156,7 @@
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
 (defn empty-cart-query [data]
-  {:promotions           (get-in data keypaths/promotions)
-   :shop-now-nav-message (navigation/shop-now-navigation-message data)})
+  {:promotions           (get-in data keypaths/promotions)})
 
 (defn built-component [data owner]
   (om/component

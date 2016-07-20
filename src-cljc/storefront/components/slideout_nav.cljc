@@ -8,7 +8,6 @@
             [storefront.platform.messages :as messages]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.stylists :refer [own-store?]]
-            [storefront.accessors.navigation :as navigation]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.app-routes :as app-routes]))
 

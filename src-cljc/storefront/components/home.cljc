@@ -5,7 +5,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.navigation :as navigation]
             [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.events :as events]))
@@ -42,9 +41,9 @@
   (component/create
    [:div.home-container.m-auto.sans-serif.clearfix
     [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
-     (apply utils/route-to (navigation/shop-now-navigation-message data))]
+     (utils/route-to events/navigate-categories)]
     [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
-     (apply utils/route-to (navigation/shop-now-navigation-message data))]
+     (utils/route-to events/navigate-categories)]
     [:div.border.border-width-2.my3.py2.center.medium.green.border-green
      "Free Shipping + 30 Day Money Back Guarantee"]
 
@@ -56,7 +55,7 @@
      [:div.col.col-6.to-lg-hide
       [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
        (merge {:style {:height "300px"}}
-              (apply utils/route-to (navigation/shop-now-navigation-message data)))]
+              (utils/route-to events/navigate-categories))]
       [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
        {:style {:height "29px"}}
        "Introducing Peruvian In All Textures"]]]]))
