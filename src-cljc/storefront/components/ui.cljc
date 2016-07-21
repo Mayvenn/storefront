@@ -129,18 +129,26 @@
 
 (defn select-field [label keypath value options select-attributes]
   (let [option-text  first
-        option-value (comp str second)]
+        option-value (comp str second)
+        error (first (:errors select-attributes))]
     [:div.col-12.mb2.mx-auto
      [:div.relative.z1
-      [:select.col-12.h2.glow-green.absolute.border-none
-       (merge {:key         label
-               :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
-               :placeholder label
-               :value       value
-               :on-change   #(handle-message events/control-change-state
-                                             {:keypath keypath
-                                              :value   (selected-value %)})}
-              select-attributes)
+      (when error
+        [:div.absolute
+         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
+         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
+          {:style {:width "2.25rem" :height "2.25rem"}}]])
+      [:select.col-12.h2.glow-green.absolute
+       (cond-> (merge {:key         label
+                       :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
+                       :placeholder label
+                       :value       value
+                       :on-change   #(handle-message events/control-change-state
+                                                     {:keypath keypath
+                                                      :value   (selected-value %)})}
+                      select-attributes)
+         (nil? error) (add-classes "border-none")
+         error (add-classes "border-orange border-width-2 pr4 glow-orange"))
        (when-let [placeholder (:placeholder select-attributes)]
          [:option {:disabled "disabled"} placeholder])
        (for [option options]
@@ -150,11 +158,17 @@
           (option-text option)])]]
      [:div.bg-pure-white.border.border-light-silver.rounded.p1
       [:label.col-12.h6.navy.relative
-       {:for (name (:id select-attributes))}
+       (merge
+        {:for (name (:id select-attributes))}
+        (when error
+          {:class "orange"}))
        label]
       [:div.h3.black.relative
        (or (->> options (filter (comp #{(str value)} option-value)) first option-text)
-           nbsp)]]]))
+           nbsp)]]
+     [:div.orange.mtp2.mb1
+      {:data-test (str (:data-test select-attributes) "-error")}
+      (or (:long-message error) nbsp)]]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div

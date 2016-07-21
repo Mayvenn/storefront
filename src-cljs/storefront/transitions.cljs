@@ -337,9 +337,9 @@
         password-confirmation (get-in app-state keypaths/manage-account-password-confirmation)
         field-errors          (cond-> {}
                                 (not= password password-confirmation)
-                                (merge (group-by :path [{:path [:user :password-confirmation] :long-message "Passwords must match!"}]))
+                                (merge (group-by :path [{:path ["password-confirmation"] :long-message "Passwords must match!"}]))
                                 (> 6 (count password))
-                                (merge (group-by :path [{:path [:user :password] :long-message "New password must be at least 6 characters"}])))]
+                                (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
     (if (seq field-errors)
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (assoc-in app-state keypaths/errors {}))))
@@ -350,9 +350,9 @@
         password-confirmation (-> stylist-account :user :password-confirmation)
         field-errors          (cond-> {}
                                 (not= password password-confirmation)
-                                (merge (group-by :path [{:path [:stylist :user :password-confirmation] :long-message "Passwords must match!"}]))
+                                (merge (group-by :path [{:path ["user" "password-confirmation"] :long-message "Passwords must match!"}]))
                                 (> 6 (count password))
-                                (merge (group-by :path [{:path [:stylist :user :password] :long-message "New password must be at least 6 characters"}])))]
+                                (merge (group-by :path [{:path ["user" "password"] :long-message "New password must be at least 6 characters"}])))]
     (if (seq field-errors)
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (assoc-in app-state keypaths/errors {}))))

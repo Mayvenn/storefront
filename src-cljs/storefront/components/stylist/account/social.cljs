@@ -9,7 +9,8 @@
 
 (defn component [{:keys [saving?
                          instagram-account
-                         styleseat-account]} owner opts]
+                         styleseat-account
+                         field-errors]} owner opts]
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-social-submit)}
@@ -29,7 +30,8 @@
                       {:type      "text"
                        :name      "account-instagram"
                        :id        "account-instagram"
-                       :data-test "account-instagram"})]]
+                       :data-test "account-instagram"
+                       :error (get field-errors ["instagram_account"])})]]
 
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
@@ -43,7 +45,8 @@
                       {:type      "text"
                        :name      "account-styleseat"
                        :id        "account-styleseat"
-                       :data-test "account-styleseat"})]]]
+                       :data-test "account-styleseat"
+                       :error (get field-errors ["styleseat_account"])})]]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -55,4 +58,5 @@
 (defn query [data]
   {:saving?           (utils/requesting? data request-keys/update-stylist-account-social)
    :instagram-account (get-in data (conj keypaths/stylist-manage-account :instagram_account))
-   :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat_account))})
+   :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat_account))
+   :field-errors      (get-in data keypaths/field-errors)})

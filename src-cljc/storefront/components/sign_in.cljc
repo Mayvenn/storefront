@@ -13,7 +13,8 @@
            email
            password
            remember-me?
-           get-satisfaction-login?]} _ _]
+           get-satisfaction-login?
+           field-errors]} _ _]
   (component/create
    [:div.flex.flex-column.items-center.black.sans-serif.col-12.mt1
 
@@ -30,7 +31,8 @@
                      :type      "email"
                      :name      "email"
                      :data-test "user-email"
-                     :required  true})
+                     :required  true
+                     :errors    (get field-errors ["email"])})
 
      (ui/text-field "Password"
                     keypaths/sign-in-password
@@ -38,7 +40,8 @@
                     {:type      "password"
                      :name      "password"
                      :data-test "user-password"
-                     :required  true})
+                     :required  true
+                     :errors    (get field-errors ["password"])})
 
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})
@@ -71,7 +74,8 @@
    :password                (get-in data keypaths/sign-in-password)
    :remember-me?            (get-in data keypaths/sign-in-remember)
    :facebook-loaded?        (get-in data keypaths/loaded-facebook)
-   :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)})
+   :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)
+   :field-errors            (get-in data keypaths/field-errors)})
 
 (defn built-component [data owner opts]
   (component/create (component/build component (query data) nil)))

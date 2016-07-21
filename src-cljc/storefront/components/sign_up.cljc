@@ -9,6 +9,7 @@
 
 (defn component
   [{:keys [facebook-loaded?
+           field-errors
            email
            password
            password-confirmation]} _ _]
@@ -30,6 +31,7 @@
                      :type      "email"
                      :name      "email"
                      :data-test "user-email"
+                     :errors    (get field-errors ["email"])
                      :required  true})
 
      (ui/text-field "Password"
@@ -38,15 +40,17 @@
                     {:type      "password"
                      :name      "password"
                      :data-test "user-password"
+                     :errors    (get field-errors ["password"])
                      :required  true})
 
      (ui/text-field "Password Confirmation"
                     keypaths/sign-up-password-confirmation
                     password-confirmation
-                    {:type     "password"
-                     :name     "password-confirmation"
+                    {:type      "password"
+                     :name      "password-confirmation"
                      :data-test "user-password-confirmation"
-                     :required true})
+                     :errors    (get field-errors ["password_confirmation"])
+                     :required  true})
 
      (ui/submit-button "Sign Up"
                        {:data-test "user-submit"})
@@ -58,7 +62,8 @@
   {:email                 (get-in data keypaths/sign-up-email)
    :password              (get-in data keypaths/sign-up-password)
    :password-confirmation (get-in data keypaths/sign-up-password-confirmation)
-   :facebook-loaded?      (get-in data keypaths/loaded-facebook)})
+   :facebook-loaded?      (get-in data keypaths/loaded-facebook)
+   :field-errors          (get-in data keypaths/field-errors)})
 
 (defn built-component [app-state owner opts]
   (component/create (component/build component (query app-state) nil)))

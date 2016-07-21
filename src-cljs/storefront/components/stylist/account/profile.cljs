@@ -10,6 +10,7 @@
 (defn component [{:keys [saving?
                          address
                          user
+                         field-errors
                          birth-date
                          facebook]} owner opts]
   (component/create
@@ -26,6 +27,7 @@
                                    :type      "text"
                                    :name      "account-first-name"
                                    :data-test "account-first-name"
+                                   :errors    (get field-errors ["address" "firstname"])
                                    :id        "account-first-name"
                                    :class     "rounded-left"
                                    :required  true})]
@@ -37,6 +39,7 @@
                                    :name      "account-last-name"
                                    :id        "account-last-name"
                                    :data-test "account-last-name"
+                                   :errors    (get field-errors ["address" "lastname"])
                                    :class     "rounded-right border-width-left-0"
                                    :required  true})]]
 
@@ -49,6 +52,7 @@
                       :name      "account-phone"
                       :id        "account-phone"
                       :data-test "account-phone"
+                      :errors    (get field-errors ["address" "phone"])
                       :required  true})
 
       (ui/text-field "Email"
@@ -58,6 +62,7 @@
                       :name      "account-email"
                       :id        "account-email"
                       :data-test "account-email"
+                      :errors    (get field-errors ["user" "email"])
                       :required  true})
 
       [:div.flex.flex-column.items-center.col-12
@@ -68,6 +73,7 @@
                        :id        "account-birth-date"
                        :name      "account-birth-date"
                        :data-test "account-birth-date"
+                       :errors    (get field-errors ["birth_date"])
                        :required  true})]]
 
      [:div.my2.col-12.clearfix
@@ -81,8 +87,9 @@
       (component/build facebook/messenger-business-opt-in-component facebook nil)]]]))
 
 (defn query [data]
-  {:saving?    (utils/requesting? data request-keys/update-stylist-account-profile)
-   :address    (get-in data (conj keypaths/stylist-manage-account :address))
-   :birth-date (get-in data (conj keypaths/stylist-manage-account :birth-date))
-   :user       (get-in data (conj keypaths/stylist-manage-account :user))
-   :facebook   (facebook/query data)})
+  {:saving?      (utils/requesting? data request-keys/update-stylist-account-profile)
+   :address      (get-in data (conj keypaths/stylist-manage-account :address))
+   :birth-date   (get-in data (conj keypaths/stylist-manage-account :birth-date))
+   :user         (get-in data (conj keypaths/stylist-manage-account :user))
+   :field-errors (get-in data keypaths/field-errors)
+   :facebook     (facebook/query data)})

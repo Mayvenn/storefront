@@ -7,7 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [reset-password reset-password-confirmation loaded-facebook?]} owner]
+(defn component [{:keys [reset-password reset-password-confirmation loaded-facebook? field-errors]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -19,13 +19,14 @@
                      reset-password
                      {:type       "password"
                       :required   true
-                      :min-length 6})
+                      :min-length 6
+                      :errors     (get field-errors ["password"])})
       (ui/text-field "Password Confirmation"
                      keypaths/reset-password-password-confirmation
                      reset-password-confirmation
-                     {:type       "password"
-                      :required   true
-                      :min-length 6})
+                     {:type     "password"
+                      :required true
+                      :errors   (get field-errors ["password_confirmation"])})
 
       (ui/submit-button "Update")]
      [:.h4.center.gray.light.my2 "OR"]
@@ -34,7 +35,8 @@
 (defn query [data]
   {:reset-password              (get-in data keypaths/reset-password-password)
    :reset-password-confirmation (get-in data keypaths/reset-password-password-confirmation)
-   :loaded-facebook?            (get-in data keypaths/loaded-facebook)})
+   :loaded-facebook?            (get-in data keypaths/loaded-facebook)
+   :field-errors                (get-in data keypaths/field-errors)})
 
 (defn built-component [data owner]
   (om/component (html (om/build component (query data)))))

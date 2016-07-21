@@ -7,7 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [email facebook-loaded?]} owner opts]
+(defn component [{:keys [email facebook-loaded? field-errors]} owner opts]
   (component/create
    (ui/narrow-container
     [:div.h2.center.my2 "Reset your forgotten password"]
@@ -21,7 +21,8 @@
                     {:autofocus "autofocus"
                      :type "email"
                      :name "email"
-                     :required true})
+                     :required true
+                     :errors (get field-errors ["email"])})
 
      (ui/submit-button "Reset my password")]
 
@@ -31,7 +32,8 @@
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)
-   :email            (get-in data keypaths/forgot-password-email)})
+   :email            (get-in data keypaths/forgot-password-email)
+   :field-errors (get-in data keypaths/field-errors)})
 
 (defn built-component [data owner opts]
   (component/create (component/build component (query data) nil)))

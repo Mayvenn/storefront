@@ -9,8 +9,25 @@
             [storefront.cache :as c]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [clojure.string :as str]))
 
+(defn is-rails-style? [resp]
+  (or (seq (:error resp))
+      (seq (:errors resp))))
+
+(defn convert-to-paths [errors]
+  (for [[error-key error-messages] errors
+        error-message error-messages]
+    {:path (str/split (name error-key) #"\.")
+     :long-message error-message}))
+
+(defn rails-style->std-error [{:keys [error errors]}]
+  {:error-message (if errors
+                    "Oops! Please fix the errors below."
+                    (or error "Something went wrong, please try again or call customer service."))
+   :error-code (if errors "invalid-input" "generic-error")
+   :field-errors (when errors (convert-to-paths errors))})
 
 ;; New Error Schema form, coerce all stranger ones to this:
 ;; {:field-errors [{:path ["referrals" 0 "phone"] :long-message "must be 10 digits"} ...]
@@ -35,13 +52,8 @@
                                 :error-message "Oops! Please fix the errors below."})
 
       ;; standard rails error response
-      (or (seq (:error response-body))
-          (seq (:errors response-body)))
-      (messages/handle-message events/api-failure-validation-errors
-                               (-> response-body
-                                   (select-keys [:error :errors])
-                                   (rename-keys {:error :error-message
-                                                 :errors :details})))
+      (is-rails-style? response-body)
+      (messages/handle-message events/api-failure-errors (rails-style->std-error response-body))
 
       ;; standard rails validation errors
       (seq (:exception response-body))

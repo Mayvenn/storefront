@@ -16,7 +16,8 @@
                          zipcode
                          city
                          state-id
-                         states]} owner opts]
+                         states
+                         field-errors]} owner opts]
   (component/create
    [:form
     {:on-submit
@@ -31,6 +32,7 @@
                        payout-methods
                        {:id        "payout-method"
                         :data-test "payout-method"
+                        :errors    (get field-errors ["chosen_payout_method"])
                         :required  true})
 
       (condp = payout-method
@@ -41,6 +43,7 @@
                                         :name      "venmo-phone"
                                         :id        "venmo-phone"
                                         :data-test "venmo-phone"
+                                        :errors    (get field-errors ["venmo_payout_attributes" "phone"])
                                         :required  true})
         "paypal"        (ui/text-field "PayPal Email"
                                        (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
@@ -49,6 +52,7 @@
                                         :name      "paypal-email"
                                         :id        "paypal-email"
                                         :data-test "paypal-email"
+                                        :errors    (get field-errors ["paypal_payout_attributes" "email"])
                                         :required  true})
         "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address entered here"]
         "check"         [:p.ml1.mb3 "Checks will mail to the address entered here"]
@@ -66,6 +70,7 @@
                       :name      "account-address1"
                       :id        "account-address1"
                       :data-test "account-address1"
+                      :errors    (get field-errors ["address" "address1"])
                       :required  true})
 
       [:div.flex.col-12
@@ -76,6 +81,7 @@
                                    :name      "account-address2"
                                    :data-test "account-address2"
                                    :id        "account-address2"
+                                   :errors    (get field-errors ["address" "address2"])
                                    :class     "rounded-left"})]
 
        [:div.col-6 (ui/text-field "Zip Code"
@@ -86,6 +92,7 @@
                                    :id        "account-zipcode"
                                    :data-test "account-zipcode"
                                    :class     "rounded-right border-width-left-0"
+                                   :errors    (get field-errors ["address" "zipcode"])
                                    :required  true})]]
 
       (ui/text-field "City"
@@ -95,6 +102,7 @@
                       :name      "account-city"
                       :id        "account-city"
                       :data-test "account-city"
+                      :errors    (get field-errors ["address" "city"])
                       :required  true})
 
       (ui/select-field "State"
@@ -104,6 +112,7 @@
                        {:id          :account-state
                         :data-test   "account-state"
                         :placeholder "State"
+                        :errors      (get field-errors ["address" "state"])
                         :required    true})]]
 
     [:div.my2.col-12.clearfix
@@ -130,4 +139,5 @@
    :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
    :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
    :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state_id))
-   :states         (map (juxt :name :id) (get-in data keypaths/states))})
+   :states         (map (juxt :name :id) (get-in data keypaths/states))
+   :field-errors   (get-in data keypaths/field-errors)})
