@@ -1,7 +1,8 @@
 (ns storefront.accessors.orders)
 
 (defn incomplete? [order]
-  (-> order :state #{"cart"} boolean))
+  (and (-> order :state #{"cart"} boolean)
+       (not (:frozen? order))))
 
 (defn line-items
   "Returns line items from an order hashmap.

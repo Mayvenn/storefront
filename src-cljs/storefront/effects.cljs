@@ -405,11 +405,6 @@
                           (get-in app-state keypaths/user)
                           remember?)))
 
-(defmethod perform-effects events/api-handle-order-not-found [_ _ _ app-state]
-  (cookie-jar/save-order (get-in app-state keypaths/cookie)
-                         (get-in app-state keypaths/order)
-                         false))
-
 (defmethod perform-effects events/control-account-profile-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (api/update-account (get-in app-state keypaths/user-id)

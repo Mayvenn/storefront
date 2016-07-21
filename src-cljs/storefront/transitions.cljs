@@ -450,9 +450,6 @@
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
   (assoc-in app-state keypaths/pending-promo-code nil))
 
-(defmethod transition-state events/api-handle-order-not-found [_ _ _ app-state]
-  (assoc-in app-state keypaths/order nil))
-
 (defmethod transition-state events/flash-show-success [_ event args app-state]
   (-> app-state
       clear-flash

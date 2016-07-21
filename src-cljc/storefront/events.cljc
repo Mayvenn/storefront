@@ -178,9 +178,6 @@
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-stylist-account-photo-too-large)
 
-(defpath api-handle)
-(defpath api-handle-order-not-found)
-
 (defpath flash)
 (defpath flash-show)
 (defpath flash-dismiss)

@@ -74,10 +74,6 @@
       (is-rails-exception? response-body)
       (messages/handle-message events/api-failure-errors (rails-exception->std-error response-body))
 
-      ;; kill order cookies if no order is found
-      (= "order-not-found" (:error-code response-body))
-      (messages/handle-message events/api-handle-order-not-found response)
-
       (waiter-style? response-body)
       (messages/handle-message events/api-failure-errors (waiter-style->std-error response-body))
 
