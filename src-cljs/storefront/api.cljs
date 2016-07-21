@@ -11,6 +11,12 @@
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]))
 
+
+;; New Error Schema form, coerce all stranger ones to this:
+;; {:field-errors [{:path ["referrals" 0 "phone"] :long-message "must be 10 digits"} ...]
+;;  :error-code "invalid-input" ;; sort of up to the backend
+;;  :error-message "There are invalid inputs"}
+
 (defn default-error-handler [response]
   (let [response-body (get-in response [:response :body])]
     (cond
@@ -24,7 +30,9 @@
 
       (= (:error-schema response-body) 3)
       (messages/handle-message events/api-failure-errors
-                               (-> response-body :errors))
+                               {:field-errors (-> response-body :errors)
+                                :error-code "invalid-input"
+                                :error-message "Oops! Please fix the errors below."})
 
       ;; standard rails error response
       (or (seq (:error response-body))

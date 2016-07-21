@@ -149,7 +149,8 @@
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 
-(defn refer-component [{:keys [bonus-amount earning-amount referrals errors flash-failure]}
+(defn refer-component [{:keys [bonus-amount earning-amount referrals flash-failure]
+                        {:keys [field-errors] :as errors} :errors}
                        owner
                        {:keys [on-close]}]
   (om/component
@@ -163,7 +164,7 @@
                    (flash/error-box
                     {:data-test "form-errors"}
                     [:div.px2
-                     (when (seq errors) "Oops! Please fix the errors below.")
+                     (when (seq errors) (:error-message errors))
                      " "
                      (when flash-failure flash-failure)])])
                 [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
@@ -188,7 +189,7 @@
                                              :data-test (str "referral-fullname-" idx)
                                              :id        (str "referral-fullname-" idx)
                                              :class     "rounded"
-                                             :errors    (get errors ["referrals" idx "fullname"])
+                                             :errors    (get field-errors ["referrals" idx "fullname"])
                                              :required  true})]
                    [:.col-12 (ui/text-field "Mobile Phone (required)"
                                             (conj keypaths/stylist-referrals idx :phone)
@@ -198,7 +199,7 @@
                                              :id        (str "referral-phone-" idx)
                                              :data-test (str "referral-phone-" idx)
                                              :class     "rounded"
-                                             :errors    (get errors ["referrals" idx "phone"])
+                                             :errors    (get field-errors ["referrals" idx "phone"])
                                              :required  true})]
                    [:.col-12 (ui/text-field "Email"
                                             (conj keypaths/stylist-referrals idx :email)
@@ -207,7 +208,7 @@
                                              :name      (str "referrals[" idx "][email]")
                                              :id        (str "referral-email-" idx)
                                              :data-test (str "referral-email-" idx)
-                                             :errors    (get errors ["referrals" idx "email"])
+                                             :errors    (get field-errors ["referrals" idx "email"])
                                              :class     "rounded"})]])
                 (when (< (count referrals) 5)
                   [:.py3.border-top.border-light-silver

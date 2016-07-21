@@ -8,7 +8,7 @@
 
 (defn component [{:keys [password
                          confirmation
-                         errors
+                         field-errors
                          saving?]} owner opts]
   (component/create
    [:form {:on-submit
@@ -23,7 +23,7 @@
                      :name      "account-password"
                      :id        "account-password"
                      :data-test "account-password"
-                     :errors (get errors [:stylist :user :password])})
+                     :errors (get field-errors [:stylist :user :password])})
 
      (ui/text-field "Re-type New Password"
                     (conj keypaths/stylist-manage-account :user :password-confirmation)
@@ -32,7 +32,7 @@
                      :name      "account-password-confirmation"
                      :id        "account-password-confirmation"
                      :data-test "account-password-confirmation"
-                     :errors (get errors [:stylist :user :password-confirmation])})]
+                     :errors (get field-errors [:stylist :user :password-confirmation])})]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -45,4 +45,4 @@
   {:saving?      (utils/requesting? data request-keys/update-stylist-account-password)
    :password     (get-in data (conj keypaths/stylist-manage-account :user :password))
    :confirmation (get-in data (conj keypaths/stylist-manage-account :user :password-confirmation))
-   :errors       (get-in data keypaths/errors)})
+   :field-errors (get-in data keypaths/field-errors)})

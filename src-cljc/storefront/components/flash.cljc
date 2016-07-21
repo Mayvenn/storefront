@@ -61,7 +61,7 @@
              [:div.px2 (field->human-name field) " " error])
            [:ul.m0.ml1.px2
             (for [[field-index [field errors]] (map-indexed vector (sort-by first validation-errors))
-                  [error-index error]          (map-indexed vector errors)]
+                  [error-index error]          (map-indexed vector (:field-errors errors))]
               [:li {:key (str field-index "-" error-index)} (field->human-name field) " " error])]))
 
         (or validation-message failure)
@@ -74,7 +74,7 @@
         (error-box
          {:data-test "flash-error"}
          [:div.px2 {:style {:line-height flash-line-height}}
-          "Oops! Please fix the errors below."])
+          (:error-message errors)])
 
         success
         (success-box

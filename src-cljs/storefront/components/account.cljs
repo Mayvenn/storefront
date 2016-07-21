@@ -15,8 +15,8 @@
    [:div.green.h0 (ui/big-money available-credit)]])
 
 (defn profile-component [{:keys [saving?
-                                 errors
                                  email
+                                 field-errors
                                  password
                                  confirmation]} owner opts]
   (component/create
@@ -41,7 +41,7 @@
                      :name      "account-password"
                      :id        "account-password"
                      :data-test "account-password"
-                     :errors (get errors [:user :password])})
+                     :errors (get field-errors [:user :password])})
 
      (ui/text-field "Re-type New Password"
                     keypaths/manage-account-password-confirmation
@@ -50,7 +50,7 @@
                      :name      "account-password-confirmation"
                      :id        "account-password-confirmation"
                      :data-test "account-password-confirmation"
-                     :errors (get errors [:user :password-confirmation])})]
+                     :errors (get field-errors [:user :password-confirmation])})]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -64,7 +64,7 @@
    :email        (get-in data keypaths/manage-account-email)
    :password     (get-in data keypaths/manage-account-password)
    :confirmation (get-in data keypaths/manage-account-password-confirmation)
-   :errors       (get-in data keypaths/errors)})
+   :field-errors (get-in data keypaths/field-errors)})
 
 (defn component [{:keys [current-nav-event
                          available-credit

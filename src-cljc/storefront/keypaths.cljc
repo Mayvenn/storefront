@@ -192,6 +192,9 @@
 (def validation-errors-details (conj validation-errors :details))
 
 (def errors (conj ui :errors))
+(def field-errors (conj errors :field-errors))
+(def error-message (conj errors :error-message))
+(def error-code (conj errors :error-code))
 
 (def review-components-count (conj ui :review-components-count))
 
