@@ -444,7 +444,9 @@
   (update-in app-state keypaths/api-cache merge new-data))
 
 (defmethod transition-state events/api-failure-errors [_ event errors app-state]
-  (assoc-in app-state keypaths/errors (update errors :field-errors (partial group-by :path))))
+  (-> app-state
+      clear-flash
+      (assoc-in keypaths/errors (update errors :field-errors (partial group-by :path)))))
 
 (defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
   (-> app-state

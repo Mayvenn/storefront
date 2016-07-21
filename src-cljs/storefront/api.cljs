@@ -29,6 +29,19 @@
    :error-code (if errors "invalid-input" "generic-error")
    :field-errors (when errors (convert-to-paths errors))})
 
+(defn waiter-style? [resp]
+  (seq (:error-code resp)))
+
+(defn waiter-style->std-error [{:keys [error-message error-code details]}]
+  {:error-message error-message
+   :error-code error-code
+   :field-errors (when details (convert-to-paths details))})
+
+(defn schema-3-style->std-error [resp]
+  {:field-errors (-> resp :errors)
+   :error-code "invalid-input"
+   :error-message "Oops! Please fix the errors below."})
+
 ;; New Error Schema form, coerce all stranger ones to this:
 ;; {:field-errors [{:path ["referrals" 0 "phone"] :long-message "must be 10 digits"} ...]
 ;;  :error-code "invalid-input" ;; sort of up to the backend
@@ -46,10 +59,7 @@
       (messages/handle-message events/api-failure-no-network-connectivity response)
 
       (= (:error-schema response-body) 3)
-      (messages/handle-message events/api-failure-errors
-                               {:field-errors (-> response-body :errors)
-                                :error-code "invalid-input"
-                                :error-message "Oops! Please fix the errors below."})
+      (messages/handle-message events/api-failure-errors (schema-3-style->std-error response-body))
 
       ;; standard rails error response
       (is-rails-style? response-body)
@@ -64,10 +74,8 @@
       (= "order-not-found" (:error-code response-body))
       (messages/handle-message events/api-handle-order-not-found response)
 
-      ;; Standard waiter response
-      (seq (:error-code response-body))
-      (messages/handle-message events/api-failure-validation-errors
-                               (select-keys response-body [:error-message :details]))
+      (waiter-style? response-body)
+      (messages/handle-message events/api-failure-errors (waiter-style->std-error response-body))
 
       :else
       (messages/handle-message events/api-failure-bad-server-response response))))
