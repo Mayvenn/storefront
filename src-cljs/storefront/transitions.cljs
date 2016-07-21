@@ -27,7 +27,6 @@
   (-> app-state
       (assoc-in keypaths/flash-success nil)
       (assoc-in keypaths/flash-failure nil)
-      (assoc-in keypaths/validation-errors {:error-message nil :details {}})
       (assoc-in keypaths/errors {})))
 
 (defmulti transition-state identity)
@@ -447,11 +446,6 @@
   (-> app-state
       clear-flash
       (assoc-in keypaths/errors (update errors :field-errors (partial group-by :path)))))
-
-(defmethod transition-state events/api-failure-validation-errors [_ event validation-errors app-state]
-  (-> app-state
-      clear-flash
-      (assoc-in keypaths/validation-errors validation-errors)))
 
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
   (assoc-in app-state keypaths/pending-promo-code nil))

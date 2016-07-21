@@ -16,6 +16,9 @@
   (or (seq (:error resp))
       (seq (:errors resp))))
 
+(defn is-rails-exception? [resp]
+  (seq (:exception resp)))
+
 (defn convert-to-paths [errors]
   (for [[error-key error-messages] errors
         error-message error-messages]
@@ -23,11 +26,15 @@
      :long-message error-message}))
 
 (defn rails-style->std-error [{:keys [error errors]}]
-  {:error-message (if errors
-                    "Oops! Please fix the errors below."
-                    (or error "Something went wrong, please try again or call customer service."))
+  {:error-message (or error "Something went wrong. Please refresh and try again or contact customer service.")
    :error-code (if errors "invalid-input" "generic-error")
    :field-errors (when errors (convert-to-paths errors))})
+
+
+(defn rails-exception->std-error [resp]
+  {:error-message "Something went wrong. Please refresh and try again or contact customer service."
+   :error-code "backend-exception"
+   :field-errors nil})
 
 (defn waiter-style? [resp]
   (seq (:error-code resp)))
@@ -61,14 +68,11 @@
       (= (:error-schema response-body) 3)
       (messages/handle-message events/api-failure-errors (schema-3-style->std-error response-body))
 
-      ;; standard rails error response
       (is-rails-style? response-body)
       (messages/handle-message events/api-failure-errors (rails-style->std-error response-body))
 
-      ;; standard rails validation errors
-      (seq (:exception response-body))
-      (messages/handle-message events/api-failure-validation-errors
-                               {:details {"" [(:exception response-body)]}})
+      (is-rails-exception? response-body)
+      (messages/handle-message events/api-failure-errors (rails-exception->std-error response-body))
 
       ;; kill order cookies if no order is found
       (= "order-not-found" (:error-code response-body))

@@ -716,9 +716,6 @@
 (defmethod perform-effects events/flash-show [_ event args app-state]
   (scroll/snap-to-top))
 
-(defmethod perform-effects events/api-failure-validation-errors [_ event validation-errors app-state]
-  (scroll/snap-to-top))
-
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 

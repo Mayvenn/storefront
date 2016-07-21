@@ -187,10 +187,6 @@
 
 (def stylist-referrals (conj stylist :referrals))
 
-(def validation-errors (conj ui :validation-errors))
-(def validation-errors-message (conj validation-errors :error-message))
-(def validation-errors-details (conj validation-errors :details))
-
 (def errors (conj ui :errors))
 (def field-errors (conj errors :field-errors))
 (def error-message (conj errors :error-message))

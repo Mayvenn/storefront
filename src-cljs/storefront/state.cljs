@@ -124,8 +124,6 @@
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
           :previous-navigation-message []
-          :validation-errors {:error-message nil
-                              :details {}}
           :errors {}
           :browse-taxon-query {}
           :browse-variant-quantity 1
