@@ -714,8 +714,13 @@
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
-(defmethod perform-effects events/api-failure-errors [_ event args app-state]
-  (scroll/snap-to-top))
+(defmethod perform-effects events/api-failure-errors [_ event errors app-state]
+  (condp = (:error-code errors)
+    "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event) events/navigate-checkout-confirmation)
+                            (routes/enqueue-redirect events/navigate-checkout-payment)
+                            (handle-later events/api-failure-errors errors)
+                            (scroll/snap-to-top))
+    (scroll/snap-to-top)))
 
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event args app-state]
   (save-cookie app-state)
