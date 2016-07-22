@@ -315,11 +315,12 @@
    PUT
    "/users"
    request-keys/update-account
-   {:params {:id                    id
-             :email                 email
-             :password              password
-             :password_confirmation password-confirmation
-             :token                 token}
+   {:params (merge  {:id    id
+                     :email email
+                     :token token}
+                    (when (or (seq password) (seq password-confirmation))
+                      {:password              password
+                       :password_confirmation password-confirmation}))
     :handler
     #(messages/handle-message events/api-success-manage-account
                               (select-sign-in-keys %))}))

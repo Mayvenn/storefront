@@ -339,7 +339,7 @@
                                 (merge (group-by :path [{:path ["password-confirmation"] :long-message "Passwords must match!"}]))
                                 (> 6 (count password))
                                 (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
-    (if (seq field-errors)
+    (if (and (or (seq password) (seq password-confirmation)) (seq field-errors))
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (assoc-in app-state keypaths/errors {}))))
 
