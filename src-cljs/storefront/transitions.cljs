@@ -357,7 +357,9 @@
       (assoc-in app-state keypaths/errors {}))))
 
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
-  (assoc-in app-state keypaths/popup nil))
+  (-> app-state
+      clear-flash
+      (assoc-in keypaths/popup nil)))
 
 (defmethod transition-state events/api-success-get-order [_ event order app-state]
   (if (orders/incomplete? order)
