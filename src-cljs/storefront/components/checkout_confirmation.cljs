@@ -41,7 +41,6 @@
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
                                                {:place-order? requires-additional-payment?})}
-        (summary/display-order-summary order)
         (when requires-additional-payment?
           [:div
            (ui/note-box
@@ -50,6 +49,7 @@
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
            (om/build checkout-payment/credit-card-form-component payment)])
+        (summary/display-order-summary order)
         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                          :disabled? updating-shipping?
                                          :data-test "confirm-form-submit"})]]]))))
