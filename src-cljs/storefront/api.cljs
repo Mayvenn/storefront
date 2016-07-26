@@ -672,7 +672,7 @@
   (api-req
    POST
    "/leads/referrals"
-   request-keys/create-shared-cart
+   request-keys/send-referrals
    {:params referral
     :handler #(messages/handle-message events/api-success-send-stylist-referrals
                                       {:referrals %})}))
