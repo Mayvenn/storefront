@@ -75,7 +75,7 @@
     [:div.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div.ml3
-       (store-credit available-credit)]]
+       (when (pos? available-credit) (store-credit available-credit))]]
 
      [:div.bg-white.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}
