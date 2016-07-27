@@ -17,7 +17,43 @@
   ([cnt singular plural]
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
 
-(defn share-link-component [{:keys [share-url]} owner {:keys [on-close]}]
+(defn share-icon [icon-class]
+  [:div.bg-no-repeat.bg-center.bg-full
+   {:style {:height "30px" :width "70px"}
+    :class icon-class}])
+
+(defn sms-link [share-url]
+  ;; the ?& is to get this to work on iOS8 and Android at the same time
+  (str "sms:?&body="
+       (js/encodeURIComponent "Shop the bundles I picked for you here: ")
+       share-url))
+
+(defn twitter-link [share-url]
+  (str "https://twitter.com/intent/tweet?url="
+       share-url "&text="
+       (js/encodeURIComponent "Shop my top virgin hair bundle picks here:")
+       "&hashtags=mayvennhair"))
+
+(defn email-link [share-url store-nickname]
+  (str "mailto:?Subject="
+       (js/encodeURIComponent "My recommended bundles for you")
+       "&body="
+       (js/encodeURIComponent (str "Hey,
+
+I have created a ready-to-shop cart with all the bundles I recommend for you. Mayvenn is my top pick for the best quality virgin human hair, and they offer a totally free 30 day exchange program, should you have any issues with your hair at all. All you have to do is click the link I have included and check out.
+
+Shop here: "
+                                   share-url
+
+                                   "
+
+Let me know if you have any questions.
+
+Thanks,
+"
+                                   store-nickname))))
+
+(defn share-link-component [{:keys [share-url store-nickname]} owner {:keys [on-close]}]
   (om/component
    (html
     (ui/modal {:on-close on-close}
@@ -25,17 +61,27 @@
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h2.navy.medium "Share your bag"]
-                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-                [:.border-top.border-bottom.border-light-silver.py2
-                 [:input.border.border-light-gray.rounded.pl1.py2.bg-pure-white.green.col-12
+                [:.h4.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.border-top.border-bottom.border-light-silver.py2.flex.justify-center
+                 [:a.mx1 {:href (str "https://www.facebook.com/sharer/sharer.php?u=" share-url) :target "_blank"}
+                  (share-icon "img-fb-share")]
+                 [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
+                  (share-icon "img-twitter-share")]
+                 [:a.mx1.md-up-hide {:href (sms-link share-url)}
+                  (share-icon "img-sms-share")]
+                 [:a.mx1 {:href (email-link share-url store-nickname)}
+                  (share-icon "img-email-share")]]
+                [:div.mt3.mb1
+                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.green.col-12.h6
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
                    :on-click utils/select-all-text}]]
-                [:.navy.my2 "(select and copy link to share)"]]]))))
+                [:div.navy.h6 "(select and copy link to share)"]]]))))
 
 (defn query-share-link [data]
-  {:share-url (get-in data keypaths/shared-cart-url)})
+  {:share-url (get-in data keypaths/shared-cart-url)
+   :store-nickname (:store_nickname (get-in data keypaths/store))})
 
 (defn full-component [{:keys [order
                               products

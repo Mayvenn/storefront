@@ -51,3 +51,8 @@
 .img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
 .img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
 .img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
+
+.img-fb-share { background-image: url('/images/share/fb.png'); }
+.img-twitter-share { background-image: url('/images/share/twitter.png'); }
+.img-sms-share { background-image: url('/images/share/sms.png'); }
+.img-email-share { background-image: url('/images/share/email.png'); }
