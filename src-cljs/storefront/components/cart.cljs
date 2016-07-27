@@ -40,7 +40,7 @@
        "&body="
        (js/encodeURIComponent (str "Hey,
 
-I've created a ready-to-shop cart with all the bundles I recommend for you. Mayvenn is my pick for the quality virgin human hair. They offer a totally free 30 day exchange program (if you have any issues with your hair at all). All you have to do is click the link below to check out.
+I've created a ready-to-shop cart with the bundles I recommend for you. Mayvenn is my pick for the quality virgin human hair. They offer a totally free 30 day exchange program (if you have any issues with your hair at all). All you have to do is click the link below to check out.
 
 Shop here: "
                                    share-url
