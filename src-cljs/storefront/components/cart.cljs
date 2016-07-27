@@ -72,12 +72,12 @@ Thanks,
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]
                 [:div.mt3.mb1
-                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.green.col-12.h6
+                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.green.col-12
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
                    :on-click utils/select-all-text}]]
-                [:div.navy.h6 "(select and copy link to share)"]]]))))
+                [:div.navy "(select and copy link to share)"]]]))))
 
 (defn query-share-link [data]
   {:share-url (get-in data keypaths/shared-cart-url)
