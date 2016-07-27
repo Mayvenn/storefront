@@ -190,23 +190,3 @@
   (if (experiments/footer-redesign? app-state)
     (experimental-component (query app-state))
     (component/build original-component (original-query app-state) nil)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
