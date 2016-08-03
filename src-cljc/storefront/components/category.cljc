@@ -75,7 +75,7 @@
    (number->words quantity)
    " "
    ;; TODO keys need to be renamed in cellar at some point
-   (products/summary (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))])
+   (products/product-title (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))])
 
 (def checkout-button
   (component/html

@@ -65,7 +65,7 @@
       :style {:width  "7.33em"
               :height "7.33em"}}]]
    [:.overflow-hidden.h4.black.p1
-    [:a.black.medium.titleize (products/summary line-item)]
+    [:a.black.medium.titleize (products/product-title line-item)]
     [:.mt1.h5.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
