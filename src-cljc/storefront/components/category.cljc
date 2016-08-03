@@ -3,11 +3,13 @@
             [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.products :as products]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
+            [clojure.set :as set]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.events :as events]
@@ -72,10 +74,8 @@
    "Added to bag: "
    (number->words quantity)
    " "
-   (some-> variant :variant_attrs :length)
-   " "
-   ;; TODO: could this be products/summary? (it only needs a variant)
-   (:name product)])
+   ;; TODO keys need to be renamed in cellar at some point
+   (products/summary (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))])
 
 (def checkout-button
   (component/html
