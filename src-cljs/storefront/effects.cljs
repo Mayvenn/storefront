@@ -517,7 +517,8 @@
                (get-in keypaths/order)
                (select-keys [:token :number])
                (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
-               (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))
+               (assoc-in [:cart-payments :stripe :source] (:id stripe-response))
+               (assoc-in [:cart-payments :stripe :save?] (get-in app-state keypaths/checkout-credit-card-save)))
     :navigate events/navigate-checkout-confirmation
     :place-order? (:place-order? stripe-response)}))
 
