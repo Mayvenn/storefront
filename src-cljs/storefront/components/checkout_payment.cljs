@@ -29,7 +29,7 @@
                      {:name      "name"
                       :data-test "payment-form-name"
                       :required  true})
-      (ui/text-field "Credit Card Number"
+      (ui/text-field "Card Number"
                      keypaths/checkout-credit-card-number
                      (cc/format-cc-number number)
                      {:max-length    19
@@ -61,7 +61,7 @@
        [:label.light-gray
         [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
                            {:type "checkbox"})]
-        "Save my credit card for easier checkouts."]]]])))
+        "Save my card for easier checkouts."]]]])))
 
 (defn credit-card-form-query [data]
   {:credit-card {:name              (get-in data keypaths/checkout-credit-card-name)
@@ -101,7 +101,7 @@
           [:div
            (om/build credit-card-form-component {:credit-card credit-card})
            [:.h4.light-gray
-            "You can review your order on the next page before we charge your credit card."]])
+            "You can review your order on the next page before we charge your card."]])
 
         (when loaded-stripe?
           [:.my2
