@@ -1,6 +1,5 @@
 (ns storefront.components.stylist.account.profile
   (:require [storefront.component :as component]
-            [storefront.components.facebook-messenger :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -11,8 +10,7 @@
                          address
                          user
                          field-errors
-                         birth-date
-                         facebook]} owner opts]
+                         birth-date]} owner opts]
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-profile-submit)}
@@ -81,15 +79,11 @@
       [:div.border-dark-white.border-top.to-md-hide.mb3]
       [:div.col-12.md-up-col-5.mx-auto
        (ui/submit-button "Update" {:spinning? saving?
-                                   :data-test "account-form-submit"})]]
-
-     [:div.my3
-      (component/build facebook/messenger-business-opt-in-component facebook nil)]]]))
+                                   :data-test "account-form-submit"})]]]]))
 
 (defn query [data]
   {:saving?      (utils/requesting? data request-keys/update-stylist-account-profile)
    :address      (get-in data (conj keypaths/stylist-manage-account :address))
    :birth-date   (get-in data (conj keypaths/stylist-manage-account :birth-date))
    :user         (get-in data (conj keypaths/stylist-manage-account :user))
-   :field-errors (get-in data keypaths/field-errors)
-   :facebook     (facebook/query data)})
+   :field-errors (get-in data keypaths/field-errors)})

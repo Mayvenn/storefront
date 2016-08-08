@@ -148,7 +148,6 @@
 (defpath api-success-stylist-referral-program)
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
-(defpath api-success-messenger-token)
 
 (defpath api-success-add-to-bag)
 (defpath api-success-remove-from-bag)

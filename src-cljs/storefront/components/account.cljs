@@ -2,7 +2,6 @@
   (:require [storefront.component :as component]
             [storefront.request-keys :as request-keys]
             [storefront.components.ui :as ui]
-            [storefront.components.facebook-messenger :as facebook]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.tabs :as tabs]
             [storefront.platform.component-utils :as utils]

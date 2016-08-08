@@ -17,7 +17,6 @@
 (def user-store-slug (conj user :store-slug))
 (def user-id (conj user :id))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
-(def user-messenger-token (conj user :messenger-token))
 
 (def order [:order])
 (def order-total (conj order :total))

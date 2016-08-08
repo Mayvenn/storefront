@@ -372,9 +372,6 @@
                          (orders/shipping-item order))))
     (assoc-in app-state keypaths/order {})))
 
-(defmethod transition-state events/api-success-messenger-token [_ event {:keys [messenger_token]} app-state]
-  (assoc-in app-state keypaths/user-messenger-token messenger_token))
-
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
       (sign-in-user args)

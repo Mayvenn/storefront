@@ -139,10 +139,6 @@
   (when-not (get-in app-state keypaths/user-token)
     (routes/enqueue-redirect events/navigate-sign-in)))
 
-(defmethod perform-effects events/navigate-account-manage [_ event args app-state]
-  (api/get-messenger-token (get-in app-state keypaths/user-id) (get-in app-state keypaths/user-token))
-  (facebook/insert))
-
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/user-token))
@@ -158,8 +154,6 @@
     :else nil))
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args app-state]
-  (api/get-messenger-token (get-in app-state keypaths/user-id) (get-in app-state keypaths/user-token))
-  (facebook/insert)
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account user-token)))

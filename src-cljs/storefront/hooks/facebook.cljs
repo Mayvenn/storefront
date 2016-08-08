@@ -39,6 +39,3 @@
 
 (defn start-reset [app-state]
   (fb-login app-state events/facebook-success-reset))
-
-(defn reparse-xfbml []
-  (js/FB.XFBML.parse))

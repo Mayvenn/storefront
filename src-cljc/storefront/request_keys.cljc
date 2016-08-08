@@ -12,7 +12,6 @@
 (def forgot-password [:forgot-password])
 (def reset-password [:reset-password])
 (def get-account [:get-account])
-(def get-messenger-token [:get-messenger-token])
 (def update-account [:update-account])
 (def update-account-address [:update-account-address])
 (def update-account-profile [:update-account-profile])
