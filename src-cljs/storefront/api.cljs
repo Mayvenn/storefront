@@ -159,6 +159,15 @@
       #(messages/handle-message events/api-success-products
                                 (select-keys % [:products]))})))
 
+(defn get-saved-cards [user-id user-token]
+  (api-req
+   GET
+   "/get-saved-cards"
+   request-keys/get-saved-cards
+   {:params {:user-token user-token :user-id user-id}
+    :handler
+    #(messages/handle-message events/api-success-get-saved-cards (select-keys % [:cards :default-card]))}))
+
 (defn get-states [cache]
   (cache-req
    cache

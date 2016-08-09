@@ -133,6 +133,8 @@
 (def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
 (def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 (def checkout-credit-card-save (conj checkout :credit-card-save))
+(def checkout-credit-card-existing-cards (conj checkout :credit-card-existing-cards))
+(def checkout-credit-card-selected (conj checkout :credit-card-selected))
 (def checkout-selected-shipping-method (conj checkout :shipping-method))
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))

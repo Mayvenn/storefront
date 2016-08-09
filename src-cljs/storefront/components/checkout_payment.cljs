@@ -11,17 +11,30 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
 
+(defn ^:private display-credit-card [{:keys [brand last4 exp-month exp-year]}]
+  (apply str brand " - xxxx-xxxx-xxxx-" last4 " - Ex. " exp-month "/" (drop 2 (str exp-year))))
+
 (defn credit-card-form-component
   [{{:keys [name
             number
             expiration
             ccv
-            save-credit-card?]} :credit-card}
+            save-credit-card?
+            selected-saved-card
+            saved-cards]} :credit-card}
    owner]
   (om/component
    (html
     [:div
      [:div.h2.my2 "Payment Information"]
+     (ui/select-field "Payment Card"
+                      keypaths/checkout-credit-card-selected
+                      selected-saved-card
+                      (map (juxt display-credit-card :id) saved-cards)
+                      {:id        "selected-saved-card"
+                       :data-test "selected-saved-card"
+                       ;;:errors    (get field-errors ["chosen_payout_method"])
+                       :required  true})
      [:div
       (ui/text-field "Cardholder's Name"
                      keypaths/checkout-credit-card-name
@@ -64,11 +77,13 @@
         "Save my card for easier checkouts."]]]])))
 
 (defn credit-card-form-query [data]
-  {:credit-card {:name              (get-in data keypaths/checkout-credit-card-name)
-                 :number            (get-in data keypaths/checkout-credit-card-number)
-                 :expiration        (get-in data keypaths/checkout-credit-card-expiration)
-                 :ccv               (get-in data keypaths/checkout-credit-card-ccv)
-                 :save-credit-card? (get-in data keypaths/checkout-credit-card-save)}})
+  {:credit-card {:name                (get-in data keypaths/checkout-credit-card-name)
+                 :number              (get-in data keypaths/checkout-credit-card-number)
+                 :expiration          (get-in data keypaths/checkout-credit-card-expiration)
+                 :ccv                 (get-in data keypaths/checkout-credit-card-ccv)
+                 :save-credit-card?   (get-in data keypaths/checkout-credit-card-save)
+                 :selected-saved-card (get-in data keypaths/checkout-credit-card-selected)
+                 :saved-cards         (get-in data keypaths/checkout-credit-card-existing-cards)}})
 
 (defn component
   [{:keys [step-bar

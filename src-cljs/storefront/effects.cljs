@@ -253,6 +253,8 @@
   (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
+  (api/get-saved-cards (get-in app-state keypaths/user-id)
+                       (get-in app-state keypaths/user-token))
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
