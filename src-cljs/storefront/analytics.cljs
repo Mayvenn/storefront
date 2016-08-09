@@ -43,7 +43,7 @@
   (google-analytics/track-event "orders" "placed_total" nil (int (:total order)))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
-(defmethod track events/control-add-to-bag [_ event {:keys [product]} app-state]
+(defmethod track events/control-add-to-bag [_ event args app-state]
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 

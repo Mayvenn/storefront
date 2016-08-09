@@ -54,10 +54,9 @@
                                             {:path keypaths/browse-variant-quantity}))]
     [:span.h3 "Currently out of stock"]) )
 
-(defn add-to-bag-button [adding-to-bag? product variant quantity]
+(defn add-to-bag-button [adding-to-bag? variant quantity]
   (ui/navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
-                                                         {:product  product
-                                                          :variant  variant
+                                                         {:variant  variant
                                                           :quantity quantity})
                    :data-test "add-to-bag"
                    :spinning? adding-to-bag?}
@@ -67,7 +66,7 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-variant [idx {:keys [quantity product variant]}]
+(defn display-bagged-variant [idx {:keys [quantity variant]}]
   [:div.h6.line-height-3.my1.p1.caps.gray.bg-dark-white.medium.center
    {:key idx
     :data-test "items-added"}
@@ -267,7 +266,6 @@
 (defn component [{:keys [taxon
                          bundle-builder
                          fetching-variants?
-                         selected-product
                          variant-quantity
                          reviews
                          adding-to-bag?
@@ -308,7 +306,7 @@
               (when (taxons/eligible-for-triple-bundle-discount? taxon)
                 triple-bundle-upsell)
               (when selected-variant
-                (add-to-bag-button adding-to-bag? selected-product selected-variant variant-quantity))
+                (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
               (bagged-variants-and-checkout bagged-variants)
               (when (taxons/is-stylist-product? taxon) shipping-and-guarantee)]])
           (taxon-description (:description taxon))])
@@ -320,8 +318,6 @@
     {:taxon              taxon
      :bundle-builder     bundle-builder
      :fetching-variants? (not (taxons/products-loaded? data taxon))
-     ;; TODO: can the add-to-bag button work without a selected-product?
-     :selected-product   (bundle-builder/selected-product bundle-builder (get-in data keypaths/products))
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)

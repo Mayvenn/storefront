@@ -637,7 +637,7 @@
                    (when (and token number) {:token token :number number}))
     :handler #(messages/handle-message events/api-success-add-to-bag
                                        {:order %
-                                        :requested (select-keys params [:quantity :product :variant])})}))
+                                        :requested (select-keys params [:quantity :variant])})}))
 
 (defn remove-promotion-code [{:keys [token number]} promo-code]
   (api-req

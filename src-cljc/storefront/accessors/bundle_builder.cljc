@@ -15,12 +15,6 @@
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
-(defn ^:private selected-products [{:keys [selected-variants]} products]
-  (->> selected-variants (map :product_id) set (map products)))
-
-(defn selected-product [bundle-builder products]
-  (only (selected-products bundle-builder products)))
-
 (defn constrained-options [{:keys [selected-variants]}]
   (->> selected-variants
        (map :variant_attrs)

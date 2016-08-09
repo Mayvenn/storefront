@@ -360,11 +360,10 @@
 (defmethod perform-effects events/control-bundle-option-select [dispatch event args app-state]
   (analytics/track dispatch event args app-state))
 
-(defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [product variant quantity] :as args} app-state]
+(defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (api/add-to-bag
    {:variant variant
-    :product product
     :quantity quantity
     :stylist-id (get-in app-state keypaths/store-stylist-id)
     :token (get-in app-state keypaths/order-token)
