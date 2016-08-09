@@ -8,7 +8,6 @@
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id
-                        :xfbml true
                         :version "v2.5"})))
 
 (defn insert []

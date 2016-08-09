@@ -6,5 +6,3 @@ FB.login = function () {};
 FB.getLoginStatus = function () {};
 FB.api = function () {};
 FB.logout = function () {};
-FB.XFBML = {};
-FB.XFBML.parse = function () {};
