@@ -162,7 +162,7 @@
 (defn get-saved-cards [user-id user-token]
   (api-req
    GET
-   "/get-saved-cards"
+   "/saved-cards"
    request-keys/get-saved-cards
    {:params {:user-token user-token :user-id user-id}
     :handler
