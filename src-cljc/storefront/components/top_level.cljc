@@ -42,7 +42,7 @@
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
        (component/build flash/component (flash/query data) opts)
        [:main {:role "main"}
-        [:div.legacy-container
+        [:div
          (component/build (requires-sign-in data redirect-getsat-component) data opts)]]])))
 
 
@@ -51,9 +51,7 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      [:div.page-wrap (when (experiments/footer-redesign? data)
-                        {:style {:min-height "100vh"}
-                         :class "flex flex-column"})
+      [:div.page-wrap.flex.flex-column {:style {:min-height "100vh"}}
        #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
        (component/build promotion-banner-component data nil)
        #?(:cljs (popup-component data))
@@ -61,11 +59,8 @@
         (header/built-component data)
         (slideout-nav/built-component data)]
        (component/build flash/component (flash/query data) opts)
-       [:main.bg-light-white (merge {:role "main"}
-                     (when (experiments/footer-redesign? data)
-                       {:class "flex-auto"}))
-        [:div (when-not (experiments/footer-redesign? data)
-                {:class "legacy-container"})
+       [:main.bg-light-white.flex-auto {:role "main"}
+        [:div
          (component/build
           (condp = (get-in data keypaths/navigation-event)
             #?@(:cljs
@@ -97,4 +92,4 @@
             events/navigate-forgot-password forgot-password/built-component
             home-component)
           data opts)]]
-       (footer/component data)]])))
+       (footer/built-component data)]])))

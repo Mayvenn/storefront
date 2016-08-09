@@ -48,12 +48,5 @@
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
 
-(defn accounts-redesign? [data]
-  (display-feature? data "accounts-redesign"))
-
 (defn stylist-banner? [data]
   (display-feature? data "stylist-banner"))
-
-(defn footer-redesign? [data]
-  (display-feature? data "footer-redesign"))
-

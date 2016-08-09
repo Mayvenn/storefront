@@ -23,58 +23,6 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
-(defn contact-us [number]
-  [:div.contact-us
-   [:div.footer-container
-    [:ul.contact-us-menu
-     [:li.cu-item
-      [:a.cu-link.send-sonar-dynamic-number-link
-       (when number
-         {:href (str "sms://+1" number)})
-       [:i.icon-chat]
-       "text"]]
-     [:li.cu-item
-      [:a.cu-link
-       {:href "mailto:help@mayvenn.com"}
-       [:i.icon-email]
-       "email"]]
-     [:li.cu-item
-      [:a.cu-link
-       {:href "tel://+18885627952"}
-       [:i.icon-phone]
-       "phone"]]]]])
-
-(def copy
-  (component/html [:span {:dangerouslySetInnerHTML {:__html "&copy;"}}]))
-
-(defn original-component [{:keys [minimal? sms-number]} _ _]
-  (component/create
-   [:footer#footer
-    (if minimal?
-      (contact-us sms-number)
-      [:div
-       [:div.footer-logo-container [:figure.footer-logo]]
-       (contact-us sms-number)
-       [:div.sm-icons
-        [:div.footer-container
-         [:ul.sm-list
-          [:li.sm-icon.icon-facebook
-           [:a.full-link.sm-icon {:href "https://www.facebook.com/MayvennHair"}]]
-          [:li.sm-icon.icon-instagram
-           [:a.full-link.sm-icon {:href "http://instagram.com/mayvennhair"}]]
-          [:li.sm-icon.icon-pinterest
-           [:a.full-link.sm-icon {:href "http://www.pinterest.com/mayvennhair/"}]]
-          [:li.sm-icon.icon-twitter
-           [:a.full-link.sm-icon {:href "https://twitter.com/MayvennHair"}]]]]]
-       [:div.legal
-        [:div.copyright copy " Mayvenn " (date/full-year (date/current-date))]
-        [:a.terms {:target "_blank" :href "/tos.html"} "Terms of Use"]
-        [:a.privacy {:target "_blank" :href "/privacy.html"} "Privacy Policy"]]])]))
-
-(defn original-query [data]
-  {:minimal? (minimal-footer-events (get-in data keypaths/navigation-event))
-   :sms-number (get-in data keypaths/sms-number)})
-
 (defn products-section [taxons]
   (for [{:keys [name slug]} taxons]
     [:a (merge {:key slug :data-test (str "footer-" slug)}
@@ -91,7 +39,7 @@
      (products-section (filter taxons/is-extension? taxons))]
     [:div.col.col-6
      (products-section (filter #(or (taxons/is-closure-or-frontal? %)
-                                    (and own-store? (taxons/is-stylist-product? %))) taxons))]]]) 
+                                    (and own-store? (taxons/is-stylist-product? %))) taxons))]]])
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
@@ -167,7 +115,7 @@
       [:span.to-md-hide call-number]
       " | 9am-5pm PST M-F"]]]))
 
-(defn experimental-component [{:keys [minimal?] :as data}]
+(defn component [{:keys [minimal?] :as data}]
   (if minimal?
     (component/build minimal-experimental-component
                      (:contacts data)
@@ -186,7 +134,5 @@
    :own-store? (own-store? data)})
 
 
-(defn component [app-state]
-  (if (experiments/footer-redesign? app-state)
-    (experimental-component (query app-state))
-    (component/build original-component (original-query app-state) nil)))
+(defn built-component [app-state]
+  (component (query app-state)))
