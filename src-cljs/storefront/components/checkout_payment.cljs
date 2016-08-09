@@ -11,9 +11,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]))
 
-(defn ^:private display-credit-card [{:keys [brand last4 exp-month exp-year]}]
-  (apply str brand " - xxxx-xxxx-xxxx-" last4 " - Ex. " exp-month "/" (drop 2 (str exp-year))))
-
 (defn credit-card-form-component
   [{{:keys [name
             number
@@ -30,7 +27,7 @@
      (ui/select-field "Payment Card"
                       keypaths/checkout-credit-card-selected
                       selected-saved-card
-                      (map (juxt display-credit-card :id) saved-cards)
+                      (map (juxt cc/display-credit-card :id) saved-cards)
                       {:id        "selected-saved-card"
                        :data-test "selected-saved-card"
                        ;;:errors    (get field-errors ["chosen_payout_method"])
