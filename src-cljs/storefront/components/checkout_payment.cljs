@@ -24,54 +24,55 @@
    (html
     [:div
      [:div.h2.my2 "Payment Information"]
-     (ui/select-field "Payment Card"
-                      keypaths/checkout-credit-card-selected
-                      selected-saved-card
-                      (map (juxt cc/display-credit-card :id) saved-cards)
-                      {:id        "selected-saved-card"
-                       :data-test "selected-saved-card"
-                       ;;:errors    (get field-errors ["chosen_payout_method"])
-                       :required  true})
-     [:div
-      (ui/text-field "Cardholder's Name"
-                     keypaths/checkout-credit-card-name
-                     name
-                     {:name      "name"
-                      :data-test "payment-form-name"
-                      :required  true})
-      (ui/text-field "Card Number"
-                     keypaths/checkout-credit-card-number
-                     (cc/format-cc-number number)
-                     {:max-length    19
-                      :data-test     "payment-form-number"
-                      :auto-complete "off"
-                      :class         "cardNumber rounded"
-                      :type          "tel"
-                      :required      true})
-      [:div.flex.col-12
-       [:div.col-6 (ui/text-field "Expiration (MM/YY)"
-                                  keypaths/checkout-credit-card-expiration
-                                  (cc/format-expiration expiration)
-                                  {:max-length    9
-                                   :data-test     "payment-form-expiry"
-                                   :auto-complete "off"
-                                   :class         "cardExpiry rounded-left"
-                                   :type          "tel"
-                                   :required      true})]
-       [:div.col-6 (ui/text-field "Security Code"
-                                  keypaths/checkout-credit-card-ccv
-                                  ccv
-                                  {:max-length    4
-                                   :auto-complete "off"
-                                   :data-test     "payment-form-code"
-                                   :class         "cardCode rounded-right border-width-left-0"
-                                   :type          "tel"
-                                   :required      true})]]
-      [:div.mb2
-       [:label.light-gray
-        [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
-                           {:type "checkbox"})]
-        "Save my card for easier checkouts."]]]])))
+     (if (seq saved-cards)
+       (ui/select-field "Payment Card"
+                        keypaths/checkout-credit-card-selected
+                        selected-saved-card
+                        (map (juxt cc/display-credit-card :id) saved-cards)
+                        {:id        "selected-saved-card"
+                         :data-test "selected-saved-card"
+                         ;;:errors    (get field-errors ["chosen_payout_method"])
+                         :required  true})
+       [:div
+        (ui/text-field "Cardholder's Name"
+                       keypaths/checkout-credit-card-name
+                       name
+                       {:name      "name"
+                        :data-test "payment-form-name"
+                        :required  true})
+        (ui/text-field "Card Number"
+                       keypaths/checkout-credit-card-number
+                       (cc/format-cc-number number)
+                       {:max-length    19
+                        :data-test     "payment-form-number"
+                        :auto-complete "off"
+                        :class         "cardNumber rounded"
+                        :type          "tel"
+                        :required      true})
+        [:div.flex.col-12
+         [:div.col-6 (ui/text-field "Expiration (MM/YY)"
+                                    keypaths/checkout-credit-card-expiration
+                                    (cc/format-expiration expiration)
+                                    {:max-length    9
+                                     :data-test     "payment-form-expiry"
+                                     :auto-complete "off"
+                                     :class         "cardExpiry rounded-left"
+                                     :type          "tel"
+                                     :required      true})]
+         [:div.col-6 (ui/text-field "Security Code"
+                                    keypaths/checkout-credit-card-ccv
+                                    ccv
+                                    {:max-length    4
+                                     :auto-complete "off"
+                                     :data-test     "payment-form-code"
+                                     :class         "cardCode rounded-right border-width-left-0"
+                                     :type          "tel"
+                                     :required      true})]]
+        [:div.mb2
+         [:label.light-gray
+          [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
+                             {:type "checkbox"})]
+          "Save my card for easier checkouts."]]])])))
 
 (defn credit-card-form-query [data]
   {:credit-card {:name                (get-in data keypaths/checkout-credit-card-name)
