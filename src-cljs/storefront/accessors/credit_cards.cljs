@@ -36,12 +36,12 @@
       :else (str month " / " year))))
 
 (def stripe-card-brand->abbrev
-  {"Discover"         "DISC - "
-   "Visa"             "VISA - "
-   "MasterCard"       "MC - "
-   "American Express" "AMEX - "
-   "Diners Club"      "DC - "
-   "JCB"              "JCB - "
+  {"Discover"         "DISC "
+   "Visa"             "VISA "
+   "MasterCard"       "MC "
+   "American Express" "AMEX "
+   "Diners Club"      "DC "
+   "JCB"              "JCB "
    "Unknown"          ""})
 
 (defn display-credit-card [{:keys [brand last4 exp-month exp-year]}]
