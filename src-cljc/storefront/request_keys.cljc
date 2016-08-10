@@ -1,6 +1,5 @@
 (ns storefront.request-keys)
 
-(def get-store [:get-store])
 (def get-promotions [:get-promotions])
 (def get-products [:get-products])
 (def get-states [:get-states])

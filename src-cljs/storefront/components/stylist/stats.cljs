@@ -66,13 +66,6 @@
       [:.py2 svg/large-percent]
       [:div "All sales since you joined Mayvenn."]])])
 
-(defn stats-details-component [stats]
-  (om/component
-   (html
-    [:.overflow-hidden.relative.engrave-2
-     (for [stat ordered-stats]
-       (render-stat stat (get stats stat)))])))
-
 (defn stylist-dashboard-stats-component [{:keys [stats]} owner]
   (om/component
    (html

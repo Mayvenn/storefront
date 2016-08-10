@@ -84,9 +84,6 @@
 (defonce main (memoize main-))
 (defonce app-state (atom (deep-merge (state/initial-state) (read-string js/data))))
 
-(defn debug-force-token [token]
-  (swap! app-state assoc-in keypaths/user-token "f766e9e3ea1f7b8bf25f1753f395cf7bd34cef0430360b7d"))
-
 (defn ^:export debug-app-state []
   (clj->js @app-state))
 

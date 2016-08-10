@@ -35,9 +35,6 @@
                    "places-autocomplete")
      #(m/handle-message events/inserted-places))))
 
-(defn remove-places-autocomplete []
-  (tags/remove-tags-by-class "places-autocomplete"))
-
 (defn- wrapped-callback [autocomplete address-keypath]
   (fn [e]
     (m/handle-message events/autocomplete-update-address

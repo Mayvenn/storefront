@@ -9,9 +9,6 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn ^:private update-keys [m f & args]
-  (reduce (fn [r [k v]] (assoc r (apply f k args) v)) {} m))
-
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
@@ -117,7 +114,6 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(def included-product? (complement :stylist_only?))
 (def included-taxon? (complement :stylist_only?))
 
 (declare select-option)

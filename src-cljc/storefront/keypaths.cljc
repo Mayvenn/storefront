@@ -27,8 +27,6 @@
 (def order-cart-payments-paypal (conj order-cart-payments :paypal))
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
-(def order-cart-payments-stripe-source (conj order-cart-payments-stripe :source))
-(def order-cart-payments-stripe-amount (conj order-cart-payments-stripe :amount))
 
 (def order-token (conj order :token))
 (def order-number (conj order :number))
@@ -54,7 +52,6 @@
 (def previous-navigation-message (conj ui :previous-navigation-message))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
-(def navigation-args (conj navigation-message 1))
 (def browse-taxon-query (conj ui :browse-taxon-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
@@ -160,9 +157,6 @@
 (def stylist-manage-account (conj stylist :manage-account))
 
 (def stylist-stats (conj stylist :stats))
-(def stylist-stats-previous-payout (conj stylist-stats :previous-payout))
-(def stylist-stats-next-payout (conj stylist-stats :next-payout))
-(def stylist-stats-lifetime-payouts (conj stylist-stats :lifetime-payouts))
 
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-rate (conj stylist-commissions :rate))

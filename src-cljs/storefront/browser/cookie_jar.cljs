@@ -53,7 +53,6 @@
          (.set cookie attr val age "/" nil config/secure?)
          (.remove cookie attr))))))
 
-(def clear-user (partial clear-cookie user))
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
 (def clear (partial clear-cookie all))

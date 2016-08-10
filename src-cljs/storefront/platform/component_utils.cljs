@@ -58,16 +58,6 @@
                        {:keypath keypath
                         :value (.. e -target -checked)}))}))
 
-(defn change-radio [app-state keypath value]
-  (let [keypath-val (get-in app-state keypath)
-        checked-val (when (= keypath-val (name value)) "checked")]
-    {:checked checked-val
-     :on-change
-     (fn [e]
-       (handle-message events/control-change-state
-                       {:keypath keypath
-                        :value value}))}))
-
 (defn change-file [event]
   {:on-change (fn [e]
                 (handle-message event

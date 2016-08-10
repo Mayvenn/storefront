@@ -44,8 +44,6 @@
                        "acceptance" 1537350883248767
                        1539908182993037))
 
-(def sonar-facebook-app-id 165304437179658)
-
 (def places-api-key
   (case js/environment
     "production" "AIzaSyBaMJMMqq4gygvlO9J_BO_mZ9t86XEZ4EA"
