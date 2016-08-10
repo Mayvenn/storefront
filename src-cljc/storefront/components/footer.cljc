@@ -57,7 +57,7 @@
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/phone-ringing]
                        [:div.left-align.h3 "Call Now"]])
-    (ui/footer-button {:href (str "tel://" sms-number)}
+    (ui/footer-button {:href (str "sms://+1" sms-number)}
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/message]
                        [:div.left-align.h3 "Send Message"]])
