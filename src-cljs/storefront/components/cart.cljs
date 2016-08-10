@@ -22,16 +22,20 @@
    {:style {:height "30px" :width "70px"}
     :class icon-class}])
 
+(defn facebook-link [share-url]
+  (str "https://www.facebook.com/sharer/sharer.php?u=" share-url "%3Futm_medium=facebook%26utm_campaign=sharebuttons"))
+
 (defn sms-link [share-url]
   ;; the ?& is to get this to work on iOS8 and Android at the same time
   (str "sms:?&body="
        (js/encodeURIComponent "Shop the bundles I picked for you here: ")
-       share-url))
+       share-url
+       "%3Futm_medium=sms%26utm_campaign=sharebuttons"))
 
 (defn twitter-link [share-url]
   (str "https://twitter.com/intent/tweet?url="
-       share-url "&text="
-       (js/encodeURIComponent "Shop my top virgin hair bundle picks here:")
+       share-url "%3Futm_medium=twitter%26utm_campaign=sharebuttons"
+       "&text=" (js/encodeURIComponent "Shop my top virgin hair bundle picks here:")
        "&hashtags=mayvennhair"))
 
 (defn email-link [share-url store-nickname]
@@ -43,7 +47,7 @@
 I've created a ready-to-shop cart with the bundles I recommend for you. Mayvenn is my pick for the quality virgin human hair. They offer a totally free 30 day exchange program (if you have any issues with your hair at all). All you have to do is click the link below to check out.
 
 Shop here: "
-                                   share-url
+                                   share-url"?utm_medium=email&utm_campaign=sharebuttons"
 
                                    "
 
@@ -63,7 +67,7 @@ Thanks,
                 [:.h2.navy.medium "Share your bag"]
                 [:.h4.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
                 [:.border-top.border-bottom.border-light-silver.py2.flex.justify-center
-                 [:a.mx1 {:href (str "https://www.facebook.com/sharer/sharer.php?u=" share-url) :target "_blank"}
+                 [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
                  [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
                   (share-icon "img-twitter-share")]
