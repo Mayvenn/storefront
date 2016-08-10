@@ -53,7 +53,7 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(def body-class "mx-auto")
+(def body-class "mx-auto bg-pure-white")
 
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
