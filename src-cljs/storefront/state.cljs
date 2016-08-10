@@ -30,6 +30,7 @@
    :credit-card-expiration ""
    :credit-card-ccv ""
    :credit-card-save true
+   :credit-card-selected-id nil
    :selected-shipping-method {}
    :use-store-credits false})
 

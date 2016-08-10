@@ -557,13 +557,13 @@
                    (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)}))
         :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-      (if (get-in app-state keypaths/checkout-credit-card-selected)
+      (if (get-in app-state keypaths/checkout-credit-card-selected-id)
         (api/update-cart-payments
          {:order (-> app-state
                      (get-in keypaths/order)
                      (select-keys [:token :number])
                      (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)})
-                     (assoc-in [:cart-payments :stripe :source] (get-in app-state keypaths/checkout-credit-card-selected)))
+                     (assoc-in [:cart-payments :stripe :source] (get-in app-state keypaths/checkout-credit-card-selected-id)))
           :navigate events/navigate-checkout-confirmation})
         (create-stripe-token app-state args)))))
 

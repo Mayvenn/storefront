@@ -199,7 +199,7 @@
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
   (-> app-state
       (assoc-in keypaths/checkout-credit-card-existing-cards cards)
-      (assoc-in keypaths/checkout-credit-card-selected (:id default-card))))
+      (assoc-in keypaths/checkout-credit-card-selected-id (:id default-card))))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
