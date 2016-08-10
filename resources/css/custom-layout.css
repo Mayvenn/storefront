@@ -1,12 +1,5 @@
 * { box-sizing: border-box; }
 
-figure, h1, h2, h3, h4, h5, h6, p { margin: 0; font-weight: normal; }
-
-body {
-  background-image: url('/images/desktop_assets/bg-wave-pattern.png');
-  background-size: 47px 51px;
-}
-
 body {
   min-width: 320px;
 }

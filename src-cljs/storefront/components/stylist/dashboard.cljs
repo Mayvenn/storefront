@@ -14,7 +14,7 @@
 (defn stylist-dashboard-component [data owner]
   (om/component
    (html
-    [:.sans-serif.black
+    [:.black
      (om/build stylist-dashboard-stats-component
                {:stats (get-in data keypaths/stylist-stats)})
 

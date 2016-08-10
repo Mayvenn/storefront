@@ -174,7 +174,7 @@
 
 (def guest-account
   (component/html
-   [:div.right-align.h6.sans-serif
+   [:div.right-align.h6
     [:a.inline-block.black (utils/route-to events/navigate-sign-in) "Sign In"]
     [:div.inline-block.pxp4.black "|"]
     [:a.inline-block.black (utils/route-to events/navigate-sign-up) "Sign Up"]]))
@@ -216,7 +216,7 @@
 
 (defn lower-left-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.right.h5.sans-serif.light
+   [:div.right.h5.light
     [:a.black.col.py1 (merge
                        {:href           "/categories"
                         :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
@@ -228,7 +228,7 @@
 
 (defn lower-right-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.h5.sans-serif.light
+   [:div.h5.light
     [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                            :href           "https://blog.mayvenn.com"}
      "Blog"]

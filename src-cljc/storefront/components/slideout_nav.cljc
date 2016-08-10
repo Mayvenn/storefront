@@ -103,14 +103,14 @@
 (defn customer-shop-section [selectable? taxons]
   [section-outer
    [section-inner
-    [:div.sans-serif.medium "Shop"]
+    [:div.medium "Shop"]
     (extensions-section selectable? taxons)
     (closures-section selectable? taxons)]])
 
 (defn stylist-shop-section [selectable? taxons]
   [section-outer
    [section-inner
-    [:div.sans-serif.medium "Shop"]
+    [:div.medium "Shop"]
     (extensions-section selectable? taxons)
     (closures-section selectable? taxons)
     (stylist-products-section selectable? taxons)]])

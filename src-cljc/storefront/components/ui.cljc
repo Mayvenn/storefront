@@ -10,7 +10,7 @@
             [clojure.string :as str]))
 
 (defn container [& content]
-  [:div.light-black.sans-serif
+  [:div.light-black
    (into [:div.p2.m-auto.overflow-hidden] content)])
 
 (defn narrow-container [& content]

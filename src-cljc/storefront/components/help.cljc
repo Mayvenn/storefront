@@ -29,7 +29,7 @@
 
 (defn help-component [{:keys [sms-number]} owner opts]
   (component/create
-   [:div.sans-serif
+   [:div
     [:div.py4.bg-white.center
      [:div.h1.navy.mb2 "Get in touch"]
      [:div.h3.dark-gray.light

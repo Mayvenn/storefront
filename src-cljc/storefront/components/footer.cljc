@@ -90,7 +90,7 @@
                               contacts
                               own-store?]} owner opts]
   (component/create
-   [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
+   [:div.h4.border-top.border-light-silver.bg-dark-white
 
     [:div.col-12.clearfix
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section taxons own-store?)]
@@ -106,7 +106,7 @@
 
 (defn minimal-component [{:keys [call-number contact-email]} owner opts]
   (component/create
-   [:div.sans-serif.border-top.border-light-silver.bg-light-white
+   [:div.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
      [:div.medium.f3.dark-gray "Need Help?"]
      [:div.dark-gray.light.f4

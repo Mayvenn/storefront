@@ -79,7 +79,7 @@
     (let [items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
                        {:id idx
                         :body (render-stat stat (get stats stat))}))]
-      [:.bg-green.white.center.sans-serif
+      [:.bg-green.white.center
        [:.bg-darken-bottom-2
         (om/build carousel/swipe-component {:items items :continuous true}
                   {:react-key "stat-swiper"

@@ -140,7 +140,7 @@ Thanks,
                    :data-test "paypal-checkout"}
                   [:div.flex.items-center.justify-center
                    [:div.right-align.mr1 "Check out with"]
-                   [:div.h2.medium.sans-serif.italic "PayPal™"]])]
+                   [:div.h2.medium.italic "PayPal™"]])]
 
        (when share-carts?
          [:div.border-top.border-bottom.border-light-silver.py2

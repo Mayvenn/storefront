@@ -1,3 +1,8 @@
+body {
+  background-image: url('/images/desktop_assets/bg-wave-pattern.png');
+  background-size: 47px 51px;
+}
+
 .bg-full { background-size: 100%; }
 
 .img-receipt-icon   { background-image: url('/images/icons/receipt.png'); }

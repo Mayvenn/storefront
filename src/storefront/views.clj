@@ -53,7 +53,7 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(def body-class "mx-auto sans-serif")
+(def body-class "mx-auto")
 
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
@@ -112,7 +112,7 @@
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (asset-path "/css/app.css"))]
    [:body {:data-snap-to "top" :class body-class}
-    [:div.sans-serif.lg-up-col-6.mx-auto.flex.flex-column.items-center
+    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center
      [:img.py2 {:src (asset-path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (asset-path "/images/not_found_head.png")
                           :style "max-width: 80%"}]

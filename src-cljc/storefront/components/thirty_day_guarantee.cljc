@@ -15,7 +15,7 @@
 
 (defn thirty-day-guarantee-component [data owner opts]
   (component/create
-   [:div.sans-serif.dark-gray
+   [:div.dark-gray
     [:div.bg-white.p2
      [:div.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
     [:div.mx-auto.px2 {:style {:max-width "768px"}}

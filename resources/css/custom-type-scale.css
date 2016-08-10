@@ -1,5 +1,5 @@
 html {
-  line-height: 1.2;
+  line-height: var(--line-height);
   font-size: 12px;
 }
 
@@ -23,3 +23,7 @@ html {
 .f6 { font-size: 8px; }
 
 @custom-media --breakpoint-lg-up (min-width: 768px);
+
+:root {
+    --line-height: 1.2;
+}

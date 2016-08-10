@@ -46,7 +46,7 @@
                          commission
                          social]} owner opts]
   (component/create
-   [:div.bg-pure-white.light-black.sans-serif
+   [:div.bg-pure-white.light-black
     [:div.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div

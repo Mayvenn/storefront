@@ -39,7 +39,7 @@
 
 (defn home-component [data owner opts]
   (component/create
-   [:div.home-container.m-auto.sans-serif.clearfix
+   [:div.home-container.m-auto.clearfix
     [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
      (utils/route-to events/navigate-categories)]
     [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
