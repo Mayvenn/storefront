@@ -1,14 +1,3 @@
-html {
-  line-height: var(--line-height);
-  font-size: 12px;
-}
-
-@media (--breakpoint-lg-up) {
-  html {
-    font-size: 16px;
-  }
-}
-
 /* We want h00 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in ems. 5.25em is 63px... close enough. */
 
@@ -21,9 +10,3 @@ html {
 .f4 { font-size: 12px; }
 .f5 { font-size: 10px; }
 .f6 { font-size: 8px; }
-
-@custom-media --breakpoint-lg-up (min-width: 768px);
-
-:root {
-    --line-height: 1.2;
-}

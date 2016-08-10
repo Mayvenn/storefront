@@ -1,15 +1,3 @@
-* { box-sizing: border-box; }
-
-body {
-  min-width: 320px;
-}
-
-@media (--breakpoint-xl-up) {
-  body {
-    width: 1024px;
-  }
-}
-
 .content-box { box-sizing: content-box; }
 
 .container { max-width: 640px; }

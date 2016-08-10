@@ -1,6 +1,7 @@
 /* The CSS for the app */
 
 @import 'normalize.css';
+@import 'custom-basic.css';
 
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
