@@ -38,7 +38,6 @@
                                  ["Add a new payment card" "add-new-card"])
                            {:id        "selected-saved-card"
                             :data-test "selected-saved-card"
-                            ;;:errors    (get field-errors ["chosen_payout_method"])
                             :required  true}))
 
         (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
