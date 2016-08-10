@@ -106,7 +106,7 @@ Thanks,
       {:data-test "order-summary"}
       "Review your order"]
 
-     [:.py2.clearfix.mxn4
+     [:.mt2.clearfix.mxn4
       [:.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
        (order-summary/display-adjustable-line-items (orders/product-items order)
@@ -143,7 +143,7 @@ Thanks,
                    [:div.h2.medium.italic "PayPal™"]])]
 
        (when share-carts?
-         [:div.border-top.border-bottom.border-light-silver.py2
+         [:div.border-top.border-light-silver.py2
           (ui/navy-outline-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
                                    :spinning? requesting-shared-cart?
                                    :data-test "share-cart"}
