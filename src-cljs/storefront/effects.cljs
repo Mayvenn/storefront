@@ -125,6 +125,7 @@
         (handle-message events/flash-dismiss)))
 
     (analytics/track dispatch event args app-state)
+    (handle-message events/control-popup-hide)
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (let [path (routes/current-path app-state)]
