@@ -102,7 +102,7 @@
 
 (defmacro with-handler
   [handler & body]
-  `(let [unstarted-system# (-> (create-system test-overrides))]
+  `(let [unstarted-system# (create-system test-overrides)]
      (with-resource [sys# (component/start unstarted-system#)
                      ~handler (-> sys# :app-handler :handler)]
        component/stop
@@ -217,7 +217,7 @@
                     (is (= "https://store.mayvenn.com/categories/hair/straight?utm_source=cats"
                            (get-in resp [:headers "Location"])))
                     (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
-                      (is (.contains cookie "preferred-store-slug=;Max-Age=0;") cookie)))))
+                      (is (.contains cookie "preferred-store-slug=;Max-Age=0;") (str cookie))))))
 
 (deftest redirects-vistaprint
   (with-handler handler
