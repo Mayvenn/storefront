@@ -112,12 +112,12 @@ Lengths: 14\" to 26\""
       (html
        [:div
         (when loaded?
-          [:.clearfix
-           [:.col.yotpo.bottomLine
+          [:.clearfix.flex.justify-center.flex-wrap.my1
+           [:.yotpo.bottomLine.mr2
             (merge
              (product-options-for taxon)
              {:data-url url})]
-           [:.col.ml2.yotpo.QABottomLine
+           [:.yotpo.QABottomLine
             (product-options-for taxon)]])]))))
 
 (defn reviews-summary-component [{:keys [taxon] :as args} owner opts]

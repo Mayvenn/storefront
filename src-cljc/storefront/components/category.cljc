@@ -233,7 +233,7 @@
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews opts]
-  [:div.inline-block.h5
+  [:div.h5
    (component/build reviews/reviews-summary-component reviews opts)])
 
 (defn taxon-uses-product-images [taxon-slug]
