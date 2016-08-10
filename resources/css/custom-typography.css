@@ -83,7 +83,6 @@ a {
 
 :root {
     --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
-    --font-family-fortescue: Fortescue,serif;
 
     --line-height: 1.2;
     --font-family: var(--sans-serif);
@@ -106,7 +105,7 @@ a {
     --list-margin-top: 0;
     --list-margin-bottom: 0;
 
-    --serif: var(--font-family-fortescue);
+    --serif: serif;
     --sans-serif: var(--font-family-graphik);
 
     --darken-2: rgba(0, 0, 0, .125);

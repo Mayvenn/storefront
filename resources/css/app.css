@@ -111,9 +111,8 @@
 
 :root {
     --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
-    --font-family-fortescue: Fortescue,serif;
 
-    --serif: var(--font-family-fortescue);
+    --serif: serif;
     --sans-serif: var(--font-family-graphik);
 
     --font-family: var(--sans-serif);
