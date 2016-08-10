@@ -10,8 +10,7 @@
     "basscss-background-images": "^0.1.1",
     "basscss-basic": "^1.0.0",
     "basscss-ui-utility-groups": "^1.0.1",
-    "gulp-sass": "^2.1.0",
-    "node-bourbon": "^4.2.2",
+    "normalize.css": "^4.2.0",
     "swipejs": "^2.0.8"
   },
   "devDependencies": {
@@ -19,7 +18,6 @@
     "cssnano": "^3.4.0",
     "del": "^2.0.2",
     "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
     "gulp-debug": "^2.0.1",
     "gulp-gzip": "^1.1.0",
     "gulp-ignore": "^1.2.1",

@@ -3,7 +3,6 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.taxons :as taxons]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
@@ -86,10 +85,10 @@
       [:a {:href "http://www.pinterest.com/mayvennhair/"}
        [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]]])
 
-(defn full-experimental-component [{:keys [minimal?
-                                           taxons
-                                           contacts
-                                           own-store?]}]
+(defn full-component [{:keys [minimal?
+                              taxons
+                              contacts
+                              own-store?]} owner opts]
   (component/create
    [:div.h4.sans-serif.border-top.border-light-silver.bg-dark-white
 
@@ -105,7 +104,7 @@
       " and "
       [:a.white {:target "_blank" :href "/tos.html"} "Terms of Use"]]]]))
 
-(defn minimal-experimental-component [{:keys [call-number contact-email]}]
+(defn minimal-component [{:keys [call-number contact-email]} owner opts]
   (component/create
    [:div.sans-serif.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
@@ -117,13 +116,8 @@
 
 (defn component [{:keys [minimal?] :as data}]
   (if minimal?
-    (component/build minimal-experimental-component
-                     (:contacts data)
-                     nil)
-    (component/build full-experimental-component
-                     data
-                     nil)))
-
+    (component/build minimal-component (:contacts data) nil)
+    (component/build full-component data nil)))
 
 (defn query [data]
   {:minimal?   (minimal-footer-events (get-in data keypaths/navigation-event))

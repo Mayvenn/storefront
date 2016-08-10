@@ -152,7 +152,7 @@
   [:div
    (when (seq desc)
      [:div
-      [:h3.regular.h2.light "Summary"]
+      [:h3.h2.light "Summary"]
       [:div.navy desc]])
    quantity-and-price])
 

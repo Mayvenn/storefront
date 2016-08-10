@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var sass = require('gulp-sass');
 var minifyCSS = require('gulp-minify-css');
 var RevAll = require('gulp-rev-all');
 var path = require('path');
@@ -14,16 +13,6 @@ var shell = require('gulp-shell');
 var del = require('del');
 var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-
-gulp.task('sass', function () {
-  return gulp.src('./resources/scss/*.scss')
-    .pipe(sass({errLogToConsole: true,
-                indentedSyntax: true,
-                includePaths: require('node-bourbon').includePaths}))
-    .pipe(minifyCSS())
-    .pipe(gulp.dest('./resources/public/css'));
-});
 
 gulp.task('css', function () {
   return gulp.src(['./resources/css/*.css'])
@@ -42,21 +31,11 @@ gulp.task('css', function () {
     .pipe(gulp.dest('./resources/public/css'));
 });
 
-gulp.task('unify-css', function () {
-  return gulp.src(['./resources/public/css/all.css', './resources/public/css/app.css'])
-    .pipe(concat('full.css'))
-    .pipe(gulp.dest('./resources/public/css/'));
+gulp.task('watch', ['css'], function (cb) {
+  gulp.watch('./resources/css/*.css', ['css']);
 });
 
-gulp.task('watch', function (cb) {
-  runSequence(['sass', 'css'], 'unify-css', cb);
-  gulp.watch('./resources/scss/*.scss', function () { runSequence('sass', 'unify-css')});
-  gulp.watch('./resources/css/*.css', function () { runSequence('css', 'unify-css')});
-});
-
-gulp.task('default', function (cb) {
-  runSequence(['sass', 'css'], 'unify-css', cb)
-});
+gulp.task('default', ['css']);
 
 gulp.task('minify-js', function () {
   del(['./target/min-js']);
@@ -117,5 +96,5 @@ gulp.task('sourcemaps', function () {
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence(['sass', 'css'], 'unify-css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'sourcemaps', cb);
+  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'sourcemaps', cb);
 });

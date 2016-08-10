@@ -24,7 +24,7 @@
 (defn categories-component [data owner opts]
   (component/create
    [:div
-    [:h1.regular.py2.center.black "Select your favorite style"]
+    [:h1.py2.center.black "Select your favorite style"]
     [:div.clearfix.mxn1.center
      (->> (taxons/current-taxons data)
           (remove taxons/is-stylist-product?)

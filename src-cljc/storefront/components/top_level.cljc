@@ -38,7 +38,7 @@
 #?(:cljs
    (defn getsat-top-level-component [data owner opts]
      (component/create
-      [:.page-wrap
+      [:div
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
        (component/build flash/component (flash/query data) opts)
        [:main {:role "main"}
@@ -51,7 +51,7 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div
-      [:div.page-wrap.flex.flex-column {:style {:min-height "100vh"}}
+      [:div.flex.flex-column {:style {:min-height "100vh"}}
        #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
        (component/build promotion-banner-component data nil)
        #?(:cljs (popup-component data))

@@ -1,6 +1,6 @@
-/* basscss-basic is a reasonable reset and basic styles, but it interferes with legacy
- * styles, so disabling for now. Probably need a normalize too.
-/* @import 'basscss-basic'; */
+/* The CSS for the app */
+
+@import 'normalize.css';
 
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
@@ -169,3 +169,4 @@
 
     --caps-letter-spacing: 0.1em;
 }
+

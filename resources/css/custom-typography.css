@@ -1,3 +1,7 @@
+a {
+  text-decoration: none;
+}
+
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500; }

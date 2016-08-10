@@ -45,13 +45,15 @@
     :else           (escape-js-string v)))
 
 (defn read-css []
-  (with-open [css (->> (asset-map "css/full.css")
+  (with-open [css (->> (asset-map "css/app.css")
                        (str "public/cdn/")
                        io/resource
                        io/input-stream
                        GZIPInputStream.)]
     (slurp css)))
 (def css-styles (memoize read-css))
+
+(def body-class "mx-auto sans-serif")
 
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
@@ -84,9 +86,9 @@
     ;; inline styles in production because our css file is so small and it avoids another round
     ;; trip request. At time of writing this greatly includes our pagespeed score
     (if (#{"development" "test"} environment)
-      (page/include-css (asset-path "/css/full.css"))
+      (page/include-css (asset-path "/css/app.css"))
       [:style (raw (css-styles))])]
-   [:body {:data-snap-to "top"}
+   [:body {:data-snap-to "top" :class body-class}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want
@@ -109,7 +111,7 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (asset-path "/css/app.css"))]
-   [:body {:data-snap-to "top"}
+   [:body {:data-snap-to "top" :class body-class}
     [:div.sans-serif.lg-up-col-6.mx-auto.flex.flex-column.items-center
      [:img.py2 {:src (asset-path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (asset-path "/images/not_found_head.png")
