@@ -12,7 +12,8 @@
             [storefront.request-keys :as request-keys]))
 
 (defn credit-card-form-component
-  [{{:keys [name
+  [{{:keys [guest?
+            name
             number
             expiration
             ccv
@@ -68,14 +69,16 @@
                                      :class         "cardCode rounded-right border-width-left-0"
                                      :type          "tel"
                                      :required      true})]]
-        [:div.mb2
-         [:label.light-gray
-          [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
-                             {:type "checkbox"})]
-          "Save my card for easier checkouts."]]])])))
+        (when-not guest?
+          [:div.mb2
+           [:label.light-gray
+            [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
+                               {:type "checkbox"})]
+            "Save my card for easier checkouts."]])])])))
 
 (defn credit-card-form-query [data]
-  {:credit-card {:name                (get-in data keypaths/checkout-credit-card-name)
+  {:credit-card {:guest?              (get-in data keypaths/checkout-as-guest)
+                 :name                (get-in data keypaths/checkout-credit-card-name)
                  :number              (get-in data keypaths/checkout-credit-card-number)
                  :expiration          (get-in data keypaths/checkout-credit-card-expiration)
                  :ccv                 (get-in data keypaths/checkout-credit-card-ccv)

@@ -253,8 +253,8 @@
   (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (api/get-saved-cards (get-in app-state keypaths/user-id)
-                       (get-in app-state keypaths/user-token))
+  (when-let [user-id (get-in app-state keypaths/user-id)]
+    (api/get-saved-cards user-id (get-in app-state keypaths/user-token)))
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
@@ -520,7 +520,8 @@
                (select-keys [:token :number])
                (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
                (assoc-in [:cart-payments :stripe :source] (:id stripe-response))
-               (assoc-in [:cart-payments :stripe :save?] (get-in app-state keypaths/checkout-credit-card-save)))
+               (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
+                                                                       (get-in app-state keypaths/checkout-credit-card-save)))))
     :navigate events/navigate-checkout-confirmation
     :place-order? (:place-order? stripe-response)}))
 
