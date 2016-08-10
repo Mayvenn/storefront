@@ -547,7 +547,8 @@
   (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))
         covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
-                                 (get-in app-state keypaths/user))]
+                                 (get-in app-state keypaths/user))
+        selected-saved-card-id (get-in app-state keypaths/checkout-credit-card-selected-id)]
     (if (and use-store-credit covered-by-store-credit)
       ;; command waiter w/ payment methods(success handler navigate to confirm)
       (api/update-cart-payments
@@ -557,13 +558,13 @@
                    (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)}))
         :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-      (if (get-in app-state keypaths/checkout-credit-card-selected-id)
+      (if (and selected-saved-card-id (not= selected-saved-card-id "add-new-card"))
         (api/update-cart-payments
          {:order (-> app-state
                      (get-in keypaths/order)
                      (select-keys [:token :number])
                      (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)})
-                     (assoc-in [:cart-payments :stripe :source] (get-in app-state keypaths/checkout-credit-card-selected-id)))
+                     (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
           :navigate events/navigate-checkout-confirmation})
         (create-stripe-token app-state args)))))
 

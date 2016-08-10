@@ -25,15 +25,18 @@
    (html
     [:div
      [:div.h2.my2 "Payment Information"]
-     (if (seq saved-cards)
+     (when (seq saved-cards)
        (ui/select-field "Payment Card"
                         keypaths/checkout-credit-card-selected-id
                         selected-saved-card-id
-                        (map (juxt cc/display-credit-card :id) saved-cards)
+                        (conj (mapv (juxt cc/display-credit-card :id) saved-cards)
+                              ["Add a new payment card" "add-new-card"])
                         {:id        "selected-saved-card"
                          :data-test "selected-saved-card"
                          ;;:errors    (get field-errors ["chosen_payout_method"])
-                         :required  true})
+                         :required  true}))
+
+     (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
        [:div
         (ui/text-field "Cardholder's Name"
                        keypaths/checkout-credit-card-name
@@ -69,7 +72,7 @@
                                      :class         "cardCode rounded-right border-width-left-0"
                                      :type          "tel"
                                      :required      true})]]
-        (when-not guest?
+        (when (and (not guest?) (empty? saved-cards))
           [:div.mb2
            [:label.light-gray
             [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
