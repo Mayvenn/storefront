@@ -11,6 +11,7 @@
             [storefront.safe-hiccup :refer [html5 raw]]
             [hiccup.page :as page]
             [hiccup.element :as element]
+            [storefront.platform.images :as images]
             [clojure.java.io :as io])
   (:import [java.util.zip GZIPInputStream]))
 
@@ -76,7 +77,7 @@
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
-           "var canonicalImage=\"" (asset-path "/images/home_image.jpg") "\";"
+           "var canonicalImage=\"" images/canonical-image "\";"
            "window.optimizely=" (generate-string (into ["bucketVisitor"] (get-in data keypaths/optimizely-buckets))) ";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     ;; in production, we want to load the script tag asynchronously which has better

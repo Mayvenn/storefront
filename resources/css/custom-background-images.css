@@ -1,5 +1,5 @@
 html {
-  background-image: url('/images/desktop_assets/bg-wave-pattern.png');
+  background-image: url('/images/bg-wave-pattern.png');
   background-size: 47px 51px;
 }
 
@@ -18,44 +18,41 @@ html {
 .img-spinner        { background-image: url('/images/spinner.svg'); }
 .img-large-spinner  { background-image: url('/images/large-spinner.svg'); }
 .img-left-arrow     {
-    background-image: url('/images/carousel/arrow.svg');
+    background-image: url('/images/icons/carousel-arrow.svg');
     transform: rotate(180deg);
 }
-.img-right-arrow  { background-image: url('/images/carousel/arrow.svg'); }
+.img-right-arrow  { background-image: url('/images/icons/carousel-arrow.svg'); }
 
-.img-straight     { background-image: url('/images/style_images/category_images/StraightCategoryImage.jpg'); }
-.img-blonde       { background-image: url('/images/style_images/category_images/BlondeCategoryImage.png'); }
-.img-curly        { background-image: url('/images/style_images/category_images/CurlyCategoryImage.png'); }
-.img-deep-wave    { background-image: url('/images/style_images/category_images/DeepWaveCategoryImage.png'); }
-.img-loose-wave   { background-image: url('/images/style_images/category_images/LooseWaveCategoryImage.png'); }
-.img-body-wave    { background-image: url('/images/style_images/category_images/BodyWaveCategoryImage.png'); }
-.img-closures     { background-image: url('/images/style_images/category_images/ClosuresCategoryImage.jpg'); }
-.img-frontals     { background-image: url('/images/style_images/category_images/FrontalsCategoryImage.jpg'); }
+.img-straight     { background-image: url('/images/category_images/StraightCategoryImage.jpg'); }
+.img-curly        { background-image: url('/images/category_images/CurlyCategoryImage.png'); }
+.img-deep-wave    { background-image: url('/images/category_images/DeepWaveCategoryImage.png'); }
+.img-loose-wave   { background-image: url('/images/category_images/LooseWaveCategoryImage.png'); }
+.img-body-wave    { background-image: url('/images/category_images/BodyWaveCategoryImage.png'); }
+.img-closures     { background-image: url('/images/category_images/ClosuresCategoryImage.jpg'); }
+.img-frontals     { background-image: url('/images/category_images/FrontalsCategoryImage.jpg'); }
 
-.img-homepage-straight   { background-image: url('/images/straight.jpg'); }
-.img-homepage-blonde     { background-image: url('/images/blonde.jpg'); }
-.img-homepage-curly      { background-image: url('/images/curly.jpg'); }
-.img-homepage-deep-wave  { background-image: url('/images/deep_wave.jpg'); }
-.img-homepage-loose-wave { background-image: url('/images/loose_wave.jpg'); }
-.img-homepage-body-wave  { background-image: url('/images/body_wave.jpg'); }
-.img-homepage-closures   { background-image: url('/images/loose_wave.jpg'); }
-.img-homepage-frontals   { background-image: url('/images/loose_wave.jpg'); }
+.img-homepage-straight   { background-image: url('/images/homepage/straight.jpg'); }
+.img-homepage-curly      { background-image: url('/images/homepage/curly.jpg'); }
+.img-homepage-deep-wave  { background-image: url('/images/homepage/deep_wave.jpg'); }
+.img-homepage-loose-wave { background-image: url('/images/homepage/loose_wave.jpg'); }
+.img-homepage-body-wave  { background-image: url('/images/homepage/body_wave.jpg'); }
+.img-homepage-closures   { background-image: url('/images/homepage/loose_wave.jpg'); }
+.img-homepage-frontals   { background-image: url('/images/homepage/loose_wave.jpg'); }
 
-.img-text-straight   { background-image: url('/images/desktop_assets/knockout/straight-knockout.png'); }
-.img-text-blonde     { background-image: url('/images/desktop_assets/knockout/blonde-knockout.png'); }
-.img-text-curly      { background-image: url('/images/desktop_assets/knockout/curly-knockout.png'); }
-.img-text-deep-wave  { background-image: url('/images/desktop_assets/knockout/deep-wave-knockout.png'); }
-.img-text-loose-wave { background-image: url('/images/desktop_assets/knockout/loose-wave-knockout.png'); }
-.img-text-body-wave  { background-image: url('/images/desktop_assets/knockout/body-wave-knockout.png'); }
-.img-text-closures   { background-image: url('/images/desktop_assets/knockout/closures-knockout.png'); }
-.img-text-frontals   { background-image: url('/images/desktop_assets/knockout/frontals-knockout.png'); }
+.img-text-straight   { background-image: url('/images/homepage/knockout/straight-knockout.png'); }
+.img-text-curly      { background-image: url('/images/homepage/knockout/curly-knockout.png'); }
+.img-text-deep-wave  { background-image: url('/images/homepage/knockout/deep-wave-knockout.png'); }
+.img-text-loose-wave { background-image: url('/images/homepage/knockout/loose-wave-knockout.png'); }
+.img-text-body-wave  { background-image: url('/images/homepage/knockout/body-wave-knockout.png'); }
+.img-text-closures   { background-image: url('/images/homepage/knockout/closures-knockout.png'); }
+.img-text-frontals   { background-image: url('/images/homepage/knockout/frontals-knockout.png'); }
 
 .img-logo { background-image: url('/images/header_logo.png'); }
 .img-styleseat { background-image: url('/images/icons/styleseat.png'); }
 
-.img-featured { background-image: url('/images/desktop_assets/home_new-product-peruvian-clickable.jpg'); }
-.img-md-home-banner { background-image: url('/images/home_image_clickable.jpg'); }
-.img-lg-home-banner { background-image: url('/images/desktop_assets/desktop_home_image_clickable.jpg'); }
+.img-featured { background-image: url('/images/homepage/home_new-product-peruvian-clickable.jpg'); }
+.img-md-home-banner { background-image: url('/images/homepage/home_image_clickable.jpg'); }
+.img-lg-home-banner { background-image: url('/images/homepage/desktop_home_image_clickable.jpg'); }
 
 .img-fb-share { background-image: url('/images/share/fb.png'); }
 .img-twitter-share { background-image: url('/images/share/twitter.png'); }
