@@ -34,3 +34,6 @@
       (and (= month 1) (goog.string/endsWith s " ")) (str "0" month " / ")
       (empty? year) (str month)
       :else (str month " / " year))))
+
+(defn display-credit-card [{:keys [brand last4 exp-month exp-year]}]
+  (apply str brand " - xxxx-xxxx-xxxx-" last4 " - Ex. " exp-month "/" (drop 2 (str exp-year))))

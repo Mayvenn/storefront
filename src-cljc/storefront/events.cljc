@@ -153,6 +153,7 @@
 (defpath api-success-remove-from-bag)
 (defpath api-success-get-order)
 (defpath api-success-get-completed-order)
+(defpath api-success-get-saved-cards)
 (defpath api-success-sms-number)
 
 (defpath api-success-shared-cart)

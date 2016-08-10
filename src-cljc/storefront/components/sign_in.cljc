@@ -52,8 +52,7 @@
         (merge (utils/toggle-checkbox keypaths/sign-in-remember remember-me?)
                {:type      "checkbox"
                 :name      "remember-me"
-                :data-test "user-remember"
-                })]
+                :data-test "user-remember"})]
        [:div.inline.ml1 "Remember me"]]
       [:a.col.col-6.right-align.gray
        (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]

@@ -196,6 +196,11 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
+(defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
+  (-> app-state
+      (assoc-in keypaths/checkout-credit-card-existing-cards cards)
+      (assoc-in keypaths/checkout-credit-card-selected (:id default-card))))
+
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
     (update-in keypaths/products merge (key-by :id products))

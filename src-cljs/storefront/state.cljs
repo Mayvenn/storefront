@@ -29,6 +29,7 @@
    :credit-card-number ""
    :credit-card-expiration ""
    :credit-card-ccv ""
+   :credit-card-save true
    :selected-shipping-method {}
    :use-store-credits false})
 

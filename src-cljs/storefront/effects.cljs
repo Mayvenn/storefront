@@ -253,6 +253,8 @@
   (api/get-states (get-in app-state keypaths/api-cache)))
 
 (defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
+  (when-let [user-id (get-in app-state keypaths/user-id)]
+    (api/get-saved-cards user-id (get-in app-state keypaths/user-token)))
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
@@ -517,7 +519,9 @@
                (get-in keypaths/order)
                (select-keys [:token :number])
                (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
-               (assoc-in [:cart-payments :stripe :source] (:id stripe-response)))
+               (assoc-in [:cart-payments :stripe :source] (:id stripe-response))
+               (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
+                                                                       (get-in app-state keypaths/checkout-credit-card-save)))))
     :navigate events/navigate-checkout-confirmation
     :place-order? (:place-order? stripe-response)}))
 
@@ -552,7 +556,15 @@
                    (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)}))
         :navigate events/navigate-checkout-confirmation})
       ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-      (create-stripe-token app-state args))))
+      (if (get-in app-state keypaths/checkout-credit-card-selected)
+        (api/update-cart-payments
+         {:order (-> app-state
+                     (get-in keypaths/order)
+                     (select-keys [:token :number])
+                     (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)})
+                     (assoc-in [:cart-payments :stripe :source] (get-in app-state keypaths/checkout-credit-card-selected)))
+          :navigate events/navigate-checkout-confirmation})
+        (create-stripe-token app-state args)))))
 
 (defmethod perform-effects events/control-checkout-remove-promotion [_ _ {:keys [code]} app-state]
   (api/remove-promotion-code (get-in app-state keypaths/order) code))
