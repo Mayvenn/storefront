@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var minifyCSS = require('gulp-minify-css');
 var RevAll = require('gulp-rev-all');
 var path = require('path');
 var argv = require('yargs').argv;
