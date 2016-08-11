@@ -26,7 +26,6 @@
 (defn attach [container-id taxon-slug]
   (when (js-loaded?)
     (when-let [sku (get skus taxon-slug)]
-      (prn container-id sku)
       (js/Pixlee.addProductWidget
        (clj->js
         {:containerId       container-id
