@@ -164,4 +164,5 @@
                    :facebook false
                    :places false
                    :talkable false
-                   :optimizely false}}}))
+                   :optimizely false
+                   :pixlee false}}}))

@@ -10,6 +10,7 @@
 .shadow { text-shadow: 1px 1px #000; }
 .engrave-2 { text-shadow: 0 -1px 0 var(--darken-2); }
 
+.crush { letter-spacing: -0.05em; }
 .letter-spacing-1 { letter-spacing: 1px; }
 .letter-spacing-2 { letter-spacing: 2px; }
 .letter-spacing-3 { letter-spacing: 3px; }

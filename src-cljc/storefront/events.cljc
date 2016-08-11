@@ -211,9 +211,12 @@
 (defpath inserted-reviews)
 (defpath inserted-talkable)
 (defpath inserted-optimizely)
+(defpath inserted-pixlee)
 
 (defpath autocomplete-update-address)
 
 (defpath checkout-address)
 (defpath checkout-address-place-changed)
 (defpath checkout-address-component-mounted)
+
+(defpath ugc-component-mounted)

@@ -63,7 +63,8 @@
                           "externs/facebook.js"
                           "externs/fastpass.js"
                           "externs/talkable.js"
-                          "externs/swipe.js"]}}
+                          "externs/swipe.js"
+                          "externs/pixlee.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
      :compiler {:main "storefront.core"
@@ -86,7 +87,8 @@
                           "externs/facebook.js"
                           "externs/fastpass.js"
                           "externs/talkable.js"
-                          "externs/swipe.js"]
+                          "externs/swipe.js"
+                          "externs/pixlee.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles

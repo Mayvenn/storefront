@@ -7,6 +7,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
+            [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
             [clojure.set :as set]
@@ -269,7 +270,8 @@
                          variant-quantity
                          reviews
                          adding-to-bag?
-                         bagged-variants]}
+                         bagged-variants
+                         ugc]}
                  owner opts]
   (let [selected-variant  (bundle-builder/selected-variant bundle-builder)
         carousel-images   (images-from-variants taxon bundle-builder)
@@ -279,7 +281,9 @@
      (when taxon
        (ui/container
         (page
-         (carousel carousel-images taxon)
+         [:div
+          (carousel carousel-images taxon)
+          [:div.to-md-hide (component/build ugc/component (assoc ugc :container-id "ugcDesktop") opts)]]
          [:div
           [:div.center
            (title (:long-name taxon))
@@ -309,7 +313,8 @@
                 (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
               (bagged-variants-and-checkout bagged-variants)
               (when (taxons/is-stylist-product? taxon) shipping-and-guarantee)]])
-          (taxon-description (:description taxon))])
+          (taxon-description (:description taxon))
+          [:div.md-up-hide.mxn2 (component/build ugc/component (assoc ugc :container-id "ugcMobile") opts)]])
         (when review? (component/build reviews/reviews-component reviews opts)))))))
 
 (defn query [data]
@@ -321,7 +326,8 @@
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)}))
+     :reviews            (reviews/query data)
+     :ugc                (ugc/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

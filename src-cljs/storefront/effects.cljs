@@ -5,6 +5,7 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
+            [storefront.accessors.experiments :as accessors.experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]
@@ -22,6 +23,7 @@
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.seo :as seo]
+            [storefront.hooks.pixlee :as pixlee]
             [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
@@ -134,6 +136,8 @@
 (defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)
+  (when (accessors.experiments/pixlee-product? app-state)
+    (pixlee/insert))
   (refresh-taxon-products app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
@@ -760,6 +764,9 @@
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
 
+(defmethod perform-effects events/ugc-component-mounted [_ event {:keys [taxon-slug container-id]} app-state]
+  (pixlee/attach container-id taxon-slug))
+
 (defn update-cart-flash [app-state msg]
   (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
 
@@ -776,6 +783,8 @@
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
+  (when (= variation "pixlee-product")
+    (pixlee/insert))
   (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]

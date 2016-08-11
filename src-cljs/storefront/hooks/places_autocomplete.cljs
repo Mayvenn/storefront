@@ -3,8 +3,7 @@
             [storefront.events :as events]
             [clojure.set :as set]
             [storefront.platform.messages :as m]
-            [storefront.config :as config]
-            [om.core :as om]))
+            [storefront.config :as config]))
 
 (def key-map
   {"street_number"               :street-number

@@ -128,6 +128,9 @@
     true
     (assoc-in keypaths/places-enabled true)))
 
+(defmethod transition-state events/inserted-pixlee [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-pixlee true))
+
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method

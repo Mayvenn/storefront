@@ -197,6 +197,7 @@
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-optimizely (conj loaded :optimizely))
+(def loaded-pixlee (conj loaded :pixlee))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
