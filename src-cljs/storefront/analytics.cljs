@@ -67,3 +67,6 @@
     (google-analytics/track-page (str (routes/current-path app-state)
                                       "/choose_"
                                       (clj->js last-step)))))
+
+(defmethod track events/api-success-get-saved-cards [_ event args app-state]
+  (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))

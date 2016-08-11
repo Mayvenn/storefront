@@ -26,7 +26,7 @@
    (html
     [:div
      [:div.h2.my2 "Payment Information"]
-     (if fetching-saved-cards?
+     (if (and fetching-saved-cards? (empty? saved-cards))
        [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat
         {:style {:height "4rem" :width "100%"}
          :data-test "spinner"}]

@@ -41,3 +41,6 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (when (.hasOwnProperty js/window "ga")
     (js/ga "set" "page" (clj->js path))
     (js/ga "send" "pageview")))
+
+(defn set-dimension [key value]
+  (js/ga "set" (str key) (str value)))

@@ -249,13 +249,17 @@
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
 
+(defn- fetch-saved-cards [app-state]
+  (when-let [user-id (get-in app-state keypaths/user-id)]
+    (api/get-saved-cards user-id (get-in app-state keypaths/user-token))))
+
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
   (places-autocomplete/insert-places-autocomplete)
-  (api/get-states (get-in app-state keypaths/api-cache)))
+  (api/get-states (get-in app-state keypaths/api-cache))
+  (fetch-saved-cards app-state))
 
-(defmethod perform-effects events/navigate-checkout-payment [_ event args app-state]
-  (when-let [user-id (get-in app-state keypaths/user-id)]
-    (api/get-saved-cards user-id (get-in app-state keypaths/user-token)))
+(defmethod perform-effects events/navigate-checkout-payment [dispatch event args app-state]
+  (fetch-saved-cards app-state)
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args app-state]
@@ -274,8 +278,11 @@
 (defmethod perform-effects events/navigate-account-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
 
-(defmethod perform-effects events/api-success-get-completed-order [_ events order app-state]
+(defmethod perform-effects events/api-success-get-completed-order [_ event order app-state]
   (handle-message events/order-completed order))
+
+(defmethod perform-effects events/api-success-get-saved-cards [dispatch event args app-state]
+  (analytics/track dispatch event args app-state))
 
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
