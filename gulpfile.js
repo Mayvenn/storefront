@@ -1,6 +1,5 @@
 var gulp = require('gulp');
 var RevAll = require('gulp-rev-all');
-var path = require('path');
 var argv = require('yargs').argv;
 var gzip = require('gulp-gzip');
 var jsonTransform = require('gulp-json-transform');
