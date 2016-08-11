@@ -28,7 +28,8 @@
      [:div.h2.my2 "Payment Information"]
      (if fetching-saved-cards?
        [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat
-        {:style {:height "4rem" :width "100%"}}]
+        {:style {:height "4rem" :width "100%"}
+         :data-test "spinner"}]
        [:div
         (when (seq saved-cards)
           (ui/select-field "Payment Card"
@@ -37,7 +38,7 @@
                            (conj (mapv (juxt cc/display-credit-card :id) saved-cards)
                                  ["Add a new payment card" "add-new-card"])
                            {:id        "selected-saved-card"
-                            :data-test "selected-saved-card"
+                            :data-test "payment-form-selected-saved-card"
                             :required  true}))
 
         (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
@@ -80,7 +81,8 @@
              [:div.mb2
               [:label.light-gray
                [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
-                                  {:type "checkbox"})]
+                                  {:type "checkbox"
+                                   :data-test "payment-form-save-credit-card"})]
                "Save my card for easier checkouts."]])])])])))
 
 (defn credit-card-form-query [data]
