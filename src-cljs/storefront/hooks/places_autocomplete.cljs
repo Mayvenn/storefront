@@ -42,6 +42,10 @@
 
 (defn attach [address-elem address-keypath]
   (when (.hasOwnProperty js/window "google")
+    (let [containers (.querySelectorAll js/document ".pac-container")]
+      (dotimes [i (.-length containers)]
+        (let [node (aget containers i)]
+          (.removeChild (.-parentNode node) node))))
     (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
           elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
