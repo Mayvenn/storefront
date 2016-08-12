@@ -26,7 +26,7 @@
    (html
     [:div
      [:div.h2.my2 "Payment Information"]
-     (if (and fetching-saved-cards? (empty? saved-cards))
+     (if fetching-saved-cards?
        [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat
         {:style {:height "4rem" :width "100%"}
          :data-test "spinner"}]
@@ -86,19 +86,22 @@
                "Save my card for easier checkouts."]])])])])))
 
 (defn credit-card-form-query [data]
-  {:credit-card {:guest?                 (get-in data keypaths/checkout-as-guest)
-                 :name                   (get-in data keypaths/checkout-credit-card-name)
-                 :number                 (get-in data keypaths/checkout-credit-card-number)
-                 :expiration             (get-in data keypaths/checkout-credit-card-expiration)
-                 :ccv                    (get-in data keypaths/checkout-credit-card-ccv)
-                 :save-credit-card?      (get-in data keypaths/checkout-credit-card-save)
-                 :selected-saved-card-id (get-in data keypaths/checkout-credit-card-selected-id)
-                 :saved-cards            (get-in data keypaths/checkout-credit-card-existing-cards)
-                 :fetching-saved-cards?  (utils/requesting? data request-keys/get-saved-cards)}})
+  (let [saved-cards (get-in data keypaths/checkout-credit-card-existing-cards)]
+    {:credit-card {:guest?                 (get-in data keypaths/checkout-as-guest)
+                   :name                   (get-in data keypaths/checkout-credit-card-name)
+                   :number                 (get-in data keypaths/checkout-credit-card-number)
+                   :expiration             (get-in data keypaths/checkout-credit-card-expiration)
+                   :ccv                    (get-in data keypaths/checkout-credit-card-ccv)
+                   :save-credit-card?      (get-in data keypaths/checkout-credit-card-save)
+                   :selected-saved-card-id (get-in data keypaths/checkout-credit-card-selected-id)
+                   :saved-cards            saved-cards
+                   :fetching-saved-cards?  (and (utils/requesting? data request-keys/get-saved-cards)
+                                                (empty? saved-cards))}}))
 
 (defn component
   [{:keys [step-bar
            saving?
+           disabled?
            loaded-stripe?
            store-credit
            credit-card]}
@@ -132,6 +135,7 @@
         (when loaded-stripe?
           [:.my2
            (ui/submit-button "Go to Review Order" {:spinning? saving?
+                                                   :disabled? disabled?
                                                    :data-test "payment-form-submit"})])])))))
 
 (defn ^:private saving-card? [data]
@@ -148,6 +152,8 @@
                                            (get-in data keypaths/order)
                                            (get-in data keypaths/user))}
       :saving?        (saving-card? data)
+      :disabled?      (and (utils/requesting? data request-keys/get-saved-cards)
+                           (empty? (get-in data keypaths/checkout-credit-card-existing-cards)))
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)}
      (credit-card-form-query data))))
