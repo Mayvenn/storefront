@@ -246,7 +246,7 @@
                          user-email]} _ _]
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
-     [:div.clearfix {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+     [:div.clearfix.relative {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
       [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
        [:div.flex-auto.col-4
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
