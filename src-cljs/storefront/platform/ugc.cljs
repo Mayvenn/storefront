@@ -3,15 +3,16 @@
             [om.core :as om]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.keypaths :as keypaths]))
 
-(defn inner-component [{:keys [taxon container-id]} owner opts]
+(defn inner-component [{:keys [pixlee-sku container-id]} owner opts]
   (reify
     om/IDidMount
     (did-mount [this]
-      (handle-message events/ugc-component-mounted {:taxon-slug (:slug taxon)
+      (handle-message events/ugc-component-mounted {:pixlee-sku   pixlee-sku
                                                     :container-id container-id}))
     om/IRender
     (render [this]
@@ -22,14 +23,16 @@
          "#MayvennMade"]
         [:div {:id container-id}]]))))
 
-(defn component [{:keys [taxon enabled? loaded?] :as data} owner opts]
+(defn component [{:keys [pixlee-sku in-experiment? pixlee-loaded? content-available?] :as data} owner opts]
   (om/component
    (html
-    (when (and enabled? loaded?)
-      [:div {:key (:slug taxon)}
+    (when (and in-experiment? pixlee-loaded? content-available?)
+      [:div {:key pixlee-sku}
        (om/build inner-component data opts)]))))
 
 (defn query [data]
-  {:enabled? (experiments/pixlee-product? data)
-   :loaded?  (get-in data keypaths/loaded-pixlee)
-   :taxon    (taxons/current-taxon data)})
+  (let [taxon (taxons/current-taxon data)]
+    {:in-experiment?     (experiments/pixlee-product? data)
+     :pixlee-loaded?     (get-in data keypaths/loaded-pixlee)
+     :content-available? (pixlee/content-available? taxon)
+     :pixlee-sku         (pixlee/sku taxon)}))
