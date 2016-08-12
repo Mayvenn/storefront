@@ -138,7 +138,9 @@
                        (orders/shipping-item (:order app-state))))))
 
 (defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
-  (ensure-cart-has-shipping-method app-state))
+  (-> app-state
+      ensure-cart-has-shipping-method
+      (update-in keypaths/checkout-credit-card-existing-cards empty)))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
