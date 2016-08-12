@@ -410,11 +410,12 @@
 (def vals-empty? (comp (partial every? string/blank?) vals))
 
 (defn default-checkout-addresses [app-state billing-address shipping-address]
-  (if (vals-empty? (get-in app-state keypaths/checkout-billing-address))
-    (-> app-state
-        (assoc-in keypaths/checkout-billing-address billing-address)
-        (assoc-in keypaths/checkout-shipping-address shipping-address))
-    app-state))
+  (cond-> app-state
+    (vals-empty? (get-in app-state keypaths/checkout-billing-address))
+    (assoc-in keypaths/checkout-billing-address billing-address)
+
+    (vals-empty? (get-in app-state keypaths/checkout-shipping-address))
+    (assoc-in keypaths/checkout-shipping-address shipping-address)))
 
 (defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath] :as args} app-state]
   (-> app-state
