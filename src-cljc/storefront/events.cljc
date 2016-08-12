@@ -220,3 +220,4 @@
 (defpath checkout-address-component-mounted)
 
 (defpath ugc-component-mounted)
+(defpath ugc-component-unmounted)

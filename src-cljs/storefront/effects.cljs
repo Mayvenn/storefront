@@ -769,6 +769,9 @@
 (defmethod perform-effects events/ugc-component-mounted [_ event {:keys [pixlee-sku container-id]} app-state]
   (pixlee/attach container-id pixlee-sku))
 
+(defmethod perform-effects events/ugc-component-unmounted [_ event _ app-state]
+  (pixlee/close-all))
+
 (defn update-cart-flash [app-state msg]
   (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
 

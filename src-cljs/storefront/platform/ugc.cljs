@@ -14,6 +14,11 @@
     (did-mount [this]
       (handle-message events/ugc-component-mounted {:pixlee-sku   pixlee-sku
                                                     :container-id container-id}))
+
+    om/IWillUnmount
+    (will-unmount [this]
+      (handle-message events/ugc-component-unmounted))
+
     om/IRender
     (render [this]
       (html
@@ -21,7 +26,7 @@
         [:div.h1.medium.black.crush.line-height-1
          {:style {:margin-top "50px"}} ;; To match the white space at the top of the widget
          "#MayvennMade"]
-        [:div {:id container-id}]
+        [:div {:id container-id :style {:height "320px"}}]
         [:div.center.dark-gray.px1 "Want to show up on our homepage? Tag your best pictures wearing Mayvenn with "
          [:span.bold "#MayvennMade"]]]))))
 
