@@ -3,4 +3,4 @@ FROM java:8u91-jre
 COPY storefront.jar storefront.jar
 
 USER nobody
-CMD java -jar storefront.jar -Djava.awt.headless=true -Xmx768m -XX:+UseConcMarkSweepGC
+CMD java -server -Xmx768m -XX:MaxMetaspaceSize=64m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar storefront.jar
