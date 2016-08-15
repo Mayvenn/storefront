@@ -26,6 +26,10 @@
         (dissoc :street :street-number))))
 
 (defn insert-places-autocomplete []
+  (let [containers (.querySelectorAll js/document ".pac-container")]
+    (dotimes [i (.-length containers)]
+      (let [node (aget containers i)]
+        (.removeChild (.-parentNode node) node))))
   (when-not (.hasOwnProperty js/window "google")
     (tags/insert-tag-with-callback
      (tags/src-tag (str "https://maps.googleapis.com/maps/api/js?key="
@@ -42,10 +46,6 @@
 
 (defn attach [address-elem address-keypath]
   (when (.hasOwnProperty js/window "google")
-    (let [containers (.querySelectorAll js/document ".pac-container")]
-      (dotimes [i (.-length containers)]
-        (let [node (aget containers i)]
-          (.removeChild (.-parentNode node) node))))
     (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
           elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
