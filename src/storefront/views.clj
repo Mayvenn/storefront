@@ -1,5 +1,6 @@
 (ns storefront.views
-  (:require [storefront.assets :refer [asset-map asset-path cdn-host]]
+  (:require [storefront.platform.asset-mappings :as asset-mappings]
+            [storefront.assets :as assets]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.component-shim :as component]
             [storefront.seo-tags :as seo]
@@ -11,7 +12,6 @@
             [storefront.safe-hiccup :refer [html5 raw]]
             [hiccup.page :as page]
             [hiccup.element :as element]
-            [storefront.platform.images :as images]
             [clojure.java.io :as io])
   (:import [java.util.zip GZIPInputStream]))
 
@@ -46,7 +46,7 @@
     :else           (escape-js-string v)))
 
 (defn read-css []
-  (with-open [css (->> (asset-map "css/app.css")
+  (with-open [css (->> (asset-mappings/manifest "css/app.css")
                        (str "public/cdn/")
                        io/resource
                        io/input-stream
@@ -64,12 +64,15 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     (into '() (seo/tags-for-page data))
 
-    [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    (when cdn-host
-      [:link {:rel "dns-prefetch" :href (str "//" cdn-host)}])
+    [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+    (when asset-mappings/cdn-host
+      [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
     [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
     [:link {:rel "dns-prefetch" :href "//cdn.optimizely.com"}]
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
+    [:script {:type "text/javascript"}
+     (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
+               "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"))]
     [:script {:type "text/javascript"}
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
@@ -77,17 +80,16 @@
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
-           "var canonicalImage=\"" images/canonical-image "\";"
            "window.optimizely=" (generate-string (into ["bucketVisitor"] (get-in data keypaths/optimizely-buckets))) ";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     ;; in production, we want to load the script tag asynchronously which has better
     ;; support when that script tag is in the <head>
     (when-not (config/development? environment)
-      [:script {:src (asset-path "/js/out/main.js") :async true}])
+      [:script {:src (assets/path "/js/out/main.js") :async true}])
     ;; inline styles in production because our css file is so small and it avoids another round
     ;; trip request. At time of writing this greatly includes our pagespeed score
     (if (#{"development" "test"} environment)
-      (page/include-css (asset-path "/css/app.css"))
+      (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
    [:body {:data-snap-to "top" :class body-class}
     [:div#content initial-content]
@@ -95,7 +97,7 @@
     ;; additionally, we want developers to see the server side render, so we don't want
     ;; to put this tag in <head> and be synchronous
     (when (config/development? environment)
-      [:script {:src (asset-path "/js/out/main.js")}])]))
+      [:script {:src (assets/path "/js/out/main.js")}])]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
@@ -110,12 +112,12 @@
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-    [:link {:href (asset-path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    (page/include-css (asset-path "/css/app.css"))]
+    [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+    (page/include-css (assets/path "/css/app.css"))]
    [:body {:data-snap-to "top" :class body-class}
     [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center
-     [:img.py2 {:src (asset-path "/images/header_logo.png")}]
-     [:img.mx-auto.block {:src (asset-path "/images/not_found_head.png")
+     [:img.py2 {:src (assets/path "/images/header_logo.png")}]
+     [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
                           :style "max-width: 80%"}]
      [:div.h2.mt3.mb2.center "We can't seem to find the page you're looking for."]
      [:a.mx-auto.btn.btn-primary.col-10
