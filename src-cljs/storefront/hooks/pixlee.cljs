@@ -25,4 +25,5 @@
        :recipeId          476
        :displayOptionsId  14046
        :type              "horizontal"
-       :accountId         1009}))))
+       :accountId         1009}))
+    (js/Pixlee.resizeWidget)))
