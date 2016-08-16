@@ -8,6 +8,8 @@
 @media (--breakpoint-xl-up) { .home-container { width: 100%; } }
 
 .banner-container { height: 216px; }
+
+.new-banner-container { height: 338px; }
 @media (--breakpoint-md-up) { .banner-container { height: 288px; } }
 @media (--breakpoint-lg-up) { .banner-container { height: 326px; } }
 @media (--breakpoint-xl-up) { .banner-container { height: 432px; } }

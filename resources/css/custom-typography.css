@@ -1,3 +1,6 @@
+/* 1-4 defined by basscss typography module */
+.line-height-5 { line-height: var(--line-height-5); }
+
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 .medium      { font-weight: 500; }

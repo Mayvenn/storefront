@@ -5,9 +5,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.experiments :as experiments]
-            [om.core :as om]
-            [sablono.core :refer-macros [html]]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.components.new-home :as new-home]))
 
 (defn color-option-home-grid [taxons]
   (let [rem #(str % "rem")
@@ -37,13 +36,14 @@
 (defn categories-query [data]
   {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
 
-(defn home-component [data owner opts]
+(defn component [data owner opts]
   (component/create
    [:div.home-container.m-auto.clearfix
     [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
      (utils/route-to events/navigate-categories)]
     [:a.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
      (utils/route-to events/navigate-categories)]
+
     [:div.border.border-width-2.my3.py2.center.medium.green.border-green
      "Free Shipping + 30 Day Money Back Guarantee"]
 
@@ -59,3 +59,10 @@
       [:p.bg-pink-gradient.col-12.white.italic.flex.items-center.justify-center.mtn1
        {:style {:height "29px"}}
        "Introducing Peruvian In All Textures"]]]]))
+
+(defn home-component [data owner opts]
+  (component/create
+   [:div
+    (if (experiments/new-homepage? data)
+      (new-home/built-component data nil)
+      (component/build component data nil))]))
