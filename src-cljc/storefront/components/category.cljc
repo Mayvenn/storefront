@@ -331,6 +331,3 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
-
-(defn category-component [data owner opts]
-  (component/create (built-component data opts)))

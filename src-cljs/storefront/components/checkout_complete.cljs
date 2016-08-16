@@ -28,4 +28,4 @@
      (ui/green-button (utils/route-to events/navigate-home) "Return to Homepage")))))
 
 (defn built-component [data _]
-  (om/component (html (om/build component {}))))
+  (om/build component {}))

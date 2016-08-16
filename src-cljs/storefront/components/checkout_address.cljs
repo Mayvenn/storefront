@@ -281,5 +281,5 @@
                              :shipping-expanded? (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
                              :field-errors       field-errors}}))
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (query data)))))
+(defn built-component [data opts]
+  (om/build component (query data)))

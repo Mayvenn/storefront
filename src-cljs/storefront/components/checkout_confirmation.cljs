@@ -65,5 +65,5 @@
    :payment                      (checkout-payment/credit-card-form-query data)
    :delivery                     (checkout-delivery/query data)})
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (query data)))))
+(defn built-component [data opts]
+  (om/build component (query data) opts))

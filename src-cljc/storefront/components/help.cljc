@@ -27,7 +27,7 @@
 (def cell-text :div.f1.light.dark-gray)
 (def cell-description :div.f4.navy.medium)
 
-(defn help-component [{:keys [sms-number]} owner opts]
+(defn component [{:keys [sms-number]} owner opts]
   (component/create
    [:div
     [:div.py4.bg-white.center
@@ -69,3 +69,9 @@
         [cell-text "Email"]
         [cell-description
          [:span {:style {:word-break "break-all"}} "help@mayvenn.com"]])]]]]))
+
+(defn query [data]
+  {:sms-number (get-in data keypaths/sms-number)})
+
+(defn built-component [data opts]
+  (component/build component (query data) opts))

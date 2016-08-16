@@ -35,5 +35,5 @@
    :email            (get-in data keypaths/forgot-password-email)
    :field-errors (get-in data keypaths/field-errors)})
 
-(defn built-component [data owner opts]
-  (component/create (component/build component (query data) nil)))
+(defn built-component [data opts]
+  (component/build component (query data) nil))

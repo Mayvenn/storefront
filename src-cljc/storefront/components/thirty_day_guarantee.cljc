@@ -13,8 +13,8 @@
                "Just call us:"
                [:a.medium.navy.block {:href "tel:1-888-562-7952"} "1-888-562-7952"]))])
 
-(defn thirty-day-guarantee-component [data owner opts]
-  (component/create
+(def content
+  (component/html
    [:div.dark-gray
     [:div.bg-white.p2
      [:div.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
@@ -31,3 +31,6 @@
        (action "RETURNS"
                "If you are not completely happy with your Mayvenn hair before it is installed, "
                "we will refund your purchase if the bundle is unopened and the hair is in its original condition. ")]]]]))
+
+(defn built-component [data opts]
+  content)

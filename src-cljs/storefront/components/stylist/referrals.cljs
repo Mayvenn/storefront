@@ -110,13 +110,13 @@
     [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
     [:p.h2.silver "Looks like you haven't" [:br] "referred anyone yet."]]))
 
-(defn stylist-referrals-component [{:keys [earning-amount
-                                           bonus-amount
-                                           lifetime-total
-                                           referrals
-                                           page
-                                           pages
-                                           fetching?]} _]
+(defn component [{:keys [earning-amount
+                         bonus-amount
+                         lifetime-total
+                         referrals
+                         page
+                         pages
+                         fetching?]} _]
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
@@ -138,14 +138,14 @@
          (when (and (seq referrals) (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
 
-(defn stylist-referrals-query [data]
-  {:earning-amount  (get-in data keypaths/stylist-referral-program-earning-amount)
-   :bonus-amount    (get-in data keypaths/stylist-referral-program-bonus-amount)
-   :lifetime-total  (get-in data keypaths/stylist-referral-program-lifetime-total)
-   :referrals       (get-in data keypaths/stylist-referral-program-referrals)
-   :page            (get-in data keypaths/stylist-referral-program-page)
-   :pages           (get-in data keypaths/stylist-referral-program-pages)
-   :fetching?       (utils/requesting? data request-keys/get-stylist-referral-program)})
+(defn query [data]
+  {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
+   :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
+   :lifetime-total (get-in data keypaths/stylist-referral-program-lifetime-total)
+   :referrals      (get-in data keypaths/stylist-referral-program-referrals)
+   :page           (get-in data keypaths/stylist-referral-program-page)
+   :pages          (get-in data keypaths/stylist-referral-program-pages)
+   :fetching?      (utils/requesting? data request-keys/get-stylist-referral-program)})
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 

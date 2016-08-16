@@ -93,5 +93,5 @@
    :commission          (account.commission/query data)
    :social              (account.social/query data)})
 
-(defn built-component [data owner opts]
-  (component/create (component/build component (query data) opts)))
+(defn built-component [data opts]
+  (component/build component (query data) opts))

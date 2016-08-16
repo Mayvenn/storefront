@@ -76,12 +76,13 @@
    :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)
    :field-errors            (get-in data keypaths/field-errors)})
 
-(defn built-component [data owner opts]
-  (component/create (component/build component (query data) nil)))
+(defn built-component [data opts]
+  (component/build component (query data) opts))
 
-(defn requires-sign-in [app-state authorized-component]
-  (let [sign-in-component built-component]
-    (if (get-in app-state keypaths/user-id) authorized-component sign-in-component)))
+(defn requires-sign-in [authorized-component data opts]
+  (if (get-in data keypaths/user-id)
+    (authorized-component data nil)
+    (built-component data nil)))
 
 (defn redirect-getsat-component [data owner opts]
   (component/create
@@ -95,3 +96,6 @@
       (flash/error-box
        {:data-test "flash-error"}
        [:div.px2 "The Mayvenn Stylist Community is only for Mayvenn stylists. Become a stylist at welcome.mayvenn.com!"])))))
+
+(defn built-redirect-getsat-component [data opts]
+  (component/build redirect-getsat-component data opts))

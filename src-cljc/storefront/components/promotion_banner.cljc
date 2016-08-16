@@ -16,9 +16,15 @@
         (promos/find-promotion-by-code promotions (get-in data keypaths/pending-promo-code))
         (promos/default-advertised-promotion promotions))))
 
-(defn promotion-banner-component [data owner opts]
+(defn component [{:keys [allowed? promo]} owner opts]
   (component/create
-   (when-let [promo (promotion-to-advertise data)]
-     (when (allowed-navigation-events (get-in data keypaths/navigation-event))
-       [:div.white.center.pp5.bg-green.f4
-        (:description promo)]))))
+   (when (and allowed? promo)
+     [:div.white.center.pp5.bg-green.f4
+      (:description promo)])))
+
+(defn query [data]
+  {:allowed? (allowed-navigation-events (get-in data keypaths/navigation-event))
+   :promo    (promotion-to-advertise data)})
+
+(defn built-component [data opts]
+  (component/build component (query data) opts))

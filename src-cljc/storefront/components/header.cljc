@@ -246,7 +246,7 @@
                          user-email]} _ _]
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
-     [:div.clearfix.relative {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+     [:div.clearfix.relative.border-bottom.border-light-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
       [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
        [:div.flex-auto.col-4
         [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
@@ -279,5 +279,5 @@
    :user-email        (get-in data keypaths/user-email)
    :taxons            (taxons/current-taxons data)})
 
-(defn built-component [data]
+(defn built-component [data opts]
   (component/build component (query data) nil))

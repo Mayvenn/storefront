@@ -6,28 +6,27 @@
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
-                       [storefront.components.checkout-sign-in :as checkout-sign-in :refer [requires-sign-in-or-guest]]
+                       [storefront.components.checkout-sign-in :as checkout-sign-in]
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
-                       [storefront.components.stylist.dashboard :refer [stylist-dashboard-component]]
-                       [storefront.components.stylist.referrals :as stylist.referrals]
+                       [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.account :as stylist.account]
-                       [storefront.components.friend-referrals :refer [friend-referrals-component]]
-                       [storefront.components.popup :refer [popup-component]]])
+                       [storefront.components.friend-referrals :as friend-referrals]
+                       [storefront.components.popup :as popup]])
 
             [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.header :as header]
             [storefront.components.footer :as footer]
             [storefront.components.flash :as flash]
-            [storefront.components.home :refer [home-component]]
-            [storefront.components.categories :refer [categories-page-component]]
-            [storefront.components.category :refer [category-component]]
-            [storefront.components.promotion-banner :refer [promotion-banner-component]]
+            [storefront.components.home :as home]
+            [storefront.components.categories :as categories]
+            [storefront.components.category :as category]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.slideout-nav :as slideout-nav]
-            [storefront.components.thirty-day-guarantee :refer [thirty-day-guarantee-component]]
-            [storefront.components.help :refer [help-component]]
-            [storefront.components.sign-in :as sign-in :refer [redirect-getsat-component requires-sign-in]]
+            [storefront.components.thirty-day-guarantee :as thirty-day-guarantee]
+            [storefront.components.help :as help]
+            [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.stylist-banner :as stylist-banner]
@@ -40,56 +39,53 @@
      (component/create
       [:div
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
-       (component/build flash/component (flash/query data) opts)
+       (flash/built-component data nil)
        [:main {:role "main"}
         [:div
-         (component/build (requires-sign-in data redirect-getsat-component) data opts)]]])))
+         (sign-in/requires-sign-in sign-in/built-redirect-getsat-component data nil)]]])))
 
+(defn main-component [nav-event]
+  (condp = nav-event
+    #?@(:cljs
+        [events/navigate-reset-password                 reset-password/built-component
+         events/navigate-stylist-dashboard-commissions  stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-bonus-credit stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-referrals    stylist.dashboard/built-component
+         events/navigate-stylist-account-profile        stylist.account/built-component
+         events/navigate-stylist-account-password       stylist.account/built-component
+         events/navigate-stylist-account-commission     stylist.account/built-component
+         events/navigate-stylist-account-social         stylist.account/built-component
+         events/navigate-account-manage                 (partial sign-in/requires-sign-in account/built-component)
+         events/navigate-account-referrals              (partial sign-in/requires-sign-in friend-referrals/built-component)
+         events/navigate-friend-referrals               friend-referrals/built-component
+         events/navigate-cart                           cart/built-component
+         events/navigate-checkout-sign-in               checkout-sign-in/built-component
+         events/navigate-checkout-address               (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
+         events/navigate-checkout-payment               (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)
+         events/navigate-checkout-confirmation          (partial checkout-sign-in/requires-sign-in-or-guest checkout-confirmation/built-component)
+         events/navigate-order-complete                 checkout-complete/built-component])
+
+    events/navigate-home            home/built-component
+    events/navigate-categories      categories/built-component
+    events/navigate-category        category/built-component
+    events/navigate-guarantee       thirty-day-guarantee/built-component
+    events/navigate-help            help/built-component
+    events/navigate-sign-in         sign-in/built-component
+    events/navigate-sign-up         sign-up/built-component
+    events/navigate-forgot-password forgot-password/built-component
+    home/built-component))
 
 (defn top-level-component [data owner opts]
   (component/create
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
-     [:div
-      [:div.flex.flex-column {:style {:min-height "100vh"}}
-       #?(:cljs (component/build stylist-banner/component (stylist-banner/query data) nil))
-       (component/build promotion-banner-component data nil)
-       #?(:cljs (popup-component data))
-       [:div.border-bottom.border-light-silver
-        (header/built-component data)
-        (slideout-nav/built-component data)]
-       (component/build flash/component (flash/query data) opts)
-       [:main.bg-light-white.flex-auto {:role "main"}
-        [:div
-         (component/build
-          (condp = (get-in data keypaths/navigation-event)
-            #?@(:cljs
-                [events/navigate-reset-password                 reset-password/built-component
-                 events/navigate-stylist-dashboard-commissions  stylist-dashboard-component
-                 events/navigate-stylist-dashboard-bonus-credit stylist-dashboard-component
-                 events/navigate-stylist-dashboard-referrals    stylist-dashboard-component
-                 events/navigate-stylist-account-profile        stylist.account/built-component
-                 events/navigate-stylist-account-password       stylist.account/built-component
-                 events/navigate-stylist-account-commission     stylist.account/built-component
-                 events/navigate-stylist-account-social         stylist.account/built-component
-                 events/navigate-account-manage                 (requires-sign-in data account/built-component)
-                 events/navigate-account-referrals              (requires-sign-in data friend-referrals-component)
-                 events/navigate-friend-referrals               friend-referrals-component
-                 events/navigate-cart                           cart/built-component
-                 events/navigate-checkout-sign-in               checkout-sign-in/built-component
-                 events/navigate-checkout-address               (requires-sign-in-or-guest data checkout-address/built-component)
-                 events/navigate-checkout-payment               (requires-sign-in-or-guest data checkout-payment/built-component)
-                 events/navigate-checkout-confirmation          (requires-sign-in-or-guest data checkout-confirmation/built-component)
-                 events/navigate-order-complete                 checkout-complete/built-component])
-
-            events/navigate-home            home-component
-            events/navigate-categories      categories-page-component
-            events/navigate-category        category-component
-            events/navigate-guarantee       thirty-day-guarantee-component
-            events/navigate-help            help-component
-            events/navigate-sign-in         sign-in/built-component
-            events/navigate-sign-up         sign-up/built-component
-            events/navigate-forgot-password forgot-password/built-component
-            home-component)
-          data opts)]]
-       (footer/built-component data)]])))
+     [:div.flex.flex-column {:style {:min-height "100vh"}}
+      #?(:cljs (stylist-banner/built-component data nil))
+      (promotion-banner/built-component data nil)
+      #?(:cljs (popup/built-component data nil))
+      (header/built-component data nil)
+      (slideout-nav/built-component data nil)
+      (flash/built-component data nil)
+      [:main.bg-light-white.flex-auto {:role "main"}
+       ((main-component (get-in data keypaths/navigation-event)) data nil)]
+      (footer/built-component data nil)])))

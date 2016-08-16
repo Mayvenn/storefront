@@ -29,14 +29,7 @@
          {:class (str "img-text-" slug)
           :style {:height "25px"}}]]])))
 
-(defn categories-component [{:keys [taxons]} owner opts]
-  (component/create
-   [:div (color-option-home-grid taxons)]))
-
-(defn categories-query [data]
-  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
-
-(defn component [data owner opts]
+(defn component [{:keys [taxons]} owner opts]
   (component/create
    [:div.home-container.m-auto.clearfix
     [:a.lg-up-hide.img-md-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container
@@ -49,9 +42,8 @@
 
     [:div.col-12.lg-up-col-6 [:div.h3.center.black.mb1 "Pick your style"]]
     [:div.mb2.clearfix
-     [:div.col.col-12.lg-up-col-6
-      (component/build categories-component (categories-query data) nil)
-      [:div.clearfix]]
+     [:div.col.col-12.lg-up-col-6.clearfix
+      (color-option-home-grid taxons)]
      [:div.col.col-6.to-lg-hide
       [:a.block.img-featured.col-12.bg-no-repeat.bg-center.bg-cover.mtp1
        (merge {:style {:height "300px"}}
@@ -60,9 +52,15 @@
        {:style {:height "29px"}}
        "Introducing Peruvian In All Textures"]]]]))
 
+(defn query [data]
+  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
+
 (defn home-component [data owner opts]
   (component/create
    [:div
     (if (experiments/new-homepage? data)
       (new-home/built-component data nil)
-      (component/build component data nil))]))
+      (component/build component (query data) nil))]))
+
+(defn built-component [data opts]
+  (component/build home-component data opts))

@@ -47,3 +47,6 @@
   {:success            (get-in data keypaths/flash-success-message)
    :failure            (get-in data keypaths/flash-failure-message)
    :errors             (get-in data keypaths/errors)})
+
+(defn built-component [data opts]
+  (component/build component (query data) opts))

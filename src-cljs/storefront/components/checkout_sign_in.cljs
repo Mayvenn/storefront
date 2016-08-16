@@ -22,11 +22,11 @@
      [:.h5.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (sign-in/query data)))))
+(defn built-component [data opts]
+  (om/build component (sign-in/query data) opts))
 
-(defn requires-sign-in-or-guest [app-state authorized-component]
-  (if (or (get-in app-state keypaths/user-id)
-          (get-in app-state keypaths/checkout-as-guest))
-    authorized-component
-    built-component))
+(defn requires-sign-in-or-guest [authorized-component data opts]
+  (if (or (get-in data keypaths/user-id)
+          (get-in data keypaths/checkout-as-guest))
+    (authorized-component data nil)
+    (built-component data nil)))

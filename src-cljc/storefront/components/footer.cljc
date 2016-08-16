@@ -114,10 +114,12 @@
       [:span.to-md-hide call-number]
       " | 9am-5pm PST M-F"]]]))
 
-(defn component [{:keys [minimal?] :as data}]
-  (if minimal?
-    (component/build minimal-component (:contacts data) nil)
-    (component/build full-component data nil)))
+(defn component [{:keys [minimal?] :as data} _ _]
+  (component/create
+   [:div
+    (if minimal?
+      (component/build minimal-component (:contacts data) nil)
+      (component/build full-component data nil))]))
 
 (defn query [data]
   {:minimal?   (minimal-footer-events (get-in data keypaths/navigation-event))
@@ -127,6 +129,5 @@
                 :contact-email "help@mayvenn.com"}
    :own-store? (own-store? data)})
 
-
-(defn built-component [app-state]
-  (component (query app-state)))
+(defn built-component [data opts]
+  (component/build component (query data) nil))

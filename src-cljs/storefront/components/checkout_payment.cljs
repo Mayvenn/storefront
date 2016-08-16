@@ -158,5 +158,5 @@
       :step-bar       (checkout-steps/query data)}
      (credit-card-form-query data))))
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (query data)))))
+(defn built-component [data opts]
+  (om/build component (query data) opts))

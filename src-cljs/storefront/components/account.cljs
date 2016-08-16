@@ -98,5 +98,5 @@
    :available-credit  (get-in data keypaths/user-total-available-store-credit)
    :profile           (profile-query data)})
 
-(defn built-component [data owner opts]
-  (component/create (component/build component (query data) opts)))
+(defn built-component [data opts]
+  (component/build component (query data) opts))

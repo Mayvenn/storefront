@@ -193,7 +193,7 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn stylist-commissions-component [{:keys [commissions expanded? shipping-methods products fetching?]}]
+(defn component [{:keys [commissions expanded? shipping-methods products fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
@@ -212,7 +212,7 @@
           [:.sm-up-col.sm-up-col-3
            (when rate (show-commission-rate rate))]]])))))
 
-(defn stylist-commissions-query [data]
+(defn query [data]
   {:commissions      (get-in data keypaths/stylist-commissions)
    :expanded?        (get-in data keypaths/expanded-commission-order-id)
    :shipping-methods (get-in data keypaths/shipping-methods)

@@ -41,3 +41,6 @@
                      (= (get-in data keypaths/store-slug) "shop")
                      (not (get-in data keypaths/stylist-banner-hidden)))
    :welcome-url (get-in data keypaths/welcome-url)})
+
+(defn built-component [data opts]
+  (component/build component (query data) opts))

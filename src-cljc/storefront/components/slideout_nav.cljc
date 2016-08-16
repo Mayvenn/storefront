@@ -199,5 +199,5 @@
    :current-navigation-message (get-in data keypaths/navigation-message)
    :taxons                     (taxons/current-taxons data)})
 
-(defn built-component [data]
+(defn built-component [data opts]
   (component/build component (query data) nil))

@@ -21,17 +21,15 @@
     [:div.h1.white.center.col-12.titleize.shadow.nowrap
      name]]])
 
-(defn categories-component [data owner opts]
+(defn component [{:keys [taxons]} owner opts]
   (component/create
-   [:div
+   [:div.m2
     [:h1.py2.center.black "Select your favorite style"]
     [:div.clearfix.mxn1.center
-     (->> (taxons/current-taxons data)
-          (remove taxons/is-stylist-product?)
-          (map-indexed category))]]))
+     (map-indexed category taxons)]]))
 
-(defn categories-page-component [data owner opts]
-  (component/create
-   ;; More spacing on this page than on home page
-   [:div.m2
-    (component/build categories-component data nil)]))
+(defn query [data]
+  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
+
+(defn built-component [data opts]
+  (component/build component (query data) nil))

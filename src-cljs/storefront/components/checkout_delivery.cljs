@@ -39,5 +39,5 @@
   {:shipping-methods (get-in data keypaths/shipping-methods)
    :selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)})
 
-(defn built-component [data owner]
-  (om/component (html (om/build component (query data)))))
+(defn built-component [data opts]
+  (om/build component (query data) opts))

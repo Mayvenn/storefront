@@ -57,7 +57,7 @@
       [:.mr1 svg/micro-dollar-sign]
       [:.center message]]]))
 
-(defn stylist-bonuses-component [{:keys [available-credit
+(defn component [{:keys [available-credit
                                          award-amount
                                          milestone-amount
                                          progress-amount
@@ -113,7 +113,7 @@
          (when (pos? lifetime-total)
            (show-lifetime-total lifetime-total))]]]))))
 
-(defn stylist-bonuses-query [data]
+(defn query [data]
   {:available-credit      (get-in data keypaths/user-total-available-store-credit)
    :award-amount          (get-in data keypaths/stylist-bonuses-award-amount)
    :milestone-amount      (get-in data keypaths/stylist-bonuses-milestone-amount)

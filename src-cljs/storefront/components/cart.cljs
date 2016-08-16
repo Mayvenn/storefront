@@ -189,7 +189,7 @@ Thanks,
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
-(defn query [data]
+(defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         line-items  (orders/product-items order)
         variant-ids (map :id line-items)]
@@ -208,12 +208,25 @@ Thanks,
 (defn empty-cart-query [data]
   {:promotions           (get-in data keypaths/promotions)})
 
-(defn built-component [data owner]
+(defn component [{:keys [fetching-order?
+                         item-count
+                         empty-cart
+                         full-cart]}
+                 owner
+                 opts]
   (om/component
    (html
-    (if (utils/requesting? data request-keys/get-order)
+    (if fetching-order?
       [:.py3.h1 ui/spinner]
-      (let [item-count (orders/product-quantity (get-in data keypaths/order))]
-        (if (zero? item-count)
-          (om/build empty-component (empty-cart-query data))
-          (om/build full-component (query data))))))))
+      (if (zero? item-count)
+        (om/build empty-component empty-cart)
+        (om/build full-component full-cart))))))
+
+(defn query [data]
+  {:fetching-order? (utils/requesting? data request-keys/get-order)
+   :item-count      (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart      (empty-cart-query data)
+   :full-cart       (full-cart-query data)})
+
+(defn built-component [data opts]
+  (om/build component (query data) opts))

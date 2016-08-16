@@ -65,5 +65,5 @@
    :facebook-loaded?      (get-in data keypaths/loaded-facebook)
    :field-errors          (get-in data keypaths/field-errors)})
 
-(defn built-component [app-state owner opts]
-  (component/create (component/build component (query app-state) nil)))
+(defn built-component [data opts]
+  (component/build component (query data) nil))
