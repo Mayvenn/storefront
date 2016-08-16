@@ -2,7 +2,7 @@
   (:require [storefront.platform.numbers :as numbers]
             [clojure.set :as set]))
 
-(defn only [coll]
+(defn ^:private only [coll]
   (when (= 1 (count coll))
     (first coll)))
 
@@ -12,7 +12,11 @@
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
-(defn constrained-options [{:keys [selected-variants]}]
+(defn constrained-options
+  "Calculate bundle builder options where the available variants all share a
+  common value. This lets us copy :style -> 'straight' to the closures page,
+  even though it was not a selected-option on the straight page"
+  [{:keys [selected-variants]}]
   (->> selected-variants
        (map :variant_attrs)
        (map #(update-vals % (comp set vector)))
@@ -21,13 +25,22 @@
        (filter second)
        (into {})))
 
-(defn clean-options [{:keys [flow step->options]} unsafe-options]
+;; This function:
+;; Checks that the selected steps are part of the current flow
+;;        (:color is one of the steps in the flow)
+;; Checks that the options are part of the steps
+;;        (:color "dark-blonde" is a valid color)
+;; DOES NOT but should also check that some of the selected variants are in stock
+;;        (at least one dark blonde variant is in stock)
+;; Checks that no steps are skipped
+;;        (does not allow length to be selected without origin)
+(defn ^:private clean-selections [{:keys [flow step->options]} unverified-selections]
   (->> flow
        (map (fn [step]
-              (let [unsafe-option (get unsafe-options step)
-                    safe? (some #{unsafe-option} (map :name (step step->options)))]
-                [step (when safe? unsafe-option)])))
-       (take-while second)
+              (let [unverified-option (get unverified-selections step)
+                    possible? (some #{unverified-option} (map :name (step step->options)))]
+                [step (when possible? unverified-option)])))
+       (take-while second) ;; prevent skipped steps
        (into {})))
 
 (defn ^:private filter-variants-by-selections [selections variants]
@@ -116,7 +129,7 @@
 
 (def included-taxon? (complement :stylist_only?))
 
-(declare select-option)
+(declare reset-options)
 (defn ^:private auto-advance [{:keys [flow selected-options selected-variants] :as bundle-builder}]
   (or (when-let [next-step (next-step bundle-builder)]
         (when-let [next-option (->> selected-variants
@@ -124,19 +137,16 @@
                                     (map next-step)
                                     set
                                     only)]
-          (select-option bundle-builder next-step next-option)))
+          (reset-options bundle-builder (assoc selected-options next-step next-option))))
       bundle-builder))
 
 (defn reset-options [{:keys [initial-variants] :as bundle-builder} selected-options]
-  (let [selected-options (clean-options bundle-builder selected-options)
+  (let [selected-options (clean-selections bundle-builder selected-options)
         selected-variants (filter-variants-by-selections selected-options initial-variants)
         revised-state (assoc bundle-builder
                              :selected-options selected-options
                              :selected-variants selected-variants)]
     (auto-advance revised-state)))
-
-(defn select-option [{:keys [selected-options] :as bundle-builder} option value]
-  (reset-options bundle-builder (assoc selected-options option value)))
 
 (defn rollback [{:keys [selected-options] :as bundle-builder}]
   (if-let [last-step (last-step bundle-builder)]
