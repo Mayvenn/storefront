@@ -4,7 +4,8 @@
                :cljs [storefront.component :as component])
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [storefront.assets :as assets]))
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
   [:a.p1.center.flex.flex-column.items-center
@@ -20,7 +21,7 @@
    [:div.my1.dark-black.medium.f3 name]])
 
 (defn pick-style [taxons]
-  [:div.center.py4
+  [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my1.flex.flex-wrap.items-center.justify-around
@@ -34,13 +35,14 @@
 
 (def banner
   (component/html
-   [:a.img-new-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.new-banner-container
-    (merge {:title "Shop Now"}
-           (utils/route-to events/navigate-categories))]))
+   [:a
+    (utils/route-to events/navigate-categories)
+    [:img.col-12 {:src (assets/path "/images/homepage/mobile_banner.jpg")
+                  :alt "shop now"}]]))
 
 (def about-mayvenn
   (component/html
-   [:div.dark-gray.py4
+   [:div.dark-gray.py3
     [:h2.h1.center.dark-black.bold.py1 "why people love Mayvenn hair"]
 
     [:div.mx3.p3.border-bottom.border-light-silver
