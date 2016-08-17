@@ -26,7 +26,7 @@
        :displayOptionsId  14046
        :type              "horizontal"
        :accountId         1009})
-     (js/Pixlee.resizeWidget))))
+     (.setTimeout js/window js/Pixlee.resizeWidget 0))))
 
 (defn close-all []
   (when (js-loaded?)
