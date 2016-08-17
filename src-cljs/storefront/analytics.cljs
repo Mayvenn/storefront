@@ -6,9 +6,13 @@
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.experiments :as experiments]
             [storefront.hooks.riskified :as riskified]
+            [storefront.hooks.pixlee :as pixlee-analytics]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
-            [storefront.accessors.stylists :as stylists]))
+            [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.pixlee :as pixlee]
+            [storefront.components.money-formatters :as mf]))
 
 (defmulti track identity)
 
@@ -43,9 +47,14 @@
   (google-analytics/track-event "orders" "placed_total" nil (int (:total order)))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
-(defmethod track events/control-add-to-bag [_ event args app-state]
+(defmethod track events/control-add-to-bag [_ event {:keys [variant quantity]} app-state]
   (facebook-analytics/track-event "AddToCart")
-  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
+  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
+  (let [taxon (taxons/current-taxon app-state)]
+    (when (pixlee/content-available? taxon)
+      (pixlee-analytics/track-event "add:to:cart" {:product_sku (pixlee/sku taxon)
+                                                   :price       (mf/as-money (:price variant))
+                                                   :quantity    quantity}))))
 
 (defmethod track events/api-success-add-to-bag [_ _ args app-state]
   (when (stylists/own-store? app-state)
