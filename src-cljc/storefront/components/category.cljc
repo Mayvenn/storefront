@@ -314,7 +314,7 @@
               (bagged-variants-and-checkout bagged-variants)
               (when (taxons/is-stylist-product? taxon) shipping-and-guarantee)]])
           (taxon-description (:description taxon))
-          [:div.md-up-hide.mxn2 (component/build ugc/component (assoc ugc :container-id "ugcMobile") opts)]])
+          [:div.md-up-hide.mxn2.mb3 (component/build ugc/component (assoc ugc :container-id "ugcMobile") opts)]])
         (when review? (component/build reviews/reviews-component reviews opts)))))))
 
 (defn query [data]
