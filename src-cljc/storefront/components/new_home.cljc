@@ -27,8 +27,7 @@
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my1
     (component/build carousel/component
-                     {:container-id "home-carousel"
-                      :items (for [taxon taxons]
+                     {:items (for [taxon taxons]
                                (category taxon))}
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
