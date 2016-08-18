@@ -71,6 +71,8 @@
 
 @import 'basscss-ui-utility-groups';
 
+@import 'swiper/dist/css/swiper.css';
+
 /* Custom media queries */
 
 /* WARNING: We try not to use these, but basscss needs them.

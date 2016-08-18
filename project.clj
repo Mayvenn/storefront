@@ -53,6 +53,8 @@
                 :pretty-print true
                 :foreign-libs [{:file "storefront/swipe.js"
                                 :provides ["swipe"]}
+                               {:file "storefront/swiper.js"
+                                :provides ["swiper"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
                 :externs ["externs/riskified.js"
@@ -64,6 +66,7 @@
                           "externs/fastpass.js"
                           "externs/talkable.js"
                           "externs/swipe.js"
+                          "externs/swiper.js"
                           "externs/pixlee.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
@@ -76,6 +79,9 @@
                 :foreign-libs [{:file "storefront/swipe.js"
                                 :file-min "target/min-js/swipe.js" ;; created by gulp
                                 :provides ["swipe"]}
+                               {:file "storefront/swiper.js"
+                                :file-min "target/min-js/swiper.js" ;; created by gulp
+                                :provides ["swiper"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
@@ -88,6 +94,7 @@
                           "externs/fastpass.js"
                           "externs/talkable.js"
                           "externs/swipe.js"
+                          "externs/swiper.js"
                           "externs/pixlee.js"]
                 :optimizations :advanced}}}}
   :auto-clean false

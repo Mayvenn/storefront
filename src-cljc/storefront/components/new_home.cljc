@@ -5,10 +5,11 @@
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
-            [storefront.assets :as assets]))
+            [storefront.assets :as assets]
+            [storefront.platform.carousel-two :as carousel]))
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
-  [:a.p1.center.flex.flex-column.items-center
+  [:a.p1.center.flex.flex-column.items-center.swiper-slide
    (merge {:key slug
            :data-test (str "taxon-" slug)}
           (utils/route-to events/navigate-category {:taxon-slug slug}))
@@ -24,9 +25,12 @@
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-   [:div.my1.flex.flex-wrap.items-center.justify-around
-    (for [taxon taxons]
-      (category taxon))]
+   [:div.my1
+    (component/build carousel/component
+                     {:container-id "home-carousel"
+                      :items (for [taxon taxons]
+                               (category taxon))}
+                     nil)]
    [:div.col-6.md-up-col-4.mx-auto
     ;; button color should be white/transparent
     (ui/silver-outline-button

@@ -35,6 +35,13 @@ gulp.task('watch', ['css'], function (cb) {
 
 gulp.task('default', ['css']);
 
+gulp.task('refresh-swiper', function () {
+  /* Run this after you update the swiper version. */
+  /* Maybe there's a preferred way of including node modules in cljs projects? */
+  return gulp.src(['./node_modules/swiper/dist/js/swiper.js'])
+      .pipe(gulp.dest('src-cljs/storefront/'));
+});
+
 gulp.task('minify-js', function () {
   del(['./target/min-js']);
 
