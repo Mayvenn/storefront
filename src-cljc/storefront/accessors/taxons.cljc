@@ -15,6 +15,13 @@
 (defn products-loaded? [app-state taxon]
   (every? (products/loaded-ids app-state) (:product-ids taxon)))
 
+(defn first-with-product-id [taxons product-id]
+  (->> taxons
+       (filter (fn [taxon] (-> (:product-ids taxon)
+                              set
+                              (contains? product-id))))
+       first))
+
 (def new-taxon? #{"frontals"})
 
 (defn is-closure? [taxon] (some-> taxon :search :category set (contains? "closures")))

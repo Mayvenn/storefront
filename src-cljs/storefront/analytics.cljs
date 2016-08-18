@@ -14,6 +14,24 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.money-formatters :as mf]))
 
+(defn ^:private pixlee-line-item [taxons {:keys [quantity unit-price product-id]}]
+  {:quantity    quantity
+   :price       (mf/as-money unit-price)
+   :product_sku (or
+                 (pixlee/sku (taxons/first-with-product-id taxons product-id))
+                 "OTH")})
+
+(defn ^:private pixlee-order [taxons order]
+  {:cart_contents       (map (partial pixlee-line-item taxons)
+                             (orders/product-items order))
+   :cart_total          (mf/as-money (:total order))
+   :cart_total_quantity (orders/product-quantity order)})
+
+(defn ^:private pixlee-cart-item [taxon {:keys [variant quantity]}]
+  {:product_sku (pixlee/sku taxon)
+   :price       (mf/as-money (:price variant))
+   :quantity    quantity})
+
 (defmulti track identity)
 
 (defmethod track :default [dispatch event args app-state])
@@ -39,22 +57,21 @@
 (defmethod track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
-(defmethod track events/order-completed [_ event order app-state]
+(defmethod track events/order-completed [_ event {:keys [total] :as order} app-state]
   (when (stylists/own-store? app-state)
     (experiments/set-dimension "stylist-own-store" "stylists"))
-  (facebook-analytics/track-event "Purchase" {:value (str (:total order)) :currency "USD"})
-  (experiments/track-event "place-order" {:revenue (* 100 (:total order))})
-  (google-analytics/track-event "orders" "placed_total" nil (int (:total order)))
-  (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
+  (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
+  (experiments/track-event "place-order" {:revenue (* 100 total)})
+  (google-analytics/track-event "orders" "placed_total" nil (int total))
+  (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
+  (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
 
-(defmethod track events/control-add-to-bag [_ event {:keys [variant quantity]} app-state]
+(defmethod track events/control-add-to-bag [_ event args app-state]
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
   (let [taxon (taxons/current-taxon app-state)]
     (when (pixlee/content-available? taxon)
-      (pixlee-analytics/track-event "add:to:cart" {:product_sku (pixlee/sku taxon)
-                                                   :price       (mf/as-money (:price variant))
-                                                   :quantity    quantity}))))
+      (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item taxon args)))))
 
 (defmethod track events/api-success-add-to-bag [_ _ args app-state]
   (when (stylists/own-store? app-state)
