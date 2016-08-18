@@ -17,7 +17,7 @@
   <outputWriter class="org.jmxtrans.agent.GraphitePlainTextTcpOutputWriter">
     <host>172.17.0.1</host>
     <port>2003</port>
-    <namePrefix>storeback.</namePrefix>
+    <namePrefix>storefront.</namePrefix>
   </outputWriter>
   <collectIntervalInSeconds>60</collectIntervalInSeconds>
 </jmxtrans-agent>
