@@ -178,9 +178,12 @@
     #(messages/handle-message events/api-success-states
                               (select-keys % [:states]))}))
 
+(defn select-user-keys [user]
+  (select-keys user [:email :token :store_slug :id]))
+
 (defn select-sign-in-keys [args]
   (-> args
-      (update :user select-keys [:email :token :store_slug :id])
+      (update :user select-user-keys)
       (select-keys [:user :order])))
 
 (defn sign-in [email password stylist-id order-number order-token]
@@ -250,7 +253,7 @@
      :reset_password_token reset-token}
     :handler
     #(messages/handle-message events/api-success-reset-password
-                              (select-sign-in-keys %))}))
+                              (select-user-keys %))}))
 
 (defn facebook-reset-password [uid access-token reset-token]
   (api-req
@@ -263,7 +266,7 @@
      :reset-password-token reset-token}
     :handler
     #(messages/handle-message events/api-success-reset-password
-                              (select-sign-in-keys %))}))
+                              (select-user-keys %))}))
 
 (defn mayvenn->spree-address [states address]
   (-> address
@@ -315,7 +318,7 @@
                        :password_confirmation password-confirmation}))
     :handler
     #(messages/handle-message events/api-success-manage-account
-                              (select-sign-in-keys %))}))
+                              (select-user-keys %))}))
 
 (defn update-account-address [states {:keys [id email user-token]} billing-address shipping-address]
   (api-req
