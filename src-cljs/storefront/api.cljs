@@ -179,44 +179,52 @@
                               (select-keys % [:states]))}))
 
 (defn select-sign-in-keys [args]
-  (select-keys args [:email :token :store_slug :id]))
+  (-> args
+      (update :user select-keys [:email :token :store_slug :id])
+      (select-keys [:user :order])))
 
-(defn sign-in [email password stylist-id]
+(defn sign-in [email password stylist-id order-number order-token]
   (api-req
    POST
-   "/login"
+   "/v2/login"
    request-keys/sign-in
    {:params
     {:email (.toLowerCase (str email))
      :password password
-     :stylist-id stylist-id}
+     :stylist-id stylist-id
+     :order-number order-number
+     :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-sign-in
                               (select-sign-in-keys %))}))
 
-(defn facebook-sign-in [uid access-token stylist-id]
+(defn facebook-sign-in [uid access-token stylist-id order-number order-token]
   (api-req
    POST
-   "/facebook_login"
+   "/v2/login/facebook"
    request-keys/facebook-sign-in
    {:params
     {:uid uid
      :access-token access-token
-     :stylist-id stylist-id}
+     :stylist-id stylist-id
+     :order-number order-number
+     :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-sign-in
                               (select-sign-in-keys %))}))
 
-(defn sign-up [email password password-confirmation stylist-id]
+(defn sign-up [email password password-confirmation stylist-id order-number order-token]
   (api-req
    POST
-   "/signup"
+   "/v2/signup"
    request-keys/sign-up
    {:params
     {:email email
      :password password
      :password-confirmation password-confirmation
-     :stylist-id stylist-id}
+     :stylist-id stylist-id
+     :order-number order-number
+     :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-sign-up
                               (select-sign-in-keys %))}))
@@ -256,20 +264,6 @@
     :handler
     #(messages/handle-message events/api-success-reset-password
                               (select-sign-in-keys %))}))
-
-(defn add-user-in-order [token number user-token user-id]
-  (api-req
-   POST
-   "/v2/add-user-to-order"
-   request-keys/add-user-in-order
-   {:params
-    {:user-id user-id
-     :user-token user-token
-     :number number
-     :token token}
-    :handler
-    #(messages/handle-message events/api-success-update-order
-                              {:order %})}))
 
 (defn mayvenn->spree-address [states address]
   (-> address

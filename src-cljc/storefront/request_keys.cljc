@@ -46,7 +46,6 @@
 (def remove-promotion-code [:remove-promo-code])
 (def get-order [:get-order])
 (def add-to-bag [:add-to-bag])
-(def add-user-in-order [:add-user-in-order])
 (def place-order [:place-order])
 (def send-referrals [:send-referrals])
 (def create-shared-cart [:create-shared-cart])

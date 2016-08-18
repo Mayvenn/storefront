@@ -332,13 +332,17 @@
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
   (api/sign-in (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
-               (get-in app-state keypaths/store-stylist-id)))
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-number)
+               (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
   (api/sign-up (get-in app-state keypaths/sign-up-email)
                (get-in app-state keypaths/sign-up-password)
                (get-in app-state keypaths/sign-up-password-confirmation)
-               (get-in app-state keypaths/store-stylist-id)))
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-number)
+               (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-facebook-sign-in [_ event args app-state]
   (facebook/start-log-in app-state))
@@ -349,7 +353,9 @@
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
   (api/facebook-sign-in (-> facebook-response :authResponse :userID)
                         (-> facebook-response :authResponse :accessToken)
-                        (get-in app-state keypaths/store-stylist-id)))
+                        (get-in app-state keypaths/store-stylist-id)
+                        (get-in app-state keypaths/order-number)
+                        (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/facebook-failure-sign-in [_ _ args app-state]
   (handle-message events/flash-show-failure
@@ -592,12 +598,7 @@
 
 (defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
   (save-cookie app-state)
-  (if-let [order-number (get-in app-state keypaths/order-number)]
-    ;; Assign guest order to signed-in user
-    (api/add-user-in-order (get-in app-state keypaths/order-token)
-                           order-number
-                           (get-in app-state keypaths/user-token)
-                           (get-in app-state keypaths/user-id))
+  (when-not (get-in app-state keypaths/order-number)
     ;; Try to fetch latest cart order
     (refresh-current-order app-state))
   (redirect-to-return-navigation app-state)
@@ -607,11 +608,6 @@
 
 (defmethod perform-effects events/api-success-sign-up [_ event args app-state]
   (save-cookie app-state)
-  (when (get-in app-state keypaths/order-number)
-    (api/add-user-in-order (get-in app-state keypaths/order-token)
-                           (get-in app-state keypaths/order-number)
-                           (get-in app-state keypaths/user-token)
-                           (get-in app-state keypaths/user-id)))
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Welcome! You have signed up successfully."
