@@ -13,19 +13,19 @@
    (merge {:key slug
            :data-test (str "taxon-" slug)}
           (utils/route-to events/navigate-category {:taxon-slug slug}))
-   [:img.my1 {:src   model-image
+   [:img {:src   model-image
               :alt   (str "A stylish model wearing " long-name)
               :style {:height "128px"}}]
-   [:img.my1 {:src   product-image
+   [:img.mt3 {:src   product-image
               :alt   (str "A close-up of " long-name)
-              :style {:width "64px"}}]
-   [:div.my1.dark-black.medium.f3 name]])
+              :style {:height "80px"}}]
+   [:div.mb3.dark-black.medium.f3 name]])
 
 (defn pick-style [taxons]
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-   [:div.my1
+   [:div.my2
     (component/build carousel/component
                      {:items (for [taxon taxons]
                                (category taxon))}

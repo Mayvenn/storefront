@@ -73,6 +73,17 @@
 
 @import 'swiper/dist/css/swiper.css';
 
+/* Arrows */
+.swiper-button-prev {
+    background-image: url("/images/icons/carousel-two-arrow.svg");
+    left: 5px;
+    transform: rotate(180deg);
+}
+.swiper-button-next {
+    background-image: url("/images/icons/carousel-two-arrow.svg");
+    right: 5px;
+}
+
 /* Custom media queries */
 
 /* WARNING: We try not to use these, but basscss needs them.
