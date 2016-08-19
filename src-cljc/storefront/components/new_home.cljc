@@ -9,23 +9,25 @@
             [storefront.platform.carousel-two :as carousel]))
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
-  [:a.p1.center.flex.flex-column.items-center.swiper-slide
-   (merge {:key slug
-           :data-test (str "taxon-" slug)}
-          (utils/route-to events/navigate-category {:taxon-slug slug}))
-   [:img {:src   model-image
-              :alt   (str "A stylish model wearing " long-name)
-              :style {:height "128px"}}]
-   [:img.mt3 {:src   product-image
-              :alt   (str "A close-up of " long-name)
-              :style {:height "80px"}}]
-   [:div.mb3.dark-black.medium.f3 name]])
+  [:div {:key slug}
+   [:a.p1.center.flex.flex-column.items-center.swiper-slide
+    (merge {:data-test (str "taxon-" slug)}
+           (utils/route-to events/navigate-category {:taxon-slug slug}))
+    [:img {:src   model-image
+           :alt   (str "A stylish model wearing " long-name)
+           :style {:height "128px"
+                   ;; TODO: add to css
+                   "-webkit-user-select" "none"}}]
+    [:img.mt3 {:src   product-image
+               :alt   (str "A close-up of " long-name)
+               :style {:height "80px"}}]
+    [:div.mb3.dark-black.medium.f3 name]]])
 
 (defn pick-style [taxons]
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-   [:div.my2
+   [:div.my2.col-11.mx-auto
     (component/build carousel/component
                      {:items (for [taxon taxons]
                                (category taxon))}

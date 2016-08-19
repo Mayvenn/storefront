@@ -56,7 +56,9 @@
                                {:file "storefront/swiper.js"
                                 :provides ["swiper"]}
                                {:file "storefront/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}]
+                                :provides ["bugsnag"]}
+                               {:file "storefront/react-slick.js"
+                                :provides ["react-slick"]}]
                 :externs ["externs/riskified.js"
                           "externs/bugsnag.js"
                           "externs/yotpo.js"
@@ -67,7 +69,8 @@
                           "externs/talkable.js"
                           "externs/swipe.js"
                           "externs/swiper.js"
-                          "externs/pixlee.js"]}}
+                          "externs/pixlee.js"
+                          "externs/react-slick.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
      :compiler {:main "storefront.core"
@@ -84,7 +87,10 @@
                                 :provides ["swiper"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}]
+                                :provides ["bugsnag"]}
+                               {:file "storefront/react-slick.js"
+                                :file-min "target/min-js/react-slick.js"
+                                :provides ["react-slick"]}]
                 :externs ["externs/riskified.js"
                           "externs/bugsnag.js"
                           "externs/yotpo.js"
@@ -95,7 +101,8 @@
                           "externs/talkable.js"
                           "externs/swipe.js"
                           "externs/swiper.js"
-                          "externs/pixlee.js"]
+                          "externs/pixlee.js"
+                          "externs/react-slick.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles
