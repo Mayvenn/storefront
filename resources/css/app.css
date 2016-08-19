@@ -76,6 +76,10 @@
 
 /* Arrows */
 
+.slick-prev { left: 0; z-index: 2; }
+.slick-next { right: 0; }
+.slick-arrow { height: 50px; width: 50px; }
+
 .slick-prev:before, .slick-next:before { color: black; }
 .swiper-button-prev {
     background-image: url("/images/icons/carousel-two-arrow.svg");
