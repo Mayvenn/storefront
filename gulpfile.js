@@ -62,10 +62,6 @@ gulp.task('cdn', function () {
     throw "missing --host";
   }
 
-  if (!argv.sourcemaps_host) {
-    throw "missing --sourcemaps_host";
-  }
-
   // Clean up from last build
   del(['./resources/public/cdn', './resources/rev-manifest.json']);
 
@@ -73,17 +69,16 @@ gulp.task('cdn', function () {
       prefix: "//" + argv.host + "/cdn/"
   });
 
-  var sourceMapHost = "//" + argv.sourcemaps_host + "/sourcemaps";
   var sourceMapPath = 'resources/public/js/out/main.js.map';
   var sourceMapStream = gulp.src([sourceMapPath])
       .pipe(jsonTransform(function(data) {
         data["sources"] = data["sources"].map(function(f) {
-          return sourceMapHost + f.replace("\/", "/");
+          return f.replace("\/", "/");
         });
         return data;
       }));
 
-  var fileStream = gulp.src(['resources/public/{css,images,fonts}/**', 'resources/public/js/out/main.js'])
+  var fileStream = gulp.src('resources/public/{js,css,images,fonts}/**')
       .pipe(gulpIgnore.exclude("*.map"));
 
   return merge(fileStream, sourceMapStream)
@@ -94,12 +89,6 @@ gulp.task('cdn', function () {
     .pipe(gulp.dest('./resources'));
 });
 
-gulp.task('sourcemaps', function () {
-  return gulp.src(['resources/public/js/**/*.{js,cljs,cljc,map}'])
-      .pipe(gzip({ append: false }))
-      .pipe(gulp.dest('./resources/public/sourcemaps/js/'));
-});
-
 gulp.task('compile-assets', function(cb) {
-  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'sourcemaps', cb);
+  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', cb);
 });
