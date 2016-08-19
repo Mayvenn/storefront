@@ -36,7 +36,7 @@
 
 (defn close-all []
   (when (widget-js-loaded?)
-    (js/Pixlee.close)))
+    (js/Pixlee.close true)))
 
 (defn track-event [event-name args]
   (when (analytics-js-loaded?)
