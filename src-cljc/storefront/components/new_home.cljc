@@ -27,7 +27,8 @@
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-   [:div.my2.col-11.mx-auto
+   [:div.my2
+    {:style {:margin-right "30px" :margin-left "30px"}}
     (component/build carousel/component
                      {:items (for [taxon taxons]
                                (category taxon))}
