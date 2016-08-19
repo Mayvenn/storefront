@@ -31,6 +31,10 @@
                          "production" 592210561
                          3156430062))
 
+(def convert-project-id (case js/environment
+                          "production" "10003995-10005092"
+                          "10003995-10005089"))
+
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))

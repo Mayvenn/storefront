@@ -210,6 +210,7 @@
 (defpath inserted-stripe)
 (defpath inserted-reviews)
 (defpath inserted-talkable)
+(defpath inserted-convert)
 (defpath inserted-optimizely)
 (defpath inserted-pixlee)
 

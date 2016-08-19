@@ -475,19 +475,15 @@
       clear-flash
       (assoc-in keypaths/flash-failure (select-keys args [:message :navigation]))))
 
-(defn set-color-option-variation [app-state variation]
-  (-> app-state
-      (assoc-in keypaths/bundle-builder nil)
-      ensure-bundle-builder))
-
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation feature]} app-state]
-  (-> app-state
-      (update-in keypaths/features conj (or feature variation))
-      (set-color-option-variation variation)))
+  (update-in app-state keypaths/features conj (or feature variation)))
 
 (defmethod transition-state events/inserted-optimizely [_ event args app-state]
   (assoc-in app-state keypaths/loaded-optimizely true))
+
+(defmethod transition-state events/inserted-convert [_ event args app-state]
+  (assoc-in app-state keypaths/loaded-convert true))
 
 (defmethod transition-state events/inserted-places [_ event args app-state]
   (assoc-in app-state keypaths/loaded-places true))

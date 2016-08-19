@@ -71,7 +71,8 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [dispatch event args app-state]
-  (experiments/insert-optimizely (get-in app-state keypaths/store))
+  (experiments/insert-convert)
+  (experiments/insert-optimizely)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (google-analytics/insert-tracking)
   (facebook-analytics/insert-tracking)

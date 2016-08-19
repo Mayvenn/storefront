@@ -196,6 +196,7 @@
 (def loaded-places (conj loaded :places))
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
+(def loaded-convert (conj loaded :convert))
 (def loaded-optimizely (conj loaded :optimizely))
 (def loaded-pixlee (conj loaded :pixlee))
 
