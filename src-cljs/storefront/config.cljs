@@ -49,3 +49,8 @@
     "production" "AIzaSyBaMJMMqq4gygvlO9J_BO_mZ9t86XEZ4EA"
     "acceptance" "AIzaSyA25Ehwf5yqYjAVfzYeAT5VEfqsKZjVbKY"
     "AIzaSyBF1WsIRs4wIRTEsnNi8Klynxtxqz5RoIA"))
+
+(def pixlee
+  (case js/environment
+    "production" {:api-key "PUTXr6XBGuAhWqoIP4ir" :account-id 1009}
+    {:api-key "iiQ27jLOrmKgTfIcRIk" :account-id 1025}))

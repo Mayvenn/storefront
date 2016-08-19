@@ -1,11 +1,11 @@
 (ns storefront.hooks.pixlee
   (:require [storefront.browser.tags :as tags]
             [storefront.events :as events]
+            [storefront.config :as config]
             [storefront.platform.messages :as m]))
 
 (defn widget-js-loaded? [] (.hasOwnProperty js/window "Pixlee"))
 (defn analytics-js-loaded? [] (.hasOwnProperty js/window "Pixlee_Analytics"))
-(def api-key "PUTXr6XBGuAhWqoIP4ir")
 
 (defn insert []
   (when-not (widget-js-loaded?)
@@ -13,7 +13,7 @@
      (tags/src-tag "//assets.pixlee.com/assets/pixlee_widget_1_0_0.js"
                    "ugc")
      (fn []
-       (js/Pixlee.init (clj->js {:apiKey api-key}))
+       (js/Pixlee.init (clj->js {:apiKey (:api-key config/pixlee)}))
        (m/handle-message events/inserted-pixlee))))
   (when-not (analytics-js-loaded?)
     (tags/insert-tag-with-src
@@ -31,7 +31,7 @@
        :recipeId          476
        :displayOptionsId  14046
        :type              "horizontal"
-       :accountId         1009})
+       :accountId         (:account-id config/pixlee)})
      (.setTimeout js/window js/Pixlee.resizeWidget 0))))
 
 (defn close-all []
@@ -40,6 +40,6 @@
 
 (defn track-event [event-name args]
   (when (analytics-js-loaded?)
-    (.trigger (.-events (js/Pixlee_Analytics. api-key))
+    (.trigger (.-events (js/Pixlee_Analytics. (:api-key config/pixlee)))
               event-name
               (clj->js args))))
