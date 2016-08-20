@@ -97,7 +97,7 @@
       " and "
       [:a.white {:target "_blank" :href "/tos.html"} "Terms of Use"]]]]))
 
-(defn minimal-component [{:keys [call-number contact-email]} owner opts]
+(defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
    [:div.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
