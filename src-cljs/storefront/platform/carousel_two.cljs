@@ -3,40 +3,42 @@
             react-slick
             [om.core :as om]))
 
-(defn inner-component [{:keys [items autoplay?]} owner _]
+(defn inner-component [{:keys [items config]} owner _]
   (om/component
    (js/React.createElement js/Slider
-                           (clj->js {:autoplay       autoplay?
-                                     :pauseOnHover   true
-                                     :slidesToShow   (count items)
-                                     :arrows         true
-                                     ;; TODO: figure out why onMouseUp always
-                                     ;; triggers navigation to link in slide,
-                                     ;; while onTouchEnd doesn't. This prevents
-                                     ;; us from allowing drag on desktop.
-                                     :draggable      false
-                                     ;; :waitForAnimate true
-                                     :responsive     [{:breakpoint 640
-                                                       :settings   {:slidesToShow 2}}
-                                                      {:breakpoint 768
-                                                       :settings   {:slidesToShow 3}}
-                                                      {:breakpoint 1024
-                                                       :settings   {:slidesToShow 5}}
-                                                      {:breakpoint 100000
-                                                       :settings   {:autoplay     false
-                                                                    :arrows       false
-                                                                    :swipe        false}}]})
+                           (clj->js (merge {:pauseOnHover true
+                                            ;; :waitForAnimate true
+                                            ;; TODO: figure out why onMouseUp always
+                                            ;; triggers navigation to link in slide,
+                                            ;; while onTouchEnd doesn't. This prevents
+                                            ;; us from allowing drag on desktop.
+                                            :draggable    false}
+                                           config))
                            (html items))))
 
 (defn cancel-autoplay [owner]
-  (om/update-state! owner #(assoc % :autoplay? false)))
+  (om/set-state! owner {:autoplay false}))
+
+(defn override-autoplay [original autoplay-override]
+  (update original :autoplay #(and % autoplay-override)))
 
 (defn component [data owner _]
   (reify
+    om/IInitState
+    (init-state [_]
+      {:autoplay true})
+
     om/IRenderState
-    (render-state [_ inner-data]
+    (render-state [_ {:keys [autoplay]}]
       (html
+       ;; Cancel autoplay on interaction
        [:div {:on-mouse-down  #(cancel-autoplay owner)
               :on-touch-start #(cancel-autoplay owner)}
-        (om/build inner-component {:items     (:items data)
-                                   :autoplay? (get inner-data :autoplay? (get data :autoplay?))})]))))
+        (om/build inner-component (-> data
+                                      (update-in [:config] override-autoplay autoplay)
+                                      (update-in [:config :responsive]
+                                                 (fn [responsive]
+                                                   (map
+                                                    (fn [breakpoint]
+                                                      (update breakpoint :settings override-autoplay autoplay))
+                                                    responsive)))))]))))

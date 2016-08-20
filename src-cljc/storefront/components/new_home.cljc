@@ -28,9 +28,30 @@
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my2
     (component/build carousel/component
-                     {:items (for [taxon taxons]
-                               (category taxon))
-                      :autoplay? true}
+                     {:items  (for [taxon taxons]
+                                (category taxon))
+                      :config (let [item-count (count taxons)
+                                    swipe      (fn [n] {:swipe        true
+                                                       :slidesToShow n
+                                                       :autoplay     true
+                                                       :arrows       true})
+                                    show-all   {:swipe        false
+                                                :slidesToShow item-count
+                                                :autoplay     false
+                                                :arrows       false}]
+                                ;; The breakpoints are mobile-last. That is, the
+                                ;; default values apply to the largest screens, and
+                                ;; 768 means 768 and below.
+                                (merge
+                                 (if (<= item-count 7)
+                                   show-all
+                                   (swipe 7))
+                                 {:responsive [{:breakpoint 1024
+                                                :settings   (swipe 5)}
+                                               {:breakpoint 768
+                                                :settings   (swipe 3)}
+                                               {:breakpoint 640
+                                                :settings   (swipe 2)}]}))}
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
     ;; button color should be white/transparent
