@@ -6,6 +6,7 @@
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.carousel-two :as carousel]))
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
@@ -28,7 +29,8 @@
    [:div.my2
     (component/build carousel/component
                      {:items (for [taxon taxons]
-                               (category taxon))}
+                               (category taxon))
+                      :autoplay? true}
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
     ;; button color should be white/transparent

@@ -1,5 +1,5 @@
 .pointer { cursor: pointer; }
-.unselectable { user-select: none; }
+.unselectable { user-select: none; -webkit-user-drag: none; }
 
 .transition-ease        { transition-timing-function: ease; }
 .transition-ease-in     { transition-timing-function: ease-in; }
