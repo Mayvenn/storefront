@@ -133,4 +133,4 @@
     [:title "Something went wrong | Mayvenn"]]
    [:body
     [:h3 "Mayvenn Will Be Back Soon"]
-    [:h4 "We apologize for the inconvenience and appricate your patience. Please check back soon."]]))
+    [:h4 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))
