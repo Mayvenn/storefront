@@ -11,8 +11,7 @@
     "basscss-ui-utility-groups": "^1.0.1",
     "normalize.css": "^4.2.0",
     "react-slick": "^0.13.1",
-    "swipejs": "^2.0.8",
-    "swiper": "^3.3.1"
+    "swipejs": "^2.0.8"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",

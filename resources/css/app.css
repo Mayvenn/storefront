@@ -71,7 +71,8 @@
 
 @import 'basscss-ui-utility-groups';
 
-@import 'swiper/dist/css/swiper.css';
+/* Carousel */
+
 @import 'slick.css';
 
 /* Carousel Arrows */

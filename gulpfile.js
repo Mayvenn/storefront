@@ -36,10 +36,8 @@ gulp.task('watch', ['css'], function (cb) {
 gulp.task('default', ['css']);
 
 gulp.task('refresh-externs', function () {
-  /* Run this after you update the swiper version. */
+  /* Run this after you update node module versions. */
   /* Maybe there's a preferred way of including node modules in cljs projects? */
-  gulp.src(['./node_modules/swiper/dist/js/swiper.js'])
-      .pipe(gulp.dest('src-cljs/storefront/'));
   gulp.src(['./node_modules/react-slick/dist/react-slick.js'])
       .pipe(gulp.dest('src-cljs/storefront/'));
 });

@@ -11,7 +11,7 @@
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
   [:div {:key slug}
-   [:a.p1.center.flex.flex-column.items-center.swiper-slide
+   [:a.p1.center.flex.flex-column.items-center
     (merge {:data-test (str "taxon-" slug)}
            (utils/route-to events/navigate-category {:taxon-slug slug}))
     [:img.unselectable {:src   model-image
