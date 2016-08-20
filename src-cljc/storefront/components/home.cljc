@@ -55,12 +55,7 @@
 (defn query [data]
   {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
 
-(defn home-component [data owner opts]
-  (component/create
-   [:div
-    (if (experiments/new-homepage? data)
-      (new-home/built-component data nil)
-      (component/build component (query data) nil))]))
-
 (defn built-component [data opts]
-  (component/build home-component data opts))
+  (if (experiments/new-homepage? data)
+    (new-home/built-component data nil)
+    (component/build component (query data) nil)))

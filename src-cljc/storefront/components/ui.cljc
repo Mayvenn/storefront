@@ -194,9 +194,8 @@
   [:div.clearfix
    {:data-scrollable "not-a-modal"}
    [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
-    [:div
-     {:alt "Close"
-      :class (or bg-class "fill-dark-silver")}
+    [:div {:alt "Close"
+           :class (or bg-class "fill-dark-silver")}
      svg/counter-inc]]])
 
 (defn circle-picture

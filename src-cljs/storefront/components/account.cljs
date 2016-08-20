@@ -89,8 +89,7 @@
          events/navigate-account-manage
          (component/build profile-component profile opts)
 
-
-          nil)])]]))
+         nil)])]]))
 
 (defn query [data]
   {:fetching?         (utils/requesting? data request-keys/get-account)

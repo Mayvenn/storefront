@@ -41,8 +41,7 @@
        [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
        (flash/built-component data nil)
        [:main {:role "main"}
-        [:div
-         (sign-in/requires-sign-in sign-in/built-redirect-getsat-component data nil)]]])))
+        (sign-in/requires-sign-in sign-in/built-redirect-getsat-component data nil)]])))
 
 (defn main-component [nav-event]
   (condp = nav-event

@@ -49,8 +49,7 @@
     [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
     [:span.to-md-hide call-number] ;; desktop
     " | 9am-5pm PST M-F"
-    [:div
-     [:a.dark-gray {:href (str "mailto:" contact-email)} contact-email]]]
+    [:a.block.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.md-up-hide
     (ui/footer-button {:href (str "tel://" call-number)}
@@ -70,23 +69,17 @@
   [:div
    [:div.medium.border-bottom.border-light-silver
     [:div.to-md-hide ui/nbsp]]
-   [:div
-    [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
-     [:div
-      [:a {:href "https://www.facebook.com/MayvennHair"}
-       [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]]
-     [:div
-      [:a {:href "http://instagram.com/mayvennhair"}
-       [:div {:style {:width "22px" :height "22px"}} svg/instagram]]]
-     [:div
-      [:a {:href "https://twitter.com/MayvennHair"}
-       [:div {:style {:width "22px" :height "22px"}} svg/twitter]]]
-     [:div
-      [:a {:href "http://www.pinterest.com/mayvennhair/"}
-       [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]]])
+   [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
+    [:a.block {:href "https://www.facebook.com/MayvennHair"}
+     [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
+    [:a.block {:href "http://instagram.com/mayvennhair"}
+     [:div {:style {:width "22px" :height "22px"}} svg/instagram]]
+    [:a.block {:href "https://twitter.com/MayvennHair"}
+     [:div {:style {:width "22px" :height "22px"}} svg/twitter]]
+    [:a.block {:href "http://www.pinterest.com/mayvennhair/"}
+     [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]])
 
-(defn full-component [{:keys [minimal?
-                              taxons
+(defn full-component [{:keys [taxons
                               contacts
                               own-store?]} owner opts]
   (component/create
@@ -114,20 +107,17 @@
       [:span.to-md-hide call-number]
       " | 9am-5pm PST M-F"]]]))
 
-(defn component [{:keys [minimal?] :as data} _ _]
-  (component/create
-   [:div
-    (if minimal?
-      (component/build minimal-component (:contacts data) nil)
-      (component/build full-component data nil))]))
+(defn contacts-query [data]
+  {:sms-number    (get-in data keypaths/sms-number)
+   :call-number   "+1 (888) 562-7952"
+   :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  {:minimal?   (minimal-footer-events (get-in data keypaths/navigation-event))
-   :taxons     (taxons/current-taxons data)
-   :contacts   {:sms-number    (get-in data keypaths/sms-number)
-                :call-number   "+1 (888) 562-7952"
-                :contact-email "help@mayvenn.com"}
+  {:taxons     (taxons/current-taxons data)
+   :contacts   (contacts-query data)
    :own-store? (own-store? data)})
 
 (defn built-component [data opts]
-  (component/build component (query data) nil))
+  (if (minimal-footer-events (get-in data keypaths/navigation-event))
+    (component/build minimal-component (contacts-query data) nil)
+    (component/build full-component (query data) nil)))

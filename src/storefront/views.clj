@@ -132,6 +132,5 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:title "Something went wrong | Mayvenn"]]
    [:body
-    [:div
-     [:h3 "Mayvenn Will Be Back Soon"]
-     [:h4 "We apologize for the inconvenience and appricate your patience. Please check back soon."]]]))
+    [:h3 "Mayvenn Will Be Back Soon"]
+    [:h4 "We apologize for the inconvenience and appricate your patience. Please check back soon."]]))
