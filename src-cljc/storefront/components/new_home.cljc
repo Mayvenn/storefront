@@ -29,10 +29,11 @@
     (component/build carousel/component
                      {:slides   (map category taxons)
                       :settings (let [slide-count (count taxons)
-                                      swipe       (fn [n] {:swipe        true
-                                                          :slidesToShow n
-                                                          :autoplay     true
-                                                          :arrows       true})
+                                      swipe       (fn [n]
+                                                    {:swipe        true
+                                                     :slidesToShow n
+                                                     :autoplay     true
+                                                     :arrows       true})
                                       show-all    {:swipe        false
                                                    :slidesToShow slide-count
                                                    :autoplay     false
