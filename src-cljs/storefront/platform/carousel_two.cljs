@@ -12,7 +12,8 @@
                                      :arrows         true
                                      ;; TODO: figure out why onMouseUp always
                                      ;; triggers navigation to link in slide,
-                                     ;; while onTouchEnd doesn't
+                                     ;; while onTouchEnd doesn't. This prevents
+                                     ;; us from allowing drag on desktop.
                                      :draggable      false
                                      ;; :waitForAnimate true
                                      :responsive     [{:breakpoint 640
