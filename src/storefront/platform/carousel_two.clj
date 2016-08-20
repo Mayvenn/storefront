@@ -3,4 +3,6 @@
 
 (defn component [{:keys [items]} _ _]
   (component/create
-   [:div "TODO: server-side carousel rendering"]))
+   [:div.overflow-hidden.nowrap
+    (for [item items]
+      [:div.inline-block item])]))
