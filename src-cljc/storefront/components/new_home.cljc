@@ -10,17 +10,16 @@
             [storefront.platform.carousel-two :as carousel]))
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
-  [:div {:key slug}
-   [:a.p1.center.flex.flex-column.items-center
-    (merge {:data-test (str "taxon-" slug)}
-           (utils/route-to events/navigate-category {:taxon-slug slug}))
-    [:img.unselectable {:src   model-image
-                        :alt   (str "A stylish model wearing " long-name)
-                        :style {:height "128px"}}]
-    [:img.mt3.unselectable {:src   product-image
-                            :alt   (str "A close-up of " long-name)
-                            :style {:height "80px"}}]
-    [:div.mb3.dark-black.medium.f3 name]]])
+  [:a.p1.center.flex.flex-column.items-center
+   (merge {:data-test (str "taxon-" slug)}
+          (utils/route-to events/navigate-category {:taxon-slug slug}))
+   [:img.unselectable {:src   model-image
+                       :alt   (str "A stylish model wearing " long-name)
+                       :style {:height "128px"}}]
+   [:img.mt3.unselectable {:src   product-image
+                           :alt   (str "A close-up of " long-name)
+                           :style {:height "80px"}}]
+   [:div.mb3.dark-black.medium.f3 name]])
 
 (defn pick-style [taxons]
   [:div.center.py3
@@ -28,30 +27,29 @@
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my2
     (component/build carousel/component
-                     {:items  (for [taxon taxons]
-                                (category taxon))
-                      :config (let [item-count (count taxons)
-                                    swipe      (fn [n] {:swipe        true
-                                                       :slidesToShow n
-                                                       :autoplay     true
-                                                       :arrows       true})
-                                    show-all   {:swipe        false
-                                                :slidesToShow item-count
-                                                :autoplay     false
-                                                :arrows       false}]
-                                ;; The breakpoints are mobile-last. That is, the
-                                ;; default values apply to the largest screens, and
-                                ;; 768 means 768 and below.
-                                (merge
-                                 (if (<= item-count 7)
-                                   show-all
-                                   (swipe 7))
-                                 {:responsive [{:breakpoint 1024
-                                                :settings   (swipe 5)}
-                                               {:breakpoint 768
-                                                :settings   (swipe 3)}
-                                               {:breakpoint 640
-                                                :settings   (swipe 2)}]}))}
+                     {:slides   (map category taxons)
+                      :settings (let [slide-count (count taxons)
+                                      swipe       (fn [n] {:swipe        true
+                                                          :slidesToShow n
+                                                          :autoplay     true
+                                                          :arrows       true})
+                                      show-all    {:swipe        false
+                                                   :slidesToShow slide-count
+                                                   :autoplay     false
+                                                   :arrows       false}]
+                                  ;; The breakpoints are mobile-last. That is, the
+                                  ;; default values apply to the largest screens, and
+                                  ;; 768 means 768 and below.
+                                  (merge
+                                   (if (<= slide-count 7)
+                                     show-all
+                                     (swipe 7))
+                                   {:responsive [{:breakpoint 1024
+                                                  :settings   (swipe 5)}
+                                                 {:breakpoint 768
+                                                  :settings   (swipe 3)}
+                                                 {:breakpoint 640
+                                                  :settings   (swipe 2)}]}))}
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
     ;; button color should be white/transparent

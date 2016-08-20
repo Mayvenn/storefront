@@ -3,7 +3,7 @@
             react-slick
             [om.core :as om]))
 
-(defn inner-component [{:keys [items config]} owner _]
+(defn inner-component [{:keys [slides settings]} owner _]
   (om/component
    (js/React.createElement js/Slider
                            (clj->js (merge {:pauseOnHover true
@@ -13,8 +13,11 @@
                                             ;; while onTouchEnd doesn't. This prevents
                                             ;; us from allowing drag on desktop.
                                             :draggable    false}
-                                           config))
-                           (html items))))
+                                           settings))
+                           (html (for [[idx slide] (map-indexed vector slides)]
+                                   ;; Wrapping div allows slider.js to attach
+                                   ;; click handlers without overwriting ours
+                                   [:div {:key idx} slide])))))
 
 (defn cancel-autoplay [owner]
   (om/set-state! owner {:autoplay false}))
@@ -35,8 +38,8 @@
        [:div {:on-mouse-down  #(cancel-autoplay owner)
               :on-touch-start #(cancel-autoplay owner)}
         (om/build inner-component (-> data
-                                      (update-in [:config] override-autoplay autoplay)
-                                      (update-in [:config :responsive]
+                                      (update-in [:settings] override-autoplay autoplay)
+                                      (update-in [:settings :responsive]
                                                  (fn [responsive]
                                                    (map
                                                     (fn [breakpoint]
