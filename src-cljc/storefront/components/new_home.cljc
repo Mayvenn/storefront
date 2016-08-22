@@ -2,6 +2,7 @@
   (:require [storefront.platform.component-utils :as utils]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
+            [storefront.platform.video :as video]
             [storefront.accessors.taxons :as taxons]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
@@ -95,6 +96,7 @@
    [:div.m-auto
     banner
     (pick-style taxons)
+    (component/build video/component {:video-id "66ysezzxwk"} nil)
     about-mayvenn]))
 
 (defn query [data]

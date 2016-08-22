@@ -31,6 +31,7 @@
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
+            [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.routes :as routes]
@@ -769,12 +770,18 @@
 (defmethod perform-effects events/ugc-component-unmounted [_ event _ app-state]
   (pixlee/close-all))
 
-(defn update-cart-flash [app-state msg]
-  (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
+(defmethod perform-effects events/video-component-mounted [_ event {:keys [video-id]} app-state]
+  (wistia/attach video-id))
+
+(defmethod perform-effects events/video-component-unmounted [_ event {:keys [video-id]} app-state]
+  (wistia/detach video-id))
 
 (defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
   (handle-message events/flash-dismiss)
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
+
+(defn update-cart-flash [app-state msg]
+  (handle-message events/flash-show-success {:message msg :navigation [events/navigate-cart {}]}))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
   (when-not allow-dormant? (update-cart-flash app-state "The coupon code was successfully applied to your order."))

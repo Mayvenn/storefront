@@ -222,3 +222,6 @@
 
 (defpath ugc-component-mounted)
 (defpath ugc-component-unmounted)
+
+(defpath video-component-mounted)
+(defpath video-component-unmounted)
