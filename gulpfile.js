@@ -35,7 +35,7 @@ gulp.task('watch', ['css'], function (cb) {
 
 gulp.task('default', ['css']);
 
-gulp.task('refresh-externs', function () {
+gulp.task('refresh-deps', function () {
   /* Run this after you update node module versions. */
   /* Maybe there's a preferred way of including node modules in cljs projects? */
   gulp.src(['./node_modules/react-slick/dist/react-slick.js'])
