@@ -6,7 +6,8 @@
 (defn- button [loaded? click-event]
   (if loaded?
     [:.btn.btn-primary.bg-fb-blue.col-12
-     {:on-click (utils/send-event-callback click-event)}
+     {:on-click (utils/send-event-callback click-event)
+      :data-test "facebook-button"}
      [:.flex.items-center.justify-center.white.items-center
       [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
       [:.h3.py1 "Sign in with Facebook"]]]
