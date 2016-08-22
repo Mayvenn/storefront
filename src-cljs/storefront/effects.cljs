@@ -5,7 +5,7 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
-            [storefront.accessors.experiments :as accessors.experiments]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.pixlee :as accessors.pixlee]
@@ -20,7 +20,8 @@
             [storefront.analytics :as analytics]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
-            [storefront.hooks.experiments :as experiments]
+            [storefront.hooks.convert :as convert]
+            [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.seo :as seo]
@@ -72,8 +73,8 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [dispatch event args app-state]
-  (experiments/insert-convert)
-  (experiments/insert-optimizely)
+  (convert/insert-tracking)
+  (optimizely/insert-tracking)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (google-analytics/insert-tracking)
   (facebook-analytics/insert-tracking)
@@ -83,7 +84,8 @@
   (refresh-current-order app-state))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
-  (experiments/remove-optimizely)
+  (convert/remove-tracking)
+  (optimizely/remove-tracking)
   (riskified/remove-beacon)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))
@@ -139,7 +141,7 @@
 (defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)
-  (when (and (accessors.experiments/pixlee-product? app-state)
+  (when (and (experiments/pixlee-product? app-state)
              (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
     (pixlee/insert))
   (refresh-taxon-products app-state))
@@ -791,11 +793,14 @@
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
-(defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
+(defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
   ;; TODO: when the pixlee-product? experiment is over, this will be unnecessary
   (when (and (= variation "pixlee-product")
              (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
     (pixlee/insert))
+  (analytics/track dispatch event args app-state))
+
+(defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
   (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]

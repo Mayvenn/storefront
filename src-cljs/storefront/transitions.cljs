@@ -475,6 +475,10 @@
       clear-flash
       (assoc-in keypaths/flash-failure (select-keys args [:message :navigation]))))
 
+(defmethod transition-state events/convert
+  [_ event {:keys [variation feature]} app-state]
+  (update-in app-state keypaths/features conj (or feature variation)))
+
 (defmethod transition-state events/optimizely
   [_ event {:keys [variation feature]} app-state]
   (update-in app-state keypaths/features conj (or feature variation)))

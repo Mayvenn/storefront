@@ -4,7 +4,8 @@
             [storefront.routes :as routes]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
-            [storefront.hooks.experiments :as experiments]
+            [storefront.hooks.convert :as convert]
+            [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.pixlee :as pixlee-analytics]
             [storefront.accessors.orders :as orders]
@@ -32,6 +33,11 @@
    :price       (mf/as-money (:price variant))
    :quantity    quantity})
 
+(defn ^:private convert-revenue [{:keys [number total] :as order}]
+  {:order-number   number
+   :revenue        total
+   :products-count (orders/product-quantity order)})
+
 (defmulti track identity)
 
 (defmethod track :default [dispatch event args app-state])
@@ -41,13 +47,16 @@
     (riskified/track-page path)
     (google-analytics/track-page path)
     (facebook-analytics/track-page path)
-    (experiments/track-event path)))
+    (optimizely/track-event path)))
 
 (defmethod track events/app-start [_ event args app-state]
   (track-page-view app-state))
 
+(defmethod track events/convert [_ event {:keys [variation]} app-state]
+  (google-analytics/track-event "convert-experiment" variation))
+
 (defmethod track events/optimizely [_ event {:keys [variation]} app-state]
-  (experiments/activate-universal-analytics)
+  (optimizely/activate-universal-analytics)
   (google-analytics/track-event "optimizely-experiment" variation))
 
 (defmethod track events/navigate [_ event args app-state]
@@ -73,8 +82,8 @@
 
 (defmethod track events/api-success-add-to-bag [_ _ args app-state]
   (when (stylists/own-store? app-state)
-    (experiments/set-dimension "stylist-own-store" "stylists"))
-  (experiments/track-event "add-to-bag"))
+    (optimizely/set-dimension "stylist-own-store" "stylists"))
+  (optimizely/track-event "add-to-bag"))
 
 (defmethod track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
@@ -90,9 +99,11 @@
 
 (defmethod track events/order-completed [_ event {:keys [total] :as order} app-state]
   (when (stylists/own-store? app-state)
-    (experiments/set-dimension "stylist-own-store" "stylists"))
+    (optimizely/set-dimension "stylist-own-store" "stylists"))
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
-  (experiments/track-event "place-order" {:revenue (* 100 total)})
+  (convert/track-conversion "place-order")
+  (convert/track-revenue (convert-revenue order))
+  (optimizely/track-event "place-order" {:revenue (* 100 total)})
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))

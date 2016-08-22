@@ -61,6 +61,7 @@
                           "externs/bugsnag.js"
                           "externs/yotpo.js"
                           "externs/optimizely.js"
+                          "externs/convert.js"
                           "externs/stripe.js"
                           "externs/facebook.js"
                           "externs/fastpass.js"
