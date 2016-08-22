@@ -36,8 +36,7 @@
          close-button]]))))
 
 (defn query [data]
-  {:show?       (and (experiments/stylist-banner? data)
-                     (= (get-in data keypaths/navigation-event) events/navigate-home)
+  {:show?       (and (= (get-in data keypaths/navigation-event) events/navigate-home)
                      (= (get-in data keypaths/store-slug) "shop")
                      (not (get-in data keypaths/stylist-banner-hidden)))
    :welcome-url (get-in data keypaths/welcome-url)})

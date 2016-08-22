@@ -79,7 +79,7 @@
    (if (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
      [:div.flex.flex-column {:style {:min-height "100vh"}}
-      #?(:cljs (stylist-banner/built-component data nil))
+      (stylist-banner/built-component data nil)
       (promotion-banner/built-component data nil)
       #?(:cljs (popup/built-component data nil))
       (header/built-component data nil)
