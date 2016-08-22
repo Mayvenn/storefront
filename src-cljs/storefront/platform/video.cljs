@@ -19,9 +19,9 @@
     (render [this]
       (html
        [:div.wistia_responsive_padding.relative
-        {:style {:padding-top "56.25%"}}
+        {:style {:padding-top "150%"}}
         [:div.wistia_responsive_wrapper.absolute.left-0.top-0.col-12 {:style {:height "100%"}}
 
-         [:span.wistia_embed.inline-block.col-12 {:class (str "wistia_async_" video-id " popover=true popoverAnimateThumbnail=true videoFoam=true")
+         [:span.wistia_embed.inline-block.col-12 {:class (str "wistia_async_" video-id " popover=true popoverAnimateThumbnail=true videoFoam=true popoverOverlayOpacity=0.9")
                                                   :style {:height "100%"}}
           ui/nbsp]]]))))
