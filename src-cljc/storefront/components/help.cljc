@@ -68,7 +68,15 @@
         (cell-icon "img-email-icon" "49px" "52px")
         [cell-text "Email"]
         [cell-description
-         [:span {:style {:word-break "break-all"}} "help@mayvenn.com"]])]]]]))
+         [:span {:style {:word-break "break-all"}} "help@mayvenn.com"]])]]]
+
+    [:div.mx-auto.col-8.mb4
+     [:div.h1.navy.mb2.center "Company Information"]
+     [:div.h4.dark-gray.light
+      [:div.mb2 [:span.bold "CEO: "] "Diishan Imria"]
+      [:div.mb2 [:span.bold "Headquarters: "] "Oakland, CA"]
+      [:div.mb2 [:span.bold "Phone: "] "+1 (888) 652-7952"]
+      [:div.mb2 [:span.bold "Website: "] "https://mayvenn.com"]]]]))
 
 (defn query [data]
   {:sms-number (get-in data keypaths/sms-number)})
