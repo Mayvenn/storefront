@@ -797,8 +797,7 @@
   ;; TODO: when the pixlee-product? experiment is over, this will be unnecessary
   (when (and (= variation "pixlee-product")
              (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
-    (pixlee/insert))
-  (analytics/track dispatch event args app-state))
+    (pixlee/insert)))
 
 (defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
   (analytics/track dispatch event args app-state))

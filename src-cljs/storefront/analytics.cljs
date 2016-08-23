@@ -52,9 +52,6 @@
 (defmethod track events/app-start [_ event args app-state]
   (track-page-view app-state))
 
-(defmethod track events/convert [_ event {:keys [variation]} app-state]
-  (google-analytics/track-event "convert-experiment" variation))
-
 (defmethod track events/optimizely [_ event {:keys [variation]} app-state]
   (optimizely/activate-universal-analytics)
   (google-analytics/track-event "optimizely-experiment" variation))
