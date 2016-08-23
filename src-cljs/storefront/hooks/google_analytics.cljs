@@ -35,7 +35,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                      "eventCategory" category
                      "eventAction" action
                      "eventLabel" label
-                     "eventValue" value}))))
+                     "eventValue" (or value "")}))))
 
 (defn track-page [path]
   (when (.hasOwnProperty js/window "ga")
