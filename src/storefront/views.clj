@@ -88,7 +88,7 @@
       [:script {:src (assets/path "/js/out/main.js") :async true}])
     ;; inline styles in production because our css file is so small and it avoids another round
     ;; trip request. At time of writing this greatly includes our pagespeed score
-    (if (#{"development" "test"} environment)© 2016
+    (if (#{"development" "test"} environment)
       (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
    [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
