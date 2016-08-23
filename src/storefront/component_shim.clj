@@ -1,6 +1,7 @@
 (ns storefront.component-shim
   (:require [clojure.string :as str]
-            [storefront.safe-hiccup :refer [raw]]))
+            [storefront.safe-hiccup :refer [raw]]
+            [clojure.set :as set]))
 
 (defn map->styles [m]
   (str/join (map (fn [[k v]] (str (name k) ":" v ";")) m)))
@@ -15,6 +16,9 @@
 
 (defn normalize-attrs [attrs]
   (-> attrs
+      (set/rename-keys {:item-prop :itemProp
+                        :item-scope :itemScope
+                        :item-type :itemType})
       (dissoc :dangerouslySetInnerHTML :key :data-test)
       remove-handlers
       normalize-style))

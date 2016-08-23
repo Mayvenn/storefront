@@ -73,15 +73,15 @@
     [:div.mx-auto.col-8.mb4.mt3
      [:div.h1.navy.mb2.center "Company Information"]
      [:div.lg-up-hide.h4.dark-gray.light
-      [:div.mb2  [:span.bold "CEO: "] [:span {:itemprop "founder"} "Diishan Imira"]]
-      [:div.mb2  [:span.bold  "Headquarters: "] [:span {:itemprop "address"} "Oakland, CA"]]
-      [:div.mb2  [:span.bold  "Phone: "] [:span {:itemprop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
-      [:div.mb2  [:span.bold "Website: "] [:span {:itemprop "url"} "https://mayvenn.com"]]]
+      [:div.mb2  [:span.bold "CEO: "] [:span {:item-prop "founder"} "Diishan Imira"]]
+      [:div.mb2  [:span.bold  "Headquarters: "] [:span {:item-prop "address"} "Oakland, CA"]]
+      [:div.mb2  [:span.bold  "Phone: "] [:span {:item-prop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
+      [:div.mb2  [:span.bold "Website: "] [:span {:item-prop "url"} "https://mayvenn.com"]]]
      [:div.to-lg-hide.h4.dark-gray.light.center
-      [:div.mb2  [:span.bold "CEO: "] [:span {:itemprop "founder"} "Diishan Imira"]]
-      [:div.mb2  [:span.bold  "Headquarters: "] [:span {:itemprop "address"} "Oakland, CA"]]
-      [:div.mb2  [:span.bold  "Phone: "] [:span {:itemprop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
-      [:div.mb2  [:span.bold "Website: "] [:span {:itemprop "url"} "https://mayvenn.com"]]]]]))
+      [:div.mb2  [:span.bold "CEO: "] [:span {:item-prop "founder"} "Diishan Imira"]]
+      [:div.mb2  [:span.bold  "Headquarters: "] [:span {:item-prop "address"} "Oakland, CA"]]
+      [:div.mb2  [:span.bold  "Phone: "] [:span {:item-prop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
+      [:div.mb2  [:span.bold "Website: "] [:span {:item-prop "url"} "https://mayvenn.com"]]]]]))
 
 (defn query [data]
   {:sms-number (get-in data keypaths/sms-number)})

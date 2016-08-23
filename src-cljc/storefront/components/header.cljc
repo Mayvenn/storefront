@@ -34,7 +34,7 @@
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.green.pp3
     (merge {:style {:height height}
             :title "Mayvenn"
-            :itemprop "logo"
+            :item-prop "logo"
             :content (assets/path "/images/header_logo.png")}
            (utils/route-to events/navigate-home))]))
 
