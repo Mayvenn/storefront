@@ -1,5 +1,6 @@
 (ns storefront.components.header
   (:require [storefront.platform.component-utils :as utils]
+            [storefront.assets :as assets]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             #?(:clj [storefront.component-shim :as component]
@@ -34,7 +35,7 @@
     (merge {:style {:height height}
             :title "Mayvenn"
             :itemprop "logo"
-            :content "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.074d3832.png"}
+            :content (assets/path "/images/header_logo.png")}
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
