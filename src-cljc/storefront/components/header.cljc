@@ -32,7 +32,9 @@
   (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.green.pp3
     (merge {:style {:height height}
-            :title "Mayvenn"}
+            :title "Mayvenn"
+            :itemprop "logo"
+            :content "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.074d3832.png"}
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]

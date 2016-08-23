@@ -70,13 +70,17 @@
    [:div.medium.border-bottom.border-light-silver
     [:div.to-md-hide ui/nbsp]]
    [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
-    [:a.block {:href "https://www.facebook.com/MayvennHair"}
+    [:a.block {:itemprop "sameAs"
+               :href "https://www.facebook.com/MayvennHair"}
      [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
-    [:a.block {:href "http://instagram.com/mayvennhair"}
+    [:a.block {:itemprop "sameAs"
+               :href "http://instagram.com/mayvennhair"}
      [:div {:style {:width "22px" :height "22px"}} svg/instagram]]
-    [:a.block {:href "https://twitter.com/MayvennHair"}
+    [:a.block {:itemprop "sameAs"
+               :href "https://twitter.com/MayvennHair"}
      [:div {:style {:width "22px" :height "22px"}} svg/twitter]]
-    [:a.block {:href "http://www.pinterest.com/mayvennhair/"}
+    [:a.block {:itemprop "sameAs"
+               :href "http://www.pinterest.com/mayvennhair/"}
      [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]])
 
 (defn full-component [{:keys [taxons
@@ -91,7 +95,10 @@
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
 
     [:div.mt3.bg-black.white.py1.px3.clearfix.f5.light
-     [:div.left "© 2016 Mayvenn"]
+     [:div.left
+      {:itemprop "name"
+       :content "Mayvenn Hair"}
+      [:span "© 2016"] "Mayvenn"]
      [:div.right
       [:a.white {:target "_blank" :href "/privacy.html"} "Privacy Policy"]
       " and "

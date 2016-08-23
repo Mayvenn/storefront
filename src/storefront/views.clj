@@ -88,10 +88,10 @@
       [:script {:src (assets/path "/js/out/main.js") :async true}])
     ;; inline styles in production because our css file is so small and it avoids another round
     ;; trip request. At time of writing this greatly includes our pagespeed score
-    (if (#{"development" "test"} environment)
+    (if (#{"development" "test"} environment)© 2016
       (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
-   [:body {:data-snap-to "top" :class body-class}
+   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want
@@ -114,7 +114,7 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
-   [:body {:data-snap-to "top" :class body-class}
+   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
     [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center
      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
@@ -132,5 +132,6 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:title "Something went wrong | Mayvenn"]]
    [:body
+    {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" }
     [:h3 "Mayvenn Will Be Back Soon"]
     [:h4 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))
