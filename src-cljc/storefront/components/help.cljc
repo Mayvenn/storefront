@@ -38,10 +38,10 @@
       [:div "Here are a few ways to get a hold of us."]]]
 
     [:div.m2.center
-     [:div.border-bottom.border-light-silver.py2.line-height-4
+     [:div
       [:div "Monday to Friday from 9am to 5pm PST"]
       [:div "Orders placed before 10am PST ship that day"]]
-     [:div.my2.flex.flex-wrap.justify-center
+     [:div.my2.flex.flex-wrap.justify-center.border-bottom.border-top.border-light-silver.py2.line-height-4
       [:div.flex
        (cell
         {:href "http://help.mayvenn.com"
@@ -70,9 +70,14 @@
         [cell-description
          [:span {:style {:word-break "break-all"}} "help@mayvenn.com"]])]]]
 
-    [:div.mx-auto.col-8.mb4
+    [:div.mx-auto.col-8.mb4.mt3
      [:div.h1.navy.mb2.center "Company Information"]
-     [:div.h4.dark-gray.light
+     [:div.lg-up-hide.h4.dark-gray.light
+      [:div.mb2  [:span.bold "CEO: "] [:span {:itemprop "founder"} "Diishan Imira"]]
+      [:div.mb2  [:span.bold  "Headquarters: "] [:span {:itemprop "address"} "Oakland, CA"]]
+      [:div.mb2  [:span.bold  "Phone: "] [:span {:itemprop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
+      [:div.mb2  [:span.bold "Website: "] [:span {:itemprop "url"} "https://mayvenn.com"]]]
+     [:div.to-lg-hide.h4.dark-gray.light.center
       [:div.mb2  [:span.bold "CEO: "] [:span {:itemprop "founder"} "Diishan Imira"]]
       [:div.mb2  [:span.bold  "Headquarters: "] [:span {:itemprop "address"} "Oakland, CA"]]
       [:div.mb2  [:span.bold  "Phone: "] [:span {:itemprop "telephone" :content "+18885627952"} "+1 (888) 652-7952"]]
