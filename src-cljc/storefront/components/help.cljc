@@ -73,9 +73,9 @@
     [:div.mx-auto.col-8.mb4
      [:div.h1.navy.mb2.center "Company Information"]
      [:div.h4.dark-gray.light
-      [:div.mb2 [:span.bold {:itemprop "founder"}"CEO: "] "Diishan Imira"]
-      [:div.mb2 [:span.bold {:itemprop "address"} "Headquarters: "] "Oakland, CA"]
-      [:div.mb2 [:span.bold {:itemprop "telephone" :content "+18885627952"} "Phone: "] "+1 (888) 652-7952"]
+      [:div.mb2 {:itemprop "founder"} [:span.bold "CEO: "] "Diishan Imira"]
+      [:div.mb2 {:itemprop "address"} [:span.bold  "Headquarters: "] "Oakland, CA"]
+      [:div.mb2 {:itemprop "telephone" :content "+18885627952"} [:span.bold  "Phone: "] "+1 (888) 652-7952"]
       [:div.mb2 {:itemprop "url"} [:span.bold "Website: "] "https://mayvenn.com"]]]]))
 
 (defn query [data]
