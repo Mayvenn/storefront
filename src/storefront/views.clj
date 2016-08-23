@@ -114,7 +114,7 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
-   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
+   [:body
     [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center
      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
