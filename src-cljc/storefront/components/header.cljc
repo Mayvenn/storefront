@@ -35,7 +35,7 @@
     (merge {:style {:height height}
             :title "Mayvenn"
             :item-prop "logo"
-            :content (assets/path "/images/header_logo.png")}
+            :content (str "https:" (assets/path "/images/header_logo.png"))}
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
