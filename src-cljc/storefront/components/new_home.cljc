@@ -118,7 +118,7 @@
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
       [:div.h0.my2 "Mayvenn in action"]
-      [:div.h2 "watch a mayvenn hair review"]]]]))
+      [:div.h2 "see what real customers say"]]]]))
 
 (defn component [{:keys [taxons]} owner opts]
   (component/create
