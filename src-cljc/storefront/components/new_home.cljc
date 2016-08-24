@@ -63,8 +63,12 @@
   (component/html
    [:a
     (utils/route-to events/navigate-categories)
-    [:img.col-12 {:src (assets/path "/images/homepage/mobile_banner.jpg")
-                  :alt "shop now"}]]))
+    [:div.to-md-hide.bg-center.bg-no-repeat
+     {:style {:height "408px"
+              :background-image (str "url("(assets/path "/images/homepage/desktop_banner.jpg")")")}
+      :title "shop now"}]
+    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_banner.jpg")
+                             :alt "shop now"}]]))
 
 (def about-mayvenn
   (component/html
