@@ -85,7 +85,7 @@
      [:p.line-height-5
       "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
 
-    [:div.mx3.p3.h3
+    [:div.mx3.p3
      [:h3.h2.center.bold.py3 "fast free shipping"]
      [:p.line-height-5
       "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]
