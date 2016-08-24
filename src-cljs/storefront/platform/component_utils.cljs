@@ -49,7 +49,7 @@
    :on-click (send-event-callback event args)})
 
 (defn toggle-checkbox [keypath value]
-  (let [checked-val (when value "checked")]
+  (let [checked-val (if value "checked" "")]
     {:checked checked-val
      :value checked-val
      :on-change
