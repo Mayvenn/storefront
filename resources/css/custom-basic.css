@@ -15,13 +15,8 @@ html {
 
 body {
   min-width: 320px;
+  max-width: 1024px;
   font-family: var(--font-family);
-}
-
-@media (--breakpoint-xl-up) {
-  body {
-    width: 1024px;
-  }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -54,7 +49,6 @@ a {
 }
 
 @custom-media --breakpoint-lg-up (min-width: 768px);
-@custom-media --breakpoint-xl-up (min-width: 1024px);
 
 :root {
     --font-family-graphik: -apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
