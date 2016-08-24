@@ -226,17 +226,17 @@
                         :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
                        (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
-    [:a.black.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-guarantee)
-     "Guarantee"]]])
+    [:a.black.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-shop-by-look)
+     "Shop By Look"]]])
 
 (defn lower-right-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
    [:div.h5.light
-    [:a.black.col.py1.mr4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                           :href           "https://blog.mayvenn.com"}
-     "Blog"]
-    [:a.black.col.py1 (desktop-nav-link-options current-page? events/navigate-help)
-     "Contact Us"]]])
+    [:a.black.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-guarantee)
+     "Guarantee"]
+    [:a.black.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
+                       :href           "https://blog.mayvenn.com"}
+     "Blog"]]])
 
 (defn component [{:keys [nav-message
                          account-expanded?

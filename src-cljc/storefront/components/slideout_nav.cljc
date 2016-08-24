@@ -119,6 +119,8 @@
   (component/html
    [section-outer-darker
     [section-inner
+     [:a.green (utils/route-to events/navigate-shop-by-look)
+      (row (selectable? events/navigate-shop-by-look "Shop By Look"))]
      [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
      [:a.green (utils/route-to events/navigate-guarantee)
       (row (selectable? events/navigate-guarantee "Our Guarantee"))]
