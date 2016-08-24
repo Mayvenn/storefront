@@ -20,7 +20,7 @@
      "//assets.pixlee.com/assets/pixlee_events.js"
      "ugc-analytics")))
 
-(defn attach-mosaic [container-id]
+(defn attach-mosaic-widget [container-id]
   (when (widget-js-loaded?)
     (js/Pixlee.addSimpleWidget
      (clj->js
@@ -34,7 +34,7 @@
        :accountId         (:account-id config/pixlee)}))
     (.setTimeout js/window js/Pixlee.resizeWidget 0)))
 
-(defn attach [container-id sku]
+(defn attach-product-widget [container-id sku]
   (when (and (widget-js-loaded?) sku)
     (js/Pixlee.addProductWidget
      (clj->js

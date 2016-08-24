@@ -770,13 +770,13 @@
   (places-autocomplete/attach address-elem address-keypath))
 
 (defmethod perform-effects events/shop-by-look-component-mounted [_ event {:keys [container-id]} app-state]
-  (pixlee/attach-mosaic container-id))
+  (pixlee/attach-mosaic-widget container-id))
 
 (defmethod perform-effects events/shop-by-look-component-unmounted [_ event _ app-state]
   (pixlee/close-all))
 
 (defmethod perform-effects events/ugc-component-mounted [_ event {:keys [pixlee-sku container-id]} app-state]
-  (pixlee/attach container-id pixlee-sku))
+  (pixlee/attach-product-widget container-id pixlee-sku))
 
 (defmethod perform-effects events/ugc-component-unmounted [_ event _ app-state]
   (pixlee/close-all))
