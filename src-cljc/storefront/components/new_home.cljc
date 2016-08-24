@@ -4,6 +4,7 @@
                :cljs [storefront.component :as component])
             [storefront.platform.video :as video]
             [storefront.accessors.taxons :as taxons]
+            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
@@ -103,12 +104,24 @@
       (utils/route-to events/navigate-categories)
       "shop now")]]))
 
+(def video-popup
+  (component/html
+   [:div {:on-click #(handle-message events/control-change-state
+                                     {:keypath keypaths/popup
+                                      :value   :home-video})}
+    [:div.to-md-hide.bg-center.bg-no-repeat
+     {:style {:height "408px"
+              :background-image (str "url("(assets/path "/images/homepage/desktop_video.png")")")}
+      :title "Watch customer reviews"}]
+    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_video.png")
+                             :alt "Watch customer reviews"}]]))
+
 (defn component [{:keys [taxons]} owner opts]
   (component/create
    [:div.m-auto
     banner
     (pick-style taxons)
-    (component/build video/component {:video-id "66ysezzxwk"} nil)
+    video-popup
     about-mayvenn]))
 
 (defn query [data]

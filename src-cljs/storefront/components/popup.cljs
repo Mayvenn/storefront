@@ -2,10 +2,13 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.video :as video]
             [storefront.components.cart :as cart]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
+
+;; TODO do cond on outside (in built-component) and queries inside
 
 (defn component [{:keys [current-popup share-link refer]} _ _]
   (om/component
@@ -17,6 +20,8 @@
        :refer-stylist        (om/build stylist.referrals/refer-component refer
                                        {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
        :refer-stylist-thanks (om/build stylist.referrals/thanks-component nil)
+       :home-video           (om/build video/component {:video-id "66ysezzxwk"}
+                                       {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}})
        nil)])))
 
 (defn query [data]
