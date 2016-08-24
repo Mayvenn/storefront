@@ -26,7 +26,7 @@
           [:div.fixed.overlay.bg-darken-4.z3
            (on-click-or-touch on-close)
            [:div.fixed.overlay.bg-darken-4]]
-          [:div.fixed.z3.left-0.right-0.mx-auto.overflow-auto
+          [:div.fixed.z3.left-0.right-0.mx-auto.overflow-auto.col-11
            {:style        {:max-height "100%"}
             :data-snap-to "top"}
            [:div.flex.flex-column.items-center.justify-center
