@@ -7,6 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.carousel-two :as carousel]))
@@ -106,15 +107,18 @@
 
 (def video-popup
   (component/html
-   [:div {:on-click #(handle-message events/control-change-state
-                                     {:keypath keypaths/popup
-                                      :value   :home-video})}
+   [:div.relative {:on-click #(handle-message events/control-change-state
+                                              {:keypath keypaths/popup
+                                               :value   :home-video})}
     [:div.to-md-hide.bg-center.bg-no-repeat
      {:style {:height "408px"
-              :background-image (str "url("(assets/path "/images/homepage/desktop_video.png")")")}
-      :title "Watch customer reviews"}]
-    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_video.png")
-                             :alt "Watch customer reviews"}]]))
+              :background-image (str "url("(assets/path "/images/homepage/desktop_video.png")")")}}]
+    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_video.png")}]
+    [:div.absolute.overlay.bg-darken-2
+     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
+      [:div.mt4 svg/play-video]
+      [:div.h0.my2 "Mayvenn in action"]
+      [:div.h2 "watch a mayvenn hair review"]]]]))
 
 (defn component [{:keys [taxons]} owner opts]
   (component/create
