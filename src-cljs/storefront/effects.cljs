@@ -138,6 +138,9 @@
       (let [path (routes/current-path app-state)]
         (exception-handler/refresh)))))
 
+(defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
+  (pixlee/insert))
+
 (defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)
@@ -765,6 +768,12 @@
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
+
+(defmethod perform-effects events/shop-by-look-component-mounted [_ event {:keys [container-id]} app-state]
+  (pixlee/attach-mosaic container-id))
+
+(defmethod perform-effects events/shop-by-look-component-unmounted [_ event _ app-state]
+  (pixlee/close-all))
 
 (defmethod perform-effects events/ugc-component-mounted [_ event {:keys [pixlee-sku container-id]} app-state]
   (pixlee/attach container-id pixlee-sku))

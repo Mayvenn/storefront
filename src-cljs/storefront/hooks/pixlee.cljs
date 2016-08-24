@@ -20,6 +20,20 @@
      "//assets.pixlee.com/assets/pixlee_events.js"
      "ugc-analytics")))
 
+(defn attach-mosaic [container-id]
+  (when (widget-js-loaded?)
+    (js/Pixlee.addSimpleWidget
+     (clj->js
+      {:containerId       container-id
+       :addToCart         false
+       :addToCartNavigate "false"
+       :albumId           (-> config/pixlee :mosaic :album-id)
+       :recipeId          476
+       :displayOptionsId  (-> config/pixlee :mosaic :display-options-id)
+       :type              "mosaic"
+       :accountId         (:account-id config/pixlee)}))
+    (.setTimeout js/window js/Pixlee.resizeWidget 0)))
+
 (defn attach [container-id sku]
   (when (and (widget-js-loaded?) sku)
     (js/Pixlee.addProductWidget
@@ -31,8 +45,8 @@
        :recipeId          476
        :displayOptionsId  14046
        :type              "horizontal"
-       :accountId         (:account-id config/pixlee)})
-     (.setTimeout js/window js/Pixlee.resizeWidget 0))))
+       :accountId         (:account-id config/pixlee)}))
+    (.setTimeout js/window js/Pixlee.resizeWidget 0)))
 
 (defn close-all []
   (when (widget-js-loaded?)

@@ -28,6 +28,7 @@
        "/account/edit"                   (edn->bidi events/navigate-account-manage)
        "/account/referrals"              (edn->bidi events/navigate-account-referrals)
        "/cart"                           (edn->bidi events/navigate-cart)
+       "/shop/look"                      (edn->bidi events/navigate-shop-by-look)
        "/stylist/commissions"            (edn->bidi events/navigate-stylist-dashboard-commissions)
        "/stylist/store_credits"          (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
        "/stylist/referrals"              (edn->bidi events/navigate-stylist-dashboard-referrals)

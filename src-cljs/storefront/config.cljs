@@ -56,5 +56,11 @@
 
 (def pixlee
   (case js/environment
-    "production" {:api-key "PUTXr6XBGuAhWqoIP4ir" :account-id 1009}
-    {:api-key "iiQ27jLOrmKgTfIcRIk" :account-id 1025}))
+    "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
+                  :account-id 1009
+                  :mosaic {:album-id 952508
+                           :display-options-id 14473}}
+    {:api-key "iiQ27jLOrmKgTfIcRIk"
+     :account-id 1025
+     :mosaic {:album-id 965034
+              :display-options-id 14783}}))

@@ -32,6 +32,7 @@
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
+(defpath navigate-shop-by-look)
 
 (defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
@@ -223,6 +224,9 @@
 
 (defpath ugc-component-mounted)
 (defpath ugc-component-unmounted)
+
+(defpath shop-by-look-component-mounted)
+(defpath shop-by-look-component-unmounted)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
