@@ -31,7 +31,7 @@
                        :name      "account-instagram"
                        :id        "account-instagram"
                        :data-test "account-instagram"
-                       :error (get field-errors ["instagram_account"])})]]
+                       :errors (get field-errors ["instagram_account"])})]]
 
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
@@ -46,7 +46,7 @@
                        :name      "account-styleseat"
                        :id        "account-styleseat"
                        :data-test "account-styleseat"
-                       :error (get field-errors ["styleseat_account"])})]]]
+                       :errors (get field-errors ["styleseat_account"])})]]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp

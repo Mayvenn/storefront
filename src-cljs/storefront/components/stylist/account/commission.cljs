@@ -65,7 +65,7 @@
       (ui/text-field "Address"
                      (conj keypaths/stylist-manage-account :address :address1)
                      address1
-                     {:autofocus "autofocus"
+                     {:auto-focus "autofocus"
                       :type      "text"
                       :name      "account-address1"
                       :id        "account-address1"

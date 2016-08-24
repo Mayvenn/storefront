@@ -21,7 +21,7 @@
        [:div.col-6 (ui/text-field "First Name"
                                   (conj keypaths/stylist-manage-account :address :firstname)
                                   (:firstname address)
-                                  {:autofocus "autofocus"
+                                  {:auto-focus "autofocus"
                                    :type      "text"
                                    :name      "account-first-name"
                                    :data-test "account-first-name"

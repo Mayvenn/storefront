@@ -18,7 +18,7 @@
      (ui/text-field "Email"
                     keypaths/forgot-password-email
                     email
-                    {:autofocus "autofocus"
+                    {:auto-focus "autofocus"
                      :type "email"
                      :name "email"
                      :required true

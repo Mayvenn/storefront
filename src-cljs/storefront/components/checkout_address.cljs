@@ -39,7 +39,7 @@
       [:.col-6 (ui/text-field "First Name"
                               keypaths/checkout-shipping-address-first-name
                               (:first-name shipping-address)
-                              {:autofocus "autofocus"
+                              {:auto-focus "autofocus"
                                :type      "text"
                                :name      "shipping-first-name"
                                :data-test "shipping-first-name"
@@ -157,7 +157,7 @@
           (ui/text-field "First Name"
                          keypaths/checkout-billing-address-first-name
                          (:first-name billing-address)
-                         {:autofocus "autofocus"
+                         {:auto-focus "autofocus"
                           :type      "text"
                           :name      "billing-first-name"
                           :id        "billing-first-name"
