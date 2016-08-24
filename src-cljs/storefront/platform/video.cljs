@@ -18,20 +18,29 @@
     om/IRender
     (render [this]
       (html
-       (letfn [(cancel-close [e] (.stopPropagation e) false)]
-         (ui/modal
-          {:on-close on-close :bg-class "bg-darken-4"}
-          [:div.flex.items-center
-           {:style          {:height "100vh"}
-            :on-click       on-close
-            :on-touch-start on-close}
-           [:div.wistia_responsive_padding.relative.col-12
-            {:style {:padding-top "56.25%"}}
-            [:div.wistia_responsive_wrapper.absolute.left-0.top-0.col-12
-             {:style          {:height "100%"}
-              :on-click       cancel-close
-              :on-touch-start cancel-close}
-             [:span.wistia_embed.col-12
-              {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")
-               :style {:height "100%"}}
-              ui/nbsp]]]]))))))
+       (letfn [(cancel-close [e] (.stopPropagation e) false)
+               (on-click-or-touch [f] {:on-click       f
+                                       :on-touch-start f})]
+         ;; TODO: if ui/modal is ever refactored, copy changes here
+         [:div
+          [:div.fixed.overlay.bg-darken-4.z3
+           (on-click-or-touch on-close)
+           [:div.fixed.overlay.bg-darken-4]]
+          [:div.fixed.z3.left-0.right-0.mx-auto.overflow-auto
+           {:style        {:max-height "100%"}
+            :data-snap-to "top"}
+           [:div.flex.flex-column.items-center.justify-center
+            (merge (on-click-or-touch on-close)
+                   {:style {:height "100vh"}})
+            [:div.wistia_responsive_padding.relative.col-12
+             {:style {:padding-top "56.25%"}}
+             [:div.wistia_responsive_wrapper.absolute.left-0.top-0.col-12
+              (merge (on-click-or-touch cancel-close)
+                     {:style {:height "100%"}})
+              [:span.wistia_embed.col-12
+               {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")
+                :style {:height "100%"}}
+               ui/nbsp]]]
+            [:div.white.p1.mt3
+             (on-click-or-touch on-close)
+             "close video"]]]])))))
