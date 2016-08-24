@@ -1,6 +1,7 @@
 var Pixlee = {};
 Pixlee.init = function(config) {};
 Pixlee.addProductWidget = function(widgetDefinition) {};
+Pixlee.addSimpleWidget = function(widgetDefinition) {};
 Pixlee.resizeWidget = function() {};
 Pixlee.close = function() {};
 
