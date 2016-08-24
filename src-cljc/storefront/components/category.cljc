@@ -15,6 +15,7 @@
                :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.assets :as assets]
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]))
 
@@ -206,11 +207,9 @@
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
-(defn css-url [url] (str "url(" url ")"))
-
 (defn carousel-image [image]
   [:div.bg-cover.bg-no-repeat.bg-center.col-12
-   {:style {:background-image (css-url image)
+   {:style {:background-image (assets/css-url image)
             :height "31rem"}}])
 
 (defn carousel [images {:keys [slug]}]

@@ -67,7 +67,7 @@
     (utils/route-to events/navigate-categories)
     [:div.to-md-hide.bg-center.bg-no-repeat
      {:style {:height "408px"
-              :background-image (str "url("(assets/path "/images/homepage/desktop_banner.jpg")")")}
+              :background-image (assets/css-url (assets/path "/images/homepage/desktop_banner.jpg"))}
       :title "shop now"}]
     [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_banner.jpg")
                              :alt "shop now"}]]))
@@ -112,7 +112,7 @@
                                                :value   :home-video})}
     [:div.to-md-hide.bg-center.bg-no-repeat
      {:style {:height "408px"
-              :background-image (str "url("(assets/path "/images/homepage/desktop_video.png")")")}}]
+              :background-image (assets/css-url (assets/path "/images/homepage/desktop_video.png"))}}]
     [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_video.png")}]
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}

@@ -9,3 +9,5 @@
       resource-path)))
 
 (def canonical-image (path "/images/canonical_image.jpg"))
+
+(defn css-url [url] (str "url(" url ")"))
