@@ -183,7 +183,7 @@
                     [:.col-12 (ui/text-field "Name"
                                             (conj keypaths/stylist-referrals idx :fullname)
                                             (:fullname referral)
-                                            {:autofocus "autofocus"
+                                            {:auto-focus "autofocus"
                                              :type      "text"
                                              :name      (str "referrals[" idx "][fullname]")
                                              :data-test (str "referral-fullname-" idx)

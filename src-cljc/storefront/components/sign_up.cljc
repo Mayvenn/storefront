@@ -27,7 +27,7 @@
      (ui/text-field "Email"
                     keypaths/sign-up-email
                     email
-                    {:autofocus "autofocus"
+                    {:auto-focus "autofocus"
                      :type      "email"
                      :name      "email"
                      :data-test "user-email"

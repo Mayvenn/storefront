@@ -23,12 +23,12 @@
     {:style {:height "1.2em" :width "100%"}}]))
 
 (defn button
-  [{:keys [disabled spinning?] :as opts} & content]
+  [{:keys [disabled? spinning?] :as opts} & content]
   (let [opts    (-> opts
-                    (update :on-click #(if (or disabled spinning?)
+                    (update :on-click #(if (or disabled? spinning?)
                                          utils/noop-callback
                                          %))
-                    (dissoc :spinning?))
+                    (dissoc :spinning? :disabled?))
         content (if spinning?
                   [:div.h3.letter-spacing-1 spinner]
                   content)]
@@ -107,13 +107,13 @@
       (cond-> (merge {:key label
                       :class "rounded"
                       :placeholder label
-                      :value value
+                      :value (or value "")
                       :on-change
                       (fn [e]
                         (handle-message events/control-change-state
                                         {:keypath keypath
                                          :value (.. e -target -value)}))}
-                     input-attributes)
+                     (dissoc input-attributes :errors))
         (nil? error) (add-classes "border-light-silver glow-green")
         error (add-classes "border-orange border-width-2 pr4 glow-orange")
         (seq value) (add-classes "has-value"))]
@@ -146,7 +146,7 @@
                        :on-change   #(handle-message events/control-change-state
                                                      {:keypath keypath
                                                       :value   (selected-value %)})}
-                      select-attributes)
+                      (dissoc select-attributes :errors))
          (nil? error) (add-classes "border-none")
          error (add-classes "border-orange border-width-2 pr4 glow-orange"))
        (when-let [placeholder (:placeholder select-attributes)]
