@@ -75,20 +75,28 @@
    [:div.dark-gray.py3
     [:h2.h1.center.dark-black.bold.py1 "why people love Mayvenn hair"]
 
-    [:div.mx3.p3.border-bottom.border-light-silver
-     [:h3.h2.center.bold.py3 "stylist recommended"]
-     [:p.line-height-5
-      "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
+    [:div.mx3.md-flex.f4
+     [:div.py4
+      [:div.px3
+       [:h3.f2.center.bold.mb3 "stylist recommended"]
+       [:p.line-height-5
+        "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]]
 
-    [:div.mx3.p3.border-bottom.border-light-silver
-     [:h3.h2.center.bold.py3 "30 day guarantee"]
-     [:p.line-height-5
-      "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
+     [:div.md-up-hide.border-bottom.border-light-silver]
+     [:div.py4
+      [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
+      [:div.px3
+       [:h3.f2.center.bold.mb3 "30 day guarantee"]
+       [:p.line-height-5
+        "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]]
 
-    [:div.mx3.p3
-     [:h3.h2.center.bold.py3 "fast free shipping"]
-     [:p.line-height-5
-      "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]
+     [:div.md-up-hide.border-bottom.border-light-silver]
+     [:div.py4
+      [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
+      [:div.px3
+       [:h3.f2.center.bold.mb3 "fast free shipping"]
+       [:p.line-height-5
+        "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]]
 
     [:div.col-6.md-up-col-4.mx-auto
      (ui/green-button
