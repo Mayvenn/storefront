@@ -12,6 +12,24 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.carousel-two :as carousel]))
 
+(defn homepage-images
+  "Adds image effect where images are always full width. On mobile, the image
+  height grows as the screen grows. On desktop, the image height is fixed. The
+  image is centered and the edges are clipped at narrower screens, then are
+  gradually exposed on wider screens. All meaningful content has to fit within
+  the center 640px of the desktop image.
+
+  mobile-asset can be any height but must be 640px wide
+  desktop-asset should be 408px high and at least 1024px wide"
+  [mobile-asset desktop-asset alt-text]
+  [:div
+   [:div.to-md-hide.bg-center.bg-no-repeat
+    {:style {:height "408px"
+             :background-image (assets/css-url desktop-asset)}
+     :title alt-text}]
+   [:img.md-up-hide.col-12 {:src mobile-asset
+                            :alt alt-text}]])
+
 (defn category [{:keys [slug name long-name model-image product-image]}]
   [:a.p1.center.flex.flex-column.items-center
    (merge {:data-test (str "taxon-" slug)}
@@ -61,20 +79,11 @@
      (utils/route-to events/navigate-categories)
      [:span.dark-black.bold "shop now"])]])
 
-(defn stretchy-images [mobile-asset desktop-asset alt-text]
-  [:div
-   [:div.to-md-hide.bg-center.bg-no-repeat
-    {:style {:height "408px"
-             :background-image (assets/css-url desktop-asset)}
-     :title alt-text}]
-   [:img.md-up-hide.col-12 {:src mobile-asset
-                            :alt alt-text}]])
-
 (def banner
   (component/html
    [:a
     (utils/route-to events/navigate-categories)
-    (stretchy-images (assets/path "/images/homepage/mobile_banner.jpg")
+    (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
                      (assets/path "/images/homepage/desktop_banner.jpg")
                      "shop now")]))
 
@@ -116,7 +125,7 @@
    [:div.relative {:on-click #(handle-message events/control-change-state
                                               {:keypath keypaths/popup
                                                :value   :home-video})}
-    (stretchy-images
+    (homepage-images
      (assets/path "/images/homepage/mobile_video.png")
      (assets/path "/images/homepage/desktop_video.png")
      "Watch a video about what real customers have to say about Mayvenn")
