@@ -61,13 +61,13 @@
 
 (def pixlee
   (case js/environment
-    "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
+    "production" {:api-key    "PUTXr6XBGuAhWqoIP4ir"
                   :account-id 1009
-                  :horizontal {:display-options-id 15040}
-                  :mosaic {:album-id 952508
-                           :display-options-id 14473}}
-    {:api-key "iiQ27jLOrmKgTfIcRIk"
+                  :product    {:displayOptionsId 15060}
+                  :mosaic     {:albumId          952508
+                               :displayOptionsId 14473}}
+    {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :account-id 1025
-     :mosaic {:album-id 965034
-              :horizontal {:display-options-id 14738}
-              :display-options-id 14783}}))
+     :product    {:displayOptionsId 15034}
+     :mosaic     {:albumId          965034
+                  :displayOptionsId 14783}}))
