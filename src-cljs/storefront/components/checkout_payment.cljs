@@ -27,8 +27,8 @@
     [:div
      [:div.h2.my2 "Payment Information"]
      (if fetching-saved-cards?
-       [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat
-        {:style {:height "4rem" :width "100%"}
+       [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
+        {:style {:height "4rem"}
          :data-test "spinner"}]
        [:div
         (when (seq saved-cards)

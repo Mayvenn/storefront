@@ -21,7 +21,7 @@
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
      :class (if photo-saving? "border-white" "border-green")}
-    [:div.circle.border-white.border.content-box {:style {:width "96px" :height "96px" :border-width "2px"}}
+    [:div.circle.border-white.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
    "Change Photo"
    [:input.hide

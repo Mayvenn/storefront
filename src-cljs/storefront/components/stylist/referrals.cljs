@@ -22,8 +22,8 @@
     [:svg {:width diameter :height diameter}
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
       [:circle.stroke-silver svg-circle-size]
-      [:circle.stroke-green (merge svg-circle-size {:style {:stroke-dasharray circumference
-                                                           :stroke-dashoffset arc-length}})]]]))
+      [:circle.stroke-green (merge svg-circle-size {:style {:stroke-dasharray  circumference
+                                                            :stroke-dashoffset arc-length}})]]]))
 
 (def state-radius 36)
 (def state-diameter (* 2 state-radius))
