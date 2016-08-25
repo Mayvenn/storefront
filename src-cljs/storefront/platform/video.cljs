@@ -1,6 +1,7 @@
 (ns storefront.platform.video
   (:require [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
             [om.core :as om]
             [sablono.core :refer-macros [html]]))
@@ -45,5 +46,11 @@
              (on-click-or-touch on-close)
              "close video"]]]])))))
 
-(defn built-home-component [_ opts]
-  (om/build component {:video-id "66ysezzxwk"} opts))
+(def video-name->id
+  {:home "66ysezzxwk"})
+
+(defn query [data]
+  {:video-id (video-name->id (get-in data keypaths/video))})
+
+(defn built-component [data opts]
+  (om/build component (query data) opts))

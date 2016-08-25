@@ -122,9 +122,7 @@
 
 (def video-popup
   (component/html
-   [:div.relative {:on-click #(handle-message events/control-change-state
-                                              {:keypath keypaths/popup
-                                               :value   :home-video})}
+   [:div.relative {:on-click #(handle-message events/control-play-video {:video :home})}
     (homepage-images
      (assets/path "/images/homepage/mobile_video.png")
      (assets/path "/images/homepage/desktop_video.png")

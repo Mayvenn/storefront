@@ -65,6 +65,7 @@
                     shop-menu-expanded
                     store-info-expanded})
 (def menus (conj header-menus menu-expanded))
+(def video (conj ui :video))
 
 (def places-enabled (conj ui :places-enabled))
 
