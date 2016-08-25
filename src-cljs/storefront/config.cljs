@@ -63,11 +63,11 @@
   (case js/environment
     "production" {:api-key    "PUTXr6XBGuAhWqoIP4ir"
                   :account-id 1009
-                  :product    {:displayOptionsId 15060}
+                  :product    {:displayOptionsId 15111}
                   :mosaic     {:albumId          952508
                                :displayOptionsId 14473}}
     {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :account-id 1025
-     :product    {:displayOptionsId 15034}
+     :product    {:displayOptionsId 15110}
      :mosaic     {:albumId          965034
                   :displayOptionsId 14783}}))
