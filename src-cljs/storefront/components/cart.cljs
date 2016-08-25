@@ -87,6 +87,9 @@ Thanks,
   {:share-url (get-in data keypaths/shared-cart-url)
    :store-nickname (:store_nickname (get-in data keypaths/store))})
 
+(defn built-share-link-component [data opts]
+  (om/build share-link-component (query-share-link data) opts))
+
 (defn full-component [{:keys [order
                               products
                               source

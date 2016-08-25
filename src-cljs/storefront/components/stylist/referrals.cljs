@@ -229,6 +229,8 @@
    :flash-failure  (get-in data keypaths/flash-failure-message)
    :referrals      (get-in data keypaths/stylist-referrals)})
 
+(defn built-refer-component [data opts]
+  (om/build refer-component (query-refer data) opts))
 
 (defn thanks-component [_ owner {:keys [on-close]}]
   (om/component
@@ -238,3 +240,6 @@
               [:.flex.flex-column.items-center.justify-center.pt4.mt4
                [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
                [:.h2.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
+
+(defn built-thanks-component [_ _]
+  (om/build thanks-component nil nil))
