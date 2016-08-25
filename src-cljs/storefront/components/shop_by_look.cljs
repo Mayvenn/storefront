@@ -23,7 +23,7 @@
          [:div.h2.navy "Shop by look"]
          [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
           {:style {:width "101px" :height "85px"}} ]
-         [:p.dark-gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easy add it to your bag!"]]
+         [:p.dark-gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
         [:div {:id container-id}]]))))
 
 (defn component [{:keys [pixlee-loaded?] :as data} owner opts]
