@@ -19,8 +19,8 @@
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"
   (component/html
-   [:div.img-spinner.bg-no-repeat.bg-center.bg-contain
-    {:style {:height "1.2em" :width "100%"}}]))
+   [:div.img-spinner.bg-no-repeat.bg-center.bg-contain.col-12
+    {:style {:height "1.2em"}}]))
 
 (defn button
   [{:keys [disabled? spinning?] :as opts} & content]
