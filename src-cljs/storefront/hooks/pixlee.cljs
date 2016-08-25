@@ -43,7 +43,7 @@
        :addToCart         false
        :addToCartNavigate "false"
        :recipeId          476
-       :displayOptionsId  14046
+       :displayOptionsId  (-> config/pixlee :horizontal :display-options-id)
        :type              "horizontal"
        :accountId         (:account-id config/pixlee)}))
     (.setTimeout js/window js/Pixlee.resizeWidget 0)))
