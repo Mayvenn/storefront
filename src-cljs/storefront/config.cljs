@@ -27,6 +27,11 @@
     "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
     "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js"))
 
+(def woopra-host
+  (case js/environment
+    "production" "mayvenn.com"
+    "diva-acceptance.com"))
+
 (def optimizely-app-id (case js/environment
                          "production" 592210561
                          3156430062))

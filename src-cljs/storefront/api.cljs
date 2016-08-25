@@ -7,6 +7,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.cache :as c]
+            [storefront.utils.combinators :refer [filter-nil]]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
@@ -89,11 +90,6 @@
     (assoc default :read (fn [xhrio]
                            {:body (read-json xhrio)
                             :app-version (app-version xhrio)}))))
-
-(defn filter-nil [m]
-  (if (map? m)
-    (into {} (filter (comp not nil? val) m))
-    m))
 
 (def default-req-opts {:format :json
                        :response-format (header-json-response-format {:keywords? true})})
@@ -506,25 +502,26 @@
                                        {:order %
                                         :navigate events/navigate-order-complete})}))
 
-(defn inc-line-item [order {:keys [variant-id] :as params}]
+(defn inc-line-item [order {:keys [variant]}]
   (api-req
    POST
    "/v2/add-to-bag"
-   (conj request-keys/increment-line-item variant-id)
+   (conj request-keys/increment-line-item (:id variant))
    {:params (merge (select-keys order [:number :token])
-                   {:variant-id variant-id
+                   {:variant-id (:id variant)
                     :quantity 1})
     :handler #(messages/handle-message events/api-success-add-to-bag
                                        {:order %
-                                        :requested-quantity 1})}))
+                                        :variant variant
+                                        :quantity 1})}))
 
-(defn dec-line-item [order {:keys [variant-id]}]
+(defn dec-line-item [order {:keys [variant]}]
   (api-req
    POST
    "/v2/remove-from-bag"
-   (conj request-keys/decrement-line-item variant-id)
+   (conj request-keys/decrement-line-item (:id variant))
    {:params (merge (select-keys order [:number :token])
-                   {:variant-id variant-id
+                   {:variant-id (:id variant)
                     :quantity 1})
     :handler #(messages/handle-message events/api-success-add-to-bag
                                        {:order %})}))
@@ -643,7 +640,8 @@
                    (when (and token number) {:token token :number number}))
     :handler #(messages/handle-message events/api-success-add-to-bag
                                        {:order %
-                                        :requested (select-keys params [:quantity :variant])})}))
+                                        :quantity (:quantity params)
+                                        :variant (:variant params)})}))
 
 (defn remove-promotion-code [{:keys [token number]} promo-code]
   (api-req

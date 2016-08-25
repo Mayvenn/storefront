@@ -308,9 +308,9 @@
                     keypaths/reset-password-token)
       (assoc-in keypaths/sign-in-remember true)))
 
-(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]
   (-> app-state
-      (update-in keypaths/browse-recently-added-variants conj requested)
+      (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
       (update-in keypaths/bundle-builder bundle-builder/rollback)))

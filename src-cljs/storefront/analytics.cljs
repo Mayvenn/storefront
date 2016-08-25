@@ -8,6 +8,7 @@
             [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.pixlee :as pixlee-analytics]
+            [storefront.hooks.woopra :as woopra]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
@@ -77,7 +78,13 @@
     (when (pixlee/content-available? taxon)
       (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item taxon args)))))
 
-(defmethod track events/api-success-add-to-bag [_ _ args app-state]
+(defmethod track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
+  (when variant
+    (woopra/track-event "line_item_added"
+                        {:variant variant
+                         :session-id (get-in app-state keypaths/session-id)
+                         :quantity quantity
+                         :order (get-in app-state keypaths/order)}))
   (when (stylists/own-store? app-state)
     (optimizely/set-dimension "stylist-own-store" "stylists"))
   (optimizely/track-event "add-to-bag"))

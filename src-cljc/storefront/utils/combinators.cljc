@@ -12,3 +12,10 @@
   collection. The key function should be injective/one-to-one."
   [f coll]
   (map-values first (group-by f coll)))
+
+(defn filter-nil
+  "Removes keys from m that have nil values."
+  [m]
+  (if (map? m)
+    (into {} (filter (comp not nil? val) m))
+    m))

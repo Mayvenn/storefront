@@ -448,18 +448,14 @@
   (api/create-shared-cart (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
-(defn- modify-cart [app-state args f]
-  (f (get-in app-state keypaths/order)
-     args))
+(defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} app-state]
+  (api/inc-line-item (get-in app-state keypaths/order) {:variant variant}))
 
-(defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [path variant-id]} app-state]
-  (modify-cart app-state {:variant-id (or variant-id (last path))} api/inc-line-item))
-
-(defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [path variant-id]} app-state]
-  (modify-cart app-state {:variant-id (or variant-id (last path))} api/dec-line-item))
+(defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [variant]} app-state]
+  (api/dec-line-item (get-in app-state keypaths/order) {:variant variant}))
 
 (defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
-  (modify-cart app-state variant-id api/delete-line-item))
+  (api/delete-line-item (get-in app-state keypaths/order) variant-id))
 
 (defmethod perform-effects events/control-checkout-as-guest-submit [_ event _ app-state]
   (redirect-to-return-navigation app-state))
