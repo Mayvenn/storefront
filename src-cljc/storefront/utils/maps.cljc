@@ -1,4 +1,4 @@
-(ns storefront.utils.combinators)
+(ns storefront.utils.maps)
 
 (defn map-values
   "Applys a function to every value in a map, i.e. the functor instance for
@@ -14,7 +14,7 @@
   (map-values first (group-by f coll)))
 
 (defn filter-nil
-  "Removes keys from m that have nil values."
+  "Removes keys from map m that have nil values."
   [m]
   (if (map? m)
     (into {} (filter (comp not nil? val) m))

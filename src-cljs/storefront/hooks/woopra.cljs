@@ -1,7 +1,7 @@
 (ns storefront.hooks.woopra
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [storefront.config :as config]
-            [storefront.utils.combinators :refer [filter-nil]]))
+            [storefront.utils.maps :refer [filter-nil]]))
 
 (defn- name-capitalization [s]
   (when s

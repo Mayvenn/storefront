@@ -10,7 +10,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.query :as query]
-            [storefront.utils.combinators :refer [map-values key-by]]
+            [storefront.utils.maps :refer [map-values key-by]]
             [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]

@@ -7,7 +7,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.cache :as c]
-            [storefront.utils.combinators :refer [filter-nil]]
+            [storefront.utils.maps :refer [filter-nil]]
             [clojure.set :refer [rename-keys]]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
