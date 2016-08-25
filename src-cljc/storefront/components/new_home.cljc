@@ -61,16 +61,22 @@
      (utils/route-to events/navigate-categories)
      [:span.dark-black.bold "shop now"])]])
 
+(defn stretchy-images [mobile-asset desktop-asset alt-text]
+  [:div
+   [:div.to-md-hide.bg-center.bg-no-repeat
+    {:style {:height "408px"
+             :background-image (assets/css-url desktop-asset)}
+     :title alt-text}]
+   [:img.md-up-hide.col-12 {:src mobile-asset
+                            :alt alt-text}]])
+
 (def banner
   (component/html
    [:a
     (utils/route-to events/navigate-categories)
-    [:div.to-md-hide.bg-center.bg-no-repeat
-     {:style {:height "408px"
-              :background-image (assets/css-url (assets/path "/images/homepage/desktop_banner.jpg"))}
-      :title "shop now"}]
-    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_banner.jpg")
-                             :alt "shop now"}]]))
+    (stretchy-images (assets/path "/images/homepage/mobile_banner.jpg")
+                     (assets/path "/images/homepage/desktop_banner.jpg")
+                     "shop now")]))
 
 (def about-mayvenn
   (component/html
@@ -110,10 +116,10 @@
    [:div.relative {:on-click #(handle-message events/control-change-state
                                               {:keypath keypaths/popup
                                                :value   :home-video})}
-    [:div.to-md-hide.bg-center.bg-no-repeat
-     {:style {:height "408px"
-              :background-image (assets/css-url (assets/path "/images/homepage/desktop_video.png"))}}]
-    [:img.md-up-hide.col-12 {:src (assets/path "/images/homepage/mobile_video.png")}]
+    (stretchy-images
+     (assets/path "/images/homepage/mobile_video.png")
+     (assets/path "/images/homepage/desktop_video.png")
+     "Watch a video about what real customers have to say about Mayvenn")
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
