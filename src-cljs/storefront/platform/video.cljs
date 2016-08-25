@@ -44,3 +44,6 @@
             [:div.white.p2.m2
              (on-click-or-touch on-close)
              "close video"]]]])))))
+
+(defn built-home-component [_ opts]
+  (om/build component {:video-id "66ysezzxwk"} opts))
