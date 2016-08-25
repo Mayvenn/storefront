@@ -14,32 +14,31 @@
 (def banner-copy
   (component/html [:p.f4.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
 
-(defn component [{:keys [show? welcome-url]} owner opts]
+(defn component [{:keys [welcome-url]} owner opts]
   (component/create
-   (when show?
-     (let [btn-behavior {:href     welcome-url
-                         :on-click (utils/send-event-callback events/external-redirect-welcome)}
-           btn-copy "Become a Mayvenn"]
-       [:div.bg-dark-black.white.p2
-        ;; Mobile layout
-        [:div.md-up-hide
-         [:div.right close-button]
-         [:div.center
-          [:div.col-9.mx-auto.mb2 banner-copy]
-          [:div.col-7.mx-auto (ui/green-button btn-behavior btn-copy)]]]
-        ;; Desktop / Tablet layout
-        [:div.flex.items-center.to-md-hide
-         [:div.flex-auto
-          [:div.col-7.mx-auto.center.flex.items-center
-           [:div.col-7.mr2 banner-copy]
-           [:div.col-5 (ui/banner-green-button btn-behavior btn-copy)]]]
-         close-button]]))))
+   (let [btn-behavior {:href     welcome-url
+                       :on-click (utils/send-event-callback events/external-redirect-welcome)}
+         btn-copy "Become a Mayvenn"]
+     [:div.bg-dark-black.white.p2
+      ;; Mobile layout
+      [:div.md-up-hide
+       [:div.right close-button]
+       [:div.center
+        [:div.col-9.mx-auto.mb2 banner-copy]
+        [:div.col-7.mx-auto (ui/green-button btn-behavior btn-copy)]]]
+      ;; Desktop / Tablet layout
+      [:div.flex.items-center.to-md-hide
+       [:div.flex-auto
+        [:div.col-7.mx-auto.center.flex.items-center
+         [:div.col-7.mr2 banner-copy]
+         [:div.col-5 (ui/banner-green-button btn-behavior btn-copy)]]]
+       close-button]])))
 
 (defn query [data]
-  {:show?       (and (= (get-in data keypaths/navigation-event) events/navigate-home)
-                     (= (get-in data keypaths/store-slug) "shop")
-                     (not (get-in data keypaths/stylist-banner-hidden)))
-   :welcome-url (get-in data keypaths/welcome-url)})
+  {:welcome-url (get-in data keypaths/welcome-url)})
 
 (defn built-component [data opts]
-  (component/build component (query data) opts))
+  (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
+             (= (get-in data keypaths/store-slug) "shop")
+             (not (get-in data keypaths/stylist-banner-hidden)))
+    (component/build component (query data) opts)))
