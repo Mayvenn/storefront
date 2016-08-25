@@ -1,7 +1,11 @@
 (ns storefront.hooks.woopra
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [storefront.config :as config]
+<<<<<<< fc6d5ce88ebb48fd5b7aabf380291fe2206d9788
             [storefront.utils.maps :refer [filter-nil]]))
+=======
+            [storefront.utils.combinators :refer [filter-nil]]))
+>>>>>>> Track add-to-bag as woopra event
 
 (defn- name-capitalization [s]
   (when s
@@ -58,6 +62,7 @@
                                 :ce_store_id             (-> order :stylist-ids last)}
                                (order->user-event-data order)
                                (order->visitor-data order)))}))
+<<<<<<< fc6d5ce88ebb48fd5b7aabf380291fe2206d9788
 
 (defn track-identity [{:keys [session-id user]}]
   (GET
@@ -66,3 +71,5 @@
              :cookie   session-id
              :cv_id    (:id user)
              :cv_email (:email user)}}))
+=======
+>>>>>>> Track add-to-bag as woopra event
