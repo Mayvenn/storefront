@@ -20,32 +20,30 @@
      "//assets.pixlee.com/assets/pixlee_events.js"
      "ugc-analytics")))
 
+(def common-config
+  {:addToCart         false
+   :addToCartNavigate "false"
+   :recipeId          476
+   :accountId         (:account-id config/pixlee)})
+
 (defn attach-mosaic-widget [container-id]
   (when (widget-js-loaded?)
     (js/Pixlee.addSimpleWidget
-     (clj->js
-      {:containerId       container-id
-       :addToCart         false
-       :addToCartNavigate "false"
-       :albumId           (-> config/pixlee :mosaic :album-id)
-       :recipeId          476
-       :displayOptionsId  (-> config/pixlee :mosaic :display-options-id)
-       :type              "mosaic"
-       :accountId         (:account-id config/pixlee)}))
+     (clj->js (merge common-config
+                     (:mosaic config/pixlee)
+                     {:containerId container-id
+                      :type        "mosaic"})))
     (.setTimeout js/window js/Pixlee.resizeWidget 0)))
 
 (defn attach-product-widget [container-id sku]
   (when (and (widget-js-loaded?) sku)
     (js/Pixlee.addProductWidget
-     (clj->js
-      {:containerId       container-id
-       :skuId             sku
-       :addToCart         false
-       :addToCartNavigate "false"
-       :recipeId          476
-       :displayOptionsId  (-> config/pixlee :horizontal :display-options-id)
-       :type              "horizontal"
-       :accountId         (:account-id config/pixlee)}))
+     (clj->js (merge
+               common-config
+               (:product config/pixlee)
+               {:containerId container-id
+                :skuId       sku
+                :type        "horizontal"})))
     (.setTimeout js/window js/Pixlee.resizeWidget 0)))
 
 (defn close-all []
