@@ -120,6 +120,8 @@
 
 (defpath control-commission-order-expand)
 
+(defpath control-play-video)
+
 (defpath api)
 (defpath api-start)
 (defpath api-end)

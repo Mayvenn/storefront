@@ -12,5 +12,5 @@
       :share-cart           (cart/built-share-link-component data opts)
       :refer-stylist        (stylist.referrals/built-refer-component data opts)
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)
-      :home-video           (video/built-home-component data opts)
+      :video                (video/built-component data opts)
       nil)))

@@ -157,6 +157,11 @@
   [_ _ {:keys [menus]} app-state]
   (collapse-menus app-state menus))
 
+(defmethod transition-state events/control-play-video [_ events {:keys [video]} app-state]
+  (-> app-state
+      (assoc-in keypaths/popup :video)
+      (assoc-in keypaths/video video)))
+
 (defmethod transition-state events/control-sign-out [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/user {})
