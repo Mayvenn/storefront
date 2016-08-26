@@ -156,7 +156,7 @@
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:.bg-light-white.rounded.p2.mt3
+              [:.bg-light-white.rounded.p2
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (or (seq errors) flash-failure)
@@ -237,7 +237,7 @@
    (html
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
-              [:.flex.flex-column.items-center.justify-center.pt4.mt4
+              [:.flex.flex-column.items-center.justify-center.pt4
                [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
                [:.h2.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
 

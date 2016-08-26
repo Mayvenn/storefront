@@ -181,14 +181,24 @@
       [:div.fixed.overlay]
       menu])])
 
-(defn modal [{:keys [on-close bg-class] :as attrs} & body]
-  [:div
-   [:div.fixed.overlay.bg-darken-4.z3
-    {:on-click on-close :on-touch-start on-close}
-    [:div.fixed.overlay {:class bg-class}]]
-   (into [:div.fixed.z3.left-0.right-0.mx-auto.col-11.md-up-col-7.lg-up-col-5.overflow-auto {:style {:max-height "100%"}
-                                                                                             :data-snap-to "top"}]
-         body)])
+(defn modal [{:keys [on-close bg-class col-class] :or {col-class "col-11 md-up-col-7 lg-up-col-5"}} & body]
+  ;; Inspired by https://css-tricks.com/considerations-styling-modal/
+  (letfn [(on-click-or-touch [f] {:on-click       f
+                                  :on-touch-start f})]
+    [:div
+     ;; The scrim, a sibling to the modal
+     [:div.z3.fixed.overlay.bg-darken-4
+      (on-click-or-touch on-close)
+      ;; An opportunity to override or darken the scrim
+      [:div.fixed.overlay {:class bg-class}]]
+     ;; The modal itself
+     [:div.z4.fixed.col-12.overflow-auto (merge {:style {:top       "50%"
+                                                         :left      "50%"
+                                                         :transform "translate(-50%, -50%)"
+                                                         :max-height "100%"}}
+                                                (on-click-or-touch on-close))
+      (into [:div.mx-auto (merge {:class col-class} (on-click-or-touch utils/stop-propagation))]
+            body)]]))
 
 (defn modal-close [{:keys [data-test on-close bg-class]}]
   [:div.clearfix
