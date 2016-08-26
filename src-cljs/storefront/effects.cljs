@@ -108,9 +108,9 @@
                          (first (get-in app-state keypaths/order-promotion-codes))
                          (get-in app-state keypaths/pending-promo-code)))
 
-    (when-let [order-number (get-in app-state keypaths/order-number)]
-      (api/get-order order-number
-                     (get-in app-state keypaths/order-token)))
+    (let [order-number (get-in app-state keypaths/order-number)]
+      (when (and order-number (not= (take 2 event) events/navigate-checkout))
+        (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
     (scroll/snap-to-top)
 
