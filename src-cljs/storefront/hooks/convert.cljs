@@ -28,12 +28,12 @@
 (defn remove-tracking []
   (tags/remove-tags-by-class "convert"))
 
-(defn track-conversion [label]
+(defn ^:private track [& args]
   (when (.hasOwnProperty js/window "convert")
-    (.push js/_conv_q
-           (clj->js ["triggerConversion" (label->goal-id label)]))))
+    (.push js/_conv_q (clj->js args))))
+
+(defn track-conversion [label]
+  (track "triggerConversion" (label->goal-id label)))
 
 (defn track-revenue [{:keys [order-number revenue products-count]}]
-  (when (.hasOwnProperty js/window "convert")
-    (.push js/_conv_q
-           (clj->js ["sendRevenue" order-number revenue products-count (label->goal-id "revenue")]))))
+  (track "sendRevenue" order-number revenue products-count (label->goal-id "revenue")))
