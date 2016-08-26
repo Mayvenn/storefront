@@ -191,13 +191,10 @@
     [:div.fixed.overlay {:class bg-class}]]
    ;; The modal itself
    ;; - is above the scrim (z)
-   ;; - centers the contents in the viewport (fixed, top, left, transform)
+   ;; - centers the contents in the viewport (fixed, translate-center)
    ;; - stays within the bounds of the screen and scrolls when necessary (col-12, max-height, overflow)
-   [:div.z4.fixed.col-12.overflow-auto {:style    {:top        "50%"
-                                                   :left       "50%"
-                                                   :transform  "translate(-50%, -50%)"
-                                                   :max-height "100%"}
-                                        :on-click on-close}
+   [:div.z4.fixed.translate-center.col-12.overflow-auto {:style    {:max-height "100%"}
+                                                         :on-click on-close}
     ;; The inner wrapper
     ;; - provides a place to set width of the modal content (col-class)
     ;;   - should be a percentage based width; will be centered with mx-auto
