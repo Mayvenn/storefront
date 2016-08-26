@@ -44,6 +44,10 @@
   (when (= 13 (.-keyCode e))
     (.preventDefault e)))
 
+(defn stop-propagation [e]
+  (.stopPropagation e)
+  false)
+
 (defn fake-href [event & [args]]
   {:href "#"
    :on-click (send-event-callback event args)})
