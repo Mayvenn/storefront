@@ -305,13 +305,14 @@
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
 
-(defmethod transition-state events/api-success-reset-password [_ event args app-state]
+(defmethod transition-state events/api-success-reset-password [_ event {:keys [user order]} app-state]
   (-> app-state
-      (sign-in-user args)
+      (sign-in-user user)
       (clear-fields keypaths/reset-password-password
                     keypaths/reset-password-password-confirmation
                     keypaths/reset-password-token)
-      (assoc-in keypaths/sign-in-remember true)))
+      (assoc-in keypaths/sign-in-remember true)
+      (assoc-in keypaths/order order)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]
   (-> app-state
