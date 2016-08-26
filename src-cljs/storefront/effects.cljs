@@ -141,6 +141,9 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/insert))
 
+(defmethod perform-effects events/navigate-categories [dispatch event args app-state]
+  (analytics/track dispatch event args app-state))
+
 (defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
   (analytics/track dispatch event args app-state)
   (reviews/insert-reviews)

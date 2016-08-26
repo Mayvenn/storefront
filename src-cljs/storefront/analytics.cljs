@@ -62,8 +62,12 @@
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (track-page-view app-state))))
 
+(defmethod track events/navigate-categories [_ event args app-state]
+  (convert/track-conversion "view-categories"))
+
 (defmethod track events/navigate-category [_ event args app-state]
-  (facebook-analytics/track-event "ViewContent"))
+  (facebook-analytics/track-event "ViewContent")
+  (convert/track-conversion "view-category"))
 
 (defmethod track events/control-bundle-option-select [_ event _ app-state]
   (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
