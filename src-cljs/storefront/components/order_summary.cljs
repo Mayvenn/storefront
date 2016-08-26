@@ -4,7 +4,8 @@
             [storefront.components.money-formatters :refer [as-money as-money-without-cents as-money-or-free]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.utils.query :as query]))
 
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
@@ -92,9 +93,9 @@
           [:.h2 {:style {:width "1.2em"}} ui/spinner]
           [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
         [:.h2
-         (ui/counter quantity
-                     updating?
-                     (utils/send-event-callback events/control-cart-line-item-dec
-                                                {:variant-id variant-id})
-                     (utils/send-event-callback events/control-cart-line-item-inc
-                                                {:variant-id variant-id}))]]))))
+         (when-let [variant (query/get {:id variant-id}
+                                       (:variants (get products product-id)))]
+           (ui/counter quantity
+                       updating?
+                       (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
+                       (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]))))

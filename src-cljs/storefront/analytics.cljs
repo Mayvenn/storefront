@@ -8,6 +8,7 @@
             [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.pixlee :as pixlee-analytics]
+            [storefront.hooks.woopra :as woopra]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
@@ -81,7 +82,13 @@
     (when (pixlee/content-available? taxon)
       (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item taxon args)))))
 
-(defmethod track events/api-success-add-to-bag [_ _ args app-state]
+(defmethod track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
+  (when variant
+    (woopra/track-event "line_item_added"
+                        {:variant variant
+                         :session-id (get-in app-state keypaths/session-id)
+                         :quantity quantity
+                         :order (get-in app-state keypaths/order)}))
   (when (stylists/own-store? app-state)
     (optimizely/set-dimension "stylist-own-store" "stylists"))
   (optimizely/track-event "add-to-bag"))
@@ -108,3 +115,15 @@
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
+
+(defmethod track events/api-success-sign-up [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))
+
+(defmethod track events/api-success-sign-in [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))
+
+(defmethod track events/api-success-reset-password [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))

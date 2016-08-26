@@ -61,12 +61,23 @@
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 
+(def ^:private session-id-length 24)
+
+(defn- must-generate-session-id? [existing-session-id]
+  (or (nil? existing-session-id)
+      (> (count existing-session-id) session-id-length)))
+
+(defn- random-id []
+  (let [s (.toString (js/Math.random) 36)]
+    (subs s 2 (+ 2 session-id-length))))
+
 (defn force-session-id [cookie]
-  (if-let [session-id (.get cookie :session-id)]
-    session-id
-    (let [created-session-id (str (random-uuid))]
-      (.set cookie :session-id created-session-id session-age "/" nil config/secure?)
-      created-session-id)))
+  (let [session-id (.get cookie :session-id)]
+    (if (must-generate-session-id? session-id)
+      (let [created-session-id (random-id)]
+        (.set cookie :session-id created-session-id session-age "/" nil config/secure?)
+        created-session-id)
+      session-id)))
 
 (def save-user (partial save-cookie user))
 (def save-order (partial save-cookie order))

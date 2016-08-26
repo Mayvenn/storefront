@@ -7,7 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.cache :as cache]
             [storefront.cookies :as cookies]
-            [storefront.utils.combinators :refer [key-by]]
+            [storefront.utils.maps :refer [key-by]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.taxons :as taxons]
             [storefront.accessors.products :as products]

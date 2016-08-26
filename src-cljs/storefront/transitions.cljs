@@ -10,7 +10,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.query :as query]
-            [storefront.utils.combinators :refer [map-values key-by]]
+            [storefront.utils.maps :refer [map-values key-by]]
             [clojure.string :as string]))
 
 (defn clear-fields [app-state & fields]
@@ -314,9 +314,9 @@
       (assoc-in keypaths/sign-in-remember true)
       (assoc-in keypaths/order order)))
 
-(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order requested]} app-state]
+(defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]
   (-> app-state
-      (update-in keypaths/browse-recently-added-variants conj requested)
+      (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
       (update-in keypaths/bundle-builder bundle-builder/rollback)))
