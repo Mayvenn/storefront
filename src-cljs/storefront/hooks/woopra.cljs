@@ -58,3 +58,11 @@
                                 :ce_store_id             (-> order :stylist-ids last)}
                                (order->user-event-data order)
                                (order->visitor-data order)))}))
+
+(defn track-identity [{:keys [session-id user]}]
+  (GET
+   "https://www.woopra.com/track/identify"
+   {:params {:host     config/woopra-host
+             :cookie   session-id
+             :cv_id    (:id user)
+             :cv_email (:email user)}}))

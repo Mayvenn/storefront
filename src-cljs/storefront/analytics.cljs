@@ -111,3 +111,15 @@
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
+
+(defmethod track events/api-success-sign-up [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))
+
+(defmethod track events/api-success-sign-in [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))
+
+(defmethod track events/api-success-reset-password [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (get-in app-state keypaths/user)}))

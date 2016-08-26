@@ -599,7 +599,7 @@
     (api/place-order (merge (get-in app-state keypaths/order)
                             {:session-id (get-in app-state keypaths/session-id)}))))
 
-(defmethod perform-effects events/api-success-sign-in [_ _ _ app-state]
+(defmethod perform-effects events/api-success-sign-in [dispatch event args app-state]
   (save-cookie app-state)
   (when-not (get-in app-state keypaths/order-number)
     ;; Try to fetch latest cart order
@@ -607,14 +607,16 @@
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Logged in successfully"
-                   :navigation [events/navigate-home {}]}))
+                   :navigation [events/navigate-home {}]})
+  (analytics/track dispatch event args app-state))
 
-(defmethod perform-effects events/api-success-sign-up [_ event args app-state]
+(defmethod perform-effects events/api-success-sign-up [dispatch event args app-state]
   (save-cookie app-state)
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Welcome! You have signed up successfully."
-                   :navigation [events/navigate-home {}]}))
+                   :navigation [events/navigate-home {}]})
+  (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate events/navigate-home)
@@ -622,12 +624,13 @@
                   {:message "You will receive an email with instructions on how to reset your password in a few minutes."
                    :navigation [events/navigate-home {}]}))
 
-(defmethod perform-effects events/api-success-reset-password [_ event args app-state]
+(defmethod perform-effects events/api-success-reset-password [dispatch event args app-state]
   (save-cookie app-state)
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Your password was changed successfully. You are now signed in."
-                   :navigation [events/navigate-home {}]}))
+                   :navigation [events/navigate-home {}]})
+  (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
   (when community-url
