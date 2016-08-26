@@ -12,6 +12,8 @@
 (defn send-event-callback [event & [args]]
   noop-callback)
 
+(defn stop-propagation [e] false)
+
 (defn toggle-checkbox [keypath value]
   (let [checked-val (when value "checked")]
     {:checked checked-val
