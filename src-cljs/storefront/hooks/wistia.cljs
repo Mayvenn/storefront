@@ -11,7 +11,5 @@
 
 (defn detach [video-id]
   (when (js-loaded?)
-    (.. js/Wistia
-        (api video-id)
-        remove)))
-
+    (when-let [player (.api js/Wistia video-id)]
+      (.remove player))))
