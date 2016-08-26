@@ -183,22 +183,31 @@
 
 (defn modal [{:keys [on-close bg-class col-class] :or {col-class "col-11 md-up-col-7 lg-up-col-5"}} & body]
   ;; Inspired by https://css-tricks.com/considerations-styling-modal/
-  (letfn [(on-click-or-touch [f] {:on-click       f
-                                  :on-touch-start f})]
-    [:div
-     ;; The scrim, a sibling to the modal
-     [:div.z3.fixed.overlay.bg-darken-4
-      (on-click-or-touch on-close)
-      ;; An opportunity to override or darken the scrim
-      [:div.fixed.overlay {:class bg-class}]]
-     ;; The modal itself
-     [:div.z4.fixed.col-12.overflow-auto (merge {:style {:top       "50%"
-                                                         :left      "50%"
-                                                         :transform "translate(-50%, -50%)"
-                                                         :max-height "100%"}}
-                                                (on-click-or-touch on-close))
-      (into [:div.mx-auto (merge {:class col-class} (on-click-or-touch utils/stop-propagation))]
-            body)]]))
+  [:div
+   ;; The scrim, a sibling to the modal
+   [:div.z3.fixed.overlay.bg-darken-4
+    {:on-click on-close}
+    ;; Set bg-class to override or darken the scrim
+    [:div.fixed.overlay {:class bg-class}]]
+   ;; The modal itself
+   ;; - is above the scrim (z)
+   ;; - centers the contents in the viewport (fixed, top, left, transform)
+   ;; - stays within the bounds of the screen and scrolls when necessary (col-12, max-height, overflow)
+   [:div.z4.fixed.col-12.overflow-auto {:style    {:top        "50%"
+                                                   :left       "50%"
+                                                   :transform  "translate(-50%, -50%)"
+                                                   :max-height "100%"}
+                                        :on-click on-close}
+    ;; The inner wrapper
+    ;; - provides a place to set width of the modal content (col-class)
+    ;;   - should be a percentage based width; will be centered with mx-auto
+    ;; Because the contents are centered with auto margin, normally clicks in
+    ;; these margins would not close the modal. This is remedied with the
+    ;; on-click handlers on the modal and on the wrapper, which collaborate to
+    ;; close the modal on click in the margin, but not on click in the contents
+    (into [:div.mx-auto {:class    col-class
+                         :on-click utils/stop-propagation}]
+          body)]])
 
 (defn modal-close [{:keys [data-test on-close bg-class]}]
   [:div.clearfix
