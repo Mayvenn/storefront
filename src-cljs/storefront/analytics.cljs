@@ -127,3 +127,7 @@
 (defmethod track events/api-success-reset-password [_ event args app-state]
   (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
+
+(defmethod track events/api-success-update-order-update-guest-address [_ event args app-state]
+  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+                          :user       (:user (get-in app-state keypaths/order))}))

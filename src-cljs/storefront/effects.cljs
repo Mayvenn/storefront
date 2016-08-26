@@ -715,6 +715,9 @@
   (when place-order?
     (api/place-order (merge order {:session-id (get-in app-state keypaths/session-id)}))))
 
+(defmethod perform-effects events/api-success-update-order-update-guest-address [dispatch event args app-state]
+  (analytics/track dispatch event args app-state))
+
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state)
   (when event
