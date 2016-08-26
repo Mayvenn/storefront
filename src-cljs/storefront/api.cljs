@@ -242,31 +242,35 @@
     :handler
     #(messages/handle-message events/api-success-forgot-password)}))
 
-(defn reset-password [password password-confirmation reset-token]
+(defn reset-password [password password-confirmation reset-token order-number order-token]
   (api-req
    POST
-   "/reset_password"
+   "/v2/reset_password"
    request-keys/reset-password
    {:params
     {:password password
      :password_confirmation password-confirmation
-     :reset_password_token reset-token}
+     :reset_password_token reset-token
+     :order-number order-number
+     :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-reset-password
-                              (select-user-keys %))}))
+                              (select-sign-in-keys %))}))
 
-(defn facebook-reset-password [uid access-token reset-token]
+(defn facebook-reset-password [uid access-token reset-token order-number order-token]
   (api-req
    POST
-   "/reset_facebook"
+   "/v2/reset_facebook"
    request-keys/reset-facebook
    {:params
     {:uid uid
      :access-token access-token
-     :reset-password-token reset-token}
+     :reset-password-token reset-token
+     :order-number order-number
+     :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-reset-password
-                              (select-user-keys %))}))
+                              (select-sign-in-keys %))}))
 
 (defn mayvenn->spree-address [states address]
   (-> address

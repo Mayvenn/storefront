@@ -413,12 +413,16 @@
                      :navigation (get-in app-state keypaths/navigation-message)})
     (api/reset-password (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-password-confirmation)
-                        (get-in app-state keypaths/reset-password-token))))
+                        (get-in app-state keypaths/reset-password-token)
+                        (get-in app-state keypaths/order-number)
+                        (get-in app-state keypaths/order-token))))
 
 (defmethod perform-effects events/facebook-success-reset [_ event facebook-response app-state]
   (api/facebook-reset-password (-> facebook-response :authResponse :userID)
                                (-> facebook-response :authResponse :accessToken)
-                               (get-in app-state keypaths/reset-password-token)))
+                               (get-in app-state keypaths/reset-password-token)
+                               (get-in app-state keypaths/order-number)
+                               (get-in app-state keypaths/order-token)))
 
 (defn save-cookie [app-state]
   ;; bug: previously, we always set this to true. Needs verification with Ryan before we fix this.
