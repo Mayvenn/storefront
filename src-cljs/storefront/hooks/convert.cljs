@@ -33,7 +33,7 @@
   (tags/remove-tags-by-class "convert"))
 
 (defn ^:private track [& args]
-  (when (.hasOwnProperty js/window "convert")
+  (when (.hasOwnProperty js/window "_conv_q")
     (.push js/_conv_q (clj->js args))))
 
 (defn track-conversion [label]
