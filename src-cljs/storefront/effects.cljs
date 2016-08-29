@@ -36,7 +36,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.routes :as routes]
-            [storefront.utils.query :as query]))
+            [storefront.utils.maps :as maps]
+            [storefront.utils.query :as query]
+            [clojure.set :as set]))
 
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -123,6 +125,20 @@
        (get-in app-state keypaths/cookie)
        pending-promo-code)
       (routes/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
+
+    (let [utm-params (some-> nav-args
+                             :query-params
+                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                             (set/rename-keys {:utm_source   :utm-source
+                                               :utm_medium   :utm-medium
+                                               :utm_campaign :utm-campaign
+                                               :utm_content  :utm-content
+                                               :utm_term     :utm-term})
+                             (maps/filter-nil))]
+      (when (seq utm-params)
+        (cookie-jar/save-utm-params
+         (get-in app-state keypaths/cookie)
+         utm-params)))
 
     (let [[flash-event flash-args :as flash-message] (get-in app-state keypaths/flash-success-nav)]
       (when-not (or

@@ -17,6 +17,10 @@
   {:optional-keys []
    :required-keys [:pending-promo-code]})
 
+(def utms
+  {:optional-keys [:utm-source :utm-medium :utm-campaign :utm-content :utm-term]
+   :required-keys []})
+
 (def all
   (let [specs [user order pending-promo]]
     {:optional-keys (apply concat (map :optional-keys specs))
@@ -83,3 +87,5 @@
 (def save-order (partial save-cookie order))
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
+(defn save-utm-params [cookie utm-params]
+  (save-cookie utms cookie utm-params))
