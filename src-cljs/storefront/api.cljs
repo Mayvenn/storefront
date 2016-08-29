@@ -496,12 +496,14 @@
           :format :json
           :response-format (json-response-format {:keywords? true})})))
 
-(defn place-order [order]
+(defn place-order [order session-id utm-params]
   (api-req
    POST
    "/v2/place-order"
    request-keys/place-order
-   {:params (select-keys order [:number :token :session-id])
+   {:params (merge (select-keys order [:number :token])
+                   {:session-id session-id
+                    :utm-params utm-params})
     :handler #(messages/handle-message events/api-success-update-order-place-order
                                        {:order %
                                         :navigate events/navigate-order-complete})}))

@@ -623,8 +623,9 @@
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} app-state]
   (if place-order?
     (create-stripe-token app-state args)
-    (api/place-order (merge (get-in app-state keypaths/order)
-                            {:session-id (get-in app-state keypaths/session-id)}))))
+    (api/place-order (get-in app-state keypaths/order)
+                     (get-in app-state keypaths/session-id)
+                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
 (defmethod perform-effects events/api-success-sign-in [dispatch event args app-state]
   (save-cookie app-state)
@@ -733,7 +734,9 @@
 
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} app-state]
   (when place-order?
-    (api/place-order (merge order {:session-id (get-in app-state keypaths/session-id)}))))
+    (api/place-order order
+                     (get-in app-state keypaths/session-id)
+                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
 (defmethod perform-effects events/api-success-update-order-update-guest-address [dispatch event args app-state]
   (analytics/track dispatch event args app-state))

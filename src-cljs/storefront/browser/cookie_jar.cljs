@@ -64,6 +64,7 @@
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
+(def retrieve-utm-params (partial retrieve utms))
 
 (def ^:private session-id-length 24)
 
