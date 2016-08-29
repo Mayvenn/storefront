@@ -108,8 +108,12 @@
                          (first (get-in app-state keypaths/order-promotion-codes))
                          (get-in app-state keypaths/pending-promo-code)))
 
-    (let [order-number (get-in app-state keypaths/order-number)]
-      (when (and order-number (not= (take 2 event) events/navigate-checkout))
+    (let [order-number (get-in app-state keypaths/order-number)
+          loaded-order? (boolean (get-in app-state (conj keypaths/order :total)))
+          checkout-page? (= (take 2 event) events/navigate-checkout)]
+      (when (and order-number
+                 (or (not checkout-page?)
+                     (not loaded-order?)))
         (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
     (scroll/snap-to-top)
