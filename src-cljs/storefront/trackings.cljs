@@ -1,4 +1,4 @@
-(ns storefront.analytics
+(ns storefront.trackings
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -39,9 +39,9 @@
    :revenue        total
    :products-count (orders/product-quantity order)})
 
-(defmulti track identity)
+(defmulti perform-track identity)
 
-(defmethod track :default [dispatch event args app-state])
+(defmethod perform-track :default [dispatch event args app-state])
 
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
@@ -50,39 +50,39 @@
     (facebook-analytics/track-page path)
     (optimizely/track-event path)))
 
-(defmethod track events/app-start [_ event args app-state]
+(defmethod perform-track events/app-start [_ event args app-state]
   (track-page-view app-state))
 
-(defmethod track events/optimizely [_ event {:keys [variation]} app-state]
+(defmethod perform-track events/optimizely [_ event {:keys [variation]} app-state]
   (optimizely/activate-universal-analytics)
   (google-analytics/track-event "optimizely-experiment" variation))
 
-(defmethod track events/navigate [_ event args app-state]
+(defmethod perform-track events/navigate [_ event args app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (track-page-view app-state))))
 
-(defmethod track events/navigate-categories [_ event args app-state]
+(defmethod perform-track events/navigate-categories [_ event args app-state]
   (convert/track-conversion "view-categories"))
 
-(defmethod track events/navigate-category [_ event args app-state]
+(defmethod perform-track events/navigate-category [_ event args app-state]
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
 
-(defmethod track events/control-bundle-option-select [_ event _ app-state]
+(defmethod perform-track events/control-bundle-option-select [_ event _ app-state]
   (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
     (google-analytics/track-page (str (routes/current-path app-state)
                                       "/choose_"
                                       (clj->js last-step)))))
 
-(defmethod track events/control-add-to-bag [_ event args app-state]
+(defmethod perform-track events/control-add-to-bag [_ event args app-state]
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
   (let [taxon (taxons/current-taxon app-state)]
     (when (pixlee/content-available? taxon)
       (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item taxon args)))))
 
-(defmethod track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
+(defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
     (woopra/track-event "line_item_added"
                         {:variant variant
@@ -93,19 +93,19 @@
     (optimizely/set-dimension "stylist-own-store" "stylists"))
   (optimizely/track-event "add-to-bag"))
 
-(defmethod track events/control-cart-share-show [_ event args app-state]
+(defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
-(defmethod track events/control-checkout-cart-submit [_ event args app-state]
+(defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
   (facebook-analytics/track-event "InitiateCheckout"))
 
-(defmethod track events/control-checkout-cart-paypal-setup [_ event _ app-state]
+(defmethod perform-track events/control-checkout-cart-paypal-setup [_ event _ app-state]
   (facebook-analytics/track-event "InitiateCheckout"))
 
-(defmethod track events/api-success-get-saved-cards [_ event args app-state]
+(defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
-(defmethod track events/order-completed [_ event {:keys [total] :as order} app-state]
+(defmethod perform-track events/order-completed [_ event {:keys [total] :as order} app-state]
   (when (stylists/own-store? app-state)
     (optimizely/set-dimension "stylist-own-store" "stylists"))
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
@@ -116,18 +116,18 @@
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
 
-(defmethod track events/api-success-sign-up [_ event args app-state]
+(defmethod perform-track events/api-success-sign-up [_ event args app-state]
   (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
-(defmethod track events/api-success-sign-in [_ event args app-state]
+(defmethod perform-track events/api-success-sign-in [_ event args app-state]
   (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
-(defmethod track events/api-success-reset-password [_ event args app-state]
+(defmethod perform-track events/api-success-reset-password [_ event args app-state]
   (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
-(defmethod track events/api-success-update-order-update-guest-address [_ event args app-state]
+(defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
   (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))

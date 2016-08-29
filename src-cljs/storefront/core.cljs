@@ -9,6 +9,7 @@
             [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
             [storefront.transitions :refer [transition-state]]
+            [storefront.trackings :refer [perform-track]]
             [cljs.reader :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]))
@@ -32,6 +33,10 @@
   (doseq [event-fragment (rest (reductions conj [] event))]
     (perform-effects event-fragment event args app-state)))
 
+(defn- track [app-state [event args]]
+  (doseq [event-fragment (rest (reductions conj [] event))]
+    (perform-track event-fragment event args app-state)))
+
 (defn- log-deltas [old-app-state new-app-state [event args]]
   (let [[deleted added unchanged] (diff old-app-state new-app-state)]
     (js/console.groupCollapsed (clj->js event) (clj->js args))
@@ -52,6 +57,7 @@
      (try
        (om/transact! (om/root-cursor app-state) #(transition % message))
        (effects @app-state message)
+       (track @app-state message)
        (catch :default e
          (exception-handler/report e))))))
 

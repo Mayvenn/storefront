@@ -17,7 +17,6 @@
             [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.analytics :as analytics]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.convert :as convert]
@@ -72,6 +71,7 @@
   (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
 
 (defmulti perform-effects identity)
+
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [dispatch event args app-state]
@@ -80,7 +80,6 @@
   (optimizely/insert-tracking)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
-  (analytics/track dispatch event args app-state)
   (talkable/insert)
   (refresh-account app-state)
   (refresh-current-order app-state))
@@ -151,7 +150,6 @@
                  (= [nav-event (seq nav-args)] [flash-event (seq flash-args)]))
         (handle-message events/flash-dismiss)))
 
-    (analytics/track dispatch event args app-state)
     (handle-message events/control-popup-hide)
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
@@ -161,11 +159,8 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/insert))
 
-(defmethod perform-effects events/navigate-categories [dispatch event args app-state]
-  (analytics/track dispatch event args app-state))
-
-(defmethod perform-effects events/navigate-category [dispatch event {:keys [taxon-slug] :as args} app-state]
-  (analytics/track dispatch event args app-state)
+(defmethod perform-effects events/navigate-category
+  [_ event {:keys [taxon-slug] :as args} app-state]
   (reviews/insert-reviews)
   (when (and (experiments/pixlee-product? app-state)
              (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
@@ -317,9 +312,6 @@
 (defmethod perform-effects events/api-success-get-completed-order [_ event order app-state]
   (handle-message events/order-completed order))
 
-(defmethod perform-effects events/api-success-get-saved-cards [dispatch event args app-state]
-  (analytics/track dispatch event args app-state))
-
 (defn redirect-to-return-navigation [app-state]
   (apply routes/enqueue-redirect
          (get-in app-state keypaths/return-navigation-message)))
@@ -409,11 +401,7 @@
                   {:message "Logged out successfully"
                    :navigation [events/navigate-home {}]}))
 
-(defmethod perform-effects events/control-bundle-option-select [dispatch event args app-state]
-  (analytics/track dispatch event args app-state))
-
 (defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} app-state]
-  (analytics/track dispatch event args app-state)
   (api/add-to-bag
    {:variant variant
     :quantity quantity
@@ -471,7 +459,6 @@
                               false))))
 
 (defmethod perform-effects events/control-cart-share-show [dispatch event args app-state]
-  (analytics/track dispatch event args app-state)
   (api/create-shared-cart (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
@@ -488,11 +475,9 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
-  (analytics/track dispatch event args app-state)
   (routes/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [dispatch event args app-state]
-  (analytics/track dispatch event args app-state)
   (let [order (get-in app-state keypaths/order)]
     (api/update-cart-payments
      {:order (-> app-state
@@ -635,16 +620,14 @@
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Logged in successfully"
-                   :navigation [events/navigate-home {}]})
-  (analytics/track dispatch event args app-state))
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-sign-up [dispatch event args app-state]
   (save-cookie app-state)
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Welcome! You have signed up successfully."
-                   :navigation [events/navigate-home {}]})
-  (analytics/track dispatch event args app-state))
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (routes/enqueue-navigate events/navigate-home)
@@ -657,8 +640,7 @@
   (redirect-to-return-navigation app-state)
   (handle-message events/flash-show-success
                   {:message "Your password was changed successfully. You are now signed in."
-                   :navigation [events/navigate-home {}]})
-  (analytics/track dispatch event args app-state))
+                   :navigation [events/navigate-home {}]}))
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
   (when community-url
@@ -722,7 +704,6 @@
   (handle-message events/order-completed order))
 
 (defmethod perform-effects events/order-completed [dispatch event order app-state]
-  (analytics/track dispatch event order app-state)
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
   (talkable/show-pending-offer app-state))
 
@@ -737,9 +718,6 @@
     (api/place-order order
                      (get-in app-state keypaths/session-id)
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
-
-(defmethod perform-effects events/api-success-update-order-update-guest-address [dispatch event args app-state]
-  (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} app-state]
   (save-cookie app-state)
@@ -780,7 +758,6 @@
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event args app-state]
   (save-cookie app-state)
   (add-pending-promo-code app-state (get-in app-state keypaths/order))
-  (analytics/track dispatch event args app-state)
   (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ app-state]
@@ -839,9 +816,6 @@
   (when (and (= variation "pixlee-product")
              (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
     (pixlee/insert)))
-
-(defmethod perform-effects events/optimizely [dispatch event {:keys [variation] :as args} app-state]
-  (analytics/track dispatch event args app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
