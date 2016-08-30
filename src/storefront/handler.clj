@@ -220,6 +220,7 @@
                           "Disallow: /stylist"
                           "Disallow: /cart"
                           "Disallow: /m/"
+                          "Disallow: /c/"
                           "Disallow: /admin"])
 
 (defn robots [{:keys [subdomains]}]
