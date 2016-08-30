@@ -128,11 +128,11 @@
     (let [utm-params (some-> nav-args
                              :query-params
                              (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                             (set/rename-keys {:utm_source   :utm-source
-                                               :utm_medium   :utm-medium
-                                               :utm_campaign :utm-campaign
-                                               :utm_content  :utm-content
-                                               :utm_term     :utm-term})
+                             (set/rename-keys {:utm_source   :storefront/utm-source
+                                               :utm_medium   :storefront/utm-medium
+                                               :utm_campaign :storefront/utm-campaign
+                                               :utm_content  :storefront/utm-content
+                                               :utm_term     :storefront/utm-term})
                              (maps/filter-nil))]
       (when (seq utm-params)
         (cookie-jar/save-utm-params

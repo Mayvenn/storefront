@@ -19,7 +19,7 @@
    :required-keys [:pending-promo-code]})
 
 (def utms
-  {:optional-keys [:utm-source :utm-medium :utm-campaign :utm-content :utm-term]
+  {:optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
 (def all
