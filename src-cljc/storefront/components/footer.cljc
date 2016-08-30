@@ -98,7 +98,7 @@
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
-      [:span "© 2016"] "Mayvenn"]
+      [:span "© 2016 "] "Mayvenn"]
      [:div.right
       [:a.white {:target "_blank" :href "/privacy.html"} "Privacy Policy"]
       " and "
