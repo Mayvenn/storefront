@@ -22,7 +22,7 @@
   {:optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
-(def all
+(def account-cookies
   (let [specs [user order pending-promo]]
     {:optional-keys (apply concat (map :optional-keys specs))
      :required-keys (apply concat (map :required-keys specs))}))
@@ -75,7 +75,7 @@
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
-(def clear (partial clear-cookie all))
+(def clear-account (partial clear-cookie account-cookies))
 
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))

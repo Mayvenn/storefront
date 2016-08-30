@@ -373,7 +373,7 @@
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
-  (cookie-jar/clear (get-in app-state keypaths/cookie))
+  (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))
   (routes/enqueue-navigate events/navigate-home)
