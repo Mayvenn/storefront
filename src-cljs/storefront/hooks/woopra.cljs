@@ -1,6 +1,9 @@
 (ns storefront.hooks.woopra
-  (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
-            [storefront.config :as config]
+  (:require [storefront.config :as config]
+            [storefront.browser.tags :refer [insert-tag-with-callback
+                                             src-tag
+                                             remove-tag]]
+            [storefront.platform.uri :as uri]
             [storefront.utils.maps :refer [filter-nil]]))
 
 (defn- name-capitalization [s]
@@ -40,6 +43,11 @@
      :cv_ship_address_zipcode (some-> order :shipping-address :zipcode)
      :cv_ship_address_city    (some-> order :shipping-address :city)
      :cv_ship_address_state   (some-> order :shipping-address :state)}))
+
+(defn- GET [endpoint {:keys [params]}]
+  (let [uri (uri/set-query-string endpoint params)]
+    (insert-tag-with-callback (src-tag uri "woopra")
+                              #(remove-tag (.-target %)))))
 
 (defn track-event [event-name {:keys [variant session-id quantity order] :as args}]
   (GET
