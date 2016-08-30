@@ -59,7 +59,7 @@
                                (order->user-event-data order)
                                (order->visitor-data order)))}))
 
-(defn track-identity [{:keys [session-id user]}]
+(defn track-identify [{:keys [session-id user]}]
   (GET
    "https://www.woopra.com/track/identify"
    {:params (filter-nil {:host     config/woopra-host

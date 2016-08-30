@@ -117,9 +117,9 @@
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (woopra/track-identity {:session-id (get-in app-state keypaths/session-id)
+  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
