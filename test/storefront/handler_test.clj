@@ -176,21 +176,6 @@
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 
-(deftest shared-cart-shortlink-redirects-to-cart
-  (let [[get-requests endpoint]
-        (recording-endpoint {:handler (fn [req]
-                                        (case (:uri req)
-                                          "/store" storeback-stylist-response
-                                          "/create-order-from-shared-cart" omakase-create-order-response
-                                          {}))})]
-    (with-standalone-server [ss (standalone-server endpoint)]
-      (with-handler handler
-        (let [resp (handler (merge default-req-params
-                                   (mock/request :get "https://bob.mayvenn.com/c/SHORTLINK?utm_source=source&utm_medium=medium&utm_term=term&utm_content=content&utm_campaign=campaign")))]
-          (is (= 302 (:status resp)) (pr-str resp))
-          (is (= (parsed-url "https://bob.mayvenn.com/cart?utm_source=source&utm_medium=medium&utm_term=term&utm_content=content&utm_campaign=campaign&message=shared-cart")
-                 (parsed-url (get-in resp [:headers "Location"])))))))))
-
 (deftest redirects-blonde-category-to-straight-hair
   (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/blonde")
                   storeback-shop-response
