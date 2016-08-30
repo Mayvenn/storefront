@@ -22,6 +22,7 @@
      (get goal-ids "sandbox"))))
 
 (defn insert-tracking []
+  (or (.hasOwnProperty js/window "_conv_q") (set! (.-_conv_q js/window) (clj->js [])))
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn-3.convertexperiments.com/js/"
                                                     config/convert-project-id
                                                     ".js" )
