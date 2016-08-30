@@ -24,6 +24,7 @@
             [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.cookies :refer [wrap-cookies]]
             [ring.util.codec :as codec]
             [ring-logging.core :as ring-logging]))
 
@@ -261,6 +262,7 @@
        (wrap-add-domains)
        (wrap-logging logger)
        (wrap-params)
+       (wrap-cookies)
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
