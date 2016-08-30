@@ -232,6 +232,9 @@
                                ""]
                               private-disalloweds))))
 
+(defn- get-cookie [request key]
+  (get-in request [:cookies key :value]))
+
 (defn paypal-routes [{:keys [storeback-config]}]
   (routes
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
@@ -240,12 +243,18 @@
                                                          (or (headers "x-forwarded-for")
                                                              (headers "remote-addr")
                                                              "localhost"))
-                                                       (:query-params request))]
+                                                       (assoc (:query-params request)
+                                                              "utm-params"
+                                                              {"utm-source"   (get-cookie request "utm-source")
+                                                               "utm-campaign" (get-cookie request "utm-campaign")
+                                                               "utm-term"     (get-cookie request "utm-term")
+                                                               "utm-content"  (get-cookie request "utm-content")
+                                                               "utm-medium"   (get-cookie request "utm-medium")}))]
           (redirect (str "/cart?error=" error-code))
           (redirect (str "/orders/"
                          number
                          "/complete?"
-                         (codec/form-encode {:paypal true
+                         (codec/form-encode {:paypal      true
                                              :order-token order-token})))))))
 
 (defn create-handler
