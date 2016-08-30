@@ -21,4 +21,5 @@
 (defn stop []
   (when (and (.hasOwnProperty js/window "yotpo") js/yotpo)
     (.splice (.-widgets js/yotpo) 0 (.. js/yotpo -widgets -length))
-    (.pop (.. js/yotpo -callbacks -ready))))
+    (when-let [ready-callbacks (and (.-callbacks js/yotpo) (.. js/yotpo -callbacks -ready))]
+      (.pop ready-callbacks))))
