@@ -437,8 +437,8 @@
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} app-state]
   (api/inc-line-item (get-in app-state keypaths/order) {:variant variant}))
 
-(defmethod perform-effects events/control-create-order-from-shared-cart [_ event cart-id app-state]
-  (api/create-order-from-cart cart-id
+(defmethod perform-effects events/control-create-order-from-shared-cart [_ event _ app-state]
+  (api/create-order-from-cart (get-in app-state keypaths/shared-cart-id)
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)))
