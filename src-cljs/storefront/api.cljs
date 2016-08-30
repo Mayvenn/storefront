@@ -2,6 +2,7 @@
   (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
             [clojure.set :refer [subset?]]
             [storefront.events :as events]
+            [storefront.routes :as routes]
             [storefront.platform.messages :as messages]
             [storefront.accessors.states :as states]
             [storefront.accessors.orders :as orders]
@@ -679,7 +680,10 @@
              :stylist-id     stylist-id}
     :handler #(messages/handle-message events/api-success-update-order-from-shared-cart
                                        {:order %
-                                        :navigate events/navigate-cart})}))
+                                        :navigate events/navigate-cart})
+    :error-handler #(do
+                      (routes/enqueue-navigate events/navigate-home)
+                      (default-error-handler %))}))
 
 (defn send-referrals [referral]
   (api-req
