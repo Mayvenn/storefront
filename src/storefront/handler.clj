@@ -192,30 +192,6 @@
                                           (assoc-in keypaths/products products-by-id)
                                           (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id))))))))))
 
-(defn create-order-from-shared-cart [{:keys [storeback-config environment]}
-                                     {:keys [store] {:keys [utm_source utm_medium utm_term utm_content utm_campaign]} :params :as req}
-                                     {:keys [shared-cart-id]}]
-  (let [{stylist-id :stylist_id store-slug :store_slug} store
-        {:keys [number token error-code] :as body} (api/create-order-from-cart storeback-config
-                                                                      shared-cart-id
-                                                                      (cookies/get req "id")
-                                                                      (cookies/get req "user-token")
-                                                                      stylist-id)]
-    (if number
-      (-> (redirect-to-cart (merge {:utm_source (or utm_source "sharecart")
-                                    :utm_content (or utm_content store-slug)
-                                    :message "shared-cart"}
-                                   (when utm_campaign {:utm_campaign utm_campaign})
-                                   (when utm_term {:utm_term utm_term})
-                                   (when utm_medium {:utm_medium utm_medium})))
-          (cookies/set environment :number number)
-          (cookies/set environment :token token)
-          cookies/encode)
-      (-> (redirect-to-cart {:error "share-cart-failed"})
-          (cookies/expire environment :number)
-          (cookies/expire environment :token)
-          cookies/encode))))
-
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
@@ -235,7 +211,6 @@
             events/navigate-category    (if (= (:taxon-slug params) "blonde")
                                           (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories/hair/straight")))
                                           (render-category render-ctx data req params))
-            events/navigate-shared-cart (create-order-from-shared-cart ctx req params)
             (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"

@@ -29,6 +29,7 @@
             [storefront.components.help :as help]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
+            [storefront.components.shared-cart :as shared-cart]
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.stylist-banner :as stylist-banner]
             [storefront.platform.component-utils :as utils]
@@ -69,6 +70,7 @@
     events/navigate-home            home/built-component
     events/navigate-categories      categories/built-component
     events/navigate-category        category/built-component
+    events/navigate-shared-cart     shared-cart/built-component
     events/navigate-guarantee       thirty-day-guarantee/built-component
     events/navigate-help            help/built-component
     events/navigate-sign-in         sign-in/built-component

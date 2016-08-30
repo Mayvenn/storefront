@@ -52,14 +52,6 @@
     (when (not-404 response)
       (:body response))))
 
-(defn create-order-from-cart [storeback-config shared-cart-id user-id user-token stylist-id]
-  (let [{:keys [body]} (storeback-post storeback-config "/create-order-from-shared-cart"
-                                       {:form-params {:shared-cart-id shared-cart-id
-                                                      :user-id        user-id
-                                                      :user-token     user-token
-                                                      :stylist-id     stylist-id}})]
-    body))
-
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid]}]
   (let [{:keys [status body]} (storeback-post storeback-config "/v2/place-order"
                                               {:form-params {:number number

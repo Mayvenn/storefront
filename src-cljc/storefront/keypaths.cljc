@@ -96,10 +96,10 @@
 (def manage-account-password-confirmation (conj manage-account :password-confirmation))
 
 (def shared-cart-url (conj ui :shared-cart-url))
+(def shared-cart-id (conj ui :shared-cart-id))
 
 (def cart (conj ui :cart))
 (def cart-coupon-code (conj cart :coupon-code))
-(def cart-source (conj cart :source))
 
 (def cart-paypal-redirect (conj cart :paypal-redirect))
 

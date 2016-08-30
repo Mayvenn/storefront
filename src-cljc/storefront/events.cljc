@@ -85,6 +85,8 @@
 (defpath control-browse-variant)
 (defpath control-add-to-bag)
 
+(defpath control-create-order-from-shared-cart)
+
 (defpath control-cart-update-coupon)
 (defpath control-cart-line-item-inc)
 (defpath control-cart-line-item-dec)
@@ -165,6 +167,7 @@
 (defpath api-success-shared-cart)
 
 (defpath api-success-update-order)
+(defpath api-success-update-order-from-shared-cart)
 (defpath api-success-update-order-update-address)
 (defpath api-success-update-order-update-guest-address)
 (defpath api-success-update-order-update-cart-payments)

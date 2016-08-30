@@ -92,7 +92,6 @@ Thanks,
 
 (defn full-component [{:keys [order
                               products
-                              source
                               coupon-code
                               applying-coupon?
                               updating?
@@ -105,7 +104,6 @@ Thanks,
    (html
     (ui/container
      [:.py3.h2.center
-      (when source [:.mb2.navy.medium source])
       [:.silver
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
@@ -199,7 +197,6 @@ Thanks,
     {:order                     order
      :products                  (get-in data keypaths/products)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
-     :source                    (get-in data keypaths/cart-source)
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
