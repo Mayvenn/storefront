@@ -2,12 +2,12 @@
   :description "The front of the store"
   :url "https://github.com/Mayvenn/storefront"
   :license {:name "All rights reserved"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.2.2"]
                  [environ "1.0.0"]
                  [tocsin "0.1.1"]
-                 [clj-http "1.0.1" :exclusions [org.clojure/tools.reader]]
+                 [clj-http "2.2.0"]
                  [compojure "1.4.0"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]
@@ -18,7 +18,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.7.228"]
+                 [org.clojure/clojurescript "1.8.51"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "1.0.0-alpha41" :exclusions [cljsjs/react]]
