@@ -30,7 +30,7 @@
    :optional-keys []
    :required-keys [:pending-promo-code]})
 
-(def utms
+(def utm-params
   {:domain        (root-domain)
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
@@ -75,17 +75,17 @@
    (doseq [attr (all-keys spec)]
      (if-let [val (attr attrs)]
        (.set cookie attr val max-age path (:domain spec) secure?)
-       (.remove cookie attr)))))
+       (.remove cookie attr path (:domain spec))))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
-(def clear-utm-params (partial clear-cookie utms))
+(def clear-utm-params (partial clear-cookie utm-params))
 (def clear-account (partial clear-cookie account-cookies))
 
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
-(def retrieve-utm-params (partial retrieve utms))
+(def retrieve-utm-params (partial retrieve utm-params))
 
 (def ^:private session-id-length 24)
 
@@ -109,6 +109,4 @@
 (def save-order (partial save-cookie order))
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
-(defn save-utm-params [cookie utm-params]
-  (clear-utm-params cookie)
-  (save-cookie utms cookie utm-params))
+(def save-utm-params (partial save-cookie utm-params))
