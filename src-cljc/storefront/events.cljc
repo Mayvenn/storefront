@@ -132,10 +132,13 @@
 
 (defpath api-success-products)
 (defpath api-success-states)
-(defpath api-success-sign-in)
-(defpath api-success-sign-up)
+
+(defpath api-success-auth)
+(defpath api-success-auth-sign-in)
+(defpath api-success-auth-sign-up)
+(defpath api-success-auth-reset-password)
+
 (defpath api-success-forgot-password)
-(defpath api-success-reset-password)
 
 (defpath api-success-account)
 (defpath api-success-manage-account)

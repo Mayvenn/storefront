@@ -287,31 +287,17 @@
       (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))
       (assoc-in keypaths/checkout-as-guest false)))
 
-(defmethod transition-state events/api-success-sign-in [_ event {:keys [user order]} app-state]
-  (-> app-state
-      (sign-in-user user)
-      (clear-fields keypaths/sign-in-email
-                    keypaths/sign-in-password)
-      (assoc-in keypaths/order order)))
-
-(defmethod transition-state events/api-success-sign-up [_ event {:keys [user order]} app-state]
+(defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (-> app-state
       (sign-in-user user)
       (clear-fields keypaths/sign-up-email
                     keypaths/sign-up-password
-                    keypaths/sign-up-password-confirmation)
+                    keypaths/sign-up-password-confirmation
+                    keypaths/reset-password-token)
       (assoc-in keypaths/order order)))
 
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
-
-(defmethod transition-state events/api-success-reset-password [_ event {:keys [user order]} app-state]
-  (-> app-state
-      (sign-in-user user)
-      (clear-fields keypaths/reset-password-password
-                    keypaths/reset-password-password-confirmation
-                    keypaths/reset-password-token)
-      (assoc-in keypaths/order order)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]
   (-> app-state

@@ -177,7 +177,7 @@
 (defn select-user-keys [user]
   (select-keys user [:email :token :store_slug :id]))
 
-(defn select-sign-in-keys [args]
+(defn select-auth-keys [args]
   (-> args
       (update :user select-user-keys)
       (select-keys [:user :order])))
@@ -194,8 +194,8 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-sign-in
-                              (select-sign-in-keys %))}))
+    #(messages/handle-message events/api-success-auth-sign-in
+                              (select-auth-keys %))}))
 
 (defn facebook-sign-in [uid access-token stylist-id order-number order-token]
   (api-req
@@ -209,8 +209,8 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-sign-in
-                              (select-sign-in-keys %))}))
+    #(messages/handle-message events/api-success-auth-sign-in
+                              (select-auth-keys %))}))
 
 (defn sign-up [email password password-confirmation stylist-id order-number order-token]
   (api-req
@@ -225,18 +225,8 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-sign-up
-                              (select-sign-in-keys %))}))
-
-(defn forgot-password [email]
-  (api-req
-   POST
-   "/forgot_password"
-   request-keys/forgot-password
-   {:params
-    {:email (.toLowerCase (str email))}
-    :handler
-    #(messages/handle-message events/api-success-forgot-password)}))
+    #(messages/handle-message events/api-success-auth-sign-up
+                              (select-auth-keys %))}))
 
 (defn reset-password [password password-confirmation reset-token order-number order-token]
   (api-req
@@ -250,8 +240,8 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-reset-password
-                              (select-sign-in-keys %))}))
+    #(messages/handle-message events/api-success-auth-reset-password
+                              (select-auth-keys %))}))
 
 (defn facebook-reset-password [uid access-token reset-token order-number order-token]
   (api-req
@@ -265,8 +255,18 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-reset-password
-                              (select-sign-in-keys %))}))
+    #(messages/handle-message events/api-success-auth-reset-password
+                              (select-auth-keys %))}))
+
+(defn forgot-password [email]
+  (api-req
+   POST
+   "/forgot_password"
+   request-keys/forgot-password
+   {:params
+    {:email (.toLowerCase (str email))}
+    :handler
+    #(messages/handle-message events/api-success-forgot-password)}))
 
 (defn mayvenn->spree-address [states address]
   (-> address
