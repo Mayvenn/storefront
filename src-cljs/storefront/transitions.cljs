@@ -286,6 +286,10 @@
       (clear-fields keypaths/sign-up-email
                     keypaths/sign-up-password
                     keypaths/sign-up-password-confirmation
+                    keypaths/sign-in-email
+                    keypaths/sign-in-password
+                    keypaths/reset-password-password
+                    keypaths/reset-password-password-confirmation
                     keypaths/reset-password-token)
       (assoc-in keypaths/order order)))
 
