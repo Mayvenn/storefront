@@ -1,5 +1,6 @@
 (ns storefront.components.thirty-day-guarantee
   (:require [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])))
 
@@ -16,8 +17,8 @@
 (def content
   (component/html
    [:div.dark-gray
-    [:div.bg-white.p2
-     [:div.img-guarantee-icon.bg-no-repeat.bg-center {:style {:height "155px"}}]]
+    [:div.bg-white.p2.center
+     (svg/guarantee {:width "154" :height "155"})]
     [:div.mx-auto.px2 {:style {:max-width "768px"}}
      [:div.center.dark-black
       [section "We guarantee that you'll love Mayvenn hair!"]
