@@ -453,18 +453,18 @@
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
   (assoc-in app-state keypaths/pending-promo-code nil))
 
-(defmethod transition-state events/flash-show-success [_ event args app-state]
+(defmethod transition-state events/flash-show-success [_ _ {:keys [message]} app-state]
   (-> app-state
       clear-flash
-      (assoc-in keypaths/flash-success (select-keys args [:message :navigation]))))
+      (assoc-in keypaths/flash-success {:message message})))
 
 (defmethod transition-state events/flash-dismiss [_ event args app-state]
   (clear-flash app-state))
 
-(defmethod transition-state events/flash-show-failure [_ event args app-state]
+(defmethod transition-state events/flash-show-failure [_ _ {:keys [message]} app-state]
   (-> app-state
       clear-flash
-      (assoc-in keypaths/flash-failure (select-keys args [:message :navigation]))))
+      (assoc-in keypaths/flash-failure {:message message})))
 
 (defmethod transition-state events/convert
   [_ event {:keys [variation feature]} app-state]
