@@ -28,7 +28,8 @@
      [:form
       {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart)}
       (ui/submit-button "View your bag"
-                        {:spinning? creating-cart?})]])))
+                        {:data-test "create-order-from-shared-cart"
+                         :spinning? creating-cart?})]])))
 
 (defn query [data]
   {:store            (get-in data keypaths/store)
