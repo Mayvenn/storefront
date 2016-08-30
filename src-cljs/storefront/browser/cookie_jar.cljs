@@ -3,28 +3,42 @@
             [clojure.string :as string])
   (:import [goog.net Cookies]))
 
+(defn ^:private root-domain []
+  (-> js/window
+      .-location
+      .-hostname
+      (string/split #"\.")
+      (->> (take-last 2)
+           (string/join ".")
+           (str "."))))
+
 (defn make-cookie []
   (Cookies. js/document))
 
 (def user
-  {:optional-keys [:store-slug]
+  {:domain        nil
+   :optional-keys [:store-slug]
    :required-keys [:email :user-token :id]})
 
 (def order
-  {:optional-keys []
+  {:domain        nil
+   :optional-keys []
    :required-keys [:token :number]})
 
 (def pending-promo
-  {:optional-keys []
+  {:domain        nil
+   :optional-keys []
    :required-keys [:pending-promo-code]})
 
 (def utms
-  {:optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
+  {:domain        (root-domain)
+   :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
 (def account-cookies
   (let [specs [user order pending-promo]]
-    {:optional-keys (apply concat (map :optional-keys specs))
+    {:domain nil
+     :optional-keys (apply concat (map :optional-keys specs))
      :required-keys (apply concat (map :required-keys specs))}))
 
 (def remember-me-age (* 60 60 24 7 4))
@@ -35,7 +49,7 @@
 
 (defn clear-cookie [spec cookie]
   (doseq [key (all-keys spec)]
-    (.remove cookie key "/")))
+    (.remove cookie key "/" (:domain spec))))
 
 (defn has-required-attrs? [m req-attrs]
   (every? seq (vals (select-keys m req-attrs))))
@@ -52,29 +66,20 @@
 (def ^:private default-cookie-opts
   {:max-age remember-me-age
    :path    "/"
-   :domain  nil
    :secure? config/secure?})
-
-(defn ^:private root-domain []
-  (-> js/window
-      .-location
-      .-hostname
-      (string/split #"\.")
-      (->> (take-last 2)
-           (string/join ".")
-           (str "."))))
 
 (defn save-cookie
   ([spec cookie attrs]
    (save-cookie spec cookie attrs default-cookie-opts))
-  ([spec cookie attrs {:keys [max-age path domain secure?]}]
+  ([spec cookie attrs {:keys [max-age path secure?]}]
    (doseq [attr (all-keys spec)]
      (if-let [val (attr attrs)]
-       (.set cookie attr val max-age path domain secure?)
+       (.set cookie attr val max-age path (:domain spec) secure?)
        (.remove cookie attr)))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
+(def clear-utm-params (partial clear-cookie utms))
 (def clear-account (partial clear-cookie account-cookies))
 
 (def retrieve-login (partial retrieve user))
@@ -105,5 +110,5 @@
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 (defn save-utm-params [cookie utm-params]
-  (save-cookie utms cookie utm-params (assoc default-cookie-opts
-                                             :domain (root-domain))))
+  (clear-utm-params cookie)
+  (save-cookie utms cookie utm-params))
