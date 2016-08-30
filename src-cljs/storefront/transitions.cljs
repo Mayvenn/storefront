@@ -311,7 +311,6 @@
       (clear-fields keypaths/reset-password-password
                     keypaths/reset-password-password-confirmation
                     keypaths/reset-password-token)
-      (assoc-in keypaths/sign-in-remember true)
       (assoc-in keypaths/order order)))
 
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]

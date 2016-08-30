@@ -12,7 +12,6 @@
   [{:keys [facebook-loaded?
            email
            password
-           remember-me?
            get-satisfaction-login?
            field-errors]} _ _]
   (component/create
@@ -46,15 +45,8 @@
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})
 
-     [:div.mt2.col-12.mb3
-      [:label.col.col-6.left-align.gray
-       [:input.align-middle
-        (merge (utils/toggle-checkbox keypaths/sign-in-remember remember-me?)
-               {:type      "checkbox"
-                :name      "remember-me"
-                :data-test "user-remember"})]
-       [:div.inline.ml1 "Remember me"]]
-      [:a.col.col-6.right-align.gray
+     [:div.mt2.col-12.mb3.gray.right-align
+      [:a
        (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]
 
     (when-not get-satisfaction-login?
@@ -71,7 +63,6 @@
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)
    :password                (get-in data keypaths/sign-in-password)
-   :remember-me?            (get-in data keypaths/sign-in-remember)
    :facebook-loaded?        (get-in data keypaths/loaded-facebook)
    :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)
    :field-errors            (get-in data keypaths/field-errors)})

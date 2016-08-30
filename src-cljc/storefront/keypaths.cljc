@@ -76,7 +76,6 @@
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
 (def sign-in-password (conj sign-in :password))
-(def sign-in-remember (conj sign-in :remember-me))
 
 (def sign-up (conj ui :sign-up))
 (def sign-up-email (conj sign-up :email))

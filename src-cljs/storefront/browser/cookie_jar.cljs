@@ -49,13 +49,11 @@
       (clear-cookie spec cookie))))
 
 (defn save-cookie
-  ([spec cookie attrs] (save-cookie spec cookie attrs true))
-  ([spec cookie attrs remember?]
-   (let [age (if remember? remember-me-age -1)]
-     (doseq [attr (all-keys spec)]
-       (if-let [val (attr attrs)]
-         (.set cookie attr val age "/" nil config/secure?)
-         (.remove cookie attr))))))
+  ([spec cookie attrs]
+   (doseq [attr (all-keys spec)]
+     (if-let [val (attr attrs)]
+       (.set cookie attr val remember-me-age "/" nil config/secure?)
+       (.remove cookie attr)))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))

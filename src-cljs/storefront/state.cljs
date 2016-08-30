@@ -139,8 +139,7 @@
           :expanded-commission-order-id #{nil}
 
           :sign-in {:email ""
-                    :password ""
-                    :remember-me true}
+                    :password ""}
           :sign-up {:email ""
                     :password ""
                     :password-confirmation ""}

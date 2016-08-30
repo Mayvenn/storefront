@@ -433,14 +433,10 @@
                                (get-in app-state keypaths/order-token)))
 
 (defn save-cookie [app-state]
-  ;; bug: previously, we always set this to true. Needs verification with Ryan before we fix this.
-  (let [remember? true #_(get-in app-state keypaths/sign-in-remember)]
     (cookie-jar/save-order (get-in app-state keypaths/cookie)
-                           (get-in app-state keypaths/order)
-                           remember?)
+                           (get-in app-state keypaths/order))
     (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user)
-                          remember?)))
+                          (get-in app-state keypaths/user)))
 
 (defmethod perform-effects events/control-account-profile-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
