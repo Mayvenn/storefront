@@ -1,5 +1,6 @@
 (ns storefront.browser.cookie-jar
-  (:require [storefront.config :as config])
+  (:require [storefront.config :as config]
+            [clojure.string :as string])
   (:import [goog.net Cookies]))
 
 (defn make-cookie []
@@ -48,11 +49,28 @@
       attrs
       (clear-cookie spec cookie))))
 
+(def ^:private default-cookie-opts
+  {:max-age remember-me-age
+   :path    "/"
+   :domain  nil
+   :secure? config/secure?})
+
+(defn ^:private root-domain []
+  (-> js/window
+      .-location
+      .-hostname
+      (string/split #"\.")
+      (->> (take-last 2)
+           (string/join ".")
+           (str "."))))
+
 (defn save-cookie
   ([spec cookie attrs]
+   (save-cookie spec cookie attrs default-cookie-opts))
+  ([spec cookie attrs {:keys [max-age path domain secure?]}]
    (doseq [attr (all-keys spec)]
      (if-let [val (attr attrs)]
-       (.set cookie attr val remember-me-age "/" nil config/secure?)
+       (.set cookie attr val max-age path domain secure?)
        (.remove cookie attr)))))
 
 (def clear-order (partial clear-cookie order))
@@ -87,4 +105,5 @@
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 (defn save-utm-params [cookie utm-params]
-  (save-cookie utms cookie utm-params))
+  (save-cookie utms cookie utm-params (assoc default-cookie-opts
+                                             :domain (root-domain))))
