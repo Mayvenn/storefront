@@ -1,13 +1,17 @@
 (ns storefront.handler-test
-  (:require [storefront.handler :refer :all]
-            [storefront.system :refer [create-system]]
-            [clojure.test :refer :all]
-            [standalone-test-server.core :refer :all]
-            [cheshire.core :refer [generate-string]]
+  (:require [cheshire.core :refer [generate-string parse-string]]
+            [clojure
+             [string :as string]
+             [test :refer :all]]
             [com.stuartsierra.component :as component]
             [ring.mock.request :as mock]
-            [ring.util.response :refer [response status content-type]]
-            [ring.util.codec :as codec]))
+            [ring.util
+             [codec :as codec]
+             [response :refer [content-type response status]]]
+            [standalone-test-server.core :refer :all]
+            [storefront
+             [handler :refer :all]
+             [system :refer [create-system]]]))
 
 (def test-overrides {:environment "test"
                      :server-opts {:port 2390}
@@ -217,6 +221,58 @@
         (is (= 302 (:status resp)))
         (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
                (get-in resp [:headers "Location"])))))))
+
+(deftest submits-paypal-redirect-to-waiter
+  (testing "when waiter returns a 200 response"
+    (let [[waiter-requests waiter-handler] (recording-endpoint
+                                            {:handler (constantly {:status  200
+                                                                   :headers {"Content-Type" "application/json"}
+                                                                   :body    "{}"})})]
+      (with-standalone-server [waiter (standalone-server waiter-handler)]
+        (with-handler handler
+          (let [set-cookies (fn [req cookies]
+                              (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
+                resp        (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
+                                (set-cookies {":storefront/utm-source"   "source"
+                                              ":storefront/utm-campaign" "campaign"
+                                              ":storefront/utm-term"     "term"
+                                              ":storefront/utm-content"  "content"
+                                              ":storefront/utm-medium"   "medium"
+                                              "expires"                  "Sat, 03 May 2025 17:44:22 GMT"})
+                                handler)]
+            (is (= 302 (:status resp)))
+            (testing "it redirects to order complete page"
+              (is (= "/orders/W123456/complete?paypal=true&order-token=order-token"
+                     (get-in resp [:headers "Location"]))))
+
+            (testing "it records the utm params associated with the request"
+              (is (= 1 (count (waiter-requests))))
+              (is (= {:utm-source   "source"
+                      :utm-campaign "campaign"
+                      :utm-term     "term"
+                      :utm-content  "content"
+                      :utm-medium   "medium"}
+                     (-> (waiter-requests) first :body (parse-string true) :utm-params)))))))))
+
+  (testing "when waiter returns a non-200 response without an error-code"
+    (with-standalone-server [waiter (standalone-server (constantly {:status  500
+                                                                    :headers {"Content-Type" "application/json"}
+                                                                    :body    "{}"}))]
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token"))]
+          (is (= 302 (:status resp)))
+          (is (= "/cart?error=paypal-incomplete"
+                 (get-in resp [:headers "Location"])))))))
+
+  (testing "when waiter returns a non-200 response with an error-code"
+    (with-standalone-server [waiter (standalone-server (constantly {:status  400
+                                                                    :headers {"Content-Type" "application/json"}
+                                                                    :body    "{\"error-code\": \"bad-request\"}"}))]
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token"))]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "/cart?error=bad-request"
+                 (get-in resp [:headers "Location"]))))))))
 
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (assert-request
