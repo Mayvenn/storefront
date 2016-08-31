@@ -42,7 +42,10 @@
 
 (defn set-current-page []
   (let [uri          (.getToken app-history)
-        query-params (:query (url (str js/location.href)))]
+        ;; TODO: If this fix (that we stop assuming location.href will be
+        ;; available) works, there are several other places that use location
+        ;; that also need to be fixed
+        query-params (:query (url (or js/window.location.href js/document.URL "")))]
     (apply handle-message
            (navigation-message-for uri query-params))))
 
