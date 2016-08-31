@@ -1,6 +1,6 @@
 (ns storefront.platform.carousel)
 
-(defn swipe-component [ {:keys [items continuous]} owner {:keys [starting-item dot-location]}]
+(defn swipe-component [{:keys [items continuous]} owner {:keys [starting-item dot-location]}]
   [:div.center.relative
    [:div.overflow-hidden.relative
     {:ref "items"}

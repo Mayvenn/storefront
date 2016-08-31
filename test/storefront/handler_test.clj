@@ -148,7 +148,7 @@
                       (is (not= "https://www.bob.mayvenn.com/?yo=lo&mo=fo"
                                 (get-in resp [:headers "Location"])))
                       (is (= "https://bob.mayvenn.com/?yo=lo&mo=fo"
-                             (get-in resp [:headers "Location"])))))) )
+                             (get-in resp [:headers "Location"])))))))
 
 (deftest redirects-missing-stylists-to-store-while-preserving-query-params
   (assert-request (mock/request :get "https://no-stylist.mayvenn.com/?yo=lo&mo=fo")
