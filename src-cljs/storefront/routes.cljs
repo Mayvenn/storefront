@@ -42,7 +42,7 @@
 
 (defn set-current-page []
   (let [uri          (.getToken app-history)
-        query-params (:query (url js/location.href))]
+        query-params (:query (url (str js/location.href)))]
     (apply handle-message
            (navigation-message-for uri query-params))))
 
