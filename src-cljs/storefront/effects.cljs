@@ -695,6 +695,9 @@
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
+(defmethod perform-effects events/api-failure-order-not-created-from-shared-cart [_ event args app-state]
+  (routes/enqueue-navigate events/navigate-home))
+
 (defmethod perform-effects events/api-failure-errors [_ event errors app-state]
   (condp = (:error-code errors)
     "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event) events/navigate-checkout-confirmation)

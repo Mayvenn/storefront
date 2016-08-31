@@ -186,6 +186,7 @@
 (defpath api-failure-errors)
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-stylist-account-photo-too-large)
+(defpath api-failure-order-not-created-from-shared-cart)
 
 (defpath flash)
 (defpath flash-show)
