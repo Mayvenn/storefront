@@ -233,26 +233,27 @@
                               private-disalloweds))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
-  (routes
-   (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-        (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
-                                                       (let [headers (:headers request)]
-                                                         (or (headers "x-forwarded-for")
-                                                             (headers "remote-addr")
-                                                             "localhost"))
-                                                       (assoc (:query-params request)
-                                                              "utm-params"
-                                                              {"utm-source"   (cookies/get request "utm-source")
-                                                               "utm-campaign" (cookies/get request "utm-campaign")
-                                                               "utm-term"     (cookies/get request "utm-term")
-                                                               "utm-content"  (cookies/get request "utm-content")
-                                                               "utm-medium"   (cookies/get request "utm-medium")}))]
-          (redirect (str "/cart?error=" error-code))
-          (redirect (str "/orders/"
-                         number
-                         "/complete?"
-                         (codec/form-encode {:paypal      true
-                                             :order-token order-token})))))))
+  (wrap-cookies
+   (routes
+    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
+         (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
+                                                        (let [headers (:headers request)]
+                                                          (or (headers "x-forwarded-for")
+                                                              (headers "remote-addr")
+                                                              "localhost"))
+                                                        (assoc (:query-params request)
+                                                               "utm-params"
+                                                               {"utm-source"   (cookies/get request "utm-source")
+                                                                "utm-campaign" (cookies/get request "utm-campaign")
+                                                                "utm-term"     (cookies/get request "utm-term")
+                                                                "utm-content"  (cookies/get request "utm-content")
+                                                                "utm-medium"   (cookies/get request "utm-medium")}))]
+           (redirect (str "/cart?error=" error-code))
+           (redirect (str "/orders/"
+                          number
+                          "/complete?"
+                          (codec/form-encode {:paypal      true
+                                              :order-token order-token}))))))))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -268,7 +269,6 @@
        (wrap-add-domains)
        (wrap-logging logger)
        (wrap-params)
-       (wrap-cookies)
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
