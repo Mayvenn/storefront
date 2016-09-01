@@ -40,7 +40,7 @@
 
 (defn products-by-ids [storeback-config product-ids user-token]
   (let [response (storeback-fetch storeback-config "/products"
-                                  {:query-params {:ids (vec (into (sorted-set) product-ids))
+                                  {:query-params {:ids (sort (distinct product-ids))
                                                   :user-token user-token}})]
     (when (not-404 response)
       (:products (:body response)))))
