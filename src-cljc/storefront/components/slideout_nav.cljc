@@ -122,9 +122,11 @@
      [:a.green (utils/route-to events/navigate-shop-by-look)
       (row (selectable? events/navigate-shop-by-look "Shop By Look"))]
      [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
-     [:a.green (utils/route-to events/navigate-guarantee)
+     [:a.green (assoc (utils/route-to events/navigate-guarantee)
+                      :data-test "navigate-guarantee")
       (row (selectable? events/navigate-guarantee "Our Guarantee"))]
-     [:a.green (utils/route-to events/navigate-help)
+     [:a.green (assoc (utils/route-to events/navigate-help)
+                      :data-test "navigate-help")
       (row (selectable? events/navigate-help "Contact Us"))]]]))
 
 (def sign-in-section

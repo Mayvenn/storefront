@@ -82,7 +82,8 @@
 (def banner
   (component/html
    [:a
-    (utils/route-to events/navigate-categories)
+    (assoc (utils/route-to events/navigate-categories)
+           :data-test "home-banner")
     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
                      (assets/path "/images/homepage/desktop_banner.jpg")
                      "shop now")]))

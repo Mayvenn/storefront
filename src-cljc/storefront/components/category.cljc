@@ -20,7 +20,8 @@
             [storefront.platform.carousel :as carousel]))
 
 (defn page [wide-left wide-right-and-narrow]
-  [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
+  [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"
+                       :data-test "category-page"}
    [:div.md-up-col.md-up-col-7.px2 [:div.to-md-hide wide-left]]
    [:div.md-up-col.md-up-col-5.px2 wide-right-and-narrow]])
 
