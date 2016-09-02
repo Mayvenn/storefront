@@ -49,6 +49,19 @@
     (insert-tag-with-callback (src-tag uri "woopra")
                               #(remove-tag (.-target %)))))
 
+(defn track-page [{:keys [session-id path domain title uri] :as args}]
+  (GET
+   "https://www.woopra.com/track/ce"
+   {:params (filter-nil (merge {:cookie                  session-id
+                                :event                   "pv"
+                                :timestamp               (.getTime (js/Date.))
+                                :host                    config/woopra-host
+
+                                :ce_url                  path
+                                :ce_title                title
+                                :ce_domain               domain
+                                :ce_uri                  uri}))}))
+
 (defn track-event [event-name {:keys [variant session-id quantity order] :as args}]
   (GET
    "https://www.woopra.com/track/ce"

@@ -46,6 +46,11 @@
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
     (riskified/track-page path)
+    (woopra/track-page {:path path
+                        :title (.-innerText (js/document.querySelector "title"))
+                        :domain (when js/window.location js/window.location.hostname)
+                        :session-id (get-in app-state keypaths/session-id)
+                        :uri (or js/window.location.href js/document.URL "")})
     (google-analytics/track-page path)
     (facebook-analytics/track-page path)
     (optimizely/track-event path)))

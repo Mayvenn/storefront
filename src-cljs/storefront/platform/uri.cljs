@@ -6,5 +6,6 @@
   (-> (Uri.parse s)
       (.setQueryData (map->query (if (seq query-params)
                                    query-params
-                                   {})))
+                                   {}))
+                     true)
       .toString))
