@@ -12,37 +12,42 @@
            (string/join ".")
            (str "."))))
 
+(def four-weeks (* 60 60 24 7 4))
+(def one-year (* 60 60 24 7 52))
+
 (defn make-cookie []
   (Cookies. js/document))
 
 (def user
   {:domain        nil
+   :max-age       four-weeks
    :optional-keys [:store-slug]
    :required-keys [:email :user-token :id]})
 
 (def order
   {:domain        nil
+   :max-age       four-weeks
    :optional-keys []
    :required-keys [:token :number]})
 
 (def pending-promo
   {:domain        nil
+   :max-age       four-weeks
    :optional-keys []
    :required-keys [:pending-promo-code]})
 
 (def utm-params
   {:domain        (root-domain)
+   :max-age       four-weeks
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
 (def account-cookies
   (let [specs [user order pending-promo]]
     {:domain nil
+     :max-age       four-weeks
      :optional-keys (apply concat (map :optional-keys specs))
      :required-keys (apply concat (map :required-keys specs))}))
-
-(def remember-me-age (* 60 60 24 7 4))
-(def session-age (* 60 60 24 7 52))
 
 (defn all-keys [spec]
   (concat (:optional-keys spec) (:required-keys spec)))
@@ -63,19 +68,11 @@
       attrs
       (clear-cookie spec cookie))))
 
-(def ^:private default-cookie-opts
-  {:max-age remember-me-age
-   :path    "/"
-   :secure? config/secure?})
-
-(defn save-cookie
-  ([spec cookie attrs]
-   (save-cookie spec cookie attrs default-cookie-opts))
-  ([spec cookie attrs {:keys [max-age path secure?]}]
-   (doseq [attr (all-keys spec)]
-     (if-let [val (attr attrs)]
-       (.set cookie attr val max-age path (:domain spec) secure?)
-       (.remove cookie attr path (:domain spec))))))
+(defn save-cookie [{:keys [max-age domain] :as spec} cookie attrs]
+  (doseq [attr (all-keys spec)]
+    (if-let [val (attr attrs)]
+      (.set    cookie attr val max-age "/" domain config/secure?)
+      (.remove cookie attr             "/" domain))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
@@ -101,7 +98,7 @@
   (let [session-id (.get cookie :session-id)]
     (if (must-generate-session-id? session-id)
       (let [created-session-id (random-id)]
-        (.set cookie :session-id created-session-id session-age "/" nil config/secure?)
+        (.set cookie :session-id created-session-id one-year "/" nil config/secure?)
         created-session-id)
       session-id)))
 
