@@ -21,8 +21,8 @@
         [:p.center.h2.navy.medium
          store_nickname " has created a bag for you!"]]
        [:div.flex.items-center.px1.py3.border-light-gray.border-top.border-bottom
-        [:div.mr2
-         (svg/guarantee {:height "5em" :width "5em"})]
+        [:div
+         (svg/guarantee {:height "5em" :width "100%"})]
         [:div.flex-auto
          [:p.medium.navy.shout.mb2 "Free shipping & 30 day guarantee"]
          [:p.dark-gray
