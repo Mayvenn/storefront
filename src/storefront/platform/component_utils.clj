@@ -29,5 +29,5 @@
   noop-callback)
 
 (defn requesting?
-  ([data request-key] false)
-  ([data request-search request-key] false))
+  ([data request-key] true)
+  ([data request-search request-key] true))
