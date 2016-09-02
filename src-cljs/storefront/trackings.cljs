@@ -46,11 +46,9 @@
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
     (riskified/track-page path)
-    (woopra/track-page {:path path
-                        :title (.-innerText (js/document.querySelector "title"))
-                        :domain (when js/window.location js/window.location.hostname)
-                        :session-id (get-in app-state keypaths/session-id)
-                        :uri (or js/window.location.href js/document.URL "")})
+    (woopra/track-page (get-in app-state keypaths/session-id)
+                       (get-in app-state keypaths/order-user)
+                       path)
     (google-analytics/track-page path)
     (facebook-analytics/track-page path)
     (optimizely/track-event path)))
@@ -89,11 +87,10 @@
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
-    (woopra/track-event "line_item_added"
-                        {:variant variant
-                         :session-id (get-in app-state keypaths/session-id)
-                         :quantity quantity
-                         :order (get-in app-state keypaths/order)}))
+    (woopra/track-add-to-bag {:variant variant
+                              :session-id (get-in app-state keypaths/session-id)
+                              :quantity quantity
+                              :order (get-in app-state keypaths/order)}))
   (when (stylists/own-store? app-state)
     (optimizely/set-dimension "stylist-own-store" "stylists"))
   (optimizely/track-event "add-to-bag"))
@@ -128,3 +125,8 @@
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
+
+(defmethod perform-track events/convert [_ event {:keys [variation]} app-state]
+  (woopra/track-experiment (get-in app-state keypaths/session-id)
+                           (get-in app-state keypaths/order-user)
+                           variation))

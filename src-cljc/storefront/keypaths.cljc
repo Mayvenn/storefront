@@ -30,6 +30,7 @@
 
 (def order-token (conj order :token))
 (def order-number (conj order :number))
+(def order-user (conj order :user))
 
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
