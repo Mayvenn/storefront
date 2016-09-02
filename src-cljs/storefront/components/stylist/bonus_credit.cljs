@@ -65,7 +65,8 @@
                          page
                          pages
                          history
-                         fetching?]}]
+                         fetching?]}
+                 owner opts]
   (om/component
    (html
     (if (and (empty? history) fetching?)
