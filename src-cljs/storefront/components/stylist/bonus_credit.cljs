@@ -58,14 +58,14 @@
       [:.center message]]]))
 
 (defn component [{:keys [available-credit
-                                         award-amount
-                                         milestone-amount
-                                         progress-amount
-                                         lifetime-total
-                                         page
-                                         pages
-                                         history
-                                         fetching?]}]
+                         award-amount
+                         milestone-amount
+                         progress-amount
+                         lifetime-total
+                         page
+                         pages
+                         history
+                         fetching?]}]
   (om/component
    (html
     (if (and (empty? history) fetching?)
