@@ -158,8 +158,7 @@
     events/navigate-categories
     events/navigate-category
     events/navigate-help
-    events/navigate-guarantee
-    events/navigate-shared-cart})
+    events/navigate-guarantee})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
