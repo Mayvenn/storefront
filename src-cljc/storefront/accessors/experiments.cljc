@@ -54,3 +54,6 @@
 
 (defn new-homepage? [data]
   (display-feature? data "new-homepage"))
+
+(defn essence? [data]
+  (display-feature? data "essence"))

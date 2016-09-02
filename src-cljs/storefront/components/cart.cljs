@@ -1,15 +1,17 @@
 (ns storefront.components.cart
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.stylists :as stylists]
+            [storefront.assets :as assets]
             [storefront.components.order-summary :as order-summary]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
 (defn- pluralize
@@ -98,33 +100,44 @@ Thanks,
                               redirecting-to-paypal?
                               share-carts?
                               requesting-shared-cart?
+                              essence?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
    (html
     (ui/container
-     [:.py3.h2.center
+     [:div.py3.h2.center
       [:.silver
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
-     [:.h2.py1
+     [:div.h2.py1
       {:data-test "order-summary"}
       "Review your order"]
 
-     [:.mt2.clearfix.mxn4
-      [:.md-up-col.md-up-col-6.px4
+     [:div.mt2.clearfix.mxn4
+      [:div.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
+
+       (when essence?
+         [:div.clearfix.border.border-orange.py1
+          [:div.col.mx1 {:style {:width "7.33em"}}
+           [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]
+          [:div.h5.mb1.line-height-2
+           [:div.bold.shout.mb1.h4 "bonus offer!"]
+           "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
+          [:a.h5.navy {:href "#"} "Offer and Rebate Details ➤"]])
+
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
                                                     delete-line-item-requests)]
-      [:.md-up-col.md-up-col-6.px4
+      [:div.md-up-col.md-up-col-6.px4
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:.pt2.flex.items-center
-         [:.col-8.pr1
+        [:div.pt2.flex.items-center
+         [:div.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
-         [:.col-4.pl1.mb3.inline-block
+         [:div.col-4.pl1.mb3.inline-block
           (ui/green-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
                             :disabled? updating?
                             :spinning? applying-coupon?}
@@ -202,6 +215,7 @@ Thanks,
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
+     :essence?                  (experiments/essence? data)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
