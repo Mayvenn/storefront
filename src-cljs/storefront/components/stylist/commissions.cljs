@@ -131,8 +131,10 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:.p2.border-bottom.border-right.border-left.border-dark-white.pointer
-   {:on-click (toggle-expanded-commission expanded? number)}
+  [:.p2.border-bottom.border-right.border-left.border-dark-white
+   (when order
+     {:class "pointer"
+      :on-click (toggle-expanded-commission expanded? number)})
    [:.mb2
     [:.px1.h5.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
@@ -142,9 +144,10 @@
 
    [:.silver.h5
     (four-up "Status" "Ship Date" "Order"
-             [:.right.h1.mtn2.mr1
-              {:class (if (expanded? number) "light-gray" "black")}
-              "..."])]
+             (when order
+               [:.right.h1.mtn2.mr1
+                {:class (if (expanded? number) "light-gray" "black")}
+                "..."]))]
 
    [:.medium.h5.line-height-3
     (four-up
@@ -162,16 +165,17 @@
                        products]
   [:div {:key id}
    (show-collapsed-commission expanded? commission)
-   (transition-group {:transitionName "commission-order"
-                      :transitionEnterTimeout 1000
-                      :transitionLeaveTimeout 1000
-                      :component "div"}
-                     (when (expanded? number)
-                       [:div.transition-3.transition-ease.overflow-auto.commission-order
-                        [:.dark-gray.bg-white
-                         (show-order products shipping-methods order)
-                         (show-grand-total commissionable-amount)]
-                        (show-payout commission)]))])
+   (when order
+     (transition-group {:transitionName "commission-order"
+                        :transitionEnterTimeout 1000
+                        :transitionLeaveTimeout 1000
+                        :component "div"}
+                       (when (expanded? number)
+                         [:div.transition-3.transition-ease.overflow-auto.commission-order
+                          [:.dark-gray.bg-white
+                           (show-order products shipping-methods order)
+                           (show-grand-total commissionable-amount)]
+                          (show-payout commission)])))])
 
 (def empty-commissions
   (html
