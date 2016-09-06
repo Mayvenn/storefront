@@ -35,10 +35,10 @@
    (merge {:data-test (str "taxon-" slug)}
           (utils/route-to events/navigate-category {:taxon-slug slug}))
    [:img.unselectable {:src   model-image
-                       :alt   (str "A stylish model wearing " long-name)
+                       :alt   ""
                        :style {:height "128px"}}]
    [:img.mt3.unselectable {:src   product-image
-                           :alt   (str "A close-up of " long-name)
+                           :alt   (str "Shop for " long-name)
                            :style {:height "80px"}}]
    [:div.mb3.dark-black.medium.f3 name]])
 
