@@ -114,8 +114,9 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
-   [:body
-    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center
+   [:body.mx-auto
+    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center.bg-white
+     {:style "min-height: 100vh;"}
      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
                           :style "max-width: 80%"}]
