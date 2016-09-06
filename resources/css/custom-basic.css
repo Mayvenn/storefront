@@ -2,14 +2,14 @@
 
 html {
   line-height: var(--line-height);
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px in most browsers, but user-scalable */
   background-image: url('/images/bg-wave-pattern.png');
   background-size: 47px 51px;
 }
 
 @media (--breakpoint-lg-up) {
   html {
-    font-size: 16px;
+    font-size: 1rem; /* 16px in most browsers, but user-scalable */
   }
 }
 
