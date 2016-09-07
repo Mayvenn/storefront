@@ -125,7 +125,9 @@ Thanks,
           [:div.h5.mb1.line-height-2
            [:div.bold.shout.mb1.h4 "bonus offer!"]
            "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
-          [:a.h5.navy {:href "#"} "Offer and Rebate Details ➤"]])
+          [:a.h5.navy
+           (utils/fake-href events/control-essence-offer-details)
+           "Offer and Rebate Details ➤"]])
 
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products

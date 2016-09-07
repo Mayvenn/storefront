@@ -2,6 +2,7 @@
   (:require [storefront.platform.component-utils :as utils]
             [storefront.platform.video :as video]
             [storefront.components.cart :as cart]
+            [storefront.components.essence :as essence]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -13,4 +14,5 @@
       :refer-stylist        (stylist.referrals/built-refer-component data opts)
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)
       :video                (video/built-component data opts)
+      :essence              (essence/built-component data opts)
       nil)))
