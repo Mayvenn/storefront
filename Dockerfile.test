@@ -1,0 +1,8 @@
+FROM clojure
+
+WORKDIR /app
+ADD project.clj /app/project.clj
+RUN lein deps
+
+ADD . /app
+CMD lein trampoline test
