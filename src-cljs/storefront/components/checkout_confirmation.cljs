@@ -39,7 +39,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (when essence? (summary/essence-faux-line-item))
+        (when essence? summary/essence-faux-line-item)
         (summary/display-line-items (orders/product-items order) products)]]
 
       [:.md-up-col.md-up-col-6.px3

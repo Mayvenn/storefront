@@ -116,7 +116,7 @@ Thanks,
      [:div.mt2.clearfix.mxn4
       [:div.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
-       (when essence? (summary/essence-faux-line-item))
+       (when essence? summary/essence-faux-line-item)
        (summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
