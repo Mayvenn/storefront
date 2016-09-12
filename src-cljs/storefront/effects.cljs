@@ -83,9 +83,9 @@
   (talkable/insert)
   (refresh-account app-state)
   (refresh-current-order app-state)
-  (doseq [variation (get-in app-state keypaths/features)]
-    ;; trigger GA analytics, even though the user has already joined
-    (handle-message events/join-experiment {:variation variation})))
+  (doseq [feature (get-in app-state keypaths/features)]
+    ;; trigger GA analytics, even though feature is already enabled
+    (handle-message events/enable-feature {:feature feature})))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (convert/remove-tracking)
