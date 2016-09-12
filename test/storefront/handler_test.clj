@@ -185,7 +185,7 @@
                   storeback-shop-response
                   (fn [resp]
                     (is (= 302 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/categories/hair/straight"
+                    (is (= "https://shop.mayvenn.com/categories"
                            (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings

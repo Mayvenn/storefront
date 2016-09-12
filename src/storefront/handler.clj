@@ -210,7 +210,7 @@
           (condp = nav-event
             events/navigate-product     (redirect-product->canonical-url ctx req params)
             events/navigate-category    (if (= (:taxon-slug params) "blonde")
-                                          (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories/hair/straight")))
+                                          (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories")))
                                           (render-category render-ctx data req params))
             (html-response render-ctx data)))))))
 
