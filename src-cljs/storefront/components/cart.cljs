@@ -119,19 +119,21 @@ Thanks,
        {:data-test "cart-line-items"}
 
        (when essence?
-         [:div.flex.border.border-orange.py1
-          [:div.flex-none.mx1 {:style {:width "7.33em"}}
-           [:div.to-md-hide
-            [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
-           [:div.md-up-hide
-            [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
-          [:div.flex-auto
-           [:div.h5.mb1.line-height-2
-            [:div.bold.shout.mb1.h4 "bonus offer!"]
-            "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
-           [:a.h5.navy
-            (utils/fake-href events/control-essence-offer-details)
-            "Offer and Rebate Details ➤"]]])
+         [:div
+          [:div.flex.border.border-orange.py1
+           [:div.flex-none.mx1 {:style {:width "7.33em"}}
+            [:div.to-lg-hide
+             [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
+            [:div.lg-up-hide
+             [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
+           [:div.flex-auto.mr1
+            [:div.h5.mb1.line-height-2
+             [:div.bold.shout.mb1.h4 "bonus offer!"]
+             "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
+            [:a.h5.navy
+             (utils/fake-href events/control-essence-offer-details)
+             "Offer and Rebate Details ➤"]]]
+          [:div.border-bottom.border-light-silver ui/nbsp]])
 
        (order-summary/display-adjustable-line-items (orders/product-items order)
                                                     products
