@@ -37,7 +37,8 @@
   (-> (generate-string {:store_slug "bob"
                         :store_name "Bob's Hair Emporium"
                         :instagram_account nil
-                        :profile_picture_url nil})
+                        :profile_picture_url nil
+                        :stylist_id 3})
       (response)
       (status 200)
       (content-type "application/json")))
@@ -180,7 +181,7 @@
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-blonde-category-to-straight-hair
+(deftest redirects-blonde-category-to-categories
   (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/blonde")
                   storeback-shop-response
                   (fn [resp]
