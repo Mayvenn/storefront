@@ -3,7 +3,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.ui :as ui]))
 
-;; TODO: why is this text blurry
 (defn component [_ owner {:keys [on-close]}]
   (om/component
    (html
@@ -21,5 +20,5 @@
                  " Your first issue will mail 8-12 weeks upon receipt of order."]
                 (ui/navy-button {:on-click on-close} "Close")]]))))
 
-(defn built-component [_ _]
-  (om/build component nil nil))
+(defn built-component [_ opts]
+  (om/build component nil opts))
