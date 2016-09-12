@@ -87,6 +87,7 @@
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
      :optimizely {:variations #{}}
+     :features #{}
 
      :session-id (cookie-jar/force-session-id cookie)
      :get-satisfaction-login? false

@@ -203,8 +203,7 @@
               data (as-> {} data
                          (assoc-in data keypaths/welcome-url (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
                          (assoc-in data keypaths/store store)
-                         (experiments/determine-experiments data environment)
-                         (experiments/determine-features data)
+                         (experiments/determine-variations data)
                          (assoc-in data keypaths/taxons (api/named-searches storeback-config))
                          (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event

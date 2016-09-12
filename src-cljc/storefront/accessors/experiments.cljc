@@ -2,48 +2,19 @@
   (:require [storefront.keypaths :as keypaths]
             [clojure.set :as set]))
 
-(def stylist-shop? (comp #{"shop"} :store_slug :store))
-(def stylist-store? (comp #{"store"} :store_slug :store))
-(defn stylist-mod? [m v]
-  (fn [data]
-    (some-> data :store :stylist_id (mod m) (= v))))
-
-(def control-1 0)
-(def control-2 1)
-(def variation 2)
-(def shop-control 3)
-(def store-control 4)
-
-(def color-option-experiment-prod 6407130806)
-(def color-option-experiment-sandbox 6368621011)
-
-(defn experiments [environment]
-  [])
-
-(def experiment->features
-  {[color-option-experiment-sandbox variation]  #{"color-option"}
-   [color-option-experiment-prod variation] #{"color-option"}})
-
-(defn bucket-applies [data [pred variation-index]]
-  (when (pred data) variation-index))
-
-(defn experiment-applies [data {:keys [buckets id]}]
-  (when-let [variation-index (some (partial bucket-applies data) buckets)]
-    [id variation-index]))
-
-(defn applicable-experiments [experiment-config data]
-  (doall (keep (partial experiment-applies data) experiment-config)))
-
-(defn determine-experiments [data environment]
-  (assoc-in data
-            keypaths/optimizely-buckets
-            (applicable-experiments (experiments environment) data)))
-
-(defn determine-features [data]
-  (let [features (->> (get-in data keypaths/optimizely-buckets)
-                      (map experiment->features)
-                      (apply set/union))]
-    (assoc-in data keypaths/features features)))
+(defn determine-variations [data]
+  (let [stylist-id (get-in data keypaths/store-stylist-id)
+        store-slug (get-in data keypaths/store-slug)
+        bucket-offset (mod stylist-id 3)]
+    (assoc-in data
+              keypaths/features
+              (cond
+                (perform-track)
+                (= store-slug "shop") #{}
+                (= store-slug "store") #{}
+                (= bucket-offset 0) #{"kinky-straight"}
+                (= bucket-offset 1) #{}
+                (= bucket-offset 2) #{}))))
 
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
@@ -57,3 +28,6 @@
 
 (defn essence? [data]
   (display-feature? data "essence"))
+
+(defn kinky-straight? [data]
+  (display-feature? data "kinky-straight"))

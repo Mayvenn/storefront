@@ -82,7 +82,10 @@
   (facebook-analytics/insert-tracking)
   (talkable/insert)
   (refresh-account app-state)
-  (refresh-current-order app-state))
+  (refresh-current-order app-state)
+  (doseq [variation (get-in app-state keypaths/features)]
+    ;; trigger GA analytics, even though the user has already joined
+    (handle-message events/join-experiment {:variation variation})))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (convert/remove-tracking)

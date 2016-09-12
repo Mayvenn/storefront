@@ -22,6 +22,6 @@
     (.push js/optimizely (clj->js ["trackEvent" event-name opts]))))
 
 ;; TODO are we using ga ecommerce and does this work without that?
-(defn activate-universal-analytics []
+(defn activate-ga-integration []
   (when (and (.hasOwnProperty js/window "optimizely") js/optimizely.activateUniversalAnalytics)
     (.activateUniversalAnalytics js/optimizely)))

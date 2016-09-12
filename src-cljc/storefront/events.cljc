@@ -208,6 +208,7 @@
 
 (defpath optimizely)
 (defpath convert)
+(defpath enable-feature)
 
 (defpath reviews)
 (defpath reviews-component-mounted)
