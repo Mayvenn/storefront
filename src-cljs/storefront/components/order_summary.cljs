@@ -1,10 +1,13 @@
 (ns storefront.components.order-summary
   (:require [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.components.money-formatters :refer [as-money as-money-without-cents as-money-or-free]]
+            [storefront.assets :as assets]
+            [storefront.components.money-formatters
+             :refer
+             [as-money as-money-or-free as-money-without-cents]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
+            [storefront.platform.component-utils :as utils]
             [storefront.utils.query :as query]))
 
 (defn ^:private summary-row
@@ -19,6 +22,23 @@
      {:class (when-not (neg? amount)
                "navy")}
      (as-money-or-free amount)]]))
+
+(def essence-faux-line-item
+  [:div
+   [:div.flex.border.border-orange.py1
+    [:div.flex-none.mx1 {:style {:width "7.33em"}}
+     [:div.to-lg-hide
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
+     [:div.lg-up-hide
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
+    [:div.flex-auto.mr1
+     [:div.h5.mb1.line-height-2
+      [:div.bold.shout.mb1.h4 "bonus offer!"]
+      "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
+     [:a.h5.navy
+      (utils/fake-href events/control-essence-offer-details)
+      "Offer and Rebate Details ➤"]]]
+   [:div.border-bottom.border-light-silver ui/nbsp]])
 
 (defn display-order-summary [order]
   (let [adjustments   (orders/all-order-adjustments order)

@@ -5,8 +5,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.stylists :as stylists]
-            [storefront.assets :as assets]
-            [storefront.components.order-summary :as order-summary]
+            [storefront.components.order-summary :as summary]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -117,28 +116,12 @@ Thanks,
      [:div.mt2.clearfix.mxn4
       [:div.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
-
-       (when essence?
-         [:div
-          [:div.flex.border.border-orange.py1
-           [:div.flex-none.mx1 {:style {:width "7.33em"}}
-            [:div.to-lg-hide
-             [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
-            [:div.lg-up-hide
-             [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
-           [:div.flex-auto.mr1
-            [:div.h5.mb1.line-height-2
-             [:div.bold.shout.mb1.h4 "bonus offer!"]
-             "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
-            [:a.h5.navy
-             (utils/fake-href events/control-essence-offer-details)
-             "Offer and Rebate Details ➤"]]]
-          [:div.border-bottom.border-light-silver ui/nbsp]])
-
-       (order-summary/display-adjustable-line-items (orders/product-items order)
+       (when essence? (summary/essence-faux-line-item))
+       (summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
                                                     delete-line-item-requests)]
+
       [:div.md-up-col.md-up-col-6.px4
        [:form.my1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
@@ -151,7 +134,7 @@ Thanks,
                             :spinning? applying-coupon?}
                            "Apply")]]]
 
-       (order-summary/display-order-summary order)
+       (summary/display-order-summary order)
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}

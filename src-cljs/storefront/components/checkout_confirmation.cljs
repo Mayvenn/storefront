@@ -1,17 +1,16 @@
 (ns storefront.components.checkout-confirmation
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
-            [storefront.assets :as assets]
+            [storefront.accessors.orders :as orders]
             [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.checkout-payment :as checkout-payment]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.order-summary :as summary]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
 (defn requires-additional-payment? [data]
@@ -38,25 +37,11 @@
       [:.md-up-col.md-up-col-6.px3
        [:.h2.left-align "Order Summary"]
 
-       [:div.my2 {:data-test "confirmation-line-items"}
-        (when essence?
-          [:div
-           [:div.flex.border.border-orange.py1
-            [:div.flex-none.mx1 {:style {:width "7.33em"}}
-             [:div.to-lg-hide
-              [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
-             [:div.lg-up-hide
-              [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
-            [:div.flex-auto.mr1
-             [:div.h5.mb1.line-height-2
-              [:div.bold.shout.mb1.h4 "bonus offer!"]
-              "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
-             [:a.h5.navy
-              (utils/fake-href events/control-essence-offer-details)
-              "Offer and Rebate Details ➤"]]]
-           [:div.border-bottom.border-light-silver ui/nbsp]])
-
+       [:div.my2
+        {:data-test "confirmation-line-items"}
+        (when essence? (summary/essence-faux-line-item))
         (summary/display-line-items (orders/product-items order) products)]]
+
       [:.md-up-col.md-up-col-6.px3
        (om/build checkout-delivery/component delivery)
        [:form
