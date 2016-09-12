@@ -9,7 +9,6 @@
     (assoc-in data
               keypaths/features
               (cond
-                (perform-track)
                 (= store-slug "shop") #{}
                 (= store-slug "store") #{}
                 (= bucket-offset 0) #{"kinky-straight"}
