@@ -16,7 +16,7 @@
 
 (def content
   (component/html
-   [:div.dark-gray {:data-test "guarantee-page"}
+   [:div.dark-gray
     [:div.bg-white.p2.center
      (svg/guarantee {:width "154" :height "155"})]
     [:div.mx-auto.px2 {:style {:max-width "768px"}}

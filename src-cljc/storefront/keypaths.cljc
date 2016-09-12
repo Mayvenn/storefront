@@ -1,4 +1,5 @@
-(ns storefront.keypaths)
+(ns storefront.keypaths
+  (:require [clojure.string :as string]))
 
 (def cookie [:cookie])
 
@@ -204,3 +205,9 @@
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
 (def get-satisfaction-login? [:get-satisfaction-login?])
+
+(defn ->str [keypath]
+  (string/join "-" (map name keypath)))
+
+(defn ->component-str [keypath]
+  (string/replace (->str keypath) #"^navigate-" "page-"))

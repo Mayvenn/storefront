@@ -32,7 +32,6 @@
 (defn component [{:keys [taxons]} owner opts]
   (component/create
    [:div.home-container.m-auto.clearfix
-    {:data-test "home-page"}
     [:a (assoc (utils/route-to events/navigate-categories)
                :data-test "home-banner")
      [:div.to-lg-hide.img-lg-home-banner.bg-no-repeat.bg-full.bg-center.col-12.block.banner-container]

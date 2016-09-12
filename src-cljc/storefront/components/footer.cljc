@@ -24,7 +24,7 @@
 
 (defn products-section [taxons]
   (for [{:keys [name slug]} taxons]
-    [:a (merge {:key slug :data-test (str "footer-" slug)}
+    [:a (merge {:key slug}
                (utils/route-to events/navigate-category {:taxon-slug slug}))
      [:div.dark-gray.light.titleize name]]))
 

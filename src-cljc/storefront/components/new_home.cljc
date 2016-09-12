@@ -137,7 +137,6 @@
 (defn component [{:keys [taxons]} owner opts]
   (component/create
    [:div.m-auto
-    {:data-test "home-page"}
     banner
     (pick-style taxons)
     video-popup
