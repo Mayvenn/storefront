@@ -66,7 +66,8 @@ gulp.task('cdn', function () {
   del(['./resources/public/cdn', './resources/rev-manifest.json']);
 
   var revAll = new RevAll({
-      prefix: "//" + argv.host + "/cdn/"
+      prefix: "//" + argv.host + "/cdn/",
+      dontSearchFile: ['.js']
   });
 
   var sourceMapPath = 'resources/public/js/out/main.js.map';
