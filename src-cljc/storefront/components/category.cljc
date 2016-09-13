@@ -207,7 +207,7 @@
        [:p.mt2 {:key idx} item])]]])
 
 (defn carousel-image [image]
-  [:div.bg-cover.bg-no-repeat.bg-center.col-12
+  [:div.bg-cover.bg-no-repeat.bg-top.col-12
    {:style {:background-image (assets/css-url image)
             :height "31rem"}}])
 
