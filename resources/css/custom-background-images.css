@@ -26,28 +26,8 @@
 .img-closures     { background-image: url('/images/category_images/ClosuresCategoryImage.jpg'); }
 .img-frontals     { background-image: url('/images/category_images/FrontalsCategoryImage.jpg'); }
 
-.img-homepage-straight   { background-image: url('/images/homepage/straight.jpg'); }
-.img-homepage-curly      { background-image: url('/images/homepage/curly.jpg'); }
-.img-homepage-deep-wave  { background-image: url('/images/homepage/deep_wave.jpg'); }
-.img-homepage-loose-wave { background-image: url('/images/homepage/loose_wave.jpg'); }
-.img-homepage-body-wave  { background-image: url('/images/homepage/body_wave.jpg'); }
-.img-homepage-closures   { background-image: url('/images/homepage/loose_wave.jpg'); }
-.img-homepage-frontals   { background-image: url('/images/homepage/loose_wave.jpg'); }
-
-.img-text-straight   { background-image: url('/images/homepage/knockout/straight-knockout.png'); }
-.img-text-curly      { background-image: url('/images/homepage/knockout/curly-knockout.png'); }
-.img-text-deep-wave  { background-image: url('/images/homepage/knockout/deep-wave-knockout.png'); }
-.img-text-loose-wave { background-image: url('/images/homepage/knockout/loose-wave-knockout.png'); }
-.img-text-body-wave  { background-image: url('/images/homepage/knockout/body-wave-knockout.png'); }
-.img-text-closures   { background-image: url('/images/homepage/knockout/closures-knockout.png'); }
-.img-text-frontals   { background-image: url('/images/homepage/knockout/frontals-knockout.png'); }
-
 .img-logo { background-image: url('/images/header_logo.png'); }
 .img-styleseat { background-image: url('/images/icons/styleseat.png'); }
-
-.img-featured { background-image: url('/images/homepage/home_new-product-peruvian-clickable.jpg'); }
-.img-md-home-banner { background-image: url('/images/homepage/home_image_clickable.jpg'); }
-.img-lg-home-banner { background-image: url('/images/homepage/desktop_home_image_clickable.jpg'); }
 
 .img-fb-share { background-image: url('/images/share/fb.png'); }
 .img-twitter-share { background-image: url('/images/share/twitter.png'); }

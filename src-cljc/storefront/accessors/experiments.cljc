@@ -22,9 +22,6 @@
   ;; TODO: when this experiment is over, delete the related code from the events/optimizely effect.
   (display-feature? data "pixlee-product"))
 
-(defn new-homepage? [data]
-  (display-feature? data "new-homepage"))
-
 (defn essence? [data]
   (display-feature? data "essence"))
 
