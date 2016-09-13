@@ -191,7 +191,7 @@
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id))))))))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id (experiments/kinky-straight? data)))))))))))
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]

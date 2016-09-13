@@ -72,7 +72,8 @@
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (taxons/current-taxon app-state)
-                                                  (get-in app-state keypaths/products))
+                                                  (get-in app-state keypaths/products)
+                                                  (experiments/kinky-straight? app-state))
         saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
     (if saved-options
       (bundle-builder/reset-options bundle-builder saved-options)
