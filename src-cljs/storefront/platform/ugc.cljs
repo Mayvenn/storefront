@@ -31,16 +31,15 @@
          {:style {:margin-top "30px"}} ;; To match the white space at the bottom of the widget
          "Want to show up on our homepage? Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
-(defn component [{:keys [pixlee-sku in-experiment? pixlee-loaded? content-available?] :as data} owner opts]
+(defn component [{:keys [pixlee-sku pixlee-loaded? content-available?] :as data} owner opts]
   (om/component
    (html
-    (when (and in-experiment? pixlee-loaded? content-available?)
+    (when (and pixlee-loaded? content-available?)
       [:div {:key pixlee-sku}
        (om/build inner-component data opts)]))))
 
 (defn query [data]
   (let [taxon (taxons/current-taxon data)]
-    {:in-experiment?     (experiments/pixlee-product? data)
-     :pixlee-loaded?     (get-in data keypaths/loaded-pixlee)
+    {:pixlee-loaded?     (get-in data keypaths/loaded-pixlee)
      :content-available? (pixlee/content-available? taxon)
      :pixlee-sku         (pixlee/sku taxon)}))

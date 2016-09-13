@@ -18,10 +18,6 @@
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
 
-(defn pixlee-product? [data]
-  ;; TODO: when this experiment is over, delete the related code from the events/optimizely effect.
-  (display-feature? data "pixlee-product"))
-
 (defn essence? [data]
   (display-feature? data "essence"))
 

@@ -154,8 +154,7 @@
 (defmethod perform-effects events/navigate-category
   [_ event {:keys [taxon-slug] :as args} app-state]
   (reviews/insert-reviews)
-  (when (and (experiments/pixlee-product? app-state)
-             (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
+  (when (accessors.pixlee/content-available? (taxons/current-taxon app-state))
     (pixlee/insert))
   (refresh-taxon-products app-state))
 
