@@ -197,23 +197,24 @@
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
       (when nav-event
-        (let [nav-event  (bidi->edn nav-event)
-              render-ctx {:storeback-config storeback-config
-                          :environment      environment}
-              init-state (fn []
-                           (as-> {} data
-                             (assoc-in data keypaths/welcome-url
-                                       (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-                             (assoc-in data keypaths/store store)
-                             (experiments/determine-features data)
-                             (assoc-in data keypaths/taxons (api/named-searches storeback-config))
-                             (assoc-in data keypaths/navigation-message [nav-event params])))]
+        (let [nav-event       (bidi->edn nav-event)
+              render-ctx      {:storeback-config storeback-config
+                               :environment      environment}
+              data            (as-> {} data
+                                (assoc-in data keypaths/welcome-url
+                                          (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+                                (assoc-in data keypaths/store store)
+                                (experiments/determine-features data)
+                                (assoc-in data keypaths/taxons (api/named-searches storeback-config))
+                                (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
-            events/navigate-category (if (= (:taxon-slug params) "blonde")
+            events/navigate-category (if (or (= "blonde" (:taxon-slug params))
+                                             (and (= "kinky-straight" (:taxon-slug params))
+                                                  (not (experiments/kinky-straight? data))))
                                        (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories")))
-                                       (render-category render-ctx (init-state) req params))
-            (html-response render-ctx (init-state))))))))
+                                       (render-category render-ctx data req params))
+            (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
