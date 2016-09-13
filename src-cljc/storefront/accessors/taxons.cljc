@@ -10,10 +10,10 @@
              (get-in app-state keypaths/taxons)))
 
 (defn current-taxons [app-state]
-  (let [kinky? (experiments/kinky-straight? app-state)
-        taxons (query/all (dissoc (get-in app-state keypaths/browse-taxon-query) :slug)
-                          (get-in app-state keypaths/taxons))]
-    (filter #(or kinky? (not= "kinky-straight" (:slug %))) taxons)))
+  (let [disallowed-slugs (if (experiments/kinky-straight? app-state) #{} #{"kinky-straight"})
+        taxons           (query/all (dissoc (get-in app-state keypaths/browse-taxon-query) :slug)
+                                    (get-in app-state keypaths/taxons))]
+    (remove (comp disallowed-slugs :slug) taxons)))
 
 (defn products-loaded? [app-state taxon]
   (every? (products/loaded-ids app-state) (:product-ids taxon)))

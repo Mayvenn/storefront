@@ -154,10 +154,11 @@
     bundle-builder))
 
 (defn initialize [taxon products-by-id kinky?]
-  (let [initial-variants (->> (map products-by-id (:product-ids taxon))
+  (let [disallowed-styles (if kinky? #{} #{"Kinky Straight"})
+        initial-variants (->> (map products-by-id (:product-ids taxon))
                               (remove nil?)
                               (mapcat build-variants)
-                              (filter (fn [variant] (or kinky? (not= "Kinky Straight" (:style variant))))))
+                              (remove (comp disallowed-styles :style)))
         initial-state    {:flow             (ordered-steps taxon)
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step taxon)}]
