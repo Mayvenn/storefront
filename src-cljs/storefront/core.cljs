@@ -104,9 +104,10 @@
       (exception-handler/report e))))
 
 (defn ^:export external-message [event args]
-  (let [event (if (coll? event) event [event])]
+  (let [event (js->clj event)
+        event (mapv keyword (if (coll? event) event [event]))]
     (handle-message app-state
-                    (map keyword event)
+                    event
                     (js->clj args :keywordize-keys true))))
 
 (dom-ready #(main app-state))
