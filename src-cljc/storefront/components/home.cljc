@@ -79,14 +79,21 @@
      (utils/route-to events/navigate-categories)
      [:span.dark-black.bold "shop now"])]])
 
-(def banner
+(defn banner [store-slug]
   (component/html
    [:a
     (assoc (utils/route-to events/navigate-categories)
            :data-test "home-banner")
-    (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                     (assets/path "/images/homepage/desktop_banner.jpg")
-                     "shop now")]))
+    (case store-slug
+      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                  "shop now")
+      "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                  (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+                                  "shop now")
+      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                       (assets/path "/images/homepage/desktop_banner.jpg")
+                       "shop now"))]))
 
 (def about-mayvenn
   (component/html
@@ -134,16 +141,17 @@
       [:div.h0.my2 "Mayvenn in action"]
       [:div.h2 "see what real customers say"]]]]))
 
-(defn component [{:keys [taxons]} owner opts]
+(defn component [{:keys [taxons store-slug]} owner opts]
   (component/create
    [:div.m-auto
-    banner
+    (banner store-slug)
     (pick-style taxons)
     video-popup
     about-mayvenn]))
 
 (defn query [data]
-  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))})
+  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))
+   :store-slug (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
