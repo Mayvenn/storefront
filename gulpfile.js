@@ -11,7 +11,6 @@ var shell = require('gulp-shell');
 var del = require('del');
 var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
-var replace = require('gulp-replace');
 var fs = require('fs');
 var path = require('path');
 
