@@ -11,6 +11,9 @@ var shell = require('gulp-shell');
 var del = require('del');
 var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
+var replace = require('gulp-replace');
+var fs = require('fs');
+var path = require('path');
 
 gulp.task('css', function () {
   return gulp.src(['./resources/css/*.css'])
@@ -38,14 +41,16 @@ gulp.task('default', ['css']);
 gulp.task('refresh-deps', function () {
   /* Run this after you update node module versions. */
   /* Maybe there's a preferred way of including node modules in cljs projects? */
-  gulp.src(['./node_modules/react-slick/dist/react-slick.js'])
+  return gulp.src(['./node_modules/react-slick/dist/react-slick.js'])
       .pipe(gulp.dest('src-cljs/storefront/'));
 });
 
-gulp.task('minify-js', function () {
-  del(['./target/min-js']);
+gulp.task('clean-min-js', function () {
+  return del(['./target/min-js']);
+})
 
-  gulp.src('src-cljs/storefront/*.js')
+gulp.task('minify-js', ['clean-min-js'], function () {
+  return gulp.src('src-cljs/storefront/*.js')
     .pipe(uglify())
     .pipe(gulp.dest('target/min-js/'));
 });
@@ -57,37 +62,75 @@ gulp.task('copy-release-assets', function () {
     .pipe(gulp.dest('./resources/public/'));
 });
 
-gulp.task('cdn', function () {
+gulp.task('clean-shaed-assets', function () {
+  return del(['./resources/public/cdn', './resources/rev-manifest.json']);
+});
+
+gulp.task('fix-source-map', function () {
+  return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map'], {base: './'})
+    .pipe(jsonTransform(function(data) {
+      data["sources"] = data["sources"].map(function(f) {
+        return f.replace("\/", "/");
+      });
+      return data;
+    }))
+    .pipe(gulp.dest('./'));
+});
+
+var shaedAssetSources = function () {
+  return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
+               .pipe(gulpIgnore.exclude("*.map")),
+               gulp.src('resources/public/js/out/main.js.map'));
+};
+
+gulp.task('rev-assets', function () {
   if (!argv.host) {
     throw "missing --host";
   }
 
-  // Clean up from last build
-  del(['./resources/public/cdn', './resources/rev-manifest.json']);
-
   var revAll = new RevAll({
-      prefix: "//" + argv.host + "/cdn/",
-      dontSearchFile: ['.js']
+    prefix: "//" + argv.host + "/cdn/",
+    dontSearchFile: ['.js']
   });
 
-  var sourceMapPath = 'resources/public/js/out/main.js.map';
-  var sourceMapStream = gulp.src([sourceMapPath])
-      .pipe(jsonTransform(function(data) {
-        data["sources"] = data["sources"].map(function(f) {
-          return f.replace("\/", "/");
-        });
-        return data;
-      }));
-
-  var fileStream = gulp.src('resources/public/{js,css,images,fonts}/**')
-      .pipe(gulpIgnore.exclude("*.map"));
-
-  return merge(fileStream, sourceMapStream)
+  return shaedAssetSources()
     .pipe(revAll.revision())
-    .pipe(gzip({ append: false }))
-    .pipe(gulp.dest('./resources/public/cdn'))
+    .pipe(gulp.dest('resources/public/cdn'))
     .pipe(revAll.manifestFile())
-    .pipe(gulp.dest('./resources'));
+    .pipe(gulp.dest('resources'))
+});
+
+gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
+  // because .js files are excluded from search and replace of sha-ed versions (so that
+  // the js code doesn't become really wrong), we need to take special care to update
+  // main.js to have the sha-ed version of the sourcemap in the file
+  fs.readFile("resources/rev-manifest.json", 'utf8', function(err, data) {
+    if (err) { return console.log(err); }
+
+    var revManifest = JSON.parse(data),
+        mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"];
+
+    fs.readFile(mainJsFilePath, 'utf8', function (err,data) {
+      if (err) { return console.log(err); }
+      var result = data.replace(/main\.js\.map/g, path.basename(revManifest["js/out/main.js.map"]));
+
+      fs.writeFile(mainJsFilePath, result, 'utf8', function (err) {
+        if (err) { return console.log(err); }
+        cb();
+      });
+    });
+  });
+})
+
+gulp.task('gzip', function () {
+  return gulp.src('resources/public/cdn/**')
+    .pipe(gulpIgnore.exclude("*.map"))
+    .pipe(gzip({ append: false }))
+    .pipe(gulp.dest('resources/public/cdn'));
+});
+
+gulp.task('cdn', function (cb) {
+  runSequence('clean-shaed-assets', 'fix-source-map', 'rev-assets', 'fix-main-js-pointing-to-source-map', 'gzip', cb);
 });
 
 gulp.task('compile-assets', function(cb) {
