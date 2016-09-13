@@ -25,7 +25,7 @@
                               (contains? product-id))))
        first))
 
-(def new-taxon? #{"frontals"})
+(def new-taxon? #{"kinky-straight"})
 
 (defn is-closure? [taxon] (some-> taxon :search :category set (contains? "closures")))
 (defn is-frontal? [taxon] (some-> taxon :search :category set (contains? "frontals")))
