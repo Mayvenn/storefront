@@ -41,6 +41,7 @@
                                     "resources/public/css/"
                                     "resources/public/cdn"]
   :source-paths ["src" "src-cljc"]
+  :resource-paths ["resources"]
   :cljsbuild
   {:builds
    {:dev
