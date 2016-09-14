@@ -46,7 +46,8 @@
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-   [:div.my2
+   [:nav.my2
+    {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
                      {:slides   (map link-to-search named-searches)
                       :settings (let [slide-count (count named-searches)

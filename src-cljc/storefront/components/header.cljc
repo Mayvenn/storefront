@@ -190,17 +190,18 @@
     [:div.col.col-10.line-height-3 right]]))
 
 (defn products-section [current-page? title named-searches]
-  [:div
+  [:nav {:role "navigation" :aria-label (str "Shop " title)}
    (row [:div.border-bottom.border-light-silver.black.h4 title])
-   [:div.my1
+   [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
-      [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:named-search-slug slug}))
-       (row
-        (when (named-searches/new-named-search? slug) ui/new-flag)
-        [:span.green.titleize
-         (when (current-page? events/navigate-category {:named-search-slug slug})
-           {:class padded-selected-link})
-         name])])]])
+      [:li {:key slug}
+       [:a.h5 (utils/route-to events/navigate-category {:named-search-slug slug})
+        (row
+         (when (named-searches/new-named-search? slug) ui/new-flag)
+         [:span.green.titleize
+          (when (current-page? events/navigate-category {:named-search-slug slug})
+            {:class padded-selected-link})
+          name])]])]])
 
 (defn shop-panel [stylist? expanded? current-page? named-searches]
   [:div.absolute.col-12.bg-white.to-lg-hide.z1.top-lit

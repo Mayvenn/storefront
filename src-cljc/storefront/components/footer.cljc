@@ -33,7 +33,8 @@
    [:div.medium.border-bottom.border-light-silver.mb1
     [:div.to-md-hide.f3 "Shop"]
     [:div.md-up-hide "Shop"]]
-   [:div.clearfix.f4
+   [:nav.clearfix.f4
+    {:role "navigation" :aria-label "Shop Products"}
     [:div.col.col-6
      (products-section (filter named-searches/is-extension? named-searches))]
     [:div.col.col-6

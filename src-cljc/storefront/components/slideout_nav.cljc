@@ -9,7 +9,8 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.app-routes :as app-routes]))
+            [storefront.app-routes :as app-routes]
+            [clojure.string :as str]))
 
 (def section-inner :div.ml3.py2)
 (def section-outer :div.border-bottom.border-light-silver.bg-pure-white.black)
@@ -55,41 +56,43 @@
     [:span.gray "Credit: "] [:span.navy (as-money credit)]]])
 
 (defn customer-section [selectable? user-email]
-  [:div
+  [:nav {:role "navigation" :aria-label "Mayvenn Account"}
    (row [:div.truncate user-email])
-   [:a.green.block (utils/route-to events/navigate-account-manage)
-    (row (selectable? events/navigate-account-manage
-                      [:span {:data-test "account-settings"} "Account Settings"]))]
-   [:a.green.block (utils/route-to events/navigate-account-referrals)
-    (row (selectable? events/navigate-account-referrals "Refer a Friend"))]])
+   [:ul.list-reset
+    [:li [:a.green.block (utils/route-to events/navigate-account-manage)
+          (row (selectable? events/navigate-account-manage
+                            [:span {:data-test "account-settings"} "Account Settings"]))]]
+    [:li [:a.green.block (utils/route-to events/navigate-account-referrals)
+          (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
 (defn store-section [selectable? store]
   (let [{store-photo :profile_picture_url nickname :store_nickname} store]
-    [:div
+    [:nav {:role "navigation" :aria-label "Mayvenn Account"}
      (row
       [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
       [:div nickname])
-     [:div
-      [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-       (row (selectable? events/navigate-stylist-dashboard
-                         [:span {:data-test "dashboard"} "Dashboard"]))]
-      [:a.green.block (utils/route-to events/navigate-stylist-account-profile)
-       (row (selectable? events/navigate-stylist-account
-                         [:span {:data-test "account-settings"} "Account Settings"]))]
-      [:a.green.block (utils/navigate-community) (row "Community")]]]))
+     [:ul.list-reset
+      [:li [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+            (row (selectable? events/navigate-stylist-dashboard
+                              [:span {:data-test "dashboard"} "Dashboard"]))]]
+      [:li [:a.green.block (utils/route-to events/navigate-stylist-account-profile)
+            (row (selectable? events/navigate-stylist-account
+                              [:span {:data-test "account-settings"} "Account Settings"]))]]
+      [:li [:a.green.block (utils/navigate-community) (row "Community")]]]]))
 
 (defn products-section [selectable? title named-searches]
-  [:div
-   (row [:div.border-bottom.border-light-silver.nav.navy title])
-   [:div.my1
+  [:nav {:role "navigation" :aria-label (str "Shop " title)}
+   (row [:div.border-bottom.border-light-silver.navy title])
+   [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
-      [:a
-       (merge {:key slug :data-test (str "menu-" slug)}
-              (utils/route-to events/navigate-category {:named-search-slug slug}))
-       (row
-        (when (named-searches/new-named-search? slug) ui/new-flag)
-        [:div.green.titleize
-         (selectable? events/navigate-category {:named-search-slug slug} name)])])]])
+      [:li {:key slug}
+       [:a
+        (merge {:data-test (str "menu-" slug)}
+               (utils/route-to events/navigate-category {:named-search-slug slug}))
+        (row
+         (when (named-searches/new-named-search? slug) ui/new-flag)
+         [:div.green.titleize
+          (selectable? events/navigate-category {:named-search-slug slug} name)])]])]])
 
 (defn extensions-section [selectable? named-searches]
   (products-section selectable? "Extensions" (filter named-searches/is-extension? named-searches)))
@@ -119,15 +122,17 @@
   (component/html
    [section-outer-darker
     [section-inner
-     [:a.green (utils/route-to events/navigate-shop-by-look)
-      (row (selectable? events/navigate-shop-by-look "Shop By Look"))]
-     [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]
-     [:a.green (assoc (utils/route-to events/navigate-guarantee)
-                      :data-test "navigate-guarantee")
-      (row (selectable? events/navigate-guarantee "Our Guarantee"))]
-     [:a.green (assoc (utils/route-to events/navigate-content-help)
-                      :data-test "navigate-content-help")
-      (row (selectable? events/navigate-content-help "Contact Us"))]]]))
+     [:nav {:role "navigation" :aria-label "Help"}
+      [:ul.list-reset
+       [:li [:a.green (utils/route-to events/navigate-shop-by-look)
+             (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]
+       [:li [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]]
+       [:li [:a.green (assoc (utils/route-to events/navigate-guarantee)
+                             :data-test "navigate-guarantee")
+             (row (selectable? events/navigate-guarantee "Our Guarantee"))]]
+       [:li [:a.green (assoc (utils/route-to events/navigate-content-help)
+                             :data-test "navigate-content-help")
+             (row (selectable? events/navigate-content-help "Contact Us"))]]]]]]))
 
 (def sign-in-section
   (component/html
