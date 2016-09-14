@@ -1,17 +1,19 @@
 (ns storefront.api
-  (:require [ajax.core :refer [GET POST PUT DELETE json-response-format]]
-            [clojure.set :refer [subset?]]
+  (:require [ajax.core
+             :refer
+             [GET json-response-format POST PUT raw-response-format]]
+            [clojure.set :refer [rename-keys]]
+            [clojure.string :as str]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.states :as states]
+            [storefront.cache :as c]
+            [storefront.config
+             :refer
+             [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.states :as states]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as products]
-            [storefront.cache :as c]
-            [storefront.utils.maps :refer [filter-nil]]
-            [clojure.set :refer [rename-keys]]
-            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.request-keys :as request-keys]
-            [clojure.string :as str]))
+            [storefront.utils.maps :refer [filter-nil]]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -692,3 +694,31 @@
    {:params referral
     :handler #(messages/handle-message events/api-success-send-stylist-referrals
                                       {:referrals %})}))
+
+(defn- storefront-req [method path req-key {:keys [handler params] :as request-opts}]
+  (let [req-id          (str (random-uuid))
+        wrapped-handler (fn [response-body] ;; TODO extract
+                          (messages/handle-message events/api-end
+                                                   {:request-key req-key
+                                                    :request-id  req-id})
+                          (handler response-body))
+        request         (method path
+                                (merge request-opts
+                                       {:format          :raw
+                                        :handler         wrapped-handler
+                                        :response-format (raw-response-format)}))]
+    (messages/handle-message events/api-start {:xhr         request
+                                               :request-key req-key
+                                               :request-id  req-id})))
+
+(defn get-static-content [static-content-id]
+  (storefront-req
+   GET
+   (str "/content/" (name static-content-id) ".html")
+   request-keys/get-static-content
+   {:params  {:static-content-id static-content-id}
+    :handler (fn [body]
+               (messages/handle-message events/api-success-get-static-content
+                                        {:static-content-id static-content-id
+                                         :content           body}))}))
+

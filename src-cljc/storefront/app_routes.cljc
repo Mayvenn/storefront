@@ -16,7 +16,7 @@
        ["/categories/hair/" :named-search-slug] (edn->bidi events/navigate-category)
        ["/products/" :product-slug]             (edn->bidi events/navigate-product)
        "/guarantee"                             (edn->bidi events/navigate-guarantee)
-       "/help"                                  (edn->bidi events/navigate-help)
+       "/help"                                  (edn->bidi events/navigate-content-help)
        "/policy/privacy"                        (edn->bidi events/navigate-privacy)
        "/policy/tos"                            (edn->bidi events/navigate-tos)
        "/login"                                 (edn->bidi events/navigate-sign-in)

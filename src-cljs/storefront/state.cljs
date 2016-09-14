@@ -159,6 +159,7 @@
                             :navigation []}}
           :review-components-count 0
           :places-enabled true
+          :static nil
           :loaded {:reviews false
                    :stripe false
                    :facebook false

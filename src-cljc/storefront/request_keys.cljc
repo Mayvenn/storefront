@@ -4,6 +4,7 @@
 (def get-products [:get-products])
 (def get-states [:get-states])
 (def get-saved-cards [:get-saved-cards])
+(def get-static-content [:get-static-content])
 
 (def sign-in [:sign-in])
 (def sign-up [:sign-up])

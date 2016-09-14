@@ -19,7 +19,6 @@
 (defpath navigate-categories)
 (defpath navigate-product)
 (defpath navigate-guarantee)
-(defpath navigate-help)
 (defpath navigate-privacy)
 (defpath navigate-tos)
 (defpath navigate-sign-in)
@@ -29,6 +28,9 @@
 (defpath navigate-reset-password)
 (defpath navigate-cart)
 (defpath navigate-shared-cart)
+
+(defpath navigate-content)
+(defpath navigate-content-help)
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
@@ -180,6 +182,8 @@
 (defpath api-success-promotions)
 
 (defpath api-success-shipping-methods)
+
+(defpath api-success-get-static-content)
 
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)

@@ -76,7 +76,9 @@
     [:script {:type "text/javascript"}
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
-     (raw (str "var data = " (generate-string (pr-str (sanitize data))) ";"))]
+     (raw (str "var data = " (generate-string (pr-str (-> (sanitize data)
+                                                          (assoc-in keypaths/static-content
+                                                                    (get-in data keypaths/static-content))))) ";"))]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"

@@ -87,8 +87,15 @@
     (apply merge-with deep-merge maps)
     (last maps)))
 
+(defn consume-preloaded-data []
+  (let [pre-data (read-string js/data)]
+    (js-delete js/window "data")
+    (set! (.-data js/window) js/undefined)
+    pre-data))
+
 (defonce main (memoize main-))
-(defonce app-state (atom (deep-merge (state/initial-state) (read-string js/data))))
+(defonce app-state (atom (deep-merge (state/initial-state)
+                                     (consume-preloaded-data))))
 
 (defn ^:export debug-app-state []
   (clj->js @app-state))

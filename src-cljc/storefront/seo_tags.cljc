@@ -67,15 +67,15 @@
                                  [:meta {:property "og:description"
                                          :content "Sign Up for a Mayvenn account and we will be able to send you special promotions for discounted hair and other important messages."}]]
 
-     events/navigate-help       [[:title {} "Contact Us | Mayvenn"]
-                                 [:meta {:property "og:title"
-                                         :content "Contact Us for any questions, problems, or if you need styling advice!"}]
-                                 [:meta {:name "description"
-                                         :content "We pride ourselves our top-notch customer service. Need help? Call, text, or email us and we will get back to you as quickly as possible."}]
-                                 [:meta {:property "og:type"
-                                         :content "website"}]
-                                 [:meta {:property "og:description"
-                                         :content "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]]
+     events/navigate-content-help [[:title {} "Contact Us | Mayvenn"]
+                                   [:meta {:property "og:title"
+                                           :content "Contact Us for any questions, problems, or if you need styling advice!"}]
+                                   [:meta {:name "description"
+                                           :content "We pride ourselves our top-notch customer service. Need help? Call, text, or email us and we will get back to you as quickly as possible."}]
+                                   [:meta {:property "og:type"
+                                           :content "website"}]
+                                   [:meta {:property "og:description"
+                                           :content "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]]
 
      events/navigate-guarantee  [[:title {} "Our 30 Day Quality Guarantee | Mayvenn"]
                                  [:meta {:property "og:title"

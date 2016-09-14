@@ -125,9 +125,9 @@
      [:a.green (assoc (utils/route-to events/navigate-guarantee)
                       :data-test "navigate-guarantee")
       (row (selectable? events/navigate-guarantee "Our Guarantee"))]
-     [:a.green (assoc (utils/route-to events/navigate-help)
-                      :data-test "navigate-help")
-      (row (selectable? events/navigate-help "Contact Us"))]]]))
+     [:a.green (assoc (utils/route-to events/navigate-content-help)
+                      :data-test "navigate-content-help")
+      (row (selectable? events/navigate-content-help "Contact Us"))]]]))
 
 (def sign-in-section
   (component/html

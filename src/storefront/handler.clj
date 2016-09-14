@@ -1,32 +1,34 @@
 (ns storefront.handler
-  (:require [storefront.config :as config]
-            [storefront.app-routes :refer [app-routes bidi->edn]]
-            [storefront.events :as events]
-            [storefront.api :as api]
-            [storefront.views :as views]
-            [storefront.keypaths :as keypaths]
-            [storefront.cache :as cache]
-            [storefront.cookies :as cookies]
-            [storefront.utils.maps :refer [key-by]]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.products :as products]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+  (:require [bidi.bidi :as bidi]
+            [clojure.java.io :as io]
             [clojure.string :as string]
-            [compojure.core :refer :all]
-            [compojure.route :as route]
-            [bidi.bidi :as bidi]
-            [clj-http.client :as http]
-            [ring.middleware.defaults :refer :all]
-            [ring.util.response :refer [redirect response status content-type header]]
-            [noir-exception.core :refer [wrap-internal-error wrap-exceptions]]
-            [ring.middleware.content-type :refer [wrap-content-type]]
-            [ring.middleware.json :refer [wrap-json-params wrap-json-response]]
-            [ring.middleware.resource :refer [wrap-resource]]
-            [ring.middleware.params :refer [wrap-params]]
-            [ring.middleware.cookies :refer [wrap-cookies]]
-            [ring.util.codec :as codec]
-            [ring-logging.core :as ring-logging]))
+            [compojure
+             [core :refer :all]
+             [route :as route]]
+            [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
+            [ring-logging.core :as ring-logging]
+            [ring.middleware
+             [content-type :refer [wrap-content-type]]
+             [cookies :refer [wrap-cookies]]
+             [defaults :refer :all]
+             [params :refer [wrap-params]]
+             [resource :refer [wrap-resource]]]
+            [ring.util
+             [codec :as codec]
+             [response :refer [content-type redirect response]]]
+            [storefront
+             [api :as api]
+             [app-routes :refer [app-routes bidi->edn]]
+             [config :as config]
+             [cookies :as cookies]
+             [events :as events]
+             [keypaths :as keypaths]
+             [views :as views]]
+            [storefront.accessors
+             [bundle-builder :as bundle-builder]
+             [experiments :as experiments]
+             [named-searches :as named-searches]]
+            [storefront.utils.maps :refer [key-by]]))
 
 (defn storefront-site-defaults
   [env]
@@ -157,7 +159,7 @@
   #{events/navigate-home
     events/navigate-categories
     events/navigate-category
-    events/navigate-help
+    events/navigate-content-help
     events/navigate-guarantee})
 
 (defn html-response [render-ctx data]
@@ -193,6 +195,16 @@
                                           (assoc-in keypaths/products products-by-id)
                                           (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data)))))))))))
 
+(defn static-content [nav-event]
+  (when (= (take 2 nav-event) events/navigate-content)
+    (->> nav-event
+         last
+         name
+         (format "public/content/%s.html")
+         io/resource
+         io/file
+         slurp)))
+
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
@@ -206,6 +218,7 @@
                            (assoc-in data keypaths/store store)
                            (experiments/determine-features data)
                            (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
+                           (assoc-in data keypaths/static-content (static-content nav-event))
                            (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)

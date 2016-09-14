@@ -26,7 +26,7 @@
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.thirty-day-guarantee :as thirty-day-guarantee]
-            [storefront.components.help :as help]
+            [storefront.components.content :as content]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.shared-cart :as shared-cart]
@@ -72,7 +72,7 @@
     events/navigate-category        category/built-component
     events/navigate-shared-cart     shared-cart/built-component
     events/navigate-guarantee       thirty-day-guarantee/built-component
-    events/navigate-help            help/built-component
+    events/navigate-content-help    content/built-component
     events/navigate-sign-in         sign-in/built-component
     events/navigate-sign-up         sign-up/built-component
     events/navigate-forgot-password forgot-password/built-component
