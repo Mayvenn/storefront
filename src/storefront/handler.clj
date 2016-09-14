@@ -204,7 +204,6 @@
          name
          (format "public/content/%s.html")
          io/resource
-         io/file
          slurp)))
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
