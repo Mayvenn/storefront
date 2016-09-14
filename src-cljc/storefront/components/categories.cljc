@@ -6,7 +6,7 @@
                :cljs [storefront.component :as component])
             [storefront.events :as events]))
 
-(defn category [index {:keys [name slug]}]
+(defn link-to-search [index {:keys [name slug]}]
   [:a.p1.inline-block.col-6
    (merge
     {:key slug
@@ -27,7 +27,7 @@
    [:div.m2
     [:h1.py2.center.black "Select your favorite style"]
     [:div.clearfix.mxn1.center
-     (map-indexed category named-searches)]]))
+     (map-indexed link-to-search named-searches)]]))
 
 (defn query [data]
   {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))})

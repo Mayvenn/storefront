@@ -30,7 +30,7 @@
    [:img.md-up-hide.col-12 {:src mobile-asset
                             :alt alt-text}]])
 
-(defn category [{:keys [slug name long-name model-image product-image]}]
+(defn link-to-search [{:keys [slug name long-name model-image product-image]}]
   [:a.p1.center.flex.flex-column.items-center
    (merge {:data-test (str "named-search-" slug)}
           (utils/route-to events/navigate-category {:named-search-slug slug}))
@@ -48,7 +48,7 @@
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my2
     (component/build carousel/component
-                     {:slides   (map category named-searches)
+                     {:slides   (map link-to-search named-searches)
                       :settings (let [slide-count (count named-searches)
                                       swipe       (fn [n]
                                                     {:swipe        true

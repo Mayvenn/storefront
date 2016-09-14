@@ -179,7 +179,7 @@
 (defn render-category
   "Checks that the category exists, and that customer has access to its products"
   [{:keys [storeback-config] :as render-ctx}
-   {:keys [named-searches] :as data}
+   data
    req
    {:keys [named-search-slug]}]
   (let [data (assoc-in data (conj keypaths/browse-named-search-query :slug) named-search-slug)]
