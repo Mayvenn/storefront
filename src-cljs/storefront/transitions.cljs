@@ -4,7 +4,7 @@
             [storefront.routes :as routes]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.hooks.talkable :as talkable]
@@ -71,7 +71,7 @@
       (assoc-in keypaths/return-navigation-message [event args])))
 
 (defn initialize-bundle-builder [app-state]
-  (let [bundle-builder (bundle-builder/initialize (taxons/current-taxon app-state)
+  (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
                                                   (get-in app-state keypaths/products)
                                                   (experiments/kinky-straight? app-state))
         saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
@@ -81,18 +81,18 @@
 
 (defn ensure-bundle-builder [app-state]
   (if (and (nil? (get-in app-state keypaths/bundle-builder))
-           (taxons/products-loaded? app-state (taxons/current-taxon app-state)))
+           (named-searches/products-loaded? app-state (named-searches/current-named-search app-state)))
     (-> app-state
         (assoc-in keypaths/bundle-builder (initialize-bundle-builder app-state))
         (update-in keypaths/ui dissoc :saved-bundle-builder-options))
     app-state))
 
-(defmethod transition-state events/navigate-category [_ event {:keys [taxon-slug]} app-state]
+(defmethod transition-state events/navigate-category [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-options (-> (get-in app-state keypaths/bundle-builder)
                                    bundle-builder/constrained-options
                                    (dissoc :length))]
     (-> app-state
-        (assoc-in (conj keypaths/browse-taxon-query :slug) taxon-slug)
+        (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/bundle-builder nil)

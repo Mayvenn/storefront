@@ -1,13 +1,13 @@
 (ns storefront.platform.reviews
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]))
 
-(def product-options-by-taxon
+(def product-options-by-named-search
   {:straight   {:data-product-id  80
                 :data-name        "Brazilian Natural Straight Hair"
                 :data-description "Perfect for those who mostly wear straight hair extensions. After washing, our Brazilian Straight hair extensions have just a hint of wave that can be easily flat ironed. Lightweight and silky. Holds a curl beautifully. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Can be easily colored or bleached (consult a licensed cosmetologist)."
@@ -61,9 +61,9 @@ Lengths: 12\" to 28\""
                     :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
 
 (defn product-options-for [{:keys [slug]}]
-  (get product-options-by-taxon (keyword slug)))
+  (get product-options-by-named-search (keyword slug)))
 
-(defn reviews-component-inner [{:keys [loaded? taxon url]} owner opts]
+(defn reviews-component-inner [{:keys [loaded? named-search url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -77,16 +77,16 @@ Lengths: 12\" to 28\""
           [:.mx-auto.mb3
            [:.yotpo.yotpo-main-widget
             (merge
-             (product-options-for taxon)
+             (product-options-for named-search)
              {:data-url url})]])]))))
 
-(defn reviews-component [{:keys [taxon] :as args} owner opts]
+(defn reviews-component [{:keys [named-search] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (:slug taxon)}
+    [:div {:key (:slug named-search)}
      (om/build reviews-component-inner args opts)])))
 
-(defn reviews-summary-component-inner [{:keys [loaded? taxon url]} owner opts]
+(defn reviews-summary-component-inner [{:keys [loaded? named-search url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -100,18 +100,18 @@ Lengths: 12\" to 28\""
           [:.clearfix.flex.justify-center.flex-wrap.my1
            [:.yotpo.bottomLine.mr2
             (merge
-             (product-options-for taxon)
+             (product-options-for named-search)
              {:data-url url})]
            [:.yotpo.QABottomLine
-            (product-options-for taxon)]])]))))
+            (product-options-for named-search)]])]))))
 
-(defn reviews-summary-component [{:keys [taxon] :as args} owner opts]
+(defn reviews-summary-component [{:keys [named-search] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (:slug taxon)}
+    [:div {:key (:slug named-search)}
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
   {:url     (routes/current-path data)
-   :taxon   (taxons/current-taxon data)
+   :named-search   (named-searches/current-named-search data)
    :loaded? (get-in data keypaths/loaded-reviews)})

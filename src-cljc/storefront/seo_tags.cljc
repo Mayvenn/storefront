@@ -2,7 +2,7 @@
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.accessors.taxons :as taxons]))
+            [storefront.accessors.named-searches :as named-searches]))
 
 (def tag-class "seo-tag")
 
@@ -26,7 +26,7 @@
            :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn category-tags [data]
-  (let [{:keys [title og-title description og-description images]} (:seo (taxons/current-taxon data))]
+  (let [{:keys [title og-title description og-description images]} (:seo (named-searches/current-named-search data))]
     [[:title {} title]
      [:meta {:name "description" :content description}]
      [:meta {:property "og:title" :content og-title}]

@@ -12,25 +12,25 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.money-formatters :as mf]))
 
-(defn ^:private pixlee-line-item [taxons {:keys [quantity unit-price product-id]}]
+(defn ^:private pixlee-line-item [named-searches {:keys [quantity unit-price product-id]}]
   {:quantity    quantity
    :price       (mf/as-money unit-price)
    :product_sku (or
-                 (pixlee/sku (taxons/first-with-product-id taxons product-id))
+                 (pixlee/sku (named-searches/first-with-product-id named-searches product-id))
                  "OTH")})
 
-(defn ^:private pixlee-order [taxons order]
-  {:cart_contents       (map (partial pixlee-line-item taxons)
+(defn ^:private pixlee-order [named-searches order]
+  {:cart_contents       (map (partial pixlee-line-item named-searches)
                              (orders/product-items order))
    :cart_total          (mf/as-money (:total order))
    :cart_total_quantity (orders/product-quantity order)})
 
-(defn ^:private pixlee-cart-item [taxon {:keys [variant quantity]}]
-  {:product_sku (pixlee/sku taxon)
+(defn ^:private pixlee-cart-item [named-search {:keys [variant quantity]}]
+  {:product_sku (pixlee/sku named-search)
    :price       (mf/as-money (:price variant))
    :quantity    quantity})
 
@@ -77,9 +77,9 @@
 (defmethod perform-track events/control-add-to-bag [_ event args app-state]
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
-  (let [taxon (taxons/current-taxon app-state)]
-    (when (pixlee/content-available? taxon)
-      (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item taxon args)))))
+  (let [named-search (named-searches/current-named-search app-state)]
+    (when (pixlee/content-available? named-search)
+      (pixlee-analytics/track-event "add:to:cart" (pixlee-cart-item named-search args)))))
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
@@ -112,7 +112,7 @@
   (optimizely/track-event "place-order" {:revenue (* 100 total)})
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
-  (pixlee-analytics/track-event "converted:photo" (pixlee-order (taxons/current-taxons app-state) order)))
+  (pixlee-analytics/track-event "converted:photo" (pixlee-order (named-searches/current-named-searches app-state) order)))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)

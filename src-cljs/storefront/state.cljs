@@ -98,7 +98,7 @@
      :promotions []
 
      :store {}
-     :taxons []
+     :named-searches []
      :products {}
      :states []
      :shipping-methods []
@@ -128,7 +128,7 @@
           :return-navigation-message [events/navigate-home {}]
           :previous-navigation-message []
           :errors {}
-          :browse-taxon-query {}
+          :browse-named-search-query {}
           :browse-variant-quantity 1
           :browse-recently-added-variants []
           :menu-expanded false

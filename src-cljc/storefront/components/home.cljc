@@ -3,7 +3,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.video :as video]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
@@ -32,8 +32,8 @@
 
 (defn category [{:keys [slug name long-name model-image product-image]}]
   [:a.p1.center.flex.flex-column.items-center
-   (merge {:data-test (str "taxon-" slug)}
-          (utils/route-to events/navigate-category {:taxon-slug slug}))
+   (merge {:data-test (str "named-search-" slug)}
+          (utils/route-to events/navigate-category {:named-search-slug slug}))
    [:img.unselectable {:src   model-image
                        :alt   ""
                        :style {:height "128px"}}]
@@ -42,14 +42,14 @@
                            :style {:height "80px"}}]
    [:div.mb3.dark-black.medium.f3 name]])
 
-(defn pick-style [taxons]
+(defn pick-style [named-searches]
   [:div.center.py3
    [:h2.h1.dark-black.bold.py1 "pick your style"]
    [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
    [:div.my2
     (component/build carousel/component
-                     {:slides   (map category taxons)
-                      :settings (let [slide-count (count taxons)
+                     {:slides   (map category named-searches)
+                      :settings (let [slide-count (count named-searches)
                                       swipe       (fn [n]
                                                     {:swipe        true
                                                      :slidesToShow n
@@ -141,16 +141,16 @@
       [:div.h0.my2 "Mayvenn in action"]
       [:div.h2 "see what real customers say"]]]]))
 
-(defn component [{:keys [taxons store-slug]} owner opts]
+(defn component [{:keys [named-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     (banner store-slug)
-    (pick-style taxons)
+    (pick-style named-searches)
     video-popup
     about-mayvenn]))
 
 (defn query [data]
-  {:taxons (remove taxons/is-stylist-product? (taxons/current-taxons data))
+  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
    :store-slug (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]

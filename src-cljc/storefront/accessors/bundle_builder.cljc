@@ -127,7 +127,7 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(def included-taxon? (complement :stylist_only?))
+(def included-named-search? (complement :stylist_only?))
 
 (declare reset-options)
 (defn ^:private auto-advance [{:keys [flow selected-options selected-variants] :as bundle-builder}]
@@ -153,13 +153,13 @@
     (reset-options bundle-builder (dissoc selected-options last-step))
     bundle-builder))
 
-(defn initialize [taxon products-by-id kinky?]
+(defn initialize [named-search products-by-id kinky?]
   (let [disallowed-styles (if kinky? #{} #{"Kinky Straight"})
-        initial-variants (->> (map products-by-id (:product-ids taxon))
+        initial-variants (->> (map products-by-id (:product-ids named-search))
                               (remove nil?)
                               (mapcat build-variants)
                               (remove (comp disallowed-styles :style)))
-        initial-state    {:flow             (ordered-steps taxon)
+        initial-state    {:flow             (ordered-steps named-search)
                           :initial-variants initial-variants
-                          :step->options    (ordered-options-by-step taxon)}]
+                          :step->options    (ordered-options-by-step named-search)}]
     (reset-options initial-state {})))

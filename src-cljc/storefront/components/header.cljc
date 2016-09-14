@@ -6,7 +6,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
             [storefront.app-routes :as app-routes]
@@ -189,27 +189,27 @@
     [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
     [:div.col.col-10.line-height-3 right]]))
 
-(defn products-section [current-page? title taxons]
+(defn products-section [current-page? title named-searches]
   [:div
    (row [:div.border-bottom.border-light-silver.black.h4 title])
    [:div.my1
-    (for [{:keys [name slug]} taxons]
-      [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:taxon-slug slug}))
+    (for [{:keys [name slug]} named-searches]
+      [:a.h5 (merge {:key slug} (utils/route-to events/navigate-category {:named-search-slug slug}))
        (row
-        (when (taxons/new-taxon? slug) ui/new-flag)
+        (when (named-searches/new-named-search? slug) ui/new-flag)
         [:span.green.titleize
-         (when (current-page? events/navigate-category {:taxon-slug slug})
+         (when (current-page? events/navigate-category {:named-search-slug slug})
            {:class padded-selected-link})
          name])])]])
 
-(defn shop-panel [stylist? expanded? current-page? taxons]
+(defn shop-panel [stylist? expanded? current-page? named-searches]
   [:div.absolute.col-12.bg-white.to-lg-hide.z1.top-lit
    (when-not expanded? {:class "hide"})
    [:div.flex.items-start {:style {:padding "1em 10% 2em"}}
-    [:div.col-4 (products-section current-page? "Hair Extensions" (filter taxons/is-extension? taxons))]
-    [:div.col-4 (products-section current-page? "Closures" (filter taxons/is-closure-or-frontal? taxons))]
+    [:div.col-4 (products-section current-page? "Hair Extensions" (filter named-searches/is-extension? named-searches))]
+    [:div.col-4 (products-section current-page? "Closures" (filter named-searches/is-closure-or-frontal? named-searches))]
     (when stylist?
-      [:div.col-4 (products-section current-page? "Stylist Products" (filter taxons/is-stylist-product? taxons))])]])
+      [:div.col-4 (products-section current-page? "Stylist Products" (filter named-searches/is-stylist-product? named-searches))])]])
 
 (defn desktop-nav-link-options [current-page? nav-event]
   (merge
@@ -245,7 +245,7 @@
                          stylist?
                          cart-quantity
                          store
-                         taxons
+                         named-searches
                          user-email]} _ _]
   (component/create
    (let [current-page? (partial app-routes/current-page? nav-message)]
@@ -269,7 +269,7 @@
             :else      guest-account)]
          (shopping-bag cart-quantity)]
         (lower-right-desktop-nav current-page?)]]
-      (shop-panel stylist? shop-expanded? current-page? taxons)])))
+      (shop-panel stylist? shop-expanded? current-page? named-searches)])))
 
 (defn query [data]
   {:store             (get-in data keypaths/store)
@@ -280,7 +280,7 @@
    :stylist?          (own-store? data)
    :nav-message       (get-in data keypaths/navigation-message)
    :user-email        (get-in data keypaths/user-email)
-   :taxons            (taxons/current-taxons data)})
+   :named-searches    (named-searches/current-named-searches data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

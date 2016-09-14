@@ -2,7 +2,7 @@
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.money-formatters :refer [as-money-without-cents]]
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.products :as products]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
@@ -180,7 +180,7 @@
    [:div.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h5
     "Free shipping & 30 day guarantee"]))
 
-(defn taxon-description [{:keys [colors weights materials summary commentary]}]
+(defn named-search-description [{:keys [colors weights materials summary commentary]}]
   [:div.border.border-light-gray.mt2.p2.rounded
    [:div.h3.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
@@ -235,8 +235,8 @@
   [:div.h5
    (component/build reviews/reviews-summary-component reviews opts)])
 
-(defn taxon-uses-product-images [taxon-slug]
-  (#{"closures" "frontals" "straight" "loose-wave"} taxon-slug))
+(defn named-search-uses-product-images [named-search-slug]
+  (#{"closures" "frontals" "straight" "loose-wave"} named-search-slug))
 
 (def image-types ["model" "product" "social"])
 
@@ -255,14 +255,14 @@
        vec))
 
 (defn ^:private images-from-variants
-  "For some taxons, when a selection has been made, show detailed product images"
-  [taxon {:keys [selected-options selected-variants]}]
-  (if (and (taxon-uses-product-images (:slug taxon))
+  "For some named-searches, when a selection has been made, show detailed product images"
+  [named-search {:keys [selected-options selected-variants]}]
+  (if (and (named-search-uses-product-images (:slug named-search))
            (seq selected-options))
     (distinct-variant-images selected-variants)
-    (:images taxon)))
+    (:images named-search)))
 
-(defn component [{:keys [taxon
+(defn component [{:keys [named-search
                          bundle-builder
                          fetching-variants?
                          variant-quantity
@@ -272,22 +272,22 @@
                          ugc]}
                  owner opts]
   (let [selected-variant  (bundle-builder/selected-variant bundle-builder)
-        carousel-images   (images-from-variants taxon bundle-builder)
+        carousel-images   (images-from-variants named-search bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
-        review?           (taxons/eligible-for-reviews? taxon)]
+        review?           (named-searches/eligible-for-reviews? named-search)]
     (component/create
-     (when taxon
+     (when named-search
        (ui/container
         (page
          [:div
-          (carousel carousel-images taxon)
+          (carousel carousel-images named-search)
           [:div.to-md-hide (component/build ugc/component (assoc ugc :container-id "ugcDesktop") opts)]]
          [:div
           [:div.center
-           (title (:long-name taxon))
+           (title (:long-name named-search))
            (when review? (reviews-summary reviews opts))
            [:meta {:item-prop "image" :content (first carousel-images)}]
-           (full-bleed-narrow (carousel carousel-images taxon))
+           (full-bleed-narrow (carousel carousel-images named-search))
            (when (and (not fetching-variants?)
                       needs-selections?)
              (starting-at (:initial-variants bundle-builder)))]
@@ -305,22 +305,22 @@
                                    :variant          selected-variant
                                    :variant-quantity variant-quantity})
                  (no-variant-summary (bundle-builder/next-step bundle-builder)))]
-              (when (taxons/eligible-for-triple-bundle-discount? taxon)
+              (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 triple-bundle-upsell)
               (when selected-variant
                 (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
               (bagged-variants-and-checkout bagged-variants)
-              (when (taxons/is-stylist-product? taxon) shipping-and-guarantee)]])
-          (taxon-description (:description taxon))
+              (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
+          (named-search-description (:description named-search))
           [:div.md-up-hide.mxn2.mb3 (component/build ugc/component (assoc ugc :container-id "ugcMobile") opts)]])
         (when review? (component/build reviews/reviews-component reviews opts)))))))
 
 (defn query [data]
-  (let [taxon          (taxons/current-taxon data)
+  (let [named-search   (named-searches/current-named-search data)
         bundle-builder (get-in data keypaths/bundle-builder)]
-    {:taxon              taxon
+    {:named-search       named-search
      :bundle-builder     bundle-builder
-     :fetching-variants? (not (taxons/products-loaded? data taxon))
+     :fetching-variants? (not (named-searches/products-loaded? data named-search))
      :variant-quantity   (get-in data keypaths/browse-variant-quantity)
      :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants    (get-in data keypaths/browse-recently-added-variants)

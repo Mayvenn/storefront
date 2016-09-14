@@ -7,7 +7,7 @@
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
@@ -65,10 +65,10 @@
   (let [not-cached (remove (products/loaded-ids app-state) (set product-ids))]
     (refresh-products app-state not-cached)))
 
-(defn refresh-taxon-products
+(defn refresh-named-search-products
   "Intentionally bypass ensure-products whenever we navigate to a category"
   [app-state]
-  (refresh-products app-state (:product-ids (taxons/current-taxon app-state))))
+  (refresh-products app-state (:product-ids (named-searches/current-named-search app-state))))
 
 (defmulti perform-effects identity)
 
@@ -152,11 +152,11 @@
   (pixlee/insert))
 
 (defmethod perform-effects events/navigate-category
-  [_ event {:keys [taxon-slug] :as args} app-state]
+  [_ event {:keys [named-search-slug] :as args} app-state]
   (reviews/insert-reviews)
-  (when (accessors.pixlee/content-available? (taxons/current-taxon app-state))
+  (when (accessors.pixlee/content-available? (named-searches/current-named-search app-state))
     (pixlee/insert))
-  (refresh-taxon-products app-state))
+  (refresh-named-search-products app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -767,7 +767,7 @@
 (defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
   ;; TODO: when the pixlee-product? experiment is over, this will be unnecessary
   (when (and (= variation "pixlee-product")
-             (accessors.pixlee/content-available? (taxons/current-taxon app-state)))
+             (accessors.pixlee/content-available? (named-searches/current-named-search app-state)))
     (pixlee/insert)))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]

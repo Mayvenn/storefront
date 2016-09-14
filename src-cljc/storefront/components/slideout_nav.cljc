@@ -6,7 +6,7 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.app-routes :as app-routes]))
@@ -78,42 +78,42 @@
                          [:span {:data-test "account-settings"} "Account Settings"]))]
       [:a.green.block (utils/navigate-community) (row "Community")]]]))
 
-(defn products-section [selectable? title taxons]
+(defn products-section [selectable? title named-searches]
   [:div
    (row [:div.border-bottom.border-light-silver.nav.navy title])
    [:div.my1
-    (for [{:keys [name slug]} taxons]
+    (for [{:keys [name slug]} named-searches]
       [:a
        (merge {:key slug :data-test (str "menu-" slug)}
-              (utils/route-to events/navigate-category {:taxon-slug slug}))
+              (utils/route-to events/navigate-category {:named-search-slug slug}))
        (row
-        (when (taxons/new-taxon? slug) ui/new-flag)
+        (when (named-searches/new-named-search? slug) ui/new-flag)
         [:div.green.titleize
-         (selectable? events/navigate-category {:taxon-slug slug} name)])])]])
+         (selectable? events/navigate-category {:named-search-slug slug} name)])])]])
 
-(defn extensions-section [selectable? taxons]
-  (products-section selectable? "Extensions" (filter taxons/is-extension? taxons)))
+(defn extensions-section [selectable? named-searches]
+  (products-section selectable? "Extensions" (filter named-searches/is-extension? named-searches)))
 
-(defn closures-section [selectable? taxons]
-  (products-section selectable? "Closures" (filter taxons/is-closure-or-frontal? taxons)))
+(defn closures-section [selectable? named-searches]
+  (products-section selectable? "Closures" (filter named-searches/is-closure-or-frontal? named-searches)))
 
-(defn stylist-products-section [selectable? taxons]
-  (products-section selectable? "Stylist Products" (filter taxons/is-stylist-product? taxons)))
+(defn stylist-products-section [selectable? named-searches]
+  (products-section selectable? "Stylist Products" (filter named-searches/is-stylist-product? named-searches)))
 
-(defn customer-shop-section [selectable? taxons]
+(defn customer-shop-section [selectable? named-searches]
   [section-outer
    [section-inner
     [:div.medium "Shop"]
-    (extensions-section selectable? taxons)
-    (closures-section selectable? taxons)]])
+    (extensions-section selectable? named-searches)
+    (closures-section selectable? named-searches)]])
 
-(defn stylist-shop-section [selectable? taxons]
+(defn stylist-shop-section [selectable? named-searches]
   [section-outer
    [section-inner
     [:div.medium "Shop"]
-    (extensions-section selectable? taxons)
-    (closures-section selectable? taxons)
-    (stylist-products-section selectable? taxons)]])
+    (extensions-section selectable? named-searches)
+    (closures-section selectable? named-searches)
+    (stylist-products-section selectable? named-searches)]])
 
 (defn help-section [selectable?]
   (component/html
@@ -153,27 +153,27 @@
            (utils/fake-href events/control-sign-out))
     "Logout"]))
 
-(defn guest-content [selectable? {:keys [taxons]}]
+(defn guest-content [selectable? {:keys [named-searches]}]
   [:div
-   (customer-shop-section selectable? taxons)
+   (customer-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-in-section])
 
-(defn customer-content [selectable? {:keys [available-store-credit user-email taxons]}]
+(defn customer-content [selectable? {:keys [available-store-credit user-email named-searches]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
     [section-inner (customer-section selectable? user-email)]]
-   (customer-shop-section selectable? taxons)
+   (customer-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])
 
-(defn stylist-content [selectable? {:keys [available-store-credit store taxons]}]
+(defn stylist-content [selectable? {:keys [available-store-credit store named-searches]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
     [section-inner (store-section selectable? store)]]
-   (stylist-shop-section selectable? taxons)
+   (stylist-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])
 
@@ -201,7 +201,7 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :taxons                     (taxons/current-taxons data)})
+   :named-searches             (named-searches/current-named-searches data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

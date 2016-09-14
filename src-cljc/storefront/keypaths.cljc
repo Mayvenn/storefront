@@ -40,7 +40,7 @@
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
 
-(def taxons [:taxons])
+(def named-searches [:named-searches])
 (def products [:products])
 (def states [:states])
 (def shipping-methods [:shipping-methods])
@@ -54,7 +54,7 @@
 (def previous-navigation-message (conj ui :previous-navigation-message))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
-(def browse-taxon-query (conj ui :browse-taxon-query))
+(def browse-named-search-query (conj ui :browse-named-search-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
 (def saved-bundle-builder-options (conj ui :saved-bundle-builder-options))

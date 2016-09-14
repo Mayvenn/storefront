@@ -1,6 +1,6 @@
 (ns storefront.accessors.pixlee)
 
-(def taxon-slug->sku
+(def named-search-slug->sku
   {"straight"   "NSH"
    "loose-wave" "LWH"
    "body-wave"  "BWH"
@@ -10,7 +10,7 @@
    "frontals"   "FRO"})
 
 (defn sku [{:keys [slug]}]
-  (taxon-slug->sku slug))
+  (named-search-slug->sku slug))
 
-(defn content-available? [taxon]
-  (boolean (sku taxon)))
+(defn content-available? [named-search]
+  (boolean (sku named-search)))

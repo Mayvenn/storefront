@@ -1,7 +1,7 @@
 (ns storefront.platform.ugc
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.events :as events]
@@ -39,7 +39,7 @@
        (om/build inner-component data opts)]))))
 
 (defn query [data]
-  (let [taxon (taxons/current-taxon data)]
+  (let [named-search (named-searches/current-named-search data)]
     {:pixlee-loaded?     (get-in data keypaths/loaded-pixlee)
-     :content-available? (pixlee/content-available? taxon)
-     :pixlee-sku         (pixlee/sku taxon)}))
+     :content-available? (pixlee/content-available? named-search)
+     :pixlee-sku         (pixlee/sku named-search)}))

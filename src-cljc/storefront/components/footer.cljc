@@ -3,7 +3,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.events :as events]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.accessors.stylists :refer [own-store?]]
@@ -22,23 +22,24 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
-(defn products-section [taxons]
-  (for [{:keys [name slug]} taxons]
+(defn products-section [named-searches]
+  (for [{:keys [name slug]} named-searches]
     [:a (merge {:key slug}
-               (utils/route-to events/navigate-category {:taxon-slug slug}))
+               (utils/route-to events/navigate-category {:named-search-slug slug}))
      [:div.dark-gray.light.titleize name]]))
 
-(defn shop-section [taxons own-store?]
+(defn shop-section [named-searches own-store?]
   [:div.col-12
    [:div.medium.border-bottom.border-light-silver.mb1
     [:div.to-md-hide.f3 "Shop"]
     [:div.md-up-hide "Shop"]]
    [:div.clearfix.f4
     [:div.col.col-6
-     (products-section (filter taxons/is-extension? taxons))]
+     (products-section (filter named-searches/is-extension? named-searches))]
     [:div.col.col-6
-     (products-section (filter #(or (taxons/is-closure-or-frontal? %)
-                                    (and own-store? (taxons/is-stylist-product? %))) taxons))]]])
+     (products-section (filter #(or (named-searches/is-closure-or-frontal? %)
+                                    (and own-store? (named-searches/is-stylist-product? %)))
+                               named-searches))]]])
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
@@ -83,14 +84,14 @@
                :href "http://www.pinterest.com/mayvennhair/"}
      [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]])
 
-(defn full-component [{:keys [taxons
+(defn full-component [{:keys [named-searches
                               contacts
                               own-store?]} owner opts]
   (component/create
    [:div.h4.border-top.border-light-silver.bg-dark-white
 
     [:div.col-12.clearfix
-     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section taxons own-store?)]
+     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section named-searches own-store?)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
 
@@ -120,9 +121,9 @@
    :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  {:taxons     (taxons/current-taxons data)
-   :contacts   (contacts-query data)
-   :own-store? (own-store? data)})
+  {:named-searches (named-searches/current-named-searches data)
+   :contacts       (contacts-query data)
+   :own-store?     (own-store? data)})
 
 (defn built-component [data opts]
   (if (minimal-footer-events (get-in data keypaths/navigation-event))

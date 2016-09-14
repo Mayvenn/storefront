@@ -9,7 +9,7 @@
             [storefront.cookies :as cookies]
             [storefront.utils.maps :refer [key-by]]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.taxons :as taxons]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.products :as products]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [clojure.string :as string]
@@ -179,19 +179,19 @@
 (defn render-category
   "Checks that the category exists, and that customer has access to its products"
   [{:keys [storeback-config] :as render-ctx}
-   {:keys [taxons] :as data}
+   {:keys [named-searches] :as data}
    req
-   {:keys [taxon-slug]}]
-  (let [data (assoc-in data (conj keypaths/browse-taxon-query :slug) taxon-slug)]
-    (when-let [taxon (taxons/current-taxon data)]
-      (let [{:keys [product-ids]} taxon
+   {:keys [named-search-slug]}]
+  (let [data (assoc-in data (conj keypaths/browse-named-search-query :slug) named-search-slug)]
+    (when-let [named-search (named-searches/current-named-search data)]
+      (let [{:keys [product-ids]} named-search
             user-token            (cookies/get req "user-token")]
         (when-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
           (let [products-by-id (key-by :id products)]
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize taxon products-by-id (experiments/kinky-straight? data)))))))))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data)))))))))))
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
@@ -205,12 +205,12 @@
                                           (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
                                 (assoc-in data keypaths/store store)
                                 (experiments/determine-features data)
-                                (assoc-in data keypaths/taxons (api/named-searches storeback-config))
+                                (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
                                 (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
-            events/navigate-category (if (or (= "blonde" (:taxon-slug params))
-                                             (and (= "kinky-straight" (:taxon-slug params))
+            events/navigate-category (if (or (= "blonde" (:named-search-slug params))
+                                             (and (= "kinky-straight" (:named-search-slug params))
                                                   (not (experiments/kinky-straight? data))))
                                        (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories")))
                                        (render-category render-ctx data req params))
