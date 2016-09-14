@@ -11,7 +11,7 @@
               (cond
                 (= store-slug "shop")  #{}
                 (= store-slug "store") #{}
-                (= bucket-offset 0)    #{} ;; when experiment starts #{"kinky-straight"}
+                (= bucket-offset 0)    #{"kinky-straight"}
                 (= bucket-offset 1)    #{}
                 (= bucket-offset 2)    #{}))))
 
