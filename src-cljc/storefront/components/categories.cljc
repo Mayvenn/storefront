@@ -15,11 +15,12 @@
                    {:taxon-slug slug})
     (when (<= index 5)
       {:class "lg-up-col-4"}))
-   [:div.bg-no-repeat.bg-top.bg-cover.flex.items-center
+   [:div.bg-no-repeat.bg-top.bg-cover
     {:class (str "img-" slug)
      :style {:height "200px"}}
-    [:div.h1.white.center.col-12.titleize.shadow.nowrap
-     name]]])
+    [:div.bg-darken-3.flex.items-center.col-12 {:style {:height "100%"}}
+     [:div.h1.white.center.col-12.titleize.shadow.nowrap
+      name]]]])
 
 (defn component [{:keys [taxons]} owner opts]
   (component/create
