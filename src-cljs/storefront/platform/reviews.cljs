@@ -8,17 +8,21 @@
             [storefront.keypaths :as keypaths]))
 
 (def product-options-by-named-search
-  {:straight   {:data-product-id  80
-                :data-name        "Brazilian Natural Straight Hair"
-                :data-description "Perfect for those who mostly wear straight hair extensions. After washing, our Brazilian Straight hair extensions have just a hint of wave that can be easily flat ironed. Lightweight and silky. Holds a curl beautifully. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Can be easily colored or bleached (consult a licensed cosmetologist)."
-                :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414704/6154340/thumb.jpg"}
-   :loose-wave {:data-product-id  2
-                :data-name        "Brazilian Loose Wave Hair"
-                :data-description "Our Brazilian Loose Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. The waves are tighter than our body wave texture but looser than our deep wave texture. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored (consult a licensed cosmetologist)."
-                :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414703/6154339/thumb.jpg"}
-   :deep-wave  {:data-product-id  67
-                :data-name        "Brazilian Deep Wave Hair"
-                :data-description "Premier Brazilian Deep Wave
+  {:straight       {:data-product-id  80
+                    :data-name        "Brazilian Natural Straight Hair"
+                    :data-description "Perfect for those who mostly wear straight hair extensions. After washing, our Brazilian Straight hair extensions have just a hint of wave that can be easily flat ironed. Lightweight and silky. Holds a curl beautifully. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Can be easily colored or bleached (consult a licensed cosmetologist)."
+                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414704/6154340/thumb.jpg"}
+   :kinky-straight {:data-product-id  807
+                    :data-name        "Brazilian Kinky Straight Hair"
+                    :data-description "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee. Our kinky straight hair mimic the blown-out texture of your natural hair."
+                    :data-image-url   "https://d275k6vjijb2m1.cloudfront.net/cellar/kinky_straight/1/250x227.jpg"}
+   :loose-wave     {:data-product-id  2
+                    :data-name        "Brazilian Loose Wave Hair"
+                    :data-description "Our Brazilian Loose Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. The waves are tighter than our body wave texture but looser than our deep wave texture. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored (consult a licensed cosmetologist)."
+                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414703/6154339/thumb.jpg"}
+   :deep-wave      {:data-product-id  67
+                    :data-name        "Brazilian Deep Wave Hair"
+                    :data-description "Premier Brazilian Deep Wave
 Material:High Quality 100% Virgin Human Hair
 Color: 1B
 Bleach-able up to level:7 or 8 (#27)
@@ -32,14 +36,14 @@ These hair extensions can be colored (consult a licensed cosmetologist).
 Excessive flat-ironing will loosen the texture over time.
 
 Lengths: 12\" to 28\""
-                :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6414702/6154338/thumb.jpg"}
-   :body-wave      {:data-product-id  15
-                    :data-name        "Malaysian Body Wave Hair"
-                    :data-description "Our Malaysian Body Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. This texture has an \"S\" shape wave that is soft and bouncy. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored or bleached (consult a licensed cosmetologist)."
-                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414706/6318976/thumb.jpg"}
-   :curly          {:data-product-id  54
-                    :data-name        "Brazilian Curly Hair"
-                    :data-description "Premier Brazilian Curly
+                    :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6414702/6154338/thumb.jpg"}
+   :body-wave {:data-product-id  15
+               :data-name        "Malaysian Body Wave Hair"
+               :data-description "Our Malaysian Body Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. This texture has an \"S\" shape wave that is soft and bouncy. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored or bleached (consult a licensed cosmetologist)."
+               :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414706/6318976/thumb.jpg"}
+   :curly     {:data-product-id  54
+               :data-name        "Brazilian Curly Hair"
+               :data-description "Premier Brazilian Curly
 Material:High Quality 100% Virgin Human Hair
 Color: 1B
 Bleach-able up to level:7 or 8 (#27)
@@ -50,15 +54,15 @@ When purchasing the curly hair extensions, keep in mind that each bundled is mea
 Holds a natural tight curl beautifully.
 Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. These hair extensions can be colored (consult a licensed cosmetologist). Excessive flat-ironing will loosen the curls over time.
 Lengths: 12\" to 28\""
-                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414708/6154343/thumb.jpg"}
-   :closures       {:data-product-id  90
-                    :data-name        "Brazilian Natural Straight Lace Closure"
-                    :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
-                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
-   :frontals       {:data-product-id  90
-                    :data-name        "Brazilian Natural Straight Lace Closure"
-                    :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
-                    :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
+               :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414708/6154343/thumb.jpg"}
+   :closures  {:data-product-id  90
+               :data-name        "Brazilian Natural Straight Lace Closure"
+               :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
+               :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
+   :frontals  {:data-product-id  90
+               :data-name        "Brazilian Natural Straight Lace Closure"
+               :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
+               :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
 
 (defn product-options-for [{:keys [slug]}]
   (get product-options-by-named-search (keyword slug)))
