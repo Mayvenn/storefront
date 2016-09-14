@@ -12,7 +12,7 @@
                     :data-name        "Brazilian Natural Straight Hair"
                     :data-description "Perfect for those who mostly wear straight hair extensions. After washing, our Brazilian Straight hair extensions have just a hint of wave that can be easily flat ironed. Lightweight and silky. Holds a curl beautifully. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Can be easily colored or bleached (consult a licensed cosmetologist)."
                     :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414704/6154340/thumb.jpg"}
-   :kinky-straight {:data-product-id  807
+   :kinky-straight {:data-product-id  525
                     :data-name        "Brazilian Kinky Straight Hair"
                     :data-description "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee. Our kinky straight hair mimic the blown-out texture of your natural hair."
                     :data-image-url   "https://d275k6vjijb2m1.cloudfront.net/cellar/kinky_straight/1/250x227.jpg"}
