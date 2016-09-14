@@ -18,6 +18,10 @@
 .letter-spacing-2 { letter-spacing: 2px; }
 .letter-spacing-3 { letter-spacing: 3px; }
 
+.list-reset > dd:after {
+    display: block;
+    content: '';
+}
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
 @font-face {
