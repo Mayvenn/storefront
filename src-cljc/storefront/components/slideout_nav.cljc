@@ -128,10 +128,10 @@
              (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]
        [:li [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]]
        [:li [:a.green (assoc (utils/route-to events/navigate-content-guarantee)
-                             :data-test "navigate-content-guarantee")
+                             :data-test "content-guarantee")
              (row (selectable? events/navigate-content-guarantee "Our Guarantee"))]]
        [:li [:a.green (assoc (utils/route-to events/navigate-content-help)
-                             :data-test "navigate-content-help")
+                             :data-test "content-help")
              (row (selectable? events/navigate-content-help "Contact Us"))]]]]]]))
 
 (def sign-in-section
