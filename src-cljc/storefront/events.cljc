@@ -18,7 +18,6 @@
 (defpath navigate-category)
 (defpath navigate-categories)
 (defpath navigate-product)
-(defpath navigate-privacy)
 (defpath navigate-tos)
 (defpath navigate-sign-in)
 (defpath navigate-getsat-sign-in)
@@ -31,6 +30,7 @@
 (defpath navigate-content)
 (defpath navigate-content-help)
 (defpath navigate-content-guarantee)
+(defpath navigate-content-privacy)
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)

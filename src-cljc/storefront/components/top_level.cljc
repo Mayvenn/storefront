@@ -72,6 +72,7 @@
     events/navigate-shared-cart       shared-cart/built-component
     events/navigate-content-guarantee content/built-component
     events/navigate-content-help      content/built-component
+    events/navigate-content-privacy   content/built-component
     events/navigate-sign-in           sign-in/built-component
     events/navigate-sign-up           sign-up/built-component
     events/navigate-forgot-password   forgot-password/built-component

@@ -160,6 +160,7 @@
     events/navigate-categories
     events/navigate-category
     events/navigate-content-help
+    events/navigate-content-privacy
     events/navigate-content-guarantee})
 
 (defn html-response [render-ctx data]

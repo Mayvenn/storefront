@@ -102,7 +102,9 @@
        :content "Mayvenn Hair"}
       [:span "© 2016 "] "Mayvenn"]
      [:div.right
-      [:a.white {:target "_blank" :href "/privacy.html"} "Privacy Policy"]
+      [:a.white
+       (assoc (utils/route-to events/navigate-content-privacy)
+              :data-test "navigate-content-privacy") "Privacy Policy"]
       " and "
       [:a.white {:target "_blank" :href "/tos.html"} "Terms of Use"]]]]))
 
