@@ -237,7 +237,8 @@
                           "Disallow: /cart"
                           "Disallow: /m/"
                           "Disallow: /c/"
-                          "Disallow: /admin"])
+                          "Disallow: /admin"
+                          "Disallow: /categories/hair/kinky-straight"])
 
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
