@@ -144,16 +144,18 @@
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
-        credit-to-use          (min available-store-credit (get-in data keypaths/order-total))]
+        credit-to-use          (min available-store-credit (get-in data keypaths/order-total))
+        fully-covered?         (orders/fully-covered-by-store-credit?
+                                (get-in data keypaths/order)
+                                (get-in data keypaths/user))]
     (merge
      {:store-credit   {:credit-available  available-store-credit
                        :credit-applicable credit-to-use
-                       :fully-covered?    (orders/fully-covered-by-store-credit?
-                                           (get-in data keypaths/order)
-                                           (get-in data keypaths/user))}
+                       :fully-covered?    fully-covered?}
       :saving?        (saving-card? data)
       :disabled?      (and (utils/requesting? data request-keys/get-saved-cards)
-                           (empty? (get-in data keypaths/checkout-credit-card-existing-cards)))
+                           (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
+                           (not fully-covered?))
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)}
      (credit-card-form-query data))))
