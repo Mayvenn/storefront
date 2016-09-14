@@ -104,9 +104,10 @@
      [:div.right
       [:a.white
        (assoc (utils/route-to events/navigate-content-privacy)
-              :data-test "navigate-content-privacy") "Privacy Policy"]
+              :data-test "content-privacy") "Privacy Policy"]
       " and "
-      [:a.white {:target "_blank" :href "/tos.html"} "Terms of Use"]]]]))
+      [:a.white (assoc (utils/route-to events/navigate-content-tos)
+                       :data-test "content-tos") "Terms of Use"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
