@@ -233,7 +233,7 @@
 (defn lower-right-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
    [:div.h5.light
-    [:a.black.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-guarantee)
+    [:a.black.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
     [:a.black.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                        :href           "https://blog.mayvenn.com"}

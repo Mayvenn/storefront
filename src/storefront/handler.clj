@@ -160,7 +160,7 @@
     events/navigate-categories
     events/navigate-category
     events/navigate-content-help
-    events/navigate-guarantee})
+    events/navigate-content-guarantee})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]

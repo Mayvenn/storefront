@@ -77,15 +77,15 @@
                                    [:meta {:property "og:description"
                                            :content "We are always here for you and pride ourselves on the best customer service. Call, text, or email us and we will get back to you as quickly as possible."}]]
 
-     events/navigate-guarantee  [[:title {} "Our 30 Day Quality Guarantee | Mayvenn"]
-                                 [:meta {:property "og:title"
-                                         :content "Our 30 Day Quality Guarantee - Buy Risk Free With Easy Returns and Exchanges!"}]
-                                 [:meta {:name "description"
-                                         :content "Mayvenn's quality guarantee: wear it, dye it, even flat iron it! If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]
-                                 [:meta {:property "og:type"
-                                        :content "website"}]
-                                 [:meta {:property "og:description"
-                                         :content "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
+     events/navigate-content-guarantee  [[:title {} "Our 30 Day Quality Guarantee | Mayvenn"]
+                                         [:meta {:property "og:title"
+                                                 :content "Our 30 Day Quality Guarantee - Buy Risk Free With Easy Returns and Exchanges!"}]
+                                         [:meta {:name "description"
+                                                 :content "Mayvenn's quality guarantee: wear it, dye it, even flat iron it! If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]
+                                         [:meta {:property "og:type"
+                                                 :content "website"}]
+                                         [:meta {:property "og:description"
+                                                 :content "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
 
      events/navigate-category    (category-tags data)
 
