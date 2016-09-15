@@ -1,7 +1,7 @@
 (ns storefront.components.content
   (:require
-   #?@(:clj [storefront.component-shim :as component]
-       :cljs [storefront.component :as component])
+   #?(:clj [storefront.component-shim :as component]
+      :cljs [storefront.component :as component])
    [storefront.keypaths :as keypaths]))
 
 (defn component [{:keys [content]} owner opts]
