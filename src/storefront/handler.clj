@@ -239,6 +239,7 @@
                           "Disallow: /m/"
                           "Disallow: /c/"
                           "Disallow: /admin"
+                          "Disallow: /content"
                           "Disallow: /categories/hair/kinky-straight"])
 
 (defn robots [{:keys [subdomains]}]
