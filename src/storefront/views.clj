@@ -77,7 +77,7 @@
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
      (raw (str "var data = " (-> (sanitize data)
-                                 (assoc-in keypaths/static-content (get-in data keypaths/static-content))
+                                 (assoc-in keypaths/static (get-in data keypaths/static))
                                  pr-str
                                  generate-string) ";"))]
     [:script {:type "text/javascript"}

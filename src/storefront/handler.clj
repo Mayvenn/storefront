@@ -28,7 +28,8 @@
              [bundle-builder :as bundle-builder]
              [experiments :as experiments]
              [named-searches :as named-searches]]
-            [storefront.utils.maps :refer [key-by]]))
+            [storefront.utils.maps :refer [key-by]]
+            [clojure.string :as str]))
 
 (defn storefront-site-defaults
   [env]
@@ -197,14 +198,15 @@
                                           (assoc-in keypaths/products products-by-id)
                                           (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data)))))))))))
 
-(defn static-content [nav-event]
-  (when (= (take 2 nav-event) events/navigate-content)
-    (->> nav-event
-         last
-         name
-         (format "public/content/%s.html")
-         io/resource
-         slurp)))
+(defn static-page [[navigate-kw content-kw & static-content-id]]
+  (when (= [navigate-kw content-kw] events/navigate-content)
+    {:id      static-content-id
+     :content (->> static-content-id
+                   (map name)
+                   (str/join "-")
+                   (format "public/content/%s.html")
+                   io/resource
+                   slurp)}))
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
@@ -219,7 +221,7 @@
                            (assoc-in data keypaths/store store)
                            (experiments/determine-features data)
                            (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
-                           (assoc-in data keypaths/static-content (static-content nav-event))
+                           (assoc-in data keypaths/static (static-page nav-event))
                            (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)

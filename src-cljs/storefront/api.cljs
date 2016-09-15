@@ -96,9 +96,9 @@
 (def default-req-opts {:format :json
                        :response-format (header-json-response-format {:keywords? true})})
 
-(defn- wrap-api-end [req-key req-id]
+(defn- wrap-api-end [req-key req-id handler]
   (fn [response]
-    (messages/handle-message events/api-end {:request-key req-key :request-id  req-id})
+    (messages/handle-message events/api-end {:request-key req-key :request-id req-id})
     (handler response)))
 
 (defn merge-req-opts [req-key req-id {:keys [handler error-handler] :as request-opts}]
@@ -703,7 +703,7 @@
 (defn- static-content-req [method path req-key {:keys [handler params] :as request-opts}]
   (let [req-id       (str (random-uuid))
         content-opts {:format          :raw
-                      :handler         (wrap-api-end req-key req-id)
+                      :handler         (wrap-api-end req-key req-id handler)
                       :response-format (raw-response-format)}
         request      (method path (merge request-opts content-opts))]
     (messages/handle-message events/api-start {:xhr         request
@@ -713,10 +713,8 @@
 (defn get-static-content [static-content-id]
   (static-content-req
    GET
-   (str "/content/" (name static-content-id) ".html")
+   (str "/content/" (->> static-content-id (map name) (str/join "-")) ".html")
    request-keys/get-static-content
-   {:params  {:static-content-id static-content-id}
-    :handler (fn [body]
-               (messages/handle-message events/api-success-get-static-content
-                                        {:static-content-id static-content-id
-                                         :content           body}))}))
+   {:handler #(messages/handle-message events/api-success-get-static-content
+                                       {:id      static-content-id
+                                        :content %})}))

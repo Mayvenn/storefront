@@ -49,6 +49,7 @@
 
 (def ui [:ui])
 (def static (conj ui :static))
+(def static-id (conj static :id))
 (def static-content (conj static :content))
 (def stylist-banner-hidden (conj ui :stylist-banner-hidden?))
 (def api-requests (conj ui :api-requests))
