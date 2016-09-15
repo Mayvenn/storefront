@@ -17,6 +17,7 @@
        ["/products/" :product-slug]             (edn->bidi events/navigate-product)
        "/guarantee"                             (edn->bidi events/navigate-content-guarantee)
        "/help"                                  (edn->bidi events/navigate-content-help)
+       "/aboutus"                               (edn->bidi events/navigate-content-aboutus)
        "/policy/privacy"                        (edn->bidi events/navigate-content-privacy)
        "/policy/tos"                            (edn->bidi events/navigate-content-tos)
        "/login"                                 (edn->bidi events/navigate-sign-in)
