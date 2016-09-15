@@ -148,7 +148,7 @@
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: normal;
+    --heading-font-weight: inherit;
 
     --button-font-weight: inherit;
     --button-line-height: 1.2;

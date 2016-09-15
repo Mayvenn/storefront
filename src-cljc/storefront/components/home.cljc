@@ -44,8 +44,9 @@
 
 (defn pick-style [named-searches]
   [:div.center.py3
-   [:h2.h1.dark-black.bold.py1 "pick your style"]
-   [:div.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
+   [:div.flex.flex-column
+    [:h1.h4.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
+    [:h2.h1.order-1.dark-black.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
@@ -81,30 +82,29 @@
      [:span.dark-black.bold "shop now"])]])
 
 (defn banner [store-slug]
-  (component/html
-   [:a
-    (assoc (utils/route-to events/navigate-categories)
-           :data-test "home-banner")
-    (case store-slug
-      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                  "shop now")
-      "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
-                                  (assets/path "/images/homepage/mimi/desktop_banner.jpg")
-                                  "shop now")
-      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                       (assets/path "/images/homepage/desktop_banner.jpg")
-                       "shop now"))]))
+  [:a
+   (assoc (utils/route-to events/navigate-categories)
+          :data-test "home-banner")
+   (case store-slug
+     "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                 (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                 "shop now")
+     "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+                                   "shop now")
+     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                      (assets/path "/images/homepage/desktop_banner.jpg")
+                      "shop now"))])
 
 (def about-mayvenn
   (component/html
    [:div.dark-gray.py3
-    [:h2.h1.center.dark-black.bold.py1 "why people love Mayvenn hair"]
+    [:h1.center.dark-black.bold.py1 "why people love Mayvenn hair"]
 
     [:div.mx3.md-flex.f4
      [:div.py4
       [:div.px3
-       [:h3.f2.center.bold.mb3 "stylist recommended"]
+       [:h2.f2.center.bold.mb3 "stylist recommended"]
        [:p.line-height-5
         "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]]
 
@@ -112,7 +112,7 @@
      [:div.py4
       [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
       [:div.px3
-       [:h3.f2.center.bold.mb3 "30 day guarantee"]
+       [:h2.f2.center.bold.mb3 "30 day guarantee"]
        [:p.line-height-5
         "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]]
 
@@ -120,7 +120,7 @@
      [:div.py4
       [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
       [:div.px3
-       [:h3.f2.center.bold.mb3 "fast free shipping"]
+       [:h2.f2.center.bold.mb3 "fast free shipping"]
        [:p.line-height-5
         "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]]
 
@@ -139,20 +139,20 @@
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
-      [:div.h0.my2 "Mayvenn in action"]
-      [:div.h2 "see what real customers say"]]]]))
+      [:h1.h0.my2 "Mayvenn in action"]
+      [:p.h2 "see what real customers say"]]]]))
 
 (defn component [{:keys [named-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
-    (banner store-slug)
-    (pick-style named-searches)
-    video-popup
-    about-mayvenn]))
+    [:section (banner store-slug)]
+    [:section (pick-style named-searches)]
+    [:section video-popup]
+    [:section about-mayvenn]]))
 
 (defn query [data]
   {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :store-slug (get-in data keypaths/store-slug)})
+   :store-slug     (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
