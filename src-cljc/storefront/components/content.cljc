@@ -14,9 +14,9 @@
 
 (defn query [data]
   (let [sms-number (get-in data keypaths/sms-number)]
-    {:sms-number sms-number
+    {:sms-number  sms-number
      :requesting? (utils/requesting? data request-keys/get-static-content)
-     :content    (get-in data [:ui :static :content])}))
+     :content     (get-in data keypaths/static-content)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
