@@ -108,8 +108,9 @@
                                                        {:selected-options selections})}]
    (if image
      [:img.mbp4.content-box.circle.border-white
-      {:src image :width 30 :height 30 :class (cond checked? "border"
-                                                    sold-out? "muted")}]
+      {:src image :alt name
+       :width 30 :height 30
+       :class (cond checked? "border" sold-out? "muted")}]
      [:div.f2.titleize name])
    [:div.f4.line-height-2
     (if sold-out?
@@ -119,7 +120,7 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:div.clearfix.f3
+   [:h2.clearfix.f3
     [:div.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.light-gray " - "])]
@@ -127,7 +128,7 @@
       [:div.overflow-hidden.light-gray
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
-   [:div.flex.flex-wrap.content-stretch.mxnp3
+   [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [name] :as option} options]
       [:div.flex.flex-column.justify-center.pp3
        {:key   (string/replace (str name step-name) #"\W+" "-")
@@ -153,7 +154,7 @@
   [:div
    (when (seq desc)
      [:div
-      [:h3.h2.light "Summary"]
+      [:h2.light "Summary"]
       [:div.navy desc]])
    quantity-and-price])
 
@@ -173,7 +174,7 @@
       [:span {:item-prop "price"} (as-money-without-cents price)]))))
 
 (def triple-bundle-upsell
-  (component/html [:div.center.p2.navy promos/bundle-discount-description]))
+  (component/html [:p.center.p2.navy promos/bundle-discount-description]))
 
 (def shipping-and-guarantee
   (component/html
@@ -182,7 +183,7 @@
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
   [:div.border.border-light-gray.mt2.p2.rounded
-   [:div.h3.medium.navy.shout "Description"]
+   [:h2.h3.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
       [:div.clearfix.my2
@@ -198,8 +199,8 @@
             [:div.h4.navy.medium.pr2 value]]))])
     (when (seq summary)
       [:div.my2
-       [:div.mbp3.h6 "Includes:"]
-       [:ul.list-reset.m0.mb2.navy.h5.medium
+       [:h3.mbp3.h6 "Includes:"]
+       [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
     [:div.h5.dark-gray.line-height-2
