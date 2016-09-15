@@ -28,7 +28,7 @@
 
 (defpath navigate-content)
 (defpath navigate-content-help)
-(defpath navigate-content-aboutus)
+(defpath navigate-content-about-us)
 (defpath navigate-content-guarantee)
 (defpath navigate-content-privacy)
 (defpath navigate-content-tos)

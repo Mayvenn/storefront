@@ -74,7 +74,7 @@
     events/navigate-content-help      content/built-component
     events/navigate-content-privacy   content/built-component
     events/navigate-content-tos       content/built-component
-    events/navigate-content-aboutus   content/built-component
+    events/navigate-content-about-us  content/built-component
     events/navigate-sign-in           sign-in/built-component
     events/navigate-sign-up           sign-up/built-component
     events/navigate-forgot-password   forgot-password/built-component

@@ -161,7 +161,7 @@
     events/navigate-categories
     events/navigate-category
     events/navigate-content-help
-    events/navigate-content-aboutus
+    events/navigate-content-about-us
     events/navigate-content-privacy
     events/navigate-content-tos
     events/navigate-content-guarantee})
