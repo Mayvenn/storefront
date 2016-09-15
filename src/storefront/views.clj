@@ -76,9 +76,10 @@
     [:script {:type "text/javascript"}
      ;; need to make sure the edn which has double quotes is validly escaped as
      ;; json as it goes into the JS file
-     (raw (str "var data = " (generate-string (pr-str (-> (sanitize data)
-                                                          (assoc-in keypaths/static-content
-                                                                    (get-in data keypaths/static-content))))) ";"))]
+     (raw (str "var data = " (-> (sanitize data)
+                                 (assoc-in keypaths/static-content (get-in data keypaths/static-content))
+                                 pr-str
+                                 generate-string) ";"))]
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
@@ -105,7 +106,9 @@
   (layout render-ctx data spinner-content))
 
 (defn prerendered-page [render-ctx data]
-  (layout render-ctx data (first (component/normalize-elements (top-level-component data nil {})))))
+  (layout render-ctx data (-> (top-level-component data nil {})
+                              component/normalize-elements
+                              first)))
 
 (def not-found
   (html5
