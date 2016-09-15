@@ -191,12 +191,12 @@
                          ["Weight" weights]
                          ["Material" materials]]
                         (filter second))
-             size (str "col-" (/ 12 (count attrs)))]
-         (for [[title value] attrs]
-           [:div.col {:class size
-                      :key title}
-            [:div.dark-gray.shout.h5 title]
-            [:div.h4.navy.medium.pr2 value]]))])
+             size (str "multi-cols-" (count attrs))]
+         (into [:dl {:class size}]
+               (mapcat (fn [[title value]]
+                         [[:dt.break-before.dark-gray.shout.h5 title]
+                          [:dd.ml0.h4.navy.medium value]])
+                       attrs)))])
     (when (seq summary)
       [:div.my2
        [:h3.mbp3.h6 "Includes:"]
