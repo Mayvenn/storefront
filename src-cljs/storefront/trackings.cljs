@@ -95,9 +95,11 @@
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
+  (google-analytics/track-event "orders" "initiate_checkout")
   (facebook-analytics/track-event "InitiateCheckout"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event _ app-state]
+  (google-analytics/track-event "orders" "initiate_checkout")
   (facebook-analytics/track-event "InitiateCheckout"))
 
 (defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
