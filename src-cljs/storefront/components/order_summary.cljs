@@ -110,9 +110,9 @@
        (products/thumbnail-url products product-id)
        [:.mt2.flex.items-center.justify-between
         (if removing?
-          [:.h2 {:style {:width "1.2em"}} ui/spinner]
+          [:.h3 {:style {:width "1.2em"}} ui/spinner]
           [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
-        [:.h2
+        [:.h3
          (when-let [variant (query/get {:id variant-id}
                                        (:variants (get products product-id)))]
            (ui/counter quantity

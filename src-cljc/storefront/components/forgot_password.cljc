@@ -10,7 +10,7 @@
 (defn component [{:keys [email facebook-loaded? field-errors]} owner opts]
   (component/create
    (ui/narrow-container
-    [:div.h2.center.my2 "Reset your forgotten password"]
+    [:div.h3.center.my2 "Reset your forgotten password"]
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}

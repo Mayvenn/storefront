@@ -35,7 +35,7 @@
 
      [:.clearfix.mxn3
       [:.md-up-col.md-up-col-6.px3
-       [:.h2.left-align "Order Summary"]
+       [:.h3.left-align "Order Summary"]
 
        [:div.my2
         {:data-test "confirmation-line-items"}

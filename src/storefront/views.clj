@@ -125,7 +125,7 @@
      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
                           :style "max-width: 80%"}]
-     [:div.h2.mt3.mb2.center "We can't seem to find the page you're looking for."]
+     [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
      [:a.mx-auto.btn.btn-primary.col-10
       {:href "/"}
       [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]))

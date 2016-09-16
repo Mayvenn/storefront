@@ -11,7 +11,7 @@
               [:div.bg-light-white.rounded.p2
                (ui/modal-close {:on-close on-close})
                [:div.flex.flex-column.items-center.justify-center.py2.line-height-3.dark-gray
-                [:h2.navy.mb3 "Offer and Rebate Details"]
+                [:h3.navy.mb3 "Offer and Rebate Details"]
                 [:p.mb2 "Included with your purchase is a 1 year subscription to ESSENCE magazine ($10 value)."]
                 [:p.mb3
                  "Offer valid in the U.S. only. Limit one subscription per Mayvenn customer. "

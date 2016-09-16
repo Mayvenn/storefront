@@ -15,7 +15,7 @@
            password-confirmation]} _ _]
   (component/create
    (ui/narrow-container
-    [:div.h2.center.my2 "Sign up for an account"]
+    [:div.h3.center.my2 "Sign up for an account"]
 
     (facebook/sign-in-button facebook-loaded?)
 

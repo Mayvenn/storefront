@@ -25,7 +25,7 @@
   (om/component
    (html
     [:div
-     [:div.h2.my2 "Payment Information"]
+     [:div.h3.my2 "Payment Information"]
      (if fetching-saved-cards?
        [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
         {:style {:height "4rem"}

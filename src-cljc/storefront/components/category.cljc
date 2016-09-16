@@ -25,7 +25,7 @@
    [:div.md-up-col.md-up-col-5.px2 wide-right-and-narrow]])
 
 (defn title [name]
-  [:h1.medium.titleize.navy.h2.line-height-2 {:item-prop "name"} name])
+  [:h1.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the ui/container, to make the body full width
@@ -120,7 +120,7 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:h2.clearfix.f3
+   [:h3.clearfix.f3
     [:div.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.light-gray " - "])]
@@ -154,7 +154,7 @@
   [:div
    (when (seq desc)
      [:div
-      [:h2.light "Summary"]
+      [:h3.light "Summary"]
       [:div.navy desc]])
    quantity-and-price])
 
@@ -183,7 +183,7 @@
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
   [:div.border.border-light-gray.mt2.p2.rounded
-   [:h2.h4.medium.navy.shout "Description"]
+   [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
       [:div.clearfix.my2

@@ -11,14 +11,14 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.h2.center.my2 "I'm new here"]
+     [:.h3.center.my2 "I'm new here"]
 
      (ui/green-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
                        :data-test "guest-checkout-button"}
                       "Guest Checkout")
 
      [:.my3 [:.col-2.m-auto.border.border-light-silver]]
-     [:.h2.center.my2 "Already registered?"]
+     [:.h3.center.my2 "Already registered?"]
      [:.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 

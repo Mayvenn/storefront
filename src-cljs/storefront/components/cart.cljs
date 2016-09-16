@@ -65,7 +65,7 @@ Thanks,
               [:.bg-light-white.rounded.p2.center
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
-                [:.h2.navy.medium "Share your bag"]
+                [:.h3.navy.medium "Share your bag"]
                 [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
                 [:.border-top.border-bottom.border-light-silver.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
@@ -105,11 +105,11 @@ Thanks,
   (om/component
    (html
     (ui/container
-     [:div.py3.h2.center
+     [:div.py3.h3.center
       [:.silver
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
-     [:div.h2.py1
+     [:div.h3.py1
       {:data-test "order-summary"}
       "Review your order"]
 
@@ -149,7 +149,7 @@ Thanks,
                    :data-test "paypal-checkout"}
                   [:div.flex.items-center.justify-center
                    [:div.right-align.mr1 "Check out with"]
-                   [:div.h2.medium.italic "PayPal™"]])]
+                   [:div.h3.medium.italic "PayPal™"]])]
 
        (when share-carts?
          [:div.border-top.border-light-silver.py2

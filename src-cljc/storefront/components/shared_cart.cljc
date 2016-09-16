@@ -18,7 +18,7 @@
         (when profile_picture_url
           [:div.mb2.h1
            (ui/circle-picture {:class "mx-auto"} profile_picture_url)])
-        [:p.center.h2.navy.medium
+        [:p.center.h3.navy.medium
          store_nickname " has created a bag for you!"]]
        [:div.flex.items-center.px1.py3.border-light-gray.border-top.border-bottom
         [:div

@@ -16,7 +16,7 @@
   (om/component
    (html
     [:div
-     [:.h2 "Shipping Method"]
+     [:.h3 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
         [:label.flex.items-center.col-12.py1

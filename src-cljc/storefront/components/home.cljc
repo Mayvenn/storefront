@@ -46,7 +46,7 @@
   [:div.center.py3
    [:div.flex.flex-column
     [:h1.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-    [:h2.h1.order-1.dark-black.bold.py1 "pick your style"]]
+    [:h3.h1.order-1.dark-black.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
@@ -104,7 +104,7 @@
     [:div.mx3.md-flex.f4
      [:div.py4
       [:div.px3
-       [:h2.f2.center.bold.mb3 "stylist recommended"]
+       [:h3.f2.center.bold.mb3 "stylist recommended"]
        [:p.line-height-5
         "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]]
 
@@ -112,7 +112,7 @@
      [:div.py4
       [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
       [:div.px3
-       [:h2.f2.center.bold.mb3 "30 day guarantee"]
+       [:h3.f2.center.bold.mb3 "30 day guarantee"]
        [:p.line-height-5
         "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]]
 
@@ -120,7 +120,7 @@
      [:div.py4
       [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
       [:div.px3
-       [:h2.f2.center.bold.mb3 "fast free shipping"]
+       [:h3.f2.center.bold.mb3 "fast free shipping"]
        [:p.line-height-5
         "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]]
 
@@ -140,7 +140,7 @@
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
       [:h1.h0.my2 "Mayvenn in action"]
-      [:p.h2 "see what real customers say"]]]]))
+      [:p.h3 "see what real customers say"]]]]))
 
 (defn component [{:keys [named-searches store-slug]} owner opts]
   (component/create

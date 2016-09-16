@@ -13,7 +13,7 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-password-submit)}
-    [:h1.h2.light.my3.center.col.col-12.md-up-col-6 "Update your password"]
+    [:h1.h3.light.my3.center.col.col-12.md-up-col-6 "Update your password"]
 
     [:div.col.col-12.md-up-col-6
      (ui/text-field "New Password"

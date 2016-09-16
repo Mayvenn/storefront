@@ -21,7 +21,7 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-account-profile-submit)}
-    [:h1.h2.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
+    [:h1.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
 
     [:div.col.col-12.md-up-col-6
      (ui/text-field "Email"

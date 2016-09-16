@@ -138,7 +138,7 @@
          {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
          [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
           {:style {:width "2.25rem" :height "2.25rem"}}]])
-      [:select.col-12.h2.glow-green.absolute
+      [:select.col-12.h3.glow-green.absolute
        (cond-> (merge {:key         label
                        :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
                        :placeholder label
@@ -209,7 +209,7 @@
 (defn modal-close [{:keys [data-test on-close bg-class]}]
   [:div.clearfix
    {:data-scrollable "not-a-modal"}
-   [:a.pointer.h2.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
+   [:a.pointer.h3.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
     [:div {:alt "Close"
            :class (or bg-class "fill-dark-silver")}
      svg/counter-inc]]])

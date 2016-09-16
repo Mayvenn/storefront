@@ -47,7 +47,7 @@
   [:.relative
    [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
-    [:.h2.green.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:.h3.green.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
     [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
@@ -64,7 +64,7 @@
       {:key (str name join-date)}
       [:.mr1 (ui/circle-picture profile-picture-url)]
       [:.flex-auto
-       [:.h2.navy name]
+       [:.h3.navy name]
        [:.h6.gray.line-height-4
         [:div.silver "Joined " (f/long-date join-date)]
         (when (= state :paid)
@@ -108,7 +108,7 @@
   (html
    [:.center.p3.to-sm-hide
     [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
-    [:p.h2.silver "Looks like you haven't" [:br] "referred anyone yet."]]))
+    [:p.h3.silver "Looks like you haven't" [:br] "referred anyone yet."]]))
 
 (defn component [{:keys [earning-amount
                          bonus-amount
@@ -167,7 +167,7 @@
                      (when (seq errors) (:error-message errors))
                      " "
                      (when flash-failure flash-failure)])])
-                [:.h2.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
+                [:.h3.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.dark-gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
@@ -175,7 +175,7 @@
                 (for [[idx referral] (map-indexed vector referrals)]
                   [:.py2.border-top.border-light-silver
                    {:key idx :data-test "referral-entry"}
-                   [:.h2.black.my2 "Enter your "(get ordinal idx)" referral"
+                   [:.h3.black.my2 "Enter your "(get ordinal idx)" referral"
                     (when (pos? idx) [:a.mr1.flex.items-center.fill-light-silver.right
                                       (merge (utils/fake-href events/control-stylist-referral-remove {:index idx})
                                              {:data-test (str "remove-referral-button-" idx)})
@@ -239,7 +239,7 @@
                :bg-class "bg-darken-4"}
               [:.flex.flex-column.items-center.justify-center.pt4
                [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
-               [:.h2.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
+               [:.h3.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
 
 (defn built-thanks-component [_ _]
   (om/build thanks-component nil nil))

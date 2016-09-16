@@ -99,7 +99,7 @@
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:.h2.p2.col-12.right-align.navy.border-top.border-dark-white
+  [:.h3.p2.col-12.right-align.navy.border-top.border-dark-white
    (mf/as-money commissionable-amount)])
 
 (defn show-order [products shipping-methods order]
@@ -140,7 +140,7 @@
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
      (when (= status "paid") "+") (mf/as-money amount)]
-    [:.h2.navy (:full-name order)]]
+    [:.h3.navy (:full-name order)]]
 
    [:.silver.h6
     (four-up "Status" "Ship Date" "Order"
@@ -182,7 +182,7 @@
    [:.center
     [:.p2.border-bottom.border-dark-white
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
-     [:p.h2.silver "Looks like you don't have any commissions yet."]]
+     [:p.h3.silver "Looks like you don't have any commissions yet."]]
     [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylist-urls/store-url]]]))
