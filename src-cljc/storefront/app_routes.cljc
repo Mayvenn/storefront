@@ -11,16 +11,21 @@
 (defn bidi->edn [value]
    (read-string (name value)))
 
+(def static-page-routes
+  {"/guarantee"                             (edn->bidi events/navigate-content-guarantee)
+   "/help"                                  (edn->bidi events/navigate-content-help)
+   "/about-us"                              (edn->bidi events/navigate-content-about-us)
+   "/policy/privacy"                        (edn->bidi events/navigate-content-privacy)
+   "/policy/tos"                            (edn->bidi events/navigate-content-tos)})
+
+(def static-api-routes
+  ["/static" static-page-routes])
+
 (def app-routes
   ["" {"/"                                      (edn->bidi events/navigate-home)
        "/categories"                            (edn->bidi events/navigate-categories)
        ["/categories/hair/" :named-search-slug] (edn->bidi events/navigate-category)
        ["/products/" :product-slug]             (edn->bidi events/navigate-product)
-       "/guarantee"                             (edn->bidi events/navigate-content-guarantee)
-       "/help"                                  (edn->bidi events/navigate-content-help)
-       "/about-us"                              (edn->bidi events/navigate-content-about-us)
-       "/policy/privacy"                        (edn->bidi events/navigate-content-privacy)
-       "/policy/tos"                            (edn->bidi events/navigate-content-tos)
        "/login"                                 (edn->bidi events/navigate-sign-in)
        "/login/getsat"                          (edn->bidi events/navigate-getsat-sign-in)
        "/signup"                                (edn->bidi events/navigate-sign-up)
