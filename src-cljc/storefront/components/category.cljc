@@ -227,7 +227,7 @@
 (defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center
-     [:div.silver.f5 "Starting at"]
+     [:div.silver.f6 "Starting at"]
      [:div.dark-gray.f1.light
       {:item-prop "price"}
       (as-money-without-cents cheapest-price)]]))

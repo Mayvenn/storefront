@@ -45,7 +45,7 @@
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:div.center.navy.f5.mtp3 {:data-test "populated-cart"} cart-quantity]])])
+      [:div.center.navy.f6.mtp3 {:data-test "populated-cart"} cart-quantity]])])
 
 (defn triangle-up [width class]
   [:div.absolute.inline-block
@@ -121,7 +121,7 @@
      [:div.relative.border.border-light-silver.rounded-1.bg-pure-white.top-lit
       notch-up
       [:div
-       [:div.p1.f5
+       [:div.p1.f6
         [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
         [:h4.f3 store-name]]
        (when instagram-account

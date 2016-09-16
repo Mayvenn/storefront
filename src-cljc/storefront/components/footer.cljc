@@ -96,7 +96,7 @@
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
 
-    [:div.mt3.bg-black.white.py1.px3.clearfix.f5.light
+    [:div.mt3.bg-black.white.py1.px3.clearfix.f6.light
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
