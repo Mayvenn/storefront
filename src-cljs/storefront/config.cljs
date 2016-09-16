@@ -9,6 +9,9 @@
 (def enable-console-print?
   (= "development" js/environment))
 
+(def enable-style-guide?
+  (not= "production" js/environment))
+
 (def allowed-version-drift
   "The number of versions that storefront is allowed to fall behind before requiring a refresh"
   0)

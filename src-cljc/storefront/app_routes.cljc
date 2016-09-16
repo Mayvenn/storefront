@@ -2,6 +2,7 @@
   (:require [bidi.bidi :as bidi]
             [storefront.events :as events]
             [storefront.platform.uri :as uri]
+            [storefront.config :as config]
             #?(:cljs [cljs.reader :refer [read-string]])))
 
 (defn edn->bidi [value]
@@ -42,7 +43,8 @@
        "/checkout/address"                      (edn->bidi events/navigate-checkout-address)
        "/checkout/payment"                      (edn->bidi events/navigate-checkout-payment)
        "/checkout/confirm"                      (edn->bidi events/navigate-checkout-confirmation)
-       ["/orders/" :number "/complete"]         (edn->bidi events/navigate-order-complete)}])
+       ["/orders/" :number "/complete"]         (edn->bidi events/navigate-order-complete)
+       "/_style"                                (edn->bidi events/navigate-style-guide)}])
 
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)

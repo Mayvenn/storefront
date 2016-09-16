@@ -33,6 +33,8 @@
 (defpath navigate-content-privacy)
 (defpath navigate-content-tos)
 
+(defpath navigate-style-guide)
+
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
 (defpath navigate-shop-by-look)

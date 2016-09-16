@@ -13,7 +13,9 @@
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.friend-referrals :as friend-referrals]
-                       [storefront.components.popup :as popup]])
+                       [storefront.components.style-guide :as style-guide]
+                       [storefront.components.popup :as popup]
+                       [storefront.config :as config]])
 
             [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
@@ -82,8 +84,16 @@
 
 (defn top-level-component [data owner opts]
   (component/create
-   (if (get-in data keypaths/get-satisfaction-login?)
+   (cond
+     (get-in data keypaths/get-satisfaction-login?)
      [:div #?(:cljs (component/build getsat-top-level-component data opts))]
+
+     #?@(:cljs
+         [(and config/enable-style-guide?
+               (= (get-in data keypaths/navigation-event) events/navigate-style-guide))
+          [:div (style-guide/built-component data nil)]])
+
+     :else
      [:div.flex.flex-column {:style {:min-height "100vh"}}
       (stylist-banner/built-component data nil)
       (promotion-banner/built-component data nil)
