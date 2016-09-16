@@ -101,7 +101,7 @@
    [:div.dark-gray.py3
     [:h2.center.dark-black.bold.py1 "why people love Mayvenn hair"]
 
-    [:div.mx3.md-flex.f4
+    [:div.mx3.md-flex.f5
      [:div.py4
       [:div.px3
        [:h3.f2.center.bold.mb3 "stylist recommended"]

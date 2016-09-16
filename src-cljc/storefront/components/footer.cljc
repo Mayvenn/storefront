@@ -33,7 +33,7 @@
    [:div.medium.border-bottom.border-light-silver.mb1
     [:div.to-md-hide.f3 "Shop"]
     [:div.md-up-hide "Shop"]]
-   [:nav.clearfix.f4
+   [:nav.clearfix.f5
     {:role "navigation" :aria-label "Shop Products"}
     [:div.col.col-6
      (products-section (filter named-searches/is-extension? named-searches))]
@@ -47,7 +47,7 @@
    [:div.medium.border-bottom.border-light-silver.mb1
     [:div.to-md-hide.f3 "Contact"]
     [:div.md-up-hide "Contact"]]
-   [:div.dark-gray.light.f4
+   [:div.dark-gray.light.f5
     [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
     [:span.to-md-hide call-number] ;; desktop
     " | 9am-5pm PST M-F"
@@ -114,7 +114,7 @@
    [:div.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
      [:div.medium.f3.dark-gray "Need Help?"]
-     [:div.dark-gray.light.f4
+     [:div.dark-gray.light.f5
       [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
       [:span.to-md-hide call-number]
       " | 9am-5pm PST M-F"]]]))

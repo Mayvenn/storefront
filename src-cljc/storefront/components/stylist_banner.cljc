@@ -12,7 +12,7 @@
    (ui/modal-close {:bg-class "fill-dark-gray" :on-close (utils/send-event-callback events/control-stylist-banner-close)})))
 
 (def banner-copy
-  (component/html [:p.f4.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
+  (component/html [:p.f5.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
 
 (defn component [{:keys [welcome-url]} owner opts]
   (component/create

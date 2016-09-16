@@ -96,7 +96,7 @@
 (def popup-width          "188px")
 
 (defn social-link [img href title]
-  [:a.f4.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href href}
+  [:a.f5.navy.block.p1.rounded-bottom-1.border-top.border-light-silver.bg-white {:href href}
    [:div.flex.items-center
     [:div.mr1 {:style {:width "15px"}} img]
     [:div.pp2 title]]])

@@ -112,7 +112,7 @@
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
      [:div.f2.titleize name])
-   [:div.f4.line-height-2
+   [:div.f5.line-height-2
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
