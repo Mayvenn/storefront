@@ -33,7 +33,7 @@
           [:.right.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]
           [:.overflow-hidden
            [:.mb1 (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-           [:.h5 (shipping/timeframe sku)]]]])]])))
+           [:.h6 (shipping/timeframe sku)]]]])]])))
 
 (defn query [data]
   {:shipping-methods (get-in data keypaths/shipping-methods)

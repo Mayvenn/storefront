@@ -140,7 +140,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.flex.items-center
-    [:div.black.flex-auto.right-align.h5 link]
+    [:div.black.flex-auto.right-align.h6 link]
     [:div.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:div.absolute.right-0 {:style {:max-width "140px"}}
     [:div.relative.border.border-light-silver.rounded-1.bg-pure-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
@@ -195,7 +195,7 @@
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
-       [:a.h5 (utils/route-to events/navigate-category {:named-search-slug slug})
+       [:a.h6 (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.green.titleize
@@ -220,7 +220,7 @@
 
 (defn lower-left-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.right.h5.light
+   [:div.right.h6.light
     [:a.black.col.py1 (merge
                        {:href           "/categories"
                         :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
@@ -232,7 +232,7 @@
 
 (defn lower-right-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.h5.light
+   [:div.h6.light
     [:a.black.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
     [:a.black.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)

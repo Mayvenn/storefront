@@ -95,14 +95,14 @@
     [:div
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
-      [:p.py1.h5.dark-silver.line-height-2 message]
+      [:p.py1.h6.dark-silver.line-height-2 message]
       [:.h3.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
       [:.right.ml2.m1.h3.col-4 (refer-button {:class "btn-big"
                                               :data-test "refer-button-mobile"})]
-      [:p.overflow-hidden.py1.h5.dark-silver.line-height-2 message]]]))
+      [:p.overflow-hidden.py1.h6.dark-silver.line-height-2 message]]]))
 
 (def empty-referrals
   (html

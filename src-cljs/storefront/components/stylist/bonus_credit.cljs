@@ -18,7 +18,7 @@
   [:.gray.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1 check-svg]
-   [:.flex-auto.h5
+   [:.flex-auto.h6
     "Credit Earned: " (mf/as-money-without-cents amount) " on " (f/epoch-date created-at)]
    [:.h3.ml1.mr1.strike (mf/as-money-without-cents revenue-surpassed)]])
 
@@ -27,7 +27,7 @@
    (html
     (when history
       [:.mx2.py2
-       [:.h5.mb1 "Sales Goals"]
+       [:.h6.mb1 "Sales Goals"]
 
        (map display-stylist-bonus history)
 

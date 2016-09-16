@@ -52,7 +52,7 @@
   [:div.right.border-bottom.border-left.border-light-silver.bg-white
    {:style {:border-bottom-left-radius "8px"}
     :class (when (zero? credit) :invisible)}
-   [:div.h5.px2.py1.line-height-1
+   [:div.h6.px2.py1.line-height-1
     [:span.gray "Credit: "] [:span.navy (as-money credit)]]])
 
 (defn customer-section [selectable? user-email]
@@ -144,7 +144,7 @@
         (merge {:data-test "sign-in"}
                (utils/route-to events/navigate-sign-in))
         "Sign In"]]
-      [:div.col.col-6.p1.center.h5.line-height-2
+      [:div.col.col-6.p1.center.h6.line-height-2
        [:div.gray "No account?"]
        [:a.green
         (merge {:data-test "sign-up"}

@@ -19,7 +19,7 @@
 
      [:.my3 [:.col-2.m-auto.border.border-light-silver]]
      [:.h2.center.my2 "Already registered?"]
-     [:.h5.center.mb2 "Sign into your account below, and checkout even faster!"]
+     [:.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 
 (defn built-component [data opts]

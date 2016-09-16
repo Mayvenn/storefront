@@ -32,10 +32,10 @@
      [:div.lg-up-hide
       [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
     [:div.flex-auto.mr1
-     [:div.h5.mb1.line-height-2
+     [:div.h6.mb1.line-height-2
       [:div.bold.shout.mb1.h4 "bonus offer!"]
       "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
-     [:a.h5.navy
+     [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
       "Offer and Rebate Details ➤"]]]
    [:div.border-bottom.border-light-silver ui/nbsp]])
@@ -59,7 +59,7 @@
              [:div
               (orders/display-adjustment-name name)
               (when coupon-code
-                [:a.ml1.h5.silver
+                [:a.ml1.h6.silver
                  (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
                  "Remove"])]
              price)))
@@ -87,7 +87,7 @@
               :height "7.33em"}}]]
    [:.overflow-hidden.h4.black.p1
     [:a.black.medium.titleize (products/product-title line-item)]
-    [:.mt1.h5.line-height-2
+    [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: "

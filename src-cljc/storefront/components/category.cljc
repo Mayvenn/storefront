@@ -39,7 +39,7 @@
 
 (defn quantity-and-price-structure [quantity price]
   [:div
-   [:div.right-align.light-gray.h5 "PRICE"]
+   [:div.right-align.light-gray.h6 "PRICE"]
    [:div.flex.h1 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
     [:div.navy price]]])
@@ -178,7 +178,7 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h5
+   [:div.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
@@ -194,16 +194,16 @@
              size (str "multi-cols-" (count attrs))]
          (into [:dl {:class size}]
                (mapcat (fn [[title value]]
-                         [[:dt.break-before.dark-gray.shout.h5 title]
+                         [[:dt.break-before.dark-gray.shout.h6 title]
                           [:dd.ml0.h4.navy.medium value]])
                        attrs)))])
     (when (seq summary)
       [:div.my2
        [:h3.mbp3.h6 "Includes:"]
-       [:ul.list-reset.navy.h5.medium
+       [:ul.list-reset.navy.h6.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h5.dark-gray.line-height-2
+    [:div.h6.dark-gray.line-height-2
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
@@ -233,7 +233,7 @@
       (as-money-without-cents cheapest-price)]]))
 
 (defn reviews-summary [reviews opts]
-  [:div.h5
+  [:div.h6
    (component/build reviews/reviews-summary-component reviews opts)])
 
 (defn named-search-uses-product-images [named-search-slug]

@@ -41,7 +41,7 @@
 (defn banner-green-button
   "Banner green buttons aren't as chunky as the others"
   [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary p1 bg-green white h5 letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-primary p1 bg-green white h6 letter-spacing-1")
           (into [:div] content)))
 
 (defn navy-button [attrs & content]
@@ -252,4 +252,4 @@
 (defn big-money [amount]
   [:div.flex.justify-center.line-height-1
    (mf/as-money-without-cents amount)
-   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
+   [:span.h6 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])

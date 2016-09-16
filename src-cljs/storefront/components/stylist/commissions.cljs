@@ -115,7 +115,7 @@
    [:.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:.border-dotted-top.border-dotted-bottom.border-gray.h5
+  [:.border-dotted-top.border-dotted-bottom.border-gray.h6
    (if (= status "paid")
      [:.bg-navy
       (payout-bar
@@ -136,20 +136,20 @@
      {:class "pointer"
       :on-click (toggle-expanded-commission expanded? number)})
    [:.mb2
-    [:.px1.h5.right.border.capped
+    [:.px1.h6.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
      (when (= status "paid") "+") (mf/as-money amount)]
     [:.h2.navy (:full-name order)]]
 
-   [:.silver.h5
+   [:.silver.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
                [:.right.h1.mtn2.mr1
                 {:class (if (expanded? number) "light-gray" "black")}
                 "..."]))]
 
-   [:.medium.h5.line-height-3
+   [:.medium.h6.line-height-3
     (four-up
      [:.titleize {:class (status-look status)} status]
      (f/short-date commission-date)
