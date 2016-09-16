@@ -283,7 +283,6 @@
 (defn static-routes [path]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route routes/static-api-routes uri)]
-      (prn nav-event)
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
 (defn create-handler
