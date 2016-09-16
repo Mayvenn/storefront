@@ -57,10 +57,10 @@
        [:div.col-6.h6.mb2 "9px"]]
 
       [:div.flex.flex-wrap
-       [:div.col-2.f1 ".f1"]
-       [:div.col-10.f1 "40px or 53px"]
+       [:div.col-2.f2 ".f2"]
+       [:div.col-10.f2 "40px or 53px"]
        [:div.col-2.f2.light ".f2.thin"]
-       [:div.col-10.f2.light.mb2.gray " for subtitles of .f1"]
+       [:div.col-10.f2.light.mb2.gray " for subtitles of .f2"]
 
        [:div.col-2.f2 ".f2"]
        [:div.col-10.f2 "24px or 32px"]

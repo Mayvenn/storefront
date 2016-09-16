@@ -228,7 +228,7 @@
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center
      [:div.silver.f6 "Starting at"]
-     [:div.dark-gray.f1.light
+     [:div.dark-gray.f2.light
       {:item-prop "price"}
       (as-money-without-cents cheapest-price)]]))
 
