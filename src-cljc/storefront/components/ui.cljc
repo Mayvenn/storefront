@@ -252,4 +252,4 @@
 (defn big-money [amount]
   [:div.flex.justify-center.line-height-1
    (mf/as-money-without-cents amount)
-   [:span.h6 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
+   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
