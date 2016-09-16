@@ -146,9 +146,18 @@
     --serif: serif;
     --sans-serif: var(--font-family-graphik);
 
+    --h1: 3.3rem;
+    --h2: 2rem;
+    --h3: 1.5rem;
+    --h4: 1.2rem;
+    --h5: 1rem;
+    --h6: 0.75rem;
+
+    --paragraph: 1rem;
+
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: inherit;
+    --heading-font-weight: 600;
 
     --button-font-weight: inherit;
     --button-line-height: 1.2;

@@ -1,56 +1,61 @@
 (ns storefront.components.style-guide
-  (:require [storefront.component :as component]))
+  (:require [storefront.component :as component]
+            [clojure.string :as string]))
+
+(defn- header [name]
+  [:h1.h3.mb3.underline [:a {:name (string/lower-case name)} name]])
+
+(defn- section-link [name]
+  [:a.h5 {:href (str "#" (string/lower-case name))} name])
 
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-pure-white.clearfix
     [:nav.col.col-2
-     [:h1.border-bottom.border-silver.center "Mayvenn"]
+     [:div.border-bottom.border-light-silver.p1
+      [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]]
      [:ul.list-reset.py2.col-6.mx-auto
       [:li [:h2.h5.mb1 "Style"]
        [:ul.list-reset.ml1
-        [:li [:a.h5 {:href "#typography"} "Typography"]]]]]]
+        [:li (section-link "Typography")]]]]]
 
-    [:div.col.col-10.px3.py3.border-left.border-silver
+    [:div.col.col-10.px3.py3.border-left.border-light-silver
      [:section
-      [:h1.mb1 [:a {:name "typography"} "Typography"]]
+      (header "Typography")
 
       [:div.flex.flex-wrap
 
-       [:div.col-4.h1 ".h1"]
+       [:div.col-2.h1 ".h1"]
        [:div.col-4.h1 "3.3rem"]
-       [:div.col-4.h1 "40px or 53px"]
-       [:div.col-4.h1sub ".h1sub"]
-       [:div.col-4.h1sub "2.3rem"]
-       [:div.col-4.h1sub.mb2 "27px or 37px"]
+       [:div.col-6.h1 "40px or 53px"]
+       [:div.col-2.h2.light ".h2.thin"]
+       [:div.col-10.h2.light.mb2.gray " for subtitles of .h1"]
 
-       [:div.col-4.h2 ".h2"]
+       [:div.col-2.h2 ".h2"]
        [:div.col-4.h2 "2rem"]
-       [:div.col-4.h2 "24px or 32px"]
-       [:div.col-4.h2sub ".h2sub"]
-       [:div.col-4.h2sub "1.5rem"]
-       [:div.col-4.h2sub.mb2 "18px or 24px"]
+       [:div.col-6.h2 "24px or 32px"]
+       [:div.col-2.h3.light ".h3.thin"]
+       [:div.col-10.h3.light.mb2.gray " for subtitles of .h2"]
 
-       [:div.col-4.h3 ".h3"]
+       [:div.col-2.h3 ".h3"]
        [:div.col-4.h3 "1.5rem"]
-       [:div.col-4.h3.mb2 "18px or 24px"]
+       [:div.col-6.h3.mb2 "18px or 24px"]
 
-       [:div.col-4.h4 ".h4"]
+       [:div.col-2.h4 ".h4"]
        [:div.col-4.h4 "1.2rem"]
-       [:div.col-4.h4.mb2 "14px or 19px"]
+       [:div.col-6.h4.mb2 "14px or 19px"]
 
-       [:div.col-4.h5 ".h5"]
+       [:div.col-2.h5 ".h5"]
        [:div.col-4.h5 "1rem"]
-       [:div.col-4.h5.mb2 "12px or 16px"]
+       [:div.col-6.h5.mb2 "12px or 16px"]
 
-       [:div.col-4.p "p"]
+       [:div.col-2.p "p"]
        [:div.col-4.p "1rem"]
-       [:div.col-4.p.mb2 "12px or 16px"]
+       [:div.col-6.p.mb2 "12px or 16px"]
 
-       [:div.col-4.sub ".sub"]
-       [:div.col-4.sub ".75rem"]
-       [:div.col-4.sub.mb2 "9px"]
-       ]]]]))
+       [:div.col-2.h6 ".h6"]
+       [:div.col-4.h6 ".75rem"]
+       [:div.col-6.h6.mb2 "9px"]]]]]))
 
 (defn query [data]
   {})

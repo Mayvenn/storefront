@@ -30,6 +30,7 @@ h1, h2, h3, h4, h5, h6 {
 p {
   margin-top: var(--paragraph-margin-top);
   margin-bottom: var(--paragraph-margin-bottom);
+  font-size: var(--paragraph);
 }
 
 dl, ol, ul {
@@ -42,7 +43,10 @@ h2 { font-size: var(--h2) }
 h3 { font-size: var(--h3) }
 h4 { font-size: var(--h4) }
 h5 { font-size: var(--h5) }
-h6 { font-size: var(--h6) }
+h6 {
+    font-size: var(--h6);
+    font-weight: normal;
+}
 
 a {
   text-decoration: none;
@@ -56,18 +60,19 @@ a {
     --line-height: 1.2;
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: normal;
+    --heading-font-weight: 600;
     --heading-line-height: var(--line-height);
     --heading-margin-top: 0;
     --heading-margin-bottom: 0;
 
-    --h1: 2rem;
-    --h2: 1.5rem;
-    --h3: 1.25rem;
-    --h4: 1rem;
-    --h5: .875rem;
-    --h6: .75rem;
+    --h1: 3.3rem;
+    --h2: 2rem;
+    --h3: 1.5rem;
+    --h4: 1.2rem;
+    --h5: 1rem;
+    --h6: 0.75rem;
 
+    --paragraph: 1rem;
     --paragraph-margin-top: 0;
     --paragraph-margin-bottom: 0;
 
