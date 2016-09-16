@@ -45,8 +45,8 @@
 (defn pick-style [named-searches]
   [:div.center.py3
    [:div.flex.flex-column
-    [:h1.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-    [:h3.h1.order-1.dark-black.bold.py1 "pick your style"]]
+    [:h2.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
+    [:h3.h2.order-1.dark-black.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
@@ -99,7 +99,7 @@
 (def about-mayvenn
   (component/html
    [:div.dark-gray.py3
-    [:h1.center.dark-black.bold.py1 "why people love Mayvenn hair"]
+    [:h2.center.dark-black.bold.py1 "why people love Mayvenn hair"]
 
     [:div.mx3.md-flex.f4
      [:div.py4
@@ -139,7 +139,7 @@
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
-      [:h1.h0.my2 "Mayvenn in action"]
+      [:h2.h0.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))
 
 (defn component [{:keys [named-searches store-slug]} owner opts]

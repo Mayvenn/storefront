@@ -170,7 +170,7 @@ Thanks,
      [:.center {:data-test "empty-bag"}
       [:div.m2 (svg/bag {:height "70px" :width "70px"} 1)]
 
-      [:p.m2.h1.light "Your bag is empty."]
+      [:p.m2.h2.light "Your bag is empty."]
 
       [:div.m2
        (if-let [promo (promos/default-advertised-promotion promotions)]
@@ -222,7 +222,7 @@ Thanks,
   (om/component
    (html
     (if fetching-order?
-      [:.py3.h1 ui/spinner]
+      [:.py3.h2 ui/spinner]
       (if (zero? item-count)
         (om/build empty-component empty-cart)
         (om/build full-component full-cart))))))

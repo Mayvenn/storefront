@@ -69,7 +69,7 @@
 
         (when store-credit
           (summary-row "Store Credit" (- (:amount store-credit))))]]]
-     [:.py2.h1
+     [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
        [:.right-align.dark-gray

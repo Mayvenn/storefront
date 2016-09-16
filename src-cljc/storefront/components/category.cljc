@@ -25,7 +25,7 @@
    [:div.md-up-col.md-up-col-5.px2 wide-right-and-narrow]])
 
 (defn title [name]
-  [:h1.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
+  [:h2.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the ui/container, to make the body full width
@@ -40,7 +40,7 @@
 (defn quantity-and-price-structure [quantity price]
   [:div
    [:div.right-align.light-gray.h6 "PRICE"]
-   [:div.flex.h1 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
+   [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
     [:div.navy price]]])
 
@@ -293,7 +293,7 @@
                       needs-selections?)
              (starting-at (:initial-variants bundle-builder)))]
           (if fetching-variants?
-            [:div.h1.mb2 ui/spinner]
+            [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
                [:div.border-bottom.border-dark-white.border-width-2

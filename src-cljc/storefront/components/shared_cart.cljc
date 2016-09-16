@@ -16,7 +16,7 @@
       [:div.sm-up-col-10.md-up-col-8.mx-auto.p2
        [:div.pb3
         (when profile_picture_url
-          [:div.mb2.h1
+          [:div.mb2.h2
            (ui/circle-picture {:class "mx-auto"} profile_picture_url)])
         [:p.center.h3.navy.medium
          store_nickname " has created a bag for you!"]]

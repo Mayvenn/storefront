@@ -145,7 +145,7 @@
    [:.silver.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
-               [:.right.h1.mtn2.mr1
+               [:.right.h2.mtn2.mr1
                 {:class (if (expanded? number) "light-gray" "black")}
                 "..."]))]
 
@@ -202,7 +202,7 @@
    (let [{:keys [history page pages rate]} commissions]
      (html
       (if (and (empty? (seq history)) fetching?)
-        [:.my2.h1 ui/spinner]
+        [:.my2.h2 ui/spinner]
         [:.mx-auto.container {:data-test "commissions-panel"}
          [:.clearfix
           [:.sm-up-col.sm-up-col-9

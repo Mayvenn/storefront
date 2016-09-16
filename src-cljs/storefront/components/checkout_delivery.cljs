@@ -21,7 +21,7 @@
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
         [:label.flex.items-center.col-12.py1
          {:key sku}
-         [:input.mx2.h1
+         [:input.mx2.h2
           {:type         "radio"
            :name         "shipping-method"
            :id           (str "shipping-method-" sku)

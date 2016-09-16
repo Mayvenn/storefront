@@ -65,7 +65,7 @@
                                           events/navigate-stylist-account-social]}})]
 
      (if fetching?
-       [:div.my2.h1 ui/spinner]
+       [:div.my2.h2 ui/spinner]
        [:div.my2
         (condp = current-nav-event
           events/navigate-stylist-account-profile

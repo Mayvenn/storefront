@@ -23,7 +23,7 @@
     {:on-submit
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.col.col-12.md-up-col-6
-     [:h1.h3.light.my3.center.col-12 "Update commission info"]
+     [:h2.h3.light.my3.center.col-12 "Update commission info"]
 
      [:div.col-12.md-up-col-10.mx-auto
       (ui/select-field "Payout Method"

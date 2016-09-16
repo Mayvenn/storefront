@@ -17,7 +17,7 @@
       [:.py2.center order-complete-check]
 
       [:.px3
-       [:.h1.center
+       [:.h2.center
         {:data-test "checkout-success-message"}
         "Thank you for your order!"]
 

@@ -18,13 +18,13 @@
      {:class (str "img-" slug)
       :style {:height "200px"}}
      [:div.bg-darken-3.flex.items-center.col-12 {:style {:height "100%"}}
-      [:div.h1.white.center.col-12.titleize.shadow.nowrap
+      [:div.h2.white.center.col-12.titleize.shadow.nowrap
        name]]]]])
 
 (defn component [{:keys [named-searches]} owner opts]
   (component/create
    [:nav.m2 {:role "navigation" :aria-labelledby "select-style-header"}
-    [:h1#select-style-header.py2.center.black "Select your favorite style"]
+    [:h2#select-style-header.py2.center.black "Select your favorite style"]
     [:ul.list-reset.clearfix.mxn1.center
      (map-indexed link-to-search named-searches)]]))
 

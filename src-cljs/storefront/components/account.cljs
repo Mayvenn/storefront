@@ -21,7 +21,7 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-account-profile-submit)}
-    [:h1.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
+    [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
 
     [:div.col.col-12.md-up-col-6
      (ui/text-field "Email"
@@ -83,7 +83,7 @@
                                :tabs     [events/navigate-account-manage]}})]
 
      (if fetching?
-       [:div.my2.h1 ui/spinner]
+       [:div.my2.h2 ui/spinner]
        [:div.my2
         (condp = current-nav-event
          events/navigate-account-manage

@@ -23,7 +23,7 @@
     (render [this]
       (html
        [:div.center.mt4
-        [:div.h1.medium.black.crush.line-height-1
+        [:div.h2.medium.black.crush.line-height-1
          {:style {:margin-top "50px"}} ;; To match the white space at the top of the widget
          "#MayvennMade"]
         [:div {:id container-id}]

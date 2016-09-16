@@ -15,7 +15,7 @@
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-profile-submit)}
     [:div.col-12
-     [:h1.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
+     [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
      [:div.col.col-12.md-up-col-6
       [:div.flex.col-12.col
        [:div.col-6 (ui/text-field "First Name"

@@ -3,7 +3,7 @@
             [clojure.string :as string]))
 
 (defn- header [name]
-  [:h1.h3.mb3.underline [:a {:name (string/lower-case name)} name]])
+  [:h2.h3.mb3.underline [:a {:name (string/lower-case name)} name]])
 
 (defn- section-link [name]
   [:a.h5 {:href (str "#" (string/lower-case name))} name])
@@ -24,11 +24,11 @@
       (header "Typography")
 
       [:div.flex.flex-wrap
-       [:div.col-2.h1 ".h1"]
-       [:div.col-4.h1 "3.3rem"]
-       [:div.col-6.h1 "40px or 53px"]
+       [:div.col-2.h2 ".h2"]
+       [:div.col-4.h2 "3.3rem"]
+       [:div.col-6.h2 "40px or 53px"]
        [:div.col-2.h2.light ".h2.thin"]
-       [:div.col-10.h2.light.mb2.gray " for subtitles of .h1"]
+       [:div.col-10.h2.light.mb2.gray " for subtitles of .h2"]
 
        [:div.col-2.h2 ".h2"]
        [:div.col-4.h2 "2rem"]
