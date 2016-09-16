@@ -120,7 +120,7 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:h3.clearfix.f3
+   [:h3.clearfix.f4
     [:div.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.light-gray " - "])]

@@ -40,7 +40,7 @@
    [:img.mt3.unselectable {:src   product-image
                            :alt   (str "Shop for " long-name)
                            :style {:height "80px"}}]
-   [:div.mb3.dark-black.medium.f3 name]])
+   [:div.mb3.dark-black.medium.f4 name]])
 
 (defn pick-style [named-searches]
   [:div.center.py3

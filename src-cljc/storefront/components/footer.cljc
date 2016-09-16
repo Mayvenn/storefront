@@ -31,7 +31,7 @@
 (defn shop-section [named-searches own-store?]
   [:div.col-12
    [:div.medium.border-bottom.border-light-silver.mb1
-    [:div.to-md-hide.f3 "Shop"]
+    [:div.to-md-hide.f4 "Shop"]
     [:div.md-up-hide "Shop"]]
    [:nav.clearfix.f5
     {:role "navigation" :aria-label "Shop Products"}
@@ -45,7 +45,7 @@
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
    [:div.medium.border-bottom.border-light-silver.mb1
-    [:div.to-md-hide.f3 "Contact"]
+    [:div.to-md-hide.f4 "Contact"]
     [:div.md-up-hide "Contact"]]
    [:div.dark-gray.light.f5
     [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
@@ -113,7 +113,7 @@
   (component/create
    [:div.border-top.border-light-silver.bg-light-white
     [:div.center.px3.my2.line-height-4
-     [:div.medium.f3.dark-gray "Need Help?"]
+     [:div.medium.f4.dark-gray "Need Help?"]
      [:div.dark-gray.light.f5
       [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
       [:span.to-md-hide call-number]
