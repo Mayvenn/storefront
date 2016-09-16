@@ -713,7 +713,7 @@
 (defn get-static-content [static-content-id]
   (static-content-req
    GET
-   (str "/content/" (->> static-content-id (map name) (str/join "-")) ".html")
+   (str "/static/" (->> static-content-id (map name) (str/join "-")))
    request-keys/get-static-content
    {:handler #(messages/handle-message events/api-success-get-static-content
                                        {:id      static-content-id

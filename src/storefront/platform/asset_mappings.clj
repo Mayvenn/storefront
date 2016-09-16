@@ -14,3 +14,12 @@
        (filter (fn [[filename filerev]]
                  (re-find #"^images/" filename)))
        (into {})))
+
+(def template-manifest
+  (reduce (fn [acc [key value]]
+            (assoc-in acc
+                      (map keyword (clojure.string/split key #"[.]"))
+                      {:url value}))
+          {}
+          manifest))
+

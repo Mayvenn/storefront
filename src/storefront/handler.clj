@@ -18,16 +18,18 @@
              [response :refer [content-type redirect response]]]
             [storefront
              [api :as api]
-             [app-routes :refer [app-routes bidi->edn]]
+             [app-routes :as routes]
              [config :as config]
              [cookies :as cookies]
              [events :as events]
              [keypaths :as keypaths]
+             [assets :as assets]
              [views :as views]]
             [storefront.accessors
              [bundle-builder :as bundle-builder]
              [experiments :as experiments]
              [named-searches :as named-searches]]
+            [comb.template :as template]
             [storefront.utils.maps :refer [key-by]]
             [clojure.string :as str]))
 
@@ -199,6 +201,9 @@
                                           (assoc-in keypaths/products products-by-id)
                                           (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data)))))))))))
 
+(defn render-static-page [template]
+  (template/eval template {:url assets/path}))
+
 (defn static-page [[navigate-kw content-kw & static-content-id]]
   (when (= [navigate-kw content-kw] events/navigate-content)
     {:id      static-content-id
@@ -207,13 +212,14 @@
                    (str/join "-")
                    (format "public/content/%s.html")
                    io/resource
-                   slurp)}))
+                   slurp
+                   render-static-page)}))
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+    (let [{nav-event :handler params :route-params} (bidi/match-route routes/app-routes uri)]
       (when nav-event
-        (let [nav-event  (bidi->edn nav-event)
+        (let [nav-event  (routes/bidi->edn nav-event)
               render-ctx {:storeback-config storeback-config
                           :environment      environment}
               data       (as-> {} data
@@ -256,24 +262,29 @@
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-     (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
-                                                    (let [headers (:headers request)]
-                                                      (or (headers "x-forwarded-for")
-                                                          (headers "remote-addr")
-                                                          "localhost"))
-                                                    (assoc (:query-params request)
-                                                           "utm-params"
-                                                           {"utm-source"   (cookies/get request "utm-source")
-                                                            "utm-campaign" (cookies/get request "utm-campaign")
-                                                            "utm-term"     (cookies/get request "utm-term")
-                                                            "utm-content"  (cookies/get request "utm-content")
-                                                            "utm-medium"   (cookies/get request "utm-medium")}))]
-       (redirect (str "/cart?error=" error-code))
-       (redirect (str "/orders/"
-                      number
-                      "/complete?"
-                      (codec/form-encode {:paypal      true
-                                          :order-token order-token})))))))
+        (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
+                                                       (let [headers (:headers request)]
+                                                         (or (headers "x-forwarded-for")
+                                                             (headers "remote-addr")
+                                                             "localhost"))
+                                                       (assoc (:query-params request)
+                                                              "utm-params"
+                                                              {"utm-source"   (cookies/get request "utm-source")
+                                                               "utm-campaign" (cookies/get request "utm-campaign")
+                                                               "utm-term"     (cookies/get request "utm-term")
+                                                               "utm-content"  (cookies/get request "utm-content")
+                                                               "utm-medium"   (cookies/get request "utm-medium")}))]
+          (redirect (str "/cart?error=" error-code))
+          (redirect (str "/orders/"
+                         number
+                         "/complete?"
+                         (codec/form-encode {:paypal      true
+                                             :order-token order-token})))))))
+(defn static-routes [path]
+  (fn [{:keys [uri store] :as req}]
+    (let [{nav-event :handler params :route-params} (bidi/match-route routes/static-api-routes uri)]
+      (prn nav-event)
+      (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -283,6 +294,7 @@
                                                     "text/plain"))
                (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
                (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
+               (static-routes ctx)
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
