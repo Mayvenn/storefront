@@ -22,7 +22,7 @@
        [:.relative.border-bottom.border-navy.col-8 {:style {:top "6px"}}]
        [:.flex.justify-center.col-12
         (for [[step-index {:keys [name id event] :as step}] (map-indexed vector steps)]
-          [:.h4.col-12.center.titleize.flex.flex-column.justify-center.navy
+          [:.h5.col-12.center.titleize.flex.flex-column.justify-center.navy
            {:key id :id id}
            [:a.navy (when (< step-index current-index) (route-to event))
             [:.mx-auto {:style {:width "12px" :height "12px"}}

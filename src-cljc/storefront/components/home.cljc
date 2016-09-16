@@ -45,7 +45,7 @@
 (defn pick-style [named-searches]
   [:div.center.py3
    [:div.flex.flex-column
-    [:h1.h4.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
+    [:h1.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
     [:h2.h1.order-1.dark-black.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}

@@ -89,7 +89,7 @@
                               contacts
                               own-store?]} owner opts]
   (component/create
-   [:div.h4.border-top.border-light-silver.bg-dark-white
+   [:div.h5.border-top.border-light-silver.bg-dark-white
 
     [:div.col-12.clearfix
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section named-searches own-store?)]

@@ -66,7 +66,7 @@ Thanks,
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h2.navy.medium "Share your bag"]
-                [:.h4.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
                 [:.border-top.border-bottom.border-light-silver.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
@@ -141,7 +141,7 @@ Thanks,
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
-       [:div.h4.gray.center.py2 "OR"]
+       [:div.h5.gray.center.py2 "OR"]
        [:div.pb2 (ui/paypal-button
                   {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                    :spinning? redirecting-to-paypal?
@@ -161,7 +161,7 @@ Thanks,
                                     {:style {:width  "24px"
                                              :height "18px"}}]
                                    [:div.flex-grow "Share your bag"]])
-          [:div.h4.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
+          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [promotions]} owner]
   (om/component

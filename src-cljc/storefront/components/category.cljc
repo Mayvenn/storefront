@@ -195,7 +195,7 @@
          (into [:dl {:class size}]
                (mapcat (fn [[title value]]
                          [[:dt.break-before.dark-gray.shout.h6 title]
-                          [:dd.ml0.h4.navy.medium value]])
+                          [:dd.ml0.h5.navy.medium value]])
                        attrs)))])
     (when (seq summary)
       [:div.my2

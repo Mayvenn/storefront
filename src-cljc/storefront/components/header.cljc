@@ -191,7 +191,7 @@
 
 (defn products-section [current-page? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-light-silver.black.h4 title])
+   (row [:div.border-bottom.border-light-silver.black.h5 title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}

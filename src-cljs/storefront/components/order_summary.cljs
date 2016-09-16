@@ -13,7 +13,7 @@
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
-   [:tr.h4.line-height-4
+   [:tr.h5.line-height-4
     (merge row-attrs
            (when (neg? amount)
              {:class "green"}))
@@ -33,7 +33,7 @@
       [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
     [:div.flex-auto.mr1
      [:div.h6.mb1.line-height-2
-      [:div.bold.shout.mb1.h4 "bonus offer!"]
+      [:div.bold.shout.mb1.h5 "bonus offer!"]
       "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
@@ -85,7 +85,7 @@
       :alt   product-name
       :style {:width  "7.33em"
               :height "7.33em"}}]]
-   [:.overflow-hidden.h4.black.p1
+   [:.overflow-hidden.h5.black.p1
     [:a.black.medium.titleize (products/product-title line-item)]
     [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]

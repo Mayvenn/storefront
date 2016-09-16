@@ -121,7 +121,7 @@
            {:color "green"
             :data-test "store-credit-note"}
            [:.p2.navy
-            [:.h4 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+            [:.h5 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
             (when-not fully-covered?
               [:.h6.mt1.line-height-2
                "Please enter an additional payment method below for the remaining total on your order."])]))
@@ -129,7 +129,7 @@
         (when-not fully-covered?
           [:div
            (om/build credit-card-form-component {:credit-card credit-card})
-           [:.h4.light-gray
+           [:.h5.light-gray
             "You can review your order on the next page before we charge your card."]])
 
         (when loaded-stripe?

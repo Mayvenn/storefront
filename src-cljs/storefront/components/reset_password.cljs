@@ -29,7 +29,7 @@
                       :errors   (get field-errors ["password_confirmation"])})
 
       (ui/submit-button "Update")]
-     [:.h4.center.gray.light.my2 "OR"]
+     [:.h5.center.gray.light.my2 "OR"]
      (facebook/reset-button loaded-facebook?)))))
 
 (defn query [data]

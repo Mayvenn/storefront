@@ -19,7 +19,7 @@
 
     (facebook/sign-in-button facebook-loaded?)
 
-    [:div.h4.center.gray.light.my2 "OR"]
+    [:div.h5.center.gray.light.my2 "OR"]
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
