@@ -24,7 +24,6 @@
       (header "Typography")
 
       [:div.flex.flex-wrap
-
        [:div.col-2.h1 ".h1"]
        [:div.col-4.h1 "3.3rem"]
        [:div.col-6.h1 "40px or 53px"]
@@ -55,7 +54,30 @@
 
        [:div.col-2.h6 ".h6"]
        [:div.col-4.h6 ".75rem"]
-       [:div.col-6.h6.mb2 "9px"]]]]]))
+       [:div.col-6.h6.mb2 "9px"]]
+
+      [:div.flex.flex-wrap
+       [:div.col-2.f1 ".f1"]
+       [:div.col-10.f1 "40px or 53px"]
+       [:div.col-2.f2.light ".f2.thin"]
+       [:div.col-10.f2.light.mb2.gray " for subtitles of .f1"]
+
+       [:div.col-2.f2 ".f2"]
+       [:div.col-10.f2 "24px or 32px"]
+       [:div.col-2.f3.light ".f3.thin"]
+       [:div.col-10.f3.light.mb2.gray " for subtitles of .f2"]
+
+       [:div.col-2.f3 ".f3"]
+       [:div.col-10.f3.mb2 "18px or 24px"]
+
+       [:div.col-2.f4 ".f4"]
+       [:div.col-10.f4.mb2 "14px or 19px"]
+
+       [:div.col-2.f5 ".f5"]
+       [:div.col-10.f5.mb2 "12px or 16px"]
+
+       [:div.col-2.f6 ".f6"]
+       [:div.col-10.f6.mb2 "9px"]]]]]))
 
 (defn query [data]
   {})
