@@ -111,7 +111,7 @@
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
-     [:div.f2.titleize name])
+     [:div.f3.titleize name])
    [:div.f5.line-height-2
     (if sold-out?
       "Sold Out"
