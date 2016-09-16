@@ -36,7 +36,7 @@
    [:.p1 "LAST PAYMENT"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (ui/big-money amount)]
+      [:.py2.h0 re-center-money (ui/big-money amount)]
       [:div "On " (f/long-date date)]]
      [:div
       [:div {:style {:padding "18px"}} svg/large-payout]
@@ -48,7 +48,7 @@
    [:.p1 "NEXT PAYMENT"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (ui/big-money amount)]
+      [:.py2.h0 re-center-money (ui/big-money amount)]
       [:div "Payment " (in-x-days)]]
      [:div
       [:.py2 svg/large-dollar]
@@ -60,7 +60,7 @@
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      [:div
-      [:.py2.h00 re-center-money (mf/as-money-without-cents amount)]
+      [:.py2.h0 re-center-money (mf/as-money-without-cents amount)]
       [:div "Sales since you joined Mayvenn"]]
      [:div
       [:.py2 svg/large-percent]
