@@ -125,7 +125,7 @@
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.light-gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.light-gray
+      [:div.overflow-hidden.light-gray.f4.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
