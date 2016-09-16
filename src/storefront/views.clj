@@ -128,7 +128,7 @@
      [:div.h2.mt3.mb2.center "We can't seem to find the page you're looking for."]
      [:a.mx-auto.btn.btn-primary.col-10
       {:href "/"}
-      [:div.h3.p1.letter-spacing-1 "Return to Homepage"]]]]))
+      [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]))
 
 (def error-page
   (html5
@@ -139,5 +139,5 @@
     [:title "Something went wrong | Mayvenn"]]
    [:body
     {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
-    [:h3 "Mayvenn Will Be Back Soon"]
+    [:h4 "Mayvenn Will Be Back Soon"]
     [:h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))

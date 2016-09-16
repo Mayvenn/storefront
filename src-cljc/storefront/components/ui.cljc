@@ -30,12 +30,12 @@
                                          %))
                     (dissoc :spinning? :disabled?))
         content (if spinning?
-                  [:div.h3.letter-spacing-1 spinner]
+                  [:div.h4.letter-spacing-1 spinner]
                   content)]
     [:a (merge {:href "#"} opts) content]))
 
 (defn green-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-green white h3 letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-green white h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn banner-green-button
@@ -45,23 +45,23 @@
           (into [:div] content)))
 
 (defn navy-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-navy white h3 letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-navy white h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn paypal-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h3 letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn silver-outline-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h3 dark-gray letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h4 dark-gray letter-spacing-1")
           (into [:div] content)))
 
 (defn navy-outline-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-navy bg-white h3 navy letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-navy bg-white h4 navy letter-spacing-1")
           (into [:div] content)))
 
 (defn footer-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h3 letter-spacing-1")
+  (button (assoc attrs :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn submit-button
@@ -69,7 +69,7 @@
   ([title {:keys [spinning? disabled? data-test]}]
    (if spinning?
      (button {:spinning? true})
-     [:input.btn.btn-primary.col-12.h3.px1.py2.letter-spacing-1
+     [:input.btn.btn-primary.col-12.h4.px1.py2.letter-spacing-1
       {:type "submit"
        :data-test data-test
        :value title
@@ -103,7 +103,7 @@
                                    (when error
                                      "orange")]))}
        label]]
-     [:input.floating-label--input.col-12.h3.border
+     [:input.floating-label--input.col-12.h4.border
       (cond-> (merge {:key label
                       :class "rounded"
                       :placeholder label
@@ -163,7 +163,7 @@
         (when error
           {:class "orange"}))
        label]
-      [:div.h3.black.relative
+      [:div.h4.black.relative
        (or (->> options (filter (comp #{(str value)} option-value)) first option-text)
            nbsp)]]
      [:div.orange.mtp2.mb1

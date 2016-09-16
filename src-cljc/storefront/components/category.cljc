@@ -54,7 +54,7 @@
                                             {:path keypaths/browse-variant-quantity})
                  (utils/send-event-callback events/control-counter-inc
                                             {:path keypaths/browse-variant-quantity}))]
-    [:span.h3 "Currently out of stock"]) )
+    [:span.h4 "Currently out of stock"]) )
 
 (defn add-to-bag-button [adding-to-bag? variant quantity]
   (ui/navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
@@ -183,7 +183,7 @@
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
   [:div.border.border-light-gray.mt2.p2.rounded
-   [:h2.h3.medium.navy.shout "Description"]
+   [:h2.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
       [:div.clearfix.my2
@@ -199,7 +199,7 @@
                        attrs)))])
     (when (seq summary)
       [:div.my2
-       [:h3.mbp3.h6 "Includes:"]
+       [:h4.mbp3.h6 "Includes:"]
        [:ul.list-reset.navy.h6.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])

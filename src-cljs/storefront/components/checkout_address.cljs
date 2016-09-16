@@ -34,7 +34,7 @@
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
-     [:.h3.black.col-12.my1 "Shipping Address"]
+     [:.h4.black.col-12.my1 "Shipping Address"]
      [:.flex.col-12
       [:.col-6 (ui/text-field "First Name"
                               keypaths/checkout-shipping-address-first-name
@@ -140,7 +140,7 @@
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
-     [:.h3.black.col-12.my1 "Billing Address"]
+     [:.h4.black.col-12.my1 "Billing Address"]
      [:.col-12.my1
       [:label.h6.gray.py1
        [:input.mr1

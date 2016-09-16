@@ -123,7 +123,7 @@
       [:div
        [:div.p1.f5
         [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
-        [:h3.f3 store-name]]
+        [:h4.f3 store-name]]
        (when instagram-account
          (social-link
           [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}} svg/instagram]

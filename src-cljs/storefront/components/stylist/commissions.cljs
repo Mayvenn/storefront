@@ -34,7 +34,7 @@
      :src   (products/thumbnail-url products product-id)
      :alt   product-name}]
    [:.overflow-hidden
-    [:.h3.medium.titleize (products/product-title item)]
+    [:.h4.medium.titleize (products/product-title item)]
     [:.line-height-3.h5.mt1
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
@@ -183,7 +183,7 @@
     [:.p2.border-bottom.border-dark-white
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
      [:p.h2.silver "Looks like you don't have any commissions yet."]]
-    [:.py3.h3
+    [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylist-urls/store-url]]]))
 

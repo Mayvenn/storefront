@@ -20,7 +20,7 @@
    [:.mr1 check-svg]
    [:.flex-auto.h6
     "Credit Earned: " (mf/as-money-without-cents amount) " on " (f/epoch-date created-at)]
-   [:.h3.ml1.mr1.strike (mf/as-money-without-cents revenue-surpassed)]])
+   [:.h4.ml1.mr1.strike (mf/as-money-without-cents revenue-surpassed)]])
 
 (defn bonus-history-component [{:keys [history page pages fetching?]}]
   (om/component
@@ -37,7 +37,7 @@
   (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
         bar-width (str (max 15 bar-value) "%")
         bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
-    [:.my2.border.border-dark-white.capped.h3.light
+    [:.my2.border.border-dark-white.capped.h4.light
      (if (zero? progress)
        [:.light-gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]
@@ -78,9 +78,9 @@
            [:div
             [:.center.px1.py2
              (cond
-               history                [:.h3 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
-               (pos? progress-amount) [:.h3 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
-               :else                  [:.h3 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
+               history                [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+               (pos? progress-amount) [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
+               :else                  [:.h4 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
              (pending-bonus-progress {:progress  progress-amount
                                       :milestone milestone-amount})

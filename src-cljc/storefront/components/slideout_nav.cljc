@@ -185,7 +185,7 @@
 (defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner opts]
   (component/create
    (let [selectable? (partial selectable current-navigation-message)]
-     [:div.h3.lg-up-hide
+     [:div.h4.lg-up-hide
       {:class (when-not slid-out? "hide")}
       [:div.fixed.overlay.bg-darken-4.z3
        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links

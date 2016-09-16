@@ -57,15 +57,15 @@
     (ui/footer-button {:href (str "tel://" call-number)}
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/phone-ringing]
-                       [:div.left-align.h3 "Call Now"]])
+                       [:div.left-align.h4 "Call Now"]])
     (ui/footer-button {:href (str "sms://+1" sms-number)}
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/message]
-                       [:div.left-align.h3 "Send Message"]])
+                       [:div.left-align.h4 "Send Message"]])
     (ui/footer-button {:href (str "mailto:" contact-email)}
                       [:div.flex.items-center.justify-center
                        [:div.p1 svg/mail-envelope]
-                       [:div.left-align.h3 "Send Email"]])]])
+                       [:div.left-align.h4 "Send Email"]])]])
 
 (defn social-section []
   [:div

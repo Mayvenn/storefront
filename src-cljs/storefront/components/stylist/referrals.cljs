@@ -96,11 +96,11 @@
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
       [:p.py1.h6.dark-silver.line-height-2 message]
-      [:.h3.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
+      [:.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-white
       [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h3.col-4 (refer-button {:class "btn-big"
+      [:.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                               :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h6.dark-silver.line-height-2 message]]]))
 
@@ -216,7 +216,7 @@
                     (ui/silver-outline-button
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test  "another-referral-button"})
-                     [:.flex.items-center.justify-center.h3.line-height-1
+                     [:.flex.items-center.justify-center.h4.line-height-1
                       [:.mr1.flex.items-center.fill-light-silver svg/counter-inc]
                       [:div "Add Another Referral"]])]])
                 [:.col-8.mx-auto

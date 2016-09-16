@@ -10,7 +10,7 @@
       :data-test "facebook-button"}
      [:.flex.items-center.justify-center.white.items-center
       [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
-      [:.h3.py1 "Sign in with Facebook"]]]
+      [:.h4.py1 "Sign in with Facebook"]]]
     [:div {:style {:height "3.25rem"}}]))
 
 (defn sign-in-button [loaded?]
