@@ -23,45 +23,86 @@
     {:style {:height "1.2em"}}]))
 
 (defn button
-  [{:keys [disabled? spinning?] :as opts} & content]
-  (let [opts    (-> opts
-                    (update :on-click #(if (or disabled? spinning?)
-                                         utils/noop-callback
-                                         %))
-                    (dissoc :spinning? :disabled?))
+  [{:keys [disabled? spinning? disabled-class]
+    :as opts}
+   & content]
+  (let [opts    (cond-> opts
+                  :always (update :on-click #(if (or disabled? spinning?)
+                                               utils/noop-callback
+                                               %))
+                  :always (dissoc :spinning? :disabled? :disabled-class)
+                  disabled? (assoc :class disabled-class))
         content (if spinning?
                   [:div.h4.letter-spacing-1 spinner]
                   content)]
     [:a (merge {:href "#"} opts) content]))
 
 (defn green-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-green white h4 letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary p1 bg-green white h5 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h5 letter-spacing-1")
+          (into [:div] content)))
+
+(defn large-green-button [attrs & content]
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary px1 py2 bg-green white h4 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn banner-green-button
   "Banner green buttons aren't as chunky as the others"
   [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary p1 bg-green white h6 letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary p1 bg-green white h6 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h6 letter-spacing-1")
           (into [:div] content)))
 
 (defn navy-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-navy white h4 letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary p1 bg-navy white h5 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h5 letter-spacing-1")
+          (into [:div] content)))
+
+(defn large-navy-button [attrs & content]
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary px1 py2 bg-navy white h4 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn paypal-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h4 letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h4 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
+          (into [:div] content)))
+
+(defn ghost-button [attrs & content]
+  (button (assoc attrs
+                 :class "btn col-12 btn-outline p1 bg-pure-white border-light-silver dark-black h5 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver border-light-silver h5 letter-spacing-1")
+          (into [:div] content)))
+
+(defn large-ghost-button [attrs & content]
+  (button (assoc attrs
+                 :class "btn col-12 btn-outline px1 py2 bg-pure-white border-light-silver dark-black h4 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver border-light-silver h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn silver-outline-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h4 dark-gray letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h4 dark-gray letter-spacing-1"
+                 :disabled-class "btn col-12 btn-outline px1 py2 silver border-light-silver bg-light-silver h4 dark-gray letter-spacing-1")
           (into [:div] content)))
 
 (defn navy-outline-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-outline px1 py2 border-navy bg-white h4 navy letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-outline px1 py2 border-navy bg-white h4 navy letter-spacing-1"
+                 :disabled-class "btn col-12 btn-outline px1 py2 border-navy bg-light-silver h4 navy letter-spacing-1")
           (into [:div] content)))
 
 (defn footer-button [attrs & content]
-  (button (assoc attrs :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h4 letter-spacing-1")
+  (button (assoc attrs
+                 :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h4 letter-spacing-1"
+                 :disabled-class "btn col-12 btn-primary border-black silver bg-light-silver px1 pyp1 my1 black medium h4 letter-spacing-1")
           (into [:div] content)))
 
 (defn submit-button
