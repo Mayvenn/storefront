@@ -9,7 +9,8 @@
 (def flash-line-height "1.25em")
 
 (def success-img
-  (component/html [:div (svg/adjustable-check {:class "stroke-green align-middle" :width flash-line-height :height flash-line-height})]))
+  (svg/circled-check {:class "stroke-green align-middle"
+                      :style {:width flash-line-height :height flash-line-height}}))
 
 (def error-img
   (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width flash-line-height :height flash-line-height}}]))

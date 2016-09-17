@@ -12,7 +12,8 @@
             [storefront.components.ui :as ui]))
 
 (def check-svg
-  (html (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})))
+  (svg/circled-check {:class "stroke-green"
+                      :style {:width "1em" :height "1em"}}))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.flex.items-center.justify-between.py1

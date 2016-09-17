@@ -37,7 +37,8 @@
 
 (def paid-icon
   (html
-   (svg/adjustable-check {:class "stroke-green" :width state-diameter :height state-diameter})))
+   (svg/circled-check {:class "stroke-green"
+                       :style {:width state-diameter :height state-diameter}})))
 
 (defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
 (defmethod state-icon :referred [_ _ _] no-sales-icon)
@@ -238,7 +239,9 @@
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
               [:.flex.flex-column.items-center.justify-center.pt4
-               [:div.m1 {:style {:height "70px" :width "70px"}} (svg/adjustable-check {:stroke "white"})]
+               [:div.m1
+                (svg/circled-check {:class "stroke-white"
+                                    :style {:height "70px" :width "70px"}})]
                [:.h2.white.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
 
 (defn built-thanks-component [_ _]

@@ -168,7 +168,8 @@ Thanks,
    (html
     (ui/narrow-container
      [:.center {:data-test "empty-bag"}
-      [:div.m2 (svg/bag {:height "70px" :width "70px"} 1)]
+      [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
+                         :class "fill-black"})]
 
       [:p.m2.h1.light "Your bag is empty."]
 

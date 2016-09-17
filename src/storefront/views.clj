@@ -54,6 +54,8 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
+(def svg-sprites (slurp (io/resource "public/images/sprites.svg")))
+
 (def body-class "mx-auto bg-pure-white")
 
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
@@ -95,6 +97,7 @@
       (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
    [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
+    (raw svg-sprites)
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want
