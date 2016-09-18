@@ -1,6 +1,7 @@
 (ns storefront.components.svg
   (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])))
+               :cljs [storefront.component :as component])
+            [storefront.assets :as assets]))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's
@@ -20,7 +21,7 @@
 
 (defn svg-xlink [opts id]
   (component/html
-   [:svg opts [:use {:xlinkHref (str "#" id)}]]))
+   [:svg opts [:use {:xlinkHref (str (assets/path "/images/sprites.svg") "#" id)}]]))
 
 (def micro-dollar-sign
   (svg-xlink {:style {:width "14px" :height "14px"}}
