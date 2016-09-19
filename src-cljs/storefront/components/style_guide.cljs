@@ -86,20 +86,20 @@
    (header "Buttons")
    ;; Normal Buttons, Active States
    [:div.flex.flex-wrap
-    [:div.col-4.p1 "Primary (Large)"
+    [:div.col-4.p1 "Primary"
      [:div (ui/green-button {} "ui/green-button")]]
-    [:div.col-4.p1 "Secondary (Large)"
+    [:div.col-4.p1 "Secondary"
      [:div (ui/navy-button {} "ui/navy-button")]]
-    [:div.col-4.p1 "Ghost (Large)"
+    [:div.col-4.p1 "Ghost"
      [:div (ui/ghost-button {} "ui/ghost-button")]]]
 
    ;; Normal Buttons, Inactive States
    [:div.flex.flex-wrap
-    [:div.col-4.p1 "Primary (Large)"
+    [:div.col-4.p1 "Primary"
      [:div (ui/green-button {:disabled? true} "ui/green-button")]]
-    [:div.col-4.p1 "Secondary (Large)"
+    [:div.col-4.p1 "Secondary"
      [:div (ui/navy-button {:disabled? true} "ui/navy-button")]]
-    [:div.col-4.p1 "Ghost (Large)"
+    [:div.col-4.p1 "Ghost"
      [:div (ui/ghost-button {:disabled? true} "ui/ghost-button")]]]
 
    ;; Large Buttons, Active States

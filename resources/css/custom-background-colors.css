@@ -10,6 +10,7 @@
 .bg-dark-gray    { background-color: var(--dark-gray); }
 .bg-light-black  { background-color: var(--light-black); }
 .bg-dark-black   { background-color: var(--dark-black); }
+.bg-clear        { background-color: var(--clear); }
 
 .bg-lighten-5    { background-color: var(--lighten-5); }
 
@@ -33,6 +34,7 @@
   --paypal-blue:   #49bbf0;
 
   --lighten-5: rgba(255, 255, 255, .925);
+  --clear: rgba(0, 0, 0, 0);
 }
 
 

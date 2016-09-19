@@ -37,81 +37,69 @@
                   content)]
     [:a (merge {:href "#"} opts) content]))
 
-(defn green-button [attrs & content]
+(defn ^:private button-colors [color-kw]
+  (let [color (color-kw {:color/green    "bg-green white"
+                         :color/navy     "bg-navy white"
+                         :color/ghost    "bg-clear border-light-silver dark-black"
+                         :color/paypal   "bg-paypal-blue white"
+                         :color/disabled "bg-light-silver silver"})]
+    (assert color (str "Button color " color-kw " has not been defined."))
+    color))
+
+(defn ^:private button-sizes [size-kw]
+  (let [size (size-kw {:size/large "col-12 px1 py2 h4 letter-spacing-1"
+                       :size/small "col-12 p1 h5 letter-spacing-1"})]
+    (assert size (str "Button size " size-kw " has not been defined."))
+    size))
+
+(defn ^:private button-class [color-kw size-kw {:keys [class]}]
+  (str/join " "
+            ["btn btn-primary"
+             (button-sizes size-kw)
+             (button-colors color-kw)
+             class]))
+
+(defn ^:private small-button [color-kw attrs & content]
   (button (assoc attrs
-                 :class "btn col-12 btn-primary p1 bg-green white h5 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h5 letter-spacing-1")
+                 :class (button-class color-kw :size/small attrs)
+                 :disabled-class (button-class :color/disabled :size/small attrs))
           (into [:div] content)))
+
+(defn ^:private large-button [color-kw attrs & content]
+  (button (assoc attrs
+                 :class (button-class color-kw :size/large attrs)
+                 :disabled-class (button-class :color/disabled :size/large attrs))
+          (into [:div] content)))
+
+(defn green-button [attrs & content]
+  (small-button :color/green attrs content))
 
 (defn large-green-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary px1 py2 bg-green white h4 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
-          (into [:div] content)))
-
-(defn banner-green-button
-  "Banner green buttons aren't as chunky as the others"
-  [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary p1 bg-green white h6 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h6 letter-spacing-1")
-          (into [:div] content)))
+  (large-button :color/green attrs content))
 
 (defn navy-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary p1 bg-navy white h5 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver h5 letter-spacing-1")
-          (into [:div] content)))
+  (small-button :color/navy attrs content))
 
 (defn large-navy-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary px1 py2 bg-navy white h4 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
-          (into [:div] content)))
+  (large-button :color/navy attrs content))
 
 (defn paypal-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary px1 py2 bg-paypal-blue white h4 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver h4 letter-spacing-1")
-          (into [:div] content)))
+  (large-button :color/paypal attrs content))
 
 (defn ghost-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-outline p1 bg-pure-white border-light-silver dark-black h5 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary p1 bg-light-silver silver border-light-silver h5 letter-spacing-1")
-          (into [:div] content)))
+  (small-button :color/ghost attrs content))
 
 (defn large-ghost-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-outline px1 py2 bg-pure-white border-light-silver dark-black h4 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary px1 py2 bg-light-silver silver border-light-silver h4 letter-spacing-1")
-          (into [:div] content)))
-
-(defn silver-outline-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-outline px1 py2 border-light-silver bg-white h4 dark-gray letter-spacing-1"
-                 :disabled-class "btn col-12 btn-outline px1 py2 silver border-light-silver bg-light-silver h4 dark-gray letter-spacing-1")
-          (into [:div] content)))
-
-(defn navy-outline-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-outline px1 py2 border-navy bg-white h4 navy letter-spacing-1"
-                 :disabled-class "btn col-12 btn-outline px1 py2 border-navy bg-light-silver h4 navy letter-spacing-1")
-          (into [:div] content)))
-
-(defn footer-button [attrs & content]
-  (button (assoc attrs
-                 :class "btn col-12 btn-primary border-black bg-dark-white px1 pyp1 my1 black medium h4 letter-spacing-1"
-                 :disabled-class "btn col-12 btn-primary border-black silver bg-light-silver px1 pyp1 my1 black medium h4 letter-spacing-1")
-          (into [:div] content)))
+  (large-button :color/ghost attrs content))
 
 (defn submit-button
   ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled? data-test]}]
+  ([title {:keys [spinning? disabled? data-test] :as attrs}]
    (if spinning?
-     (button {:spinning? true})
-     [:input.btn.btn-primary.col-12.h4.px1.py2.letter-spacing-1
+     (large-button :color/green attrs)
+     [:input
       {:type "submit"
+       :class (button-class :color/green :color/large attrs)
        :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))

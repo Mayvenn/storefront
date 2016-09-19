@@ -31,7 +31,7 @@
        [:div.flex-auto
         [:div.col-7.mx-auto.center.flex.items-center
          [:div.col-7.mr2 banner-copy]
-         [:div.col-5 (ui/banner-green-button btn-behavior btn-copy)]]]
+         [:div.col-5 (ui/green-button btn-behavior btn-copy)]]]
        close-button]])))
 
 (defn query [data]

@@ -153,7 +153,7 @@ Thanks,
 
        (when share-carts?
          [:div.border-top.border-light-silver.py2
-          (ui/navy-outline-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+          (ui/large-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
                                    :spinning? requesting-shared-cart?
                                    :data-test "share-cart"}
                                   [:div.flex.items-center.justify-center

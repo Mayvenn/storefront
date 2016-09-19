@@ -77,7 +77,7 @@
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
     ;; button color should be white/transparent
-    (ui/silver-outline-button
+    (ui/large-ghost-button
      (utils/route-to events/navigate-categories)
      [:span.dark-black.bold "shop now"])]])
 

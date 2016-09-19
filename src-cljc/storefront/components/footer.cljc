@@ -54,18 +54,21 @@
     [:a.block.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.md-up-hide
-    (ui/footer-button {:href (str "tel://" call-number)}
-                      [:div.flex.items-center.justify-center
-                       [:div.p1 svg/phone-ringing]
-                       [:div.left-align.h4 "Call Now"]])
-    (ui/footer-button {:href (str "sms://+1" sms-number)}
-                      [:div.flex.items-center.justify-center
-                       [:div.p1 svg/message]
-                       [:div.left-align.h4 "Send Message"]])
-    (ui/footer-button {:href (str "mailto:" contact-email)}
-                      [:div.flex.items-center.justify-center
-                       [:div.p1 svg/mail-envelope]
-                       [:div.left-align.h4 "Send Email"]])]])
+    (ui/ghost-button {:href (str "tel://" call-number)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      [:div.p1 svg/phone-ringing]
+                      [:div.left-align.h4 "Call Now"]])
+    (ui/ghost-button {:href (str "sms://+1" sms-number)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      [:div.p1 svg/message]
+                      [:div.left-align.h4 "Send Message"]])
+    (ui/ghost-button {:href (str "mailto:" contact-email)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      [:div.p1 svg/mail-envelope]
+                      [:div.left-align.h4 "Send Email"]])]])
 
 (defn social-section []
   [:div
