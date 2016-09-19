@@ -51,7 +51,7 @@
 
     (when-not get-satisfaction-login?
       [:div.clearfix.center.gray.mb2 "Don't have an account? "
-       [:a.green (utils/route-to events/navigate-sign-up) "Register Here"]])]))
+       [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]])]))
 
 (defn component [{:keys [get-satisfaction-login?] :as form-data} owner opts]
   (component/create

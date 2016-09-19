@@ -30,7 +30,7 @@
            :checked      (= selected-sku sku)
            :on-change    (select-shipping-method shipping-method)}]
          [:.clearfix.col-12
-          [:.right.medium {:class (if (pos? price) "navy" "green")} (as-money-without-cents-or-free price)]
+          [:.right.medium {:class (if (pos? price) "navy" "teal")} (as-money-without-cents-or-free price)]
           [:.overflow-hidden
            [:.mb1 (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
            [:.h6 (shipping/timeframe sku)]]]])]])))

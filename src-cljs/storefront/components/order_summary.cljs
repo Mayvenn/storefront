@@ -16,7 +16,7 @@
    [:tr.h5.line-height-4
     (merge row-attrs
            (when (neg? amount)
-             {:class "green"}))
+             {:class "teal"}))
     [:td name]
     [:td.right-align.medium
      {:class (when-not (neg? amount)

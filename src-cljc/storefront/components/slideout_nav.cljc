@@ -33,7 +33,7 @@
 
 (def logo
   (component/html
-   [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.green.pp3
+   [:a.block.img-logo.bg-no-repeat.bg-contain.bg-center.teal.pp3
     (merge {:style {:height "30px"}
             :title "Mayvenn"
             :data-test "slideout-logo"}
@@ -59,10 +59,10 @@
   [:nav {:role "navigation" :aria-label "Mayvenn Account"}
    (row [:div.truncate user-email])
    [:ul.list-reset
-    [:li [:a.green.block (utils/route-to events/navigate-account-manage)
+    [:li [:a.teal.block (utils/route-to events/navigate-account-manage)
           (row (selectable? events/navigate-account-manage
                             [:span {:data-test "account-settings"} "Account Settings"]))]]
-    [:li [:a.green.block (utils/route-to events/navigate-account-referrals)
+    [:li [:a.teal.block (utils/route-to events/navigate-account-referrals)
           (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
 (defn store-section [selectable? store]
@@ -72,13 +72,13 @@
       [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
       [:div nickname])
      [:ul.list-reset
-      [:li [:a.green.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+      [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
             (row (selectable? events/navigate-stylist-dashboard
                               [:span {:data-test "dashboard"} "Dashboard"]))]]
-      [:li [:a.green.block (utils/route-to events/navigate-stylist-account-profile)
+      [:li [:a.teal.block (utils/route-to events/navigate-stylist-account-profile)
             (row (selectable? events/navigate-stylist-account
                               [:span {:data-test "account-settings"} "Account Settings"]))]]
-      [:li [:a.green.block (utils/navigate-community) (row "Community")]]]]))
+      [:li [:a.teal.block (utils/navigate-community) (row "Community")]]]]))
 
 (defn products-section [selectable? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
@@ -91,7 +91,7 @@
                (utils/route-to events/navigate-category {:named-search-slug slug}))
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
-         [:div.green.titleize
+         [:div.teal.titleize
           (selectable? events/navigate-category {:named-search-slug slug} name)])]])]])
 
 (defn extensions-section [selectable? named-searches]
@@ -124,13 +124,13 @@
     [section-inner
      [:nav {:role "navigation" :aria-label "Help"}
       [:ul.list-reset
-       [:li [:a.green (utils/route-to events/navigate-shop-by-look)
+       [:li [:a.teal (utils/route-to events/navigate-shop-by-look)
              (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]
-       [:li [:a.green {:href "https://blog.mayvenn.com"} (row "Blog")]]
-       [:li [:a.green (assoc (utils/route-to events/navigate-content-guarantee)
+       [:li [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]]
+       [:li [:a.teal (assoc (utils/route-to events/navigate-content-guarantee)
                              :data-test "content-guarantee")
              (row (selectable? events/navigate-content-guarantee "Our Guarantee"))]]
-       [:li [:a.green (assoc (utils/route-to events/navigate-content-help)
+       [:li [:a.teal (assoc (utils/route-to events/navigate-content-help)
                              :data-test "content-help")
              (row (selectable? events/navigate-content-help "Contact Us"))]]]]]]))
 
@@ -146,7 +146,7 @@
         "Sign In"]]
       [:div.col.col-6.p1.center.h6.line-height-2
        [:div.gray "No account?"]
-       [:a.green
+       [:a.teal
         (merge {:data-test "sign-up"}
                (utils/route-to events/navigate-sign-up))
         "Sign Up"]]]]]))

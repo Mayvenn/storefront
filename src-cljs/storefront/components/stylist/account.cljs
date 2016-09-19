@@ -20,7 +20,7 @@
                 :top "-12px" :left "-12px"}}]])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if photo-saving? "border-white" "border-green")}
+     :class (if photo-saving? "border-white" "border-teal")}
     [:div.circle.border-white.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
    "Change Photo"
@@ -33,7 +33,7 @@
 (defn store-credit [available-credit]
   [:div.mb3
    [:div.medium.mb1 "Store Credit"]
-   [:div.green.h1 (when available-credit (ui/big-money available-credit))]
+   [:div.teal.h1 (when available-credit (ui/big-money available-credit))]
    [:div.mb1 ui/nbsp]])
 
 (defn component [{:keys [fetching?

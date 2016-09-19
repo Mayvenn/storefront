@@ -56,7 +56,7 @@
                        {:data-test "user-submit"})
 
      [:div.center.gray.mt3.mb2 "Already have an account? "
-      [:a.green (utils/route-to events/navigate-sign-in) "Log In"]]])))
+      [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]])))
 
 (defn query [data]
   {:email                 (get-in data keypaths/sign-up-email)

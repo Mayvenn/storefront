@@ -77,7 +77,7 @@ Thanks,
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]
                 [:div.mt3.mb1
-                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.green.col-12
+                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.teal.col-12
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
@@ -129,7 +129,7 @@ Thanks,
          [:div.col-8.pr1
           (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
          [:div.col-4.pl1.mb3.inline-block
-          (ui/green-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
+          (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
                             :disabled? updating?
                             :spinning? applying-coupon?}
                            "Apply")]]]
@@ -177,7 +177,7 @@ Thanks,
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/green-button (utils/route-to events/navigate-categories)
+     (ui/teal-button (utils/route-to events/navigate-categories)
                       "Shop Now")))))
 
 (defn ^:private variants-requests [data request-key variant-ids]

@@ -13,7 +13,7 @@
     (ui/narrow-container
      [:.h3.center.my2 "I'm new here"]
 
-     (ui/green-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
+     (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
                        :data-test "guest-checkout-button"}
                       "Guest Checkout")
 

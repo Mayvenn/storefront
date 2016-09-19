@@ -1,9 +1,7 @@
-.stroke-teal         { stroke: var(--teal); }
-.stroke-green        { stroke: var(--green); }
+.stroke-teal        { stroke: var(--teal); }
 .stroke-navy         { stroke: var(--navy); }
 
-.fill-teal  { fill: var(--teal); }
-.fill-green { fill: var(--green); }
+.fill-teal { fill: var(--teal); }
 .fill-navy  { fill: var(--navy); }
 
 .stroke-pure-white   { stroke: var(--pure-white); }
@@ -35,8 +33,7 @@
 .fill-dark-black   { fill: var(--dark-black); }
 
 :root {
-  --teal:        #36b4d4;
-  --green:       #40CBAC;
+  --teal:       #40CBAC;
   --navy:        #175674;
 
   --pure-white:   #ffffff;

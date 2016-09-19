@@ -31,7 +31,7 @@
 
 (defn logo [height]
   (component/html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.green.pp3
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
     (merge {:style {:height height}
             :title "Mayvenn"
             :item-prop "logo"
@@ -152,7 +152,7 @@
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
-  [:a.green.block (utils/route-to nav-event)
+  [:a.teal.block (utils/route-to nav-event)
    [:span (when current-page? {:class padded-selected-link}) title]])
 
 (defn stylist-account [expanded?
@@ -165,7 +165,7 @@
     (when store-photo [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:div.truncate store-nickname]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
-   [:a.green.block (utils/navigate-community) "Community"]
+   [:a.teal.block (utils/navigate-community) "Community"]
    (account-link (current-page? events/navigate-stylist-account) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
@@ -198,7 +198,7 @@
        [:a.h5 (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
-         [:span.green.titleize
+         [:span.teal.titleize
           (when (current-page? events/navigate-category {:named-search-slug slug})
             {:class padded-selected-link})
           name])]])]])

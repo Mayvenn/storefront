@@ -9,13 +9,13 @@
 (def flash-line-height "1.25em")
 
 (def success-img
-  (component/html [:div (svg/adjustable-check {:class "stroke-green align-middle" :width flash-line-height :height flash-line-height})]))
+  (component/html [:div (svg/adjustable-check {:class "stroke-teal align-middle" :width flash-line-height :height flash-line-height})]))
 
 (def error-img
   (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width flash-line-height :height flash-line-height}}]))
 
 (defn success-box [box-opts body]
-  [:div.green.bg-green.border.border-green.rounded.light.letter-spacing-1
+  [:div.teal.bg-teal.border.border-teal.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
     [:div.right.ml1 success-img]
     [:div.overflow-hidden body]]])

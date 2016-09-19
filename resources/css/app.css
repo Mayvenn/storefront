@@ -161,15 +161,14 @@
 
     --button-font-weight: inherit;
     --button-line-height: 1.2;
-    --button-background-color: var(--green);
+    --button-background-color: var(--teal);
     --button-border-radius: var(--border-radius);
     --button-big-padding-y: .75rem;
 
     --border-radius: 4px;
     --border-radius-1: 8px;
 
-    --teal:         #36b4d4;
-    --green:        #40CBAC;
+    --teal:        #40CBAC;
     --navy:         #175674;
     --orange:       #e8a50c;
 

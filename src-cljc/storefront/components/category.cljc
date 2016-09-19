@@ -83,7 +83,7 @@
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/green-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn bagged-variants-and-checkout [bagged-variants]
   (when (seq bagged-variants)
@@ -99,7 +99,7 @@
     :class (cond
              sold-out?   "bg-silver gray"
              later-step? "bg-light-silver muted"
-             checked?    "bg-green white"
+             checked?    "bg-teal white"
              true        "bg-white gray")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)

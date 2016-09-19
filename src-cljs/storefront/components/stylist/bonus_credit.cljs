@@ -12,7 +12,7 @@
             [storefront.components.ui :as ui]))
 
 (def check-svg
-  (html (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-green"})))
+  (html (svg/adjustable-check {:width "1em" :height "1em" :class "stroke-teal"})))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.flex.items-center.justify-between.py1
@@ -41,7 +41,7 @@
      (if (zero? progress)
        [:.light-gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]
-       [:.bg-green.white.px2.capped.flex.items-center
+       [:.bg-teal.white.px2.capped.flex.items-center
         {:style (merge bar-padding-y {:width bar-width})}
         [:.right-align.flex-auto
          (str (.toFixed bar-value 0) "%")]])]))

@@ -22,7 +22,7 @@
     [:svg {:width diameter :height diameter}
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
       [:circle.stroke-silver svg-circle-size]
-      [:circle.stroke-green (merge svg-circle-size {:style {:stroke-dasharray  circumference
+      [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray  circumference
                                                             :stroke-dashoffset arc-length}})]]]))
 
 (def state-radius 36)
@@ -37,7 +37,7 @@
 
 (def paid-icon
   (html
-   (svg/adjustable-check {:class "stroke-green" :width state-diameter :height state-diameter})))
+   (svg/adjustable-check {:class "stroke-teal" :width state-diameter :height state-diameter})))
 
 (defmulti state-icon (fn [state earning-amount commissioned-revenue] state))
 (defmethod state-icon :referred [_ _ _] no-sales-icon)
@@ -47,7 +47,7 @@
   [:.relative
    [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
-    [:.h3.green.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:.h3.teal.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
     [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5

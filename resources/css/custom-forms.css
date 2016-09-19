@@ -18,8 +18,8 @@
   padding-bottom: 0.5em;
 }
 
-.glow-green:focus {
-   outline-color: var(--green);
+.glow-teal:focus {
+   outline-color: var(--teal);
 }
 
 .glow-orange:focus {
@@ -31,6 +31,6 @@ input[type=date] {
 }
 
 :root {
-  --green:  #40CBAC;
+  --teal:  #40CBAC;
   --orange: #e8a50c;
 }

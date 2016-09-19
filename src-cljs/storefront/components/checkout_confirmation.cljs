@@ -50,7 +50,7 @@
         (when requires-additional-payment?
           [:div
            (ui/note-box
-            {:color "green"
+            {:color "teal"
              :data-test "additional-payment-required-note"}
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])

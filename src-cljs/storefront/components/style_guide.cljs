@@ -87,7 +87,7 @@
    ;; Normal Buttons, Active States
    [:div.flex.flex-wrap
     [:div.col-4.p1 "Primary"
-     [:div (ui/green-button {} "ui/green-button")]]
+     [:div (ui/teal-button {} "ui/teal-button")]]
     [:div.col-4.p1 "Secondary"
      [:div (ui/navy-button {} "ui/navy-button")]]
     [:div.col-4.p1 "Ghost"
@@ -96,7 +96,7 @@
    ;; Normal Buttons, Inactive States
    [:div.flex.flex-wrap
     [:div.col-4.p1 "Primary"
-     [:div (ui/green-button {:disabled? true} "ui/green-button")]]
+     [:div (ui/teal-button {:disabled? true} "ui/teal-button")]]
     [:div.col-4.p1 "Secondary"
      [:div (ui/navy-button {:disabled? true} "ui/navy-button")]]
     [:div.col-4.p1 "Ghost"
@@ -105,7 +105,7 @@
    ;; Large Buttons, Active States
    [:div.flex.flex-wrap
     [:div.col-4.p1 "Primary (Large)"
-     [:div (ui/large-green-button {} "ui/large-green-button")]]
+     [:div (ui/large-teal-button {} "ui/large-teal-button")]]
     [:div.col-4.p1 "Secondary (Large)"
      [:div (ui/large-navy-button {} "ui/large-navy-button")]]
     [:div.col-4.p1 "Ghost (Large)"
@@ -113,7 +113,7 @@
 
     ;; Large Buttons, Inactive States
     [:div.col-4.p1 "Primary (Large)"
-     [:div (ui/large-green-button {:disabled? true} "ui/large-green-button")]]
+     [:div (ui/large-teal-button {:disabled? true} "ui/large-teal-button")]]
     [:div.col-4.p1 "Secondary (Large)"
      [:div (ui/large-navy-button {:disabled? true} "ui/large-navy-button")]]
     [:div.col-4.p1 "Ghost (Large)"

@@ -118,7 +118,7 @@
 
         (when (pos? credit-available)
           (ui/note-box
-           {:color "green"
+           {:color "teal"
             :data-test "store-credit-note"}
            [:.p2.navy
             [:.h5 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]

@@ -125,7 +125,7 @@
         "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]]
 
     [:div.col-6.md-up-col-4.mx-auto
-     (ui/green-button
+     (ui/teal-button
       (utils/route-to events/navigate-categories)
       "shop now")]]))
 

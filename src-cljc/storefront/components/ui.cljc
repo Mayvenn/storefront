@@ -38,7 +38,7 @@
     [:a (merge {:href "#"} opts) content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/green    "bg-green white"
+  (let [color (color-kw {:color/teal    "bg-teal white"
                          :color/navy     "bg-navy white"
                          :color/ghost    "bg-clear border-light-silver dark-black"
                          :color/paypal   "bg-paypal-blue white"
@@ -71,11 +71,11 @@
                  :disabled-class (button-class :color/disabled :size/large attrs))
           (into [:div] content)))
 
-(defn green-button [attrs & content]
-  (small-button :color/green attrs content))
+(defn teal-button [attrs & content]
+  (small-button :color/teal attrs content))
 
-(defn large-green-button [attrs & content]
-  (large-button :color/green attrs content))
+(defn large-teal-button [attrs & content]
+  (large-button :color/teal attrs content))
 
 (defn navy-button [attrs & content]
   (small-button :color/navy attrs content))
@@ -96,10 +96,10 @@
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test] :as attrs}]
    (if spinning?
-     (large-button :color/green attrs)
+     (large-button :color/teal attrs)
      [:input
       {:type "submit"
-       :class (button-class :color/green :color/large attrs)
+       :class (button-class :color/teal :color/large attrs)
        :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))
@@ -143,7 +143,7 @@
                                         {:keypath keypath
                                          :value (.. e -target -value)}))}
                      (dissoc input-attributes :errors))
-        (nil? error) (add-classes "border-light-silver glow-green")
+        (nil? error) (add-classes "border-light-silver glow-teal")
         error (add-classes "border-orange border-width-2 pr4 glow-orange")
         (seq value) (add-classes "has-value"))]
      [:div.orange.mtp2.mb1
@@ -167,7 +167,7 @@
          {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
          [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
           {:style {:width "2.25rem" :height "2.25rem"}}]])
-      [:select.col-12.h3.glow-green.absolute
+      [:select.col-12.h3.glow-teal.absolute
        (cond-> (merge {:key         label
                        :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
                        :placeholder label

@@ -17,7 +17,7 @@
 
 (defn status-look [status]
   (case status
-    "pending" "green"
+    "pending" "teal"
     "paid" "navy"))
 
 (defn four-up [a b c d]
@@ -92,10 +92,10 @@
                                      (store-credit-subtotals order))]
     [:.clearfix.mxn1.my2 {:key name}
      [:.px1.col.col-8
-      {:class (when (neg? price) "green")}
+      {:class (when (neg? price) "teal")}
       name]
      [:.px1.col.col-4.medium.right-align
-      {:class (if (neg? price) "green" "navy")}
+      {:class (if (neg? price) "teal" "navy")}
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
@@ -120,7 +120,7 @@
      [:.bg-navy
       (payout-bar
        (mf/as-money amount) " paid on " (f/long-date payout-date))]
-     [:.bg-green
+     [:.bg-teal
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
 
