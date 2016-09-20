@@ -7,15 +7,17 @@
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's
 ;; svg -> optimized svg:    https://github.com/svg/svgo
 ;; manual cleanup           remove title, if warranted
-;;                          remove xmlns, assuming SVG will be rendered inline
-;;                          remove width and height, if SVG will have adjustable size
-;;                          use .stroke-x and .fill-x color classes, so SVGs
-;;                            change with palette
-;; svg -> sprited svg:      change svg to symbol in sprites.svg
-;;                          use the same viewBox
+;; svg -> sprited svg:      move svg to a `symbol` in sprites.svg
 ;;                          set id
-;;                          set width and height to 100%
-;;                          use it
+;;                          use the same viewBox
+;;                          remove width and height
+;;                          remove xmlns
+;;                          use .stroke-x and .fill-x color classes (internally,
+;;                            not in the external sprite), so SVGs change with
+;;                            palette. If an SVG uses more than one stroke or
+;;                            fill, the colors will have be inlined in the
+;;                            sprite.
+;;                          use it, referencing id
 ;;                            here, in svg.cljc, as svg/svg-xlink
 ;;                            in static content as xlink:href
 
