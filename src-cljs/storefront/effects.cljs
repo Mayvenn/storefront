@@ -148,10 +148,10 @@
       (let [path (routes/current-path app-state)]
         (exception-handler/refresh)))))
 
-(defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id] _ app-state]
+(defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ app-state]
   (when-not (= static-content-id
                (get-in app-state keypaths/static-id))
-    (api/get-static-content static-content-id)))
+    (api/get-static-content event)))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/insert))

@@ -6,6 +6,7 @@
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.states :as states]
+            [storefront.app-routes :as app-routes]
             [storefront.cache :as c]
             [storefront.config
              :refer
@@ -710,10 +711,10 @@
                                                :request-key req-key
                                                :request-id  req-id})))
 
-(defn get-static-content [static-content-id]
+(defn get-static-content [[_ _ & static-content-id :as nav-event]]
   (static-content-req
    GET
-   (str "/static/" (->> static-content-id (map name) (str/join "-")))
+   (app-routes/path-for nav-event)
    request-keys/get-static-content
    {:handler #(messages/handle-message events/api-success-get-static-content
                                        {:id      static-content-id
