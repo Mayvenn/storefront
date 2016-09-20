@@ -67,23 +67,24 @@
                        [:div.p1 svg/mail-envelope]
                        [:div.left-align.h3 "Send Email"]])]])
 
-(defn social-section []
-  [:div
-   [:div.medium.border-bottom.border-light-silver
-    [:div.to-md-hide ui/nbsp]]
-   [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
-    [:a.block {:item-prop "sameAs"
-               :href "https://www.facebook.com/MayvennHair"}
-     [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
-    [:a.block {:item-prop "sameAs"
-               :href "http://instagram.com/mayvennhair"}
-     [:div {:style {:width "22px" :height "22px"}} svg/instagram]]
-    [:a.block {:item-prop "sameAs"
-               :href "https://twitter.com/MayvennHair"}
-     [:div {:style {:width "22px" :height "22px"}} svg/twitter]]
-    [:a.block {:item-prop "sameAs"
-               :href "http://www.pinterest.com/mayvennhair/"}
-     [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]])
+(def social-section
+  (component/html
+   [:div
+    [:div.medium.border-bottom.border-light-silver
+     [:div.to-md-hide ui/nbsp]]
+    [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
+     [:a.block {:item-prop "sameAs"
+                :href "https://www.facebook.com/MayvennHair"}
+      [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
+     [:a.block {:item-prop "sameAs"
+                :href "http://instagram.com/mayvennhair"}
+      [:div {:style {:width "22px" :height "22px"}} svg/instagram]]
+     [:a.block {:item-prop "sameAs"
+                :href "https://twitter.com/MayvennHair"}
+      [:div {:style {:width "22px" :height "22px"}} svg/twitter]]
+     [:a.block {:item-prop "sameAs"
+                :href "http://www.pinterest.com/mayvennhair/"}
+      [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]))
 
 (defn full-component [{:keys [named-searches
                               contacts
@@ -94,7 +95,7 @@
     [:div.col-12.clearfix
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section named-searches own-store?)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
-     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
+     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 social-section]]
 
     [:div.mt3.bg-black.white.py1.px3.clearfix.f5.light
      [:div.left
@@ -103,11 +104,14 @@
       [:span "© 2016 "] "Mayvenn"]
      [:div.right
       [:a.white
+       (utils/route-to events/navigate-content-about-us) "About Us"]
+      " - "
+      [:a.white
        (assoc (utils/route-to events/navigate-content-privacy)
-              :data-test "content-privacy") "Privacy Policy"]
-      " and "
+              :data-test "content-privacy") "Privacy"]
+      " - "
       [:a.white (assoc (utils/route-to events/navigate-content-tos)
-                       :data-test "content-tos") "Terms of Use"]]]]))
+                       :data-test "content-tos") "Terms"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
