@@ -1,10 +1,12 @@
 .stroke-teal         { stroke: var(--teal); }
 .stroke-green        { stroke: var(--green); }
 .stroke-navy         { stroke: var(--navy); }
+.stroke-orange       { stroke: var(--orange); }
 
-.fill-teal  { fill: var(--teal); }
-.fill-green { fill: var(--green); }
-.fill-navy  { fill: var(--navy); }
+.fill-teal   { fill: var(--teal); }
+.fill-green  { fill: var(--green); }
+.fill-navy   { fill: var(--navy); }
+.fill-orange { fill: var(--orange); }
 
 .stroke-pure-white   { stroke: var(--pure-white); }
 .stroke-white        { stroke: var(--white); }
@@ -38,6 +40,7 @@
   --teal:        #36b4d4;
   --green:       #40CBAC;
   --navy:        #175674;
+  --orange:      #e8a50c;
 
   --pure-white:   #ffffff;
   --light-white:  #fcfcfc;

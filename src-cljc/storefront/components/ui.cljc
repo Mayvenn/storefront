@@ -86,15 +86,17 @@
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))
 
+(def input-error-icon
+  (component/html
+   [:div.absolute
+    {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
+    (svg/error {:class "fill-orange" :style {:width "2.25rem" :height "2.25rem"}})]))
+
 (defn text-field [label keypath value {:keys [errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
      [:div.right.relative
-      (when error
-        [:div.absolute
-         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
-         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-          {:style {:width "2.25rem" :height "2.25rem"}}]])]
+      (when error input-error-icon)]
      [:div.absolute
       [:label.floating-label--label.col-12.h6.navy.relative
        {:class (str/join " " (map str
@@ -133,11 +135,7 @@
         error (first (:errors select-attributes))]
     [:div.col-12.mb2.mx-auto
      [:div.relative.z1
-      (when error
-        [:div.absolute
-         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
-         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-          {:style {:width "2.25rem" :height "2.25rem"}}]])
+      (when error input-error-icon)
       [:select.col-12.h2.glow-green.absolute
        (cond-> (merge {:key         label
                        :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}

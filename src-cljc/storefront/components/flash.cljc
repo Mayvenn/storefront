@@ -13,7 +13,8 @@
                       :style {:width flash-line-height :height flash-line-height}}))
 
 (def error-img
-  (component/html [:div.img-error-icon.bg-no-repeat.bg-contain {:style {:width flash-line-height :height flash-line-height}}]))
+  (svg/error {:class "fill-orange"
+              :style {:width flash-line-height :height flash-line-height}}))
 
 (defn success-box [box-opts body]
   [:div.green.bg-green.border.border-green.rounded.light.letter-spacing-1

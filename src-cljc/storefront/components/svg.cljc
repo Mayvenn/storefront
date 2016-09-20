@@ -25,6 +25,9 @@
   (component/html
    [:svg opts [:use {:xlinkHref (str (assets/path "/images/sprites.svg") "#" id)}]]))
 
+(defn error [opts]
+  (svg-xlink opts "circled-exclamation"))
+
 ;; Stylist Dashboard
 
 (def micro-dollar-sign
