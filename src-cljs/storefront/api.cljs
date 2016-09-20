@@ -714,7 +714,7 @@
 (defn get-static-content [[_ _ & static-content-id :as nav-event]]
   (static-content-req
    GET
-   (app-routes/path-for nav-event)
+   (str "/static" (app-routes/path-for nav-event))
    request-keys/get-static-content
    {:handler #(messages/handle-message events/api-success-get-static-content
                                        {:id      static-content-id
