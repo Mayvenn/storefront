@@ -9,7 +9,7 @@
 
 (def close-button
   (component/html
-   (ui/modal-close {:bg-class "fill-dark-gray" :on-close (utils/send-event-callback events/control-stylist-banner-close)})))
+   (ui/modal-close {:bg-class "fill-gray" :on-close (utils/send-event-callback events/control-stylist-banner-close)})))
 
 (def banner-copy
   (component/html [:p.f5.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
@@ -19,7 +19,7 @@
    (let [btn-behavior {:href     welcome-url
                        :on-click (utils/send-event-callback events/external-redirect-welcome)}
          btn-copy "Become a Mayvenn"]
-     [:div.bg-dark-black.white.p2
+     [:div.bg-dark-gray.light-silver.p2
       ;; Mobile layout
       [:div.md-up-hide
        [:div.right close-button]

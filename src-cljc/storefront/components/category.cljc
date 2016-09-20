@@ -39,7 +39,7 @@
 
 (defn quantity-and-price-structure [quantity price]
   [:div
-   [:div.right-align.light-gray.h6 "PRICE"]
+   [:div.right-align.gray.h6 "PRICE"]
    [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
     [:div.navy price]]])
@@ -69,7 +69,7 @@
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.line-height-3.my1.p1.caps.gray.bg-dark-white.medium.center
+  [:div.h6.line-height-3.my1.p1.caps.gray.bg-silver.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -93,13 +93,13 @@
 
 (defn option-html [later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-silver.p1.flex.flex-column.justify-center.items-center.light.col-12
+  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.light.col-12
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :style {:height "100%"}
     :class (cond
-             sold-out?   "bg-silver gray"
-             later-step? "bg-light-silver muted"
-             checked?    "bg-teal white"
+             sold-out?   "bg-light-gray gray"
+             later-step? "bg-dark-silver muted"
+             checked?    "bg-teal light-silver"
              true        "bg-white gray")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
@@ -107,7 +107,7 @@
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selected-options selections})}]
    (if image
-     [:img.mbp4.content-box.circle.border-white
+     [:img.mbp4.content-box.circle.border-light-silver
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
@@ -123,9 +123,9 @@
    [:h3.clearfix.f4
     [:div.left.navy.medium.shout
      (name step-name)
-     (when selected-option [:span.inline-block.mxp2.light-gray " - "])]
+     (when selected-option [:span.inline-block.mxp2.gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.light-gray.f4.regular
+      [:div.overflow-hidden.gray.f4.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
@@ -178,11 +178,11 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-light-silver.p2.my2.center.navy.shout.medium.h6
+   [:div.border-top.border-bottom.border-dark-silver.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
-  [:div.border.border-light-gray.mt2.p2.rounded
+  [:div.border.border-gray.mt2.p2.rounded
    [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
@@ -194,7 +194,7 @@
              size (str "multi-cols-" (count attrs))]
          (into [:dl {:class size}]
                (mapcat (fn [[title value]]
-                         [[:dt.break-before.dark-gray.shout.h6 title]
+                         [[:dt.break-before.gray.shout.h6 title]
                           [:dd.ml0.h5.navy.medium value]])
                        attrs)))])
     (when (seq summary)
@@ -203,7 +203,7 @@
        [:ul.list-reset.navy.h6.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h6.dark-gray.line-height-2
+    [:div.h6.gray.line-height-2
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
@@ -227,8 +227,8 @@
 (defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center
-     [:div.silver.f6 "Starting at"]
-     [:div.dark-gray.f2.light
+     [:div.light-gray.f6 "Starting at"]
+     [:div.gray.f2.light
       {:item-prop "price"}
       (as-money-without-cents cheapest-price)]]))
 
@@ -296,7 +296,7 @@
             [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
-               [:div.border-bottom.border-dark-white.border-width-2
+               [:div.border-bottom.border-silver.border-width-2
                 (for [step (bundle-builder/steps bundle-builder)]
                   (step-html step))])
              [:div schema-org-offer-props

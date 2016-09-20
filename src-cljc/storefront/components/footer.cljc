@@ -26,11 +26,11 @@
   (for [{:keys [name slug]} named-searches]
     [:a (merge {:key slug}
                (utils/route-to events/navigate-category {:named-search-slug slug}))
-     [:div.dark-gray.light.titleize name]]))
+     [:div.gray.light.titleize name]]))
 
 (defn shop-section [named-searches own-store?]
   [:div.col-12
-   [:div.medium.border-bottom.border-light-silver.mb1
+   [:div.medium.border-bottom.border-dark-silver.mb1
     [:div.to-md-hide.f4 "Shop"]
     [:div.md-up-hide "Shop"]]
    [:nav.clearfix.f5
@@ -44,14 +44,14 @@
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
-   [:div.medium.border-bottom.border-light-silver.mb1
+   [:div.medium.border-bottom.border-dark-silver.mb1
     [:div.to-md-hide.f4 "Contact"]
     [:div.md-up-hide "Contact"]]
-   [:div.dark-gray.light.f5
-    [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+   [:div.gray.light.f5
+    [:span.md-up-hide [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
     [:span.to-md-hide call-number] ;; desktop
     " | 9am-5pm PST M-F"
-    [:a.block.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
+    [:a.block.gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.md-up-hide
     (ui/ghost-button {:href (str "tel://" call-number)
@@ -72,9 +72,9 @@
 
 (defn social-section []
   [:div
-   [:div.medium.border-bottom.border-light-silver
+   [:div.medium.border-bottom.border-dark-silver
     [:div.to-md-hide ui/nbsp]]
-   [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
+   [:div.border-bottom.border-dark-silver.p1.flex.items-center.justify-around.py2
     [:a.block {:item-prop "sameAs"
                :href "https://www.facebook.com/MayvennHair"}
      [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
@@ -92,33 +92,33 @@
                               contacts
                               own-store?]} owner opts]
   (component/create
-   [:div.h5.border-top.border-light-silver.bg-dark-white
+   [:div.h5.border-top.border-dark-silver.bg-light-silver
 
     [:div.col-12.clearfix
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section named-searches own-store?)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (social-section)]]
 
-    [:div.mt3.bg-black.white.py1.px3.clearfix.f6.light
+    [:div.mt3.bg-dark-gray.light-silver.py1.px3.clearfix.f6.light
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
       [:span "© 2016 "] "Mayvenn"]
      [:div.right
-      [:a.white
+      [:a.light-silver
        (assoc (utils/route-to events/navigate-content-privacy)
               :data-test "content-privacy") "Privacy Policy"]
       " and "
-      [:a.white (assoc (utils/route-to events/navigate-content-tos)
+      [:a.light-silver (assoc (utils/route-to events/navigate-content-tos)
                        :data-test "content-tos") "Terms of Use"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
-   [:div.border-top.border-light-silver.bg-light-white
+   [:div.border-top.border-dark-silver.bg-white
     [:div.center.px3.my2.line-height-4
-     [:div.medium.f4.dark-gray "Need Help?"]
-     [:div.dark-gray.light.f5
-      [:span.md-up-hide [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
+     [:div.medium.f4.gray "Need Help?"]
+     [:div.gray.light.f5
+      [:span.md-up-hide [:a.gray {:href (str "tel://" call-number)} call-number]]
       [:span.to-md-hide call-number]
       " | 9am-5pm PST M-F"]]]))
 

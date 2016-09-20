@@ -54,7 +54,7 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(def body-class "mx-auto bg-pure-white")
+(def body-class "mx-auto bg-white")
 
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
@@ -120,7 +120,7 @@
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
    [:body.mx-auto
-    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center.bg-white
+    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center.bg-light-silver
      {:style "min-height: 100vh;"}
      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")

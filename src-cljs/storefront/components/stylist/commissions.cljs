@@ -29,7 +29,7 @@
 
 (defn show-item [products {:keys [id product-name product-id unit-price variant-attrs quantity] :as item}]
   [:.py2.clearfix {:key id}
-   [:img.left.border.border-dark-white.mr3
+   [:img.left.border.border-silver.mr3
     {:style {:width "5rem"}
      :src   (products/thumbnail-url products product-id)
      :alt   product-name}]
@@ -99,7 +99,7 @@
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:.h3.p2.col-12.right-align.navy.border-top.border-dark-white
+  [:.h3.p2.col-12.right-align.navy.border-top.border-silver
    (mf/as-money commissionable-amount)])
 
 (defn show-order [products shipping-methods order]
@@ -131,7 +131,7 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:.p2.border-bottom.border-right.border-left.border-dark-white
+  [:.p2.border-bottom.border-right.border-left.border-silver
    (when order
      {:class "pointer"
       :on-click (toggle-expanded-commission expanded? number)})
@@ -142,11 +142,11 @@
      (when (= status "paid") "+") (mf/as-money amount)]
     [:.h3.navy (:full-name order)]]
 
-   [:.silver.h6
+   [:.light-gray.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
                [:.right.h2.mtn2.mr1
-                {:class (if (expanded? number) "light-gray" "black")}
+                {:class (if (expanded? number) "gray" "dark-gray")}
                 "..."]))]
 
    [:.medium.h6.line-height-3
@@ -172,7 +172,7 @@
                         :component "div"}
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
-                          [:.dark-gray.bg-white
+                          [:.gray.bg-light-silver
                            (show-order products shipping-methods order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])
@@ -180,16 +180,16 @@
 (def empty-commissions
   (html
    [:.center
-    [:.p2.border-bottom.border-dark-white
+    [:.p2.border-bottom.border-silver
      [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
-     [:p.h3.silver "Looks like you don't have any commissions yet."]]
+     [:p.h3.light-gray "Looks like you don't have any commissions yet."]]
     [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylist-urls/store-url]]]))
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:.h6.dark-silver
+    [:.h6.light-gray
      [:.p2.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]

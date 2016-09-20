@@ -29,7 +29,7 @@
              [:.relative {:style {:width "0"}}
               [:.bg-navy.circle.absolute {:style {:width "12px" :height "12px"}}]
               (when (> step-index current-index)
-                [:.bg-pure-white.circle.absolute {:style {:top "1px" :left "1px" :width "10px" :height "10px"}}])]]
+                [:.bg-white.circle.absolute {:style {:top "1px" :left "1px" :width "10px" :height "10px"}}])]]
             [:.mt2 name]]])]]))))
 
 (defn query [data]

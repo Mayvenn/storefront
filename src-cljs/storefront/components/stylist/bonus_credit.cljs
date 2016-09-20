@@ -37,11 +37,11 @@
   (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
         bar-width (str (max 15 bar-value) "%")
         bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
-    [:.my2.border.border-dark-white.capped.h4.light
+    [:.my2.border.border-silver.capped.h4.light
      (if (zero? progress)
-       [:.light-gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
+       [:.gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
         [:.flex-auto "0%"]]
-       [:.bg-teal.white.px2.capped.flex.items-center
+       [:.bg-teal.light-silver.px2.capped.flex.items-center
         {:style (merge bar-padding-y {:width bar-width})}
         [:.right-align.flex-auto
          (str (.toFixed bar-value 0) "%")]])]))
@@ -49,7 +49,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:.h6.dark-silver
+    [:.h6.light-gray
      [:.p3.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
@@ -99,7 +99,7 @@
                        :fetching? fetching?})
 
             (when (pos? available-credit)
-              [:.center.bg-white.p2.line-height-2
+              [:.center.bg-light-silver.p2.line-height-2
                [:p
                 "Bonus credits available " [:span.navy (mf/as-money available-credit)]
                 [:br]

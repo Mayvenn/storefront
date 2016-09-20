@@ -11,7 +11,7 @@
 
 
 (defn tab-link [event ref label]
-  [:a.black.center.pt2
+  [:a.dark-gray.center.pt2
    (merge (utils/route-to event) {:key ref})
    [:.py1 {:ref ref
            :data-test (str "nav-" ref)}

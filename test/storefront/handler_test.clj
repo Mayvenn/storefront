@@ -69,7 +69,7 @@
                                                    :sku "BNS10"
                                                    :unit-taxable-amount 55.0
                                                    :variant-attrs {:category "hair"
-                                                                   :color "black"
+                                                                   :color "dark-gray"
                                                                    :grade "6a premier collection"
                                                                    :origin "brazilian"
                                                                    :style "straight"

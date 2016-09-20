@@ -13,8 +13,8 @@
             [clojure.string :as str]))
 
 (def section-inner :div.ml3.py2)
-(def section-outer :div.border-bottom.border-light-silver.bg-pure-white.black)
-(def section-outer-darker :div.border-bottom.border-light-silver)
+(def section-outer :div.border-bottom.border-dark-silver.bg-white.dark-gray)
+(def section-outer-darker :div.border-bottom.border-dark-silver)
 
 (defn row
   ([right] (row nil right))
@@ -28,8 +28,8 @@
    [:div.absolute {:style {:width "60px"}}
     [:div.relative.rotate-45.p2 {:style {:height "60px"}
                               :on-click #(messages/handle-message events/control-menu-collapse-all)}
-     [:div.absolute.border-right.border-dark-gray {:style {:width "18px" :height "36px"}}]
-     [:div.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
+     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
+     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
   (component/html
@@ -49,7 +49,7 @@
     content]))
 
 (defn store-credit-flag [credit]
-  [:div.right.border-bottom.border-left.border-light-silver.bg-white
+  [:div.right.border-bottom.border-left.border-dark-silver.bg-white
    {:style {:border-bottom-left-radius "8px"}
     :class (when (zero? credit) :invisible)}
    [:div.h6.px2.py1.line-height-1
@@ -82,7 +82,7 @@
 
 (defn products-section [selectable? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-light-silver.navy title])
+   (row [:div.border-bottom.border-dark-silver.navy title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
@@ -153,7 +153,7 @@
 
 (def sign-out-section
   (component/html
-   [:a.block.navy.center.col-12.p3.bg-white
+   [:a.block.navy.center.col-12.p3.bg-light-silver
     (merge {:data-test "sign-out"}
            (utils/fake-href events/control-sign-out))
     "Logout"]))

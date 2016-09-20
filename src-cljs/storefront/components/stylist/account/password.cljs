@@ -36,7 +36,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-dark-white.border-top.to-md-hide.mb3]
+     [:div.border-silver.border-top.to-md-hide.mb3]
      [:div.col-12.md-up-col-5.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))

@@ -53,7 +53,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-dark-white.border-top.to-md-hide.mb3]
+     [:div.border-silver.border-top.to-md-hide.mb3]
      [:div.col-12.md-up-col-5.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
@@ -70,13 +70,13 @@
                          fetching?
                          profile]} owner opts]
   (component/create
-   [:div.bg-pure-white.light-black
+   [:div.bg-white.gray
     [:div.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div.ml3
        (when available-credit (store-credit available-credit))]]
 
-     [:div.bg-white.mt3.mxn2 ;; Oppose padding on page
+     [:div.bg-light-silver.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}
                        {:opts {:tab-refs ["profile"]
                                :labels   ["Profile"]

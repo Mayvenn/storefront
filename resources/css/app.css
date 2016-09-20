@@ -93,7 +93,7 @@
 
 .slick-prev:before,
 .slick-next:before {
-    color: black;
+    color: dark-gray;
     font-family: sans-serif;
     content: "";
 }
@@ -169,22 +169,18 @@
     --border-radius-1: 8px;
 
     --teal:        #40CBAC;
-    --navy:         #175674;
-    --orange:       #e8a50c;
+    --navy:        #175674;
+    --orange:      #e8a50c;
+    --aqua:        #49BBF0;
 
-    --pure-white:   #ffffff;
-    --light-white:  #fcfcfc;
-    --white:        #fafafa;
-    --dark-white:   #e6e6e6;
-    --light-silver: #d2d2d2;
-    --silver:       #bebebe;
-    --dark-silver:  #aaaaaa;
-    --light-gray:   #969696;
-    --gray:         #828282;
-    --dark-gray:    #6e6e6e;
-    --light-black:  #5a5a5a;
-    --black:        #464646;
-    --dark-black:   #323232;
+    --white:        #FFFFFF;
+    --light-silver: #F2F2F2;
+    --silver:       #EBEBEB;
+    --dark-silver:  #DADADA;
+    --light-gray:   #B4B4B4;
+    --gray:         #666666;
+    --dark-gray:    #333333;
+    --black:        #000000;
 
     --facebook-blue: #3b5998;
     --paypal-blue:   #49bbf0;

@@ -40,13 +40,13 @@
    [:img.mt3.unselectable {:src   product-image
                            :alt   (str "Shop for " long-name)
                            :style {:height "80px"}}]
-   [:div.mb3.dark-black.medium.f4 name]])
+   [:div.mb3.dark-gray.medium.f4 name]])
 
 (defn pick-style [named-searches]
   [:div.center.py3
    [:div.flex.flex-column
-    [:h2.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-    [:h3.h2.order-1.dark-black.bold.py1 "pick your style"]]
+    [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
+    [:h3.h2.order-1.dark-gray.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
@@ -76,10 +76,10 @@
                                                   :settings   (swipe 2)}]}))}
                      nil)]
    [:div.col-6.md-up-col-4.mx-auto
-    ;; button color should be white/transparent
+    ;; button color should be light-silver/transparent
     (ui/large-ghost-button
      (utils/route-to events/navigate-categories)
-     [:span.dark-black.bold "shop now"])]])
+     [:span.dark-gray.bold "shop now"])]])
 
 (defn banner [store-slug]
   [:a
@@ -98,8 +98,8 @@
 
 (def about-mayvenn
   (component/html
-   [:div.dark-gray.py3
-    [:h2.center.dark-black.bold.py1 "why people love Mayvenn hair"]
+   [:div.gray.py3
+    [:h2.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
     [:div.mx3.md-flex.f5
      [:div.py4
@@ -108,17 +108,17 @@
        [:p.line-height-5
         "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]]
 
-     [:div.md-up-hide.border-bottom.border-light-silver]
+     [:div.md-up-hide.border-bottom.border-dark-silver]
      [:div.py4
-      [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
+      [:div.to-md-hide.left.border-left.border-dark-silver {:style {:height "100%"}}]
       [:div.px3
        [:h3.f3.center.bold.mb3 "30 day guarantee"]
        [:p.line-height-5
         "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]]
 
-     [:div.md-up-hide.border-bottom.border-light-silver]
+     [:div.md-up-hide.border-bottom.border-dark-silver]
      [:div.py4
-      [:div.to-md-hide.left.border-left.border-light-silver {:style {:height "100%"}}]
+      [:div.to-md-hide.left.border-left.border-dark-silver {:style {:height "100%"}}]
       [:div.px3
        [:h3.f3.center.bold.mb3 "fast free shipping"]
        [:p.line-height-5
@@ -137,7 +137,7 @@
      (assets/path "/images/homepage/desktop_video.png")
      "Watch a video about what real customers have to say about Mayvenn")
     [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
+     [:div.flex.flex-column.items-center.justify-center.light-silver.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
       [:h2.h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))

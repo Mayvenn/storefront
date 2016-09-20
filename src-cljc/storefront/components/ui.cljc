@@ -10,7 +10,7 @@
             [clojure.string :as str]))
 
 (defn container [& content]
-  [:div.light-black
+  [:div.gray
    (into [:div.p2.m-auto.overflow-hidden] content)])
 
 (defn narrow-container [& content]
@@ -40,9 +40,9 @@
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal    "bg-teal white"
                          :color/navy     "bg-navy white"
-                         :color/ghost    "bg-clear border-light-silver dark-black"
+                         :color/ghost    "bg-clear border-dark-silver dark-gray"
                          :color/paypal   "bg-paypal-blue white"
-                         :color/disabled "bg-light-silver silver"})]
+                         :color/disabled "bg-dark-silver light-gray"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -99,7 +99,7 @@
      (large-button :color/teal attrs)
      [:input
       {:type "submit"
-       :class (button-class :color/teal :color/large attrs)
+       :class (button-class :color/teal :size/large attrs)
        :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))
@@ -143,7 +143,7 @@
                                         {:keypath keypath
                                          :value (.. e -target -value)}))}
                      (dissoc input-attributes :errors))
-        (nil? error) (add-classes "border-light-silver glow-teal")
+        (nil? error) (add-classes "border-dark-silver glow-teal")
         error (add-classes "border-orange border-width-2 pr4 glow-orange")
         (seq value) (add-classes "has-value"))]
      [:div.orange.mtp2.mb1
@@ -185,14 +185,14 @@
           {:key   (option-value option)
            :value (option-value option)}
           (option-text option)])]]
-     [:div.bg-pure-white.border.border-light-silver.rounded.p1
+     [:div.bg-white.border.border-dark-silver.rounded.p1
       [:label.col-12.h6.navy.relative
        (merge
         {:for (name (:id select-attributes))}
         (when error
           {:class "orange"}))
        label]
-      [:div.h4.black.relative
+      [:div.h4.dark-gray.relative
        (or (->> options (filter (comp #{(str value)} option-value)) first option-text)
            nbsp)]]
      [:div.orange.mtp2.mb1
@@ -240,13 +240,13 @@
    {:data-scrollable "not-a-modal"}
    [:a.pointer.h3.right.rotate-45 {:href "#" :on-click on-close :data-test data-test}
     [:div {:alt "Close"
-           :class (or bg-class "fill-dark-silver")}
+           :class (or bg-class "fill-light-gray")}
      svg/counter-inc]]])
 
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-white.overflow-hidden
+   [:div.circle.bg-light-silver.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
     (if src
       [:img {:style {:width width :height width :object-fit "cover"} :src src}]
@@ -266,7 +266,7 @@
    (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:div.fill-light-silver
+  [:div.fill-dark-silver
    (counter-button spinning? "quantity-dec" dec-fn svg/counter-dec)
    (counter-value spinning? value)
    (counter-button spinning? "quantity-inc" inc-fn svg/counter-inc)])

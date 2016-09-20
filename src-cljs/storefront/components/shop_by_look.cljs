@@ -19,11 +19,11 @@
     (render [this]
       (html
        [:div
-        [:div.center.bg-white.py3
+        [:div.center.bg-light-silver.py3
          [:h2.h3.navy "Shop by look"]
          [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
           {:style {:width "101px" :height "85px"}} ]
-         [:p.dark-gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
+         [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
         [:div {:id container-id}]]))))
 
 (defn component [{:keys [pixlee-loaded?] :as data} owner opts]

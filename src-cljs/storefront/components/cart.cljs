@@ -62,12 +62,12 @@ Thanks,
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:.bg-light-white.rounded.p2.center
+              [:.bg-white.rounded.p2.center
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
-                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-                [:.border-top.border-bottom.border-light-silver.py2.flex.justify-center
+                [:.h5.gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.border-top.border-bottom.border-dark-silver.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
                  [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
@@ -77,7 +77,7 @@ Thanks,
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]
                 [:div.mt3.mb1
-                 [:input.border.border-light-gray.rounded.pl1.py1.bg-pure-white.teal.col-12
+                 [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
@@ -106,7 +106,7 @@ Thanks,
    (html
     (ui/container
      [:div.py3.h3.center
-      [:.silver
+      [:.light-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
      [:div.h3.py1
@@ -152,7 +152,7 @@ Thanks,
                    [:div.h3.medium.italic "PayPal™"]])]
 
        (when share-carts?
-         [:div.border-top.border-light-silver.py2
+         [:div.border-top.border-dark-silver.py2
           (ui/large-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
                                    :spinning? requesting-shared-cart?
                                    :data-test "share-cart"}
@@ -161,7 +161,7 @@ Thanks,
                                     {:style {:width  "24px"
                                              :height "18px"}}]
                                    [:div.flex-grow "Share your bag"]])
-          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]))))
+          [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]))))
 
 (defn empty-component [{:keys [promotions]} owner]
   (om/component

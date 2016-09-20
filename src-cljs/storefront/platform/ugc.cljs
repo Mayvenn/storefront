@@ -23,12 +23,12 @@
     (render [this]
       (html
        [:div.center.mt4
-        [:div.h2.medium.black.crush.line-height-1
-         {:style {:margin-top "50px"}} ;; To match the white space at the top of the widget
+        [:div.h2.medium.dark-gray.crush.line-height-1
+         {:style {:margin-top "50px"}} ;; To match the light-silver space at the top of the widget
          "#MayvennMade"]
         [:div {:id container-id}]
-        [:p.center.dark-gray.px1
-         {:style {:margin-top "30px"}} ;; To match the white space at the bottom of the widget
+        [:p.center.gray.px1
+         {:style {:margin-top "30px"}} ;; To match the light-silver space at the bottom of the widget
          "Want to show up on our homepage? Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn component [{:keys [pixlee-sku pixlee-loaded? content-available?] :as data} owner opts]

@@ -30,7 +30,7 @@
             {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")
              :style {:height "100%"}}
             ui/nbsp]]]
-         [:div.white.p3.col-12.center
+         [:div.light-silver.p3.col-12.center
           {:on-click       on-close
            :on-touch-start on-close}
           "close video"]])))))

@@ -1,16 +1,15 @@
 .bg-fb-blue      { background-color: var(--facebook-blue); }
 .bg-paypal-blue  { background-color: var(--paypal-blue); }
 
-.bg-pure-white   { background-color: var(--pure-white); }
-.bg-light-white  { background-color: var(--light-white); }
-.bg-dark-white   { background-color: var(--dark-white); }
-.bg-light-silver { background-color: var(--light-silver); }
-.bg-dark-silver  { background-color: var(--dark-silver); }
-.bg-light-gray   { background-color: var(--light-gray); }
-.bg-dark-gray    { background-color: var(--dark-gray); }
-.bg-light-black  { background-color: var(--light-black); }
-.bg-dark-black   { background-color: var(--dark-black); }
-.bg-clear        { background-color: var(--clear); }
+.bg-white         { background-color: var(--white); }
+.bg-light-silver  { background-color: var(--light-silver); }
+.bg-silver        { background-color: var(--silver); }
+.bg-dark-silver   { background-color: var(--dark-silver); }
+.bg-light-gray    { background-color: var(--light-gray); }
+.bg-gray          { background-color: var(--gray); }
+.bg-dark-gray     { background-color: var(--dark-gray); }
+.bg-black         { background-color: var(--black); }
+.bg-clear         { background-color: var(--clear); }
 
 .bg-lighten-5    { background-color: var(--lighten-5); }
 
@@ -20,21 +19,19 @@
 }
 
 :root {
-  --pure-white:   #ffffff;
-  --light-white:  #fcfcfc;
-  --dark-white:   #e6e6e6;
-  --light-silver: #d2d2d2;
-  --dark-silver:  #aaaaaa;
-  --light-gray:   #969696;
-  --dark-gray:    #6e6e6e;
-  --light-black:  #5a5a5a;
-  --dark-black:   #323232;
+    --white:         #ffffff;
+    --light-silver:  #f2f2f2;
+    --silver:        #ebebeb;
+    --dark-silver:   #dadada;
+    --light-gray:    #b4b4b4;
+    --gray:          #666666;
+    --dark-gray:     #333333;
+    --black:         #000000;
 
-  --facebook-blue: #3b5998;
-  --paypal-blue:   #49bbf0;
+    --facebook-blue: #3b5998;
+    --paypal-blue:   #49bbf0;
 
-  --lighten-5: rgba(255, 255, 255, .925);
-  --clear: rgba(0, 0, 0, 0);
+    --lighten-5: rgba(255, 255, 255, .925);
+    --clear: rgba(0, 0, 0, 0);
 }
-
 

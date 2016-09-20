@@ -14,10 +14,10 @@
 (defn component [{:keys [nav-event stats commissions bonuses referrals]} owner opts]
   (om/component
    (html
-    [:.black
+    [:.dark-gray
      (om/build stylist-dashboard-stats-component {:stats stats})
 
-     [:div.bg-white
+     [:div.bg-light-silver
       [:div.md-up-col-6.mx-auto
        (om/build tabs/component {:selected-tab nav-event}
                  {:opts {:tab-refs ["bonuses" "commissions" "referrals"]

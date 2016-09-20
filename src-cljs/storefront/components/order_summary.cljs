@@ -38,7 +38,7 @@
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
       "Offer and Rebate Details ➤"]]]
-   [:div.border-bottom.border-light-silver ui/nbsp]])
+   [:div.border-bottom.border-dark-silver ui/nbsp]])
 
 (defn display-order-summary [order]
   (let [adjustments   (orders/all-order-adjustments order)
@@ -46,7 +46,7 @@
         shipping-item (orders/shipping-item order)
         store-credit  (-> order :cart-payments :store-credit)]
     [:div
-     [:.py2.border-top.border-bottom.border-light-silver
+     [:.py2.border-top.border-bottom.border-dark-silver
       [:table.col-12
        [:tbody
         (summary-row "Subtotal"
@@ -59,7 +59,7 @@
              [:div
               (orders/display-adjustment-name name)
               (when coupon-code
-                [:a.ml1.h6.silver
+                [:a.ml1.h6.light-gray
                  (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
                  "Remove"])]
              price)))
@@ -72,21 +72,21 @@
      [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
-       [:.right-align.dark-gray
+       [:.right-align.gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id product-name variant-attrs unit-price] :as line-item}
                                    thumbnail
                                    quantity-line]
-  [:.clearfix.mb1.border-bottom.border-light-silver.py2 {:key id}
+  [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
    [:a.left.mr1
-    [:img.border.border-light-silver.rounded
+    [:img.border.border-dark-silver.rounded
      {:src   thumbnail
       :alt   product-name
       :style {:width  "7.33em"
               :height "7.33em"}}]]
-   [:.overflow-hidden.h5.black.p1
-    [:a.black.medium.titleize (products/product-title line-item)]
+   [:.overflow-hidden.h5.dark-gray.p1
+    [:a.dark-gray.medium.titleize (products/product-title line-item)]
     [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
@@ -111,7 +111,7 @@
        [:.mt2.flex.items-center.justify-between
         (if removing?
           [:.h3 {:style {:width "1.2em"}} ui/spinner]
-          [:a.silver (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+          [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
         [:.h3
          (when-let [variant (query/get {:id variant-id}
                                        (:variants (get products product-id)))]

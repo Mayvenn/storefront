@@ -15,7 +15,7 @@
            get-satisfaction-login?
            field-errors]} _ _]
   (component/create
-   [:div.flex.flex-column.items-center.black.col-12.mt1
+   [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
 
     (facebook/sign-in-button facebook-loaded?)
     [:div.h5.gray.light.my2 "OR"]

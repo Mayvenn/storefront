@@ -11,7 +11,7 @@
 
 (def ^:private styles-menu
   [:nav.col.col-2
-   [:div.border-bottom.border-light-silver.p1
+   [:div.border-bottom.border-dark-silver.p1
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]]
    [:ul.list-reset.py2.col-6.mx-auto
     [:li [:h2.h5.mb1 "Style"]
@@ -121,10 +121,10 @@
 
 (defn component [data owner opts]
   (component/create
-   [:div.col-12.bg-pure-white.clearfix
+   [:div.col-12.bg-white.clearfix
     styles-menu
 
-    [:div.col.col-10.px3.py3.border-left.border-light-silver
+    [:div.col.col-10.px3.py3.border-left.border-dark-silver
      typography
      buttons]]))
 

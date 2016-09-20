@@ -61,7 +61,7 @@
 
     [:div.col.col-12.md-up-col-6
      [:div.mx-auto.col-12.md-up-col-10
-      [:div.border-dark-white.border-top.md-up-hide.mb3]
+      [:div.border-silver.border-top.md-up-hide.mb3]
       (ui/text-field "Address"
                      (conj keypaths/stylist-manage-account :address :address1)
                      address1
@@ -117,7 +117,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-dark-white.border-top.to-md-hide.mb3]
+     [:div.border-silver.border-top.to-md-hide.mb3]
      [:div.col-12.md-up-col-5.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
