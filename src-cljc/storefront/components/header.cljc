@@ -120,10 +120,10 @@
     [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
      [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit
       notch-up
-      [:div
+      [:div.dark-gray
        [:div.p1.f6
         [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
-        [:h4.f4 store-name]]
+        [:h4.f4.regular store-name]]
        (when instagram-account
          (social-link
           [:div.mlp1.fill-light-gray {:style {:width "15px" :height "15px"}} svg/instagram]
