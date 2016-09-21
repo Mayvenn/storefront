@@ -1,7 +1,6 @@
 (ns storefront.components.svg
   (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.assets :as assets]))
+               :cljs [storefront.component :as component])))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's
@@ -23,7 +22,7 @@
 
 (defn svg-xlink [opts id]
   (component/html
-   [:svg opts [:use {:xlinkHref (str (assets/path "/images/sprites.svg") "#" id)}]]))
+   [:svg opts [:use {:xlinkHref (str "#" id)}]]))
 
 (defn error [opts]
   (svg-xlink opts "circled-exclamation"))
