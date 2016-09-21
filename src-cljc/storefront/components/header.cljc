@@ -132,7 +132,7 @@
           "Follow me on Instagram"))
        (when styleseat-account
          (social-link
-          [:div.bg-no-repeat.bg-contain.img-styleseat {:style {:width "15px" :height "14px"}}]
+          [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}} svg/styleseat]
           (str "https://www.styleseat.com/v/" styleseat-account)
           "Book me on StyleSeat"))]]])])
 
