@@ -55,20 +55,20 @@
 
    [:div.py1.md-up-hide
     (ui/ghost-button {:href (str "tel://" call-number)
-                      :class "my1"}
+                      :class "my1 bg-darken-1"}
                      [:div.flex.items-center.justify-center
-                      [:div.p1 svg/phone-ringing]
-                      [:div.left-align.h4 "Call Now"]])
+                      [:div.px1 svg/phone-ringing]
+                      [:div.left-align "Call Now"]])
     (ui/ghost-button {:href (str "sms://+1" sms-number)
-                      :class "my1"}
+                      :class "my1 bg-darken-1"}
                      [:div.flex.items-center.justify-center
-                      [:div.p1 svg/message]
-                      [:div.left-align.h4 "Send Message"]])
+                      [:div.px1 svg/message]
+                      [:div.left-align "Send Message"]])
     (ui/ghost-button {:href (str "mailto:" contact-email)
-                      :class "my1"}
+                      :class "my1 bg-darken-1"}
                      [:div.flex.items-center.justify-center
-                      [:div.p1 svg/mail-envelope]
-                      [:div.left-align.h4 "Send Email"]])]])
+                      [:div.px1 svg/mail-envelope]
+                      [:div.left-align "Send Email"]])]])
 
 (defn social-section []
   [:div
