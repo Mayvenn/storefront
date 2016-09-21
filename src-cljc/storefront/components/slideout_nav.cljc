@@ -129,7 +129,8 @@
       [:li [:a.green (assoc (utils/route-to events/navigate-content-guarantee)
                             :data-test "content-guarantee")
             (row (selectable? events/navigate-content-guarantee "Our Guarantee"))]]
-      [:li [:a.green (utils/route-to events/navigate-content-about-us)
+      [:li [:a.green (assoc (utils/route-to events/navigate-content-about-us)
+                            :data-test "content-about-us")
             (row (selectable? events/navigate-content-about-us "About Us"))]]
       [:li [:a.green (assoc (utils/route-to events/navigate-content-help)
                             :data-test "content-help")

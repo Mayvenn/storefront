@@ -104,6 +104,9 @@
       [:span "© 2016 "] "Mayvenn"]
      [:div.right
       [:a.white
+       (utils/route-to events/navigate-content-help) "Contact Us"]
+      " - "
+      [:a.white
        (utils/route-to events/navigate-content-about-us) "About Us"]
       " - "
       [:a.white
