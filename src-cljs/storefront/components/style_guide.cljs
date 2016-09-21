@@ -120,6 +120,43 @@
      [:div.mb1.bold "Ghost (Large)"]
      [:div.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]]])
 
+(defn color-swatch [color-class hex]
+ [:div.flex.items-center
+  [:div
+   [:div.circle.p4.m2.border.border-light-silver
+    {:class (str "bg-" color-class)}]]
+  [:div.flex
+   [:div.mt2.flex-column.bold.underline.shout.dark-gray
+    [:div.my1 "Class"]
+    [:div.my1 "HEX"]]
+   [:div.mt2.ml2.flex-column
+    [:div.my1 (str "." color-class)]
+    [:div.my1 "#" hex]]]])
+
+(def ^:private colors
+ [:section
+  (header "Color")
+  [:div.flex.flex-wrap
+   [:div.col-6.flex-column
+    [:h3 "Primary"]
+    (color-swatch "teal" "40CBAC")
+    (color-swatch "navy" "175674")]
+   [:div.col-6.flex-column
+    [:h3 "Secondary"]
+    (color-swatch "aqua" "49BBF0")
+    (color-swatch "orange" "E8A50C")]
+   [:h3.col-12 "Neutrals"]
+   [:div.col-6.flex-column
+    (color-swatch "white" "FFFFFF")
+    (color-swatch "light-silver" "F2F2F2")
+    (color-swatch "silver" "EBEBEB")
+    (color-swatch "dark-silver" "DADADA")]
+   [:div.col-6.flex-column
+    (color-swatch "light-gray" "B4B4B4")
+    (color-swatch "gray" "666666")
+    (color-swatch "dark-gray" "333333")
+    (color-swatch "black" "000000")]]])
+
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-white.clearfix
@@ -127,7 +164,8 @@
 
     [:div.col.col-10.px3.py3.border-left.border-dark-silver
      typography
-     buttons]]))
+     buttons
+     colors]]))
 
 (defn query [data]
   {})
