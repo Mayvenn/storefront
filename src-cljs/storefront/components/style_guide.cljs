@@ -12,7 +12,8 @@
 (def ^:private styles-menu
   [:nav.col.col-2
    [:div.border-bottom.border-dark-silver.p1
-    [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]]
+    [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
+    [:h1.hide "Mayvenn Styleguide"]]
    [:ul.list-reset.py2.col-6.mx-auto
     [:li [:h2.h5.mb1 "Style"]
      [:ul.list-reset.ml1
@@ -136,26 +137,25 @@
 (def ^:private colors
  [:section
   (header "Color")
-  [:div.flex.flex-wrap
-   [:div.col-6.flex-column
-    [:h3 "Primary"]
-    (color-swatch "teal" "40CBAC")
-    (color-swatch "navy" "175674")]
-   [:div.col-6.flex-column
-    [:h3 "Secondary"]
-    (color-swatch "aqua" "49BBF0")
-    (color-swatch "orange" "E8A50C")]
-   [:h3.col-12 "Neutrals"]
-   [:div.col-6.flex-column
-    (color-swatch "white" "FFFFFF")
-    (color-swatch "light-silver" "F2F2F2")
-    (color-swatch "silver" "EBEBEB")
-    (color-swatch "dark-silver" "DADADA")]
-   [:div.col-6.flex-column
-    (color-swatch "light-gray" "B4B4B4")
-    (color-swatch "gray" "666666")
-    (color-swatch "dark-gray" "333333")
-    (color-swatch "black" "000000")]]])
+  [:div.col.col-6
+   [:h3 "Primary"]
+   (color-swatch "teal" "40CBAC")
+   (color-swatch "navy" "175674")]
+  [:div.col.col-6
+   [:h3 "Secondary"]
+   (color-swatch "aqua" "49BBF0")
+   (color-swatch "orange" "E8A50C")]
+  [:h3 "Neutrals"]
+  [:div.col.col-6
+   (color-swatch "white" "FFFFFF")
+   (color-swatch "light-silver" "F2F2F2")
+   (color-swatch "silver" "EBEBEB")
+   (color-swatch "dark-silver" "DADADA")]
+  [:div.col.col-6
+   (color-swatch "light-gray" "B4B4B4")
+   (color-swatch "gray" "666666")
+   (color-swatch "dark-gray" "333333")
+   (color-swatch "black" "000000")]])
 
 (defn component [data owner opts]
   (component/create
