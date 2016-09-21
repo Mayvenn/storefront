@@ -114,6 +114,11 @@
     [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
+(def ^:private field-error-icon
+  [:div.absolute {:style {:right "1rem" :top "1rem"}}
+   [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
+    {:style {:width "1.5rem" :height "1.5rem"}}]])
+
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))
 
@@ -121,18 +126,13 @@
   (let [error (first errors)]
     [:div.col-12.mb1
      [:div.right.relative
-      (when error
-        [:div.absolute
-         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
-         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-          {:style {:width "2.25rem" :height "2.25rem"}}]])]
+      (when error field-error-icon)]
      [:div.absolute
-      [:label.floating-label--label.col-12.h6.navy.relative
-       {:class (str/join " " (map str
-                                  [(when (seq value)
-                                     "has-value")
-                                   (when error
-                                     "orange")]))}
+      [:label.floating-label--label.col-12.h6.relative
+       (cond-> {:class ""}
+         (seq value) (add-classes "has-value")
+         error       (add-classes "orange")
+         (not error) (add-classes "light-gray")) 
        label]]
      [:input.floating-label--input.col-12.h4.border
       (cond-> (merge {:key label
@@ -145,10 +145,11 @@
                                         {:keypath keypath
                                          :value (.. e -target -value)}))}
                      (dissoc input-attributes :errors))
-        (nil? error) (add-classes "border-dark-silver glow-teal")
-        error (add-classes "border-orange border-width-2 pr4 glow-orange")
-        (seq value) (add-classes "has-value"))]
-     [:div.orange.mtp2.mb1
+        (nil? error)                  (add-classes "border-dark-silver glow-teal")
+        error                         (add-classes "border-orange border-width-2 pr4 glow-orange")
+        (and error (not (seq value))) (add-classes "orange")
+        (seq value)                   (add-classes "has-value bold"))]
+     [:div.orange.mtp2.mb1.bold
       {:data-test (str data-test "-error")}
       (or (:long-message error) nbsp)]]))
 
@@ -162,21 +163,17 @@
   ;; CONCERNS:
   ;; - Current implementation doesn't handle initial empty value. Would need to:
   ;;   - Make floating-label work
-  ;;   - Research browser/aria recommneded way to show disabled option as placeholder
+  ;;   - Research browser/aria recommneded way to show disabled option as placeholder (gold with errors)
   ;;   - Explore validation of empty value
   (let [option-text  first
         option-value (comp str second)
-        error (first (:errors select-attributes))]
-    [:div.col-12.mb2.mx-auto
+        error        (first (:errors select-attributes))]
+    [:div.col-12.mb2.mx-auto.line-height-1
      [:div.relative.z1
-      (when error
-        [:div.absolute
-         {:style {:right "1rem" :top "0.8725rem" :bottom "0"}}
-         [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-          {:style {:width "2.25rem" :height "2.25rem"}}]])
+      (when error field-error-icon)
       [:select.col-12.h3.glow-teal.absolute
        (cond-> (merge {:key         label
-                       :style       {:height "3.75rem" :color "transparent" :background-color "transparent"}
+                       :style       {:height "2.1em" :color "transparent" :background-color "transparent"}
                        :placeholder label
                        :value       value
                        :on-change   #(handle-message events/control-change-state
@@ -184,7 +181,7 @@
                                                       :value   (selected-value %)})}
                       (dissoc select-attributes :errors))
          (nil? error) (add-classes "border-none")
-         error (add-classes "border-orange border-width-2 pr4 glow-orange"))
+         error        (add-classes "border-orange border-width-2 pr4 glow-orange"))
        (when-let [placeholder (:placeholder select-attributes)]
          [:option {:disabled "disabled"} placeholder])
        (for [option options]
@@ -192,17 +189,15 @@
           {:key   (option-value option)
            :value (option-value option)}
           (option-text option)])]]
-     [:div.bg-white.border.border-dark-silver.rounded.p1
-      [:label.col-12.h6.navy.relative
-       (merge
-        {:for (name (:id select-attributes))}
-        (when error
-          {:class "orange"}))
+     [:div.bg-white.border.border-dark-silver.rounded.px2.py1
+      [:label.block.col-12.h6.relative
+       {:for   (name (:id select-attributes))
+        :class (if error "orange" "light-gray")}
        label]
-      [:div.h4.dark-gray.relative
+      [:div.h4.dark-gray.relative.bold
        (or (->> options (filter (comp #{(str value)} option-value)) first option-text)
            nbsp)]]
-     [:div.orange.mtp2.mb1
+     [:div.orange.mtp2.mb1.bold
       {:data-test (str (:data-test select-attributes) "-error")}
       (or (:long-message error) nbsp)]]))
 

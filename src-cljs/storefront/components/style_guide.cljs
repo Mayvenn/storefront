@@ -159,40 +159,43 @@
    (color-swatch "dark-gray" "333333")
    (color-swatch "black" "000000")]])
 
-(def ^:private form-fields
+(defn ^:private form [key data errors]
+  [:div
+   [:.flex.col-12
+    [:.col-6 (ui/text-field "First Name"
+                            [:style-guide :form key :first-name]
+                            (get-in data [:style-guide :form key :first-name])
+                            {:type   "text"
+                             :errors errors
+                             :class  "rounded-left"})]
+    [:.col-6 (ui/text-field "Last Name"
+                            [:style-guide :form key :last-name]
+                            (get-in data [:style-guide :form key :last-name])
+                            {:type   "text"
+                             :errors errors
+                             :class  "rounded-right border-width-left-0"})]]
+   (ui/text-field "Mobile Phone"
+                  [:style-guide :form key :phone]
+                  (get-in data [:style-guide :form key :phone])
+                  {:type     "text"
+                   :errors   errors
+                   :required true})
+   (ui/select-field "Besty"
+                    [:style-guide :form key :besty]
+                    (get-in data [:style-guide :form key :besty])
+                    [["Corey" "corey"] ["Jacob" "jacob"]]
+                    {:id          "id-is-required"
+                     :errors      errors
+                     :placeholder "Besty"
+                     :required    true})] )
+
+(defn ^:private form-fields [data]
   [:section
    (header "Form Fields")
-   [:div.lg-up-col.lg-up-col-6
-    [:h3 "Active"]
-    [:.flex.col-12
-     [:.col-6 (ui/text-field "First Name"
-                             nil
-                             nil
-                             {:type      "text"
-                              :errors []
-                              :class     "rounded-left"})]
-     [:.col-6 (ui/text-field "Last Name"
-                             nil
-                             nil
-                             {:type       "text"
-                              :errors []
-                              :class      "rounded-right border-width-left-0"})]]
-    (ui/text-field "Mobile Phone"
-                   nil
-                   nil
-                   {:type      "text"
-                    :errors []
-                    :required  true})
-    (ui/select-field "Besty"
-                     nil
-                     "corey"
-                     [["Corey" "corey"] ["Jacob" "jacob"]]
-                     {:id "id-is-required"
-                      :errors []
-                      :placeholder "Besty"
-                      :required    true})]
-   [:div.lg-up-col.lg-up-col-6
-    [:h3 "Error"]]])
+   [:div
+    [:h3 "Active"] (form :active data [])]
+   [:div
+    [:h3 "Errors"] (form :errors data [{:long-message "Wrong"}])]])
 
 (defn component [data owner opts]
   (component/create
@@ -203,10 +206,7 @@
      typography
      buttons
      colors
-     form-fields]]))
-
-(defn query [data]
-  {})
+     (form-fields data)]]))
 
 (defn built-component [data opts]
-  (component/build component (query data) opts))
+  (component/build component data opts))
