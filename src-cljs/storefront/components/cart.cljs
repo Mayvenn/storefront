@@ -20,7 +20,8 @@
 
 ;; TODO: these images badly need refactoring. They are the button, the icon and
 ;; the text (!) all in one. Not surprisingly, they are not adapting as we
-;; refactor buttons, colors and icons.
+;; refactor buttons, colors and icons. Wait until styleguide has new button
+;; definitions, then fix this.
 ;; We have SVG icons for twitter, email and text. If we also had the facebook
 ;; SVG we could use it here and on sign-in.
 (defn share-icon [icon-class]
