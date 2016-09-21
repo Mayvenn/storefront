@@ -23,52 +23,48 @@
     {:style {:height "1.2em"}}]))
 
 (defn button
-  [{:keys [disabled? spinning? disabled-class]
+  [{:keys [disabled? spinning?]
     :as opts}
    & content]
   (let [opts    (cond-> opts
                   :always (update :on-click #(if (or disabled? spinning?)
                                                utils/noop-callback
                                                %))
-                  :always (dissoc :spinning? :disabled? :disabled-class)
-                  disabled? (assoc :class disabled-class))
-        content (if spinning?
-                  [:div.h4.letter-spacing-1 spinner]
-                  content)]
+                  :always (dissoc :spinning? :disabled?)
+                  disabled? (update :class str " is-disabled "))
+        content (if spinning? spinner content)]
     [:a (merge {:href "#"} opts) content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/teal    "bg-teal white"
-                         :color/navy     "bg-navy white"
-                         :color/ghost    "bg-clear border-dark-silver dark-gray"
-                         :color/paypal   "bg-paypal-blue white"
-                         :color/disabled "bg-dark-silver light-gray"})]
+  (let [color (color-kw {:color/teal     "btn-primary bg-teal white"
+                         :color/navy     "btn-primary bg-navy white"
+                         :color/aqua     "btn-primary bg-aqua white"
+                         :color/ghost    "btn-outline border-light-gray dark-gray"
+                         :color/facebook "btn-primary bg-fb-blue white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
 (defn ^:private button-sizes [size-kw]
-  (let [size (size-kw {:size/large "col-12 px1 py2 h4 letter-spacing-1"
-                       :size/small "col-12 p1 h5 letter-spacing-1"})]
+  (let [size (size-kw {:size/small "col-12 h4"
+                       :size/large "col-12 h3 btn-large"})]
     (assert size (str "Button size " size-kw " has not been defined."))
     size))
 
 (defn ^:private button-class [color-kw size-kw {:keys [class]}]
   (str/join " "
-            ["btn btn-primary"
+            ["btn"
              (button-sizes size-kw)
              (button-colors color-kw)
              class]))
 
 (defn ^:private small-button [color-kw attrs & content]
   (button (assoc attrs
-                 :class (button-class color-kw :size/small attrs)
-                 :disabled-class (button-class :color/disabled :size/small attrs))
+                 :class          (button-class color-kw :size/small attrs))
           (into [:div] content)))
 
 (defn ^:private large-button [color-kw attrs & content]
   (button (assoc attrs
-                 :class (button-class color-kw :size/large attrs)
-                 :disabled-class (button-class :color/disabled :size/large attrs))
+                 :class          (button-class color-kw :size/large attrs))
           (into [:div] content)))
 
 (defn teal-button [attrs & content]
@@ -83,8 +79,14 @@
 (defn large-navy-button [attrs & content]
   (large-button :color/navy attrs content))
 
-(defn paypal-button [attrs & content]
-  (large-button :color/paypal attrs content))
+(defn aqua-button [attrs & content]
+  (small-button :color/aqua attrs content))
+
+(defn large-aqua-button [attrs & content]
+  (large-button :color/aqua attrs content))
+
+(defn large-facebook-button [attrs & content]
+  (large-button :color/facebook attrs content))
 
 (defn ghost-button [attrs & content]
   (small-button :color/ghost attrs content))

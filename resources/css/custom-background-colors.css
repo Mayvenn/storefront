@@ -1,5 +1,4 @@
 .bg-fb-blue      { background-color: var(--facebook-blue); }
-.bg-paypal-blue  { background-color: var(--paypal-blue); }
 
 .bg-white         { background-color: var(--white); }
 .bg-light-silver  { background-color: var(--light-silver); }
@@ -29,7 +28,6 @@
     --black:         #000000;
 
     --facebook-blue: #3b5998;
-    --paypal-blue:   #49bbf0;
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);

@@ -85,39 +85,40 @@
   [:section
    (header "Buttons")
    ;; Normal Buttons, Active States
-   [:div.flex.flex-wrap
-    [:div.col-4.p1 "Primary"
-     [:div (ui/teal-button {} "ui/teal-button")]]
-    [:div.col-4.p1 "Secondary"
-     [:div (ui/navy-button {} "ui/navy-button")]]
-    [:div.col-4.p1 "Ghost"
-     [:div (ui/ghost-button {} "ui/ghost-button")]]]
-
-   ;; Normal Buttons, Inactive States
-   [:div.flex.flex-wrap
-    [:div.col-4.p1 "Primary"
-     [:div (ui/teal-button {:disabled? true} "ui/teal-button")]]
-    [:div.col-4.p1 "Secondary"
-     [:div (ui/navy-button {:disabled? true} "ui/navy-button")]]
-    [:div.col-4.p1 "Ghost"
-     [:div (ui/ghost-button {:disabled? true} "ui/ghost-button")]]]
+   [:div.flex.flex-wrap.mxn1
+    [:div.col-4.p1
+     [:div.mb1.bold "Primary"]
+     [:div.mb1 (ui/teal-button {} "ui/teal-button")]]
+    [:div.col-4.p1
+     [:div.mb1.bold "Secondary"]
+     [:div.mb1 (ui/navy-button {} "ui/navy-button")]]
+    [:div.col-4.p1
+     [:div.mb1.bold "Ghost"]
+     [:div.mb1 (ui/ghost-button {} "ui/ghost-button")]]
+    [:div.col-4.p1
+     [:div.mb1.bold "Disabled"]
+     [:div.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]]
+    [:div.col-4.p1
+     [:div.mb1.bold "Branded"]
+     [:div.mb1 (ui/aqua-button {} "ui/aqua-button")]]]
 
    ;; Large Buttons, Active States
-   [:div.flex.flex-wrap
-    [:div.col-4.p1 "Primary (Large)"
-     [:div (ui/large-teal-button {} "ui/large-teal-button")]]
-    [:div.col-4.p1 "Secondary (Large)"
-     [:div (ui/large-navy-button {} "ui/large-navy-button")]]
-    [:div.col-4.p1 "Ghost (Large)"
-     [:div (ui/large-ghost-button {} "ui/large-ghost-button")]]
-
-    ;; Large Buttons, Inactive States
-    [:div.col-4.p1 "Primary (Large)"
-     [:div (ui/large-teal-button {:disabled? true} "ui/large-teal-button")]]
-    [:div.col-4.p1 "Secondary (Large)"
-     [:div (ui/large-navy-button {:disabled? true} "ui/large-navy-button")]]
-    [:div.col-4.p1 "Ghost (Large)"
-     [:div (ui/large-ghost-button {:disabled? true} "ui/large-ghost-button")]]]])
+   [:div.flex.flex-wrap.mxn1
+    [:div.col-6.p1
+     [:div.mb1.bold "Primary (Large)"]
+     [:div.mb1 (ui/large-teal-button {} "ui/large-teal-button")]]
+    [:div.col-6.p1
+     [:div.mb1.bold "Secondary (Large)"]
+     [:div.mb1 (ui/large-navy-button {} "ui/large-navy-button")]]
+    [:div.col-6.p1
+     [:div.mb1.bold "Disabled (Large)"]
+     [:div.mb1 (ui/large-teal-button {:disabled? true} "(ui/large-teal-button {:disabled? true})")]]
+    [:div.col-6.p1
+     [:div.mb1.bold "Branded (Large)"]
+     [:div.mb1 (ui/large-aqua-button {} "ui/large-aqua-button")]]
+    [:div.col-6.p1
+     [:div.mb1.bold "Ghost (Large)"]
+     [:div.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]]])
 
 (defn component [data owner opts]
   (component/create

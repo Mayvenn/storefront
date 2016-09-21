@@ -142,14 +142,14 @@ Thanks,
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
        [:div.h5.gray.center.py2 "OR"]
-       [:div.pb2 (ui/paypal-button
+       [:div.pb2 (ui/large-aqua-button
                   {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                    :spinning? redirecting-to-paypal?
                    :disabled? updating?
                    :data-test "paypal-checkout"}
-                  [:div.flex.items-center.justify-center
-                   [:div.right-align.mr1 "Check out with"]
-                   [:div.h3.medium.italic "PayPal™"]])]
+                  [:div
+                   "Check out with "
+                   [:span.medium.italic "PayPal™"]])]
 
        (when share-carts?
          [:div.border-top.border-dark-silver.py2

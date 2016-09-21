@@ -57,19 +57,19 @@
     [:span.h4 "Currently out of stock"]) )
 
 (defn add-to-bag-button [adding-to-bag? variant quantity]
-  (ui/navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
-                                                         {:variant  variant
-                                                          :quantity quantity})
-                   :data-test "add-to-bag"
-                   :spinning? adding-to-bag?}
-                  "Add to bag"))
+  (ui/large-navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
+                                                               {:variant  variant
+                                                                :quantity quantity})
+                         :data-test "add-to-bag"
+                         :spinning? adding-to-bag?}
+                        "Add to bag"))
 
 (defn ^:private number->words [n]
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.line-height-3.my1.p1.caps.gray.bg-silver.medium.center
+  [:div.h6.line-height-3.my1.p1.py2.caps.gray.bg-silver.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -83,7 +83,7 @@
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/large-teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn bagged-variants-and-checkout [bagged-variants]
   (when (seq bagged-variants)

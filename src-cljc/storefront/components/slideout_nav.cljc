@@ -138,13 +138,13 @@
   (component/html
    [section-outer-darker
     [section-inner
-     [:div.clearfix
-      [:div.col.col-6.p1
+     [:div.flex.items-center
+      [:div.col-6.p1
        [:a.btn.btn-outline.navy.col-12
         (merge {:data-test "sign-in"}
                (utils/route-to events/navigate-sign-in))
         "Sign In"]]
-      [:div.col.col-6.p1.center.h6.line-height-2
+      [:div.col-6.p1.center.h6.line-height-2
        [:div.gray "No account?"]
        [:a.teal
         (merge {:data-test "sign-up"}

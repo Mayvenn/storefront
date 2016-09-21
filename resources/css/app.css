@@ -6,12 +6,11 @@
 /* Optional Modules (not included in Basscss by default) that must be able to be overridden by basscss core */
 
 @import 'custom-btn.css'; /* Borrowed from basscss-addons/modules/btn */
-@import 'basscss-addons/modules/btn-primary';
 @import 'custom-btn-primary.css';
-@import 'basscss-addons/modules/btn-outline';
 @import 'custom-btn-outline.css';
-@import 'basscss-addons/modules/btn-sizes';
-/* @import 'basscss-addons/modules/forms'; */ /* Would like to use this, but .input interferes with existing forms */
+@import 'custom-btn-sizes.css';
+/* @import 'basscss-addons/modules/forms'; */
+/* Would like to use this, but .input interferes with existing forms */
 @import 'custom-forms.css';
 
 /* Basscss Core */
@@ -159,11 +158,9 @@
     --heading-font-family: var(--sans-serif);
     --heading-font-weight: 600;
 
-    --button-font-weight: inherit;
     --button-line-height: 1.2;
     --button-background-color: var(--teal);
     --button-border-radius: var(--border-radius);
-    --button-big-padding-y: .75rem;
 
     --border-radius: 4px;
     --border-radius-1: 8px;
@@ -183,7 +180,6 @@
     --black:        #000000;
 
     --facebook-blue: #3b5998;
-    --paypal-blue:   #49bbf0;
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);

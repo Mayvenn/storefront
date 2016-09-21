@@ -1,16 +1,18 @@
 (ns storefront.components.facebook
   (:require [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.components.ui :as ui]))
+
 
 (defn- button [loaded? click-event]
   (if loaded?
-    [:.btn.btn-primary.bg-fb-blue.col-12
+    (ui/large-facebook-button
      {:on-click (utils/send-event-callback click-event)
       :data-test "facebook-button"}
-     [:.flex.items-center.justify-center.white.items-center
+     [:div.flex.items-center.justify-center
       [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
-      [:.h4.py1 "Sign in with Facebook"]]]
+      [:span "Sign in with Facebook"]])
     [:div {:style {:height "3.25rem"}}]))
 
 (defn sign-in-button [loaded?]
