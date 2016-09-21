@@ -17,10 +17,12 @@
    [:ul.list-reset.py2.col-6.mx-auto
     [:li [:h2.h5.mb1 "Style"]
      [:ul.list-reset.ml1
-      [:li (section-link "Typography")]]]
+      [:li (section-link "Typography")]
+      [:li (section-link "Color")]]]
     [:li [:h2.h5.mb1 "Components"]
      [:ul.list-reset.ml1
-      [:li (section-link "Buttons")]]]]])
+      [:li (section-link "Buttons")]
+      [:li (section-link "Form Fields")]]]]])
 
 (def ^:private typography
   [:section
@@ -157,6 +159,41 @@
    (color-swatch "dark-gray" "333333")
    (color-swatch "black" "000000")]])
 
+(def ^:private form-fields
+  [:section
+   (header "Form Fields")
+   [:div.lg-up-col.lg-up-col-6
+    [:h3 "Active"]
+    [:.flex.col-12
+     [:.col-6 (ui/text-field "First Name"
+                             nil
+                             nil
+                             {:type      "text"
+                              :errors []
+                              :class     "rounded-left"})]
+     [:.col-6 (ui/text-field "Last Name"
+                             nil
+                             nil
+                             {:type       "text"
+                              :errors []
+                              :class      "rounded-right border-width-left-0"})]]
+    (ui/text-field "Mobile Phone"
+                   nil
+                   nil
+                   {:type      "text"
+                    :errors []
+                    :required  true})
+    (ui/select-field "Besty"
+                     nil
+                     "corey"
+                     [["Corey" "corey"] ["Jacob" "jacob"]]
+                     {:id "id-is-required"
+                      :errors []
+                      :placeholder "Besty"
+                      :required    true})]
+   [:div.lg-up-col.lg-up-col-6
+    [:h3 "Error"]]])
+
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-white.clearfix
@@ -165,7 +202,8 @@
     [:div.col.col-10.px3.py3.border-left.border-dark-silver
      typography
      buttons
-     colors]]))
+     colors
+     form-fields]]))
 
 (defn query [data]
   {})

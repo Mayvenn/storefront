@@ -159,6 +159,11 @@
            (.-selectedIndex elem)))))
 
 (defn select-field [label keypath value options select-attributes]
+  ;; CONCERNS:
+  ;; - Current implementation doesn't handle initial empty value. Would need to:
+  ;;   - Make floating-label work
+  ;;   - Research browser/aria recommneded way to show disabled option as placeholder
+  ;;   - Explore validation of empty value
   (let [option-text  first
         option-value (comp str second)
         error (first (:errors select-attributes))]
