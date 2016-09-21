@@ -60,7 +60,7 @@
                        [:div.left-align.h3 "Call Now"]])
     (ui/footer-button {:href (str "sms://+1" sms-number)}
                       [:div.flex.items-center.justify-center
-                       [:div.p1 svg/message]
+                       [:div.p1 svg/message-bubble]
                        [:div.left-align.h3 "Send Message"]])
     (ui/footer-button {:href (str "mailto:" contact-email)}
                       [:div.flex.items-center.justify-center
@@ -75,16 +75,16 @@
     [:div.border-bottom.border-light-silver.p1.flex.items-center.justify-around.py2
      [:a.block {:item-prop "sameAs"
                 :href "https://www.facebook.com/MayvennHair"}
-      [:div.center {:style {:width "22px" :height "22px"}} svg/facebook]]
+      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-facebook]]
      [:a.block {:item-prop "sameAs"
                 :href "http://instagram.com/mayvennhair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/instagram]]
+      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-instagram]]
      [:a.block {:item-prop "sameAs"
                 :href "https://twitter.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/twitter]]
+      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-twitter]]
      [:a.block {:item-prop "sameAs"
                 :href "http://www.pinterest.com/mayvennhair/"}
-      [:div {:style {:width "22px" :height "22px"}} svg/pinterest]]]]))
+      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
 
 (defn full-component [{:keys [named-searches
                               contacts
