@@ -1,5 +1,6 @@
 (ns storefront.components.style-guide
   (:require [storefront.component :as component]
+            [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
             [clojure.string :as string]))
 
@@ -22,7 +23,8 @@
     [:li [:h2.h5.mb1 "Components"]
      [:ul.list-reset.ml1
       [:li (section-link "Buttons")]
-      [:li (section-link "Form Fields")]]]]])
+      [:li (section-link "Form Fields")]
+      [:li (section-link "Navigation")]]]]])
 
 (def ^:private typography
   [:section
@@ -204,6 +206,21 @@
                                    :phone [{:long-message "Wrong"}]
                                    :besty [{:long-message "wrong"}]})]])
 
+(defn ^:private navigation [_ _ _]
+  (component/create
+   [:section
+    (header "Navigation")
+    [:.dark-gray
+     [:div.bg-light-silver
+      [:div.md-up-col-6.mx-auto
+       (component/build tabs/component
+                        {:selected-tab [:navigate-keypath 2]}
+                        {:opts {:tab-refs ["one" "two" "three"]
+                                :labels   ["One" "Two" "Three"]
+                                :tabs     [[:navigate-keypath 1]
+                                           [:navigate-keypath 2]
+                                           [:navigate-keypath 3]]}})]]]]))
+
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-white.clearfix
@@ -213,7 +230,8 @@
      typography
      colors
      buttons
-     (form-fields data)]]))
+     (form-fields data)
+     (component/build navigation data opts)]]))
 
 (defn built-component [data opts]
   (component/build component data opts))
