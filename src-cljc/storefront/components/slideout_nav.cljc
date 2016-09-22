@@ -27,7 +27,7 @@
   (component/html
    [:div.absolute {:style {:width "60px"}}
     [:div.relative.rotate-45.p2 {:style {:height "60px"}
-                              :on-click #(messages/handle-message events/control-menu-collapse-all)}
+                                 :on-click #(messages/handle-message events/control-menu-collapse-all)}
      [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
      [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
 

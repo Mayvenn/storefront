@@ -54,7 +54,7 @@
                                             {:path keypaths/browse-variant-quantity})
                  (utils/send-event-callback events/control-counter-inc
                                             {:path keypaths/browse-variant-quantity}))]
-    [:span.h4 "Currently out of stock"]) )
+    [:span.h4 "Currently out of stock"]))
 
 (defn add-to-bag-button [adding-to-bag? variant quantity]
   (ui/large-navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag

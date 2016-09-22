@@ -227,10 +227,10 @@
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
    [:div.right.h5.light
     [:a.dark-gray.col.py1 (merge
-                       {:href           "/categories"
-                        :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
-                        :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
-                       (when (current-page? events/navigate-category) {:class selected-link}))
+                           {:href           "/categories"
+                            :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
+                            :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
+                           (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
     [:a.dark-gray.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
@@ -241,7 +241,7 @@
     [:a.dark-gray.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
     [:a.dark-gray.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                       :href           "https://blog.mayvenn.com"}
+                           :href           "https://blog.mayvenn.com"}
      "Blog"]]])
 
 (defn component [{:keys [nav-message

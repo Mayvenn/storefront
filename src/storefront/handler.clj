@@ -223,13 +223,13 @@
               render-ctx {:storeback-config storeback-config
                           :environment      environment}
               data       (as-> {} data
-                           (assoc-in data keypaths/welcome-url
-                                     (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-                           (assoc-in data keypaths/store store)
-                           (experiments/determine-features data)
-                           (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
-                           (assoc-in data keypaths/static (static-page nav-event))
-                           (assoc-in data keypaths/navigation-message [nav-event params]))]
+                               (assoc-in data keypaths/welcome-url
+                                         (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+                               (assoc-in data keypaths/store store)
+                               (experiments/determine-features data)
+                               (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
+                               (assoc-in data keypaths/static (static-page nav-event))
+                               (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
             events/navigate-category (if (or (= "blonde" (:named-search-slug params))
@@ -262,24 +262,24 @@
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-        (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
-                                                       (let [headers (:headers request)]
-                                                         (or (headers "x-forwarded-for")
-                                                             (headers "remote-addr")
-                                                             "localhost"))
-                                                       (assoc (:query-params request)
-                                                              "utm-params"
-                                                              {"utm-source"   (cookies/get request "utm-source")
-                                                               "utm-campaign" (cookies/get request "utm-campaign")
-                                                               "utm-term"     (cookies/get request "utm-term")
-                                                               "utm-content"  (cookies/get request "utm-content")
-                                                               "utm-medium"   (cookies/get request "utm-medium")}))]
-          (redirect (str "/cart?error=" error-code))
-          (redirect (str "/orders/"
-                         number
-                         "/complete?"
-                         (codec/form-encode {:paypal      true
-                                             :order-token order-token})))))))
+     (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
+                                                    (let [headers (:headers request)]
+                                                      (or (headers "x-forwarded-for")
+                                                          (headers "remote-addr")
+                                                          "localhost"))
+                                                    (assoc (:query-params request)
+                                                           "utm-params"
+                                                           {"utm-source"   (cookies/get request "utm-source")
+                                                            "utm-campaign" (cookies/get request "utm-campaign")
+                                                            "utm-term"     (cookies/get request "utm-term")
+                                                            "utm-content"  (cookies/get request "utm-content")
+                                                            "utm-medium"   (cookies/get request "utm-medium")}))]
+       (redirect (str "/cart?error=" error-code))
+       (redirect (str "/orders/"
+                      number
+                      "/complete?"
+                      (codec/form-encode {:paypal      true
+                                          :order-token order-token})))))))
 (defn static-routes [path]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route routes/static-api-routes uri)]

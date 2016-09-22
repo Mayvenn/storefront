@@ -117,7 +117,7 @@
               :data-test "content-privacy") "Privacy"]
       " - "
       [:a.light-silver (assoc (utils/route-to events/navigate-content-tos)
-                       :data-test "content-tos") "Terms"]]]]))
+                              :data-test "content-tos") "Terms"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create

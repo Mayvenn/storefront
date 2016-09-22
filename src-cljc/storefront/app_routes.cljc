@@ -9,7 +9,7 @@
   (keyword (prn-str value)))
 
 (defn bidi->edn [value]
-   (read-string (name value)))
+  (read-string (name value)))
 
 (def static-page-routes
   {"/guarantee"                             (edn->bidi events/navigate-content-guarantee)
