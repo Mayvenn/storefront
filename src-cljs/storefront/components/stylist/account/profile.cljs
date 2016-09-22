@@ -17,29 +17,28 @@
     [:div.col-12
      [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
      [:div.col.col-12.md-up-col-6
-      [:div.flex.col-12.col
-       [:div.col-6 (ui/text-field "First Name"
-                                  (conj keypaths/stylist-manage-account :address :firstname)
-                                  (:firstname address)
-                                  {:auto-focus "autofocus"
-                                   :type      "text"
-                                   :name      "account-first-name"
-                                   :data-test "account-first-name"
-                                   :errors    (get field-errors ["address" "firstname"])
-                                   :id        "account-first-name"
-                                   :class     "rounded-left"
-                                   :required  true})]
+      [:div.col-12.col
+       (ui/text-field-group
+        {:label      "First Name"
+         :keypath    (conj keypaths/stylist-manage-account :address :firstname)
+         :value      (:firstname address)
+         :errors     (get field-errors ["address" "firstname"])
+         :auto-focus "autofocus"
+         :type       "text"
+         :name       "account-first-name"
+         :data-test  "account-first-name"
+         :id         "account-first-name"
+         :required   true}
 
-       [:div.col-6 (ui/text-field "Last Name"
-                                  (conj keypaths/stylist-manage-account :address :lastname)
-                                  (:lastname address)
-                                  {:type      "text"
-                                   :name      "account-last-name"
-                                   :id        "account-last-name"
-                                   :data-test "account-last-name"
-                                   :errors    (get field-errors ["address" "lastname"])
-                                   :class     "rounded-right border-width-left-0"
-                                   :required  true})]]
+        {:type      "text"
+         :label     "Last Name"
+         :keypath   (conj keypaths/stylist-manage-account :address :lastname)
+         :value     (:lastname address)
+         :errors    (get field-errors ["address" "lastname"])
+         :name      "account-last-name"
+         :id        "account-last-name"
+         :data-test "account-last-name"
+         :required  true})]
 
       [:div.clearfix]
 

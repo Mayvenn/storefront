@@ -66,34 +66,33 @@
                      (conj keypaths/stylist-manage-account :address :address1)
                      address1
                      {:auto-focus "autofocus"
-                      :type      "text"
-                      :name      "account-address1"
-                      :id        "account-address1"
-                      :data-test "account-address1"
-                      :errors    (get field-errors ["address" "address1"])
-                      :required  true})
+                      :type       "text"
+                      :name       "account-address1"
+                      :id         "account-address1"
+                      :data-test  "account-address1"
+                      :errors     (get field-errors ["address" "address1"])
+                      :required   true})
 
-      [:div.flex.col-12
-       [:div.col-6 (ui/text-field "Apt/Suite"
-                                  (conj keypaths/stylist-manage-account :address :address2)
-                                  address2
-                                  {:type      "text"
-                                   :name      "account-address2"
-                                   :data-test "account-address2"
-                                   :id        "account-address2"
-                                   :errors    (get field-errors ["address" "address2"])
-                                   :class     "rounded-left"})]
+      [:div.col-12
+       (ui/text-field-group
+        {:type      "text"
+         :label     "Apt/Suite"
+         :keypath   (conj keypaths/stylist-manage-account :address :address2)
+         :value     address2
+         :errors    (get field-errors ["address" "address2"])
+         :name      "account-address2"
+         :data-test "account-address2"
+         :id        "account-address2"}
 
-       [:div.col-6 (ui/text-field "Zip Code"
-                                  (conj keypaths/stylist-manage-account :address :zipcode)
-                                  zipcode
-                                  {:type      "text"
-                                   :name      "account-zipcode"
-                                   :id        "account-zipcode"
-                                   :data-test "account-zipcode"
-                                   :class     "rounded-right border-width-left-0"
-                                   :errors    (get field-errors ["address" "zipcode"])
-                                   :required  true})]]
+        {:type      "text"
+         :label     "Zip Code"
+         :keypath   (conj keypaths/stylist-manage-account :address :zipcode)
+         :value     zipcode
+         :errors    (get field-errors ["address" "zipcode"])
+         :name      "account-zipcode"
+         :id        "account-zipcode"
+         :data-test "account-zipcode"
+         :required  true})]
 
       (ui/text-field "City"
                      (conj keypaths/stylist-manage-account :address :city)

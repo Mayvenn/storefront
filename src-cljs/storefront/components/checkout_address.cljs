@@ -35,29 +35,27 @@
    (html
     [:.flex.flex-column.items-center.col-12
      [:.h4.dark-gray.col-12.my1 "Shipping Address"]
-     [:.flex.col-12
-      [:.col-6 (ui/text-field "First Name"
-                              keypaths/checkout-shipping-address-first-name
-                              (:first-name shipping-address)
-                              {:auto-focus "autofocus"
-                               :type      "text"
-                               :name      "shipping-first-name"
-                               :data-test "shipping-first-name"
-                               :id        "shipping-first-name"
-                               :class     "rounded-left"
-                               :errors    (get field-errors ["shipping-address" "first-name"])
-                               :required  true})]
-
-      [:.col-6 (ui/text-field "Last Name"
-                              keypaths/checkout-shipping-address-last-name
-                              (:last-name shipping-address)
-                              {:type      "text"
-                               :name      "shipping-last-name"
-                               :id        "shipping-last-name"
-                               :data-test "shipping-last-name"
-                               :class     "rounded-right border-width-left-0"
-                               :errors    (get field-errors ["shipping-address" "last-name"])
-                               :required  true})]]
+     [:.col-12
+      (ui/text-field-group
+       {:type       "text"
+        :label      "First Name"
+        :keypath    keypaths/checkout-shipping-address-first-name
+        :value      (:first-name shipping-address)
+        :errors     (get field-errors ["shipping-address" "first-name"])
+        :auto-focus "autofocus"
+        :name       "shipping-first-name"
+        :data-test  "shipping-first-name"
+        :id         "shipping-first-name"
+        :required   true}
+       {:type      "text"
+        :label     "Last Name"
+        :keypath   keypaths/checkout-shipping-address-last-name
+        :value     (:last-name shipping-address)
+        :errors    (get field-errors ["shipping-address" "last-name"])
+        :name      "shipping-last-name"
+        :id        "shipping-last-name"
+        :data-test "shipping-last-name"
+        :required  true})]
 
      (when guest?
        (ui/text-field "Email"
@@ -90,30 +88,29 @@
 
      (when shipping-expanded?
        [:.flex.flex-column.items-center.col-12
-        [:.flex.col-12
-         [:.col-6 (ui/text-field "Apt/Suite"
-                                 keypaths/checkout-shipping-address-address2
-                                 (:address2 shipping-address)
-                                 {:type      "text"
-                                  :name      "shipping-address2"
-                                  :data-test "shipping-address2"
-                                  :class     "rounded-left"
-                                  :errors    (get field-errors ["shipping-address" "address2"])
-                                  :id        "shipping-address2"})]
-         [:.col-6 (ui/text-field "Zip Code"
-                                 keypaths/checkout-shipping-address-zip
-                                 (:zipcode shipping-address)
-                                 {:type       "text"
-                                  :name       "shipping-zip"
-                                  :id         "shipping-zip"
-                                  :data-test  "shipping-zip"
-                                  :class      "rounded-right border-width-left-0"
-                                  :required   true
-                                  :max-length 5
-                                  :min-length 5
-                                  :pattern    "\\d{5}"
-                                  :errors     (get field-errors ["shipping-address" "zipcode"])
-                                  :title      "zip code must be 5 digits"})]]
+        [:.col-12
+         (ui/text-field-group
+          {:type      "text"
+           :label     "Apt/Suite"
+           :keypath   keypaths/checkout-shipping-address-address2
+           :value     (:address2 shipping-address)
+           :errors    (get field-errors ["shipping-address" "address2"])
+           :name      "shipping-address2"
+           :data-test "shipping-address2"
+           :id        "shipping-address2"}
+          {:type       "text"
+           :label      "Zip Code"
+           :keypath    keypaths/checkout-shipping-address-zip
+           :value      (:zipcode shipping-address)
+           :errors     (get field-errors ["shipping-address" "zipcode"])
+           :name       "shipping-zip"
+           :id         "shipping-zip"
+           :data-test  "shipping-zip"
+           :required   true
+           :max-length 5
+           :min-length 5
+           :pattern    "\\d{5}"
+           :title      "zip code must be 5 digits"})]
 
         (ui/text-field "City"
                        keypaths/checkout-shipping-address-city
@@ -152,31 +149,28 @@
        "Use same address?"]]
      (when-not bill-to-shipping-address?
        [:.col-12
-        [:.flex.col-12
-         [:.col-6
-          (ui/text-field "First Name"
-                         keypaths/checkout-billing-address-first-name
-                         (:first-name billing-address)
-                         {:auto-focus "autofocus"
-                          :type      "text"
-                          :name      "billing-first-name"
-                          :id        "billing-first-name"
-                          :data-test "billing-first-name"
-                          :class     "rounded-left"
-                          :errors    (get field-errors ["billing-address" "first-name"])
-                          :required  true})]
+        [:.col-12
+         (ui/text-field-group
+          {:label      "First Name"
+           :keypath    keypaths/checkout-billing-address-first-name
+           :value      (:first-name billing-address)
+           :errors     (get field-errors ["billing-address" "first-name"])
+           :auto-focus "autofocus"
+           :type       "text"
+           :name       "billing-first-name"
+           :id         "billing-first-name"
+           :data-test  "billing-first-name"
+           :required   true}
 
-         [:.col-6
-          (ui/text-field "Last Name"
-                         keypaths/checkout-billing-address-last-name
-                         (:last-name billing-address)
-                         {:type      "text"
-                          :name      "billing-last-name"
-                          :id        "billing-last-name"
-                          :data-test "billing-last-name"
-                          :class     "rounded-right border-width-left-0"
-                          :errors    (get field-errors ["billing-address" "last-name"])
-                          :required  true})]]
+          {:type      "text"
+           :label     "Last Name"
+           :keypath   keypaths/checkout-billing-address-last-name
+           :value     (:last-name billing-address)
+           :errors    (get field-errors ["billing-address" "last-name"])
+           :name      "billing-last-name"
+           :id        "billing-last-name"
+           :data-test "billing-last-name"
+           :required  true})]
 
         (ui/text-field "Mobile Phone"
                        keypaths/checkout-billing-address-phone
@@ -198,30 +192,29 @@
 
         (when billing-expanded?
           [:.flex.flex-column.items-center.col-12
-           [:.flex.col-12
-            [:.col-6 (ui/text-field "Apt/Suite"
-                                    keypaths/checkout-billing-address-address2
-                                    (:address2 billing-address)
-                                    {:type      "text"
-                                     :name      "billing-address2"
-                                     :class     "rounded-left"
-                                     :id        "billing-address2"
-                                     :errors    (get field-errors ["billing-address" "address2"])
-                                     :data-test "billing-address2" })]
-            [:.col-6 (ui/text-field "Zip Code"
-                                    keypaths/checkout-billing-address-zip
-                                    (:zipcode billing-address)
-                                    {:type       "text"
-                                     :name       "billing-zip"
-                                     :id         "billing-zip"
-                                     :data-test  "billing-zip"
-                                     :class      "rounded-right border-width-left-0"
-                                     :errors     (get field-errors ["billing-address" "zipcode"])
-                                     :required   true
-                                     :max-length 5
-                                     :min-length 5
-                                     :pattern    "\\d{5}"
-                                     :title      "zip code must be 5 digits"})]]
+           [:.col-12
+            (ui/text-field-group
+             {:type      "text"
+              :label     "Apt/Suite"
+              :keypath   keypaths/checkout-billing-address-address2
+              :value     (:address2 billing-address)
+              :errors    (get field-errors ["billing-address" "address2"])
+              :name      "billing-address2"
+              :id        "billing-address2"
+              :data-test "billing-address2"}
+             {:type       "text"
+              :label      "Zip Code"
+              :keypath    keypaths/checkout-billing-address-zip
+              :value      (:zipcode billing-address)
+              :errors     (get field-errors ["billing-address" "zipcode"])
+              :name       "billing-zip"
+              :id         "billing-zip"
+              :data-test  "billing-zip"
+              :required   true
+              :max-length 5
+              :min-length 5
+              :pattern    "\\d{5}"
+              :title      "zip code must be 5 digits"})]
 
            (ui/text-field "City"
                           keypaths/checkout-billing-address-city
