@@ -114,56 +114,115 @@
     [:div.inline-block.border.border-navy.navy.pp2.medium
      [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
 
-(def ^:private field-error-icon
-  [:div.absolute {:style {:right "1rem" :top "0.75rem"}}
-   [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-    {:style {:width "1.5rem" :height "1.5rem"}}]])
+(defn- add-classes [attributes classes]
+  (update attributes :class #(str %1 " " %2) classes))
+
+(defn selected-value [evt]
+  (let [elem (.-target evt)]
+    (.-value
+     (aget (.-options elem)
+           (.-selectedIndex elem)))))
+
+(defn ^:private field-error-icon [{:keys [error?]}]
+  (when error?
+    ;; z3 puts the icon above the field, even when it has focus
+    [:div.right.relative.z3
+     [:div.absolute {:style {:right "1rem" :top "0.75rem"}}
+      [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
+       {:style {:width "1.5rem" :height "1.5rem"}}]]]))
 
 (defn ^:private field-error-message [error data-test]
   [:div.orange.mtp2.mb1.bold
    (when error {:data-test (str data-test "-error")})
    (or (:long-message error) nbsp)])
 
-(defn- add-classes [attributes classes]
-  (update attributes :class #(str %1 " " %2) classes))
+(defn ^:private floating-label [label id {:keys [error? value?]}]
+  [:div.absolute
+   [:label.floating-label--label.col-12.h6.relative
+    (cond-> {:for id}
+      value?       (add-classes "has-value")
+      error?       (add-classes "orange")
+      (not error?) (add-classes "light-gray"))
+    label]])
 
-(defn ^:private text-field-without-error-message [label keypath value error? input-attributes]
-  (let [wrapper-class    (:wrapper-class input-attributes)
-        input-attributes (dissoc input-attributes :wrapper-class)]
-    [:div.clearfix.rounded.border.pp1
-     (cond-> {:class wrapper-class}
-       ;; .z1.relative is for adjacent text-fields with left in error and right
-       ;; not in error; keeps the left field's right border/inset 2px;
-       error?       (add-classes "z1 relative border-orange inset-orange x-group-item-2")
-       (not error?) (add-classes "border-dark-silver x-group-item"))
-     ;; z3 puts the icon above the field, even when it has focus
-     [:div.right.relative.z3 (when error? field-error-icon)]
-     [:div.absolute
-      [:label.floating-label--label.col-12.h6.relative
-       (cond-> {:for (:id input-attributes)}
-         (seq value)       (add-classes "has-value")
-         error?            (add-classes "orange")
-         (not error?)      (add-classes "light-gray"))
-       label]]
-     [:input.floating-label--input.col-12.h4.glow.border-none
-      (cond-> (merge {:key label
-                      :placeholder label
-                      :value (or value "")
-                      :on-change
-                      (fn [e]
-                        (handle-message events/control-change-state
-                                        {:keypath keypath
-                                         :value (.. e -target -value)}))}
-                     input-attributes)
-        error?                         (add-classes "field-is-error pr4")
-        (and error? (not (seq value))) (add-classes "orange")
-        (seq value)                    (add-classes "has-value bold"))]]))
+(defn ^:private field-wrapper-class [wrapper-class {:keys [error?]}]
+  (cond-> {:class wrapper-class}
+    true         (add-classes "rounded border pp1")
+    ;; .z1.relative is for adjacent text-fields with left in error and right
+    ;; not in error; keeps the left field's right border/inset 2px;
+    error?       (add-classes "z1 relative border-orange inset-orange x-group-item-2")
+    (not error?) (add-classes "border-dark-silver x-group-item")))
+
+(defn ^:private field-class [base {:keys [error? value?]}]
+  (cond-> base
+    true                      (add-classes "floating-label--input glow border-none")
+    error?                    (add-classes "field-is-error pr4")
+    (and error? (not value?)) (add-classes "orange")
+    value?                    (add-classes "has-value bold")))
+
+(defn ^:private plain-text-field
+  [label keypath value error? {:keys [wrapper-class id] :as input-attributes}]
+  (let [input-attributes (dissoc input-attributes :wrapper-class)
+        status           {:error? error?
+                          :value? (seq value)}]
+    [:div.clearfix
+     (field-wrapper-class wrapper-class status)
+     (field-error-icon status)
+     (floating-label label id status)
+     [:input.col-12.h4
+      (field-class (merge {:key         label
+                           :placeholder label
+                           :value       (or value "")
+                           :on-change
+                           (fn [e]
+                             (handle-message events/control-change-state
+                                             {:keypath keypath
+                                              :value   (.. e -target -value)}))}
+                          input-attributes)
+                   status)]]))
+
+(defn ^:private plain-select-field
+  [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
+  (let [option-text   first
+        option-value  (comp str second)
+        selected-text (->> options
+                           (filter (comp #{(str value)} option-value))
+                           first
+                           option-text)
+        status        {:error? error?
+                       :value? (seq selected-text)}]
+    [:div.clearfix
+     (field-wrapper-class "" status)
+     (field-error-icon status)
+     (floating-label label id status)
+     [:select.col-12.h4.bg-clear
+      (field-class (merge {:key         label
+                           :value       (or value "")
+                           :on-change   #(handle-message events/control-change-state
+                                                         {:keypath keypath
+                                                          :value   (selected-value %)})}
+                          select-attributes)
+                   status)
+      (when placeholder
+        [:option {:value "" :disabled "disabled"} placeholder])
+      (for [option options]
+        [:option
+         {:key   (option-value option)
+          :value (option-value option)}
+         (option-text option)])]]))
 
 (defn text-field [label keypath value {:keys [errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
-     (text-field-without-error-message label keypath value (not (nil? error))
-                                       (dissoc input-attributes :errors))
+     (plain-text-field label keypath value (not (nil? error))
+                       (dissoc input-attributes :errors))
+     (field-error-message error data-test)]))
+
+(defn select-field [label keypath value options {:keys [errors data-test] :as select-attributes}]
+  (let [error (first errors)]
+    [:div.col-12.mb1
+     (plain-select-field label keypath value options (not (nil? error))
+                         (dissoc select-attributes :errors))
      (field-error-message error data-test)]))
 
 (defn text-field-group
@@ -183,7 +242,7 @@
               (let [wrapper-class (str col-size
                                        (when first? " rounded-left")
                                        (when last? " rounded-right"))]
-                (text-field-without-error-message
+                (plain-text-field
                  label keypath value (seq errors)
                  (-> field
                      (dissoc :label :keypath :value :errors)
@@ -191,58 +250,6 @@
             (for [{:keys [errors data-test]} fields]
               [:div {:class col-size}
                (field-error-message (first errors) data-test)])))]))
-
-(defn selected-value [evt]
-  (let [elem (.-target evt)]
-    (.-value
-     (aget (.-options elem)
-           (.-selectedIndex elem)))))
-
-(defn select-field [label keypath value options select-attributes]
-  ;; TODO: This is almost an exact copy of the floating label implementation
-  ;; from text-field. Unify.
-  (let [option-text   first
-        option-value  (comp str second)
-        selected-text (->> options
-                           (filter (comp #{(str value)} option-value))
-                           first
-                           option-text)
-        error         (first (:errors select-attributes))
-        error?        (not (nil? error))]
-    [:div.col-12.mb1
-     [:div.clearfix.rounded.border.pp1
-      (cond-> {}
-        ;; .z1.relative is for adjacent text-fields with left in error and right
-        ;; not in error; keeps the left field's right border/inset 2px;
-        error?       (add-classes "z1 relative border-orange inset-orange x-group-item-2")
-        (not error?) (add-classes "border-dark-silver x-group-item"))
-      ;; z3 puts the icon above the field, even when it has focus
-      [:div.right.relative.z3 (when error? field-error-icon)]
-      [:div.absolute
-       [:label.floating-label--label.col-12.h6.relative
-        (cond-> {:for (:id select-attributes)}
-          (seq selected-text) (add-classes "has-value")
-          error?              (add-classes "orange")
-          (not error?)        (add-classes "light-gray"))
-        label]]
-      [:select.floating-label--input.col-12.h4.glow.border-none.bg-clear
-       (cond-> (merge {:key         label
-                       :value       (or value "")
-                       :on-change   #(handle-message events/control-change-state
-                                                     {:keypath keypath
-                                                      :value   (selected-value %)})}
-                      (dissoc select-attributes :errors))
-         error?                                 (add-classes "field-is-error pr4")
-         (and error? (not (seq selected-text))) (add-classes "orange")
-         (seq selected-text)                    (add-classes "has-value bold"))
-       (when-let [placeholder (:placeholder select-attributes)]
-         [:option {:value "" :disabled "disabled"} placeholder])
-       (for [option options]
-         [:option
-          {:key   (option-value option)
-           :value (option-value option)}
-          (option-text option)])]]
-     (field-error-message error (:data-test select-attributes))]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
