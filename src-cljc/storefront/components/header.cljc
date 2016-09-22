@@ -95,8 +95,11 @@
 ;; Sharing this width ensure the popup is centered on mobile
 (def popup-width          "188px")
 
-(defn social-link [img href title]
-  [:a.f5.navy.block.p1.rounded-bottom-1.border-top.border-dark-silver.bg-light-silver {:href href}
+(defn social-link [img href title last?]
+  [:a.f5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
+   (merge {:href href}
+          (when last?
+            {:class "rounded-bottom-1"}))
    [:div.flex.items-center
     [:div.mr1 {:style {:width "15px"}} img]
     [:div.pp2 title]]])
@@ -128,12 +131,14 @@
          (social-link
           [:div.mlp1.fill-light-gray {:style {:width "15px" :height "15px"}} svg/instagram]
           (str "http://instagram.com/" instagram-account)
-          "Follow me on Instagram"))
+          "Follow me on Instagram"
+          (not styleseat-account)))
        (when styleseat-account
          (social-link
           [:div.bg-no-repeat.bg-contain.img-styleseat {:style {:width "15px" :height "14px"}}]
           (str "https://www.styleseat.com/v/" styleseat-account)
-          "Book me on StyleSeat"))]]])])
+          "Book me on StyleSeat"
+          true))]]])])
 
 (defn account-dropdown [expanded? link & menu]
   (ui/drop-down
