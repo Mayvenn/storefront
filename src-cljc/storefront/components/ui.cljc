@@ -194,6 +194,14 @@
     [:div.clearfix
      (field-wrapper-class "" status)
      (field-error-icon status)
+     (when (not error?)
+       ;; z3 puts the icon above the field, even when it has focus
+       [:div.right.relative.z3
+        [:div.absolute {:style {:right "1rem" :top "1rem"}}
+         [:svg.stroke-light-gray {:viewBox "0 0 18 18"
+                                  :fill "none"
+                                  :style {:width "1.2rem" :height "1.2rem"}}
+          [:path {:d "M0 7 l9 9l9 -9"}]]]])
      (floating-label label id status)
      [:select.col-12.h4.bg-clear
       (field-class (merge {:key         label
