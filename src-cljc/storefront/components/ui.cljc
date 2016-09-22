@@ -209,7 +209,8 @@
                            :on-change   #(handle-message events/control-change-state
                                                          {:keypath keypath
                                                           :value   (selected-value %)})}
-                          select-attributes)
+                          select-attributes
+                          (when-not (seq selected-text) {:style {:opacity 0.5}}))
                    status)
       (when placeholder
         [:option {:value "" :disabled "disabled"} placeholder])
