@@ -14,15 +14,14 @@
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
-
-     (ui/text-field "Email"
-                    keypaths/forgot-password-email
-                    email
-                    {:auto-focus "autofocus"
-                     :type "email"
-                     :name "email"
-                     :required true
-                     :errors (get field-errors ["email"])})
+     (ui/text-field {:auto-focus "autofocus"
+                     :errors     (get field-errors ["email"])
+                     :keypath    keypaths/forgot-password-email
+                     :label      "Email"
+                     :name       "email"
+                     :required   true
+                     :type       "email"
+                     :value      email})
 
      (ui/submit-button "Reset my password")]
 

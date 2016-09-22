@@ -24,14 +24,14 @@
         :class (if (seq instagram-account) "fill-teal" "fill-gray")}
        svg/instagram]
       [:div.flex-auto
-       (ui/text-field "Instagram"
-                      (conj keypaths/stylist-manage-account :instagram_account)
-                      instagram-account
-                      {:type      "text"
-                       :name      "account-instagram"
+       (ui/text-field {:data-test "account-instagram"
+                       :errors    (get field-errors ["instagram_account"])
                        :id        "account-instagram"
-                       :data-test "account-instagram"
-                       :errors (get field-errors ["instagram_account"])})]]
+                       :keypath   (conj keypaths/stylist-manage-account :instagram_account)
+                       :label     "Instagram"
+                       :name      "account-instagram"
+                       :type      "text"
+                       :value     instagram-account})]]
 
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
@@ -39,14 +39,14 @@
         :class (if (seq styleseat-account) "fill-teal" "fill-gray")}
        svg/styleseat]
       [:div.flex-auto
-       (ui/text-field "StyleSeat"
-                      (conj keypaths/stylist-manage-account :styleseat_account)
-                      styleseat-account
-                      {:type      "text"
-                       :name      "account-styleseat"
+       (ui/text-field {:data-test "account-styleseat"
+                       :errors    (get field-errors ["styleseat_account"])
                        :id        "account-styleseat"
-                       :data-test "account-styleseat"
-                       :errors (get field-errors ["styleseat_account"])})]]]
+                       :keypath   (conj keypaths/stylist-manage-account :styleseat_account)
+                       :label     "StyleSeat"
+                       :name      "account-styleseat"
+                       :type       "text"
+                       :value     styleseat-account})]]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp

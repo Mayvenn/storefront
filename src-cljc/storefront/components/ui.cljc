@@ -220,7 +220,7 @@
           :value (option-value option)}
          (option-text option)])]]))
 
-(defn text-field [label keypath value {:keys [errors data-test] :as input-attributes}]
+(defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
      (plain-text-field label keypath value (not (nil? error))

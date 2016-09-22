@@ -43,21 +43,21 @@
 
         (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
           [:div
-           (ui/text-field "Cardholder's Name"
-                          keypaths/checkout-credit-card-name
-                          name
-                          {:name      "name"
-                           :data-test "payment-form-name"
-                           :required  true})
-           (ui/text-field "Card Number"
-                          keypaths/checkout-credit-card-number
-                          (cc/format-cc-number number)
-                          {:max-length    19
-                           :data-test     "payment-form-number"
-                           :auto-complete "off"
+           (ui/text-field {:data-test "payment-form-name"
+                           :keypath   keypaths/checkout-credit-card-name
+                           :label     "Cardholder's Name"
+                           :name      "name"
+                           :required  true
+                           :value     name})
+           (ui/text-field {:auto-complete "off"
                            :class         "cardNumber"
+                           :data-test     "payment-form-number"
+                           :keypath       keypaths/checkout-credit-card-number
+                           :label         "Card Number"
+                           :max-length    19
+                           :required      true
                            :type          "tel"
-                           :required      true})
+                           :value         (cc/format-cc-number number)})
            [:div.col-12
             (ui/text-field-group
              {:label         "Expiration (MM/YY)"

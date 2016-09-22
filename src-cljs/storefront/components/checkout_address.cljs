@@ -18,16 +18,16 @@
     om/IRender
     (render [_]
       (html
-       (ui/text-field "Address"
-                      keypath
-                      value
-                      {:type        "text"
-                       :name        id
-                       :id          id
-                       :required    true
+       (ui/text-field {:data-test   data-test
                        :errors      errors
-                       :data-test   data-test
-                       :on-key-down utils/suppress-return-key})))))
+                       :id          id
+                       :keypath     keypath
+                       :label       "Address"
+                       :name        id
+                       :on-key-down utils/suppress-return-key
+                       :required    true
+                       :type        "text"
+                       :value       value})))))
 
 (defn ^:private shipping-address-component
   [{:keys [shipping-address states email guest? places-loaded? shipping-expanded? field-errors]} owner]
@@ -58,25 +58,25 @@
         :required  true})]
 
      (when guest?
-       (ui/text-field "Email"
-                      keypaths/checkout-guest-email
-                      email
-                      {:type      "email"
-                       :name      "shipping-email"
-                       :id        "shipping-email"
-                       :data-test "shipping-email"
+       (ui/text-field {:data-test "shipping-email"
                        :errors    (get field-errors ["email"])
-                       :required  true}))
+                       :id        "shipping-email"
+                       :keypath   keypaths/checkout-guest-email
+                       :label     "Email"
+                       :name      "shipping-email"
+                       :required  true
+                       :type      "email"
+                       :value     email}))
 
-     (ui/text-field "Mobile Phone"
-                    keypaths/checkout-shipping-address-phone
-                    (:phone shipping-address)
-                    {:type      "tel"
-                     :name      "shipping-phone"
-                     :id        "shipping-phone"
-                     :data-test "shipping-phone"
+     (ui/text-field {:data-test "shipping-phone"
                      :errors    (get field-errors ["shipping-address" "phone"])
-                     :required  true})
+                     :id        "shipping-phone"
+                     :keypaths  keypaths/checkout-shipping-address-phone
+                     :label     "Mobile Phone"
+                     :name      "shipping-phone"
+                     :required  true
+                     :type      "tel"
+                     :value     (:phone shipping-address)})
 
      (when places-loaded?
        (om/build places-component {:id              :shipping-address1
@@ -90,37 +90,37 @@
        [:.flex.flex-column.items-center.col-12
         [:.col-12
          (ui/text-field-group
-          {:type      "text"
-           :label     "Apt/Suite"
-           :keypath   keypaths/checkout-shipping-address-address2
-           :value     (:address2 shipping-address)
+          {:data-test "shipping-address2"
            :errors    (get field-errors ["shipping-address" "address2"])
+           :id        "shipping-address2"
+           :keypath   keypaths/checkout-shipping-address-address2
+           :label     "Apt/Suite"
            :name      "shipping-address2"
-           :data-test "shipping-address2"
-           :id        "shipping-address2"}
-          {:type       "text"
-           :label      "Zip Code"
-           :keypath    keypaths/checkout-shipping-address-zip
-           :value      (:zipcode shipping-address)
+           :type      "text"
+           :value     (:address2 shipping-address)}
+          {:data-test  "shipping-zip"
            :errors     (get field-errors ["shipping-address" "zipcode"])
-           :name       "shipping-zip"
            :id         "shipping-zip"
-           :data-test  "shipping-zip"
-           :required   true
+           :keypath    keypaths/checkout-shipping-address-zip
+           :label      "Zip Code"
            :max-length 5
            :min-length 5
+           :name       "shipping-zip"
            :pattern    "\\d{5}"
-           :title      "zip code must be 5 digits"})]
+           :required   true
+           :title      "zip code must be 5 digits"
+           :type       "text"
+           :value      (:zipcode shipping-address)})]
 
-        (ui/text-field "City"
-                       keypaths/checkout-shipping-address-city
-                       (:city shipping-address)
-                       {:type      "text"
-                        :name      "shipping-city"
-                        :id        "shipping-city"
-                        :data-test "shipping-city"
+        (ui/text-field {:data-test "shipping-city"
                         :errors    (get field-errors ["shipping-address" "city"])
-                        :required  true})
+                        :id        "shipping-city"
+                        :keypath   keypaths/checkout-shipping-address-city
+                        :label     "City"
+                        :name      "shipping-city"
+                        :required  true
+                        :type      "text"
+                        :value     (:city shipping-address)})
 
         (ui/select-field "State"
                          keypaths/checkout-shipping-address-state
@@ -172,15 +172,15 @@
            :data-test "billing-last-name"
            :required  true})]
 
-        (ui/text-field "Mobile Phone"
-                       keypaths/checkout-billing-address-phone
-                       (:phone billing-address)
-                       {:type      "tel"
-                        :name      "billing-phone"
-                        :id        "billing-phone"
-                        :data-test "billing-phone"
+        (ui/text-field {:data-test "billing-phone"
                         :errors    (get field-errors ["billing-address" "phone"])
-                        :required  true})
+                        :id        "billing-phone"
+                        :keypaths  keypaths/checkout-billing-address-phone
+                        :label     "Mobile Phone"
+                        :name      "billing-phone"
+                        :required  true
+                        :type      "tel"
+                        :value     (:phone billing-address)})
 
         (when places-loaded?
           (om/build places-component {:id              :billing-address1
@@ -216,15 +216,15 @@
               :pattern    "\\d{5}"
               :title      "zip code must be 5 digits"})]
 
-           (ui/text-field "City"
-                          keypaths/checkout-billing-address-city
-                          (:city billing-address)
-                          {:type      "text"
-                           :name      "billing-city"
-                           :id        "billing-city"
-                           :data-test "billing-city"
+           (ui/text-field {:data-test "billing-city"
                            :errors    (get field-errors ["billing-address" "city"])
-                           :required  true})
+                           :id        "billing-city"
+                           :keypath   keypaths/checkout-billing-address-city
+                           :label     "City"
+                           :name      "billing-city"
+                           :required  true
+                           :type      "text"
+                           :value     (:city billing-address)})
 
            (ui/select-field "State"
                             keypaths/checkout-billing-address-state

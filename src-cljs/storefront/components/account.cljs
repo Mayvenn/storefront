@@ -24,32 +24,32 @@
     [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
 
     [:div.col.col-12.md-up-col-6
-     (ui/text-field "Email"
-                    keypaths/manage-account-email
-                    email
-                    {:type      "email"
-                     :name      "account-email"
+     (ui/text-field {:data-test "account-email"
                      :id        "account-email"
-                     :data-test "account-email"
-                     :required  true})
+                     :keypath   keypaths/manage-account-email
+                     :label     "Email"
+                     :name      "account-email"
+                     :required  true
+                     :type      "email"
+                     :value     email})
 
-     (ui/text-field "New Password"
-                    keypaths/manage-account-password
-                    password
-                    {:type      "password"
-                     :name      "account-password"
+     (ui/text-field {:data-test "account-password"
+                     :errors    (get field-errors ["password"])
                      :id        "account-password"
-                     :data-test "account-password"
-                     :errors (get field-errors ["password"])})
+                     :keypath   keypaths/manage-account-password
+                     :label     "New Password"
+                     :name      "account-password"
+                     :password  password
+                     :type      "password"})
 
-     (ui/text-field "Re-type New Password"
-                    keypaths/manage-account-password-confirmation
-                    confirmation
-                    {:type      "password"
-                     :name      "account-password-confirmation"
+     (ui/text-field {:data-test "account-password-confirmation"
+                     :errors    (get field-errors ["password-confirmation"])
                      :id        "account-password-confirmation"
-                     :data-test "account-password-confirmation"
-                     :errors (get field-errors ["password-confirmation"])})]
+                     :keypath   keypaths/manage-account-password-confirmation
+                     :label     "Re-type New Password"
+                     :name      "account-password-confirmation"
+                     :type      "password"
+                     :value     confirmation})]
 
     [:div.my2.col-12.clearfix
      ui/nbsp

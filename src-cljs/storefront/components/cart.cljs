@@ -127,7 +127,9 @@ Thanks,
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:div.pt2.flex.items-center
          [:div.col-8.pr1
-          (ui/text-field "Promo code" keypaths/cart-coupon-code coupon-code {})]
+          (ui/text-field {:keypath keypaths/cart-coupon-code
+                          :label "Promo code"
+                          :value coupon-code})]
          [:div.col-4.pl1.mb3.inline-block
           (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
                             :disabled? updating?

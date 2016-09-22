@@ -174,12 +174,22 @@
      :keypath [:style-guide :form :last-name]
      :value   (get-in data [:style-guide :form :last-name])
      :errors  (:last-name errors)})
-   (ui/text-field "Mobile Phone"
-                  [:style-guide :form :phone]
-                  (get-in data [:style-guide :form :phone])
-                  {:type     "text"
-                   :errors   (:phone errors)
-                   :required true})
+   (ui/text-field
+    {:type     "text"
+     :label    "Mobile Phone"
+     :keypath  [:style-guide :form :phone]
+     :value    (get-in data [:style-guide :form :phone])
+     :errors   (:phone errors)
+     :required true})
+#_   (ui/new-select-field 
+                    [:style-guide :form :besty]
+                    (get-in data [:style-guide :form :besty])
+                    [["Corey" "corey"] ["Jacob" "jacob"]]
+                    {:label "Besty"
+                     :id          "id-is-required"
+                     :errors      (:besty errors)
+                     :placeholder "Besty"
+                     :required    true})
    (ui/select-field "Besty"
                     [:style-guide :form :besty]
                     (get-in data [:style-guide :form :besty])

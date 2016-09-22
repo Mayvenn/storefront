@@ -42,36 +42,36 @@
 
       [:div.clearfix]
 
-      (ui/text-field "Mobile Phone"
-                     (conj keypaths/stylist-manage-account :address :phone)
-                     (:phone address)
-                     {:type      "tel"
-                      :name      "account-phone"
-                      :id        "account-phone"
-                      :data-test "account-phone"
+      (ui/text-field {:data-test "account-phone"
                       :errors    (get field-errors ["address" "phone"])
-                      :required  true})
+                      :id        "account-phone"
+                      :keypath   (conj keypaths/stylist-manage-account :address :phone)
+                      :label     "Mobile Phone"
+                      :name      "account-phone"
+                      :required  true
+                      :type      "tel"
+                      :value     (:phone address)})
 
-      (ui/text-field "Email"
-                     (conj keypaths/stylist-manage-account :user :email)
-                     (:email user)
-                     {:type      "email"
-                      :name      "account-email"
-                      :id        "account-email"
-                      :data-test "account-email"
+      (ui/text-field {:data-test "account-email"
                       :errors    (get field-errors ["user" "email"])
-                      :required  true})
+                      :id        "account-email"
+                      :keypath   (conj keypaths/stylist-manage-account :user :email)
+                      :label     "Email"
+                      :name      "account-email"
+                      :required  true
+                      :type      "email"
+                      :value     (:email user)})
 
       [:div.flex.flex-column.items-center.col-12
-       (ui/text-field "Birthday"
-                      (conj keypaths/stylist-manage-account :birth-date)
-                      birth-date
-                      {:type      "date"
-                       :id        "account-birth-date"
-                       :name      "account-birth-date"
-                       :data-test "account-birth-date"
+       (ui/text-field {:data-test "account-birth-date"
                        :errors    (get field-errors ["birth_date"])
-                       :required  true})]]
+                       :id        "account-birth-date"
+                       :keypath (conj keypaths/stylist-manage-account :birth-date)
+                       :label "Birthday"
+                       :name      "account-birth-date"
+                       :required  true
+                       :type      "date"
+                       :value birth-date})]]
 
      [:div.my2.col-12.clearfix
       ui/nbsp

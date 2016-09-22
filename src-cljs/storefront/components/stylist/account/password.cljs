@@ -16,23 +16,23 @@
     [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your password"]
 
     [:div.col.col-12.md-up-col-6
-     (ui/text-field "New Password"
-                    (conj keypaths/stylist-manage-account :user :password)
-                    password
-                    {:type      "password"
-                     :name      "account-password"
+     (ui/text-field {:data-test "account-password"
+                     :errors    (get field-errors ["user" "password"])
                      :id        "account-password"
-                     :data-test "account-password"
-                     :errors (get field-errors ["user" "password"])})
+                     :keypath   (conj keypaths/stylist-manage-account :user :password)
+                     :label     "New Password"
+                     :name      "account-password"
+                     :type      "password"
+                     :value     password})
 
-     (ui/text-field "Re-type New Password"
-                    (conj keypaths/stylist-manage-account :user :password-confirmation)
-                    confirmation
-                    {:type      "password"
-                     :name      "account-password-confirmation"
+     (ui/text-field {:data-test "account-password-confirmation"
+                     :errors    (get field-errors ["user" "password-confirmation"])
                      :id        "account-password-confirmation"
-                     :data-test "account-password-confirmation"
-                     :errors (get field-errors ["user" "password-confirmation"])})]
+                     :keypath   (conj keypaths/stylist-manage-account :user :password-confirmation)
+                     :label     "Re-type New Password"
+                     :name      "account-password-confirmation"
+                     :value     confirmation
+                     :type      "password"})]
 
     [:div.my2.col-12.clearfix
      ui/nbsp

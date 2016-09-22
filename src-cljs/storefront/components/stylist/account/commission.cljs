@@ -36,24 +36,24 @@
                         :required  true})
 
       (condp = payout-method
-        "venmo"         (ui/text-field "Venmo Phone #"
-                                       (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
-                                       venmo-phone
-                                       {:type      "tel"
-                                        :name      "venmo-phone"
-                                        :id        "venmo-phone"
-                                        :data-test "venmo-phone"
+        "venmo"         (ui/text-field {:data-test "venmo-phone"
                                         :errors    (get field-errors ["venmo_payout_attributes" "phone"])
-                                        :required  true})
-        "paypal"        (ui/text-field "PayPal Email"
-                                       (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
-                                       paypal-email
-                                       {:type      "email"
-                                        :name      "paypal-email"
-                                        :id        "paypal-email"
-                                        :data-test "paypal-email"
+                                        :id        "venmo-phone"
+                                        :keypath   (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
+                                        :label     "Venmo Phone #"
+                                        :name      "venmo-phone"
+                                        :required  true
+                                        :type      "tel"
+                                        :value     venmo-phone})
+        "paypal"        (ui/text-field {:data-test "paypal-email"
                                         :errors    (get field-errors ["paypal_payout_attributes" "email"])
-                                        :required  true})
+                                        :id        "paypal-email"
+                                        :keypath   (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
+                                        :label     "PayPal Email"
+                                        :name      "paypal-email"
+                                        :required  true
+                                        :type      "email"
+                                        :value     paypal-email})
         "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address entered here"]
         "check"         [:p.ml1.mb3 "Checks will mail to the address entered here"]
         [:p.ml1.mb3 "Checks will mail to the address entered here"])]]
@@ -62,16 +62,16 @@
     [:div.col.col-12.md-up-col-6
      [:div.mx-auto.col-12.md-up-col-10
       [:div.border-silver.border-top.md-up-hide.mb3]
-      (ui/text-field "Address"
-                     (conj keypaths/stylist-manage-account :address :address1)
-                     address1
-                     {:auto-focus "autofocus"
-                      :type       "text"
-                      :name       "account-address1"
-                      :id         "account-address1"
+      (ui/text-field {:auto-focus "autofocus"
                       :data-test  "account-address1"
                       :errors     (get field-errors ["address" "address1"])
-                      :required   true})
+                      :id         "account-address1"
+                      :keypath    (conj keypaths/stylist-manage-account :address :address1)
+                      :label      "Address"
+                      :name       "account-address1"
+                      :required   true
+                      :type       "text"
+                      :value      address1})
 
       [:div.col-12
        (ui/text-field-group
@@ -98,15 +98,15 @@
          :pattern    "\\d{5}"
          :title      "zip code must be 5 digits"})]
 
-      (ui/text-field "City"
-                     (conj keypaths/stylist-manage-account :address :city)
-                     city
-                     {:type      "text"
-                      :name      "account-city"
-                      :id        "account-city"
-                      :data-test "account-city"
+      (ui/text-field {:data-test "account-city"
                       :errors    (get field-errors ["address" "city"])
-                      :required  true})
+                      :id        "account-city"
+                      :keypath   (conj keypaths/stylist-manage-account :address :city)
+                      :label     "City"
+                      :name      "account-city"
+                      :required  true
+                      :type      "text"
+                      :value     city})
 
       (ui/select-field "State"
                        (conj keypaths/stylist-manage-account :address :state_id)

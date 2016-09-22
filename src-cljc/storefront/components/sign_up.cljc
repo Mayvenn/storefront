@@ -24,33 +24,33 @@
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
 
-     (ui/text-field "Email"
-                    keypaths/sign-up-email
-                    email
-                    {:auto-focus "autofocus"
-                     :type      "email"
-                     :name      "email"
-                     :data-test "user-email"
-                     :errors    (get field-errors ["email"])
-                     :required  true})
+     (ui/text-field {:auto-focus "autofocus"
+                     :data-test  "user-email"
+                     :errors     (get field-errors ["email"])
+                     :keypath    keypaths/sign-up-email
+                     :label      "Email"
+                     :name       "email"
+                     :required   true
+                     :type       "email"
+                     :value      email})
 
-     (ui/text-field "Password"
-                    keypaths/sign-up-password
-                    password
-                    {:type      "password"
-                     :name      "password"
-                     :data-test "user-password"
+     (ui/text-field {:data-test "user-password"
                      :errors    (get field-errors ["password"])
-                     :required  true})
+                     :keypath   keypaths/sign-up-password
+                     :label     "Password"
+                     :name      "password"
+                     :password  password
+                     :required  true
+                     :type      "password"})
 
-     (ui/text-field "Password Confirmation"
-                    keypaths/sign-up-password-confirmation
-                    password-confirmation
-                    {:type      "password"
-                     :name      "password-confirmation"
-                     :data-test "user-password-confirmation"
+     (ui/text-field {:data-test "user-password-confirmation"
                      :errors    (get field-errors ["password_confirmation"])
-                     :required  true})
+                     :keypath   keypaths/sign-up-password-confirmation
+                     :label     "Password Confirmation"
+                     :name      "password-confirmation"
+                     :required  true
+                     :type      "password"
+                     :value     password-confirmation})
 
      (ui/submit-button "Sign Up"
                        {:data-test "user-submit"})

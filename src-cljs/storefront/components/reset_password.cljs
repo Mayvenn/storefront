@@ -14,19 +14,19 @@
      [:.h3.center.my2 "Update Your Password"]
      [:form.col-12
       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
-      (ui/text-field "Password"
-                     keypaths/reset-password-password
-                     reset-password
-                     {:type       "password"
-                      :required   true
+      (ui/text-field {:errors     (get field-errors ["password"])
+                      :keypath    keypaths/reset-password-password
+                      :label      "Password"
                       :min-length 6
-                      :errors     (get field-errors ["password"])})
-      (ui/text-field "Password Confirmation"
-                     keypaths/reset-password-password-confirmation
-                     reset-password-confirmation
-                     {:type     "password"
+                      :required   true
+                      :type       "password"
+                      :value      reset-password})
+      (ui/text-field {:errors   (get field-errors ["password_confirmation"])
+                      :keypath  keypaths/reset-password-password-confirmation
+                      :label    "Password Confirmation"
                       :required true
-                      :errors   (get field-errors ["password_confirmation"])})
+                      :type     "password"
+                      :value    reset-password-confirmation})
 
       (ui/submit-button "Update")]
      [:.h5.center.gray.light.my2 "OR"]
