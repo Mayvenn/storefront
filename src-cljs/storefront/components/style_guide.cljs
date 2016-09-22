@@ -159,33 +159,33 @@
    (color-swatch "dark-gray" "333333")
    (color-swatch "black" "000000")]])
 
-(defn ^:private form [key data errors]
+(defn ^:private form [data errors]
   [:div
-   [:.flex.col-12
-    [:.col-6 (ui/text-field "First Name"
-                            [:style-guide :form key :first-name]
-                            (get-in data [:style-guide :form key :first-name])
-                            {:type   "text"
-                             :errors errors
-                             :class  "rounded-left"})]
-    [:.col-6 (ui/text-field "Last Name"
-                            [:style-guide :form key :last-name]
-                            (get-in data [:style-guide :form key :last-name])
-                            {:type   "text"
-                             :errors errors
-                             :class  "rounded-right border-width-left-0"})]]
+   (ui/text-field-group
+    {:type    "text"
+     :label   "First Name"
+     :id      (str key "-" :first-name)
+     :keypath [:style-guide :form :first-name]
+     :value   (get-in data [:style-guide :form :first-name])
+     :errors  (:first-name errors)}
+    {:type    "text"
+     :label   "Last Name"
+     :id      "last-name"
+     :keypath [:style-guide :form :last-name]
+     :value   (get-in data [:style-guide :form :last-name])
+     :errors  (:last-name errors)})
    (ui/text-field "Mobile Phone"
-                  [:style-guide :form key :phone]
-                  (get-in data [:style-guide :form key :phone])
+                  [:style-guide :form :phone]
+                  (get-in data [:style-guide :form :phone])
                   {:type     "text"
-                   :errors   errors
+                   :errors   (:phone errors)
                    :required true})
    (ui/select-field "Besty"
-                    [:style-guide :form key :besty]
-                    (get-in data [:style-guide :form key :besty])
+                    [:style-guide :form :besty]
+                    (get-in data [:style-guide :form :besty])
                     [["Corey" "corey"] ["Jacob" "jacob"]]
                     {:id          "id-is-required"
-                     :errors      errors
+                     :errors      (:besty errors)
                      :placeholder "Besty"
                      :required    true})] )
 
@@ -193,9 +193,15 @@
   [:section
    (header "Form Fields")
    [:div
-    [:h3 "Active"] (form :active data [])]
+    [:h3.mb1 "Active"] (form data {:first-name []
+                                   :last-name [{:long-message "wrong"}]
+                                   :phone []
+                                   :besty []})]
    [:div
-    [:h3 "Errors"] (form :errors data [{:long-message "Wrong"}])]])
+    [:h3.mb1 "Errors"] (form data {:first-name [{:long-message "Wrong"}]
+                                   :last-name [{:long-message "wrong"}]
+                                   :phone [{:long-message "Wrong"}]
+                                   :besty [{:long-message "wrong"}]})]])
 
 (defn component [data owner opts]
   (component/create
@@ -204,8 +210,8 @@
 
     [:div.col.col-10.px3.py3.border-left.border-dark-silver
      typography
-     buttons
      colors
+     buttons
      (form-fields data)]]))
 
 (defn built-component [data opts]

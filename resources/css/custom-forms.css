@@ -1,11 +1,12 @@
 .floating-label--label {
   position: relative;
   display: none;
+  z-index: 3;
 }
 
 .floating-label--label.has-value {
   top: 0.9em;
-  left: 1.15em;
+  left: 1em;
   display: block;
 }
 
@@ -18,16 +19,22 @@
   padding-bottom: 0.3em;
 }
 
-.glow-teal:focus {
-   outline-color: var(--teal);
+.glow:focus {
+  outline-color: var(--teal);
+  /* 0 looks ok, but loses glow on right border of first field in group */
+  outline-offset: -1px;
+  /* z2 puts the glowing field above the field inset but below the error icon */
+  z-index: 2;
+  position: relative;
 }
 
-.glow-orange:focus {
-   outline-color: var(--orange);
+.glow.field-is-error:focus {
+  outline-color: var(--orange);
 }
 
+select,
 input[type=date] {
-   -webkit-appearance: none;
+  appearance: none;
 }
 
 :root {
