@@ -84,15 +84,19 @@
          :data-test "account-address2"
          :id        "account-address2"}
 
-        {:type      "text"
-         :label     "Zip Code"
-         :keypath   (conj keypaths/stylist-manage-account :address :zipcode)
-         :value     zipcode
-         :errors    (get field-errors ["address" "zipcode"])
-         :name      "account-zipcode"
-         :id        "account-zipcode"
-         :data-test "account-zipcode"
-         :required  true})]
+        {:type       "text"
+         :label      "Zip Code"
+         :keypath    (conj keypaths/stylist-manage-account :address :zipcode)
+         :value      zipcode
+         :errors     (get field-errors ["address" "zipcode"])
+         :name       "account-zipcode"
+         :id         "account-zipcode"
+         :data-test  "account-zipcode"
+         :required   true
+         :max-length 5
+         :min-length 5
+         :pattern    "\\d{5}"
+         :title      "zip code must be 5 digits"})]
 
       (ui/text-field "City"
                      (conj keypaths/stylist-manage-account :address :city)
