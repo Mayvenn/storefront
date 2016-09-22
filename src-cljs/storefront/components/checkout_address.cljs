@@ -151,12 +151,12 @@
        [:.col-12
         [:.col-12
          (ui/text-field-group
-          {:label      "First Name"
+          {:type       "text"
+           :label      "First Name"
            :keypath    keypaths/checkout-billing-address-first-name
            :value      (:first-name billing-address)
            :errors     (get field-errors ["billing-address" "first-name"])
            :auto-focus "autofocus"
-           :type       "text"
            :name       "billing-first-name"
            :id         "billing-first-name"
            :data-test  "billing-first-name"
