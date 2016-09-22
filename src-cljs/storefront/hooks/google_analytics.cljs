@@ -29,13 +29,14 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
 (defn track-event [category action & [label value]]
+  {:pre [(if label (number? value) true)]}
   (when (.hasOwnProperty js/window "ga")
     (js/ga "send"
            (clj->js {"hitType" "event"
                      "eventCategory" category
                      "eventAction" action
                      "eventLabel" label
-                     "eventValue" (or value "")}))))
+                     "eventValue" value}))))
 
 (defn track-page [path]
   (when (.hasOwnProperty js/window "ga")

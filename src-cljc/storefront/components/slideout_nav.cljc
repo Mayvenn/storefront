@@ -119,20 +119,22 @@
     (stylist-products-section selectable? named-searches)]])
 
 (defn help-section [selectable?]
-  (component/html
-   [section-outer-darker
-    [section-inner
-     [:nav {:role "navigation" :aria-label "Help"}
-      [:ul.list-reset
-       [:li [:a.teal (utils/route-to events/navigate-shop-by-look)
-             (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]
-       [:li [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]]
-       [:li [:a.teal (assoc (utils/route-to events/navigate-content-guarantee)
-                             :data-test "content-guarantee")
-             (row (selectable? events/navigate-content-guarantee "Our Guarantee"))]]
-       [:li [:a.teal (assoc (utils/route-to events/navigate-content-help)
-                             :data-test "content-help")
-             (row (selectable? events/navigate-content-help "Contact Us"))]]]]]]))
+  [section-outer-darker
+   [section-inner
+    [:nav {:role "navigation" :aria-label "Help"}
+     [:ul.list-reset
+      [:li [:a.teal (utils/route-to events/navigate-shop-by-look)
+            (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]
+      [:li [:a.teal {:href "https://blog.mayvenn.com"} (row "Blog")]]
+      [:li [:a.teal (assoc (utils/route-to events/navigate-content-guarantee)
+                           :data-test "content-guarantee")
+            (row (selectable? events/navigate-content-guarantee "Our Guarantee"))]]
+      [:li [:a.teal (assoc (utils/route-to events/navigate-content-about-us)
+                           :data-test "content-about-us")
+            (row (selectable? events/navigate-content-about-us "About Us"))]]
+      [:li [:a.teal (assoc (utils/route-to events/navigate-content-help)
+                           :data-test "content-help")
+            (row (selectable? events/navigate-content-help "Contact Us"))]]]]]])
 
 (def sign-in-section
   (component/html

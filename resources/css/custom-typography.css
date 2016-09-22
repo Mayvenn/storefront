@@ -22,6 +22,9 @@
     display: block;
     content: '';
 }
+
+.font-style-normal { font-style: normal; }
+
 /* Use customized Graphik fonts when applying .medium or .bold */
 /* This was broken in old styles. */
 @font-face {
