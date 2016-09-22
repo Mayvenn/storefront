@@ -39,9 +39,9 @@
                      :keypath   keypaths/sign-up-password
                      :label     "Password"
                      :name      "password"
-                     :password  password
                      :required  true
-                     :type      "password"})
+                     :type      "password"
+                     :value     password})
 
      (ui/text-field {:data-test "user-password-confirmation"
                      :errors    (get field-errors ["password_confirmation"])
