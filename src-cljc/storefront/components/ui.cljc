@@ -257,7 +257,7 @@
           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
          link-contents)
    (when expanded?
-     [:div.relative.z2
+     [:div.relative.z4
       {:on-click #(handle-message events/control-menu-collapse-all)}
       [:div.fixed.overlay]
       menu])])
@@ -266,7 +266,7 @@
   ;; Inspired by https://css-tricks.com/considerations-styling-modal/
   [:div
    ;; The scrim, a sibling to the modal
-   [:div.z3.fixed.overlay.bg-darken-4
+   [:div.z4.fixed.overlay.bg-darken-4
     {:on-click on-close}
     ;; Set bg-class to override or darken the scrim
     [:div.fixed.overlay {:class bg-class}]]

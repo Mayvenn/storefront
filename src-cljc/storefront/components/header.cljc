@@ -209,7 +209,7 @@
           name])]])]])
 
 (defn shop-panel [stylist? expanded? current-page? named-searches]
-  [:div.absolute.col-12.bg-light-silver.to-lg-hide.z1.top-lit
+  [:div.absolute.col-12.bg-light-silver.to-lg-hide.z4.top-lit
    (when-not expanded? {:class "hide"})
    [:div.flex.items-start {:style {:padding "1em 10% 2em"}}
     [:div.col-4 (products-section current-page? "Hair Extensions" (filter named-searches/is-extension? named-searches))]

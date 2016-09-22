@@ -187,10 +187,10 @@
    (let [selectable? (partial selectable current-navigation-message)]
      [:div.h4.lg-up-hide
       {:class (when-not slid-out? "hide")}
-      [:div.fixed.overlay.bg-darken-4.z3
+      [:div.fixed.overlay.bg-darken-4.z4
        ;; Clicks on the overlay close the slideout nav, without letting the click through to underlying links
        {:on-click (utils/send-event-callback events/control-menu-collapse-all)}]
-      [:div.fixed.overflow-auto.top-0.left-0.col-10.z3.lit.bg-white.rounded-bottom-right-1
+      [:div.fixed.overflow-auto.top-0.left-0.col-10.z4.lit.bg-white.rounded-bottom-right-1
        {:style {:max-height "100vh"}}
        [section-outer-darker menu-x [:div.p2 logo]]
        (cond
