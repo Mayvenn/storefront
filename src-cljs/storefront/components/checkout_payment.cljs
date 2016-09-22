@@ -32,14 +32,15 @@
          :data-test "spinner"}]
        [:div
         (when (seq saved-cards)
-          (ui/select-field "Payment Card"
-                           keypaths/checkout-credit-card-selected-id
-                           selected-saved-card-id
-                           (conj (mapv (juxt cc/display-credit-card :id) saved-cards)
-                                 ["Add a new payment card" "add-new-card"])
-                           {:id        "selected-saved-card"
-                            :data-test "payment-form-selected-saved-card"
-                            :required  true}))
+          (let [card-options (conj (mapv (juxt cc/display-credit-card :id) saved-cards)
+                                   ["Add a new payment card" "add-new-card"])]
+            (ui/select-field {:data-test "payment-form-selected-saved-card"
+                              :id        "selected-saved-card"
+                              :keypath   keypaths/checkout-credit-card-selected-id
+                              :label     "Payment Card"
+                              :options   card-options
+                              :required  true
+                              :value     selected-saved-card-id})))
 
         (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
           [:div

@@ -122,15 +122,15 @@
                         :type      "text"
                         :value     (:city shipping-address)})
 
-        (ui/select-field "State"
-                         keypaths/checkout-shipping-address-state
-                         (:state shipping-address)
-                         states
-                         {:id          :shipping-state
-                          :data-test   "shipping-state"
-                          :placeholder "State"
+        (ui/select-field {:data-test   "shipping-state"
                           :errors      (get field-errors ["shipping-address" "state"])
-                          :required    true})])])))
+                          :id          :shipping-state
+                          :keypath     keypaths/checkout-shipping-address-state
+                          :label       "State"
+                          :options     states
+                          :placeholder "State"
+                          :required    true
+                          :value       (:state shipping-address)})])])))
 
 (defn ^:private billing-address-component
   [{:keys [billing-address states bill-to-shipping-address? places-loaded? billing-expanded? field-errors]} owner]
@@ -226,15 +226,15 @@
                            :type      "text"
                            :value     (:city billing-address)})
 
-           (ui/select-field "State"
-                            keypaths/checkout-billing-address-state
-                            (:state billing-address)
-                            states
-                            {:id          :billing-state
-                             :data-test   "billing-state"
-                             :placeholder "State"
+           (ui/select-field {:data-test   "billing-state"
                              :errors      (get field-errors ["billing-address" "state"])
-                             :required    true})])])])))
+                             :id          :billing-state
+                             :keypath     keypaths/checkout-billing-address-state
+                             :label       "State"
+                             :options     states
+                             :placeholder "State"
+                             :required    true
+                             :value       (:state billing-address)})])])])))
 
 (defn component
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]

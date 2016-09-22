@@ -24,17 +24,15 @@
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.col.col-12.md-up-col-6
      [:h2.h3.light.my3.center.col-12 "Update commission info"]
-
      [:div.col-12.md-up-col-10.mx-auto
-      (ui/select-field "Payout Method"
-                       (conj keypaths/stylist-manage-account :chosen_payout_method)
-                       payout-method
-                       payout-methods
-                       {:id        "payout-method"
-                        :data-test "payout-method"
+      (ui/select-field {:data-test "payout-method"
                         :errors    (get field-errors ["chosen_payout_method"])
-                        :required  true})
-
+                        :id         "payout-method"
+                        :keypath   (conj keypaths/stylist-manage-account :chosen_payout_method)
+                        :label     "Payout Method"
+                        :options   payout-methods
+                        :required  true
+                        :value     payout-method})
       (condp = payout-method
         "venmo"         (ui/text-field {:data-test "venmo-phone"
                                         :errors    (get field-errors ["venmo_payout_attributes" "phone"])
@@ -108,15 +106,15 @@
                       :type      "text"
                       :value     city})
 
-      (ui/select-field "State"
-                       (conj keypaths/stylist-manage-account :address :state_id)
-                       state-id
-                       states
-                       {:id          :account-state
-                        :data-test   "account-state"
-                        :placeholder "State"
+      (ui/select-field {:data-test   "account-state"
                         :errors      (get field-errors ["address" "state"])
-                        :required    true})]]
+                        :id          :account-state
+                        :keypath     (conj keypaths/stylist-manage-account :address :state_id)
+                        :label       "State"
+                        :options     states
+                        :placeholder "State"
+                        :required    true
+                        :value       state-id})]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp

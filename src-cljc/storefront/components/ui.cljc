@@ -227,7 +227,7 @@
                        (dissoc input-attributes :errors))
      (field-error-message error data-test)]))
 
-(defn select-field [label keypath value options {:keys [errors data-test] :as select-attributes}]
+(defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
      (plain-select-field label keypath value options (not (nil? error))

@@ -181,23 +181,14 @@
      :value    (get-in data [:style-guide :form :phone])
      :errors   (:phone errors)
      :required true})
-#_   (ui/new-select-field 
-                    [:style-guide :form :besty]
-                    (get-in data [:style-guide :form :besty])
-                    [["Corey" "corey"] ["Jacob" "jacob"]]
-                    {:label "Besty"
+   (ui/select-field {:errors      (:besty errors)
                      :id          "id-is-required"
-                     :errors      (:besty errors)
+                     :keypath     [:style-guide :form :besty]
+                     :label       "Besty"
+                     :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Besty"
-                     :required    true})
-   (ui/select-field "Besty"
-                    [:style-guide :form :besty]
-                    (get-in data [:style-guide :form :besty])
-                    [["Corey" "corey"] ["Jacob" "jacob"]]
-                    {:id          "id-is-required"
-                     :errors      (:besty errors)
-                     :placeholder "Besty"
-                     :required    true})] )
+                     :required    true
+                     :value       (get-in data [:style-guide :form :besty])})])
 
 (defn ^:private form-fields [data]
   [:section
