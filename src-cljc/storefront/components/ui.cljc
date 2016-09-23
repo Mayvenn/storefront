@@ -155,7 +155,7 @@
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
-    true                      (add-classes "floating-label--input rounded glow border-none")
+    true                      (add-classes "floating-label--input rounded glow border-none h3")
     error?                    (add-classes "field-is-error pr4")
     (and error? (not value?)) (add-classes "orange")
     value?                    (add-classes "has-value")))
