@@ -93,14 +93,14 @@
 
 (defn option-html [later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.light.col-12
+  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.col-12
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :style {:height "100%"}
     :class (cond
-             sold-out?   "bg-light-gray gray"
-             later-step? "bg-dark-silver muted"
-             checked?    "bg-teal light-silver"
-             true        "bg-white gray")}
+             sold-out?   "bg-light-gray gray light"
+             later-step? "bg-dark-silver muted light"
+             checked?    "bg-teal white regular"
+             true        "bg-white gray light")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
