@@ -71,7 +71,7 @@
      (ui/text-field {:data-test "shipping-phone"
                      :errors    (get field-errors ["shipping-address" "phone"])
                      :id        "shipping-phone"
-                     :keypaths  keypaths/checkout-shipping-address-phone
+                     :keypath   keypaths/checkout-shipping-address-phone
                      :label     "Mobile Phone"
                      :name      "shipping-phone"
                      :required  true
@@ -175,7 +175,7 @@
         (ui/text-field {:data-test "billing-phone"
                         :errors    (get field-errors ["billing-address" "phone"])
                         :id        "billing-phone"
-                        :keypaths  keypaths/checkout-billing-address-phone
+                        :keypath   keypaths/checkout-billing-address-phone
                         :label     "Mobile Phone"
                         :name      "billing-phone"
                         :required  true

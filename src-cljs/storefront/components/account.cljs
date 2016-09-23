@@ -39,7 +39,7 @@
                      :keypath   keypaths/manage-account-password
                      :label     "New Password"
                      :name      "account-password"
-                     :password  password
+                     :value     password
                      :type      "password"})
 
      (ui/text-field {:data-test "account-password-confirmation"
