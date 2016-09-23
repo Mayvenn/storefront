@@ -17,8 +17,8 @@
     [:div.bg-no-repeat.bg-top.bg-cover
      {:class (str "img-" slug)
       :style {:height "200px"}}
-     [:div.bg-darken-3.flex.items-center.col-12 {:style {:height "100%"}}
-      [:div.h2.light-silver.center.col-12.titleize.shadow.nowrap
+     [:div.bg-darken-2.flex.items-center.col-12 {:style {:height "100%"}}
+      [:div.h2.bold.white.center.col-12.titleize.shadow.nowrap
        name]]]]])
 
 (defn component [{:keys [named-searches]} owner opts]

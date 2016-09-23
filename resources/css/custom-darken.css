@@ -10,7 +10,7 @@
   --darken-bottom-4: linear-gradient(0deg, var(--darken-4), rgba(255, 255, 255, 0));
 
   --darken-1: rgba(0, 0, 0, .075);
-  --darken-2: rgba(0, 0, 0, .125);
+  --darken-2: rgba(0, 0, 0, .225);
   --darken-3: rgba(0, 0, 0, .375);
   --darken-4: rgba(0, 0, 0, .625);
 }
