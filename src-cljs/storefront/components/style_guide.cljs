@@ -60,8 +60,8 @@
     [:div.col-6.p.mb2 "12px or 16px"]
 
     [:div.col-2.h6 ".h6"]
-    [:div.col-4.h6 ".75rem"]
-    [:div.col-6.h6.mb2 "9px or 12px"]]
+    [:div.col-4.h6 ".875rem"]
+    [:div.col-6.h6.mb2 "10.5px or 12px"]]
 
    [:div.flex.flex-wrap
     [:div.col-2.f1 ".f1"]
@@ -84,7 +84,7 @@
     [:div.col-10.f5.mb2 "12px"]
 
     [:div.col-2.f6 ".f6"]
-    [:div.col-10.f6.mb2 "9px"]]])
+    [:div.col-10.f6.mb2 "10.5px"]]])
 
 (def ^:private buttons
   [:section
