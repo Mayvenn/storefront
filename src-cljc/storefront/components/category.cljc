@@ -199,11 +199,11 @@
                        attrs)))])
     (when (seq summary)
       [:div.my2
-       [:h4.mbp3.h6 "Includes:"]
-       [:ul.list-reset.navy.h6.medium
+       [:h4.mbp3.h5 "Includes:"]
+       [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h6.gray.line-height-2
+    [:div.h5.gray.line-height-2
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
