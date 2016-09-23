@@ -146,7 +146,7 @@
         (merge {:data-test "sign-in"}
                (utils/route-to events/navigate-sign-in))
         "Sign In"]]
-      [:div.col-6.p1.center.h6.line-height-2
+      [:div.col-6.p1.center.h5.line-height-2
        [:div.gray "No account?"]
        [:a.teal
         (merge {:data-test "sign-up"}
