@@ -45,8 +45,8 @@
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})
 
-     [:div.mt2.col-12.mb3.gray.right-align
-      [:a
+     [:div.mt2.col-12.mb3.right-align
+      [:a.gray
        (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]
 
     (when-not get-satisfaction-login?
