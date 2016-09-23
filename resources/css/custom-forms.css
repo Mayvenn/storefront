@@ -5,18 +5,23 @@
 }
 
 .floating-label--label.has-value {
-  top: 0.6em;
-  left: 1em;
+  top: calc(var(--floating-label--input-padding-y) / 2 - var(--floating-label--input-label-padding-y));
+  left: var(--floating-label--input-padding-x);
   display: block;
 }
 
 .floating-label--input {
-  padding: 0.7em 0.6em;
+  padding: var(--floating-label--input-padding-y) var(--floating-label--input-padding-x);
 }
 
 .floating-label--input.has-value {
-  padding-top: 1.1em;
-  padding-bottom: 0.3em;
+  padding-top: calc(var(--floating-label--input-padding-y) * 1.5 + var(--floating-label--input-label-padding-y)); /* 1.571428571rem */
+  padding-bottom: calc(var(--floating-label--input-padding-y) / 2 - var(--floating-label--input-label-padding-y));
+}
+
+.floating-label--icon { /* assumes 1.5rem x 1.5rem size */
+  top: var(--floating-label--input-padding-y);
+  right: var(--floating-label--input-padding-x);
 }
 
 .glow:focus {
@@ -40,4 +45,8 @@ input[type=date] {
 :root {
   --teal:  #40CBAC;
   --orange: #e8a50c;
+
+  --floating-label--input-padding-x: 0.9rem;
+  --floating-label--input-padding-y: 1.05rem;
+  --floating-label--input-label-padding-y: 0.2rem;
 }

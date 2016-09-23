@@ -127,7 +127,7 @@
   (when error?
     ;; z3 puts the icon above the field, even when it has focus
     [:div.right.relative.z3
-     [:div.absolute {:style {:right "1rem" :top "0.75rem"}}
+     [:div.absolute.floating-label--icon
       [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
        {:style {:width "1.5rem" :height "1.5rem"}}]]]))
 
