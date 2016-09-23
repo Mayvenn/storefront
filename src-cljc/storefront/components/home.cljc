@@ -137,7 +137,7 @@
      (assets/path "/images/homepage/desktop_video.png")
      "Watch a video about what real customers have to say about Mayvenn")
     [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.light-silver.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
+     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
       [:h2.h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))
