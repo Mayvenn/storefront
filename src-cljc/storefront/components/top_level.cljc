@@ -90,7 +90,8 @@
 
      #?@(:cljs
          [(and config/enable-style-guide?
-               (= (get-in data keypaths/navigation-event) events/navigate-style-guide))
+               (= events/navigate-style-guide
+                  (subvec (get-in data keypaths/navigation-event) 0 (count events/navigate-style-guide))))
           [:div (style-guide/built-component data nil)]])
 
      :else

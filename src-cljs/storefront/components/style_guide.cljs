@@ -2,29 +2,32 @@
   (:require [storefront.component :as component]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]
+            [storefront.keypaths :as keypaths]
+            [storefront.events :as events]
             [clojure.string :as string]))
 
 (defn- header [name]
   [:h2.h3.my3.underline [:a {:name (string/lower-case name)} name]])
 
-(defn- section-link [name]
-  [:a.h5 {:href (str "#" (string/lower-case name))} name])
+(defn- section-link [name navigation-event]
+  [:a.h5 (utils/route-to navigation-event) name])
 
 (def ^:private styles-menu
   [:nav.col.col-2
    [:div.border-bottom.border-dark-silver.p1
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
     [:h1.hide "Mayvenn Styleguide"]]
-   [:ul.list-reset.py2.col-6.mx-auto
+   [:ul.list-reset.py2.col-8.mx-auto
     [:li [:h2.h5.mb1 "Style"]
      [:ul.list-reset.ml1
-      [:li (section-link "Typography")]
-      [:li (section-link "Color")]]]
-    [:li [:h2.h5.mb1 "Components"]
+      [:li (section-link "Typography" events/navigate-style-guide)]
+      [:li (section-link "Color" events/navigate-style-guide-color)]]]
+    [:li.mt1 [:h2.h5.mb1 "Components"]
      [:ul.list-reset.ml1
-      [:li (section-link "Buttons")]
-      [:li (section-link "Form Fields")]
-      [:li (section-link "Navigation")]]]]])
+      [:li (section-link "Buttons" events/navigate-style-guide-buttons)]
+        [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
+      [:li (section-link "Navigation" events/navigate-style-guide-navigation)]]]]])
 
 (def ^:private typography
   [:section
@@ -206,7 +209,7 @@
                                    :phone [{:long-message "Wrong"}]
                                    :besty [{:long-message "wrong"}]})]])
 
-(defn ^:private navigation [_ _ _]
+(defn ^:private navigation [data _ _]
   (component/create
    [:section
     (header "Navigation")
@@ -214,12 +217,12 @@
      [:div.bg-light-silver
       [:div.md-up-col-6.mx-auto
        (component/build tabs/component
-                        {:selected-tab [:navigate-keypath 2]}
+                        {:selected-tab (get-in data keypaths/navigation-event)}
                         {:opts {:tab-refs ["one" "two" "three"]
                                 :labels   ["One" "Two" "Three"]
-                                :tabs     [[:navigate-keypath 1]
-                                           [:navigate-keypath 2]
-                                           [:navigate-keypath 3]]}})]]]]))
+                                :tabs     [events/navigate-style-guide-navigation-tab1
+                                           events/navigate-style-guide-navigation
+                                           events/navigate-style-guide-navigation-tab3]}})]]]]))
 
 (defn component [data owner opts]
   (component/create
@@ -227,11 +230,14 @@
     styles-menu
 
     [:div.col.col-10.px3.py3.border-left.border-dark-silver
-     typography
-     colors
-     buttons
-     (form-fields data)
-     (component/build navigation data opts)]]))
+     (condp = (get-in data keypaths/navigation-event)
+       events/navigate-style-guide typography
+       events/navigate-style-guide-color colors
+       events/navigate-style-guide-buttons buttons
+       events/navigate-style-guide-form-fields (form-fields data)
+       events/navigate-style-guide-navigation (component/build navigation data opts)
+       events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
+       events/navigate-style-guide-navigation-tab3 (component/build navigation data opts))]]))
 
 (defn built-component [data opts]
   (component/build component data opts))

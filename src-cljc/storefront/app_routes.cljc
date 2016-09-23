@@ -50,7 +50,13 @@
               "/checkout/payment"                      (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                      (edn->bidi events/navigate-checkout-confirmation)
               ["/orders/" :number "/complete"]         (edn->bidi events/navigate-order-complete)
-              "/_style"                                (edn->bidi events/navigate-style-guide)})])
+              "/_style"                                (edn->bidi events/navigate-style-guide)
+              "/_style/color"                          (edn->bidi events/navigate-style-guide-color)
+              "/_style/buttons"                        (edn->bidi events/navigate-style-guide-buttons)
+              "/_style/form-fields"                    (edn->bidi events/navigate-style-guide-form-fields)
+              "/_style/navigation"                     (edn->bidi events/navigate-style-guide-navigation)
+              "/_style/navigation/tab1"                (edn->bidi events/navigate-style-guide-navigation-tab1)
+              "/_style/navigation/tab3"                (edn->bidi events/navigate-style-guide-navigation-tab3)})])
 
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)
