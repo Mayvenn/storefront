@@ -196,11 +196,11 @@
 
 (defn products-section [current-page? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-dark-silver.dark-gray.h4 title])
+   (row [:div.border-bottom.border-dark-silver.dark-gray.h5 title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
-       [:a.h5 (utils/route-to events/navigate-category {:named-search-slug slug})
+       [:a.h6.bold (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.teal.titleize
@@ -225,7 +225,7 @@
 
 (defn lower-left-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.right.h5.light
+   [:div.right.h6
     [:a.dark-gray.col.py1 (merge
                            {:href           "/categories"
                             :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
@@ -237,7 +237,7 @@
 
 (defn lower-right-desktop-nav [current-page?]
   [:div.to-lg-hide {:style {:margin-top "-12px"}}
-   [:div.h5.light
+   [:div.h6
     [:a.dark-gray.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
     [:a.dark-gray.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
