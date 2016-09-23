@@ -200,7 +200,7 @@
    (header "Form Fields")
    [:div
     [:h3.mb1 "Active"] (form data {:first-name []
-                                   :last-name [{:long-message "wrong"}]
+                                   :last-name []
                                    :phone []
                                    :besty []})]
    [:div
