@@ -60,7 +60,7 @@
   (html5
    [:head
     [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     (into '() (seo/tags-for-page data))
 
@@ -115,7 +115,7 @@
    [:head
     [:title "Not Found | Mayvenn"]
     [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
@@ -134,7 +134,7 @@
   (html5
    [:head
     [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:title "Something went wrong | Mayvenn"]]
    [:body
