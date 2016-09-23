@@ -140,7 +140,7 @@
   (component/html
    [:svg {:width "64" :height "64" :viewBox "0 0 64 64"}
     [:g {:fill "none" :fill-rule "evenodd"}
-     [:circle.fill-green {:cx "32" :cy "32" :r "32"}]
+     [:circle.fill-teal {:cx "32" :cy "32" :r "32"}]
      [:path.fill-white {:d "M22 44V20l24 12z"}]]]))
 
 (defn guarantee [svg-options]
