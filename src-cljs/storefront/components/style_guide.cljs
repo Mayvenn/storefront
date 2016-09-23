@@ -155,7 +155,7 @@
   [:h3 "Neutrals"]
   [:div.col.col-6
    (color-swatch "white" "FFFFFF")
-   (color-swatch "light-silver" "F2F2F2")
+   (color-swatch "light-silver" "F8F8F8")
    (color-swatch "silver" "EBEBEB")
    (color-swatch "dark-silver" "DADADA")]
   [:div.col.col-6
