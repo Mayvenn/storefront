@@ -11,15 +11,15 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.h3.center.my2 "I'm new here"]
+     [:div.h2.center.my2.bold "I'm new here"]
 
      (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
                        :data-test "guest-checkout-button"}
                       "Guest Checkout")
 
-     [:.my3 [:.col-2.m-auto.border.border-dark-silver]]
-     [:.h3.center.my2 "Already registered?"]
-     [:.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
+     [:div.my3 [:.col-2.m-auto.border.border-dark-silver]]
+     [:div.h2.center.my2.bold "Already registered?"]
+     [:div.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 
 (defn built-component [data opts]
