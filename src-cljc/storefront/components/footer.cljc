@@ -100,24 +100,24 @@
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
      [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 social-section]]
 
-    [:div.mt3.bg-dark-gray.light-silver.py1.px3.clearfix.f6.light
+    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.f6
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
       [:span "© 2016 "] "Mayvenn"]
      [:div.right
-      [:a.light-silver
+      [:a.white
        (utils/route-to events/navigate-content-help) "Contact Us"]
       " - "
-      [:a.light-silver
+      [:a.white
        (utils/route-to events/navigate-content-about-us) "About Us"]
       " - "
-      [:a.light-silver
+      [:a.white
        (assoc (utils/route-to events/navigate-content-privacy)
               :data-test "content-privacy") "Privacy"]
       " - "
-      [:a.light-silver (assoc (utils/route-to events/navigate-content-tos)
-                              :data-test "content-tos") "Terms"]]]]))
+      [:a.white (assoc (utils/route-to events/navigate-content-tos)
+                       :data-test "content-tos") "Terms"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
