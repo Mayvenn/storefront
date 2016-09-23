@@ -158,7 +158,7 @@
     true                      (add-classes "floating-label--input rounded glow border-none")
     error?                    (add-classes "field-is-error pr4")
     (and error? (not value?)) (add-classes "orange")
-    value?                    (add-classes "has-value bold")))
+    value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field
   [label keypath value error? {:keys [wrapper-class id] :as input-attributes}]
