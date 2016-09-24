@@ -45,7 +45,7 @@
    (svg/bag {:class "absolute overlay m-auto"} cart-quantity)
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:div.center.navy.f6.mtp3 {:data-test "populated-cart"} cart-quantity]])])
+      [:div.center.navy.f5 {:data-test "populated-cart"} cart-quantity]])])
 
 (defn triangle-up [width class]
   [:div.absolute.inline-block
@@ -145,7 +145,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.flex.items-center
-    [:div.dark-gray.flex-auto.right-align.h5 link]
+    [:div.dark-gray.flex-auto.right-align.h6 link]
     [:div.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:div.absolute.right-0 {:style {:max-width "140px"}}
     [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
