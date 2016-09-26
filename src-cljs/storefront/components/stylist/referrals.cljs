@@ -31,9 +31,9 @@
   (let [width (str (- state-diameter 2) "px")]
     (html
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
-     [:.relative
-      [:.h6.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
-      [:.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
+     [:div.relative
+      [:div.h6.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
+      [:div.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
   (html
@@ -45,11 +45,11 @@
 (defmethod state-icon :paid [_ _ _] paid-icon)
 (defmethod state-icon :in-progress [_ earning-amount commissioned-revenue]
   ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
-  [:.relative
-   [:.center.absolute.overlay.m-auto {:style {:height "50%"}}
+  [:div.relative
+   [:div.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
-    [:.h3.teal.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
+    [:div.h3.teal.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:div.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
@@ -61,27 +61,27 @@
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
-     [:.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-silver.p2
+     [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-silver.p2
       {:key (str name join-date)}
-      [:.mr1 (ui/circle-picture profile-picture-url)]
-      [:.flex-auto
-       [:.h3.navy name]
-       [:.h6.gray.line-height-4
+      [:div.mr1 (ui/circle-picture profile-picture-url)]
+      [:div.flex-auto
+       [:div.h3.navy name]
+       [:div.h6.gray.line-height-4
         [:div.gray "Joined " (f/long-date join-date)]
         (when (= state :paid)
           [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
-      [:.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
+      [:div.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:.h6.gray
-     [:.p3.to-sm-hide
-      [:.mb1.center svg/micro-dollar-sign]
+    [:div.h6.gray
+     [:div.p3.to-sm-hide
+      [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:.my3.flex.justify-center.items-center.sm-up-hide
-      [:.mr1 svg/micro-dollar-sign]
-      [:.center message]]]))
+     [:div.my3.flex.justify-center.items-center.sm-up-hide
+      [:div.mr1 svg/micro-dollar-sign]
+      [:div.center message]]]))
 
 (defn refer-button [link-attrs]
   [:a.col-12.btn.btn-primary
@@ -94,21 +94,21 @@
                                     (mf/as-money-without-cents bonus-amount)
                                     (mf/as-money-without-cents earning-amount))]
     [:div
-     [:.py2.px3.to-sm-hide
-      [:.center.fill-navy svg/large-mail]
+     [:div.py2.px3.to-sm-hide
+      [:div.center.fill-navy svg/large-mail]
       [:p.py1.h6.gray.line-height-2 message]
-      [:.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
+      [:div.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
-     [:.p2.clearfix.sm-up-hide.border-bottom.border-light-silver
-      [:.left.mx1.fill-navy svg/large-mail]
-      [:.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
+     [:div.p2.clearfix.sm-up-hide.border-bottom.border-light-silver
+      [:div.left.mx1.fill-navy svg/large-mail]
+      [:div.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                               :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h6.gray.line-height-2 message]]]))
 
 (def empty-referrals
   (html
-   [:.center.p3.to-sm-hide
-    [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
+   [:div.center.p3.to-sm-hide
+    [:div.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
     [:p.h3.gray "Looks like you haven't" [:br] "referred anyone yet."]]))
 
 (defn component [{:keys [earning-amount
@@ -121,21 +121,21 @@
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)
-      [:.my2.h2 ui/spinner]
-      [:.mx-auto.container {:data-test "referrals-panel"}
-       [:.clearfix.mb3
-        [:.sm-up-col-right.sm-up-col-4
+      [:div.my2.h2 ui/spinner]
+      [:div.mx-auto.container {:data-test "referrals-panel"}
+       [:div.clearfix.mb3
+        [:div.sm-up-col-right.sm-up-col-4
          (when bonus-amount
            (show-refer-ad bonus-amount earning-amount))]
 
-        [:.sm-up-col.sm-up-col-8
+        [:div.sm-up-col.sm-up-col-8
          (when (seq referrals)
            [:div
             (for [referral referrals]
               (show-referral earning-amount referral))
             (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
          (when (zero? pages) empty-referrals)]
-        [:.sm-up-col-right.sm-up-col-4.clearfix
+        [:div.sm-up-col-right.sm-up-col-4.clearfix
          (when (and (seq referrals) (pos? lifetime-total))
            (show-lifetime-total lifetime-total))]]]))))
 
@@ -157,7 +157,7 @@
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:.bg-white.rounded.p2
+              [:div.bg-white.rounded.p2
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (or (seq errors) flash-failure)
@@ -168,20 +168,20 @@
                      (when (seq errors) (:error-message errors))
                      " "
                      (when flash-failure flash-failure)])])
-                [:.h3.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
+                [:div.h3.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
                 [:p.light.gray.line-height-3.my2
                  "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
-                  [:.py2.border-top.border-dark-silver
+                  [:div.py2.border-top.border-dark-silver
                    {:key idx :data-test "referral-entry"}
-                   [:.h3.dark-gray.my2 "Enter your "(get ordinal idx)" referral"
+                   [:div.h3.dark-gray.my2 "Enter your "(get ordinal idx)" referral"
                     (when (pos? idx) [:a.mr1.flex.items-center.right
                                       (merge (utils/fake-href events/control-stylist-referral-remove {:index idx})
                                              {:data-test (str "remove-referral-button-" idx)})
                                       svg/counter-dec])]
-                   [:.col-12 (ui/text-field {:auto-focus "autofocus"
+                   [:div.col-12 (ui/text-field {:auto-focus "autofocus"
                                              :class      "rounded"
                                              :data-test  (str "referral-fullname-" idx)
                                              :errors     (get field-errors ["referrals" idx "fullname"])
@@ -192,7 +192,7 @@
                                              :required   true
                                              :type       "text"
                                              :value      (:fullname referral)})]
-                   [:.col-12 (ui/text-field {:class     "rounded"
+                   [:div.col-12 (ui/text-field {:class     "rounded"
                                              :data-test (str "referral-phone-" idx)
                                              :errors    (get field-errors ["referrals" idx "phone"])
                                              :id        (str "referral-phone-" idx)
@@ -202,7 +202,7 @@
                                              :required  true
                                              :type      "tel"
                                              :value     (:phone referral)})]
-                   [:.col-12 (ui/text-field {:class     "rounded"
+                   [:div.col-12 (ui/text-field {:class     "rounded"
                                              :data-test (str "referral-email-" idx)
                                              :errors    (get field-errors ["referrals" idx "email"])
                                              :id        (str "referral-email-" idx)
@@ -212,15 +212,15 @@
                                              :type      "email"
                                              :value     (:email referral)})]])
                 (when (< (count referrals) 5)
-                  [:.py3.border-top.border-dark-silver
-                   [:.col-10.mx-auto
+                  [:div.py3.border-top.border-dark-silver
+                   [:div.col-10.mx-auto
                     (ui/large-ghost-button
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test "another-referral-button"})
-                     [:.flex.items-center.justify-center.h4.line-height-1
+                     [:div.flex.items-center.justify-center.h4.line-height-1
                       [:div.mr1.flex.items-center svg/counter-inc]
                       [:div "Add Another Referral"]])]])
-                [:.col-8.mx-auto
+                [:div.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 
 (defn query-refer [data]
@@ -238,10 +238,10 @@
    (html
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
-              [:.flex.flex-column.items-center.justify-center.pt4
+              [:div.flex.flex-column.items-center.justify-center.pt4
                [:div.m1 (svg/circled-check {:class "stroke-light-silver"
                                             :style {:height "70px" :width "70px"}})]
-               [:.h3.light-silver.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
+               [:div.h3.light-silver.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
 
 (defn built-thanks-component [_ _]
   (om/build thanks-component nil nil))
