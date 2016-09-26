@@ -155,10 +155,11 @@
 
 (def sign-out-section
   (component/html
-   [:a.block.navy.center.col-12.p3.bg-light-silver
-    (merge {:data-test "sign-out"}
-           (utils/fake-href events/control-sign-out))
-    "Logout"]))
+   [:div.pb4.bg-light-silver
+    [:a.block.navy.center.col-12.p3
+     (merge {:data-test "sign-out"}
+            (utils/fake-href events/control-sign-out))
+     "Logout"]]))
 
 (defn guest-content [selectable? {:keys [named-searches]}]
   [:div
