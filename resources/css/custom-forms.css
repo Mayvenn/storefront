@@ -12,6 +12,7 @@
 
 .floating-label--input {
   padding: var(--floating-label--input-padding-y) var(--floating-label--input-padding-x);
+  height: calc(var(--floating-label--input-text-height) + var(--floating-label--input-padding-y) * 2);
 }
 
 .floating-label--input.has-value {
@@ -46,7 +47,8 @@ input[type=date] {
   --teal:  #40CBAC;
   --orange: #E8A50C;
 
+  --floating-label--input-text-height: 1.5rem;
   --floating-label--input-padding-x: 0.9rem;
-  --floating-label--input-padding-y: 1.05rem;
-  --floating-label--input-label-padding-y: 0.2rem;
+  --floating-label--input-padding-y: 1.0rem;
+  --floating-label--input-label-padding-y: 0.1rem;
 }

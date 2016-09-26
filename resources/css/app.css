@@ -204,8 +204,9 @@
 
     --caps-letter-spacing: 0.1em;
 
-    --floating-label--input-padding-x: 0.9rem;
-    --floating-label--input-padding-y: 1.05rem;
+    --floating-label--input-text-height: 1.5rem; /* height, not including paddding */
+    --floating-label--input-padding-x: 0.6rem;
+    --floating-label--input-padding-y: 0.666666667rem;
     --floating-label--input-label-padding-y: 0.1rem;
 }
 
