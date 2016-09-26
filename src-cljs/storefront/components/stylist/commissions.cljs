@@ -117,7 +117,7 @@
 (defn show-payout [{:keys [amount status payout-date]}]
   [:.border-dotted-top.border-dotted-bottom.border-gray.h6
    (if (= status "paid")
-     [:.bg-navy
+     [:.bg-aqua
       (payout-bar
        (mf/as-money amount) " paid on " (f/long-date payout-date))]
      [:.bg-teal
