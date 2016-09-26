@@ -219,7 +219,6 @@
 (defpath facebook-failure-sign-in)
 (defpath facebook-email-denied)
 
-(defpath optimizely)
 (defpath convert)
 (defpath enable-feature)
 
@@ -237,7 +236,6 @@
 (defpath inserted-reviews)
 (defpath inserted-talkable)
 (defpath inserted-convert)
-(defpath inserted-optimizely)
 (defpath inserted-pixlee)
 
 (defpath autocomplete-update-address)

@@ -3,8 +3,6 @@
 
 (def cookie [:cookie])
 
-(def optimizely [:optimizely])
-(def optimizely-buckets [:optimizely :buckets])
 (def features [:features])
 (def welcome-url [:welcome-url])
 
@@ -203,7 +201,6 @@
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-convert (conj loaded :convert))
-(def loaded-optimizely (conj loaded :optimizely))
 (def loaded-pixlee (conj loaded :pixlee))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))

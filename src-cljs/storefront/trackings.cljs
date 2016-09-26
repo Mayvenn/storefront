@@ -5,7 +5,6 @@
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.convert :as convert]
-            [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.pixlee :as pixlee-analytics]
             [storefront.hooks.woopra :as woopra]
@@ -50,8 +49,7 @@
                        (get-in app-state keypaths/order-user)
                        path)
     (google-analytics/track-page path)
-    (facebook-analytics/track-page path)
-    (optimizely/track-event path)))
+    (facebook-analytics/track-page path)))
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (track-page-view app-state))
@@ -86,10 +84,7 @@
     (woopra/track-add-to-bag {:variant variant
                               :session-id (get-in app-state keypaths/session-id)
                               :quantity quantity
-                              :order (get-in app-state keypaths/order)}))
-  (when (stylists/own-store? app-state)
-    (optimizely/set-dimension "stylist-own-store" "stylists"))
-  (optimizely/track-event "add-to-bag"))
+                              :order (get-in app-state keypaths/order)})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
@@ -106,12 +101,9 @@
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
 (defmethod perform-track events/order-completed [_ event {:keys [total] :as order} app-state]
-  (when (stylists/own-store? app-state)
-    (optimizely/set-dimension "stylist-own-store" "stylists"))
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
   (convert/track-conversion "place-order")
   (convert/track-revenue (convert-revenue order))
-  (optimizely/track-event "place-order" {:revenue (* 100 total)})
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (named-searches/current-named-searches app-state) order)))
@@ -124,24 +116,14 @@
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
 
-;; We have 3 ways to enable a feature: via optimizely, convert.com, or our own
-;; code. Each needs to report to GA, and they all do it differently. Optimizely
-;; sets up the GA dimension via `activate-ga-integration` but doesn't actually send it,
-;; so we have to trigger that via `track-event "optimizely-experiment"`. Convert
-;; does everything for us, as part of their `script` tag. Our own code sets up
-;; the dimension and sends it to GA by tracking an event.
+;; We have 2 ways to enable a feature: via convert.com, or our own code. Each
+;; needs to report to GA, and both do it differently. Convert does everything
+;; for us, as part of their `script` tag. Our own code sets up the dimension and
+;; sends it to GA by tracking an event.
 ;;
-;; We would like convert and optimizely to be able to trigger
-;; events/enable-feature, because that's what being put in a variation does.
-;; However, this code prevents that... events/enable-feature would overwrite the
-;; dimension set by optimizely or convert.
-(defmethod perform-track events/optimizely [_ event {:keys [variation]} app-state]
-  (optimizely/activate-ga-integration)
-  (google-analytics/track-event "optimizely-experiment" variation)
-  (woopra/track-experiment (get-in app-state keypaths/session-id)
-                           (get-in app-state keypaths/order-user)
-                           variation))
-
+;; We would like convert to be able to trigger events/enable-feature, because
+;; that's what being put in a variation does. However, this code prevents
+;; that... events/enable-feature would overwrite the dimension set by convert.
 (defmethod perform-track events/convert [_ event {:keys [variation]} app-state]
   (woopra/track-experiment (get-in app-state keypaths/session-id)
                            (get-in app-state keypaths/order-user)

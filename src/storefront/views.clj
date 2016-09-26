@@ -68,7 +68,6 @@
     (when asset-mappings/cdn-host
       [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
     [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
-    [:link {:rel "dns-prefetch" :href "//cdn.optimizely.com"}]
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
     [:script {:type "text/javascript"}
      (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
@@ -83,7 +82,6 @@
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
-           "window.optimizely=" (generate-string (into ["bucketVisitor"] (get-in data keypaths/optimizely-buckets))) ";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     ;; in production, we want to load the script tag asynchronously which has better
     ;; support when that script tag is in the <head>

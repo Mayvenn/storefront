@@ -20,7 +20,6 @@
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.convert :as convert]
-            [storefront.hooks.optimizely :as optimizely]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.seo :as seo]
@@ -79,7 +78,6 @@
   (svg/insert-sprite)
   (google-analytics/insert-tracking)
   (convert/insert-tracking)
-  (optimizely/insert-tracking)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
   (talkable/insert)
@@ -91,7 +89,6 @@
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (convert/remove-tracking)
-  (optimizely/remove-tracking)
   (riskified/remove-beacon)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))

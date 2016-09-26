@@ -35,10 +35,6 @@
     "production" "mayvenn.com"
     "diva-acceptance.com"))
 
-(def optimizely-app-id (case js/environment
-                         "production" 592210561
-                         3156430062))
-
 (def convert-project-id (case js/environment
                           "production" "10003995-10005092"
                           "10003995-10005089"))

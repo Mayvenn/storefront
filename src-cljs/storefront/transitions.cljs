@@ -484,16 +484,9 @@
   [_ event {:keys [variation feature]} app-state]
   (update-in app-state keypaths/features conj (or feature variation)))
 
-(defmethod transition-state events/optimizely
-  [_ event {:keys [variation feature]} app-state]
-  (update-in app-state keypaths/features conj (or feature variation)))
-
 (defmethod transition-state events/enable-feature
   [_ event {:keys [feature]} app-state]
   (update-in app-state keypaths/features conj feature))
-
-(defmethod transition-state events/inserted-optimizely [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-optimizely true))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))

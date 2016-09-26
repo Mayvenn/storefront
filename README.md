@@ -34,7 +34,7 @@ Starting at [/src-cljs/storefront/][13], there are some directories.
 * Accessors - Utility modules for working with our domain models
 * Browser - Modules which work with browser APIs directly, e.g. scrolling and cookies
 * Components - React UI components
-* Hooks - Things like middleware or 3rd party code which is non-essential to the operation of storefront e.g. yotpo, bugsnag, optimizely
+* Hooks - Things like middleware or 3rd party code which is non-essential to the operation of storefront e.g. yotpo, bugsnag
 * Utils - Small helper libraries that are generic in nature, e.g. a Uuid generator
 
 
