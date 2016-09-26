@@ -11,7 +11,7 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.h3.center.my2 "Update Your Password"]
+     [:h2.center.my2.navy.mb3 "Update Your Password"]
      [:form.col-12
       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
       (ui/text-field {:errors     (get field-errors ["password"])
