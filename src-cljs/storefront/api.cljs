@@ -1,16 +1,12 @@
 (ns storefront.api
-  (:require [ajax.core
-             :refer
-             [GET json-response-format POST PUT raw-response-format]]
+  (:require [ajax.core :refer [GET json-response-format POST PUT raw-response-format]]
             [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.states :as states]
             [storefront.app-routes :as app-routes]
             [storefront.cache :as c]
-            [storefront.config
-             :refer
-             [api-base-url send-sonar-base-url send-sonar-publishable-key]]
+            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]

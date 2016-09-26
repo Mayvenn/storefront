@@ -156,7 +156,7 @@
     (api/get-static-content event)))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
-  (pixlee/insert))
+  (pixlee/fetch-mosaic))
 
 (defmethod perform-effects events/navigate-category
   [_ event {:keys [named-search-slug] :as args} app-state]
@@ -445,8 +445,8 @@
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} app-state]
   (api/inc-line-item (get-in app-state keypaths/order) {:variant variant}))
 
-(defmethod perform-effects events/control-create-order-from-shared-cart [_ event _ app-state]
-  (api/create-order-from-cart (get-in app-state keypaths/shared-cart-id)
+(defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [shared-cart-id]} app-state]
+  (api/create-order-from-cart shared-cart-id
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)))
@@ -737,12 +737,6 @@
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
-
-(defmethod perform-effects events/shop-by-look-component-mounted [_ event {:keys [container-id]} app-state]
-  (pixlee/attach-mosaic-widget container-id))
-
-(defmethod perform-effects events/shop-by-look-component-unmounted [_ event _ app-state]
-  (pixlee/close-all))
 
 (defmethod perform-effects events/ugc-component-mounted [_ event {:keys [pixlee-sku container-id]} app-state]
   (pixlee/attach-product-widget container-id pixlee-sku))

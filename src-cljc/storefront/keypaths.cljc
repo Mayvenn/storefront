@@ -44,6 +44,7 @@
 (def products [:products])
 (def states [:states])
 (def shipping-methods [:shipping-methods])
+(def looks [:looks])
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
 

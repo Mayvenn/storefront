@@ -125,6 +125,15 @@
 (defmethod transition-state events/inserted-pixlee [_ event args app-state]
   (assoc-in app-state keypaths/loaded-pixlee true))
 
+(defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
+  (assoc-in app-state keypaths/looks
+            (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url products] :as p}]
+                   {:id            id
+                    :user-handle   user_name
+                    :photo         (:medium_url pixlee_cdn_photos)
+                    :purchase-link (:link (first products))})
+                 data)))
+
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method

@@ -9,7 +9,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [store creating-cart? advertised-promo]} owner opts]
+(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo]} owner opts]
   (component/create
    (let [{:keys [profile_picture_url store_nickname]} store]
      (ui/container
@@ -30,13 +30,14 @@
        [:div.p3.h4.center.line-height-3
         (or (:description advertised-promo) promos/bundle-discount-description)]
        [:form
-        {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart)}
+        {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart {:shared-cart-id shared-cart-id})}
         (ui/submit-button "View your bag"
                           {:data-test "create-order-from-shared-cart"
                            :spinning? creating-cart?})]]))))
 
 (defn query [data]
-  {:store            (get-in data keypaths/store)
+  {:shared-cart-id   (get-in data keypaths/shared-cart-id)
+   :store            (get-in data keypaths/store)
    :advertised-promo (promos/default-advertised-promotion (get-in data keypaths/promotions))
    :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)})
 

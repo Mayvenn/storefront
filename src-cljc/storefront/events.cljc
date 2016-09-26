@@ -249,8 +249,7 @@
 (defpath ugc-component-mounted)
 (defpath ugc-component-unmounted)
 
-(defpath shop-by-look-component-mounted)
-(defpath shop-by-look-component-unmounted)
+(defpath pixlee-api-success-fetch-mosaic)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

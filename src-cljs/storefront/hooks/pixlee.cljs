@@ -1,8 +1,10 @@
 (ns storefront.hooks.pixlee
-  (:require [storefront.browser.tags :as tags]
+  (:require [ajax.core :refer [GET json-response-format]]
+            [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [storefront.config :as config]
-            [storefront.platform.messages :as m]))
+            [storefront.platform.messages :as m])
+  (:import goog.json.Serializer))
 
 (defn widget-js-loaded? [] (.hasOwnProperty js/window "Pixlee"))
 (defn analytics-js-loaded? [] (.hasOwnProperty js/window "Pixlee_Analytics"))
@@ -20,30 +22,29 @@
      "//assets.pixlee.com/assets/pixlee_events.js"
      "ugc-analytics")))
 
-(def common-config
-  {:addToCart         false
-   :addToCartNavigate "false"
-   :recipeId          476
-   :accountId         (:account-id config/pixlee)})
+(defn write-json [data]
+  (.serialize (goog.json.Serializer.) (clj->js data)))
 
-(defn attach-mosaic-widget [container-id]
-  (when (widget-js-loaded?)
-    (js/Pixlee.addSimpleWidget
-     (clj->js (merge common-config
-                     (:mosaic config/pixlee)
-                     {:containerId container-id
-                      :type        "mosaic"})))
-    (.setTimeout js/window js/Pixlee.resizeWidget 0)))
+(defn fetch-mosaic []
+  (GET (str "http://distillery.pixlee.com/api/v2/albums/" (-> config/pixlee :mosaic :albumId) "/photos")
+      {:params          {:api_key  (:api-key config/pixlee)
+                         :per_page 48
+                         :filters  (write-json {:content_type ["image"]})}
+       :response-format (json-response-format {:keywords? true})
+       :handler         (partial m/handle-message events/pixlee-api-success-fetch-mosaic)}))
 
 (defn attach-product-widget [container-id sku]
   (when (and (widget-js-loaded?) sku)
     (js/Pixlee.addProductWidget
      (clj->js (merge
-               common-config
                (:product config/pixlee)
-               {:containerId container-id
-                :skuId       sku
-                :type        "horizontal"})))
+               {:containerId       container-id
+                :skuId             sku
+                :type              "horizontal"
+                :addToCart         false
+                :addToCartNavigate "false"
+                :recipeId          476
+                :accountId         (:account-id config/pixlee)})))
     (.setTimeout js/window js/Pixlee.resizeWidget 0)))
 
 (defn close-all []
