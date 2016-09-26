@@ -194,8 +194,8 @@
      (field-wrapper-class "" status)
      (field-error-icon status)
      (when (not error?)
-       ;; z3 puts the icon above the field, even when it has focus
-       [:div.right.relative.z3
+       ;; Doesn't need z-index, even when field has focus, because background of select is transparent
+       [:div.right.relative
         [:div.absolute.floating-label--icon
          (svg/dropdown-arrow {:class "stroke-light-gray"
                               :style {:width "1.2rem" :height "1.2rem"}})]])
