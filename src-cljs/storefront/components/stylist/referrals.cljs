@@ -21,7 +21,7 @@
         svg-circle-size {:r inner-radius :cy radius :cx radius :stroke-width stroke-width :fill "none"}]
     [:svg {:width diameter :height diameter}
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
-      [:circle.stroke-light-gray svg-circle-size]
+      [:circle.stroke-gray svg-circle-size]
       [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray  circumference
                                                             :stroke-dashoffset arc-length}})]]]))
 
@@ -32,8 +32,8 @@
     (html
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
      [:.relative
-      [:.h6.light-gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
-      [:.border-dashed.border-light-gray.circle {:style {:width width :height width}}]])))
+      [:.h6.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
+      [:.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
   (html
@@ -67,7 +67,7 @@
       [:.flex-auto
        [:.h3.navy name]
        [:.h6.gray.line-height-4
-        [:div.light-gray "Joined " (f/long-date join-date)]
+        [:div.gray "Joined " (f/long-date join-date)]
         (when (= state :paid)
           [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
       [:.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
@@ -75,7 +75,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:.h6.light-gray
+    [:.h6.gray
      [:.p3.to-sm-hide
       [:.mb1.center svg/micro-dollar-sign]
       [:div message]]
@@ -96,20 +96,20 @@
     [:div
      [:.py2.px3.to-sm-hide
       [:.center.fill-navy svg/large-mail]
-      [:p.py1.h6.light-gray.line-height-2 message]
+      [:p.py1.h6.gray.line-height-2 message]
       [:.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
      [:.p2.clearfix.sm-up-hide.border-bottom.border-light-silver
       [:.left.mx1.fill-navy svg/large-mail]
       [:.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                               :data-test "refer-button-mobile"})]
-      [:p.overflow-hidden.py1.h6.light-gray.line-height-2 message]]]))
+      [:p.overflow-hidden.py1.h6.gray.line-height-2 message]]]))
 
 (def empty-referrals
   (html
    [:.center.p3.to-sm-hide
     [:.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
-    [:p.h3.light-gray "Looks like you haven't" [:br] "referred anyone yet."]]))
+    [:p.h3.gray "Looks like you haven't" [:br] "referred anyone yet."]]))
 
 (defn component [{:keys [earning-amount
                          bonus-amount
