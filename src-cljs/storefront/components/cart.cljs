@@ -18,6 +18,12 @@
   ([cnt singular plural]
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
 
+;; TODO: these images badly need refactoring. They are the button, the icon and
+;; the text (!) all in one. Not surprisingly, they are not adapting as we
+;; refactor buttons, colors and icons. Wait until styleguide has new button
+;; definitions, then fix this.
+;; We have SVG icons for twitter, email and text. If we also had the facebook
+;; SVG we could use it here and on sign-in.
 (defn share-icon [icon-class]
   [:div.bg-no-repeat.bg-center.bg-full
    {:style {:height "30px" :width "70px"}
@@ -170,7 +176,8 @@ Thanks,
    (html
     (ui/narrow-container
      [:.center {:data-test "empty-bag"}
-      [:div.m2 (svg/bag {:height "70px" :width "70px"} 1)]
+      [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
+                         :class "fill-black"})]
 
       [:p.m2.h2.light "Your bag is empty."]
 

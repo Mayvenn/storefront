@@ -7,7 +7,8 @@
             [storefront.platform.component-utils :as utils]))
 
 (def ^:private order-complete-check
-  (html (svg/adjustable-check {:class "stroke-navy" :width "80px" :height "80px"})))
+  (svg/circled-check {:class "stroke-navy"
+                      :style {:width "80px" :height "80px"}}))
 
 (defn component [_ _]
   (om/component

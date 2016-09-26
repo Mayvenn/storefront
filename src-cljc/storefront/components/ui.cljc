@@ -128,8 +128,7 @@
     ;; z3 puts the icon above the field, even when it has focus
     [:div.right.relative.z3
      [:div.absolute.floating-label--icon
-      [:div.img-error-icon.bg-no-repeat.bg-contain.bg-center
-       {:style {:width "1.5rem" :height "1.5rem"}}]]]))
+      (svg/error {:class "fill-orange" :style {:width "1.5rem" :height "1.5rem"}})]]))
 
 (defn ^:private field-error-message [error data-test]
   [:div.orange.mtp2.mb1.bold
@@ -197,11 +196,9 @@
      (when (not error?)
        ;; z3 puts the icon above the field, even when it has focus
        [:div.right.relative.z3
-        [:div.absolute {:style {:right "1rem" :top "1rem"}}
-         [:svg.stroke-light-gray {:viewBox "0 0 18 18"
-                                  :fill "none"
-                                  :style {:width "1.2rem" :height "1.2rem"}}
-          [:path {:d "M0 7 l9 9l9 -9"}]]]])
+        [:div.absolute.floating-label--icon
+         (svg/dropdown-arrow {:class "stroke-light-gray"
+                              :style {:width "1.2rem" :height "1.2rem"}})]])
      (floating-label label id status)
      [:select.col-12.h4.bg-clear
       (field-class (merge {:key         label

@@ -4,11 +4,6 @@
 .img-no-chat-icon      { background-image: url('/images/icons/no-chat.png'); }
 .img-coins-icon        { background-image: url('/images/icons/coins.png'); }
 .img-share-icon        { background-image: url('/images/icons/share.png'); }
-.img-faqs-icon         { background-image: url('/images/icons/faqs.svg'); }
-.img-phone-icon        { background-image: url('/images/icons/phone.svg'); }
-.img-text-icon         { background-image: url('/images/icons/text.svg'); }
-.img-email-icon        { background-image: url('/images/icons/email.svg'); }
-.img-error-icon        { background-image: url('/images/icons/error.svg'); }
 .img-shop-by-look-icon { background-image: url('/images/icons/shop-by-look@2x.png') }
 .img-spinner           { background-image: url('/images/spinner.svg'); }
 .img-large-spinner     { background-image: url('/images/large-spinner.svg'); }
@@ -28,7 +23,6 @@
 .img-frontals       { background-image: url('//d275k6vjijb2m1.cloudfront.net/cellar/straight/8/640x580.jpg'); }
 
 .img-logo { background-image: url('/images/header_logo.png'); }
-.img-styleseat { background-image: url('/images/icons/styleseat.png'); }
 
 .img-fb-share { background-image: url('/images/share/fb.png'); }
 .img-twitter-share { background-image: url('/images/share/twitter.png'); }

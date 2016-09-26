@@ -24,6 +24,7 @@
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.seo :as seo]
+            [storefront.hooks.svg :as svg]
             [storefront.hooks.pixlee :as pixlee]
             [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
@@ -75,6 +76,7 @@
 (defmethod perform-effects :default [dispatch event args app-state])
 
 (defmethod perform-effects events/app-start [dispatch event args app-state]
+  (svg/insert-sprite)
   (google-analytics/insert-tracking)
   (convert/insert-tracking)
   (optimizely/insert-tracking)
