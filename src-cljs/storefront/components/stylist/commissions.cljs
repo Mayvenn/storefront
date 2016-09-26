@@ -115,7 +115,7 @@
    [:div.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:div.border-dotted-top.border-dotted-bottom.border-gray.h6
+  [:div.border-dotted-top.border-dotted-bottom.border-gray.h5
    (if (= status "paid")
      [:div.bg-aqua
       (payout-bar
