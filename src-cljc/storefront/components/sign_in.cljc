@@ -57,7 +57,7 @@
   (component/create
    (ui/narrow-container
     (when-not get-satisfaction-login?
-      [:div.h2.center.my2.bold.navy "Sign in to your account"])
+      [:h2.center.my2.mb3.navy "Sign in to your account"])
     (component/build form-component form-data nil))))
 
 (defn query [data]
