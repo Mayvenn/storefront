@@ -14,8 +14,8 @@
      [:h2.center.my2.navy "I'm new here"]
 
      (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
-                       :data-test "guest-checkout-button"}
-                      "Guest Checkout")
+                      :data-test "guest-checkout-button"}
+                     "Guest Checkout")
 
      [:div.my3 [:.col-2.m-auto.border.border-dark-silver]]
      [:h2.center.my2.navy "Already registered?"]
