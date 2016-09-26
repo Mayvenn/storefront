@@ -13,7 +13,7 @@
 
 (def check-svg
   (svg/circled-check {:class "stroke-teal"
-                      :style {:width "1em" :height "1em"}}))
+                      :style {:width "1.5rem" :height "1.5rem"}}))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
   [:.gray.flex.items-center.justify-between.py1
