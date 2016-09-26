@@ -27,11 +27,12 @@
       [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
-     [:div
+     [:div.clearfix.mxn2.mtn2
       (for [{:keys [id user-handle photo purchase-link]} looks]
-        [:div.mb2 {:key id}
-         [:div.relative
-          [:img.col-12.block {:src photo}]
+        [:div.p2.col-12.col.md-up-col-3 {:key id}
+         [:div.relative.overflow-hidden
+          {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+          [:img.col-12.absolute.top-0.block {:src photo}]
           [:div.absolute.bottom-0.right-0
            [:div.p1.light-gray.bold.h4 "@" user-handle]]]
          (ui/large-teal-button (merge (purchase-link-behavior purchase-link)
