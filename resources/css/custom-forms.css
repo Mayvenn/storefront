@@ -44,7 +44,7 @@ input[type=date] {
 
 :root {
   --teal:  #40CBAC;
-  --orange: #e8a50c;
+  --orange: #E8A50C;
 
   --floating-label--input-padding-x: 0.9rem;
   --floating-label--input-padding-y: 1.05rem;

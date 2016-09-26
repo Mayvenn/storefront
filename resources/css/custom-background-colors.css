@@ -12,11 +12,6 @@
 
 .bg-lighten-5    { background-color: var(--lighten-5); }
 
-.bg-pink-gradient {
-  border-color: #f865a5;
-  background-image: linear-gradient(to right,#f865a5,#ff6562);
-}
-
 :root {
     --white:         #ffffff;
     --light-silver:  #f2f2f2;
