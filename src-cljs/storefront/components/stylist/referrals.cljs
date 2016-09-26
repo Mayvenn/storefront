@@ -23,7 +23,7 @@
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
       [:circle.stroke-gray svg-circle-size]
       [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray  circumference
-                                                            :stroke-dashoffset arc-length}})]]]))
+                                                           :stroke-dashoffset arc-length}})]]]))
 
 (def state-radius 36)
 (def state-diameter (* 2 state-radius))
@@ -102,8 +102,8 @@
      [:div.p2.clearfix.sm-up-hide.border-bottom.border-light-silver
       [:div.left.mx1.fill-navy svg/large-mail]
       [:div.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
-                                              :data-test "refer-button-mobile"})]
       [:p.overflow-hidden.py1.h6.gray.line-height-2 message]]]))
+                                                 :data-test "refer-button-mobile"})]
 
 (def empty-referrals
   (html
@@ -182,35 +182,35 @@
                                              {:data-test (str "remove-referral-button-" idx)})
                                       svg/counter-dec])]
                    [:div.col-12 (ui/text-field {:auto-focus "autofocus"
-                                             :class      "rounded"
-                                             :data-test  (str "referral-fullname-" idx)
-                                             :errors     (get field-errors ["referrals" idx "fullname"])
-                                             :id         (str "referral-fullname-" idx)
-                                             :keypath    (conj keypaths/stylist-referrals idx :fullname)
-                                             :label      "Name"
-                                             :name       (str "referrals[" idx "][fullname]")
-                                             :required   true
-                                             :type       "text"
-                                             :value      (:fullname referral)})]
+                                                :class      "rounded"
+                                                :data-test  (str "referral-fullname-" idx)
+                                                :errors     (get field-errors ["referrals" idx "fullname"])
+                                                :id         (str "referral-fullname-" idx)
+                                                :keypath    (conj keypaths/stylist-referrals idx :fullname)
+                                                :label      "Name"
+                                                :name       (str "referrals[" idx "][fullname]")
+                                                :required   true
+                                                :type       "text"
+                                                :value      (:fullname referral)})]
                    [:div.col-12 (ui/text-field {:class     "rounded"
-                                             :data-test (str "referral-phone-" idx)
-                                             :errors    (get field-errors ["referrals" idx "phone"])
-                                             :id        (str "referral-phone-" idx)
-                                             :keypath   (conj keypaths/stylist-referrals idx :phone)
-                                             :label     "Mobile Phone (required)"
-                                             :name      (str "referrals[" idx "][phone]")
-                                             :required  true
-                                             :type      "tel"
-                                             :value     (:phone referral)})]
+                                                :data-test (str "referral-phone-" idx)
+                                                :errors    (get field-errors ["referrals" idx "phone"])
+                                                :id        (str "referral-phone-" idx)
+                                                :keypath   (conj keypaths/stylist-referrals idx :phone)
+                                                :label     "Mobile Phone (required)"
+                                                :name      (str "referrals[" idx "][phone]")
+                                                :required  true
+                                                :type      "tel"
+                                                :value     (:phone referral)})]
                    [:div.col-12 (ui/text-field {:class     "rounded"
-                                             :data-test (str "referral-email-" idx)
-                                             :errors    (get field-errors ["referrals" idx "email"])
-                                             :id        (str "referral-email-" idx)
-                                             :keypath   (conj keypaths/stylist-referrals idx :email)
-                                             :label     "Email"
-                                             :name      (str "referrals[" idx "][email]")
-                                             :type      "email"
-                                             :value     (:email referral)})]])
+                                                :data-test (str "referral-email-" idx)
+                                                :errors    (get field-errors ["referrals" idx "email"])
+                                                :id        (str "referral-email-" idx)
+                                                :keypath   (conj keypaths/stylist-referrals idx :email)
+                                                :label     "Email"
+                                                :name      (str "referrals[" idx "][email]")
+                                                :type      "email"
+                                                :value     (:email referral)})]])
                 (when (< (count referrals) 5)
                   [:div.py3.border-top.border-dark-silver
                    [:div.col-10.mx-auto
