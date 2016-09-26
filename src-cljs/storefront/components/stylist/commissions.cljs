@@ -21,21 +21,21 @@
     "paid" "navy"))
 
 (defn four-up [a b c d]
-  [:.clearfix.mxn1
-   [:.col.col-3.px1 a]
-   [:.col.col-3.px1 b]
-   [:.col.col-3.px1 c]
-   [:.col.col-3.px1 d]])
+  [:div.clearfix.mxn1
+   [:div.col.col-3.px1 a]
+   [:div.col.col-3.px1 b]
+   [:div.col.col-3.px1 c]
+   [:div.col.col-3.px1 d]])
 
 (defn show-item [products {:keys [id product-name product-id unit-price variant-attrs quantity] :as item}]
-  [:.py2.clearfix {:key id}
+  [:div.py2.clearfix {:key id}
    [:img.left.border.border-silver.mr3
     {:style {:width "5rem"}
      :src   (products/thumbnail-url products product-id)
      :alt   product-name}]
-   [:.overflow-hidden
-    [:.h4.medium.titleize (products/product-title item)]
-    [:.line-height-3.h5.mt1
+   [:div.overflow-hidden
+    [:div.h4.medium.titleize (products/product-title item)]
+    [:div.line-height-3.h5.mt1
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: " (mf/as-money unit-price)]
@@ -90,37 +90,37 @@
                                      (discount-subtotals order)
                                      (shipping-subtotals shipping-methods order)
                                      (store-credit-subtotals order))]
-    [:.clearfix.mxn1.my2 {:key name}
-     [:.px1.col.col-8
+    [:div.clearfix.mxn1.my2 {:key name}
+     [:div.px1.col.col-8
       {:class (when (neg? price) "teal")}
       name]
-     [:.px1.col.col-4.medium.right-align
+     [:div.px1.col.col-4.medium.right-align
       {:class (if (neg? price) "teal" "navy")}
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:.h3.p2.col-12.right-align.navy.border-top.border-silver
+  [:div.h3.p2.col-12.right-align.navy.border-top.border-silver
    (mf/as-money commissionable-amount)])
 
 (defn show-order [products shipping-methods order]
-  [:.px2
+  [:div.px2
    (for [item (orders/product-items order)]
      (show-item products item))
 
    (show-subtotals shipping-methods order)])
 
 (defn payout-bar [& content]
-  [:.bg-lighten-4.flex.items-center.px2.py1
-   [:.img-coins-icon.bg-no-repeat.bg-contain {:style {:width "18px" :height "12px"}}]
-   [:.center.flex-auto content]])
+  [:div.bg-lighten-4.flex.items-center.px2.py1
+   [:div.img-coins-icon.bg-no-repeat.bg-contain {:style {:width "18px" :height "12px"}}]
+   [:div.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:.border-dotted-top.border-dotted-bottom.border-gray.h6
+  [:div.border-dotted-top.border-dotted-bottom.border-gray.h6
    (if (= status "paid")
-     [:.bg-aqua
+     [:div.bg-aqua
       (payout-bar
        (mf/as-money amount) " paid on " (f/long-date payout-date))]
-     [:.bg-teal
+     [:div.bg-teal
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
 
@@ -131,27 +131,27 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:.p2.border-bottom.border-right.border-left.border-silver
+  [:div.p2.border-bottom.border-right.border-left.border-silver
    (when order
      {:class "pointer"
       :on-click (toggle-expanded-commission expanded? number)})
-   [:.mb2
-    [:.px1.h6.right.border.capped
+   [:div.mb2
+    [:div.px1.h6.right.border.capped
      {:style {:padding-top "3px" :padding-bottom "2px"}
       :class (status-look status)}
      (when (= status "paid") "+") (mf/as-money amount)]
-    [:.h3.navy (:full-name order)]]
+    [:div.h3.navy (:full-name order)]]
 
-   [:.light-gray.h6
+   [:div.light-gray.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
-               [:.right.h2.mtn2.mr1
+               [:div.right.h2.mtn2.mr1
                 {:class (if (expanded? number) "gray" "dark-gray")}
                 "..."]))]
 
-   [:.medium.h6.line-height-3
+   [:div.medium.h6.line-height-3
     (four-up
-     [:.titleize {:class (status-look status)} status]
+     [:div.titleize {:class (status-look status)} status]
      (f/short-date commission-date)
      number
      nil)]])
@@ -179,9 +179,9 @@
 
 (def empty-commissions
   (html
-   [:.center
-    [:.p2.border-bottom.border-silver
-     [:.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
+   [:div.center
+    [:div.p2.border-bottom.border-silver
+     [:div.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
      [:p.h3.light-gray "Looks like you don't have any commissions yet."]]
     [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
@@ -189,31 +189,31 @@
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:.h6.light-gray
-     [:.p2.to-sm-hide
-      [:.mb1.center svg/micro-dollar-sign]
+    [:div.h6.light-gray
+     [:div.p2.to-sm-hide
+      [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:.my3.flex.justify-center.items-center.sm-up-hide
-      [:.mr1 svg/micro-dollar-sign]
-      [:.center message]]]))
+     [:div.my3.flex.justify-center.items-center.sm-up-hide
+      [:div.mr1 svg/micro-dollar-sign]
+      [:div.center message]]]))
 
 (defn component [{:keys [commissions expanded? shipping-methods products fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
       (if (and (empty? (seq history)) fetching?)
-        [:.my2.h2 ui/spinner]
-        [:.mx-auto.container {:data-test "commissions-panel"}
-         [:.clearfix
-          [:.sm-up-col.sm-up-col-9
+        [:div.my2.h2 ui/spinner]
+        [:div.mx-auto.container {:data-test "commissions-panel"}
+         [:div.clearfix
+          [:div.sm-up-col.sm-up-col-9
            (when-let [history (seq history)]
-             [:.mb3
+             [:div.mb3
               (for [commission history]
                 (show-commission commission expanded? shipping-methods products))
               (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
            (when (zero? pages) empty-commissions)]
 
-          [:.sm-up-col.sm-up-col-3
+          [:div.sm-up-col.sm-up-col-3
            (when rate (show-commission-rate rate))]]])))))
 
 (defn query [data]
