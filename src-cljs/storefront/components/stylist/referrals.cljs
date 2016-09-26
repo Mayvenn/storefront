@@ -177,7 +177,7 @@
                   [:.py2.border-top.border-dark-silver
                    {:key idx :data-test "referral-entry"}
                    [:.h3.dark-gray.my2 "Enter your "(get ordinal idx)" referral"
-                    (when (pos? idx) [:a.mr1.flex.items-center.fill-dark-silver.right
+                    (when (pos? idx) [:a.mr1.flex.items-center.right
                                       (merge (utils/fake-href events/control-stylist-referral-remove {:index idx})
                                              {:data-test (str "remove-referral-button-" idx)})
                                       svg/counter-dec])]
@@ -218,7 +218,7 @@
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test "another-referral-button"})
                      [:.flex.items-center.justify-center.h4.line-height-1
-                      [:.mr1.flex.items-center.fill-dark-silver svg/counter-inc]
+                      [:div.mr1.flex.items-center svg/counter-inc]
                       [:div "Add Another Referral"]])]])
                 [:.col-8.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))

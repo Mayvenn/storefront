@@ -324,7 +324,7 @@
    (if spinning? spinner value)])
 
 (defn counter [value spinning? dec-fn inc-fn]
-  [:div.fill-dark-silver
+  [:div
    (counter-button spinning? "quantity-dec" dec-fn svg/counter-dec)
    (counter-value spinning? value)
    (counter-button spinning? "quantity-inc" inc-fn svg/counter-inc)])

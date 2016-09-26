@@ -87,12 +87,12 @@
 
 (def counter-inc
   (component/html
-   [:svg {:class "stroke-white" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
 (def counter-dec
   (component/html
-   [:svg {:class "stroke-white" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-dec")]))
 
 ;; Stylist Account Page
