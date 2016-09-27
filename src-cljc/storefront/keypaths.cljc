@@ -77,6 +77,10 @@
 
 (def bundle-builder (conj ui :bundle-builder))
 
+
+(def account (conj ui :account))
+(def account-show-password? (conj account :show-password?))
+
 (def sign-in (conj ui :sign-in))
 (def sign-in-email (conj sign-in :email))
 (def sign-in-password (conj sign-in :password))

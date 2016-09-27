@@ -149,36 +149,80 @@
     true         (add-classes "rounded border pp1")
     ;; .z1.relative is for adjacent text-fields with left in error and right
     ;; not in error; keeps the left field's right border/inset 2px;
-    error?       (add-classes "z1 relative border-orange inset-orange x-group-item-2")
+    error?       (add-classes "z1 field-is-error relative border-orange inset-orange x-group-item-2")
     (not error?) (add-classes "border-dark-silver x-group-item")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
-    true                      (add-classes "floating-label--input rounded glow border-none h3")
+    true                      (add-classes "floating-label--input rounded border-none h3")
     error?                    (add-classes "field-is-error pr4")
     (and error? (not value?)) (add-classes "orange")
     value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field
-  [label keypath value error? {:keys [wrapper-class id] :as input-attributes}]
-  (let [input-attributes (dissoc input-attributes :wrapper-class)
+  [label keypath value error? {:keys [wrapper-class id hint] :as input-attributes}]
+  (let [input-attributes (dissoc input-attributes :wrapper-class :hint)
+        hint?            (seq hint)
         status           {:error? error?
+                          :hint?  hint?
                           :value? (seq value)}]
-    [:div.clearfix
-     (field-wrapper-class wrapper-class status)
+    [:div.clearfix (field-wrapper-class wrapper-class status)
      (field-error-icon status)
      (floating-label label id status)
-     [:input.col-12.h4
-      (field-class (merge {:key         label
-                           :placeholder label
-                           :value       (or value "")
-                           :on-change
-                           (fn [e]
-                             (handle-message events/control-change-state
-                                             {:keypath keypath
-                                              :value   (.. e -target -value)}))}
-                          input-attributes)
-                   status)]]))
+     [:label
+      [:input.col-12.h4
+       (field-class (merge {:key         label
+                            :placeholder label
+                            :value       (or value "")
+                            :on-focus
+                            (fn [e]
+                              (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
+                                (.add (.-classList wrapper) "force-glow")))
+                            :on-blur
+                            (fn [e]
+                              (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
+                                (.remove (.-classList wrapper) "force-glow")))
+                            :on-change
+                            (fn [e]
+                              (handle-message events/control-change-state
+                                              {:keypath keypath
+                                               :value   (.. e -target -value)}))}
+                           input-attributes)
+                    status)]
+      (when (seq hint)  [:div.p1 hint])]]))
+
+(defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
+  (let [error (first errors)]
+    [:div.col-12.mb1
+     (plain-text-field label keypath value (not (nil? error))
+                       (dissoc input-attributes :label :keypath :value :errors))
+     (field-error-message error data-test)]))
+
+(defn text-field-group
+  "For grouping many fields on one line. Sets up columns, rounding of
+  first and last fields, and avoids doubling of borders between fields."
+  [& fields]
+  {:pre [(zero? (rem 12 (count fields)))]}
+  (let [col-size (str "col col-" (/ 12 (count fields)))]
+    [:div.mb1
+     (into [:div.clearfix]
+           (concat
+            (for [[idx {:keys [label keypath value errors] :as field}]
+                  (map-indexed vector fields)
+
+                  :let [first? (zero? idx)
+                        last? (= idx (dec (count fields)))]]
+              (let [wrapper-class (str col-size
+                                       (when first? " rounded-left")
+                                       (when last? " rounded-right"))]
+                (plain-text-field
+                 label keypath value (seq errors)
+                 (-> field
+                     (dissoc :label :keypath :value :errors)
+                     (assoc :wrapper-class wrapper-class)))))
+            (for [{:keys [errors data-test]} fields]
+              [:div {:class col-size}
+               (field-error-message (first errors) data-test)])))]))
 
 (defn ^:private plain-select-field
   [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
@@ -217,13 +261,6 @@
           :value (option-value option)}
          (option-text option)])]]))
 
-(defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
-  (let [error (first errors)]
-    [:div.col-12.mb1
-     (plain-text-field label keypath value (not (nil? error))
-                       (dissoc input-attributes :label :keypath :value :errors))
-     (field-error-message error data-test)]))
-
 (defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb1
@@ -231,31 +268,14 @@
                          (dissoc select-attributes :label :keypath :value :options :errors))
      (field-error-message error data-test)]))
 
-(defn text-field-group
-  "For grouping many fields on one line. Sets up columns, rounding of
-  first and last fields, and avoids doubling of borders between fields."
-  [& fields]
-  {:pre [(zero? (rem 12 (count fields)))]}
-  (let [col-size (str "col col-" (/ 12 (count fields)))]
-    [:div.mb1
-     (into [:div.clearfix]
-           (concat
-            (for [[idx {:keys [label keypath value errors] :as field}]
-                  (map-indexed vector fields)
-
-                  :let [first? (zero? idx)
-                        last? (= idx (dec (count fields)))]]
-              (let [wrapper-class (str col-size
-                                       (when first? " rounded-left")
-                                       (when last? " rounded-right"))]
-                (plain-text-field
-                 label keypath value (seq errors)
-                 (-> field
-                     (dissoc :label :keypath :value :errors)
-                     (assoc :wrapper-class wrapper-class)))))
-            (for [{:keys [errors data-test]} fields]
-              [:div {:class col-size}
-               (field-error-message (first errors) data-test)])))]))
+(defn check-box [{:keys [label keypath value label-classes] :as attributes}]
+  [:div.col-12.mb1
+   [:label {:class label-classes}
+    [:input.mr1
+     (merge (utils/toggle-checkbox keypath value)
+            (dissoc attributes :label :keypath :value :label-classes)
+            {:type "checkbox"})]
+    label]])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div

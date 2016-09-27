@@ -12,6 +12,7 @@
   [{:keys [facebook-loaded?
            email
            password
+           show-password?
            get-satisfaction-login?
            field-errors]} _ _]
   (component/create
@@ -39,15 +40,21 @@
                      :label     "Password"
                      :name      "password"
                      :required  true
+                     :hint      (when show-password? password)
                      :type      "password"
                      :value     password})
 
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})
 
-     [:div.mt2.col-12.mb3.right-align
-      [:a.gray
-       (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]
+     [:div.mt2.col-12.mb3
+      [:div.left.col-6
+       (ui/check-box {:label   "Show password"
+                      :keypath keypaths/account-show-password?
+                      :value   show-password?})]
+
+      [:div.right.col-6.right-align
+       [:a.gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]]
 
     (when-not get-satisfaction-login?
       [:div.clearfix.center.gray.mb2 "Don't have an account? "
@@ -63,6 +70,7 @@
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)
    :password                (get-in data keypaths/sign-in-password)
+   :show-password?          (get-in data keypaths/account-show-password? true)
    :facebook-loaded?        (get-in data keypaths/loaded-facebook)
    :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)
    :field-errors            (get-in data keypaths/field-errors)})

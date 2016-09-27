@@ -25,15 +25,18 @@
   right: var(--floating-label--input-padding-x);
 }
 
+.force-glow,
 .glow:focus {
+  outline: -webkit-focus-ring-color auto 5px;
   outline-color: var(--teal);
   /* 0 looks ok, but loses glow on right border of first field in group */
-  outline-offset: -1px;
+  outline-offset: -4px;
   /* z2 puts the glowing field above the field inset but below the error icon */
   z-index: 2;
   position: relative;
 }
 
+.force-glow.field-is-error,
 .glow.field-is-error:focus {
   outline-color: var(--orange);
 }
@@ -41,6 +44,10 @@
 select,
 input[type=date] {
   appearance: none;
+}
+
+input:focus {
+    outline: none;
 }
 
 :root {
