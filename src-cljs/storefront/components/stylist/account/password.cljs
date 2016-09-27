@@ -7,7 +7,7 @@
             [storefront.request-keys :as request-keys]))
 
 (defn component [{:keys [password
-                         confirmation
+                         show-password?
                          field-errors
                          saving?]} owner opts]
   (component/create
@@ -23,16 +23,13 @@
                      :label     "New Password"
                      :name      "account-password"
                      :type      "password"
-                     :value     password})
+                     :value     password
+                     :hint      (when show-password? password)})
 
-     (ui/text-field {:data-test "account-password-confirmation"
-                     :errors    (get field-errors ["user" "password-confirmation"])
-                     :id        "account-password-confirmation"
-                     :keypath   (conj keypaths/stylist-manage-account :user :password-confirmation)
-                     :label     "Re-type New Password"
-                     :name      "account-password-confirmation"
-                     :value     confirmation
-                     :type      "password"})]
+     [:div.gray.mtn2.mb2.col-12.left
+      (ui/check-box {:label   "Show password"
+                     :keypath keypaths/account-show-password?
+                     :value   show-password?})]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -42,7 +39,7 @@
                                   :data-test "account-form-submit"})]]]))
 
 (defn query [data]
-  {:saving?      (utils/requesting? data request-keys/update-stylist-account-password)
-   :password     (get-in data (conj keypaths/stylist-manage-account :user :password))
-   :confirmation (get-in data (conj keypaths/stylist-manage-account :user :password-confirmation))
-   :field-errors (get-in data keypaths/field-errors)})
+  {:saving?        (utils/requesting? data request-keys/update-stylist-account-password)
+   :password       (get-in data (conj keypaths/stylist-manage-account :user :password))
+   :show-password? (get-in data keypaths/account-show-password? true)
+   :field-errors   (get-in data keypaths/field-errors)})

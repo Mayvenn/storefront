@@ -141,15 +141,12 @@
           :sign-in {:email ""
                     :password ""}
           :sign-up {:email ""
-                    :password ""
-                    :password-confirmation ""}
+                    :password ""}
           :forgot-password {:email ""}
           :reset-password {:password ""
-                           :password-confirmation ""
                            :token ""}
           :manage-account {:email ""
-                           :password ""
-                           :password-confirmation ""}
+                           :password ""}
           :cart initial-cart-state
           :checkout initial-checkout-state
           :flash {:success {:message nil

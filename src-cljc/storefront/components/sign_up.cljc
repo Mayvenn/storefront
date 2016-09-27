@@ -12,7 +12,7 @@
            field-errors
            email
            password
-           password-confirmation]} _ _]
+           show-password?]} _ _]
   (component/create
    (ui/narrow-container
     [:h2.center.mt2.mb3.navy "Sign up for an account"]
@@ -41,16 +41,13 @@
                      :name      "password"
                      :required  true
                      :type      "password"
-                     :value     password})
+                     :value     password
+                     :hint      (when show-password? password)})
 
-     (ui/text-field {:data-test "user-password-confirmation"
-                     :errors    (get field-errors ["password_confirmation"])
-                     :keypath   keypaths/sign-up-password-confirmation
-                     :label     "Password Confirmation"
-                     :name      "password-confirmation"
-                     :required  true
-                     :type      "password"
-                     :value     password-confirmation})
+     [:div.gray.mtn3.mb2.col-12.left
+      (ui/check-box {:label   "Show password"
+                     :keypath keypaths/account-show-password?
+                     :value   show-password?})]
 
      (ui/submit-button "Sign Up"
                        {:data-test "user-submit"})
@@ -61,7 +58,7 @@
 (defn query [data]
   {:email                 (get-in data keypaths/sign-up-email)
    :password              (get-in data keypaths/sign-up-password)
-   :password-confirmation (get-in data keypaths/sign-up-password-confirmation)
+   :show-password?        (get-in data keypaths/account-show-password? true)
    :facebook-loaded?      (get-in data keypaths/loaded-facebook)
    :field-errors          (get-in data keypaths/field-errors)})
 

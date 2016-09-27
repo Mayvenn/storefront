@@ -7,7 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [reset-password reset-password-confirmation loaded-facebook? field-errors]} owner]
+(defn component [{:keys [reset-password show-password? loaded-facebook? field-errors]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -20,13 +20,12 @@
                       :min-length 6
                       :required   true
                       :type       "password"
-                      :value      reset-password})
-      (ui/text-field {:errors   (get field-errors ["password_confirmation"])
-                      :keypath  keypaths/reset-password-password-confirmation
-                      :label    "Password Confirmation"
-                      :required true
-                      :type     "password"
-                      :value    reset-password-confirmation})
+                      :value      reset-password
+                      :hint       (when show-password? reset-password)})
+      [:div.gray.mtn2.mb2.col-12.left
+       (ui/check-box {:label   "Show password"
+                      :keypath keypaths/account-show-password?
+                      :value   show-password?})]
 
       (ui/submit-button "Update")]
      [:.h5.center.gray.light.my2 "OR"]
@@ -34,7 +33,7 @@
 
 (defn query [data]
   {:reset-password              (get-in data keypaths/reset-password-password)
-   :reset-password-confirmation (get-in data keypaths/reset-password-password-confirmation)
+   :show-password?              (get-in data keypaths/account-show-password? true)
    :loaded-facebook?            (get-in data keypaths/loaded-facebook)
    :field-errors                (get-in data keypaths/field-errors)})
 

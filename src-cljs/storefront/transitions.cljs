@@ -298,11 +298,9 @@
       (sign-in-user user)
       (clear-fields keypaths/sign-up-email
                     keypaths/sign-up-password
-                    keypaths/sign-up-password-confirmation
                     keypaths/sign-in-email
                     keypaths/sign-in-password
                     keypaths/reset-password-password
-                    keypaths/reset-password-password-confirmation
                     keypaths/reset-password-token)
       (assoc-in keypaths/order order)))
 
@@ -346,23 +344,17 @@
 
 (defmethod transition-state events/control-account-profile-submit [_ event args app-state]
   (let [password              (get-in app-state keypaths/manage-account-password)
-        password-confirmation (get-in app-state keypaths/manage-account-password-confirmation)
         field-errors          (cond-> {}
-                                (not= password password-confirmation)
-                                (merge (group-by :path [{:path ["password-confirmation"] :long-message "Passwords must match!"}]))
                                 (> 6 (count password))
                                 (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
-    (if (and (or (seq password) (seq password-confirmation)) (seq field-errors))
+    (if (and (seq password) (seq field-errors))
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (assoc-in app-state keypaths/errors {}))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
         password              (-> stylist-account :user :password)
-        password-confirmation (-> stylist-account :user :password-confirmation)
         field-errors          (cond-> {}
-                                (not= password password-confirmation)
-                                (merge (group-by :path [{:path ["user" "password-confirmation"] :long-message "Passwords must match!"}]))
                                 (> 6 (count password))
                                 (merge (group-by :path [{:path ["user" "password"] :long-message "New password must be at least 6 characters"}])))]
     (if (seq field-errors)
@@ -389,8 +381,7 @@
   (-> app-state
       (sign-in-user args)
       (clear-fields keypaths/manage-account-email
-                    keypaths/manage-account-password
-                    keypaths/manage-account-password-confirmation)))
+                    keypaths/manage-account-password)))
 
 (defn default-credit-card-name [app-state {:keys [first-name last-name]}]
   (if (string/blank? (get-in app-state keypaths/checkout-credit-card-name))

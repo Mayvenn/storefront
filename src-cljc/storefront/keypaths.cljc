@@ -88,20 +88,17 @@
 (def sign-up (conj ui :sign-up))
 (def sign-up-email (conj sign-up :email))
 (def sign-up-password (conj sign-up :password))
-(def sign-up-password-confirmation (conj sign-up :password-confirmation))
 
 (def forgot-password (conj ui :forgot-password))
 (def forgot-password-email (conj forgot-password :email))
 
 (def reset-password (conj ui :reset-password))
 (def reset-password-password (conj reset-password :password))
-(def reset-password-password-confirmation (conj reset-password :password-confirmation))
 (def reset-password-token (conj reset-password :token))
 
 (def manage-account (conj ui :manage-account))
 (def manage-account-email (conj manage-account :email))
 (def manage-account-password (conj manage-account :password))
-(def manage-account-password-confirmation (conj manage-account :password-confirmation))
 
 (def shared-cart-url (conj ui :shared-cart-url))
 (def shared-cart-id (conj ui :shared-cart-id))

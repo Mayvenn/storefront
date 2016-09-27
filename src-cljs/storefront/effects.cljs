@@ -339,24 +339,7 @@
   (set! (.. js/document -body -style -overflow) "auto"))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
-  (api/sign-in (get-in app-state keypaths/sign-in-email)
-               (get-in app-state keypaths/sign-in-password)
-               (get-in app-state keypaths/store-stylist-id)
-               (get-in app-state keypaths/order-number)
-               (get-in app-state keypaths/order-token)))
 
-(defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
-  (api/sign-up (get-in app-state keypaths/sign-up-email)
-               (get-in app-state keypaths/sign-up-password)
-               (get-in app-state keypaths/sign-up-password-confirmation)
-               (get-in app-state keypaths/store-stylist-id)
-               (get-in app-state keypaths/order-number)
-               (get-in app-state keypaths/order-token)))
-
-(defmethod perform-effects events/control-facebook-sign-in [_ event args app-state]
-  (facebook/start-log-in app-state))
-
-(defmethod perform-effects events/control-facebook-reset [_ event args app-state]
   (facebook/start-reset app-state))
 
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
@@ -372,7 +355,7 @@
 
 (defmethod perform-effects events/facebook-email-denied [_ _ args app-state]
   (handle-message events/flash-show-failure
-                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
+                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."})
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
@@ -401,7 +384,6 @@
   (if (empty? (get-in app-state keypaths/reset-password-password))
     (handle-message events/flash-show-failure {:message "Your password cannot be blank."})
     (api/reset-password (get-in app-state keypaths/reset-password-password)
-                        (get-in app-state keypaths/reset-password-password-confirmation)
                         (get-in app-state keypaths/reset-password-token)
                         (get-in app-state keypaths/order-number)
                         (get-in app-state keypaths/order-token))))
@@ -424,7 +406,6 @@
     (api/update-account (get-in app-state keypaths/user-id)
                         (get-in app-state keypaths/manage-account-email)
                         (get-in app-state keypaths/manage-account-password)
-                        (get-in app-state keypaths/manage-account-password-confirmation)
                         (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/control-cart-update-coupon [_ event args app-state]

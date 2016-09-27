@@ -17,7 +17,7 @@
                                  email
                                  field-errors
                                  password
-                                 confirmation]} owner opts]
+                                 show-password?]} owner opts]
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-account-profile-submit)}
@@ -40,16 +40,13 @@
                      :label     "New Password"
                      :name      "account-password"
                      :value     password
-                     :type      "password"})
-
-     (ui/text-field {:data-test "account-password-confirmation"
-                     :errors    (get field-errors ["password-confirmation"])
-                     :id        "account-password-confirmation"
-                     :keypath   keypaths/manage-account-password-confirmation
-                     :label     "Re-type New Password"
-                     :name      "account-password-confirmation"
                      :type      "password"
-                     :value     confirmation})]
+                     :hint      (when show-password? password)})
+
+     [:div.gray.mtn2.mb2.col-12.left
+      (ui/check-box {:label   "Show password"
+                     :keypath keypaths/account-show-password?
+                     :value   show-password?})]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -59,11 +56,11 @@
                                   :data-test "account-form-submit"})]]]))
 
 (defn profile-query [data]
-  {:saving?      (utils/requesting? data request-keys/update-account-profile)
-   :email        (get-in data keypaths/manage-account-email)
-   :password     (get-in data keypaths/manage-account-password)
-   :confirmation (get-in data keypaths/manage-account-password-confirmation)
-   :field-errors (get-in data keypaths/field-errors)})
+  {:saving?        (utils/requesting? data request-keys/update-account-profile)
+   :email          (get-in data keypaths/manage-account-email)
+   :password       (get-in data keypaths/manage-account-password)
+   :show-password? (get-in data keypaths/account-show-password? true)
+   :field-errors   (get-in data keypaths/field-errors)})
 
 (defn component [{:keys [current-nav-event
                          available-credit

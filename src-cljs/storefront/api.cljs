@@ -216,7 +216,7 @@
     #(messages/handle-message events/api-success-auth-sign-in
                               (select-auth-keys %))}))
 
-(defn sign-up [email password password-confirmation stylist-id order-number order-token]
+(defn sign-up [email password stylist-id order-number order-token]
   (api-req
    POST
    "/v2/signup"
@@ -224,7 +224,6 @@
    {:params
     {:email email
      :password password
-     :password-confirmation password-confirmation
      :stylist-id stylist-id
      :order-number order-number
      :order-token order-token}
@@ -232,14 +231,13 @@
     #(messages/handle-message events/api-success-auth-sign-up
                               (select-auth-keys %))}))
 
-(defn reset-password [password password-confirmation reset-token order-number order-token]
+(defn reset-password [password reset-token order-number order-token]
   (api-req
    POST
    "/v2/reset_password"
    request-keys/reset-password
    {:params
     {:password password
-     :password_confirmation password-confirmation
      :reset_password_token reset-token
      :order-number order-number
      :order-token order-token}
@@ -309,7 +307,7 @@
     #(messages/handle-message events/api-success-account
                               (spree->mayvenn-addresses %))}))
 
-(defn update-account [id email password password-confirmation token]
+(defn update-account [id email password token]
   (api-req
    PUT
    "/users"
@@ -317,9 +315,8 @@
    {:params (merge  {:id    id
                      :email email
                      :token token}
-                    (when (or (seq password) (seq password-confirmation))
-                      {:password              password
-                       :password_confirmation password-confirmation}))
+                    (when (seq password)
+                      {:password password}))
     :handler
     #(messages/handle-message events/api-success-manage-account
                               (select-user-keys %))}))
