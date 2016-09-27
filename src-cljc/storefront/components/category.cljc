@@ -222,6 +222,7 @@
                      {:slides (map :body items)
                       :settings {:arrows true
                                  :dots true
+                                 :dotsClass "carousel-dots"
                                  :swipe true}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 

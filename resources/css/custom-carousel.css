@@ -1,0 +1,60 @@
+/* Taken from slick.css */
+
+.carousel-dots {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    list-style: none;
+    display: inline-block;
+    text-align: center;
+    padding: 0;
+}
+.carousel-dots li {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    padding: 2px;
+    cursor: pointer;
+}
+.carousel-dots li button {
+    border: 0;
+    background: transparent;
+    display: block;
+    outline: none;
+    line-height: 0;
+    font-size: 0;
+    color: gray;
+    padding: 5px;
+    cursor: pointer;
+}
+.carousel-dots li button:hover, .carousel-dots li button:focus {
+    outline: none;
+}
+.carousel-dots li button:hover:before, .carousel-dots li button:focus:before {
+    opacity: 1;
+}
+.carousel-dots li button:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: "•";
+    font-size: 1.5rem;
+    line-height: 20px;
+    text-align: center;
+    color: var(--white);
+    opacity: 0.623529;
+    text-shadow:
+    -1px -1px 0 var(--gray),
+    1px -1px 0 var(--gray),
+    -1px 1px 0 var(--gray),
+    1px 1px 0 var(--gray);
+}
+.carousel-dots li.slick-active button:before {
+    color: var(--gray);
+    opacity: 1;
+}
+
+:root {
+    --white:        #FFFFFF;
+    --dark-gray:    #333333;
+}
