@@ -17,7 +17,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.assets :as assets]
             [storefront.request-keys :as request-keys]
-            [storefront.platform.carousel :as carousel]))
+            [storefront.platform.carousel-two :as carousel]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
@@ -218,11 +218,12 @@
                                   {:id   (subs image (max 0 (- (count image) 50)))
                                    :body (carousel-image image)}))
                    vec)]
-    (component/build carousel/swipe-component
-                     {:items      items
-                      :continuous true}
-                     {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))
-                      :opts      {:dot-location :left}})))
+    (component/build carousel/component
+                     {:slides (map :body items)
+                      :settings {:arrows true
+                                 :dots true
+                                 :swipe true}}
+                     {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
 (defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
