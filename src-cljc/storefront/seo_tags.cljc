@@ -86,7 +86,15 @@
                                                  :content "website"}]
                                          [:meta {:property "og:description"
                                                  :content "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
-
+     events/navigate-content-about-us [[:title {} "About Us - 100% virgin human hair company | Mayvenn "]
+                                       [:meta {:property "og:title"
+                                               :content "The Mayvenn Story - About Us"}]
+                                       [:meta {:name "description"
+                                               :content "Mayvenn is a hair company providing top-quality 100% virgin human hair for consumers and stylists. Learn more about us!"}]
+                                       [:meta {:property "og:type"
+                                               :content "website"}]
+                                       [:meta {:property "og:description"
+                                               :content "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
      events/navigate-category    (category-tags data)
 
      default-tags)
