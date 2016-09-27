@@ -27,10 +27,12 @@
 
 .force-glow,
 .glow:focus {
+  outline: solid auto 2px;
   outline: -webkit-focus-ring-color auto 5px;
+  -moz-outline-radius: var(--border-radius);
   outline-color: var(--teal);
   /* 0 looks ok, but loses glow on right border of first field in group */
-  outline-offset: -4px;
+  outline-offset: -2px;
   /* z2 puts the glowing field above the field inset but below the error icon */
   z-index: 2;
   position: relative;
