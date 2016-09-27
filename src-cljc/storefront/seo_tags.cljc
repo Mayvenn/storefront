@@ -86,6 +86,7 @@
                                                  :content "website"}]
                                          [:meta {:property "og:description"
                                                  :content "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
+
      events/navigate-content-about-us [[:title {} "About Us - 100% virgin human hair company | Mayvenn "]
                                        [:meta {:property "og:title"
                                                :content "The Mayvenn Story - About Us"}]
@@ -95,6 +96,17 @@
                                                :content "website"}]
                                        [:meta {:property "og:description"
                                                :content "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
+
+     events/navigate-shop-by-look [[:title {} "Shop By Look | Mayvenn"]
+                                   [:meta {:property "og:title"
+                                           :content "Shop By Look - Find and Buy your favorite Mayvenn hairstyle!"}]
+                                   [:meta {:name "description"
+                                           :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
+                                   [:meta {:property "og:type"
+                                           :content "website"}]
+                                   [:meta {:property "og:description"
+                                           :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
+
      events/navigate-category    (category-tags data)
 
      default-tags)
