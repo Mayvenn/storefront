@@ -6,7 +6,7 @@
 
 .carousel-dots {
     position: absolute;
-    bottom: 1.25rem;
+    bottom: 0.75rem;
     list-style: none;
     display: inline-block;
     text-align: center;
@@ -21,15 +21,20 @@
     cursor: pointer;
 }
 .carousel-dots li button {
-    border: 0;
     background: transparent;
     display: block;
     outline: none;
-    line-height: 0;
+    background-color: var(--white);
     font-size: 0;
-    color: gray;
-    padding: 5px;
+    padding: 3px;
     cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid var(--gray);
+    opacity: 0.623529;
+}
+.carousel-dots li.slick-active button {
+    background-color: var(--gray);
+    opacity: 1;
 }
 .carousel-dots li button:hover, .carousel-dots li button:focus {
     outline: none;
@@ -37,28 +42,8 @@
 .carousel-dots li button:hover:before, .carousel-dots li button:focus:before {
     opacity: 1;
 }
-.carousel-dots li button:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    content: "•";
-    font-size: 1.5rem;
-    line-height: 20px;
-    text-align: center;
-    color: var(--white);
-    opacity: 0.623529;
-    text-shadow:
-    -1px -1px 0 var(--gray),
-    1px -1px 0 var(--gray),
-    -1px 1px 0 var(--gray),
-    1px 1px 0 var(--gray);
-}
-.carousel-dots li.slick-active button:before {
-    color: var(--gray);
-    opacity: 1;
-}
 
 :root {
     --white:        #FFFFFF;
-    --dark-gray:    #333333;
+    --gray:         #666666;
 }

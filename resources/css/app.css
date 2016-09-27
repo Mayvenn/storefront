@@ -94,7 +94,7 @@
 
 .slick-prev:before,
 .slick-next:before {
-    color: dark-gray;
+    color: var(--dark-gray);
     font-family: sans-serif;
     content: "";
 }
