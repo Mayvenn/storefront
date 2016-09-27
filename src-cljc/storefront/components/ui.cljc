@@ -6,6 +6,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.messages :refer [handle-message]]
+            [storefront.platform.numbers :as numbers]
             [storefront.components.money-formatters :as mf]
             [clojure.string :as str]))
 
@@ -360,3 +361,22 @@
   [:div.flex.justify-center.line-height-1
    (mf/as-money-without-cents amount)
    [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
+
+(defn progress-indicator [{:keys [value maximum]}]
+  (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
+        bar-width (str (numbers/round bar-value) "%")
+        bar-style {:padding-top "0.3em" :padding-bottom "0.15em" :height "20px"}]
+    [:div.flex.items-center
+     [:div.my2.border.border-dark-gray.capped.h4.flex-auto
+      (cond
+        (zero? value) [:div.px2.capped {:style bar-style}]
+        (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
+        :else [:div.bg-dark-silver.px2.capped {:style (merge bar-style {:width bar-width})}])]
+     (if (= value maximum)
+       (svg/circled-check {:class "stroke-teal"
+                           :style {:width "3rem" :height "3rem"
+                                   :margin-left "0.4rem"
+                                   :margin-right "-0.2rem"}})
+       [:div.border.circle.border-dark-gray.h6.center.ml1
+        {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
+        bar-width])]))

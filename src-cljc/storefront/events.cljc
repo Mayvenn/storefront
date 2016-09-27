@@ -41,6 +41,7 @@
 (defpath navigate-style-guide-navigation)
 (defpath navigate-style-guide-navigation-tab1)
 (defpath navigate-style-guide-navigation-tab3)
+(defpath navigate-style-guide-progress)
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)

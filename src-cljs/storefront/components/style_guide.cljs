@@ -29,8 +29,9 @@
     [:li [:h2.h5.my1 "Components"]
      [:ul.list-reset.ml1
       [:li (section-link "Buttons" events/navigate-style-guide-buttons)]
-        [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
-      [:li (section-link "Navigation" events/navigate-style-guide-navigation)]]]]])
+      [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
+      [:li (section-link "Navigation" events/navigate-style-guide-navigation)]
+      [:li (section-link "Progress" events/navigate-style-guide-progress)]]]]])
 
 (def ^:private typography
   [:section
@@ -287,6 +288,18 @@
                                            events/navigate-style-guide-navigation
                                            events/navigate-style-guide-navigation-tab3]}})]]]]))
 
+(defn ^:private progress [data _ _]
+  (component/create
+   [:section
+    (header "Progress Indicator")
+    [:.dark-gray
+     [:div.bg-white
+      [:div.md-up-col-6.mx-auto
+       (ui/progress-indicator {:value 0 :maximum 100})
+       (ui/progress-indicator {:value 50 :maximum 100})
+       (ui/progress-indicator {:value 5 :maximum 7})
+       (ui/progress-indicator {:value 100 :maximum 100})]]]]))
+
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-white.clearfix
@@ -301,7 +314,8 @@
        events/navigate-style-guide-form-fields (form-fields data)
        events/navigate-style-guide-navigation (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
-       events/navigate-style-guide-navigation-tab3 (component/build navigation data opts))]]))
+       events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
+       events/navigate-style-guide-progress (component/build progress data opts))]]))
 
 (defn built-component [data opts]
   (component/build component data opts))

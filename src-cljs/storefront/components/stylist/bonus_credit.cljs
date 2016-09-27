@@ -34,18 +34,6 @@
 
        (pagination/fetch-more events/control-stylist-bonuses-fetch fetching? page pages)]))))
 
-(defn pending-bonus-progress [{:keys [progress milestone]}]
-  (let [bar-value (-> progress (/ milestone) (* 100.0) (min 100))
-        bar-width (str (max 15 bar-value) "%")
-        bar-padding-y {:padding-top "0.3em" :padding-bottom "0.15em"}]
-    [:.my2.border.border-silver.capped.h4
-     (if (zero? progress)
-       [:.gray.left-align.px2.self-center.flex.items-center {:style bar-padding-y}
-        [:.flex-auto "0%"]]
-       [:.bg-teal.light-silver.px2.capped.flex.items-center
-        {:style (merge bar-padding-y {:width bar-width})}
-        [:.right-align.flex-auto
-         (str (.toFixed bar-value 0) "%")]])]))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
@@ -83,8 +71,8 @@
                (pos? progress-amount) [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
                :else                  [:.h4 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
-             (pending-bonus-progress {:progress  progress-amount
-                                      :milestone milestone-amount})
+             (ui/progress-indicator {:value  progress-amount
+                                     :maximum milestone-amount})
 
              [:.h6.gray
               "You earn "

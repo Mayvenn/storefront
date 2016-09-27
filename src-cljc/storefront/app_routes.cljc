@@ -21,8 +21,20 @@
 (def static-api-routes
   ["/static" static-page-routes])
 
+(def style-guide-routes
+  ["/_style" {"/"                (edn->bidi events/navigate-style-guide)
+              "/color"           (edn->bidi events/navigate-style-guide-color)
+              "/spacing"         (edn->bidi events/navigate-style-guide-spacing)
+              "/buttons"         (edn->bidi events/navigate-style-guide-buttons)
+              "/form-fields"     (edn->bidi events/navigate-style-guide-form-fields)
+              "/navigation"      (edn->bidi events/navigate-style-guide-navigation)
+              "/navigation/tab1" (edn->bidi events/navigate-style-guide-navigation-tab1)
+              "/navigation/tab3" (edn->bidi events/navigate-style-guide-navigation-tab3)
+              "/progress"        (edn->bidi events/navigate-style-guide-progress)}])
+
 (def app-routes
   ["" (merge static-page-routes
+             style-guide-routes
              {"/"                                      (edn->bidi events/navigate-home)
               "/categories"                            (edn->bidi events/navigate-categories)
               ["/categories/hair/" :named-search-slug] (edn->bidi events/navigate-category)
@@ -49,15 +61,7 @@
               "/checkout/address"                      (edn->bidi events/navigate-checkout-address)
               "/checkout/payment"                      (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                      (edn->bidi events/navigate-checkout-confirmation)
-              ["/orders/" :number "/complete"]         (edn->bidi events/navigate-order-complete)
-              "/_style"                                (edn->bidi events/navigate-style-guide)
-              "/_style/color"                          (edn->bidi events/navigate-style-guide-color)
-              "/_style/spacing"                        (edn->bidi events/navigate-style-guide-spacing)
-              "/_style/buttons"                        (edn->bidi events/navigate-style-guide-buttons)
-              "/_style/form-fields"                    (edn->bidi events/navigate-style-guide-form-fields)
-              "/_style/navigation"                     (edn->bidi events/navigate-style-guide-navigation)
-              "/_style/navigation/tab1"                (edn->bidi events/navigate-style-guide-navigation-tab1)
-              "/_style/navigation/tab3"                (edn->bidi events/navigate-style-guide-navigation-tab3)})])
+              ["/orders/" :number "/complete"]         (edn->bidi events/navigate-order-complete)})])
 
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)
