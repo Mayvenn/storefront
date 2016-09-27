@@ -186,12 +186,13 @@
    [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
-      (into [:div.clearfix.my2]
-            (let [attrs (->> [["Color" colors]
-                              ["Weight" weights]
-                              ["Material" materials]]
-                             (filter second))
-                  size (str "col-" (/ 12 (count attrs)))]
+      (let [attrs (->> [["Color" colors]
+                        ["Weight" weights]
+                        ["Material" materials]]
+                       (filter second))
+            ;;This won't work if we have 5 possible attrs
+            size (str "col-" (/ 12 (count attrs)))]
+        (into [:div.clearfix.my2]
               (for [[title value] attrs]
                 [:dl.col.m0.inline-block {:class size}
                  [:dt.mx1.gray.shout.h6 title]
