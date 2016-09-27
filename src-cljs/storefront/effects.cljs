@@ -339,7 +339,23 @@
   (set! (.. js/document -body -style -overflow) "auto"))
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args app-state]
+  (api/sign-in (get-in app-state keypaths/sign-in-email)
+               (get-in app-state keypaths/sign-in-password)
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-number)
+               (get-in app-state keypaths/order-token)))
 
+(defmethod perform-effects events/control-sign-up-submit [_ event args app-state]
+  (api/sign-up (get-in app-state keypaths/sign-up-email)
+               (get-in app-state keypaths/sign-up-password)
+               (get-in app-state keypaths/store-stylist-id)
+               (get-in app-state keypaths/order-number)
+               (get-in app-state keypaths/order-token)))
+
+(defmethod perform-effects events/control-facebook-sign-in [_ event args app-state]
+  (facebook/start-log-in app-state))
+
+(defmethod perform-effects events/control-facebook-reset [_ event args app-state]
   (facebook/start-reset app-state))
 
 (defmethod perform-effects events/facebook-success-sign-in [_ _ facebook-response app-state]
