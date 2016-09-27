@@ -22,15 +22,15 @@
   ["/static" static-page-routes])
 
 (def style-guide-routes
-  ["/_style" {"/"                (edn->bidi events/navigate-style-guide)
-              "/color"           (edn->bidi events/navigate-style-guide-color)
-              "/spacing"         (edn->bidi events/navigate-style-guide-spacing)
-              "/buttons"         (edn->bidi events/navigate-style-guide-buttons)
-              "/form-fields"     (edn->bidi events/navigate-style-guide-form-fields)
-              "/navigation"      (edn->bidi events/navigate-style-guide-navigation)
-              "/navigation/tab1" (edn->bidi events/navigate-style-guide-navigation-tab1)
-              "/navigation/tab3" (edn->bidi events/navigate-style-guide-navigation-tab3)
-              "/progress"        (edn->bidi events/navigate-style-guide-progress)}])
+  {"/_style"                 (edn->bidi events/navigate-style-guide)
+   "/_style/color"           (edn->bidi events/navigate-style-guide-color)
+   "/_style/spacing"         (edn->bidi events/navigate-style-guide-spacing)
+   "/_style/buttons"         (edn->bidi events/navigate-style-guide-buttons)
+   "/_style/form-fields"     (edn->bidi events/navigate-style-guide-form-fields)
+   "/_style/navigation"      (edn->bidi events/navigate-style-guide-navigation)
+   "/_style/navigation/tab1" (edn->bidi events/navigate-style-guide-navigation-tab1)
+   "/_style/navigation/tab3" (edn->bidi events/navigate-style-guide-navigation-tab3)
+   "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)})
 
 (def app-routes
   ["" (merge static-page-routes
