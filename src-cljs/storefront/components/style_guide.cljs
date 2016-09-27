@@ -93,41 +93,21 @@
 (def ^:private buttons
   [:section
    (header "Buttons")
-   ;; Normal Buttons, Active States
+   [:h3 "Normal"]
    [:div.flex.flex-wrap.mxn1
-    [:div.col-4.p1
-     [:div.mb1.bold "Primary"]
-     [:div.mb1 (ui/teal-button {} "ui/teal-button")]]
-    [:div.col-4.p1
-     [:div.mb1.bold "Secondary"]
-     [:div.mb1 (ui/navy-button {} "ui/navy-button")]]
-    [:div.col-4.p1
-     [:div.mb1.bold "Ghost"]
-     [:div.mb1 (ui/ghost-button {} "ui/ghost-button")]]
-    [:div.col-4.p1
-     [:div.mb1.bold "Disabled"]
-     [:div.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]]
-    [:div.col-4.p1
-     [:div.mb1.bold "Branded"]
-     [:div.mb1 (ui/aqua-button {} "ui/aqua-button")]]]
+    [:div.col-4.p1.mb1 (ui/teal-button {} "ui/teal-button")]
+    [:div.col-4.p1.mb1 (ui/navy-button {} "ui/navy-button")]
+    [:div.col-4.p1.mb1 (ui/ghost-button {} "ui/ghost-button")]
+    [:div.col-4.p1.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
+    [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]
 
-   ;; Large Buttons, Active States
-   [:div.flex.flex-wrap.mxn1.mt4
-    [:div.col-6.p1
-     [:div.mb1.bold "Primary (Large)"]
-     [:div.mb1 (ui/large-teal-button {} "ui/large-teal-button")]]
-    [:div.col-6.p1
-     [:div.mb1.bold "Secondary (Large)"]
-     [:div.mb1 (ui/large-navy-button {} "ui/large-navy-button")]]
-    [:div.col-6.p1
-     [:div.mb1.bold "Disabled (Large)"]
-     [:div.mb1 (ui/large-teal-button {:disabled? true} "(ui/large-teal-button {:disabled? true})")]]
-    [:div.col-6.p1
-     [:div.mb1.bold "Branded (Large)"]
-     [:div.mb1 (ui/large-aqua-button {} "ui/large-aqua-button")]]
-    [:div.col-6.p1
-     [:div.mb1.bold "Ghost (Large)"]
-     [:div.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]]])
+   [:h3.mt4 "Large"]
+   [:div.flex.flex-wrap.mxn1
+    [:div.col-6.p1.mb1 (ui/large-teal-button {} "ui/large-teal-button")]
+    [:div.col-6.p1.mb1 (ui/large-navy-button {} "ui/large-navy-button")]
+    [:div.col-6.p1.mb1 (ui/large-teal-button {:disabled? true} "(ui/large-teal-button {:disabled? true})")]
+    [:div.col-6.p1.mb1 (ui/large-aqua-button {} "ui/large-aqua-button")]
+    [:div.col-6.p1.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]])
 
 (def ^:private increment->size
   {1 ".5rem"
@@ -147,14 +127,15 @@
                    [:p.h6 px]]]]]]])
         subsection (fn [text body]
                      [:div.my2
-                      [:h3.h4.bold.mb1 text]
+                      [:div.center.h3.light.my1 text]
                       body])]
     [:section
      (header "Spacing")
      [:div.h4.light.mb2.gray "Margin puts space between elements. Padding puts space within elements."]
 
+     [:h3 "Key"]
      (subsection
-      "Key"
+      ""
       [:div.border-dashed.border-light-gray.inline-block.p1.center.h6
        "Margin"
        [:div.border.border-teal.p1
@@ -162,8 +143,9 @@
         [:div.border.border-light-gray.p1.bg-silver
          "Content"]]])
 
+     [:h3 "Margin"]
      (subsection
-      "Margin in rems"
+      "in rems"
       [:div.mxn1
        (for [direction ["" "y" "x" "t" "b" "l" "r"]]
          [:div.clearfix
@@ -173,7 +155,7 @@
              (box class (increment->size increment))])])])
 
      (subsection
-      "Margin in pixels"
+      "in pixels"
       [:div.mxn1
        (for [direction ["" "t" "b" "l" "r"]]
          [:div.clearfix
@@ -183,8 +165,13 @@
             [:div.col.col-2
              (box class (str increment "px"))])])])
 
+     [:h3 "Padding"]
+
+     [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
+     [:p.mt1.light-gray "So, " [:code.gray ".pl1"] ", " [:code.gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
+
      (subsection
-      "Padding in rems"
+      "in rems"
       [:div
        [:div.mxn1
         (for [direction ["" "y" "x"]]
@@ -192,12 +179,10 @@
            (for [increment (range 1 5)
                  :let [class (str "p" direction increment)]]
              [:div.col.col-3
-              (box class (increment->size increment))])])]
-       [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
-       [:p.mt1.light-gray "So, " [:code.gray ".pl1"] ", " [:code.gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]])
+              (box class (increment->size increment))])])]])
 
      (subsection
-      "Padding in pixels"
+      "in pixels"
       [:div.mxn1
        (for [direction ["" "y" "x"]]
          [:div.clearfix
