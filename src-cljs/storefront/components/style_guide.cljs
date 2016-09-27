@@ -131,69 +131,82 @@
      [:div.mb1.bold "Ghost (Large)"]
      [:div.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]]])
 
-(def ^:private rem-increment->px
-  {1 "8px"
-   2 "16px"
-   3 "32px"
-   4 "64px"})
+(def ^:private increment->size
+  {1 ".5rem"
+   2 "1rem"
+   3 "2rem"
+   4 "4rem"})
 
 (def ^:private spacing
   (let [box (fn [class px]
              [:div {:key (str class "-" px)}
               [:div.m1
-               [:div.border-dashed.border-light-gray.inline-block.center.h6
+               [:div.border-dashed.border-light-gray.inline-block.center
                 [:div.border.border-teal.inline-block {:class class}
-                 [:div.border-dashed.border-light-gray.inline-block.bg-silver
+                 [:div.border.border-light-gray.inline-block.bg-silver
                   [:div
-                   [:p (str "." class)]
-                   [:p px "px"]]]]]]])
+                   [:p.h6 (str "." class)]
+                   [:p.h6 px]]]]]]])
         subsection (fn [text body]
                      [:div.my2
                       [:h3.h4.bold.mb1 text]
                       body])]
     [:section
      (header "Spacing")
+     [:div.h4.light.mb2.gray "Margin puts space between elements. Padding puts space within elements."]
+
      (subsection
       "Key"
       [:div.border-dashed.border-light-gray.inline-block.p1.center.h6
        "Margin"
        [:div.border.border-teal.p1
         "Padding"
-        [:div.border-dashed.border-light-gray.p1.bg-silver
+        [:div.border.border-light-gray.p1.bg-silver
          "Content"]]])
 
      (subsection
-      "Padding in rems"
-      [:div.flex.flex-wrap.mxn1
-       (for [direction ["" "t" "r" "b" "l"]
-             increment (range 1 5)
-             :let [class (str "p" direction increment)]]
-         (box class (rem-increment->px increment)))])
-
-     (subsection
-      "Padding in pixels"
-      [:div.flex.flex-wrap.mxn1
-       (for [direction [""]
-             increment (range 1 5)
-             :let [class (str "p" direction "p" increment)]]
-         (box class increment))])
-
-     (subsection
       "Margin in rems"
-      [:div.flex.flex-wrap.mxn1
-       (for [direction ["" "t" "r" "b" "l"]
-             increment (range 1 5)
-             :let [class (str "m" direction increment)]]
-         (box class (rem-increment->px increment)))])
+      [:div.mxn1
+       (for [direction ["" "y" "x" "t" "b" "l" "r"]]
+         [:div.clearfix
+          (for [increment (range 1 5)
+                :let [class (str "m" direction increment)]]
+            [:div.col.col-3
+             (box class (increment->size increment))])])])
 
      (subsection
       "Margin in pixels"
-      [:div.flex.flex-wrap.mxn1
-       (for [direction ["" "t" "r" "b" "l"]
-             increment (range 1 5)
-             :let [class (str "m" direction "p" increment)
-                   text (str "." class)]]
-         (box class increment))])]))
+      [:div.mxn1
+       (for [direction ["" "t" "b" "l" "r"]]
+         [:div.clearfix
+          (for [increment (range 1 7)
+                :let [class (str "m" direction "p" increment)
+                      text (str "." class)]]
+            [:div.col.col-2
+             (box class (str increment "px"))])])])
+
+     (subsection
+      "Padding in rems"
+      [:div
+       [:div.mxn1
+        (for [direction ["" "y" "x"]]
+          [:div.clearfix
+           (for [increment (range 1 5)
+                 :let [class (str "p" direction increment)]]
+             [:div.col.col-3
+              (box class (increment->size increment))])])]
+       [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
+       [:p.mt1.light-gray "So, " [:code.gray ".pl1"] ", " [:code.gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]])
+
+     (subsection
+      "Padding in pixels"
+      [:div.mxn1
+       (for [direction ["" "y" "x"]]
+         [:div.clearfix
+          (for [increment (range 1 7)
+                :let [class (str "p" direction "p" increment)]]
+            [:div.col.col-2
+             (box class (str increment "px"))])])])]))
 
 (defn color-swatch [color-class hex]
  [:div.flex.items-center
