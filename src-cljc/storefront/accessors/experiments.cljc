@@ -11,7 +11,7 @@
               (cond
                 (= store-slug "shop")  #{}
                 (= store-slug "store") #{}
-                (= bucket-offset 0)    #{"kinky-straight"}
+                (= bucket-offset 0)    #{"kinky-straight-2"}
                 (= bucket-offset 1)    #{}
                 (= bucket-offset 2)    #{}))))
 
@@ -22,4 +22,4 @@
   (display-feature? data "essence"))
 
 (defn kinky-straight? [data]
-  (display-feature? data "kinky-straight"))
+  (display-feature? data "kinky-straight-2"))
