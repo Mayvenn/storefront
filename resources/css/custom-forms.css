@@ -25,21 +25,21 @@
   right: var(--floating-label--input-padding-x);
 }
 
-.force-glow,
-.glow:focus {
+select:focus,
+.glow {
   outline: solid auto 2px;
   outline: -webkit-focus-ring-color auto 5px;
   -moz-outline-radius: var(--border-radius);
   outline-color: var(--teal);
   /* 0 looks ok, but loses glow on right border of first field in group */
+  outline-offset: -4px;
   outline-offset: -2px;
   /* z2 puts the glowing field above the field inset but below the error icon */
   z-index: 2;
   position: relative;
 }
 
-.force-glow.field-is-error,
-.glow.field-is-error:focus {
+.glow.field-is-error {
   outline-color: var(--orange);
 }
 

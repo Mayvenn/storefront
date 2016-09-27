@@ -178,11 +178,11 @@
                             :on-focus
                             (fn [e]
                               (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
-                                (.add (.-classList wrapper) "force-glow")))
+                                (.add (.-classList wrapper) "glow")))
                             :on-blur
                             (fn [e]
                               (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
-                                (.remove (.-classList wrapper) "force-glow")))
+                                (.remove (.-classList wrapper) "glow")))
                             :on-change
                             (fn [e]
                               (handle-message events/control-change-state
