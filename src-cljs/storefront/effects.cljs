@@ -355,7 +355,7 @@
 
 (defmethod perform-effects events/facebook-email-denied [_ _ args app-state]
   (handle-message events/flash-show-failure
-                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."})
+                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
