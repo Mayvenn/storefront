@@ -7,7 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.platform.carousel :as carousel]))
+            [storefront.platform.carousel-two :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 
@@ -70,10 +70,13 @@
   (om/component
    (html
     (let [items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
-                       {:id idx
-                        :body (render-stat stat (get stats stat))}))]
+                       (render-stat stat (get stats stat))))]
       [:div.bg-teal.light-silver.center
        [:div.bg-darken-bottom-1
-        (om/build carousel/swipe-component {:items items :continuous true}
-                  {:react-key "stat-swiper"
-                   :opts {:starting-item (nth items 1)}})]]))))
+        (om/build carousel/component
+                  {:slides items
+                   :settings {:arrows true
+                              :dots true
+                              :dotsClass "carousel-dots"
+                              :swipe true}}
+                  {:react-key "stat-swiper"})]]))))

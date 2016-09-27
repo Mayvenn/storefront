@@ -3,11 +3,11 @@
 .carousel-dots {
     position: absolute;
     bottom: 1.25rem;
-    left: 1.25rem;
     list-style: none;
     display: inline-block;
     text-align: center;
     padding: 0;
+    width: 100%;
 }
 .carousel-dots li {
     position: relative;
