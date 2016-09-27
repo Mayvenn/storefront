@@ -371,7 +371,7 @@
       (cond
         (zero? value) [:div.px2.capped {:style bar-style}]
         (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
-        :else [:div.bg-dark-silver.px2.capped {:style (merge bar-style {:width bar-width})}])]
+        :else [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
      (if (= value maximum)
        (svg/circled-check {:class "stroke-teal"
                            :style {:width "3rem" :height "3rem"
