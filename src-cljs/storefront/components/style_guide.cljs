@@ -41,7 +41,7 @@
     [:div.col-4.h1 "3.3rem"]
     [:div.col-6.h1 "40px or 53px"]
     [:div.col-2.h2.light ".h2.light"]
-    [:div.col-10.h2.light.mb2.gray " for subtitles of .h2"]
+    [:div.col-10.h2.light.mb2.gray " for subtitles of .h1"]
 
     [:div.col-2.h2 ".h2"]
     [:div.col-4.h2 "2rem"]
@@ -69,16 +69,14 @@
     [:div.col-4.h6 ".875rem"]
     [:div.col-6.h6.mb2 "10.5px or 12px"]]
 
+   [:p.h4.my3 "The rem based fonts scale to large screens, but for designs that need the same font size on all screens, use the " [:code ".fN"] " helpers:"]
+
    [:div.flex.flex-wrap
     [:div.col-2.f1 ".f1"]
-    [:div.col-10.f1 "40px"]
-    [:div.col-2.f2.light ".f2.light"]
-    [:div.col-10.f2.light.mb2.gray " for subtitles of .f2"]
+    [:div.col-10.f1.mb2 "40px"]
 
     [:div.col-2.f2 ".f2"]
-    [:div.col-10.f2 "24px"]
-    [:div.col-2.f3.light ".f3.light"]
-    [:div.col-10.f3.light.mb2.gray " for subtitles of .f2"]
+    [:div.col-10.f2.mb2 "24px"]
 
     [:div.col-2.f3 ".f3"]
     [:div.col-10.f3.mb2 "18px"]
@@ -114,7 +112,7 @@
      [:div.mb1 (ui/aqua-button {} "ui/aqua-button")]]]
 
    ;; Large Buttons, Active States
-   [:div.flex.flex-wrap.mxn1
+   [:div.flex.flex-wrap.mxn1.mt4
     [:div.col-6.p1
      [:div.mb1.bold "Primary (Large)"]
      [:div.mb1 (ui/large-teal-button {} "ui/large-teal-button")]]
