@@ -38,13 +38,13 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:.h6.light-gray
-     [:.p3.to-sm-hide
-      [:.mb1.center svg/micro-dollar-sign]
+    [:div.h6.light-gray
+     [:div.p3.to-sm-hide
+      [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:.my3.flex.justify-center.items-center.sm-up-hide
-      [:.mr1 svg/micro-dollar-sign]
-      [:.center message]]]))
+     [:div.my3.flex.justify-center.items-center.sm-up-hide
+      [:div.pl2.mr1 svg/micro-dollar-sign]
+      [:div.center message]]]))
 
 (defn component [{:keys [available-credit
                          award-amount
