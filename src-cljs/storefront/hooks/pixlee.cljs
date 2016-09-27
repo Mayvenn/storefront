@@ -26,7 +26,7 @@
   (.serialize (goog.json.Serializer.) (clj->js data)))
 
 (defn fetch-mosaic []
-  (GET (str "http://distillery.pixlee.com/api/v2/albums/" (-> config/pixlee :mosaic :albumId) "/photos")
+  (GET (str "https://distillery.pixlee.com/api/v2/albums/" (-> config/pixlee :mosaic :albumId) "/photos")
       {:params          {:api_key  (:api-key config/pixlee)
                          :per_page 48
                          :filters  (write-json {:content_type ["image"]})}
