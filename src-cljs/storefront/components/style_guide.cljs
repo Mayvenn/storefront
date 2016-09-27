@@ -250,6 +250,14 @@
      :value    (get-in data [:style-guide :form :phone])
      :errors   (:phone errors)
      :required true})
+   (ui/text-field
+    {:type     "password"
+     :label    "Password"
+     :keypath  [:style-guide :form :password]
+     :value    (get-in data [:style-guide :form :password])
+     :errors   (:password errors)
+     :hint     (get-in data [:style-guide :form :password])
+     :required true})
    (ui/select-field {:errors      (:besty errors)
                      :id          "id-is-required"
                      :keypath     [:style-guide :form :besty]
@@ -271,6 +279,7 @@
     [:h3.mb1 "Errors"] (form data {:first-name [{:long-message "Wrong"}]
                                    :last-name [{:long-message "wrong"}]
                                    :phone [{:long-message "Wrong"}]
+                                   :password [{:long-message "Incorrect"}]
                                    :besty [{:long-message "wrong"}]})]])
 
 (defn ^:private navigation [data _ _]
