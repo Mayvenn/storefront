@@ -1,5 +1,9 @@
 /* Taken from slick.css */
 
+.slick-slider {
+   margin-bottom: 0;
+}
+
 .carousel-dots {
     position: absolute;
     bottom: 1.25rem;
