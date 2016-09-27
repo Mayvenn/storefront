@@ -27,18 +27,33 @@
 
 select:focus,
 .glow {
+  /* Start with spec, mostly for Firefox */
   outline: solid auto 2px;
-  outline: -webkit-focus-ring-color auto 5px;
   -moz-outline-radius: var(--border-radius);
+
+  /* Reset offset, selects and inputs differ */
+  outline-offset: 0px;
+
+  /* Webkit has a nice glow ring */
+  outline: -webkit-focus-ring-color auto 5px;
+
+  /* Everyone should be 'teal' */
   outline-color: var(--teal);
-  /* 0 looks ok, but loses glow on right border of first field in group */
-  outline-offset: -4px;
-  outline-offset: -2px;
+
   /* z2 puts the glowing field above the field inset but below the error icon */
   z-index: 2;
   position: relative;
 }
 
+.glow {
+  outline-offset: -4px;
+}
+
+select:focus {
+  outline-offset: -2px;
+}
+
+select:focus.field-is-error,
 .glow.field-is-error {
   outline-color: var(--orange);
 }
