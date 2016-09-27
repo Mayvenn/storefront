@@ -186,17 +186,16 @@
    [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
-      [:div.clearfix.my2
-       (let [attrs (->> [["Color" colors]
-                         ["Weight" weights]
-                         ["Material" materials]]
-                        (filter second))
-             size (str "multi-cols-" (count attrs))]
-         (into [:dl {:class size}]
-               (mapcat (fn [[title value]]
-                         [[:dt.break-before.gray.shout.h6 title]
-                          [:dd.ml0.h5.navy.medium value]])
-                       attrs)))])
+      (into [:div.clearfix.my2]
+            (let [attrs (->> [["Color" colors]
+                              ["Weight" weights]
+                              ["Material" materials]]
+                             (filter second))
+                  size (str "col-" (/ 12 (count attrs)))]
+              (for [[title value] attrs]
+                [:dl.col.m0.inline-block {:class size}
+                 [:dt.mx1.gray.shout.h6 title]
+                 [:dd.mx1.ml0.h5.navy.medium value]]))))
     (when (seq summary)
       [:div.my2
        [:h4.mbp3.h5 "Includes:"]
