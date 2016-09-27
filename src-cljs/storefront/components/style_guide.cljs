@@ -89,7 +89,10 @@
     [:div.col-10.f5.mb2 "12px"]
 
     [:div.col-2.f6 ".f6"]
-    [:div.col-10.f6.mb2 "10.5px"]]])
+    [:div.col-10.f6.mb2 "10.5px"]]
+
+   (header "Text Links")
+   [:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} ":a.navy - Learn more"]]])
 
 (def ^:private buttons
   [:section
