@@ -36,6 +36,7 @@
 (defpath navigate-style-guide)
 (defpath navigate-style-guide-color)
 (defpath navigate-style-guide-buttons)
+(defpath navigate-style-guide-spacing)
 (defpath navigate-style-guide-form-fields)
 (defpath navigate-style-guide-navigation)
 (defpath navigate-style-guide-navigation-tab1)

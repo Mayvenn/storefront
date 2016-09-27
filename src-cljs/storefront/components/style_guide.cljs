@@ -19,11 +19,14 @@
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
     [:h1.hide "Mayvenn Styleguide"]]
    [:ul.list-reset.py2.col-8.mx-auto
-    [:li [:h2.h5.mb1 "Style"]
+    [:li [:h2.h5.my1 "Style"]
      [:ul.list-reset.ml1
       [:li (section-link "Typography" events/navigate-style-guide)]
       [:li (section-link "Color" events/navigate-style-guide-color)]]]
-    [:li.mt1 [:h2.h5.mb1 "Components"]
+    [:li [:h2.h5.my1 "Layout"]
+     [:ul.list-reset.ml1
+      [:li (section-link "Spacing" events/navigate-style-guide-spacing)]]]
+    [:li [:h2.h5.my1 "Components"]
      [:ul.list-reset.ml1
       [:li (section-link "Buttons" events/navigate-style-guide-buttons)]
         [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
@@ -127,6 +130,70 @@
     [:div.col-6.p1
      [:div.mb1.bold "Ghost (Large)"]
      [:div.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]]])
+
+(def ^:private rem-increment->px
+  {1 "8px"
+   2 "16px"
+   3 "32px"
+   4 "64px"})
+
+(def ^:private spacing
+  (let [box (fn [class px]
+             [:div {:key (str class "-" px)}
+              [:div.m1
+               [:div.border-dashed.border-light-gray.inline-block.center.h6
+                [:div.border.border-teal.inline-block {:class class}
+                 [:div.border-dashed.border-light-gray.inline-block.bg-silver
+                  [:div
+                   [:p (str "." class)]
+                   [:p px "px"]]]]]]])
+        subsection (fn [text body]
+                     [:div.my2
+                      [:h3.h4.bold.mb1 text]
+                      body])]
+    [:section
+     (header "Spacing")
+     (subsection
+      "Key"
+      [:div.border-dashed.border-light-gray.inline-block.p1.center.h6
+       "Margin"
+       [:div.border.border-teal.p1
+        "Padding"
+        [:div.border-dashed.border-light-gray.p1.bg-silver
+         "Content"]]])
+
+     (subsection
+      "Padding in rems"
+      [:div.flex.flex-wrap.mxn1
+       (for [direction ["" "t" "r" "b" "l"]
+             increment (range 1 5)
+             :let [class (str "p" direction increment)]]
+         (box class (rem-increment->px increment)))])
+
+     (subsection
+      "Padding in pixels"
+      [:div.flex.flex-wrap.mxn1
+       (for [direction [""]
+             increment (range 1 5)
+             :let [class (str "p" direction "p" increment)]]
+         (box class increment))])
+
+     (subsection
+      "Margin in rems"
+      [:div.flex.flex-wrap.mxn1
+       (for [direction ["" "t" "r" "b" "l"]
+             increment (range 1 5)
+             :let [class (str "m" direction increment)]]
+         (box class (rem-increment->px increment)))])
+
+     (subsection
+      "Margin in pixels"
+      [:div.flex.flex-wrap.mxn1
+       (for [direction ["" "t" "r" "b" "l"]
+             increment (range 1 5)
+             :let [class (str "m" direction "p" increment)
+                   text (str "." class)]]
+         (box class increment))])]))
 
 (defn color-swatch [color-class hex]
  [:div.flex.items-center
@@ -234,6 +301,7 @@
        events/navigate-style-guide typography
        events/navigate-style-guide-color colors
        events/navigate-style-guide-buttons buttons
+       events/navigate-style-guide-spacing spacing
        events/navigate-style-guide-form-fields (form-fields data)
        events/navigate-style-guide-navigation (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
