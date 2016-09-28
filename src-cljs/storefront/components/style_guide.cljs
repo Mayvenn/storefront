@@ -2,6 +2,7 @@
   (:require [storefront.component :as component]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
+            [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
@@ -31,7 +32,8 @@
       [:li (section-link "Buttons" events/navigate-style-guide-buttons)]
       [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
       [:li (section-link "Navigation" events/navigate-style-guide-navigation)]
-      [:li (section-link "Progress" events/navigate-style-guide-progress)]]]]])
+      [:li (section-link "Progress" events/navigate-style-guide-progress)]
+      [:li (section-link "Carousels" events/navigate-style-guide-carousel)]]]]])
 
 (def ^:private typography
   [:section
@@ -317,6 +319,51 @@
        (ui/progress-indicator {:value 5 :maximum 7})
        (ui/progress-indicator {:value 100 :maximum 100})]]]]))
 
+(defn ^:private carousel [data _ _]
+  (component/create
+   [:section
+    (header "Carousels")
+    [:div.flex.items-center.col-12
+     [:div.col-4
+      (component/build carousel/component
+                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/1"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/2"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/3"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]
+                        :settings {:swipe true
+                                   :arrows true
+                                   :dots true
+                                   :dotsClass "carousel-dots"}}
+                       {})]
+
+     [:div.col-4
+      (component/build carousel/component
+                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/5"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/6"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/7"}]
+                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/8"}]]
+                        :settings {:swipe true
+                                   :arrows true}}
+                       {})]
+
+     [:div.col-4
+      (component/build carousel/component
+                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/9"}]]
+                        :settings {:swipe true
+                                   :arrows false}}
+                       {})]]
+
+    [:div.mt1
+     (component/build carousel/component
+                      {:slides (for [i (range 12)]
+                                 [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])
+                       :settings {:swipe true
+                                  :slidesToShow 3
+                                  :arrows true
+                                  :dots true
+                                  :dotsClass "carousel-dots"}}
+                      {})]]))
+
 (defn component [data owner opts]
   (component/create
    [:div.col-12.bg-white.clearfix
@@ -332,7 +379,8 @@
        events/navigate-style-guide-navigation (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
-       events/navigate-style-guide-progress (component/build progress data opts))]]))
+       events/navigate-style-guide-progress (component/build progress data opts)
+       events/navigate-style-guide-carousel (component/build carousel data opts))]])) 
 
 (defn built-component [data opts]
   (component/build component data opts))

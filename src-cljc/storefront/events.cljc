@@ -42,6 +42,7 @@
 (defpath navigate-style-guide-navigation-tab1)
 (defpath navigate-style-guide-navigation-tab3)
 (defpath navigate-style-guide-progress)
+(defpath navigate-style-guide-carousel)
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)

@@ -30,7 +30,8 @@
    "/_style/navigation"      (edn->bidi events/navigate-style-guide-navigation)
    "/_style/navigation/tab1" (edn->bidi events/navigate-style-guide-navigation-tab1)
    "/_style/navigation/tab3" (edn->bidi events/navigate-style-guide-navigation-tab3)
-   "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)})
+   "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)
+   "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def app-routes
   ["" (merge static-page-routes
