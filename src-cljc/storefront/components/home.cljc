@@ -10,7 +10,7 @@
             [storefront.components.svg :as svg]
             [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.carousel-two :as carousel]))
+            [storefront.platform.carousel :as carousel]))
 
 (defn homepage-images
   "Adds image effect where images are always full width. On mobile, the image

@@ -17,7 +17,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.assets :as assets]
             [storefront.request-keys :as request-keys]
-            [storefront.platform.carousel-two :as carousel]))
+            [storefront.platform.carousel :as carousel]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}

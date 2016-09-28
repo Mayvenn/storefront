@@ -1,4 +1,4 @@
-(ns storefront.platform.carousel-two
+(ns storefront.platform.carousel
   (:require [sablono.core :refer-macros [html]]
             react-slick
             [om.core :as om]))

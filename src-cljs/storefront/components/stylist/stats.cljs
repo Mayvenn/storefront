@@ -7,7 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.platform.carousel-two :as carousel]))
+            [storefront.platform.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
 
