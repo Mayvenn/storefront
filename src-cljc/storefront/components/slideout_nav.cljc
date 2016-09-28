@@ -140,7 +140,7 @@
   (component/html
    [section-outer-darker
     [section-inner
-     [:div.flex.items-center
+     [:div.pb4.flex.items-center
       [:div.col-6.p1
        [:a.btn.btn-outline.navy.col-12
         (merge {:data-test "sign-in"}
