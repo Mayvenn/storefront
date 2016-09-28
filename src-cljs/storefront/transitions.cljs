@@ -179,6 +179,14 @@
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))
 
+(defmethod transition-state events/control-focus
+  [_ event {:keys [keypath]} app-state]
+  (assoc-in app-state keypaths/ui-focus keypath))
+
+(defmethod transition-state events/control-blur
+  [_ event {:keys [keypath]} app-state]
+  (assoc-in app-state keypaths/ui-focus nil))
+
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
   (update-in app-state (:path args) inc))
 

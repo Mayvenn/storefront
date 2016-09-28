@@ -145,9 +145,10 @@
       (not error?) (add-classes "light-gray"))
     label]])
 
-(defn ^:private field-wrapper-class [wrapper-class {:keys [error?]}]
+(defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
   (cond-> {:class wrapper-class}
     true         (add-classes "rounded border pp1")
+    focused?     (add-classes "glow")
     ;; .z1.relative is for adjacent text-fields with left in error and right
     ;; not in error; keeps the left field's right border/inset 2px;
     error?       (add-classes "z1 field-is-error relative border-orange inset-orange x-group-item-2")
@@ -161,12 +162,14 @@
     value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field
-  [label keypath value error? {:keys [wrapper-class id hint] :as input-attributes}]
-  (let [input-attributes (dissoc input-attributes :wrapper-class :hint)
+  [label keypath value error? {:keys [wrapper-class id hint focused] :as input-attributes}]
+  (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused)
         hint?            (seq hint)
-        status           {:error? error?
-                          :hint?  hint?
-                          :value? (seq value)}]
+        focused?         (= focused keypath)
+        status           {:error?   error?
+                          :focused? focused?
+                          :hint?    hint?
+                          :value?   (seq value)}]
     [:div.clearfix (field-wrapper-class wrapper-class status)
      (field-error-icon status)
      (floating-label label id status)
@@ -177,12 +180,10 @@
                             :value       (or value "")
                             :on-focus
                             (fn [e]
-                              (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
-                                (.add (.-classList wrapper) "glow")))
+                              (handle-message events/control-focus {:keypath keypath}))
                             :on-blur
                             (fn [e]
-                              (when-let [wrapper (some-> e .-target .-parentElement .-parentElement)]
-                                (.remove (.-classList wrapper) "glow")))
+                              (handle-message events/control-blur {:keypath keypath}))
                             :on-change
                             (fn [e]
                               (handle-message events/control-change-state
@@ -190,7 +191,7 @@
                                                :value   (.. e -target -value)}))}
                            input-attributes)
                     status)]
-      (when (seq hint)  [:div.p1 hint])]]))
+      (when (and focused? hint?) [:div.p1 hint])]]))
 
 (defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]

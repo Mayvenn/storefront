@@ -75,6 +75,8 @@
 (defpath stripe-failure-create-token)
 
 (defpath control-change-state)
+(defpath control-focus)
+(defpath control-blur)
 
 (defpath control-stylist-commissions-fetch)
 (defpath control-stylist-referrals-fetch)

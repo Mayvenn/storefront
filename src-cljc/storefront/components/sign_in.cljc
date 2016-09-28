@@ -12,6 +12,7 @@
   [{:keys [facebook-loaded?
            email
            password
+           focused
            show-password?
            get-satisfaction-login?
            field-errors]} _ _]
@@ -27,6 +28,7 @@
      (ui/text-field {:auto-focus "autofocus"
                      :data-test  "user-email"
                      :errors     (get field-errors ["email"])
+                     :focused    focused
                      :keypath    keypaths/sign-in-email
                      :label      "Email"
                      :name       "email"
@@ -37,6 +39,7 @@
      (ui/text-field {:data-test "user-password"
                      :errors    (get field-errors ["password"])
                      :keypath   keypaths/sign-in-password
+                     :focused   focused
                      :label     "Password"
                      :name      "password"
                      :required  true
@@ -72,6 +75,7 @@
    :password                (get-in data keypaths/sign-in-password)
    :show-password?          (get-in data keypaths/account-show-password? true)
    :facebook-loaded?        (get-in data keypaths/loaded-facebook)
+   :focused                 (get-in data keypaths/ui-focus)
    :get-satisfaction-login? (get-in data keypaths/get-satisfaction-login?)
    :field-errors            (get-in data keypaths/field-errors)})
 
