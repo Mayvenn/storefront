@@ -79,8 +79,7 @@
      [:div.p3.to-sm-hide
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:div.my3.flex.justify-center.items-center.sm-up-hide
-      [:div.mr1 svg/micro-dollar-sign]
+     [:div.my3.sm-up-hide
       [:div.center message]]]))
 
 (defn refer-button [link-attrs]
