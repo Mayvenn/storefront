@@ -12,7 +12,7 @@
                 (= store-slug "shop")  #{}
                 (= store-slug "store") #{}
                 (= bucket-offset 0)    #{"kinky-straight-2"}
-                (= bucket-offset 1)    #{}
+                (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
                 (= bucket-offset 2)    #{}))))
 
 (defn display-feature? [data feature]
@@ -23,3 +23,6 @@
 
 (defn kinky-straight? [data]
   (display-feature? data "kinky-straight-2"))
+
+(defn swap-curly-loose-wave? [data]
+  (display-feature? data "kinky-straight-2-curly-move"))
