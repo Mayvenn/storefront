@@ -71,6 +71,8 @@ input:focus {
   --teal:  #40CBAC;
   --orange: #E8A50C;
 
+  --border-radius: 4px;
+
   --floating-label--input-text-height: 1.5rem;
   --floating-label--input-padding-x: 0.9rem;
   --floating-label--input-padding-y: 1.0rem;
