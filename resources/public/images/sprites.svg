@@ -48,6 +48,8 @@
   <symbol id="message-bubble" viewBox="0 0 28 30">
     <g fill="none" transform="translate(0 .268)" stroke-width="1.184">
       <path d="M7.717 21.018C4.287 20.19.803 16.09.803 10.828c0-5.494 4.113-10.23 8.9-10.23h8.775c4.788 0 8.67 4.705 8.67 10.2 0 5.437-3.882 10.2-8.67 10.2h-2.764l-7.997 6.936v-6.916z"></path>
+    </g>
+    <g fill="none" transform="translate(0 .268)" stroke-width="1.184">
       <ellipse cx="7.915" cy="10.69" rx="1.851" ry="1.943"></ellipse>
       <ellipse cx="13.726" cy="10.69" rx="1.851" ry="1.943"></ellipse>
       <ellipse cx="19.537" cy="10.69" rx="1.851" ry="1.943"></ellipse>
