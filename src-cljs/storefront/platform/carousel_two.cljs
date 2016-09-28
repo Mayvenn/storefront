@@ -25,7 +25,7 @@
 (defn override-autoplay [original autoplay-override]
   (update original :autoplay #(and % autoplay-override)))
 
-(defn component [data owner _]
+(defn component [{:keys [slides] :as data} owner _]
   (reify
     om/IInitState
     (init-state [_]
@@ -37,11 +37,18 @@
        ;; Cancel autoplay on interaction
        [:div {:on-mouse-down  #(cancel-autoplay owner)
               :on-touch-start #(cancel-autoplay owner)}
-        (om/build inner-component (-> data
-                                      (update-in [:settings] override-autoplay autoplay)
-                                      (update-in [:settings :responsive]
-                                                 (fn [responsive]
-                                                   (map
-                                                    (fn [breakpoint]
-                                                      (update breakpoint :settings override-autoplay autoplay))
-                                                    responsive)))))]))))
+        (om/build inner-component
+                  (cond-> data
+                    (= (count slides) 1)
+                    (update-in [:settings] merge {:arrows false
+                                                  :dots   false
+                                                  :swipe  false})
+                    :always
+                    (update-in [:settings] override-autoplay autoplay)
+                    :always
+                    (update-in [:settings :responsive]
+                               (fn [responsive]
+                                 (map
+                                  (fn [breakpoint]
+                                    (update breakpoint :settings override-autoplay autoplay))
+                                  responsive)))))]))))

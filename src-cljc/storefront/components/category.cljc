@@ -220,10 +220,8 @@
                    vec)]
     (component/build carousel/component
                      {:slides (map :body items)
-                      :settings {:arrows true
-                                 :dots true
-                                 :dotsClass "carousel-dots"
-                                 :swipe true}}
+                      :settings {:dots true
+                                 :dotsClass "carousel-dots"}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
 (defn starting-at [variants]
