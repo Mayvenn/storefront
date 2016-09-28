@@ -28,8 +28,8 @@
      (ui/text-field {:auto-focus "autofocus"
                      :data-test  "user-email"
                      :errors     (get field-errors ["email"])
-                     :focused    focused
                      :keypath    keypaths/sign-in-email
+                     :focused    focused
                      :label      "Email"
                      :name       "email"
                      :required   true

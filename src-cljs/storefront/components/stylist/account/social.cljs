@@ -7,7 +7,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [saving?
+(defn component [{:keys [focused
+                         saving?
                          instagram-account
                          styleseat-account
                          field-errors]} owner opts]
@@ -28,6 +29,7 @@
                        :errors    (get field-errors ["instagram_account"])
                        :id        "account-instagram"
                        :keypath   (conj keypaths/stylist-manage-account :instagram_account)
+                       :focused   focused
                        :label     "Instagram"
                        :name      "account-instagram"
                        :type      "text"
@@ -43,9 +45,10 @@
                        :errors    (get field-errors ["styleseat_account"])
                        :id        "account-styleseat"
                        :keypath   (conj keypaths/stylist-manage-account :styleseat_account)
+                       :focused   focused
                        :label     "StyleSeat"
                        :name      "account-styleseat"
-                       :type       "text"
+                       :type      "text"
                        :value     styleseat-account})]]]
 
     [:div.my2.col-12.clearfix
@@ -59,4 +62,5 @@
   {:saving?           (utils/requesting? data request-keys/update-stylist-account-social)
    :instagram-account (get-in data (conj keypaths/stylist-manage-account :instagram_account))
    :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat_account))
-   :field-errors      (get-in data keypaths/field-errors)})
+   :field-errors      (get-in data keypaths/field-errors)
+   :focused           (get-in data keypaths/ui-focus)})

@@ -8,7 +8,8 @@
             [storefront.keypaths :as keypaths]))
 
 (defn component
-  [{:keys [facebook-loaded?
+  [{:keys [focused
+           facebook-loaded?
            field-errors
            email
            password
@@ -28,6 +29,7 @@
                      :data-test  "user-email"
                      :errors     (get field-errors ["email"])
                      :keypath    keypaths/sign-up-email
+                     :focused    focused
                      :label      "Email"
                      :name       "email"
                      :required   true
@@ -37,6 +39,7 @@
      (ui/text-field {:data-test "user-password"
                      :errors    (get field-errors ["password"])
                      :keypath   keypaths/sign-up-password
+                     :focused   focused
                      :label     "Password"
                      :name      "password"
                      :required  true
@@ -56,11 +59,12 @@
       [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]])))
 
 (defn query [data]
-  {:email                 (get-in data keypaths/sign-up-email)
-   :password              (get-in data keypaths/sign-up-password)
-   :show-password?        (get-in data keypaths/account-show-password? true)
-   :facebook-loaded?      (get-in data keypaths/loaded-facebook)
-   :field-errors          (get-in data keypaths/field-errors)})
+  {:email            (get-in data keypaths/sign-up-email)
+   :password         (get-in data keypaths/sign-up-password)
+   :show-password?   (get-in data keypaths/account-show-password? true)
+   :facebook-loaded? (get-in data keypaths/loaded-facebook)
+   :field-errors     (get-in data keypaths/field-errors)
+   :focused          (get-in data keypaths/ui-focus)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

@@ -6,7 +6,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [saving?
+(defn component [{:keys [focused
+                         saving?
                          address
                          user
                          field-errors
@@ -21,6 +22,7 @@
        (ui/text-field-group
         {:label      "First Name"
          :keypath    (conj keypaths/stylist-manage-account :address :firstname)
+         :focused    focused
          :value      (:firstname address)
          :errors     (get field-errors ["address" "firstname"])
          :auto-focus "autofocus"
@@ -33,6 +35,7 @@
         {:type      "text"
          :label     "Last Name"
          :keypath   (conj keypaths/stylist-manage-account :address :lastname)
+         :focused   focused
          :value     (:lastname address)
          :errors    (get field-errors ["address" "lastname"])
          :name      "account-last-name"
@@ -46,6 +49,7 @@
                       :errors    (get field-errors ["address" "phone"])
                       :id        "account-phone"
                       :keypath   (conj keypaths/stylist-manage-account :address :phone)
+                      :focused   focused
                       :label     "Mobile Phone"
                       :name      "account-phone"
                       :required  true
@@ -56,6 +60,7 @@
                       :errors    (get field-errors ["user" "email"])
                       :id        "account-email"
                       :keypath   (conj keypaths/stylist-manage-account :user :email)
+                      :focused   focused
                       :label     "Email"
                       :name      "account-email"
                       :required  true
@@ -66,12 +71,13 @@
        (ui/text-field {:data-test "account-birth-date"
                        :errors    (get field-errors ["birth_date"])
                        :id        "account-birth-date"
-                       :keypath (conj keypaths/stylist-manage-account :birth-date)
-                       :label "Birthday"
+                       :keypath   (conj keypaths/stylist-manage-account :birth-date)
+                       :focused   focused
+                       :label     "Birthday"
                        :name      "account-birth-date"
                        :required  true
                        :type      "date"
-                       :value birth-date})]]
+                       :value     birth-date})]]
 
      [:div.my2.col-12.clearfix
       ui/nbsp
@@ -85,4 +91,5 @@
    :address      (get-in data (conj keypaths/stylist-manage-account :address))
    :birth-date   (get-in data (conj keypaths/stylist-manage-account :birth-date))
    :user         (get-in data (conj keypaths/stylist-manage-account :user))
-   :field-errors (get-in data keypaths/field-errors)})
+   :field-errors (get-in data keypaths/field-errors)
+   :focused      (get-in data keypaths/ui-focus)})

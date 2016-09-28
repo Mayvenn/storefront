@@ -238,18 +238,21 @@
      :label   "First Name"
      :id      (str key "-" :first-name)
      :keypath [:style-guide :form :first-name]
+     :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :first-name])
      :errors  (:first-name errors)}
     {:type    "text"
      :label   "Last Name"
      :id      "last-name"
      :keypath [:style-guide :form :last-name]
+     :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :last-name])
      :errors  (:last-name errors)})
    (ui/text-field
     {:type     "text"
      :label    "Mobile Phone"
      :keypath  [:style-guide :form :phone]
+     :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :phone])
      :errors   (:phone errors)
      :required true})
@@ -257,6 +260,7 @@
     {:type     "password"
      :label    "Password"
      :keypath  [:style-guide :form :password]
+     :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :password])
      :errors   (:password errors)
      :hint     (get-in data [:style-guide :form :password])
@@ -264,6 +268,7 @@
    (ui/select-field {:errors      (:besty errors)
                      :id          "id-is-required"
                      :keypath     [:style-guide :form :besty]
+                     :focused     (get-in data keypaths/ui-focus)
                      :label       "Besty"
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Besty"
@@ -275,15 +280,15 @@
    (header "Form Fields")
    [:div
     [:h3.mb1 "Active"] (form data {:first-name []
-                                   :last-name []
-                                   :phone []
-                                   :besty []})]
+                                   :last-name  []
+                                   :phone      []
+                                   :besty      []})]
    [:div
     [:h3.mb1 "Errors"] (form data {:first-name [{:long-message "Wrong"}]
-                                   :last-name [{:long-message "wrong"}]
-                                   :phone [{:long-message "Wrong"}]
-                                   :password [{:long-message "Incorrect"}]
-                                   :besty [{:long-message "wrong"}]})]])
+                                   :last-name  [{:long-message "wrong"}]
+                                   :phone      [{:long-message "Wrong"}]
+                                   :password   [{:long-message "Incorrect"}]
+                                   :besty      [{:long-message "wrong"}]})]])
 
 (defn ^:private navigation [data _ _]
   (component/create

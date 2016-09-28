@@ -7,7 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [reset-password show-password? loaded-facebook? field-errors]} owner]
+(defn component [{:keys [focused reset-password show-password? loaded-facebook? field-errors]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -16,6 +16,7 @@
       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
       (ui/text-field {:errors     (get field-errors ["password"])
                       :keypath    keypaths/reset-password-password
+                      :focused    focused
                       :label      "Password"
                       :min-length 6
                       :required   true
@@ -25,6 +26,7 @@
       [:div.gray.mtn2.mb2.col-12.left
        (ui/check-box {:label   "Show password"
                       :keypath keypaths/account-show-password?
+                      :focused focused
                       :value   show-password?})]
 
       (ui/submit-button "Update")]
@@ -32,10 +34,11 @@
      (facebook/reset-button loaded-facebook?)))))
 
 (defn query [data]
-  {:reset-password              (get-in data keypaths/reset-password-password)
-   :show-password?              (get-in data keypaths/account-show-password? true)
-   :loaded-facebook?            (get-in data keypaths/loaded-facebook)
-   :field-errors                (get-in data keypaths/field-errors)})
+  {:reset-password   (get-in data keypaths/reset-password-password)
+   :show-password?   (get-in data keypaths/account-show-password? true)
+   :loaded-facebook? (get-in data keypaths/loaded-facebook)
+   :field-errors     (get-in data keypaths/field-errors)
+   :focused          (get-in data keypaths/ui-focus)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

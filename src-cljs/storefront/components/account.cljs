@@ -13,7 +13,8 @@
    [:div.medium.mb1 "Store Credit"]
    [:div.teal.h1 (ui/big-money available-credit)]])
 
-(defn profile-component [{:keys [saving?
+(defn profile-component [{:keys [focused
+                                 saving?
                                  email
                                  field-errors
                                  password
@@ -27,6 +28,7 @@
      (ui/text-field {:data-test "account-email"
                      :id        "account-email"
                      :keypath   keypaths/manage-account-email
+                     :focused   focused
                      :label     "Email"
                      :name      "account-email"
                      :required  true
@@ -37,6 +39,7 @@
                      :errors    (get field-errors ["password"])
                      :id        "account-password"
                      :keypath   keypaths/manage-account-password
+                     :focused   focused
                      :label     "New Password"
                      :name      "account-password"
                      :value     password
@@ -60,7 +63,8 @@
    :email          (get-in data keypaths/manage-account-email)
    :password       (get-in data keypaths/manage-account-password)
    :show-password? (get-in data keypaths/account-show-password? true)
-   :field-errors   (get-in data keypaths/field-errors)})
+   :field-errors   (get-in data keypaths/field-errors)
+   :focused       (get-in data keypaths/ui-focus)})
 
 (defn component [{:keys [current-nav-event
                          available-credit

@@ -97,7 +97,8 @@ Thanks,
 (defn built-share-link-component [data opts]
   (om/build share-link-component (query-share-link data) opts))
 
-(defn full-component [{:keys [order
+(defn full-component [{:keys [focused
+                              order
                               products
                               coupon-code
                               applying-coupon?
@@ -134,12 +135,13 @@ Thanks,
         [:div.pt2.flex.items-center
          [:div.col-8.pr1
           (ui/text-field {:keypath keypaths/cart-coupon-code
-                          :label "Promo code"
-                          :value coupon-code})]
+                          :focused focused
+                          :label   "Promo code"
+                          :value   coupon-code})]
          [:div.col-4.pl1.mb3.inline-block
-          (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                            :disabled? updating?
-                            :spinning? applying-coupon?}
+          (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                           :disabled? updating?
+                           :spinning? applying-coupon?}
                            "Apply")]]]
 
        (summary/display-order-summary order)
@@ -161,9 +163,9 @@ Thanks,
 
        (when share-carts?
          [:div.border-top.border-dark-silver.py2
-          (ui/large-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                   :spinning? requesting-shared-cart?
-                                   :data-test "share-cart"}
+          (ui/large-ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
+                                  :spinning? requesting-shared-cart?
+                                  :data-test "share-cart"}
                                   [:div.flex.items-center.justify-center
                                    [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
                                     {:style {:width  "24px"
@@ -240,7 +242,8 @@ Thanks,
   {:fetching-order? (utils/requesting? data request-keys/get-order)
    :item-count      (orders/product-quantity (get-in data keypaths/order))
    :empty-cart      (empty-cart-query data)
-   :full-cart       (full-cart-query data)})
+   :full-cart       (full-cart-query data)
+   :focused         (get-in data keypaths/ui-focus)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

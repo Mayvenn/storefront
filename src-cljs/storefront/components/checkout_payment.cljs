@@ -12,7 +12,8 @@
             [storefront.request-keys :as request-keys]))
 
 (defn credit-card-form-component
-  [{{:keys [guest?
+  [{{:keys [focused
+            guest?
             name
             number
             expiration
@@ -37,6 +38,7 @@
             (ui/select-field {:data-test "payment-form-selected-saved-card"
                               :id        "selected-saved-card"
                               :keypath   keypaths/checkout-credit-card-selected-id
+                              :focused   focused
                               :label     "Payment Card"
                               :options   card-options
                               :required  true
@@ -46,6 +48,7 @@
           [:div
            (ui/text-field {:data-test "payment-form-name"
                            :keypath   keypaths/checkout-credit-card-name
+                           :focused   focused
                            :label     "Cardholder's Name"
                            :name      "name"
                            :required  true
@@ -54,6 +57,7 @@
                            :class         "cardNumber"
                            :data-test     "payment-form-number"
                            :keypath       keypaths/checkout-credit-card-number
+                           :focused       focused
                            :label         "Card Number"
                            :max-length    19
                            :required      true
@@ -63,6 +67,7 @@
             (ui/text-field-group
              {:label         "Expiration (MM/YY)"
               :keypath       keypaths/checkout-credit-card-expiration
+              :focused       focused
               :value         (cc/format-expiration expiration)
               :max-length    9
               :data-test     "payment-form-expiry"
@@ -72,6 +77,7 @@
               :required      true}
              {:label         "Security Code"
               :keypath       keypaths/checkout-credit-card-ccv
+              :focused       focused
               :value         ccv
               :max-length    4
               :auto-complete "off"
@@ -98,7 +104,8 @@
                    :selected-saved-card-id (get-in data keypaths/checkout-credit-card-selected-id)
                    :saved-cards            saved-cards
                    :fetching-saved-cards?  (and (utils/requesting? data request-keys/get-saved-cards)
-                                                (empty? saved-cards))}}))
+                                                (empty? saved-cards))
+                   :focused                (get-in data keypaths/ui-focus)}}))
 
 (defn component
   [{:keys [step-bar

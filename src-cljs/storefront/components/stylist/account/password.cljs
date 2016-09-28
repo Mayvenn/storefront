@@ -6,7 +6,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [password
+(defn component [{:keys [focused
+                         password
                          show-password?
                          field-errors
                          saving?]} owner opts]
@@ -20,6 +21,7 @@
                      :errors    (get field-errors ["user" "password"])
                      :id        "account-password"
                      :keypath   (conj keypaths/stylist-manage-account :user :password)
+                     :focused   focused
                      :label     "New Password"
                      :name      "account-password"
                      :type      "password"
@@ -42,4 +44,5 @@
   {:saving?        (utils/requesting? data request-keys/update-stylist-account-password)
    :password       (get-in data (conj keypaths/stylist-manage-account :user :password))
    :show-password? (get-in data keypaths/account-show-password? true)
-   :field-errors   (get-in data keypaths/field-errors)})
+   :field-errors   (get-in data keypaths/field-errors)
+   :focused        (get-in data keypaths/ui-focus)})

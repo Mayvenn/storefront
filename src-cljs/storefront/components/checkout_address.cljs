@@ -9,7 +9,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
-(defn ^:private places-component [{:keys [id address-keypath keypath value data-test errors]} owner]
+(defn ^:private places-component [{:keys [focused id address-keypath keypath value data-test errors]} owner]
   (reify
     om/IDidMount
     (did-mount [this]
@@ -22,6 +22,7 @@
                        :errors      errors
                        :id          id
                        :keypath     keypath
+                       :focused     focused
                        :label       "Address"
                        :name        id
                        :on-key-down utils/suppress-return-key
@@ -30,7 +31,7 @@
                        :value       value})))))
 
 (defn ^:private shipping-address-component
-  [{:keys [shipping-address states email guest? places-loaded? shipping-expanded? field-errors]} owner]
+  [{:keys [focused shipping-address states email guest? places-loaded? shipping-expanded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -40,6 +41,7 @@
        {:type       "text"
         :label      "First Name"
         :keypath    keypaths/checkout-shipping-address-first-name
+        :focused    focused
         :value      (:first-name shipping-address)
         :errors     (get field-errors ["shipping-address" "first-name"])
         :auto-focus "autofocus"
@@ -50,6 +52,7 @@
        {:type      "text"
         :label     "Last Name"
         :keypath   keypaths/checkout-shipping-address-last-name
+        :focused   focused
         :value     (:last-name shipping-address)
         :errors    (get field-errors ["shipping-address" "last-name"])
         :name      "shipping-last-name"
@@ -62,6 +65,7 @@
                        :errors    (get field-errors ["email"])
                        :id        "shipping-email"
                        :keypath   keypaths/checkout-guest-email
+                       :focused   focused
                        :label     "Email"
                        :name      "shipping-email"
                        :required  true
@@ -72,6 +76,7 @@
                      :errors    (get field-errors ["shipping-address" "phone"])
                      :id        "shipping-phone"
                      :keypath   keypaths/checkout-shipping-address-phone
+                     :focused   focused
                      :label     "Mobile Phone"
                      :name      "shipping-phone"
                      :required  true
@@ -83,6 +88,7 @@
                                    :data-test       "shipping-address1"
                                    :address-keypath keypaths/checkout-shipping-address
                                    :keypath         keypaths/checkout-shipping-address-address1
+                                   :focused         focused
                                    :errors          (get field-errors ["shipping-address" "address1"])
                                    :value           (:address1 shipping-address)}))
 
@@ -94,6 +100,7 @@
            :errors    (get field-errors ["shipping-address" "address2"])
            :id        "shipping-address2"
            :keypath   keypaths/checkout-shipping-address-address2
+           :focused   focused
            :label     "Apt/Suite"
            :name      "shipping-address2"
            :type      "text"
@@ -102,6 +109,7 @@
            :errors     (get field-errors ["shipping-address" "zipcode"])
            :id         "shipping-zip"
            :keypath    keypaths/checkout-shipping-address-zip
+           :focused    focused
            :label      "Zip Code"
            :max-length 5
            :min-length 5
@@ -116,6 +124,7 @@
                         :errors    (get field-errors ["shipping-address" "city"])
                         :id        "shipping-city"
                         :keypath   keypaths/checkout-shipping-address-city
+                        :focused   focused
                         :label     "City"
                         :name      "shipping-city"
                         :required  true
@@ -126,6 +135,7 @@
                           :errors      (get field-errors ["shipping-address" "state"])
                           :id          :shipping-state
                           :keypath     keypaths/checkout-shipping-address-state
+                          :focused     focused
                           :label       "State"
                           :options     states
                           :placeholder "State"
@@ -133,7 +143,7 @@
                           :value       (:state shipping-address)})])])))
 
 (defn ^:private billing-address-component
-  [{:keys [billing-address states bill-to-shipping-address? places-loaded? billing-expanded? field-errors]} owner]
+  [{:keys [focused billing-address states bill-to-shipping-address? places-loaded? billing-expanded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -154,6 +164,7 @@
           {:type       "text"
            :label      "First Name"
            :keypath    keypaths/checkout-billing-address-first-name
+           :focused    focused
            :value      (:first-name billing-address)
            :errors     (get field-errors ["billing-address" "first-name"])
            :auto-focus "autofocus"
@@ -165,6 +176,7 @@
           {:type      "text"
            :label     "Last Name"
            :keypath   keypaths/checkout-billing-address-last-name
+           :focused   focused
            :value     (:last-name billing-address)
            :errors    (get field-errors ["billing-address" "last-name"])
            :name      "billing-last-name"
@@ -176,6 +188,7 @@
                         :errors    (get field-errors ["billing-address" "phone"])
                         :id        "billing-phone"
                         :keypath   keypaths/checkout-billing-address-phone
+                        :focused   focused
                         :label     "Mobile Phone"
                         :name      "billing-phone"
                         :required  true
@@ -187,6 +200,7 @@
                                       :data-test       "billing-address1"
                                       :address-keypath keypaths/checkout-billing-address
                                       :keypath         keypaths/checkout-billing-address-address1
+                                      :focused         focused
                                       :errors          (get field-errors ["billing-address" "address1"])
                                       :value           (:address1 billing-address)}))
 
@@ -197,6 +211,7 @@
              {:type      "text"
               :label     "Apt/Suite"
               :keypath   keypaths/checkout-billing-address-address2
+              :focused   focused
               :value     (:address2 billing-address)
               :errors    (get field-errors ["billing-address" "address2"])
               :name      "billing-address2"
@@ -205,6 +220,7 @@
              {:type       "text"
               :label      "Zip Code"
               :keypath    keypaths/checkout-billing-address-zip
+              :focused    focused
               :value      (:zipcode billing-address)
               :errors     (get field-errors ["billing-address" "zipcode"])
               :name       "billing-zip"
@@ -220,6 +236,7 @@
                            :errors    (get field-errors ["billing-address" "city"])
                            :id        "billing-city"
                            :keypath   keypaths/checkout-billing-address-city
+                           :focused   focused
                            :label     "City"
                            :name      "billing-city"
                            :required  true
@@ -230,6 +247,7 @@
                              :errors      (get field-errors ["billing-address" "state"])
                              :id          :billing-state
                              :keypath     keypaths/checkout-billing-address-state
+                             :focused     focused
                              :label       "State"
                              :options     states
                              :placeholder "State"
@@ -265,14 +283,16 @@
                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
                              :places-loaded?            places-loaded?
                              :billing-expanded?         (not (empty? (get-in data keypaths/checkout-billing-address-address1)))
-                             :field-errors              field-errors}
+                             :field-errors              field-errors
+                             :focused                   (get-in data keypaths/ui-focus)}
      :shipping-address-data {:shipping-address   (get-in data keypaths/checkout-shipping-address)
                              :states             states
                              :email              (get-in data keypaths/checkout-guest-email)
                              :guest?             (get-in data keypaths/checkout-as-guest)
                              :places-loaded?     places-loaded?
                              :shipping-expanded? (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
-                             :field-errors       field-errors}}))
+                             :field-errors       field-errors
+                             :focused            (get-in data keypaths/ui-focus)}}))
 
 (defn built-component [data opts]
   (om/build component (query data)))

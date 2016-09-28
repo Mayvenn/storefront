@@ -6,7 +6,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(defn component [{:keys [saving?
+(defn component [{:keys [focused
+                         saving?
                          payout-method
                          payout-methods
                          venmo-phone
@@ -27,8 +28,9 @@
      [:div.col-12.md-up-col-10.mx-auto
       (ui/select-field {:data-test "payout-method"
                         :errors    (get field-errors ["chosen_payout_method"])
-                        :id         "payout-method"
+                        :id        "payout-method"
                         :keypath   (conj keypaths/stylist-manage-account :chosen_payout_method)
+                        :focused   focused
                         :label     "Payout Method"
                         :options   payout-methods
                         :required  true
@@ -38,6 +40,7 @@
                                         :errors    (get field-errors ["venmo_payout_attributes" "phone"])
                                         :id        "venmo-phone"
                                         :keypath   (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
+                                        :focused   focused
                                         :label     "Venmo Phone #"
                                         :name      "venmo-phone"
                                         :required  true
@@ -47,6 +50,7 @@
                                         :errors    (get field-errors ["paypal_payout_attributes" "email"])
                                         :id        "paypal-email"
                                         :keypath   (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
+                                        :focused   focused
                                         :label     "PayPal Email"
                                         :name      "paypal-email"
                                         :required  true
@@ -65,6 +69,7 @@
                       :errors     (get field-errors ["address" "address1"])
                       :id         "account-address1"
                       :keypath    (conj keypaths/stylist-manage-account :address :address1)
+                      :focused    focused
                       :label      "Address"
                       :name       "account-address1"
                       :required   true
@@ -76,6 +81,7 @@
         {:type      "text"
          :label     "Apt/Suite"
          :keypath   (conj keypaths/stylist-manage-account :address :address2)
+         :focused   focused
          :value     address2
          :errors    (get field-errors ["address" "address2"])
          :name      "account-address2"
@@ -85,6 +91,7 @@
         {:type       "text"
          :label      "Zip Code"
          :keypath    (conj keypaths/stylist-manage-account :address :zipcode)
+         :focused    focused
          :value      zipcode
          :errors     (get field-errors ["address" "zipcode"])
          :name       "account-zipcode"
@@ -100,6 +107,7 @@
                       :errors    (get field-errors ["address" "city"])
                       :id        "account-city"
                       :keypath   (conj keypaths/stylist-manage-account :address :city)
+                      :focused   focused
                       :label     "City"
                       :name      "account-city"
                       :required  true
@@ -110,6 +118,7 @@
                         :errors      (get field-errors ["address" "state"])
                         :id          :account-state
                         :keypath     (conj keypaths/stylist-manage-account :address :state_id)
+                        :focused     focused
                         :label       "State"
                         :options     states
                         :placeholder "State"
@@ -141,4 +150,5 @@
    :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
    :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state_id))
    :states         (map (juxt :name :id) (get-in data keypaths/states))
-   :field-errors   (get-in data keypaths/field-errors)})
+   :field-errors   (get-in data keypaths/field-errors)
+   :focused        (get-in data keypaths/ui-focus)})

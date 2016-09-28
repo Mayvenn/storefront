@@ -149,7 +149,7 @@
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 
-(defn refer-component [{:keys [bonus-amount earning-amount referrals flash-failure]
+(defn refer-component [{:keys                             [focused bonus-amount earning-amount referrals flash-failure]
                         {:keys [field-errors] :as errors} :errors}
                        owner
                        {:keys [on-close]}]
@@ -186,6 +186,7 @@
                                                 :errors     (get field-errors ["referrals" idx "fullname"])
                                                 :id         (str "referral-fullname-" idx)
                                                 :keypath    (conj keypaths/stylist-referrals idx :fullname)
+                                                :focused    focused
                                                 :label      "Name"
                                                 :name       (str "referrals[" idx "][fullname]")
                                                 :required   true
@@ -196,6 +197,7 @@
                                                 :errors    (get field-errors ["referrals" idx "phone"])
                                                 :id        (str "referral-phone-" idx)
                                                 :keypath   (conj keypaths/stylist-referrals idx :phone)
+                                                :focused   focused
                                                 :label     "Mobile Phone (required)"
                                                 :name      (str "referrals[" idx "][phone]")
                                                 :required  true
@@ -206,6 +208,7 @@
                                                 :errors    (get field-errors ["referrals" idx "email"])
                                                 :id        (str "referral-email-" idx)
                                                 :keypath   (conj keypaths/stylist-referrals idx :email)
+                                                :focused   focused
                                                 :label     "Email"
                                                 :name      (str "referrals[" idx "][email]")
                                                 :type      "email"
@@ -227,7 +230,8 @@
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
    :errors         (get-in data keypaths/errors)
    :flash-failure  (get-in data keypaths/flash-failure-message)
-   :referrals      (get-in data keypaths/stylist-referrals)})
+   :referrals      (get-in data keypaths/stylist-referrals)
+   :focused        (get-in data keypaths/ui-focus)})
 
 (defn built-refer-component [data opts]
   (om/build refer-component (query-refer data) opts))
