@@ -9,11 +9,11 @@
     (assoc-in data
               keypaths/features
               (cond
-                (= store-slug "shop")  #{}
-                (= store-slug "store") #{}
+                (= store-slug "shop")  #{"kinky-straight-2-control"}
+                (= store-slug "store") #{"kinky-straight-2-control"}
                 (= bucket-offset 0)    #{"kinky-straight-2"}
                 (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
-                (= bucket-offset 2)    #{}))))
+                (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
 (defn display-feature? [data feature]
   ((set (get-in data keypaths/features)) feature))
