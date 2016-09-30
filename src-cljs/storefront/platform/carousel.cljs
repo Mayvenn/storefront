@@ -3,10 +3,13 @@
             react-slick
             [om.core :as om]))
 
+(def custom-dots (constantly (html [:a [:div.circle]])))
+
 (defn inner-component [{:keys [slides settings]} owner _]
   (om/component
    (js/React.createElement js/Slider
                            (clj->js (merge {:pauseOnHover true
+                                            :customPaging custom-dots
                                             ;; :waitForAnimate true
                                             ;; TODO: figure out why onMouseUp always
                                             ;; triggers navigation to link in slide,

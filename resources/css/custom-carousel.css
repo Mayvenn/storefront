@@ -17,29 +17,32 @@
     position: relative;
     display: inline-block;
     margin: 0;
-    padding: 2px;
-    cursor: pointer;
 }
-.carousel-dots li button {
+.carousel-dots li a {
     background: transparent;
     display: block;
     outline: none;
+    padding: 5px;
+    cursor: pointer;
+}
+.carousel-dots li a div {
     background-color: var(--white);
     font-size: 0;
     padding: 3px;
-    cursor: pointer;
     border-radius: 50%;
     border: 1px solid var(--gray);
     opacity: 0.623529;
 }
-.carousel-dots li.slick-active button {
+.carousel-dots li.slick-active a div {
     background-color: var(--gray);
     opacity: 1;
 }
-.carousel-dots li button:hover, .carousel-dots li button:focus {
+.carousel-dots li a:hover div,
+.carousel-dots li a:focus div {
     outline: none;
 }
-.carousel-dots li button:hover:before, .carousel-dots li button:focus:before {
+.carousel-dots li a:hover:before div,
+.carousel-dots li a:focus:before div {
     opacity: 1;
 }
 
@@ -47,7 +50,7 @@
 
 .slick-prev { left: 0; z-index: 2; }
 .slick-next { right: 0; }
-.slick-next, .slick-prev { margin-top: -20px; }
+.slick-next, .slick-prev { margin-top: -25px; }
 .slick-arrow {
     height: 50px;
     width: 50px;
