@@ -25,13 +25,13 @@
        [:div.right close-button]
        [:div.center
         [:div.col-9.mx-auto.mb2 banner-copy]
-        [:div.col-7.mx-auto (ui/teal-button btn-behavior btn-copy)]]]
+        [:div.col-9.mx-auto (ui/teal-button btn-behavior btn-copy)]]]
       ;; Desktop / Tablet layout
       [:div.flex.items-center.to-md-hide
        [:div.flex-auto
-        [:div.col-7.mx-auto.center.flex.items-center
+        [:div.col-8.mx-auto.center.flex.items-center
          [:div.col-7.mr2 banner-copy]
-         [:div.col-5 (ui/teal-button btn-behavior btn-copy)]]]
+         [:div.col-7 (ui/teal-button btn-behavior btn-copy)]]]
        close-button]])))
 
 (defn query [data]
