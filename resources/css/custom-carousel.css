@@ -43,7 +43,34 @@
     opacity: 1;
 }
 
+/* Carousel Arrows */
+
+.slick-prev { left: 0; z-index: 2; }
+.slick-next { right: 0; }
+.slick-next, .slick-prev { margin-top: -20px; }
+.slick-arrow {
+    height: 50px;
+    width: 50px;
+}
+
+.slick-prev, .slick-next, .slick-prev:hover, .slick-prev:focus, .slick-next:hover, .slick-next:focus  {
+    background-image: url("/images/icons/carousel-arrow.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    color: var(--dark-gray);
+    font-family: sans-serif;
+    content: "";
+}
+.slick-prev {
+    transform: rotate(180deg);
+}
+
 :root {
     --white:        #FFFFFF;
     --gray:         #666666;
+    --dark-gray:    #333333;
 }

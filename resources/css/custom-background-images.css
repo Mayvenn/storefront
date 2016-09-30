@@ -7,11 +7,6 @@
 .img-shop-by-look-icon { background-image: url('/images/icons/shop-by-look@2x.png') }
 .img-spinner           { background-image: url('/images/spinner.svg'); }
 .img-large-spinner     { background-image: url('/images/large-spinner.svg'); }
-.img-left-arrow        {
-    background-image: url('/images/icons/carousel-arrow.svg');
-    transform: rotate(180deg);
-}
-.img-right-arrow  { background-image: url('/images/icons/carousel-arrow.svg'); }
 
 .img-straight       { background-image: url('//d275k6vjijb2m1.cloudfront.net/cellar/straight/1/640x580_1.jpg'); }
 .img-curly          { background-image: url('//d275k6vjijb2m1.cloudfront.net/cellar/curly/1/640x580.png'); }

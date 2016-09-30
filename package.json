@@ -10,8 +10,7 @@
     "basscss-background-images": "^0.1.1",
     "basscss-ui-utility-groups": "^1.0.1",
     "normalize.css": "^4.2.0",
-    "react-slick": "^0.14.4",
-    "swipejs": "^2.0.8"
+    "react-slick": "^0.14.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.1",

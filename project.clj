@@ -53,9 +53,7 @@
                 :output-to "resources/public/js/out/main.js"
                 :output-dir "resources/public/js/out"
                 :pretty-print true
-                :foreign-libs [{:file "storefront/swipe.js"
-                                :provides ["swipe"]}
-                               {:file "storefront/react-slick.js"
+                :foreign-libs [{:file "storefront/react-slick.js"
                                 :provides ["react-slick"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
@@ -67,7 +65,6 @@
                           "externs/facebook.js"
                           "externs/fastpass.js"
                           "externs/talkable.js"
-                          "externs/swipe.js"
                           "externs/react-slick.js"
                           "externs/pixlee.js"
                           "externs/wistia.js"]}}
@@ -79,10 +76,7 @@
                 :source-map "target/release/js/out/main.js.map"
                 :source-map-path "/js/out"
                 :pretty-print false
-                :foreign-libs [{:file "storefront/swipe.js"
-                                :file-min "target/min-js/swipe.js" ;; created by gulp
-                                :provides ["swipe"]}
-                               {:file "storefront/react-slick.js"
+                :foreign-libs [{:file "storefront/react-slick.js"
                                 :file-min "target/min-js/react-slick.js" ;; created by gulp
                                 :provides ["react-slick"]}
                                {:file "storefront/bugsnag-2.5.0.js"
@@ -96,7 +90,6 @@
                           "externs/facebook.js"
                           "externs/fastpass.js"
                           "externs/talkable.js"
-                          "externs/swipe.js"
                           "externs/react-slick.js"
                           "externs/pixlee.js"
                           "externs/wistia.js"]
