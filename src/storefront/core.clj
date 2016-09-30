@@ -3,12 +3,18 @@
   (:require [com.stuartsierra.component :as component]
             [tocsin.core :as tocsin]
             [environ.core :refer [env]]
+            [storefront.jetty :as jetty]
             [storefront.system :as system]))
 
 (def the-system nil)
 
 (.addShutdownHook (Runtime/getRuntime)
-                  (Thread. (fn [] (when the-system (component/stop the-system)))))
+                  (Thread. (fn []
+                             (when the-system
+                               ;; Ensure de-registered from service registry before stopping
+                               ;; the system (which causes Jetty stopping to accept new requests)
+                               (Thread/sleep jetty/stale-reads-timeout)
+                               (component/stop the-system)))))
 
 (defn -main [& args]
   (try
