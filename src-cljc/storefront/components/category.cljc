@@ -208,9 +208,14 @@
        [:p.mt2 {:key idx} item])]]])
 
 (defn carousel-image [image]
-  [:div.bg-cover.bg-no-repeat.bg-top.col-12
-   {:style {:background-image (assets/css-url image)
-            :height "31rem"}}])
+  [:div.col-12.overflow-hidden {:style {:max-height "31rem"}}
+   [:img.col-12 {:src image
+                 ;; Technically, it would be better to have real alt tags,
+                 ;; something like "Mayvenn's straight bundles are ..."
+                 ;; But, until we define those, we're marking these images as
+                 ;; "presentational" so as not to confuse screen readers & bots.
+                 ;; See https://www.w3.org/WAI/tutorials/images/decorative/
+                 :alt ""}]])
 
 (defn carousel [images {:keys [slug]}]
   (let [items (->> images
