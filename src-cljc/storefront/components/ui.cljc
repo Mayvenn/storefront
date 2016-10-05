@@ -252,7 +252,7 @@
                            :on-change   #(handle-message events/control-change-state
                                                          {:keypath keypath
                                                           :value   (selected-value %)})}
-                          select-attributes
+                          (dissoc select-attributes :focused)
                           (when-not (seq selected-text) {:style {:opacity 0.5}}))
                    status)
       (when placeholder
