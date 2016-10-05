@@ -34,7 +34,9 @@
     [:div.flex-auto.mr1
      [:div.h6.mb1.line-height-2
       [:div.bold.shout.mb1.h5 "bonus offer!"]
-      "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is included with your order ($10 value)."]
+      "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is "
+      [:span.underline "included"]
+      " with your order."]
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
       "Offer and Rebate Details ➤"]]]
