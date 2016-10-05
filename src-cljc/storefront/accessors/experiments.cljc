@@ -19,7 +19,7 @@
   ((set (get-in data keypaths/features)) feature))
 
 (defn essence? [data]
-  (display-feature? data "essence"))
+  (display-feature? data "essence-2"))
 
 (defn kinky-straight? [data]
   (display-feature? data "kinky-straight-2"))

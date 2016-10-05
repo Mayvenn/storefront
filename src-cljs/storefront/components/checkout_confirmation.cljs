@@ -23,7 +23,6 @@
            updating-shipping?
            saving-card?
            placing-order?
-           essence?
            requires-additional-payment?
            payment delivery order
            products]}
@@ -39,7 +38,6 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (when essence? summary/essence-faux-line-item)
         (summary/display-line-items (orders/product-items order) products)]]
 
       [:.md-up-col.md-up-col-6.px3
@@ -65,7 +63,6 @@
    :saving-card?                 (checkout-payment/saving-card? data)
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
-   :essence?                     (experiments/essence? data)
    :checkout-steps               (checkout-steps/query data)
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
