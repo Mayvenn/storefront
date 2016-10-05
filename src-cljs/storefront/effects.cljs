@@ -759,11 +759,7 @@
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
-(defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
-  ;; TODO: when the pixlee-product? experiment is over, this will be unnecessary
-  (when (and (= variation "pixlee-product")
-             (accessors.pixlee/content-available? (named-searches/current-named-search app-state)))
-    (pixlee/insert)))
+(defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state])
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
