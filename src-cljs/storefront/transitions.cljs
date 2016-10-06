@@ -93,7 +93,6 @@
                                    bundle-builder/constrained-options
                                    (dissoc :length))]
     (-> app-state
-        (assoc-in keypaths/popup :email-capture) ;; TODO DELETE ME
         (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
         (assoc-in keypaths/browse-variant-quantity 1)
@@ -229,9 +228,6 @@
 
 (defmethod transition-state events/control-essence-offer-details [_ event args app-state]
   (assoc-in app-state keypaths/popup :essence))
-
-#_(defmethod transition-state events/control-email-capture [_ event args app-state]
-  (assoc-in app-state keypaths/popup :email-capture))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]
@@ -545,3 +541,13 @@
 
 (defmethod transition-state events/talkable-offer-shown [_ event args app-state]
   (assoc-in app-state keypaths/pending-talkable-order nil))
+
+(defmethod transition-state events/control-email-captured-submit [_ event args app-state]
+  (let [email (get-in app-state keypaths/captured-email)]
+    (if (or (> 3 (count email)) (not (string/includes? email "@")))
+      (assoc-in app-state keypaths/errors {:field-errors  {["email"] [{:path ["email"] :long-message "Email is invalid"}]}
+                                           :error-code    "invalid-input"
+                                           :error-message "Oops! Please fix the errors below."})
+      (-> app-state
+          (assoc-in keypaths/errors {})
+          (assoc-in keypaths/popup nil)))))

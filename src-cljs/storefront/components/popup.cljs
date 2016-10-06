@@ -11,8 +11,7 @@
 
 (defn built-component [data _]
   (let [opts {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}}]
-    (email-capture/built-component data opts)
-#_    (condp = :email-capture #_(get-in data keypaths/popup)
+    (condp = (get-in data keypaths/popup)
       :email-capture        (email-capture/built-component data opts)
       :share-cart           (cart/built-share-link-component data opts)
       :refer-stylist        (stylist.referrals/built-refer-component data opts)

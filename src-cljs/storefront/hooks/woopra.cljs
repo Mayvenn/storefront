@@ -59,6 +59,9 @@
                                (user->event-data user)
                                params))}))
 
+(defn track-user-email-captured [session-id user email]
+  (track-event "email_captured" session-id user {:ce_email email}))
+
 (defn track-experiment [session-id user variation]
   (track-event "experiment_joined" session-id user {:ce_variation variation}))
 

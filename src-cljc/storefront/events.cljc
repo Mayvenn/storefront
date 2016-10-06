@@ -79,6 +79,8 @@
 (defpath control-focus)
 (defpath control-blur)
 
+(defpath control-email-captured-submit)
+
 (defpath control-stylist-commissions-fetch)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)

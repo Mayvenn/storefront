@@ -136,3 +136,9 @@
   (woopra/track-experiment (get-in app-state keypaths/session-id)
                            (get-in app-state keypaths/order-user)
                            feature))
+
+(defmethod perform-track events/control-email-captured-submit [_ event args app-state]
+  (woopra/track-user-email-captured
+   (get-in app-state keypaths/session-id)
+   (get-in app-state keypaths/user)
+   (get-in app-state keypaths/captured-email)))
