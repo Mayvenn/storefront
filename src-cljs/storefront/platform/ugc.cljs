@@ -7,8 +7,9 @@
 
 (defn image-thumbnail [{:keys [id photo user-handle purchase-link]}]
   [:div.p1
-   [:img.col-12.block {:src photo}]
-   #_[:div.my1.light-gray.bold.h4.right-align "@" user-handle]])
+   [:div.relative.overflow-hidden
+    {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+    [:img.col-12.absolute.top-0.block {:src photo}]]])
 
 (defn component [{:keys [album]} owner opts]
   (om/component
