@@ -155,11 +155,11 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/fetch-mosaic))
 
-(defn ensure-product-album [app-state]
+(defn fetch-named-search-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
       (when-let [album-id (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search)))] ; else haven't gotten album ids yet
-        (pixlee/fetch-product-album album-id (:slug named-search))))))
+        (pixlee/fetch-named-search-album (:slug named-search) album-id)))))
 
 (defmethod perform-effects events/navigate-category
   [_ event {:keys [named-search-slug] :as args} app-state]
@@ -168,11 +168,11 @@
     (refresh-named-search-products app-state named-search)
     (when (and (accessors.pixlee/content-available? named-search)
                (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
-      (pixlee/fetch-product-album-ids))
-    (ensure-product-album app-state)))
+      (pixlee/fetch-named-search-album-ids))
+    (fetch-named-search-album app-state)))
 
-(defmethod perform-effects events/pixlee-api-success-fetch-product-album-ids [_ event _ app-state]
-  (ensure-product-album app-state))
+(defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ app-state]
+  (fetch-named-search-album app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)

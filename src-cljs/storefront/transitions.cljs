@@ -134,11 +134,11 @@
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
   (assoc-in app-state keypaths/ugc-looks (parse-ugc-album data)))
 
-(defmethod transition-state events/pixlee-api-success-fetch-product-album [_ event {:keys [album-data named-search-slug]} app-state]
+(defmethod transition-state events/pixlee-api-success-fetch-named-search-album [_ event {:keys [album-data named-search-slug]} app-state]
   (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
             (parse-ugc-album album-data)))
 
-(defmethod transition-state events/pixlee-api-success-fetch-product-album-ids [_ event {:keys [data]} app-state]
+(defmethod transition-state events/pixlee-api-success-fetch-named-search-album-ids [_ event {:keys [data]} app-state]
   (reduce (fn [app-state {:keys [sku album_id]}]
             (if-let [named-search-slug (pixlee/sku->named-search-slug sku)]
               (assoc-in app-state (conj keypaths/named-search-slug->pixlee-album-id named-search-slug) album_id)

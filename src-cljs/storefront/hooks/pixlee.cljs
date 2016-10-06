@@ -37,18 +37,18 @@
                       {:params  {:per_page 48}
                        :handler (partial m/handle-message events/pixlee-api-success-fetch-mosaic)}))
 
-(defn fetch-product-album [album-id named-search-slug]
+(defn fetch-named-search-album [named-search-slug album-id]
   (fetch-album-photos album-id
                       {:params  {:per_page 24}
                        :handler (fn [resp]
-                                  (m/handle-message events/pixlee-api-success-fetch-product-album
+                                  (m/handle-message events/pixlee-api-success-fetch-named-search-album
                                                     {:album-data (:data resp)
                                                      :named-search-slug named-search-slug}))}))
 
-(defn fetch-product-album-ids []
+(defn fetch-named-search-album-ids []
   (api-request "/products"
                {:params  {:per_page 100}
-                :handler (partial m/handle-message events/pixlee-api-success-fetch-product-album-ids)}))
+                :handler (partial m/handle-message events/pixlee-api-success-fetch-named-search-album-ids)}))
 
 (defn track-event [event-name args]
   (when (analytics-js-loaded?)

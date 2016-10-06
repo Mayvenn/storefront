@@ -48,7 +48,7 @@
 (def ugc-albums [:ugc-albums])
 (def ugc-looks (conj ugc-albums :looks))
 (def ugc-named-searches (conj ugc-albums :named-searches))
-(def named-search-slug->pixlee-album-id [:pixlee-product-album-ids])
+(def named-search-slug->pixlee-album-id (conj ugc-albums :named-search-album-ids))
 
 (def ui [:ui])
 (def ui-focus (conj ui :focus))

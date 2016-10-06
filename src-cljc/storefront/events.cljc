@@ -249,8 +249,8 @@
 (defpath checkout-address-component-mounted)
 
 (defpath pixlee-api-success-fetch-mosaic)
-(defpath pixlee-api-success-fetch-product-album-ids)
-(defpath pixlee-api-success-fetch-product-album)
+(defpath pixlee-api-success-fetch-named-search-album-ids)
+(defpath pixlee-api-success-fetch-named-search-album)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
