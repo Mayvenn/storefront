@@ -257,3 +257,4 @@
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
+(defpath show-email-popup)

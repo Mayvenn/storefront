@@ -551,3 +551,6 @@
       (-> app-state
           (assoc-in keypaths/errors {})
           (assoc-in keypaths/popup nil)))))
+
+(defmethod transition-state events/show-email-popup [_ event args app-state]
+  (assoc-in app-state keypaths/popup :email-capture))
