@@ -15,7 +15,7 @@
                (ui/modal-close {:on-close on-close})
                [:form.col-12.flex.flex-column.items-center
                 {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
-                [:div.h3.navy.bold.mb2 "Be first!"]
+                [:div.h3.navy.bold.mb2 "Become an Insider"]
                 [:p.h5.gray.mb2
                  "Want exclusive offers and first access to products? Sign up for our email alerts below!"]
                 [:div.col-12.border-top.border-silver ui/nbsp]
