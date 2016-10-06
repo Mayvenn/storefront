@@ -157,8 +157,7 @@
 
 (defn ensure-product-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
-    (when (and (accessors.pixlee/content-available? named-search) ; else don't need album for this category
-               (not (get-in app-state (conj keypaths/ugc-named-searches (:slug named-search))))) ; else already fetched album, don't need it again
+    (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
       (when-let [album-id (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search)))] ; else haven't gotten album ids yet
         (pixlee/fetch-product-album album-id (:slug named-search))))))
 
