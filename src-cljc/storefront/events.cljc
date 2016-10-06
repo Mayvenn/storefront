@@ -241,7 +241,6 @@
 (defpath inserted-reviews)
 (defpath inserted-talkable)
 (defpath inserted-convert)
-(defpath inserted-pixlee)
 
 (defpath autocomplete-update-address)
 
@@ -249,10 +248,9 @@
 (defpath checkout-address-place-changed)
 (defpath checkout-address-component-mounted)
 
-(defpath ugc-component-mounted)
-(defpath ugc-component-unmounted)
-
 (defpath pixlee-api-success-fetch-mosaic)
+(defpath pixlee-api-success-fetch-product-album-ids)
+(defpath pixlee-api-success-fetch-product-album)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

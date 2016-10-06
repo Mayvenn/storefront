@@ -9,6 +9,8 @@
    "closures"   "CLO"
    "frontals"   "FRO"})
 
+(def sku->named-search-slug (clojure.set/map-invert named-search-slug->sku))
+
 (defn sku [{:keys [slug]}]
   (named-search-slug->sku slug))
 

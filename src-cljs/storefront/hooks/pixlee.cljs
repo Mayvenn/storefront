@@ -3,20 +3,13 @@
             [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [storefront.config :as config]
-            [storefront.platform.messages :as m])
+            [storefront.platform.messages :as m]
+            [clojure.string :as str])
   (:import goog.json.Serializer))
 
-(defn widget-js-loaded? [] (.hasOwnProperty js/window "Pixlee"))
 (defn analytics-js-loaded? [] (.hasOwnProperty js/window "Pixlee_Analytics"))
 
 (defn insert []
-  (when-not (widget-js-loaded?)
-    (tags/insert-tag-with-callback
-     (tags/src-tag "//assets.pixlee.com/assets/pixlee_widget_1_0_0.js"
-                   "ugc")
-     (fn []
-       (js/Pixlee.init (clj->js {:apiKey (:api-key config/pixlee)}))
-       (m/handle-message events/inserted-pixlee))))
   (when-not (analytics-js-loaded?)
     (tags/insert-tag-with-src
      "//assets.pixlee.com/assets/pixlee_events.js"
@@ -25,31 +18,37 @@
 (defn write-json [data]
   (.serialize (goog.json.Serializer.) (clj->js data)))
 
-(defn fetch-mosaic []
-  (GET (str "https://distillery.pixlee.com/api/v2/albums/" (-> config/pixlee :mosaic :albumId) "/photos")
-      {:params          {:api_key  (:api-key config/pixlee)
-                         :per_page 48
-                         :filters  (write-json {:content_type ["image"]})}
+(defn ^:private api-request [path {:keys [params handler]}]
+  (GET (str "https://distillery.pixlee.com/api/v2" path)
+      {:params          (merge {:api_key (:api-key config/pixlee)}
+                               params)
        :response-format (json-response-format {:keywords? true})
-       :handler         (partial m/handle-message events/pixlee-api-success-fetch-mosaic)}))
+       :handler         handler}))
 
-(defn attach-product-widget [container-id sku]
-  (when (and (widget-js-loaded?) sku)
-    (js/Pixlee.addProductWidget
-     (clj->js (merge
-               (:product config/pixlee)
-               {:containerId       container-id
-                :skuId             sku
-                :type              "horizontal"
-                :addToCart         false
-                :addToCartNavigate "false"
-                :recipeId          476
-                :accountId         (:account-id config/pixlee)})))
-    (.setTimeout js/window js/Pixlee.resizeWidget 0)))
+(defn fetch-album-photos [album-id {:keys [params handler]}]
+  (api-request (str "/albums/" album-id "/photos")
+               ;; Only fetch images until we handle videos https://www.pivotaltracker.com/story/show/131462137
+               {:params  (merge {:filters (write-json {:content_type ["image"]})}
+                                params)
+                :handler handler}))
 
-(defn close-all []
-  (when (widget-js-loaded?)
-    (js/Pixlee.close true)))
+(defn fetch-mosaic []
+  (fetch-album-photos (-> config/pixlee :mosaic :albumId)
+                      {:params  {:per_page 48}
+                       :handler (partial m/handle-message events/pixlee-api-success-fetch-mosaic)}))
+
+(defn fetch-product-album [album-id named-search-slug]
+  (fetch-album-photos album-id
+                      {:params  {:per_page 24}
+                       :handler (fn [resp]
+                                  (m/handle-message events/pixlee-api-success-fetch-product-album
+                                                    {:album-data (:data resp)
+                                                     :named-search-slug named-search-slug}))}))
+
+(defn fetch-product-album-ids []
+  (api-request "/products"
+               {:params  {:per_page 100}
+                :handler (partial m/handle-message events/pixlee-api-success-fetch-product-album-ids)}))
 
 (defn track-event [event-name args]
   (when (analytics-js-loaded?)

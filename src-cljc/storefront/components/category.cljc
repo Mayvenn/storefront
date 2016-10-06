@@ -287,7 +287,7 @@
         (page
          [:div
           (carousel carousel-images named-search)
-          [:div.to-md-hide (component/build ugc/component (assoc ugc :container-id "ugcDesktop") opts)]]
+          [:div.to-md-hide (component/build ugc/component ugc opts)]]
          [:div
           [:div.center
            (title (:long-name named-search))
@@ -318,7 +318,7 @@
               (bagged-variants-and-checkout bagged-variants)
               (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
           (named-search-description (:description named-search))
-          [:div.md-up-hide.mxn2.mb3 (component/build ugc/component (assoc ugc :container-id "ugcMobile") opts)]])
+          [:div.md-up-hide.mxn2.mb3 (component/build ugc/component ugc opts)]])
         (when review? (component/build reviews/reviews-component reviews opts)))))))
 
 (defn query [data]

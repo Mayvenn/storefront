@@ -104,6 +104,7 @@
      :sms-number nil
      :stylist initial-stylist-state
      :api-cache {}
+     :ugc-albums {}
 
      :billing-address {:firstname ""
                        :lastname ""
@@ -160,5 +161,4 @@
                    :stripe false
                    :facebook false
                    :places false
-                   :talkable false
-                   :pixlee false}}}))
+                   :talkable false}}}))

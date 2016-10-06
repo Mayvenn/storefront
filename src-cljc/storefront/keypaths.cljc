@@ -42,9 +42,13 @@
 (def products [:products])
 (def states [:states])
 (def shipping-methods [:shipping-methods])
-(def looks [:looks])
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
+
+(def ugc-albums [:ugc-albums])
+(def ugc-looks (conj ugc-albums :looks))
+(def ugc-named-searches (conj ugc-albums :named-searches))
+(def named-search-slug->pixlee-album-id [:pixlee-product-album-ids])
 
 (def ui [:ui])
 (def ui-focus (conj ui :focus))
@@ -205,7 +209,6 @@
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-convert (conj loaded :convert))
-(def loaded-pixlee (conj loaded :pixlee))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 

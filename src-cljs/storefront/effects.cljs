@@ -67,8 +67,8 @@
 
 (defn refresh-named-search-products
   "Intentionally bypass ensure-products whenever we navigate to a category"
-  [app-state]
-  (refresh-products app-state (:product-ids (named-searches/current-named-search app-state))))
+  [app-state named-search]
+  (refresh-products app-state (:product-ids named-search)))
 
 (defmulti perform-effects identity)
 
@@ -155,12 +155,25 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/fetch-mosaic))
 
+(defn ensure-product-album [app-state]
+  (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
+    (when (and (accessors.pixlee/content-available? named-search) ; else don't need album for this category
+               (not (get-in app-state (conj keypaths/ugc-named-searches (:slug named-search))))) ; else already fetched album, don't need it again
+      (when-let [album-id (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search)))] ; else haven't gotten album ids yet
+        (pixlee/fetch-product-album album-id (:slug named-search))))))
+
 (defmethod perform-effects events/navigate-category
   [_ event {:keys [named-search-slug] :as args} app-state]
   (reviews/insert-reviews)
-  (when (accessors.pixlee/content-available? (named-searches/current-named-search app-state))
-    (pixlee/insert))
-  (refresh-named-search-products app-state))
+  (let [named-search (named-searches/current-named-search app-state)]
+    (refresh-named-search-products app-state named-search)
+    (when (and (accessors.pixlee/content-available? named-search)
+               (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
+      (pixlee/fetch-product-album-ids))
+    (ensure-product-album app-state)))
+
+(defmethod perform-effects events/pixlee-api-success-fetch-product-album-ids [_ event _ app-state]
+  (ensure-product-album app-state))
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -731,12 +744,6 @@
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
-
-(defmethod perform-effects events/ugc-component-mounted [_ event {:keys [pixlee-sku container-id]} app-state]
-  (pixlee/attach-product-widget container-id pixlee-sku))
-
-(defmethod perform-effects events/ugc-component-unmounted [_ event _ app-state]
-  (pixlee/close-all))
 
 (defmethod perform-effects events/video-component-mounted [_ event {:keys [video-id]} app-state]
   (wistia/attach video-id))

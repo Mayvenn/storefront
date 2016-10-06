@@ -42,6 +42,7 @@
      [:div.clearfix.mtn2
       (for [{:keys [id user-handle photo purchase-link]} looks]
         [:div
+         {:key id}
          [:div.py2.col-12.col.md-up-col-3.md-up-hide {:key (str "small-" id)}
           (image-thumbnail photo user-handle)
           (buy-look-button purchase-link)]
@@ -50,7 +51,7 @@
           (buy-look-button purchase-link)]])]])))
 
 (defn query [data]
-  {:looks (get-in data keypaths/looks)})
+  {:looks (get-in data keypaths/ugc-looks)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

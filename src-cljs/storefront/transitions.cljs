@@ -7,6 +7,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
             [storefront.utils.query :as query]
@@ -122,17 +123,28 @@
     true
     (assoc-in keypaths/places-enabled true)))
 
-(defmethod transition-state events/inserted-pixlee [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-pixlee true))
+(defn ^:private parse-ugc-album [album]
+  (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url products]}]
+         {:id            id
+          :user-handle   user_name
+          :photo         (:medium_url pixlee_cdn_photos)
+          :purchase-link (:link (first products))})
+       album))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
-  (assoc-in app-state keypaths/looks
-            (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url products] :as p}]
-                   {:id            id
-                    :user-handle   user_name
-                    :photo         (:medium_url pixlee_cdn_photos)
-                    :purchase-link (:link (first products))})
-                 data)))
+  (assoc-in app-state keypaths/ugc-looks (parse-ugc-album data)))
+
+(defmethod transition-state events/pixlee-api-success-fetch-product-album [_ event {:keys [album-data named-search-slug]} app-state]
+  (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
+            (parse-ugc-album album-data)))
+
+(defmethod transition-state events/pixlee-api-success-fetch-product-album-ids [_ event {:keys [data]} app-state]
+  (reduce (fn [app-state {:keys [sku album_id]}]
+            (if-let [named-search-slug (pixlee/sku->named-search-slug sku)]
+              (assoc-in app-state (conj keypaths/named-search-slug->pixlee-album-id named-search-slug) album_id)
+              app-state))
+          app-state
+          data))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
