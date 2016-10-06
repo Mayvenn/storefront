@@ -3,6 +3,7 @@
             [storefront.platform.video :as video]
             [storefront.components.cart :as cart]
             [storefront.components.essence :as essence]
+            [storefront.components.email-capture :as email-capture]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.platform.ugc :as ugc]
             [storefront.events :as events]
@@ -10,7 +11,9 @@
 
 (defn built-component [data _]
   (let [opts {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}}]
-    (condp = (get-in data keypaths/popup)
+    (email-capture/built-component data opts)
+#_    (condp = :email-capture #_(get-in data keypaths/popup)
+      :email-capture        (email-capture/built-component data opts)
       :share-cart           (cart/built-share-link-component data opts)
       :refer-stylist        (stylist.referrals/built-refer-component data opts)
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)

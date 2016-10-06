@@ -85,6 +85,7 @@
 
 (def bundle-builder (conj ui :bundle-builder))
 
+(def collected-email (conj ui :collected-email))
 
 (def account (conj ui :account))
 (def account-show-password? (conj account :show-password?))
