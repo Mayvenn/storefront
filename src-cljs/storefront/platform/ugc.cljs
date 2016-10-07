@@ -63,7 +63,8 @@
   (om/component
    (html
     (ui/modal
-     {:on-close on-close}
+     {:on-close on-close
+      :bg-class "bg-darken-4"}
      [:div.relative
       (om/build carousel/component
                 {:slides       (map attributed-slide (:album ugc))
@@ -71,7 +72,7 @@
                                 :initialSlide offset}}
                 {})
       [:div.absolute
-       {:style {:top "1rem" :right "1rem"}}
+       {:style {:top "1.5rem" :right "1.5rem"}}
        (ui/modal-close {:class    "stroke-dark-gray fill-dark-silver"
                         :on-close on-close})]]))))
 
