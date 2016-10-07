@@ -33,7 +33,7 @@
       [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
     [:div.flex-auto.mr1
      [:div.h6.mb1.line-height-2
-      [:div.bold.shout.mb1.h5 "bonus offer!"]
+      [:div.bold.shout.mb1.h5 "bonus gift!"]
       "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is "
       [:span.underline "included"]
       " with your order."]
