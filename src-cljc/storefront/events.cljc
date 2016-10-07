@@ -80,6 +80,7 @@
 (defpath control-focus)
 (defpath control-blur)
 
+(defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
 (defpath control-stylist-commissions-fetch)

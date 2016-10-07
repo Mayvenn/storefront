@@ -138,6 +138,7 @@
           :stylist-banner-hidden? false
 
           :expanded-commission-order-id #{nil}
+          :popup-session (cookie-jar/retrieve-popup-session cookie)
 
           :sign-in {:email ""
                     :password ""}

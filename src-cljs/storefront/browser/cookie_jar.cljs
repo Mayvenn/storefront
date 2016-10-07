@@ -90,7 +90,8 @@
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
-(def retrieve-popup-session (partial retrieve popup-session))
+
+(def retrieve-popup-session (comp :popup-session (partial retrieve popup-session)))
 
 (def ^:private session-id-length 24)
 
@@ -115,8 +116,8 @@
 
 (defn save-popup-session [cookie value]
   (let [max-age (condp = value
-                  "logged-in" four-weeks
-                  "opted-in"    (* 200 one-year)
+                  "signed-in" four-weeks
+                  "opted-in"  (* 200 one-year)
                   "dismissed" 1800)]
     (.set cookie :popup-session value max-age "/" (:domain popup-session) config/secure?)))
 

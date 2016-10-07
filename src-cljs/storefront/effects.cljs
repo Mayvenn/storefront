@@ -71,14 +71,8 @@
   (refresh-products app-state (:product-ids named-search)))
 
 (defn update-popup-session [app-state]
-  (when-let [email-popup-action (get-in app-state keypaths/popup-session)]
-    (if-not (= email-popup-action "opted-in")
-      (cookie-jar/save-popup-session (get-in app-state keypaths/cookie)
-                                     ;; move this value into app-state's keypath/popup-session
-                                     ;; and just use it here
-                                     (if (get-in app-state keypaths/user-id)
-                                       "logged-in"
-                                       "dismissed")))))
+  (when-let [value (get-in app-state keypaths/popup-session)]
+    (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) value)))
 
 (defmulti perform-effects identity)
 
@@ -157,7 +151,7 @@
       (let [path (routes/current-path app-state)]
         (exception-handler/refresh))))
 
-  (update-popup-session app-state))
+  (when experiments/email-popup? (update-popup-session app-state)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ app-state]
   (when-not (= static-content-id
@@ -217,7 +211,7 @@
     (handle-message events/control-stylist-commissions-fetch)))
 
 (defmethod perform-effects events/control [_ _ args app-state]
-  (update-popup-session app-state))
+  (when experiments/email-popup? (update-popup-session app-state)))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args app-state]
   (when (empty? (get-in app-state keypaths/errors))
@@ -785,12 +779,12 @@
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
-  (let [in-experiment?                 (experiments/email-popup? app-state)
-        seen-popup-in-current-session? (not (get-in app-state keypaths/popup-session))
-        logged-in?                     (get-in app-state keypaths/user-id)]
-    (when (and in-experiment? seen-popup-in-current-session?)
-      (if logged-in?
-        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "logged-in")
+  (let [in-experiment?      (experiments/email-popup? app-state)
+        not-seen-popup-yet? (not (get-in app-state keypaths/popup-session))
+        signed-in?          (get-in app-state keypaths/user-id)]
+    (when (and in-experiment? not-seen-popup-yet?)
+      (if signed-in?
+        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "signed-in")
         (handle-message events/show-email-popup)))))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
@@ -798,3 +792,6 @@
   (when (#{events/navigate-friend-referrals events/navigate-account-referrals}
          (get-in app-state keypaths/navigation-event))
     (talkable/show-referrals app-state)))
+
+(defmethod perform-effects events/control-email-captured-dismiss [_ event args app-state]
+  (update-popup-session app-state))

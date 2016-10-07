@@ -185,14 +185,18 @@
       (assoc-in keypaths/video video)))
 
 (defmethod transition-state events/control-sign-out [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/user {})
-      (assoc-in keypaths/order nil)
-      (assoc-in keypaths/stylist state/initial-stylist-state)
-      (assoc-in keypaths/checkout state/initial-checkout-state)
-      (assoc-in keypaths/billing-address {})
-      (assoc-in keypaths/shipping-address {})
-      (assoc-in keypaths/facebook-email-denied nil)))
+  (let [signed-out-app-state (-> app-state
+                                 (assoc-in keypaths/user {})
+                                 (assoc-in keypaths/order nil)
+                                 (assoc-in keypaths/stylist state/initial-stylist-state)
+                                 (assoc-in keypaths/checkout state/initial-checkout-state)
+                                 (assoc-in keypaths/billing-address {})
+                                 (assoc-in keypaths/shipping-address {})
+                                 (assoc-in keypaths/facebook-email-denied nil))
+        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/popup-session))]
+    (cond-> signed-out-app-state
+      (and experiments/email-popup? (not opted-in?))
+      (assoc-in keypaths/popup-session "dismissed"))))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -321,15 +325,19 @@
       (assoc-in keypaths/checkout-as-guest false)))
 
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
-  (-> app-state
-      (sign-in-user user)
-      (clear-fields keypaths/sign-up-email
-                    keypaths/sign-up-password
-                    keypaths/sign-in-email
-                    keypaths/sign-in-password
-                    keypaths/reset-password-password
-                    keypaths/reset-password-token)
-      (assoc-in keypaths/order order)))
+  (let [signed-in-app-state (-> app-state
+                                (sign-in-user user)
+                                (clear-fields keypaths/sign-up-email
+                                              keypaths/sign-up-password
+                                              keypaths/sign-in-email
+                                              keypaths/sign-in-password
+                                              keypaths/reset-password-password
+                                              keypaths/reset-password-token)
+                                (assoc-in keypaths/order order))
+        opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/popup-session))]
+    (cond-> signed-in-app-state
+      (and experiments/email-popup? (not opted-in?))
+      (assoc-in keypaths/popup-session "signed-in"))))
 
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
@@ -541,6 +549,11 @@
 
 (defmethod transition-state events/talkable-offer-shown [_ event args app-state]
   (assoc-in app-state keypaths/pending-talkable-order nil))
+
+(defmethod transition-state events/control-email-captured-dismiss [_ event args app-state]
+  (-> app-state
+      (assoc-in keypaths/popup nil)
+      (assoc-in keypaths/popup-session "dismissed")))
 
 (defmethod transition-state events/control-email-captured-submit [_ event args app-state]
   (let [email (get-in app-state keypaths/captured-email)]
