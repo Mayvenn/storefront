@@ -9,19 +9,19 @@
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]))
 
-(defn image-thumbnail [{:keys [photo]}]
+(defn image-thumbnail [photo]
   [:div.relative.overflow-hidden
    {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
    [:img.col-12.absolute.top-0.block {:src photo}]])
 
-(defn unattributed-slide [idx item]
+(defn unattributed-slide [idx {:keys [photo]}]
   [:div.p1
    [:a (util/fake-href events/control-popup-ugc-category {:offset idx})
-    (image-thumbnail item)]])
+    (image-thumbnail photo)]])
 
-(defn attributed-slide [{:keys [user-handle social-service] :as item}]
+(defn attributed-slide [{:keys [user-handle large-photo social-service] :as item}]
   [:div.m1.lit.rounded-bottom
-   (image-thumbnail item)
+   (image-thumbnail large-photo)
    [:div.flex.items-center.rounded-bottom.bg-white.py2.px3
     [:div.flex-auto.gray.bold "@" user-handle]
     [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}

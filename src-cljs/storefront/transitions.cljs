@@ -128,6 +128,7 @@
          {:id             id
           :user-handle    user_name
           :photo          (:medium_url pixlee_cdn_photos)
+          :large-photo    (:large_url pixlee_cdn_photos)
           :social-service source
           :purchase-link  (:link (first products))})
        album))
