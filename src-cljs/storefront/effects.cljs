@@ -70,6 +70,16 @@
   [app-state named-search]
   (refresh-products app-state (:product-ids named-search)))
 
+(defn update-popup-session [app-state]
+  (when-let [email-popup-action (get-in app-state keypaths/popup-session)]
+    (if-not (= email-popup-action "opted-in")
+      (cookie-jar/save-popup-session (get-in app-state keypaths/cookie)
+                                     ;; move this value into app-state's keypath/popup-session
+                                     ;; and just use it here
+                                     (if (get-in app-state keypaths/user-id)
+                                       "logged-in"
+                                       "dismissed")))))
+
 (defmulti perform-effects identity)
 
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -145,7 +155,9 @@
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (let [path (routes/current-path app-state)]
-        (exception-handler/refresh)))))
+        (exception-handler/refresh))))
+
+  (update-popup-session app-state))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ app-state]
   (when-not (= static-content-id
@@ -203,6 +215,13 @@
   (api/get-shipping-methods)
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
     (handle-message events/control-stylist-commissions-fetch)))
+
+(defmethod perform-effects events/control [_ _ args app-state]
+  (update-popup-session app-state))
+
+(defmethod perform-effects events/control-email-captured-submit [_ _ args app-state]
+  (when (empty? (get-in app-state keypaths/errors))
+    (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "opted-in")))
 
 (defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -766,8 +785,13 @@
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
-  (when (experiments/email-popup? app-state)
-    (handle-message events/show-email-popup)))
+  (let [in-experiment?                 (experiments/email-popup? app-state)
+        seen-popup-in-current-session? (not (get-in app-state keypaths/popup-session))
+        logged-in?                     (get-in app-state keypaths/user-id)]
+    (when (and in-experiment? seen-popup-in-current-session?)
+      (if logged-in?
+        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "logged-in")
+        (handle-message events/show-email-popup)))))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)

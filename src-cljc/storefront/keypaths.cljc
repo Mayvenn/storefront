@@ -216,6 +216,8 @@
 
 (def get-satisfaction-login? [:get-satisfaction-login?])
 
+(def popup-session (conj ui :popup-session))
+
 (defn ->str [keypath]
   (string/join "-" (map name keypath)))
 

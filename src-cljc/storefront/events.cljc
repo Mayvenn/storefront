@@ -75,6 +75,7 @@
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
 
+(defpath control)
 (defpath control-change-state)
 (defpath control-focus)
 (defpath control-blur)

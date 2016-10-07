@@ -138,7 +138,8 @@
                            feature))
 
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
-  (woopra/track-user-email-captured
-   (get-in app-state keypaths/session-id)
-   (get-in app-state keypaths/user)
-   (get-in app-state keypaths/captured-email)))
+  (when (empty? (get-in app-state keypaths/errors))
+    (woopra/track-user-email-captured
+     (get-in app-state keypaths/session-id)
+     (get-in app-state keypaths/user)
+     (get-in app-state keypaths/captured-email))))
