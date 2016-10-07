@@ -112,6 +112,7 @@
 
 (defpath control-popup-hide)
 (defpath control-popup-show-refer-stylists)
+(defpath control-popup-ugc-category)
 
 (defpath control-counter-inc)
 (defpath control-counter-dec)

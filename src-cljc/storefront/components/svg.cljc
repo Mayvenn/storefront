@@ -90,16 +90,36 @@
    [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
+(defn close-x [{:keys [class]}]
+  (component/html
+   [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
+    (svg-xlink "counter-inc")]))
+
 (def counter-dec
   (component/html
    [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-dec")]))
 
-;; Stylist Account Page
+;; Social
 (def instagram
   (component/html
    [:svg {:style {:width "100%" :height "100%"}}
     (svg-xlink "instagram")]))
+
+(def facebook-f
+  (component/html
+   [:svg {:style {:width "100%" :height "100%"}}
+    (svg-xlink "facebook-f")]))
+
+(def pinterest
+  (component/html
+   [:svg {:style {:width "100%" :height "100%"}}
+    (svg-xlink "pinterest")]))
+
+(def twitter
+  (component/html
+   [:svg {:style {:width "100%" :height "100%"}}
+    (svg-xlink "twitter")]))
 
 (def styleseat
   (component/html

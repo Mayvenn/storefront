@@ -77,6 +77,7 @@
                     store-info-expanded})
 (def menus (conj header-menus menu-expanded))
 (def video (conj ui :video))
+(def ui-ugc-category-popup-offset (conj ui :popup-ugc-category-offset))
 
 (def places-enabled (conj ui :places-enabled))
 

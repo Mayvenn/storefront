@@ -124,11 +124,12 @@
     (assoc-in keypaths/places-enabled true)))
 
 (defn ^:private parse-ugc-album [album]
-  (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url products]}]
-         {:id            id
-          :user-handle   user_name
-          :photo         (:medium_url pixlee_cdn_photos)
-          :purchase-link (:link (first products))})
+  (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url source products]}]
+         {:id             id
+          :user-handle    user_name
+          :photo          (:medium_url pixlee_cdn_photos)
+          :social-service source
+          :purchase-link  (:link (first products))})
        album))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
@@ -137,6 +138,11 @@
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album [_ event {:keys [album-data named-search-slug]} app-state]
   (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
             (parse-ugc-album album-data)))
+
+(defmethod transition-state events/control-popup-ugc-category [_ event {:keys [offset]} app-state]
+  (-> app-state
+      (assoc-in keypaths/popup :category-ugc)
+      (assoc-in keypaths/ui-ugc-category-popup-offset offset)))
 
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album-ids [_ event {:keys [data]} app-state]
   (reduce (fn [app-state {:keys [sku album_id]}]
