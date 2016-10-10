@@ -191,7 +191,7 @@
                                                :value   (.. e -target -value)}))}
                            input-attributes)
                     status)]
-      (when (and focused? hint?) [:div.p1 hint])]]))
+      (when hint? [:div.p1 hint])]]))
 
 (defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]
