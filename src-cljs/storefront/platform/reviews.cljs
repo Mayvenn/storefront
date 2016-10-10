@@ -87,7 +87,7 @@ Lengths: 12\" to 28\""
 (defn reviews-component [{:keys [named-search] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (:slug named-search)}
+    [:div {:key (str "reviews-" (:slug named-search))}
      (om/build reviews-component-inner args opts)])))
 
 (defn reviews-summary-component-inner [{:keys [loaded? named-search url]} owner opts]
@@ -112,7 +112,7 @@ Lengths: 12\" to 28\""
 (defn reviews-summary-component [{:keys [named-search] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (:slug named-search)}
+    [:div {:key (str "reviews-summary-" (:slug named-search))}
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
