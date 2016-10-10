@@ -5,6 +5,7 @@
             [storefront.events :as events]
             [storefront.routes :as routes]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
             [cemerick.url :as url]))
 
@@ -18,17 +19,25 @@
       (utils/fake-href events/control-create-order-from-shared-cart nav-args)
       (apply utils/route-to nav-message))))
 
-(defn image-thumbnail [photo user-handle]
-  [:div.relative.overflow-hidden
-   {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
-   [:img.col-12.absolute.top-0.block {:src photo}]
-   [:div.absolute.bottom-0.right-0
-    [:div.p1.light-gray.bold.h4 "@" user-handle]]])
+(defn image-thumbnail [photo]
+  [:div.overflow-hidden
+   [:img.col-12.block {:src photo}]])
 
 (defn buy-look-button [purchase-link]
-  (ui/large-teal-button (merge (purchase-link-behavior purchase-link)
-                               {:class "not-rounded"})
-                        "Buy Look"))
+  (ui/large-teal-button (purchase-link-behavior purchase-link) "Buy Look"))
+
+(defn image-attribution [user-handle purchase-link social-service]
+  [:div
+   [:div.flex.items-center.py2.mx3
+    [:div.flex-auto.gray.bold "@" user-handle]
+    [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}
+     (case social-service
+       "instagram" svg/instagram
+       "facebook"  svg/facebook-f
+       "pinterest" svg/pinterest
+       "twitter"   svg/twitter
+       nil)]]
+   [:div.px1.fill-gray (buy-look-button purchase-link)]])
 
 (defn component [{:keys [looks]} owner opts]
   (om/component
@@ -40,14 +49,14 @@
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.clearfix.mtn2
-      (for [{:keys [id user-handle photo purchase-link]} looks]
+      (for [{:keys [id user-handle photo purchase-link social-service]} looks]
         [:div
          {:key id}
          [:div.py2.col-12.col.md-up-col-3.md-up-hide {:key (str "small-" id)}
-          (image-thumbnail photo user-handle)
-          (buy-look-button purchase-link)]
+          (image-thumbnail photo)
+          (image-attribution user-handle purchase-link social-service)]
          [:div.py2.px2.col-12.col.md-up-col-3.to-md-hide {:key (str "large-" id)}
-          (image-thumbnail photo user-handle)
+          (image-thumbnail photo)
           (buy-look-button purchase-link)]])]])))
 
 (defn query [data]
