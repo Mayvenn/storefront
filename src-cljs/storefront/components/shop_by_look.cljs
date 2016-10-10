@@ -20,24 +20,24 @@
       (apply utils/route-to nav-message))))
 
 (defn image-thumbnail [photo]
-  [:div.overflow-hidden
+  [:div
    [:img.col-12.block {:src photo}]])
 
 (defn buy-look-button [purchase-link]
-  (ui/large-teal-button (purchase-link-behavior purchase-link) "Buy Look"))
+  (ui/large-teal-button (purchase-link-behavior purchase-link) "Buy this look"))
 
 (defn image-attribution [user-handle purchase-link social-service]
-  [:div
+  [:div.bg-light-silver
    [:div.flex.items-center.py2.mx3
     [:div.flex-auto.gray.bold "@" user-handle]
-    [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}
+    [:div {:style {:width "15px" :height "15px"}}
      (case social-service
        "instagram" svg/instagram
        "facebook"  svg/facebook-f
        "pinterest" svg/pinterest
        "twitter"   svg/twitter
        nil)]]
-   [:div.px1.fill-gray (buy-look-button purchase-link)]])
+   [:div.p1.fill-gray (buy-look-button purchase-link)]])
 
 (defn component [{:keys [looks]} owner opts]
   (om/component
@@ -52,12 +52,14 @@
       (for [{:keys [id user-handle photo purchase-link social-service]} looks]
         [:div
          {:key id}
-         [:div.py2.col-12.col.md-up-col-3.md-up-hide {:key (str "small-" id)}
+         [:div.py2.col-12.col.md-up-hide {:key (str "small-" id)}
           (image-thumbnail photo)
           (image-attribution user-handle purchase-link social-service)]
-         [:div.py2.px2.col-12.col.md-up-col-3.to-md-hide {:key (str "large-" id)}
-          (image-thumbnail photo)
-          (buy-look-button purchase-link)]])]])))
+         [:div.py2.px2.col.col-4.to-md-hide {:key (str "large-" id)}
+          [:div.relative.hoverable.overflow-hidden
+           {:style {:padding-top "100%"}}
+           [:div.absolute.top-0 (image-thumbnail photo)]
+           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution user-handle purchase-link social-service)]]]])]])))
 
 (defn query [data]
   {:looks (get-in data keypaths/ugc-looks)})
