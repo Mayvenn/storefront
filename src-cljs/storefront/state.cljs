@@ -136,6 +136,7 @@
           :store-info-expanded false
           :popup nil
           :stylist-banner-hidden? false
+          :show-apple-pay? false
 
           :expanded-commission-order-id #{nil}
           :popup-session (cookie-jar/retrieve-popup-session cookie)

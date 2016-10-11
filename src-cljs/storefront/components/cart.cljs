@@ -107,6 +107,7 @@ Thanks,
                               share-carts?
                               requesting-shared-cart?
                               essence?
+                              show-apple-pay?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
@@ -152,6 +153,15 @@ Thanks,
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
        [:div.h5.gray.center.py2 "OR"]
+
+       (when show-apple-pay?
+         [:div.pb2 (ui/large-apple-pay-button
+                    {:on-click (fn [])
+                     :data-test "apple-pay-checkout"}
+                    [:div.flex.items-center.justify-center
+                     "Check out with "
+                     [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.mtp4.ml1 {:style {:width "4rem"
+                                                                                              :height "2rem"}}]])])
        [:div.pb2 (ui/large-aqua-button
                   {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                    :spinning? redirecting-to-paypal?
@@ -218,6 +228,8 @@ Thanks,
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
      :essence?                  (experiments/essence? data)
+     :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
+                                     (experiments/apple-pay? data))
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 

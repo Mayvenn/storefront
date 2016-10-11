@@ -251,6 +251,10 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
+(defmethod transition-state events/apple-pay-availability
+  [_ event {:keys [available?]} app-state]
+  (assoc-in app-state keypaths/show-apple-pay? available?))
+
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
   (-> app-state
       (assoc-in keypaths/checkout-credit-card-existing-cards cards)

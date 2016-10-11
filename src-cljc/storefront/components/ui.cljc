@@ -37,11 +37,12 @@
     [:a (merge {:href "#"} opts) content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/teal     "btn-primary bg-teal white"
-                         :color/navy     "btn-primary bg-navy white"
-                         :color/aqua     "btn-primary bg-aqua white"
-                         :color/ghost    "btn-outline border-light-gray dark-gray"
-                         :color/facebook "btn-primary bg-fb-blue white"})]
+  (let [color (color-kw {:color/teal      "btn-primary bg-teal white"
+                         :color/navy      "btn-primary bg-navy white"
+                         :color/aqua      "btn-primary bg-aqua white"
+                         :color/ghost     "btn-outline border-light-gray dark-gray"
+                         :color/facebook  "btn-primary bg-fb-blue white"
+                         :color/apple-pay "btn-primary bg-black white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -88,6 +89,9 @@
 
 (defn large-facebook-button [attrs & content]
   (large-button :color/facebook attrs content))
+
+(defn large-apple-pay-button [attrs & content]
+  (large-button :color/apple-pay attrs content))
 
 (defn ghost-button [attrs & content]
   (small-button :color/ghost attrs content))

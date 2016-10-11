@@ -39,3 +39,13 @@
                                                       (assoc (js->clj response :keywordize-keys true) :place-order? (:place-order? args) ))
                                       (handle-message events/stripe-failure-create-token
                                                       (js->clj response :keywordize-keys true))))))))
+
+
+(defn verify-apple-pay-eligible []
+  (when (.hasOwnProperty js/window "Stripe")
+    (let [api-id {:request-key request-keys/stripe-apple-pay-availability
+                  :request-id (str (random-uuid))}]
+      (handle-message events/api-start api-id)
+      (js/Stripe.applePay.checkAvailability (fn [available?]
+                                              (handle-message events/api-end api-id)
+                                              (handle-message events/apple-pay-availability {:available? available?}))))))

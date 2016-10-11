@@ -72,6 +72,8 @@
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
 
+(defpath apple-pay-availability)
+
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
 

@@ -277,6 +277,7 @@
    "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
+  (stripe/insert)
   (refresh-current-order app-state)
   (api/get-shipping-methods)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
@@ -792,6 +793,9 @@
   (when (#{events/navigate-friend-referrals events/navigate-account-referrals}
          (get-in app-state keypaths/navigation-event))
     (talkable/show-referrals app-state)))
+
+(defmethod perform-effects events/inserted-stripe [_ event args app-state]
+  (stripe/verify-apple-pay-eligible))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args app-state]
   (update-popup-session app-state))

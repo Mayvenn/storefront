@@ -32,3 +32,6 @@
 
 (defn show-fields? [data]
   (display-feature? data "show-fields"))
+
+(defn apple-pay? [data]
+  (display-feature? data "apple-pay"))
