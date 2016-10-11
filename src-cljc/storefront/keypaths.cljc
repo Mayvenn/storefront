@@ -112,6 +112,8 @@
 (def shared-cart-url (conj ui :shared-cart-url))
 (def shared-cart-id (conj ui :shared-cart-id))
 
+(def selected-look-id (conj ui :selected-look-id))
+
 (def cart (conj ui :cart))
 (def cart-coupon-code (conj cart :coupon-code))
 

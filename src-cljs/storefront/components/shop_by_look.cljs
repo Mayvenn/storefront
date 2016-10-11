@@ -7,26 +7,28 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
             [cemerick.url :as url]))
 
-(defn ^:private purchase-link-behavior [purchase-link]
+(defn image-thumbnail [photo]
+  [:img.col-12.block {:src photo}])
+
+(defn buy-look-button [requesting? selected-look-id {:keys [id purchase-link]}]
   (let [[nav-event nav-args :as nav-message] (-> purchase-link
                                                  url/url-decode
                                                  url/url
                                                  :path
-                                                 routes/navigation-message-for)]
-    (if (= nav-event events/navigate-shared-cart)
-      (utils/fake-href events/control-create-order-from-shared-cart nav-args)
-      (apply utils/route-to nav-message))))
+                                                 routes/navigation-message-for)
+        is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
+    (ui/large-teal-button
+     (merge
+      {:spinning? (and (= id selected-look-id) requesting?)}
+      (if is-shared-cart-link?
+        (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
+        (apply utils/route-to nav-message)))
+     "Buy this look")))
 
-(defn image-thumbnail [photo]
-  [:div
-   [:img.col-12.block {:src photo}]])
-
-(defn buy-look-button [purchase-link]
-  (ui/large-teal-button (purchase-link-behavior purchase-link) "Buy this look"))
-
-(defn image-attribution [user-handle purchase-link social-service]
+(defn image-attribution [requesting? selected-look-id {:keys [user-handle social-service] :as look}]
   [:div.bg-light-silver
    [:div.flex.items-center.py2.mx3
     [:div.flex-auto.gray.bold "@" user-handle]
@@ -37,9 +39,9 @@
        "pinterest" svg/pinterest
        "twitter"   svg/twitter
        nil)]]
-   [:div.p1.fill-gray (buy-look-button purchase-link)]])
+   [:div.p1.fill-gray (buy-look-button requesting? selected-look-id look)]])
 
-(defn component [{:keys [looks]} owner opts]
+(defn component [{:keys [looks requesting? selected-look-id]} owner opts]
   (om/component
    (html
     [:div
@@ -49,20 +51,22 @@
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.clearfix.mtn2
-      (for [{:keys [id user-handle photo purchase-link social-service]} looks]
+      (for [{:keys [id user-handle photo purchase-link social-service] :as look} looks]
         [:div
          {:key id}
          [:div.py2.col-12.col.md-up-hide {:key (str "small-" id)}
           (image-thumbnail photo)
-          (image-attribution user-handle purchase-link social-service)]
+          (image-attribution requesting? selected-look-id look)]
          [:div.py2.px2.col.col-4.to-md-hide {:key (str "large-" id)}
           [:div.relative.hoverable.overflow-hidden
            {:style {:padding-top "100%"}}
            [:div.absolute.top-0 (image-thumbnail photo)]
-           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution user-handle purchase-link social-service)]]]])]])))
+           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution requesting? selected-look-id look)]]]])]])))
 
 (defn query [data]
-  {:looks (get-in data keypaths/ugc-looks)})
+  {:looks (get-in data keypaths/ugc-looks)
+   :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :selected-look-id (get-in data keypaths/selected-look-id)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
