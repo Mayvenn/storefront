@@ -42,7 +42,7 @@
       "Offer and Rebate Details ➤"]]]
    [:div.border-bottom.border-dark-silver ui/nbsp]])
 
-(defn display-order-summary [order]
+(defn display-order-summary [order {:keys [read-only?]}]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
@@ -60,7 +60,7 @@
              {:key name}
              [:div
               (orders/display-adjustment-name name)
-              (when coupon-code
+              (when (and (not read-only?) coupon-code)
                 [:a.ml1.h6.light-gray
                  (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
                  "Remove"])]

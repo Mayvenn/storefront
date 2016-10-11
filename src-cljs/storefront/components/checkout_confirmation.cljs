@@ -53,7 +53,7 @@
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
            (om/build checkout-payment/credit-card-form-component payment)])
-        (summary/display-order-summary order)
+        (summary/display-order-summary order {:read-only? true})
         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                          :disabled? updating-shipping?
                                          :data-test "confirm-form-submit"})]]]))))
