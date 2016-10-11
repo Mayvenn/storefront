@@ -27,9 +27,7 @@
 
 (defn fetch-album-photos [album-id {:keys [params handler]}]
   (api-request (str "/albums/" album-id "/photos")
-               ;; Only fetch images until we handle videos https://www.pivotaltracker.com/story/show/131462137
-               {:params  (merge {:filters (write-json {:content_type ["image"]})}
-                                params)
+               {:params  params
                 :handler handler}))
 
 (defn fetch-mosaic []

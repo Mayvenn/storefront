@@ -52,7 +52,7 @@
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.clearfix.mtn2
-      (for [{:keys [id user-handle photo purchase-link social-service] :as look} looks]
+      (for [{:keys [id content-type user-handle photo purchase-link source-url social-service] :as look} looks]
         [:div
          {:key id}
          [:div.py2.col-12.col.md-up-hide {:key (str "small-" id)}

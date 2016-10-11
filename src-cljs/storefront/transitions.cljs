@@ -124,13 +124,18 @@
     (assoc-in keypaths/places-enabled true)))
 
 (defn ^:private parse-ugc-album [album]
-  (map (fn [{:keys [id user_name pixlee_cdn_photos medium_url source products]}]
-         {:id             id
-          :user-handle    user_name
-          :photo          (:medium_url pixlee_cdn_photos)
-          :large-photo    (:large_url pixlee_cdn_photos)
-          :social-service source
-          :purchase-link  (:link (first products))})
+  (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products]}]
+         (let [medium-cdn-url (:medium_url pixlee_cdn_photos)]
+           {:id             id
+            :content-type   content_type
+            :source-url     source_url
+            :user-handle    user_name
+            :photo          (if (blank? medium-cdn-url)
+                              medium_url
+                              medium-cdn-url)
+            :large-photo    (:large_url pixlee_cdn_photos)
+            :social-service source
+            :purchase-link  (:link (first products))}))
        album))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
