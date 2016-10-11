@@ -155,7 +155,12 @@
 
 (def play-video
   (component/html
-   [:svg {:style {:width "64px" :height "64px"}}
+   [:svg {:class "fill-teal" :style {:width "64px" :height "64px"}}
+    (svg-xlink "play-video")]))
+
+(def play-video-muted
+  (component/html
+   [:svg {:class "fill-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
 
 (def guarantee

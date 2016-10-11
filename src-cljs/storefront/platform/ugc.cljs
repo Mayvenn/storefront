@@ -9,19 +9,30 @@
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]))
 
-(defn image-thumbnail [photo]
+(defn image-view [photo-url]
   [:div.relative.overflow-hidden
    {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
-   [:img.col-12.absolute.top-0.block {:src photo}]])
+   [:img.col-12.absolute.top-0 {:src photo-url}]])
 
-(defn unattributed-slide [idx {:keys [photo]}]
+(defn video-view [video-url]
+  [:div.bg-white.relative {:style {:padding-top "100%"}}
+   [:video.col-12.absolute.top-0 {:controls true}
+    [:source {:src video-url}]]])
+
+(defn unattributed-slide [idx {:keys [photo content-type]}]
   [:div.p1
    [:a (util/fake-href events/control-popup-ugc-category {:offset idx})
-    (image-thumbnail photo)]])
+    [:div.relative.overflow-hidden
+     {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+     [:img.col-12.absolute.top-0.block {:src photo}]
+     (when (= content-type "video")
+       [:div.col-12.absolute {:style {:top "50%" :margin-top "-32px"}} svg/play-video-muted])]]])
 
-(defn attributed-slide [{:keys [user-handle large-photo social-service] :as item}]
+(defn attributed-slide [{:keys [user-handle large-photo social-service content-type source-url] :as item}]
   [:div.m1.lit.rounded-bottom
-   (image-thumbnail large-photo)
+   (if (= content-type "video")
+     (video-view source-url)
+     (image-view large-photo))
    [:div.flex.items-center.rounded-bottom.bg-white.py2.px3
     [:div.flex-auto.gray.bold "@" user-handle]
     [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}

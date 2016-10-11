@@ -93,7 +93,7 @@
   </symbol>
   <symbol id="play-video" viewBox="0 0 64 64">
     <g fill-rule="evenodd">
-      <circle cx="32" cy="32" r="32" fill="#40CBAC"></circle>
+      <circle cx="32" cy="32" r="32"></circle>
       <path d="M22 44V20l24 12z" fill="#FFFFFF"></path>
     </g>
   </symbol>
