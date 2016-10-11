@@ -67,12 +67,17 @@
   (map (fn [{:keys [name price] :as item}]
          {:label name
           :amount price})
-       (orders/all-order-adjustments order)))
+       (:adjustments order)))
 
 (defn ^:private shipping->apple-pay [order]
   (let [{:keys [quantity unit-price]} (orders/shipping-item order)]
     {:label "Shipping"
      :amount (* quantity unit-price)}))
+
+(defn ^:private tax->apple-pay [order]
+  (let [{:keys [name price]} (orders/tax-adjustment order)]
+    {:label name
+     :amount price}))
 
 (defn ^:private shipping-methods->apple-pay [shipping-methods]
   (for [{:keys [name quantity price sku]} shipping-methods]
@@ -88,8 +93,9 @@
                          :requiredShippingContactFields ["name" "phone" "email" "postalAddress"]
                          :shippingMethods (shipping-methods->apple-pay shipping-methods)
                          :lineItems (concat (line-items->apple-pay order)
-                                            [(shipping->apple-pay order)]
-                                            (adjustments->apple-pay order))
+                                            (adjustments->apple-pay order)
+                                            [(shipping->apple-pay order)
+                                             (tax->apple-pay order)])
                          :total {:label "Mayvenn Hair"
                                  :amount (:total order)}}
         session (js/Stripe.applePay.buildSession (clj->js payment-request) charge-apple-pay)]
