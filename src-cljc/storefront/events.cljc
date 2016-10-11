@@ -126,6 +126,7 @@
 (defpath control-checkout-as-guest-submit)
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
+(defpath control-checkout-cart-apple-pay)
 (defpath control-checkout-update-addresses-submit)
 (defpath control-checkout-shipping-method-select)
 (defpath control-checkout-payment-method-submit)

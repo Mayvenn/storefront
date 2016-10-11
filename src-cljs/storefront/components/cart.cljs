@@ -156,7 +156,7 @@ Thanks,
 
        (when show-apple-pay?
          [:div.pb2 (ui/large-apple-pay-button
-                    {:on-click (fn [])
+                    {:on-click (utils/send-event-callback events/control-checkout-cart-apple-pay)
                      :data-test "apple-pay-checkout"}
                     [:div.flex.items-center.justify-center
                      "Check out with "
@@ -229,7 +229,8 @@ Thanks,
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
      :essence?                  (experiments/essence? data)
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
-                                     (experiments/apple-pay? data))
+                                     (experiments/apple-pay? data)
+                                     (seq (get-in data keypaths/shipping-methods)))
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
