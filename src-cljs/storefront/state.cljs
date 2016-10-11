@@ -37,7 +37,7 @@
 (def initial-cart-state
   {:coupon-code ""
    :source nil
-   :paypal-redirecting false})
+   :paypal-redirect false})
 
 (def empty-referral {:fullname ""
                      :phone ""
