@@ -130,7 +130,7 @@
             :content-type   content_type
             :source-url     source_url
             :user-handle    user_name
-            :photo          (if (blank? medium-cdn-url)
+            :photo          (if (string/blank? medium-cdn-url)
                               medium_url
                               medium-cdn-url)
             :large-photo    (:large_url pixlee_cdn_photos)
