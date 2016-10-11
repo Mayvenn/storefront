@@ -22,7 +22,8 @@
         is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
     (ui/large-teal-button
      (merge
-      {:spinning? (and (= id selected-look-id) requesting?)}
+      {:spinning? (and (= id selected-look-id) requesting?)
+       :disabled? requesting?}
       (if is-shared-cart-link?
         (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
         (apply utils/route-to nav-message)))
