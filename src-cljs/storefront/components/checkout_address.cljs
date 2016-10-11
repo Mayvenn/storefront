@@ -6,6 +6,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.accessors.experiments :as experiments]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
@@ -273,16 +274,19 @@
                                                 :data-test "address-form-submit"})]]))))
 
 (defn query [data]
-  (let [places-loaded? (get-in data keypaths/loaded-places)
-        states         (map (juxt :name :abbr) (get-in data keypaths/states))
-        field-errors   (get-in data keypaths/field-errors)]
+  (let [places-loaded?   (get-in data keypaths/loaded-places)
+        states           (map (juxt :name :abbr) (get-in data keypaths/states))
+        field-errors     (get-in data keypaths/field-errors)
+        always-expanded? (experiments/show-fields? data)]
     {:saving?               (utils/requesting? data request-keys/update-addresses)
      :step-bar              (checkout-steps/query data)
      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
                              :states                    states
                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
                              :places-loaded?            places-loaded?
-                             :billing-expanded?         (not (empty? (get-in data keypaths/checkout-billing-address-address1)))
+                             :always-expanded?          always-expanded?
+                             :billing-expanded?         (or always-expanded?
+                                                            (not (empty? (get-in data keypaths/checkout-billing-address-address1))))
                              :field-errors              field-errors
                              :focused                   (get-in data keypaths/ui-focus)}
      :shipping-address-data {:shipping-address   (get-in data keypaths/checkout-shipping-address)
@@ -290,7 +294,8 @@
                              :email              (get-in data keypaths/checkout-guest-email)
                              :guest?             (get-in data keypaths/checkout-as-guest)
                              :places-loaded?     places-loaded?
-                             :shipping-expanded? (not (empty? (get-in data keypaths/checkout-shipping-address-address1)))
+                             :shipping-expanded? (or always-expanded?
+                                                     (not (empty? (get-in data keypaths/checkout-shipping-address-address1))))
                              :field-errors       field-errors
                              :focused            (get-in data keypaths/ui-focus)}}))
 

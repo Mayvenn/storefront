@@ -29,3 +29,6 @@
 
 (defn email-popup? [data]
   (display-feature? data "email-popup"))
+
+(defn show-fields? [data]
+  (display-feature? data "show-fields"))
