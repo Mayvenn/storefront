@@ -64,8 +64,7 @@
     [:div.col.col-12.md-up-col-6
      [:div.mx-auto.col-12.md-up-col-10
       [:div.border-silver.border-top.md-up-hide.mb3]
-      (ui/text-field {:auto-focus "autofocus"
-                      :data-test  "account-address1"
+      (ui/text-field {:data-test  "account-address1"
                       :errors     (get field-errors ["address" "address1"])
                       :id         "account-address1"
                       :keypath    (conj keypaths/stylist-manage-account :address :address1)

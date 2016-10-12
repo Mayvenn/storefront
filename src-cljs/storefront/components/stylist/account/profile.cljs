@@ -25,7 +25,6 @@
          :focused    focused
          :value      (:firstname address)
          :errors     (get field-errors ["address" "firstname"])
-         :auto-focus "autofocus"
          :type       "text"
          :name       "account-first-name"
          :data-test  "account-first-name"

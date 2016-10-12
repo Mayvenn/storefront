@@ -180,8 +180,7 @@
                                       (merge (utils/fake-href events/control-stylist-referral-remove {:index idx})
                                              {:data-test (str "remove-referral-button-" idx)})
                                       svg/counter-dec])]
-                   [:div.col-12 (ui/text-field {:auto-focus "autofocus"
-                                                :class      "rounded"
+                   [:div.col-12 (ui/text-field {:class      "rounded"
                                                 :data-test  (str "referral-fullname-" idx)
                                                 :errors     (get field-errors ["referrals" idx "fullname"])
                                                 :id         (str "referral-fullname-" idx)

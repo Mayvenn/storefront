@@ -25,8 +25,7 @@
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
 
-     (ui/text-field {:auto-focus "autofocus"
-                     :data-test  "user-email"
+     (ui/text-field {:data-test  "user-email"
                      :errors     (get field-errors ["email"])
                      :keypath    keypaths/sign-up-email
                      :focused    focused

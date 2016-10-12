@@ -14,8 +14,7 @@
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
-     (ui/text-field {:auto-focus "autofocus"
-                     :errors     (get field-errors ["email"])
+     (ui/text-field {:errors     (get field-errors ["email"])
                      :keypath    keypaths/forgot-password-email
                      :focused    focused
                      :label      "Email"

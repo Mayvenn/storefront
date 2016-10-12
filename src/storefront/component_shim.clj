@@ -18,8 +18,7 @@
   (-> attrs
       (set/rename-keys {:item-prop :itemprop
                         :item-scope :itemscope
-                        :item-type :itemtype
-                        :auto-focus :autofocus})
+                        :item-type :itemtype})
       (dissoc :dangerouslySetInnerHTML :key :data-test)
       remove-handlers
       normalize-style))

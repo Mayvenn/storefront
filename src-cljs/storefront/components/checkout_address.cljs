@@ -45,7 +45,6 @@
         :focused    focused
         :value      (:first-name shipping-address)
         :errors     (get field-errors ["shipping-address" "first-name"])
-        :auto-focus "autofocus"
         :name       "shipping-first-name"
         :data-test  "shipping-first-name"
         :id         "shipping-first-name"
@@ -168,7 +167,6 @@
            :focused    focused
            :value      (:first-name billing-address)
            :errors     (get field-errors ["billing-address" "first-name"])
-           :auto-focus "autofocus"
            :name       "billing-first-name"
            :id         "billing-first-name"
            :data-test  "billing-first-name"
