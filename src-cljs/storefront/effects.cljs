@@ -486,7 +486,8 @@
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
   (stripe/begin-apple-pay (get-in app-state keypaths/order)
-                          (get-in app-state keypaths/shipping-methods)))
+                          (get-in app-state keypaths/shipping-methods)
+                          (get-in app-state keypaths/states)))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [dispatch event args app-state]
   (let [order (get-in app-state keypaths/order)]

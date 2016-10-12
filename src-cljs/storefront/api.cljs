@@ -567,6 +567,12 @@
                                        {:order %
                                         :navigate events/navigate-checkout-payment})}))
 
+(defn update-shipping-address [params complete-shipping]
+  (POST
+   (str api-base-url "/v2/guest-update-addresses")
+   {:params  params
+    :handler (comp complete-shipping :body)}))
+
 (defn update-shipping-method [order]
   (api-req
    POST
