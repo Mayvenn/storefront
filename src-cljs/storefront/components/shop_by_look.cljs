@@ -66,7 +66,7 @@
            [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution requesting? selected-look-id look)]]]])]])))
 
 (defn query [data]
-  {:looks (get-in data keypaths/ugc-looks)
+  {:looks (remove (comp #{"video"} :content-type) (get-in data keypaths/ugc-looks))
    :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
    :selected-look-id (get-in data keypaths/selected-look-id)})
 
