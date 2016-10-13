@@ -3,7 +3,9 @@
             [clojure.set :as set]))
 
 (defn determine-features [data]
-  (let [stylist-id    (get-in data keypaths/store-stylist-id)
+  data
+  ;; NOTE: Ryan wants kinky-straight disabled under further review
+  #_(let [stylist-id    (get-in data keypaths/store-stylist-id)
         store-slug    (get-in data keypaths/store-slug)
         bucket-offset (mod stylist-id 3)]
     (assoc-in data
