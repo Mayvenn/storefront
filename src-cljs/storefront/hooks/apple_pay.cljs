@@ -120,7 +120,7 @@
     (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order states
                                                    (fn [status total line-items] (.completeShippingContactSelection session
                                                                                                                    status
-                                                                                                                   (clj->js shipping-methods)
+                                                                                                                   (clj->js []) ;; no new shipping methods
                                                                                                                    (clj->js total)
                                                                                                                    (clj->js line-items)))))
     (set! (.-onshippingmethodselected session) (partial apple-pay-update-estimates modified-order states
