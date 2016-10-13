@@ -230,7 +230,8 @@ Thanks,
      :essence?                  (experiments/essence? data)
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
                                      (experiments/apple-pay? data)
-                                     (seq (get-in data keypaths/shipping-methods)))
+                                     (seq (get-in data keypaths/shipping-methods))
+                                     (seq (get-in data keypaths/states)))
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 

@@ -29,6 +29,7 @@
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
+            [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.wistia :as wistia]
@@ -278,6 +279,7 @@
 
 (defmethod perform-effects events/navigate-cart [_ event args app-state]
   (api/get-shipping-methods)
+  (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)
   (refresh-current-order app-state)
   (api/get-shipping-methods)
@@ -485,9 +487,9 @@
   (routes/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
-  (stripe/begin-apple-pay (get-in app-state keypaths/order)
-                          (get-in app-state keypaths/shipping-methods)
-                          (get-in app-state keypaths/states)))
+  (apple-pay/begin (get-in app-state keypaths/order)
+                   (get-in app-state keypaths/shipping-methods)
+                   (get-in app-state keypaths/states)))
 
 (defmethod perform-effects events/control-checkout-cart-paypal-setup [dispatch event args app-state]
   (let [order (get-in app-state keypaths/order)]
@@ -801,7 +803,7 @@
     (talkable/show-referrals app-state)))
 
 (defmethod perform-effects events/inserted-stripe [_ event args app-state]
-  (stripe/verify-apple-pay-eligible))
+  (apple-pay/verify-eligible))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args app-state]
   (update-popup-session app-state))

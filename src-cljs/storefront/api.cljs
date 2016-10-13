@@ -567,11 +567,13 @@
                                        {:order %
                                         :navigate events/navigate-checkout-payment})}))
 
-(defn update-shipping-address [params complete-shipping]
+(defn apple-pay-estimate [params successful-estimate failed-to-estimate]
   (POST
-   (str api-base-url "/v2/guest-update-addresses")
-   {:params  params
-    :handler (comp complete-shipping :body)}))
+   (str api-base-url "/apple-pay-estimate")
+   (merge default-req-opts
+          {:params  params
+           :handler (comp successful-estimate :body)
+           :error-handler failed-to-estimate})))
 
 (defn update-shipping-method [order]
   (api-req
