@@ -19,7 +19,7 @@
 (defn video-view [video-url]
   [:div.bg-black.relative {:style {:padding-top "100%"}}
    [:div.absolute.top-0.bottom-0.left-0.right-0.overflow-hidden
-    [:video.col-12.block {:controls true :style {:min-height "100%" :min-width "100%"}}
+    [:video.col-12.block {:controls true :style {:height "100%" :width "100%"}}
      [:source {:src video-url}]]]])
 
 (defn unattributed-slide [idx {:keys [photo content-type]}]
