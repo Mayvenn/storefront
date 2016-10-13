@@ -33,7 +33,7 @@
        [:div.col-12.absolute {:style {:top "50%" :margin-top "-32px"}} svg/play-video-muted])]]])
 
 (defn attributed-slide [{:keys [user-handle large-photo social-service content-type source-url] :as item}]
-  [:div.lit.rounded-bottom
+  [:div.rounded-bottom.pp1
    (if (= content-type "video")
      (video-view source-url)
      (image-view large-photo))
