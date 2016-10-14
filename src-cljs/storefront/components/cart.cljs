@@ -210,8 +210,7 @@ Thanks,
 (defn ^:private update-pending? [data]
   (let [request-key-prefix (comp vector first :request-key)]
     (some #(apply utils/requesting? data %)
-          [request-keys/checkout-cart
-           request-keys/add-promotion-code
+          [request-keys/add-promotion-code
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 

@@ -34,7 +34,6 @@
 (def get-shipping-methods [:shipping-methods])
 
 (def update-cart [:update-cart])
-(def checkout-cart [:checkout-cart])
 (def update-line-item [:update-line-item])
 (def increment-line-item [:update-line-item])
 (def decrement-line-item [:update-line-item])
