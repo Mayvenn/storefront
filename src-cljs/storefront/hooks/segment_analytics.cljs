@@ -18,6 +18,6 @@
   (when (.hasOwnProperty js/window "analytics")
     (js/analytics.track event-name (clj->js props))))
 
-(defn track-page [path]
+(defn track-page []
   (when (.hasOwnProperty js/window "analytics")
     (js/analytics.page)))
