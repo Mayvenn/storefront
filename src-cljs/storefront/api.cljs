@@ -575,6 +575,17 @@
            :handler (comp successful-estimate :body)
            :error-handler failed-to-estimate})))
 
+(defn checkout [params successful-checkout failed-checkout]
+  (api-req
+   POST
+   "/checkout"
+   request-keys/checkout
+   {:params  params
+    :handler (juxt successful-checkout (messages/handle-message events/api-success-update-order-place-order
+                                                                {:order %
+                                                                 :navigate events/navigate-order-complete}))
+    :error-handler (juxt failed-checkout default-error-handler)}))
+
 (defn update-shipping-method [order]
   (api-req
    POST

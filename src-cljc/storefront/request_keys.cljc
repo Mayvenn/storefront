@@ -48,6 +48,7 @@
 (def get-order [:get-order])
 (def add-to-bag [:add-to-bag])
 (def place-order [:place-order])
+(def checkout [:checkout])
 (def send-referrals [:send-referrals])
 (def create-shared-cart [:create-shared-cart])
 (def create-order-from-shared-cart [:create-order-from-shared-cart])

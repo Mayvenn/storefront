@@ -501,6 +501,8 @@
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
   (apple-pay/begin (get-in app-state keypaths/order)
+                   (get-in app-state keypaths/session-id)
+                   (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
                    (get-in app-state keypaths/shipping-methods)
                    (get-in app-state keypaths/states)))
 

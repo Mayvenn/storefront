@@ -18,10 +18,6 @@
                                               (handle-message events/api-end api-id)
                                               (handle-message events/apple-pay-availability {:available? available?}))))))
 
-(defn ^:private charge-apple-pay [order result complete]
-  ;;TODO charge and then say its successful
-  (complete (js/ApplePaySession.STATUS_SUCCESS)))
-
 (defn ^:private product-items->apple-line-items [order]
   (map (fn [{:keys [quantity unit-price] :as item}]
          {:label (str (products/product-title item) " - QTY " quantity)
@@ -80,6 +76,34 @@
    :state (state-name->abbr administrativeArea)
    :zipcode postalCode})
 
+(defn ^:private card->waiter-address [card shipping-contact state-name->abbr]
+  (let [{:keys [address_city address_country address_line1 address_line2 address_state address_zip]} (js->clj card)
+        {:keys [givenName familyName phoneNumber]} shipping-contact]
+    {:address1 address_line1
+     :address2 address_line2
+     :city address_city
+     :firstname givenName
+     :lastname familyName
+     :phone phoneNumber
+     :state (state-name->abbr address_state)
+     :zipcode address_zip}))
+
+(defn ^:private charge-apple-pay [order session-id utm-params state-name->abbr result complete]
+  ;;TODO charge and then say its successful
+  (let [shipping-contact (js->clj (.-shippingContact result) :keywordize-keys true)
+        shipping-method  (js->clj (.-shippingMethod result) :keywordize-keys true)]
+    (api/checkout {:number              (:number order)
+                   :token               (:token order)
+                   :shipping-address    (apple->waiter-shipping shipping-contact state-name->abbr)
+                   :billing-address     (card->waiter-address (.. result -token -card) shipping-contact state-name->abbr)
+                   :email               (:emailAddress shipping-contact)
+                   :shipping-method-sku (:identifier shipping-method)
+                   :cart-payments       {:apple-pay {:source (.. result -token -id)}}
+                   :session-id          session-id
+                   :utm-params          utm-params}
+                  (fn [response] (complete js/ApplePaySession.STATUS_SUCCESS))
+                  (fn [error] (complete js/ApplePaySession.STATUS_FAILURE)))))
+
 (defn ^:private apple-pay-update-estimates [order-atom states complete event]
   (let [{:keys [number token shipping-address] :as order} @order-atom
 
@@ -101,22 +125,29 @@
                                         (order->apple-total updated-order)
                                         (order->apple-line-items updated-order)))
         failed-to-estimate  (fn [error]
-                              (complete js/ApplePaySession.STATUS_FAILURE
-                                        (order->apple-total order)
-                                        (order->apple-line-items order)))]
+                              (let [details               (or (some-> error :response :body :details) {})
+                                    bad-shipping-contact? (some details [:email])
+                                    bad-shipping-address? (some details [:shipping-address.city :shipping-address.state :shipping-address.zipcode])
+                                    status                (cond
+                                                            bad-shipping-contact? js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
+                                                            bad-shipping-address? js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
+                                                            :else                 js/ApplePaySession.STATUS_FAILURE)]
+                                (complete status
+                                          (order->apple-total order)
+                                          (order->apple-line-items order))))]
     (api/apple-pay-estimate params successful-estimate failed-to-estimate)))
 
-(defn begin [order shipping-methods states]
-  (let [modified-order (atom order)
+(defn begin [order session-id utm-params shipping-methods states]
+  (let [modified-order   (atom order)
         shipping-methods (waiter->apple-shipping-methods shipping-methods)
-        payment-request {:countryCode                   "US"
-                         :currencyCode                  "USD"
-                         :requiredBillingContactFields  ["name" "postalAddress"]
-                         :requiredShippingContactFields ["name" "phone" "email" "postalAddress"]
-                         :shippingMethods               shipping-methods
-                         :lineItems                     (order->apple-line-items order)
-                         :total                         (order->apple-total order)}
-        session         (js/Stripe.applePay.buildSession (clj->js payment-request) (partial charge-apple-pay order))]
+        payment-request  {:countryCode                   "US"
+                          :currencyCode                  "USD"
+                          :requiredBillingContactFields  ["name" "postalAddress"]
+                          :requiredShippingContactFields ["name" "phone" "email" "postalAddress"]
+                          :shippingMethods               shipping-methods
+                          :lineItems                     (order->apple-line-items order)
+                          :total                         (order->apple-total order)}
+        session          (js/Stripe.applePay.buildSession (clj->js payment-request) (partial charge-apple-pay order session-id utm-params (partial find-state-abbr states)))]
     (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order states
                                                    (fn [status total line-items] (.completeShippingContactSelection session
                                                                                                                    status
