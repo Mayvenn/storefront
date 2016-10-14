@@ -56,6 +56,16 @@
       (assoc-in app-state keypaths/pending-promo-code sha)
       app-state)))
 
+(defn default-credit-card-name [app-state {:keys [first-name last-name]}]
+  (if-not (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
+    app-state
+    (let [default (->> [first-name last-name]
+                       (remove string/blank?)
+                       (string/join " "))]
+      (if (string/blank? default)
+        app-state
+        (assoc-in app-state keypaths/checkout-credit-card-name default)))))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       collapse-menus
@@ -122,6 +132,9 @@
 
     true
     (assoc-in keypaths/places-enabled true)))
+
+(defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
+  (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
 (defn ^:private parse-ugc-album [album]
   (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products]}]
@@ -429,11 +442,6 @@
       (sign-in-user args)
       (clear-fields keypaths/manage-account-email
                     keypaths/manage-account-password)))
-
-(defn default-credit-card-name [app-state {:keys [first-name last-name]}]
-  (if (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
-    (assoc-in app-state keypaths/checkout-credit-card-name (str first-name " " last-name))
-    app-state))
 
 (defmethod transition-state events/api-success-shipping-methods [_ events {:keys [shipping-methods]} app-state]
   (-> app-state
