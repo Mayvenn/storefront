@@ -40,6 +40,16 @@
             [storefront.utils.query :as query]
             [clojure.set :as set]))
 
+(defn potentially-show-email-popup [app-state]
+  (let [in-experiment?      (experiments/email-popup? app-state)
+        is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
+        not-seen-popup-yet? (not (get-in app-state keypaths/popup-session))
+        signed-in?          (get-in app-state keypaths/user-id)]
+    (when (and in-experiment? is-on-homepage? not-seen-popup-yet?)
+      (if signed-in?
+        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "signed-in")
+        (handle-message events/show-email-popup)))))
+
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
@@ -153,6 +163,9 @@
         (exception-handler/refresh))))
 
   (when experiments/email-popup? (update-popup-session app-state)))
+
+(defmethod perform-effects events/navigate-home [_ _ _ app-state]
+  (potentially-show-email-popup app-state))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ app-state]
   (when-not (= static-content-id
@@ -788,13 +801,7 @@
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
-  (let [in-experiment?      (experiments/email-popup? app-state)
-        not-seen-popup-yet? (not (get-in app-state keypaths/popup-session))
-        signed-in?          (get-in app-state keypaths/user-id)]
-    (when (and in-experiment? not-seen-popup-yet?)
-      (if signed-in?
-        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "signed-in")
-        (handle-message events/show-email-popup)))))
+  (potentially-show-email-popup app-state))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)
