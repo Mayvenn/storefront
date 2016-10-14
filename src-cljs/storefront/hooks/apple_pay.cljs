@@ -89,7 +89,6 @@
      :zipcode address_zip}))
 
 (defn ^:private charge-apple-pay [order session-id utm-params state-name->abbr result complete]
-  ;;TODO charge and then say its successful
   (let [shipping-contact (js->clj (.-shippingContact result) :keywordize-keys true)
         shipping-method  (js->clj (.-shippingMethod result) :keywordize-keys true)]
     (api/checkout {:number              (:number order)
