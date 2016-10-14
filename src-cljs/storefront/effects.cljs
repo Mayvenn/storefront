@@ -18,6 +18,7 @@
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.google-analytics :as google-analytics]
+            [storefront.hooks.segment-analytics :as segment-analytics]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook :as facebook]
@@ -92,6 +93,7 @@
 (defmethod perform-effects events/app-start [dispatch event args app-state]
   (svg/insert-sprite)
   (google-analytics/insert-tracking)
+  (segment-analytics/insert-tracking)
   (convert/insert-tracking)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
@@ -103,6 +105,7 @@
     (handle-message events/enable-feature {:feature feature})))
 
 (defmethod perform-effects events/app-stop [_ event args app-state]
+  (segment-analytics/remove-tracking)
   (convert/remove-tracking)
   (riskified/remove-beacon)
   (google-analytics/remove-tracking)

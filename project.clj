@@ -67,7 +67,8 @@
                           "externs/talkable.js"
                           "externs/react-slick.js"
                           "externs/pixlee.js"
-                          "externs/wistia.js"]}}
+                          "externs/wistia.js"
+                          "externs/segment.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
      :compiler {:main "storefront.core"
@@ -92,7 +93,8 @@
                           "externs/talkable.js"
                           "externs/react-slick.js"
                           "externs/pixlee.js"
-                          "externs/wistia.js"]
+                          "externs/wistia.js"
+                          "externs/segment.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles
