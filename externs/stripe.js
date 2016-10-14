@@ -5,9 +5,11 @@ Stripe.card.createToken = function() {};
 Stripe.applePay = {};
 Stripe.applePay.checkAvailability = function() {};
 /**
+ * @param {Object<string, *>} paymentRequest
+ * @param {function(!_StripeApplePayResult,function(*))} callback
  * @return {!_ApplePaySession}
  */
-Stripe.applePay.buildSession = function() {};
+Stripe.applePay.buildSession = function(paymentRequest, callback) {};
 
 function _ApplePaySession() {};
 _ApplePaySession.prototype.begin = function() {};
@@ -22,3 +24,10 @@ ApplePaySession.STATUS_SUCCESS = null;
 ApplePaySession.STATUS_FAILURE = null;
 ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS = null;
 ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT = null;
+
+function _StripeApplePayResult() {}
+_StripeApplePayResult.prototype.shippingContact = {};
+_StripeApplePayResult.prototype.shippingMethod = {};
+_StripeApplePayResult.prototype.token = {};
+_StripeApplePayResult.prototype.token.card = null;
+_StripeApplePayResult.prototype.token.id = null;
