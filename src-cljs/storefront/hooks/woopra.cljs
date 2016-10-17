@@ -49,6 +49,15 @@
     (insert-tag-with-callback (src-tag uri "woopra")
                               #(remove-tag (.-target %)))))
 
+(defn track-identify [{:keys [session-id user]}]
+  (woopra-request
+   "https://www.woopra.com/track/identify"
+   {:params (filter-nil {:host     config/woopra-host
+                         :cookie   session-id
+                         :cv_id    (:id user)
+                         :cv_email (:email user)})}))
+
+
 (defn- track-event [event-name session-id user params]
   (woopra-request
    "https://www.woopra.com/track/ce"
@@ -60,6 +69,8 @@
                                params))}))
 
 (defn track-user-email-captured [session-id user email]
+  (track-identify {:session-id session-id
+                   :user (assoc user :email email)})
   (track-event "email_captured" session-id user {:ce_email email}))
 
 (defn track-experiment [session-id user variation]
@@ -83,12 +94,4 @@
                        :ce_line_item_subtotal   ($ (* (:price variant) quantity))
                        :ce_store_id             (-> order :stylist-ids last)}
                       (order->visitor-data order))))
-
-(defn track-identify [{:keys [session-id user]}]
-  (woopra-request
-   "https://www.woopra.com/track/identify"
-   {:params (filter-nil {:host     config/woopra-host
-                         :cookie   session-id
-                         :cv_id    (:id user)
-                         :cv_email (:email user)})}))
 
