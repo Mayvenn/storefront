@@ -74,9 +74,9 @@
                                       "/choose_"
                                       (clj->js last-step)))))
 
-(defmethod perform-track events/control-add-to-bag [_ event args app-state]
+(defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart")
-  (segment-analytics/track-event "add-to-cart" {})
+  (segment-analytics/track-event "add-to-cart" {:variant variant :quantity quantity})
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
   (let [named-search (named-searches/current-named-search app-state)]
     (when (pixlee/content-available? named-search)
@@ -117,10 +117,12 @@
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (named-searches/current-named-searches app-state) order)))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
+  (segment-analytics/identify (get-in app-state keypaths/user))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
+  (segment-analytics/identify (get-in app-state keypaths/user))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
 

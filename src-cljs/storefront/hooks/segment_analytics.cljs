@@ -21,3 +21,8 @@
 (defn track-page []
   (when (.hasOwnProperty js/window "analytics")
     (js/analytics.page)))
+
+(defn identify [user]
+  (when (.hasOwnProperty js/window "analytics")
+    (js/analytics.identify (or (:id user) (:email user))
+                           (clj->js {:email (:email user)}))))
