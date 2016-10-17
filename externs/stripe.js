@@ -16,7 +16,7 @@ _ApplePaySession.prototype.begin = function() {};
 _ApplePaySession.prototype.onshippingcontactselected = null;
 _ApplePaySession.prototype.onshippingmethodselected = null;
 
-_ApplePaySession.prototype.completeShippingContactSelected = function() {};
+_ApplePaySession.prototype.completeShippingContactSelection = function() {};
 _ApplePaySession.prototype.completeShippingMethodSelection = function() {};
 
 var ApplePaySession = {};
