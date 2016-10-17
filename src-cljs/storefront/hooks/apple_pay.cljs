@@ -70,20 +70,20 @@
   {:address1 (first addressLines)
    :address2 (second addressLines)
    :city locality
-   :firstname givenName
-   :lastname familyName
+   :first-name givenName
+   :last-name familyName
    :phone phoneNumber
    :state (state-name->abbr administrativeArea)
    :zipcode postalCode})
 
 (defn ^:private card->waiter-address [card shipping-contact state-name->abbr]
-  (let [{:keys [address_city address_country address_line1 address_line2 address_state address_zip]} (js->clj card)
+  (let [{:keys [address_city address_country address_line1 address_line2 address_state address_zip]} (js->clj card :keywordize-keys true)
         {:keys [givenName familyName phoneNumber]} shipping-contact]
     {:address1 address_line1
      :address2 address_line2
      :city address_city
-     :firstname givenName
-     :lastname familyName
+     :first-name givenName
+     :last-name familyName
      :phone phoneNumber
      :state (state-name->abbr address_state)
      :zipcode address_zip}))
