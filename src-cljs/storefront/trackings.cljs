@@ -153,3 +153,16 @@
      (get-in app-state keypaths/session-id)
      (get-in app-state keypaths/user)
      (get-in app-state keypaths/captured-email))))
+
+(defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
+  (convert/track-conversion "apple-pay-checkout"))
+
+(defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
+  (convert/track-conversion "checkout"))
+
+(defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
+  (convert/track-conversion "paypal-checkout"))
+
+(defmethod perform-track events/apple-pay-availability [_ event {"keys" [available?]} app-state]
+  (when available?
+    (convert/track-conversion "apple-pay-available")))

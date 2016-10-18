@@ -6,14 +6,22 @@
             [storefront.config :as config]))
 
 (def goals
-  {"view-categories" {"production" "100016254"
-                      "sandbox"    "100016257"}
-   "view-category"   {"production" "100016255"
-                      "sandbox"    "100016256"}
-   "place-order"     {"production" "100016055"
-                      "sandbox"    "100016047"}
-   "revenue"         {"production" "100016054"
-                      "sandbox"    "100016046"}})
+  {"view-categories"     {"production" "100016254"
+                          "sandbox"    "100016257"}
+   "view-category"       {"production" "100016255"
+                          "sandbox"    "100016256"}
+   "place-order"         {"production" "100016055"
+                          "sandbox"    "100016047"}
+   "revenue"             {"production" "100016054"
+                          "sandbox"    "100016046"}
+   "apple-pay-checkout"  {"production" "TODO"
+                          "sandbox"    "100017131"}
+   "checkout"            {"production" "TODO"
+                          "sandbox"    "100017132"}
+   "paypal-checkout"     {"production" "TODO"
+                          "sandbox"    "100017133"}
+   "apple-pay-available" {"production" "TODO"
+                          "sandbox"    "100017134"}})
 
 (defn label->goal-id [label]
   (let [goal-ids (get goals label)]
