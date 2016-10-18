@@ -14,13 +14,13 @@
                           "sandbox"    "100016047"}
    "revenue"             {"production" "100016054"
                           "sandbox"    "100016046"}
-   "apple-pay-checkout"  {"production" "TODO"
+   "apple-pay-checkout"  {"production" "100017135"
                           "sandbox"    "100017131"}
-   "checkout"            {"production" "TODO"
+   "checkout"            {"production" "100017136"
                           "sandbox"    "100017132"}
-   "paypal-checkout"     {"production" "TODO"
+   "paypal-checkout"     {"production" "100017137"
                           "sandbox"    "100017133"}
-   "apple-pay-available" {"production" "TODO"
+   "apple-pay-available" {"production" "100017138"
                           "sandbox"    "100017134"}})
 
 (defn label->goal-id [label]
