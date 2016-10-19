@@ -268,6 +268,12 @@
   [_ event {:keys [available?]} app-state]
   (assoc-in app-state keypaths/show-apple-pay? available?))
 
+(defmethod transition-state events/apple-pay-begin [_ _ _ app-state]
+  (assoc-in app-state keypaths/disable-apple-pay-button? true))
+
+(defmethod transition-state events/apple-pay-end [_ _ _ app-state]
+  (assoc-in app-state keypaths/disable-apple-pay-button? false) )
+
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
   (-> app-state
       (assoc-in keypaths/checkout-credit-card-existing-cards cards)

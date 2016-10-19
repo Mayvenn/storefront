@@ -115,6 +115,7 @@
 (def selected-look-id (conj ui :selected-look-id))
 
 (def show-apple-pay? (conj ui :show-apple-pay?))
+(def disable-apple-pay-button? (conj ui :disable-apple-pay-button?))
 
 (def cart (conj ui :cart))
 (def cart-coupon-code (conj cart :coupon-code))

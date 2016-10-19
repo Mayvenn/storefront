@@ -100,8 +100,11 @@
                    :cart-payments       {:apple-pay {:source (.. result -token -id)}}
                    :session-id          session-id
                    :utm-params          utm-params}
-                  (fn [response] (complete js/ApplePaySession.STATUS_SUCCESS))
+                  (fn [response]
+                    (handle-message events/apple-pay-end)
+                    (complete js/ApplePaySession.STATUS_SUCCESS))
                   (fn [error]
+                    (handle-message events/apple-pay-end)
                     (complete (if (some (or (some-> error :response :body :details) {}) [:email :shipping-address.phone :billing-address.phone])
                                 js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
                                 js/ApplePaySession.STATUS_FAILURE))))))
@@ -147,6 +150,7 @@
                           :lineItems                     (order->apple-line-items order)
                           :total                         (order->apple-total order)}
         session          (js/Stripe.applePay.buildSession (clj->js payment-request) (partial charge-apple-pay order session-id utm-params (partial find-state-abbr states)))]
+    (set! (.-oncancel session) (fn [_] (handle-message events/apple-pay-end)))
     (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order states
                                                    (fn [status total line-items]
                                                      (.completeShippingContactSelection session

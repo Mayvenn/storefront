@@ -107,6 +107,7 @@ Thanks,
                               share-carts?
                               requesting-shared-cart?
                               show-apple-pay?
+                              disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
   (om/component
@@ -156,7 +157,8 @@ Thanks,
        (when show-apple-pay?
          [:div.pb2 (ui/large-apple-pay-button
                     {:on-click (utils/send-event-callback events/control-checkout-cart-apple-pay)
-                     :data-test "apple-pay-checkout"}
+                     :data-test "apple-pay-checkout"
+                     :disabled? disable-apple-pay-button?}
                     [:div.flex.items-center.justify-center
                      "Check out with "
                      [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.mtp4.ml1 {:style {:width "4rem"
@@ -229,6 +231,7 @@ Thanks,
                                      (experiments/apple-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
+     :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
