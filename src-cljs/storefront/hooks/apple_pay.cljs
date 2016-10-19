@@ -102,7 +102,7 @@
                    :utm-params          utm-params}
                   (fn [response] (complete js/ApplePaySession.STATUS_SUCCESS))
                   (fn [error]
-                    (complete (if (some (or (some-> error :response :body :details) {}) [:email :phone])
+                    (complete (if (some (or (some-> error :response :body :details) {}) [:email :shipping-address.phone :billing-address.phone])
                                 js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
                                 js/ApplePaySession.STATUS_FAILURE))))))
 
