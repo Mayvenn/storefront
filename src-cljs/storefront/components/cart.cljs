@@ -106,7 +106,6 @@ Thanks,
                               redirecting-to-paypal?
                               share-carts?
                               requesting-shared-cart?
-                              essence?
                               show-apple-pay?
                               update-line-item-requests
                               delete-line-item-requests]} owner]
@@ -124,7 +123,7 @@ Thanks,
      [:div.mt2.clearfix.mxn4
       [:div.md-up-col.md-up-col-6.px4
        {:data-test "cart-line-items"}
-       (when essence? summary/essence-faux-line-item)
+       summary/essence-faux-line-item
        (summary/display-adjustable-line-items (orders/product-items order)
                                                     products
                                                     update-line-item-requests
@@ -226,7 +225,6 @@ Thanks,
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-     :essence?                  (experiments/essence? data)
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
                                      (experiments/apple-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))
