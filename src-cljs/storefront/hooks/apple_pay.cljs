@@ -145,7 +145,9 @@
         payment-request  {:countryCode                   "US"
                           :currencyCode                  "USD"
                           :requiredBillingContactFields  ["name" "postalAddress"]
-                          :requiredShippingContactFields ["name" "phone" "email" "postalAddress"]
+                          :requiredShippingContactFields (if (:user order)
+                                                           ["name" "phone" "postalAddress"]
+                                                           ["name" "phone" "email" "postalAddress"])
                           :shippingMethods               shipping-methods
                           :lineItems                     (order->apple-line-items order)
                           :total                         (order->apple-total order)}
