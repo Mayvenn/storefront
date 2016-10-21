@@ -88,13 +88,13 @@
    (case store-slug
      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                 "shop now")
+                                 "Get 15% Off Hair Extensions Mayvenn")
      "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
                                    (assets/path "/images/homepage/mimi/desktop_banner.jpg")
-                                   "shop now")
+                                   "Get 15% Off Hair Extensions Mayvenn")
      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
                       (assets/path "/images/homepage/desktop_banner.jpg")
-                      "shop now"))])
+                      "Get 15% Off Hair Extensions Mayvenn"))])
 
 (def about-mayvenn
   (component/html
@@ -135,7 +135,7 @@
     (homepage-images
      (assets/path "/images/homepage/mobile_video.png")
      (assets/path "/images/homepage/desktop_video.png")
-     "Watch a video about what real customers have to say about Mayvenn")
+     "Hair Extension Reviews Mayvenn")
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
       [:div.mt4 svg/play-video]
