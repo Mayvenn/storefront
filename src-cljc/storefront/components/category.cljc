@@ -208,18 +208,12 @@
 
 (defn carousel-image [image]
   [:div.col-12.overflow-hidden {:style {:max-height "31rem"}}
-   [:img.col-12 {:src image
-                 ;; Technically, it would be better to have real alt tags,
-                 ;; something like "Mayvenn's straight bundles are ..."
-                 ;; But, until we define those, we're marking these images as
-                 ;; "presentational" so as not to confuse screen readers & bots.
-                 ;; See https://www.w3.org/WAI/tutorials/images/decorative/
-                 :alt ""}]])
+   [:img.col-12 (utils/img-attrs image :large)]])
 
 (defn carousel [images {:keys [slug]}]
   (let [items (->> images
                    (map-indexed (fn [idx image]
-                                  {:id   (subs image (max 0 (- (count image) 50)))
+                                  {:id   (subs (:large_url image) (max 0 (- (count image) 50)))
                                    :body (carousel-image image)}))
                    vec)]
     (component/build carousel/component
@@ -247,9 +241,9 @@
 
 (defn sort-images [images]
   (for [image-type image-types
-        {:keys [type large_url]} images
+        {:keys [type large_url] :as image} images
         :when (and (= type image-type) large_url)]
-    large_url))
+    image))
 
 (defn distinct-variant-images [selected-variants]
   (->> (sort-by #(-> % :variant_attrs :style) selected-variants)
@@ -262,10 +256,11 @@
 (defn ^:private images-from-variants
   "For some named-searches, when a selection has been made, show detailed product images"
   [named-search {:keys [selected-options selected-variants]}]
+  (prn (keys (first selected-variants)))
   (if (and (named-search-uses-product-images (:slug named-search))
            (seq selected-options))
     (distinct-variant-images selected-variants)
-    (:images named-search)))
+    (sort-images (:carousel-images named-search))))
 
 (defn component [{:keys [named-search
                          bundle-builder
