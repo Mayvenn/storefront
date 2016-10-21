@@ -93,9 +93,8 @@
 
 (defn option-html [later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.col-12
+  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size
    {:data-test (str "option-" (string/replace name #"\W+" ""))
-    :style {:height "100%"}
     :class (cond
              sold-out?   "bg-light-gray gray light"
              later-step? "bg-dark-silver muted light"

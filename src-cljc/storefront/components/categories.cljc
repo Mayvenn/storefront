@@ -6,7 +6,7 @@
                :cljs [storefront.component :as component])
             [storefront.events :as events]))
 
-(defn link-to-search [index {:keys [name slug]}]
+(defn link-to-search [index {:keys [name slug representative-images]}]
   [:li.p1.inline-block.col-6
    (merge {:key slug}
           (when (<= index 5) {:class "lg-up-col-4"}))
@@ -14,12 +14,14 @@
         {:data-test (str "named-search-" slug)}
         (utils/route-to events/navigate-category
                         {:named-search-slug slug}))
-    [:div.bg-no-repeat.bg-top.bg-cover
-     {:class (str "img-" slug)
-      :style {:height "200px"}}
-     [:div.bg-darken-2.flex.items-center.col-12 {:style {:height "100%"}}
-      [:div.h2.bold.white.center.col-12.titleize.shadow.nowrap
-       name]]]]])
+    [:div.relative {:style {:height "200px"}}
+     [:img.container-size
+      (merge (utils/img-attrs (:model-full representative-images) :large)
+             {:style {:object-fit "cover"
+                      :object-position "50% 0"}})]
+     [:div.absolute.overlay.bg-darken-2
+      [:div.flex.items-center.container-height
+       [:div.h2.bold.white.col-12.titleize.shadow.nowrap name]]]]]])
 
 (defn component [{:keys [named-searches]} owner opts]
   (component/create

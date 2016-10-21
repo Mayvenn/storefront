@@ -30,17 +30,18 @@
    [:img.md-up-hide.col-12 {:src mobile-asset
                             :alt alt-text}]])
 
-(defn link-to-search [{:keys [slug name long-name model-image product-image]}]
-  [:a.p1.center.flex.flex-column.items-center
-   (merge {:data-test (str "named-search-" slug)}
-          (utils/route-to events/navigate-category {:named-search-slug slug}))
-   [:img.unselectable {:src   model-image
-                       :alt   ""
-                       :style {:height "128px"}}]
-   [:img.mt3.unselectable {:src   product-image
-                           :alt   (str "Shop for " long-name)
-                           :style {:height "80px"}}]
-   [:div.mb3.dark-gray.medium.f4 name]])
+(defn link-to-search [{:keys [slug name long-name representative-images]}]
+  (let [{:keys [model-circle product]} representative-images]
+    [:a.p1.center.flex.flex-column.items-center
+     (merge {:data-test (str "named-search-" slug)}
+            (utils/route-to events/navigate-category {:named-search-slug slug}))
+     [:img.unselectable (merge
+                         (utils/img-attrs (:model-circle representative-images) :small)
+                         {:style {:height "128px"}})]
+     [:img.mt3.unselectable (merge
+                             (utils/img-attrs (:product representative-images) :small)
+                             {:style {:height "80px"}})]
+     [:div.mb3.dark-gray.medium.f4 name]]))
 
 (defn pick-style [named-searches]
   [:div.center.py3
@@ -110,7 +111,7 @@
 
      [:div.md-up-hide.border-bottom.border-dark-silver]
      [:div.py4
-      [:div.to-md-hide.left.border-left.border-dark-silver {:style {:height "100%"}}]
+      [:div.to-md-hide.left.border-left.border-dark-silver.container-height]
       [:div.px3
        [:h3.f3.center.bold.mb3 "30 day guarantee"]
        [:p.line-height-5
@@ -118,7 +119,7 @@
 
      [:div.md-up-hide.border-bottom.border-dark-silver]
      [:div.py4
-      [:div.to-md-hide.left.border-left.border-dark-silver {:style {:height "100%"}}]
+      [:div.to-md-hide.left.border-left.border-dark-silver.container-height]
       [:div.px3
        [:h3.f3.center.bold.mb3 "fast free shipping"]
        [:p.line-height-5
@@ -137,7 +138,7 @@
      (assets/path "/images/homepage/desktop_video.png")
      "Hair Extension Reviews Mayvenn")
     [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1 {:style {:height "100%"}}
+     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1.container-height
       [:div.mt4 svg/play-video]
       [:h2.h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))

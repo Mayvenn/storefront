@@ -93,3 +93,7 @@
       (do
         (set! (.-selectionStart el) 0)
         (set! (.-selectionEnd el) length)))))
+
+(defn img-attrs [img size]
+  {:src (get img (keyword (str (name size) "_url")))
+   :alt (:alt img)})

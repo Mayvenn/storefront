@@ -24,11 +24,9 @@
         [:div
          [:div.wistia_responsive_padding.relative.col-12
           {:style {:padding-top "56.25%"}}
-          [:div.wistia_responsive_wrapper.absolute.left-0.top-0.col-12
-           {:style {:height "100%"}}
-           [:span.wistia_embed.col-12
-            {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")
-             :style {:height "100%"}}
+          [:div.wistia_responsive_wrapper.absolute.left-0.top-0.container-size
+           [:span.wistia_embed.container-size
+            {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")}
             ui/nbsp]]]
          [:div.light-silver.p3.col-12.center
           {:on-click       on-close

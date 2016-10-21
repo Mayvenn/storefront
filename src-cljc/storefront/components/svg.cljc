@@ -103,27 +103,27 @@
 ;; Social
 (def instagram
   (component/html
-   [:svg {:style {:width "100%" :height "100%"}}
+   [:svg.container-size
     (svg-xlink "instagram")]))
 
 (def facebook-f
   (component/html
-   [:svg {:style {:width "100%" :height "100%"}}
+   [:svg.container-size
     (svg-xlink "facebook-f")]))
 
 (def pinterest
   (component/html
-   [:svg {:style {:width "100%" :height "100%"}}
+   [:svg.container-size
     (svg-xlink "pinterest")]))
 
 (def twitter
   (component/html
-   [:svg {:style {:width "100%" :height "100%"}}
+   [:svg.container-size
     (svg-xlink "twitter")]))
 
 (def styleseat
   (component/html
-   [:svg {:style {:width "100%" :height "100%"}}
+   [:svg.container-size
     (svg-xlink "styleseat")]))
 
 ;; Footer
@@ -131,7 +131,7 @@
 (defn ^:private mayvenn-on-social [title xlink]
   (let [title-id (str "social-title-" xlink)]
     (component/html
-     [:svg {:class "fill-dark-gray" :role "img" :aria-labeledby title-id :style {:width "100%" :height "100%"}}
+     [:svg.container-size {:class "fill-dark-gray" :role "img" :aria-labeledby title-id}
       [:title {:id title-id} title]
       (svg-xlink {:role "presentation"} xlink)])))
 
@@ -165,5 +165,5 @@
 
 (def guarantee
   (component/html
-   [:svg {:class "fill-teal" :height "5em" :width "100%"}
+   [:svg.col-12 {:class "fill-teal" :height "5em"}
     (svg-xlink "guarantee")]))
