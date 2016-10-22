@@ -256,7 +256,6 @@
 (defn ^:private images-from-variants
   "For some named-searches, when a selection has been made, show detailed product images"
   [named-search {:keys [selected-options selected-variants]}]
-  (prn (keys (first selected-variants)))
   (if (and (named-search-uses-product-images (:slug named-search))
            (seq selected-options))
     (distinct-variant-images selected-variants)
