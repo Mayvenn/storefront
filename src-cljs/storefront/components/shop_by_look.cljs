@@ -20,7 +20,7 @@
                                                  :path
                                                  routes/navigation-message-for)
         is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
-    (ui/large-teal-button
+    (ui/teal-button
      (merge
       {:spinning? (and (= id selected-look-id) requesting?)}
       (if requesting?
@@ -31,17 +31,17 @@
      "Buy this look")))
 
 (defn image-attribution [requesting? selected-look-id {:keys [user-handle social-service] :as look}]
-  [:div.bg-light-silver
-   [:div.flex.items-center.py2.mx3
-    [:div.flex-auto.gray.bold "@" user-handle]
-    [:div {:style {:width "15px" :height "15px"}}
+  [:div.bg-light-silver.p1
+   [:div.flex.items-center.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
+    [:div.flex-auto.f4.gray.bold {:style {:word-break "break-all"}} "@" user-handle]
+    [:div.ml1 {:style {:width "15px" :height "15px"}}
      (case social-service
        "instagram" svg/instagram
        "facebook"  svg/facebook-f
        "pinterest" svg/pinterest
        "twitter"   svg/twitter
        nil)]]
-   [:div.p1.fill-gray (buy-look-button requesting? selected-look-id look)]])
+   (buy-look-button requesting? selected-look-id look)])
 
 (defn component [{:keys [looks requesting? selected-look-id]} owner opts]
   (om/component
@@ -52,7 +52,7 @@
       [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
-     [:div.clearfix.mtn2
+     [:div.container.clearfix.mtn2
       (for [{:keys [id content-type user-handle photo purchase-link source-url social-service] :as look} looks]
         [:div
          {:key id}
