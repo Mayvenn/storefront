@@ -102,18 +102,18 @@
    [:div.container.gray.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
-    [:div.mx3.flex-on-tb-dt.f5
-     [:div.p3
+    [:div.clearfix.f5
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:h3.f3.center.bold.mb3 "stylist recommended"]
       [:p.line-height-5
        "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
-     [:div.p3
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:h3.f3.center.bold.mb3 "30 day guarantee"]
       [:p.line-height-5
        "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
 
-     [:div.p3
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:h3.f3.center.bold.mb3 "fast free shipping"]
       [:p.line-height-5
        "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
