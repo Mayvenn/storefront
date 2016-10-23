@@ -6,9 +6,6 @@
   clip: rect(1px, 1px, 1px, 1px);
 }
 
-@media (--breakpoint-to-sm) { .to-sm-hide { display: none !important } }
-@media (--breakpoint-sm-up) { .sm-up-hide { display: none !important } }
-@media (--breakpoint-sm-md) { .sm-md-hide { display: none !important } }
 @media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
 @media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
 @media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
@@ -28,9 +25,6 @@
 .display-none { display: none !important }
 .invisible { visibility: hidden; }
 
-@custom-media --breakpoint-to-sm (max-width: 479px);
-@custom-media --breakpoint-sm-up (min-width: 480px); /* sm-up is the same as sm */
-@custom-media --breakpoint-sm-md (min-width: 480px) and (max-width: 639px);
 @custom-media --breakpoint-to-md (max-width: 639px);
 @custom-media --breakpoint-md-up (min-width: 640px);
 @custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
