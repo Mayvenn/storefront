@@ -90,10 +90,8 @@
 
 /* Responsive breakpoints:
 
-        640px       768px     1024px
+        640px       768px
   to-md   |   md-up
-  to-md   |   md-lg   |   lg-up
-              to-lg   |   lg-up
 
                   750px      1000px
            on-mb    | on-tb-dt
@@ -107,16 +105,10 @@
 /*
 to-md- -on-mb
 md-up-
-md-lg- -on-mb
-to-lg- -on-mb
-lg-up- -on-tb-dt
 */
 
 @custom-media --breakpoint-to-md (max-width: 639px);
 @custom-media --breakpoint-md-up (min-width: 640px);
-@custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
-@custom-media --breakpoint-to-lg (max-width: 767px);
-@custom-media --breakpoint-lg-up (min-width: 768px);
 
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);

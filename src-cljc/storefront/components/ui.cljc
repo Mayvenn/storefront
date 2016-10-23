@@ -295,7 +295,7 @@
       [:div.fixed.overlay]
       menu])])
 
-(defn modal [{:keys [on-close bg-class col-class] :or {col-class "col-11 md-up-col-7 lg-up-col-5"}} & body]
+(defn modal [{:keys [on-close bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
   ;; Inspired by https://css-tricks.com/considerations-styling-modal/
   [:div
    ;; The scrim, a sibling to the modal

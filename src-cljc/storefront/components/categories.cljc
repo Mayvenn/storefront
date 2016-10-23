@@ -9,7 +9,7 @@
 (defn link-to-search [index {:keys [name slug representative-images]}]
   [:li.p1.inline-block.col-6
    (merge {:key slug}
-          (when (<= index 5) {:class "lg-up-col-4"}))
+          (when (<= index 5) {:class "col-4-on-tb-dt"}))
    [:a (merge
         {:data-test (str "named-search-" slug)}
         (utils/route-to events/navigate-category

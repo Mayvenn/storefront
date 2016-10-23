@@ -8,15 +8,12 @@
 
 @media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
 @media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
-@media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
-@media (--breakpoint-to-lg) { .to-lg-hide { display: none !important } }
-@media (--breakpoint-lg-up) { .lg-up-hide { display: none !important } }
 
 
 @media (--on-mobile)             { .hide-on-mb    { display: none !important } }
 @media (--on-tablet)             { .hide-on-tb    { display: none !important } }
 @media (--on-desktop)            { .hide-on-dt    { display: none !important } }
-@media (--on-mobile-and-tablet)  { .hide-on-mb-dt { display: none !important } }
+@media (--on-mobile-and-tablet)  { .hide-on-mb-tb { display: none !important } }
 @media (--on-tablet-and-desktop) { .hide-on-tb-dt { display: none !important } }
 
 .display-none { display: none !important }
@@ -24,13 +21,9 @@
 
 @custom-media --breakpoint-to-md (max-width: 639px);
 @custom-media --breakpoint-md-up (min-width: 640px);
-@custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
-@custom-media --breakpoint-to-lg (max-width: 767px);
-@custom-media --breakpoint-lg-up (min-width: 768px); /* lg-up is the same as lg */
 
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
 @custom-media --on-desktop            (min-width: 1000px);
-
 @custom-media --on-mobile-and-tablet  (max-width: 999px);
 @custom-media --on-tablet-and-desktop (min-width: 750px);

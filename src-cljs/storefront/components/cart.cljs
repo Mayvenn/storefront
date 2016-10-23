@@ -78,7 +78,7 @@ Thanks,
                   (share-icon "img-fb-share")]
                  [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
                   (share-icon "img-twitter-share")]
-                 [:a.mx1.lg-up-hide {:href (sms-link share-url)}
+                 [:a.mx1.hide-on-dt {:href (sms-link share-url)}
                   (share-icon "img-sms-share")]
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]

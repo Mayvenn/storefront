@@ -27,9 +27,9 @@
   [:div
    [:div.flex.border.border-orange.py1
     [:div.flex-none.mx1 {:style {:width "7.33em"}}
-     [:div.to-lg-hide
+     [:div.hide-on-mb
       [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
-     [:div.lg-up-hide
+     [:div.hide-on-tb-dt
       [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
     [:div.flex-auto.mr1
      [:div.h6.mb1.line-height-2
