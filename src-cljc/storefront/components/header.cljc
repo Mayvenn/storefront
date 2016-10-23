@@ -210,7 +210,7 @@
           name])]])]])
 
 (defn shop-panel [stylist? expanded? current-page? named-searches]
-  [:div.absolute.col-12.bg-white.to-lg-hide.z4.top-lit
+  [:div.absolute.col-12.bg-white.hide-on-mb.z4.top-lit
    (when-not expanded? {:class "hide"})
    [:div.flex.items-start {:style {:padding "1em 10% 2em"}}
     [:div.col-4 (products-section current-page? "Hair Extensions" (filter named-searches/is-extension? named-searches))]
@@ -225,7 +225,7 @@
    (utils/route-to nav-event)))
 
 (defn lower-left-desktop-nav [current-page?]
-  [:div.to-lg-hide {:style {:margin-top "-12px"}}
+  [:div.hide-on-mb {:style {:margin-top "-12px"}}
    [:div.right.h6
     [:a.dark-gray.col.py1 (merge
                            {:href           "/categories"
@@ -237,7 +237,7 @@
      "Shop By Look"]]])
 
 (defn lower-right-desktop-nav [current-page?]
-  [:div.to-lg-hide {:style {:margin-top "-12px"}}
+  [:div.hide-on-mb {:style {:margin-top "-12px"}}
    [:div.h6
     [:a.dark-gray.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
@@ -259,7 +259,7 @@
      [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
       [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
        [:div.flex-auto.col-4
-        [:div {:style {:height "60px"}} [:div.lg-up-hide hamburger]]
+        [:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]]
         (lower-left-desktop-nav current-page?)]
        (into [:div.flex.flex-column.justify-center.flex-auto.col-4 {:style {:min-width popup-width}}]
              (if (sans-stylist? (:store_slug store))
@@ -269,7 +269,7 @@
                 (store-dropdown store-expanded? store))))
        [:div.flex-auto.col-4
         [:div.flex.justify-end.items-center
-         [:div.flex-auto.to-lg-hide.pr2
+         [:div.flex-auto.hide-on-mb.pr2
           (cond
             stylist?   (stylist-account account-expanded? current-page? store)
             user-email (customer-account account-expanded? current-page? user-email)
