@@ -16,9 +16,9 @@
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-social-submit)}
 
-    [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Connect your social"]
+    [:h2.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Connect your social"]
 
-    [:div.col.col-12.md-up-col-6
+    [:div.col.col-12.col-6-on-tb-dt
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
        {:style {:width "2.5rem" :height "2.5rem"}
@@ -53,8 +53,8 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.to-md-hide.mb3]
-     [:div.col-12.md-up-col-5.mx-auto
+     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

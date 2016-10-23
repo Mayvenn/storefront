@@ -51,15 +51,15 @@
       [:h1.h2.navy "shop by look"]
       [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
-      [:p.gray.col-10.md-up-col-6.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
+      [:p.gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.clearfix.mtn2
       (for [{:keys [id content-type user-handle photo purchase-link source-url social-service] :as look} looks]
         [:div
          {:key id}
-         [:div.py2.col-12.col.md-up-hide {:key (str "small-" id)}
+         [:div.py2.col-12.col.hide-on-tb-dt {:key (str "small-" id)}
           (image-thumbnail photo)
           (image-attribution requesting? selected-look-id look)]
-         [:div.py2.px2.col.col-4.to-md-hide {:key (str "large-" id)}
+         [:div.py2.px2.col.col-4.hide-on-mb {:key (str "large-" id)}
           [:div.relative.hoverable.overflow-hidden
            {:style {:padding-top "100%"}}
            [:div.absolute.top-0 (image-thumbnail photo)]

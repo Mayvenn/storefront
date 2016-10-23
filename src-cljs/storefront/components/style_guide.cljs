@@ -298,7 +298,7 @@
     (header "Navigation")
     [:.dark-gray
      [:div.bg-light-silver
-      [:div.md-up-col-6.mx-auto
+      [:div.col-6-on-tb-dt.mx-auto
        (component/build tabs/component
                         {:selected-tab (get-in data keypaths/navigation-event)}
                         {:opts {:tab-refs ["one" "two" "three"]
@@ -313,7 +313,7 @@
     (header "Progress Indicator")
     [:.dark-gray
      [:div.bg-white
-      [:div.md-up-col-6.mx-auto
+      [:div.col-6-on-tb-dt.mx-auto
        (ui/progress-indicator {:value 0 :maximum 100})
        (ui/progress-indicator {:value 50 :maximum 100})
        (ui/progress-indicator {:value 5 :maximum 7})

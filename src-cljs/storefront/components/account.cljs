@@ -22,9 +22,9 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-account-profile-submit)}
-    [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your info"]
+    [:h2.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your info"]
 
-    [:div.col.col-12.md-up-col-6
+    [:div.col.col-12.col-6-on-tb-dt
      (ui/text-field {:data-test "account-email"
                      :id        "account-email"
                      :keypath   keypaths/manage-account-email
@@ -53,8 +53,8 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.to-md-hide.mb3]
-     [:div.col-12.md-up-col-5.mx-auto
+     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

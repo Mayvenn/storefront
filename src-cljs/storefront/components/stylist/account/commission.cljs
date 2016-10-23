@@ -23,9 +23,9 @@
    [:form
     {:on-submit
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
-    [:div.col.col-12.md-up-col-6
+    [:div.col.col-12.col-6-on-tb-dt
      [:h2.h3.light.my3.center.col-12 "Update commission info"]
-     [:div.col-12.md-up-col-10.mx-auto
+     [:div.col-12.col-10-on-tb-dt.mx-auto
       (ui/select-field {:data-test "payout-method"
                         :errors    (get field-errors ["chosen_payout_method"])
                         :id        "payout-method"
@@ -61,9 +61,9 @@
         [:p.ml1.mb3 "Checks will mail to the address entered here"])]]
 
 
-    [:div.col.col-12.md-up-col-6
-     [:div.mx-auto.col-12.md-up-col-10
-      [:div.border-silver.border-top.md-up-hide.mb3]
+    [:div.col.col-12.col-6-on-tb-dt
+     [:div.mx-auto.col-12.col-10-on-tb-dt
+      [:div.border-silver.border-top.hide-on-tb-dt.mb3]
       (ui/text-field {:data-test  "account-address1"
                       :errors     (get field-errors ["address" "address1"])
                       :id         "account-address1"
@@ -126,8 +126,8 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.to-md-hide.mb3]
-     [:div.col-12.md-up-col-5.mx-auto
+     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

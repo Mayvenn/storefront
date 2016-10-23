@@ -22,13 +22,13 @@
          btn-copy "Become a Mayvenn"]
      [:div.bg-dark-gray.light-silver.p2
       ;; Mobile layout
-      [:div.md-up-hide
+      [:div.hide-on-tb-dt
        [:div.right close-button]
        [:div.center
         [:div.col-9.mx-auto.mb2 banner-copy]
         [:div.col-9.mx-auto (ui/teal-button btn-behavior btn-copy)]]]
       ;; Desktop / Tablet layout
-      [:div.flex.items-center.to-md-hide
+      [:div.flex.items-center.hide-on-mb
        [:div.flex-auto
         [:div.col-8.mx-auto.center.flex.items-center
          [:div.col-7.mr2 banner-copy]

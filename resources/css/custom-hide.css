@@ -6,10 +6,6 @@
   clip: rect(1px, 1px, 1px, 1px);
 }
 
-@media (--breakpoint-to-md) { .to-md-hide { display: none !important } }
-@media (--breakpoint-md-up) { .md-up-hide { display: none !important } }
-
-
 @media (--on-mobile)             { .hide-on-mb    { display: none !important } }
 @media (--on-tablet)             { .hide-on-tb    { display: none !important } }
 @media (--on-desktop)            { .hide-on-dt    { display: none !important } }
@@ -18,9 +14,6 @@
 
 .display-none { display: none !important }
 .invisible { visibility: hidden; }
-
-@custom-media --breakpoint-to-md (max-width: 639px);
-@custom-media --breakpoint-md-up (min-width: 640px);
 
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);

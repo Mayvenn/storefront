@@ -14,9 +14,9 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-password-submit)}
-    [:h2.h3.light.my3.center.col.col-12.md-up-col-6 "Update your password"]
+    [:h2.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your password"]
 
-    [:div.col.col-12.md-up-col-6
+    [:div.col.col-12.col-6-on-tb-dt
      (ui/text-field {:data-test "account-password"
                      :errors    (get field-errors ["user" "password"])
                      :id        "account-password"
@@ -35,8 +35,8 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.to-md-hide.mb3]
-     [:div.col-12.md-up-col-5.mx-auto
+     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 

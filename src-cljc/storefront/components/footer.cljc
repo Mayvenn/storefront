@@ -31,8 +31,8 @@
 (defn shop-section [named-searches own-store?]
   [:div.col-12
    [:div.medium.border-bottom.border-dark-silver.mb1
-    [:div.to-md-hide.f4 "Shop"]
-    [:div.md-up-hide "Shop"]]
+    [:div.hide-on-mb.f4 "Shop"]
+    [:div.hide-on-tb-dt "Shop"]]
    [:nav.clearfix.f5
     {:role "navigation" :aria-label "Shop Products"}
     [:div.col.col-6
@@ -45,15 +45,15 @@
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
    [:div.medium.border-bottom.border-dark-silver.mb1
-    [:div.to-md-hide.f4 "Contact"]
-    [:div.md-up-hide "Contact"]]
+    [:div.hide-on-mb.f4 "Contact"]
+    [:div.hide-on-tb-dt "Contact"]]
    [:div.gray.light.f5
-    [:span.md-up-hide [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
-    [:span.to-md-hide call-number] ;; desktop
+    [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+    [:span.hide-on-mb call-number] ;; desktop
     " | 9am-5pm PST M-F"
     [:a.block.gray {:href (str "mailto:" contact-email)} contact-email]]
 
-   [:div.py1.md-up-hide
+   [:div.py1.hide-on-tb-dt
     (ui/ghost-button {:href (str "tel://" call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
@@ -74,7 +74,7 @@
   (component/html
    [:div
     [:div.medium.border-bottom.border-dark-silver
-     [:div.to-md-hide ui/nbsp]]
+     [:div.hide-on-mb ui/nbsp]]
     [:div.border-bottom.border-dark-silver.p1.flex.items-center.justify-around.py2
      [:a.block {:item-prop "sameAs"
                 :href "https://www.facebook.com/MayvennHair"}
@@ -94,11 +94,11 @@
                               own-store?]} owner opts]
   (component/create
    [:div.h5.border-top.border-dark-silver.bg-light-silver
-
-    [:div.col-12.clearfix
-     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (shop-section named-searches own-store?)]
-     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 (contacts-section contacts)]
-     [:div.md-up-col.md-up-col-4.px3.my2.line-height-4 social-section]]
+    [:div.container
+     [:div.col-12.clearfix
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 (shop-section named-searches own-store?)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 (contacts-section contacts)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.f6
      [:div.left
@@ -122,12 +122,13 @@
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
    [:div.border-top.border-dark-silver.bg-white
-    [:div.center.px3.my2.line-height-4
-     [:div.medium.f4.gray "Need Help?"]
-     [:div.gray.light.f5
-      [:span.md-up-hide [:a.gray {:href (str "tel://" call-number)} call-number]]
-      [:span.to-md-hide call-number]
-      " | 9am-5pm PST M-F"]]]))
+    [:div.container
+     [:div.center.px3.my2.line-height-4
+      [:div.medium.f4.gray "Need Help?"]
+      [:div.gray.light.f5
+       [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]]
+       [:span.hide-on-mb call-number]
+       " | 9am-5pm PST M-F"]]]]))
 
 (defn contacts-query [data]
   {:sms-number    (get-in data keypaths/sms-number)
