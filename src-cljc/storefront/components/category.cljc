@@ -21,8 +21,8 @@
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
-   [:div.md-up-col.md-up-col-7.px2 [:div.to-md-hide wide-left]]
-   [:div.md-up-col.md-up-col-5.px2 wide-right-and-narrow]])
+   [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
+   [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
   [:h2.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
@@ -30,7 +30,7 @@
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.md-up-hide.mxn2.my2 body])
+  [:div.hide-on-tb-dt.mxn2.my2 body])
 
 (def schema-org-offer-props
   {:item-prop "offers"
@@ -280,7 +280,7 @@
         (page
          [:div
           (carousel carousel-images named-search)
-          [:div.to-md-hide (component/build ugc/component ugc opts)]]
+          [:div.hide-on-mb (component/build ugc/component ugc opts)]]
          [:div
           [:div.center
            (title (:long-name named-search))
@@ -311,7 +311,7 @@
               (bagged-variants-and-checkout bagged-variants)
               (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
           (named-search-description (:description named-search))
-          [:div.md-up-hide.mxn2.mb3 (component/build ugc/component ugc opts)]])
+          [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
         (when review? (component/build reviews/reviews-component reviews opts))]))))
 
 (defn query [data]
