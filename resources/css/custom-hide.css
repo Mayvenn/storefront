@@ -11,9 +11,6 @@
 @media (--breakpoint-md-lg) { .md-lg-hide { display: none !important } }
 @media (--breakpoint-to-lg) { .to-lg-hide { display: none !important } }
 @media (--breakpoint-lg-up) { .lg-up-hide { display: none !important } }
-@media (--breakpoint-lg-xl) { .lg-xl-hide { display: none !important } }
-@media (--breakpoint-to-xl) { .to-xl-hide { display: none !important } }
-@media (--breakpoint-xl-up) { .xl-up-hide { display: none !important } }
 
 
 @media (--on-mobile)             { .hide-on-mb    { display: none !important } }
@@ -30,9 +27,6 @@
 @custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
 @custom-media --breakpoint-to-lg (max-width: 767px);
 @custom-media --breakpoint-lg-up (min-width: 768px); /* lg-up is the same as lg */
-@custom-media --breakpoint-lg-xl (min-width: 768px) and (max-width: 1023px);
-@custom-media --breakpoint-to-xl (max-width: 1023px);
-@custom-media --breakpoint-xl-up (min-width: 1024px);
 
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);

@@ -87,15 +87,13 @@
 @custom-media --breakpoint-sm (min-width: 480px);
 @custom-media --breakpoint-md (min-width: 640px);
 @custom-media --breakpoint-lg (min-width: 768px);
-@custom-media --breakpoint-xl (min-width: 1024px);
 
 /* Responsive breakpoints:
 
         640px       768px     1024px
   to-md   |   md-up
   to-md   |   md-lg   |   lg-up
-              to-lg   |   lg-xl  |  xl-up
-                          to-xl  |  xl-up
+              to-lg   |   lg-up
 
                   750px      1000px
            on-mb    | on-tb-dt
@@ -112,9 +110,6 @@ md-up-
 md-lg- -on-mb
 to-lg- -on-mb
 lg-up- -on-tb-dt
-lg-xl- -on-tb
-to-xl- -on-mb-tb
-xl-up- -on-dt
 */
 
 @custom-media --breakpoint-to-md (max-width: 639px);
@@ -122,9 +117,6 @@ xl-up- -on-dt
 @custom-media --breakpoint-md-lg (min-width: 640px) and (max-width: 767px);
 @custom-media --breakpoint-to-lg (max-width: 767px);
 @custom-media --breakpoint-lg-up (min-width: 768px);
-@custom-media --breakpoint-lg-xl (min-width: 768px) and (max-width: 1023px);
-@custom-media --breakpoint-to-xl (max-width: 1023px);
-@custom-media --breakpoint-xl-up (min-width: 1024px);
 
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
