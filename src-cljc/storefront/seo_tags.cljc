@@ -26,12 +26,12 @@
            :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn category-tags [data]
-  (let [{:keys [title og-title description og-description images]} (:seo (named-searches/current-named-search data))]
+  (let [{:keys [title og-title description og-description image]} (:seo (named-searches/current-named-search data))]
     [[:title {} title]
      [:meta {:name "description" :content description}]
      [:meta {:property "og:title" :content og-title}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (first images))}]
+     [:meta {:property "og:image" :content (str "http:" (:large_url image))}]
      [:meta {:property "og:description" :content og-description}]]))
 
 (defn tags-for-page [data]
