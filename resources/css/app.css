@@ -39,9 +39,9 @@
 
 /* Optional Modules (extensions to Basscss Core) */
 
-@import 'basscss-addons/modules/responsive-margin';
+/* @import 'basscss-addons/modules/responsive-margin'; */ /* deprecated in favor of custom names */
 @import 'custom-responsive-margin.css';
-@import 'basscss-addons/modules/responsive-padding';
+/* @import 'basscss-addons/modules/responsive-padding'; */ /* unused */
 @import 'basscss-addons/modules/colors';
 @import 'custom-colors.css';
 @import 'basscss-addons/modules/background-colors';
@@ -81,12 +81,12 @@
 /* Custom media queries */
 
 /* WARNING: We try not to use these, but basscss needs them.
- * Better to use the responsive breakpoints defined below.
+ * Better to use the breakpoints defined below.
  * Also, bascss uses em's for breakpoints, which is a cute idea, but doesn't play nice
  * with how our fonts change size at different screen widths. Use px instead: */
-@custom-media --breakpoint-sm (min-width: 480px);
-@custom-media --breakpoint-md (min-width: 640px);
-@custom-media --breakpoint-lg (min-width: 768px);
+@custom-media --breakpoint-sm (max-width: 0px);
+@custom-media --breakpoint-md (max-width: 0px);
+@custom-media --breakpoint-lg (max-width: 0px);
 
 /* Responsive breakpoints:
 
@@ -94,8 +94,6 @@
            on-mb    | on-tb-dt
            on-mb    | on-tb    | on-dt
                       on-mb-tb | on-dt
-
-
 
 */
 
