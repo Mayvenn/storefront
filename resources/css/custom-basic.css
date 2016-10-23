@@ -3,11 +3,11 @@
 html {
   line-height: var(--line-height);
   font-size: 0.75rem; /* 12px in most browsers, but user-scalable */
-  background-image: url('/images/bg-wave-pattern.png');
+  background-color: var(--white);
   background-size: 47px 51px;
 }
 
-@media (--breakpoint-lg-up) {
+@media (--on-tablet-and-desktop) {
   html {
     font-size: 1rem; /* 16px in most browsers, but user-scalable */
   }
@@ -21,7 +21,8 @@ html {
 
 body {
   min-width: 320px;
-  max-width: 1024px;
+  max-width: 1440px;
+  margin: 0 auto;
   font-family: var(--font-family);
 }
 
@@ -58,7 +59,7 @@ a {
   text-decoration: none;
 }
 
-@custom-media --breakpoint-lg-up (min-width: 768px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);
 
 :root {
     --font-family-graphik: -apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
@@ -81,6 +82,8 @@ a {
     --paragraph: 1rem;
     --paragraph-margin-top: 0;
     --paragraph-margin-bottom: 0;
+
+    --white:        #FFFFFF;
 
     --list-margin-top: 0;
     --list-margin-bottom: 0;

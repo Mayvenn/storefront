@@ -28,7 +28,7 @@
   [:h2.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
-  ;; The mxn2 pairs with the p2 of the ui/container, to make the body full width
+  ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
   [:div.md-up-hide.mxn2.my2 body])
 
@@ -276,7 +276,7 @@
         review?           (named-searches/eligible-for-reviews? named-search)]
     (component/create
      (when named-search
-       (ui/container
+       [:div.container.p2
         (page
          [:div
           (carousel carousel-images named-search)
@@ -312,7 +312,7 @@
               (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
           (named-search-description (:description named-search))
           [:div.md-up-hide.mxn2.mb3 (component/build ugc/component ugc opts)]])
-        (when review? (component/build reviews/reviews-component reviews opts)))))))
+        (when review? (component/build reviews/reviews-component reviews opts))]))))
 
 (defn query [data]
   (let [named-search   (named-searches/current-named-search data)

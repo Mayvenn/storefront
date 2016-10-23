@@ -29,18 +29,18 @@
    owner]
   (om/component
    (html
-    (ui/container
+    [:div.container.p2
      (om/build checkout-steps/component checkout-steps)
 
      [:.clearfix.mxn3
-      [:.md-up-col.md-up-col-6.px3
+      [:.col-on-tb-dt.col-6-on-tb-dt.px3
        [:.h3.left-align "Order Summary"]
 
        [:div.my2
         {:data-test "confirmation-line-items"}
         (summary/display-line-items (orders/product-items order) products)]]
 
-      [:.md-up-col.md-up-col-6.px3
+      [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
@@ -56,7 +56,7 @@
         (summary/display-order-summary order {:read-only? true})
         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                          :disabled? updating-shipping?
-                                         :data-test "confirm-form-submit"})]]]))))
+                                         :data-test "confirm-form-submit"})]]]])))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)

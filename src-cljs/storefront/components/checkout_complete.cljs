@@ -14,17 +14,16 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.col-12
-      [:.py2.center order-complete-check]
+     [:.py2.center order-complete-check]
 
-      [:.px3
-       [:.h2.center
-        {:data-test "checkout-success-message"}
-        "Thank you for your order!"]
+     [:.px3
+      [:.h2.center
+       {:data-test "checkout-success-message"}
+       "Thank you for your order!"]
 
-       [:.py2.line-height-3
-        [:p.my2.gray
-         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]]
+      [:.py2.line-height-3
+       [:p.my2.gray
+        "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
      (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")))))
 

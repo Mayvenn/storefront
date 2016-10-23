@@ -29,6 +29,7 @@
 @import 'basscss-grid/lib/grid.css';
 @import 'custom-grid.css'; /* responsive helpers preferred over basscss-grid/lib/*-grid.css */
 @import 'basscss-flexbox';
+@import 'custom-flexbox.css';
 @import 'basscss-position';
 @import 'custom-position.css';
 @import 'basscss-border';
@@ -108,6 +109,13 @@
 @custom-media --breakpoint-lg-xl (min-width: 768px) and (max-width: 1023px);
 @custom-media --breakpoint-to-xl (max-width: 1023px);
 @custom-media --breakpoint-xl-up (min-width: 1024px);
+
+@custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
+@custom-media --on-desktop            (min-width: 1000px);
+
+@custom-media --on-mobile-and-tablet  (max-width: 999px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);
 
 /* Screen Densities */
 @custom-media --xhdpi (only screen) and (-webkit-min-device-pixel-ratio: 2);

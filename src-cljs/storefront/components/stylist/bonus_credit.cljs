@@ -59,48 +59,48 @@
    (html
     (if (and (empty? history) fetching?)
       [:.my2.h2 ui/spinner]
-      [:.mx-auto.container {:data-test "bonuses-panel"}
-       [:.clearfix.mb3
-        [:.sm-up-col.sm-up-col-8
-         (when award-amount
-           [:div
-            [:.center.px1.py2
-             (cond
-               history                [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
-               (pos? progress-amount) [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
-               :else                  [:.h4 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
+      [:.clearfix.mb3
+       {:data-test "bonuses-panel"}
+       [:.sm-up-col.sm-up-col-8
+        (when award-amount
+          [:div
+           [:.center.px1.py2
+            (cond
+              history                [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your next bonus!"]
+              (pos? progress-amount) [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
+              :else                  [:.h4 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
-             (ui/progress-indicator {:value  progress-amount
-                                     :maximum milestone-amount})
+            (ui/progress-indicator {:value  progress-amount
+                                    :maximum milestone-amount})
 
-             [:.h6.gray
-              "You earn "
-              (mf/as-money-without-cents award-amount)
-              " in credit for every "
-              (mf/as-money-without-cents milestone-amount)
-              " in sales you make."]]
+            [:.h6.gray
+             "You earn "
+             (mf/as-money-without-cents award-amount)
+             " in credit for every "
+             (mf/as-money-without-cents milestone-amount)
+             " in sales you make."]]
 
-            (om/build bonus-history-component
-                      {:history history
-                       :page    page
-                       :pages   pages
-                       :fetching? fetching?})
+           (om/build bonus-history-component
+                     {:history history
+                      :page    page
+                      :pages   pages
+                      :fetching? fetching?})
 
-            (when (pos? available-credit)
-              [:.center.bg-light-silver.p2.line-height-2
-               [:p
-                "Bonus credits available " [:span.navy (mf/as-money available-credit)]
-                [:br]
-                "Why not treat yourself?"]
+           (when (pos? available-credit)
+             [:.center.bg-light-silver.p2.line-height-2
+              [:p
+               "Bonus credits available " [:span.navy (mf/as-money available-credit)]
+               [:br]
+               "Why not treat yourself?"]
 
-               [:p.btn.mt1
-                [:a.navy
-                 (utils/route-to events/navigate-categories)
-                 "Shop now " ui/rarr]]])])]
+              [:p.btn.mt1
+               [:a.navy
+                (utils/route-to events/navigate-categories)
+                "Shop now " ui/rarr]]])])]
 
-        [:.sm-up-col-right.sm-up-col-4
-         (when (pos? lifetime-total)
-           (show-lifetime-total lifetime-total))]]]))))
+       [:.sm-up-col-right.sm-up-col-4
+        (when (pos? lifetime-total)
+          (show-lifetime-total lifetime-total))]]))))
 
 (defn query [data]
   {:available-credit      (get-in data keypaths/user-total-available-store-credit)

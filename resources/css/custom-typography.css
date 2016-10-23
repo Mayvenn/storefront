@@ -19,6 +19,10 @@
 .letter-spacing-2 { letter-spacing: 2px; }
 .letter-spacing-3 { letter-spacing: 3px; }
 
+.line-length { /* used on headers & paragraphs to make sure they're not too wide */
+  max-width: 600px;
+}
+
 .list-reset > dd:after {
     display: block;
     content: '';

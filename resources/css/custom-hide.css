@@ -18,6 +18,13 @@
 @media (--breakpoint-to-xl) { .to-xl-hide { display: none !important } }
 @media (--breakpoint-xl-up) { .xl-up-hide { display: none !important } }
 
+
+@media (--on-mobile)             { .hide-on-mb    { display: none !important } }
+@media (--on-tablet)             { .hide-on-tb    { display: none !important } }
+@media (--on-desktop)            { .hide-on-dt    { display: none !important } }
+@media (--on-mobile-and-tablet)  { .hide-on-mb-dt { display: none !important } }
+@media (--on-tablet-and-desktop) { .hide-on-tb-dt { display: none !important } }
+
 .display-none { display: none !important }
 .invisible { visibility: hidden; }
 
@@ -32,3 +39,10 @@
 @custom-media --breakpoint-lg-xl (min-width: 768px) and (max-width: 1023px);
 @custom-media --breakpoint-to-xl (max-width: 1023px);
 @custom-media --breakpoint-xl-up (min-width: 1024px);
+
+@custom-media --on-mobile             (max-width: 749px);
+@custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
+@custom-media --on-desktop            (min-width: 1000px);
+
+@custom-media --on-mobile-and-tablet  (max-width: 999px);
+@custom-media --on-tablet-and-desktop (min-width: 750px);

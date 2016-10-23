@@ -54,8 +54,6 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(def body-class "mx-auto bg-white")
-
 (defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
   (html5
    [:head
@@ -92,7 +90,7 @@
     (if (#{"development" "test"} environment)
       (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
-   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top" :class body-class}
+   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top"}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want
@@ -117,16 +115,17 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
-   [:body.mx-auto
-    [:div.lg-up-col-6.mx-auto.flex.flex-column.items-center.bg-light-silver
-     {:style "min-height: 100vh;"}
-     [:img.py2 {:src (assets/path "/images/header_logo.png")}]
-     [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
-                          :style "max-width: 80%"}]
-     [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
-     [:a.mx-auto.btn.btn-primary.col-10
-      {:href "/"}
-      [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]))
+   [:body.bg-light-silver
+    [:div.container
+     [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
+      {:style "min-height: 100vh;"}
+      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
+      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
+                           :style "max-width: 80%"}]
+      [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
+      [:a.mx-auto.btn.btn-primary.col-10
+       {:href "/"}
+       [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
 
 (def error-page
   (html5

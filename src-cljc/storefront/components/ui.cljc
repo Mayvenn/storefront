@@ -10,12 +10,13 @@
             [storefront.components.money-formatters :as mf]
             [clojure.string :as str]))
 
-(defn container [& content]
-  [:div.gray
-   (into [:div.p2.m-auto.overflow-hidden] content)])
-
-(defn narrow-container [& content]
-  (apply container {:class "md-up-col-8 lg-up-col-6"} content))
+(defn narrow-container
+  "A container that is 480px wide on desktop and tablet, but squishes on mobile"
+  [& content]
+  [:div.container
+   [:div.m-auto.col-8-on-tb.col-6-on-dt
+    ;; TODO: should this div be in the callers?
+    (into [:div.gray.p2] content)]])
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"

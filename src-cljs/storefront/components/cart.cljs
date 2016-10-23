@@ -112,7 +112,7 @@ Thanks,
                               delete-line-item-requests]} owner]
   (om/component
    (html
-    (ui/container
+    [:div.container.p2
      [:div.py3.h3.center
       [:.light-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
@@ -121,19 +121,19 @@ Thanks,
       {:data-test "order-summary"}
       "Review your order"]
 
-     [:div.mt2.clearfix.mxn4
-      [:div.md-up-col.md-up-col-6.px4
+     [:div.mt2.clearfix.mxn3
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
        {:data-test "cart-line-items"}
        summary/essence-faux-line-item
        (summary/display-adjustable-line-items (orders/product-items order)
-                                                    products
-                                                    update-line-item-requests
-                                                    delete-line-item-requests)]
+                                              products
+                                              update-line-item-requests
+                                              delete-line-item-requests)]
 
-      [:div.md-up-col.md-up-col-6.px4
-       [:form.my1
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+       [:form
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:div.pt2.flex.items-center
+        [:div.flex.items-center
          [:div.col-8.pr1
           (ui/text-field {:keypath keypaths/cart-coupon-code
                           :focused focused
@@ -143,7 +143,7 @@ Thanks,
           (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
                            :disabled? updating?
                            :spinning? applying-coupon?}
-                           "Apply")]]]
+                          "Apply")]]]
 
        (summary/display-order-summary order {:read-only? false})
 
@@ -177,12 +177,12 @@ Thanks,
           (ui/large-ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
                                   :spinning? requesting-shared-cart?
                                   :data-test "share-cart"}
-                                  [:div.flex.items-center.justify-center
-                                   [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                                    {:style {:width  "24px"
-                                             :height "18px"}}]
-                                   [:div.flex-grow "Share your bag"]])
-          [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]))))
+                                 [:div.flex.items-center.justify-center
+                                  [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
+                                   {:style {:width  "24px"
+                                            :height "18px"}}]
+                                  [:div.flex-grow "Share your bag"]])
+          [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]])))
 
 (defn empty-component [{:keys [promotions]} owner]
   (om/component
@@ -200,7 +200,7 @@ Thanks,
          promos/bundle-discount-description)]]
 
      (ui/teal-button (utils/route-to events/navigate-categories)
-                      "Shop Now")))))
+                     "Shop Now")))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids

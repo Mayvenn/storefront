@@ -202,18 +202,18 @@
      (html
       (if (and (empty? (seq history)) fetching?)
         [:div.my2.h2 ui/spinner]
-        [:div.mx-auto.container {:data-test "commissions-panel"}
-         [:div.clearfix
-          [:div.sm-up-col.sm-up-col-9
-           (when-let [history (seq history)]
-             [:div.mb3
-              (for [commission history]
-                (show-commission commission expanded? shipping-methods products))
-              (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
-           (when (zero? pages) empty-commissions)]
+        [:div.clearfix
+         {:data-test "commissions-panel"}
+         [:div.sm-up-col.sm-up-col-9
+          (when-let [history (seq history)]
+            [:div.mb3
+             (for [commission history]
+               (show-commission commission expanded? shipping-methods products))
+             (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
+          (when (zero? pages) empty-commissions)]
 
-          [:div.sm-up-col.sm-up-col-3
-           (when rate (show-commission-rate rate))]]])))))
+         [:div.sm-up-col.sm-up-col-3
+          (when rate (show-commission-rate rate))]])))))
 
 (defn query [data]
   {:commissions      (get-in data keypaths/stylist-commissions)

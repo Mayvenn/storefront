@@ -1,3 +1,18 @@
 .content-box { box-sizing: content-box; }
 
-.container { max-width: 640px; }
+.container {
+  margin: 0 auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+@media (--on-tablet) {
+  .container { max-width: 720px; }
+}
+
+@media (--on-desktop) {
+  .container { max-width: 960px; }
+}
+
+@custom-media --on-tablet  (min-width: 750px) and (max-width: 999px);
+@custom-media --on-desktop (min-width: 1000px);

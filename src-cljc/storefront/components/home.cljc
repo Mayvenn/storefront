@@ -23,12 +23,12 @@
   desktop-asset should be 408px high and at least 1024px wide"
   [mobile-asset desktop-asset alt-text]
   [:div
-   [:div.to-md-hide.bg-center.bg-no-repeat
+   [:div.hide-on-mb.bg-center.bg-no-repeat
     {:style {:height "408px"
              :background-image (assets/css-url desktop-asset)}
      :title alt-text}]
-   [:img.md-up-hide.col-12 {:src mobile-asset
-                            :alt alt-text}]])
+   [:img.hide-on-tb-dt.col-12 {:src mobile-asset
+                               :alt alt-text}]])
 
 (defn link-to-search [{:keys [slug name long-name representative-images]}]
   (let [{:keys [model-circle product]} representative-images]
@@ -44,7 +44,7 @@
      [:div.mb3.dark-gray.medium.f4 name]]))
 
 (defn pick-style [named-searches]
-  [:div.center.py3
+  [:div.container.center.py3
    [:div.flex.flex-column
     [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
     [:h3.h2.order-1.dark-gray.bold.py1 "pick your style"]]
@@ -69,14 +69,14 @@
                                    (if (<= slide-count 7)
                                      show-all
                                      (swipe 7))
-                                   {:responsive [{:breakpoint 1024
+                                   {:responsive [{:breakpoint 1000
                                                   :settings   (swipe 5)}
-                                                 {:breakpoint 768
+                                                 {:breakpoint 750
                                                   :settings   (swipe 3)}
-                                                 {:breakpoint 640
+                                                 {:breakpoint 500
                                                   :settings   (swipe 2)}]}))}
                      nil)]
-   [:div.col-6.md-up-col-4.mx-auto
+   [:div.col-6.col-4-on-tb-dt.mx-auto
     ;; button color should be light-silver/transparent
     (ui/large-ghost-button
      (utils/route-to events/navigate-categories)
@@ -99,33 +99,26 @@
 
 (def about-mayvenn
   (component/html
-   [:div.gray.py3
-    [:h2.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
+   [:div.container.gray.py3
+    [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
-    [:div.mx3.md-flex.f5
-     [:div.py4
-      [:div.px3
-       [:h3.f3.center.bold.mb3 "stylist recommended"]
-       [:p.line-height-5
-        "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]]
+    [:div.mx3.flex-on-tb-dt.f5
+     [:div.p3
+      [:h3.f3.center.bold.mb3 "stylist recommended"]
+      [:p.line-height-5
+       "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
-     [:div.md-up-hide.border-bottom.border-dark-silver]
-     [:div.py4
-      [:div.to-md-hide.left.border-left.border-dark-silver.container-height]
-      [:div.px3
-       [:h3.f3.center.bold.mb3 "30 day guarantee"]
-       [:p.line-height-5
-        "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]]
+     [:div.p3
+      [:h3.f3.center.bold.mb3 "30 day guarantee"]
+      [:p.line-height-5
+       "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
 
-     [:div.md-up-hide.border-bottom.border-dark-silver]
-     [:div.py4
-      [:div.to-md-hide.left.border-left.border-dark-silver.container-height]
-      [:div.px3
-       [:h3.f3.center.bold.mb3 "fast free shipping"]
-       [:p.line-height-5
-        "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]]
+     [:div.p3
+      [:h3.f3.center.bold.mb3 "fast free shipping"]
+      [:p.line-height-5
+       "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
 
-    [:div.col-6.md-up-col-4.mx-auto.mtn3
+    [:div.col-6.col-4-on-tb-dt.mx-auto
      (ui/teal-button
       (utils/route-to events/navigate-categories)
       "shop now")]]))

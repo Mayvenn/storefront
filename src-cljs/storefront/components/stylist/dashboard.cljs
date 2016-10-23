@@ -14,7 +14,7 @@
 (defn component [{:keys [nav-event stats commissions bonuses referrals]} owner opts]
   (om/component
    (html
-    [:.dark-gray
+    [:.container.dark-gray
      (om/build stylist-dashboard-stats-component {:stats stats})
 
      [:div.bg-light-silver

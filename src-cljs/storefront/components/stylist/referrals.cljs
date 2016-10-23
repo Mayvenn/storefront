@@ -121,22 +121,22 @@
    (html
     (if (and (empty? (seq referrals)) fetching?)
       [:div.my2.h2 ui/spinner]
-      [:div.mx-auto.container {:data-test "referrals-panel"}
-       [:div.clearfix.mb3
-        [:div.sm-up-col-right.sm-up-col-4
-         (when bonus-amount
-           (show-refer-ad bonus-amount earning-amount))]
+      [:div.clearfix.mb3
+       {:data-test "referrals-panel"}
+       [:div.sm-up-col-right.sm-up-col-4
+        (when bonus-amount
+          (show-refer-ad bonus-amount earning-amount))]
 
-        [:div.sm-up-col.sm-up-col-8
-         (when (seq referrals)
-           [:div
-            (for [referral referrals]
-              (show-referral earning-amount referral))
-            (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
-         (when (zero? pages) empty-referrals)]
-        [:div.sm-up-col-right.sm-up-col-4.clearfix
-         (when (and (seq referrals) (pos? lifetime-total))
-           (show-lifetime-total lifetime-total))]]]))))
+       [:div.sm-up-col.sm-up-col-8
+        (when (seq referrals)
+          [:div
+           (for [referral referrals]
+             (show-referral earning-amount referral))
+           (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
+        (when (zero? pages) empty-referrals)]
+       [:div.sm-up-col-right.sm-up-col-4.clearfix
+        (when (and (seq referrals) (pos? lifetime-total))
+          (show-lifetime-total lifetime-total))]]))))
 
 (defn query [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)

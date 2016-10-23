@@ -47,7 +47,7 @@
                          social]} owner opts]
   (component/create
    [:div.bg-white.gray
-    [:div.p2.m-auto.overflow-hidden
+    [:div.container.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div
        (edit-photo profile-picture-url photo-saving?)]

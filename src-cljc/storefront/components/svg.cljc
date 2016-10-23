@@ -165,5 +165,5 @@
 
 (def guarantee
   (component/html
-   [:svg.col-12 {:class "fill-teal" :height "5em"}
+   [:svg {:class "fill-teal" :height "5em"}
     (svg-xlink "guarantee")]))
