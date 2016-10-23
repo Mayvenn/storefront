@@ -14,9 +14,9 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.py2.center order-complete-check]
+     [:.my2.center order-complete-check]
 
-     [:.px3
+     [:.mx3
       [:.h2.center
        {:data-test "checkout-success-message"}
        "Thank you for your order!"]
@@ -25,7 +25,8 @@
        [:p.my2.gray
         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
-     (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")))))
+     [:div.mb2
+      (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")]))))
 
 (defn built-component [data _]
   (om/build component {}))
