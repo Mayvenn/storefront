@@ -40,6 +40,7 @@
 /* Optional Modules (extensions to Basscss Core) */
 
 @import 'basscss-addons/modules/responsive-margin';
+@import 'custom-responsive-margin.css';
 @import 'basscss-addons/modules/responsive-padding';
 @import 'basscss-addons/modules/colors';
 @import 'custom-colors.css';
@@ -96,6 +97,28 @@
               to-md   |   md-lg   |   lg-up
                           to-lg   |   lg-xl  |  xl-up
                                       to-xl  |  xl-up
+
+                              750px      1000px
+                       on-mb    | on-tb-dt
+                       on-mb    | on-tb    | on-dt
+                                  on-mb-tb | on-dt
+
+
+
+*/
+
+/*
+to-sm- -on-mb
+sm-up-
+sm-md- -on-mb
+to-md- -on-mb
+md-up-
+md-lg- -on-mb
+to-lg- -on-mb
+lg-up- -on-tb-dt
+lg-xl- -on-tb
+to-xl- -on-mb-tb
+xl-up- -on-dt
 */
 
 @custom-media --breakpoint-to-sm (max-width: 479px);
@@ -113,7 +136,6 @@
 @custom-media --on-mobile             (max-width: 749px);
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
 @custom-media --on-desktop            (min-width: 1000px);
-
 @custom-media --on-mobile-and-tablet  (max-width: 999px);
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 

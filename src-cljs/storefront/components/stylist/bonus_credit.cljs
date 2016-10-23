@@ -39,10 +39,10 @@
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
     [:div.h6.light-gray
-     [:div.p3.to-sm-hide
+     [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:div.my3.sm-up-hide
+     [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
 
 (defn component [{:keys [available-credit
@@ -61,7 +61,7 @@
       [:.my2.h2 ui/spinner]
       [:.clearfix.mb3
        {:data-test "bonuses-panel"}
-       [:.sm-up-col.sm-up-col-8
+       [:.col-on-tb-dt.col-8-on-tb-dt
         (when award-amount
           [:div
            [:.center.px1.py2
@@ -70,8 +70,9 @@
               (pos? progress-amount) [:.h4 "Sell " (mf/as-money (- milestone-amount progress-amount)) " more to earn your first bonus!"]
               :else                  [:.h4 "Sell " (mf/as-money-without-cents milestone-amount) " to earn your first bonus!"])
 
-            (ui/progress-indicator {:value  progress-amount
-                                    :maximum milestone-amount})
+            [:.mx1
+             (ui/progress-indicator {:value  progress-amount
+                                     :maximum milestone-amount})]
 
             [:.h6.gray
              "You earn "
@@ -98,7 +99,7 @@
                 (utils/route-to events/navigate-categories)
                 "Shop now " ui/rarr]]])])]
 
-       [:.sm-up-col-right.sm-up-col-4
+       [:.col-right-on-tb-dt.col-4-on-tb-dt
         (when (pos? lifetime-total)
           (show-lifetime-total lifetime-total))]]))))
 

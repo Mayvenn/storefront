@@ -70,16 +70,16 @@
         [:div.gray "Joined " (f/long-date join-date)]
         (when (= state :paid)
           [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
-      [:div.ml1.sm-mr3 (state-icon state earning-amount commissioned-revenue)]])))
+      [:div.ml1.mr3-on-tb-dt (state-icon state earning-amount commissioned-revenue)]])))
 
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
     [:div.h6.gray
-     [:div.p3.to-sm-hide
+     [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:div.my3.sm-up-hide
+     [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
 
 (defn refer-button [link-attrs]
@@ -93,12 +93,12 @@
                                     (mf/as-money-without-cents bonus-amount)
                                     (mf/as-money-without-cents earning-amount))]
     [:div
-     [:div.py2.px3.to-sm-hide
+     [:div.py2.px3.hide-on-mb
       [:div.center.fill-navy svg/large-mail]
       [:p.py1.h5.black.line-height-2 message]
       [:div.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
-     [:div.p2.clearfix.sm-up-hide.border-bottom.border-light-silver
+     [:div.p2.clearfix.hide-on-tb-dt.border-bottom.border-light-silver
       [:div.left.mx1.fill-navy svg/large-mail]
       [:div.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                                  :data-test "refer-button-mobile"})]
@@ -106,7 +106,7 @@
 
 (def empty-referrals
   (html
-   [:div.center.p3.to-sm-hide
+   [:div.center.p3.hide-on-mb
     [:div.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
     [:p.h3.gray "Looks like you haven't" [:br] "referred anyone yet."]]))
 
@@ -123,18 +123,18 @@
       [:div.my2.h2 ui/spinner]
       [:div.clearfix.mb3
        {:data-test "referrals-panel"}
-       [:div.sm-up-col-right.sm-up-col-4
+       [:div.col-right-on-tb-dt.col-4-on-tb-dt
         (when bonus-amount
           (show-refer-ad bonus-amount earning-amount))]
 
-       [:div.sm-up-col.sm-up-col-8
+       [:div.col-on-tb-dt.col-8-on-tb-dt
         (when (seq referrals)
           [:div
            (for [referral referrals]
              (show-referral earning-amount referral))
            (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
         (when (zero? pages) empty-referrals)]
-       [:div.sm-up-col-right.sm-up-col-4.clearfix
+       [:div.col-right-on-tb-dt.col-4-on-tb-dt.clearfix
         (when (and (seq referrals) (pos? lifetime-total))
           (show-lifetime-total lifetime-total))]]))))
 

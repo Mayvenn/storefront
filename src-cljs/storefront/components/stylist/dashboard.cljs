@@ -18,7 +18,7 @@
      (om/build stylist-dashboard-stats-component {:stats stats})
 
      [:div.bg-light-silver
-      [:div.md-up-col-6.mx-auto
+      [:div.col-6-on-tb-dt.mx-auto
        (om/build tabs/component {:selected-tab nav-event}
                  {:opts {:tab-refs ["bonuses" "commissions" "referrals"]
                          :labels   ["Bonuses" "Commissions" "Referrals"]

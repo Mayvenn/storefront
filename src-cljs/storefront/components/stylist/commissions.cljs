@@ -190,10 +190,10 @@
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
     [:div.h6.light-gray
-     [:div.p2.to-sm-hide
+     [:div.p2.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
-     [:div.my3.sm-up-hide
+     [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
 
 (defn component [{:keys [commissions expanded? shipping-methods products fetching?]}]
@@ -204,7 +204,7 @@
         [:div.my2.h2 ui/spinner]
         [:div.clearfix
          {:data-test "commissions-panel"}
-         [:div.sm-up-col.sm-up-col-9
+         [:div.col-on-tb-dt.col-9-on-tb-dt
           (when-let [history (seq history)]
             [:div.mb3
              (for [commission history]
@@ -212,7 +212,7 @@
              (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
           (when (zero? pages) empty-commissions)]
 
-         [:div.sm-up-col.sm-up-col-3
+         [:div.col-on-tb-dt.col-3-on-tb-dt
           (when rate (show-commission-rate rate))]])))))
 
 (defn query [data]
