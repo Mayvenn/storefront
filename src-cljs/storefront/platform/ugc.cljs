@@ -61,9 +61,9 @@
                              :centerPadding "36px"
                              ;; The breakpoints are mobile-last. That is, the
                              ;; default values apply to the largest screens, and
-                             ;; 768 means 768 and below.
+                             ;; 1000 means 1000 and below.
                              :slidesToShow  3
-                             :responsive    [{:breakpoint 768
+                             :responsive    [{:breakpoint 1000
                                               :settings   {:slidesToShow 2}}]}}
                  opts)
        [:p.center.gray.m2
