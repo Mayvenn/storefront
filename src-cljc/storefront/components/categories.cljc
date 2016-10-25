@@ -14,14 +14,14 @@
         {:data-test (str "named-search-" slug)}
         (utils/route-to events/navigate-category
                         {:named-search-slug slug}))
-    [:div.relative {:style {:height "200px"}}
-     [:img.container-size
-      (merge (utils/img-attrs (:model-full representative-images) :large)
-             {:style {:object-fit "cover"
-                      :object-position "50% 0"}})]
+    [:div.relative.overflow-hidden
+     ;; TODO: Should we add new assets that are the top 2/3 of these images? Would double the downloads.
+     {:style {:padding-top "66.66%"}} ;; To keep aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+     [:div.absolute.overlay
+      [:img.col-12.block (utils/img-attrs (:model-full representative-images) :large)]]
      [:div.absolute.overlay.bg-darken-2
       [:div.flex.items-center.container-height
-       [:div.h2.bold.white.col-12.titleize.shadow.nowrap name]]]]]])
+       [:div.h3.bold.white.col-12.titleize.shadow.nowrap name]]]]]])
 
 (defn component [{:keys [named-searches]} owner opts]
   (component/create
