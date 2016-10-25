@@ -10,15 +10,14 @@
             [storefront.platform.carousel :as carousel]))
 
 (defn image-view [photo-url]
-   {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
   [:div.bg-black.relative.overflow-hidden
-   {:style {:padding-top "100%"}}
-   [:div.absolute.top-0.bottom-0.left-0.right-0.bg-cover.bg-no-repeat.bg-center
+   {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
+   [:div.absolute.overlay.bg-cover.bg-no-repeat.bg-center
     {:style {:background-image (str "url(" photo-url ")")}}]])
 
 (defn video-view [video-url]
   [:div.bg-black.relative {:style {:padding-top "100%"}}
-   [:div.absolute.top-0.bottom-0.left-0.right-0.overflow-hidden
+   [:div.absolute.overlay.overflow-hidden
     [:video.container-size.block {:controls true}
      [:source {:src video-url}]]]])
 
@@ -27,7 +26,7 @@
    [:a (util/fake-href events/control-popup-ugc-category {:offset idx})
     [:div.relative.overflow-hidden
      {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
-     [:div.absolute.top-0.bottom-0.left-0.right-0.flex.flex-column.justify-center
+     [:div.absolute.overlay.flex.flex-column.justify-center
       [:img.col-12.block {:src photo}]]
      (when (= content-type "video")
        [:div.col-12.absolute {:style {:top "50%" :margin-top "-32px"}} svg/play-video-muted])]]])
