@@ -4,7 +4,6 @@
             [storefront.routes :as routes]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
-            [storefront.hooks.segment-analytics :as segment-analytics]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.pixlee :as pixlee-analytics]
@@ -50,7 +49,6 @@
                        (get-in app-state keypaths/order-user)
                        path)
     (google-analytics/track-page path)
-    (segment-analytics/track-page)
     (facebook-analytics/track-page path)))
 
 (defmethod perform-track events/app-start [_ event args app-state]
@@ -76,7 +74,6 @@
 
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart")
-  (segment-analytics/track-event "add-to-cart" {:variant variant :quantity quantity})
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
   (let [named-search (named-searches/current-named-search app-state)]
     (when (pixlee/content-available? named-search)
@@ -90,16 +87,13 @@
                               :order (get-in app-state keypaths/order)})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
-  (segment-analytics/track-event "stylist-share-cart" {})
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (segment-analytics/track-event "initiate checkout normal" {})
   (google-analytics/track-event "orders" "initiate_checkout")
   (facebook-analytics/track-event "InitiateCheckout"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event _ app-state]
-  (segment-analytics/track-event "initiate checkout paypal" {})
   (google-analytics/track-event "orders" "initiate_checkout")
   (facebook-analytics/track-event "InitiateCheckout"))
 
@@ -110,19 +104,15 @@
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
   (convert/track-conversion "place-order")
   (convert/track-revenue (convert-revenue order))
-  (segment-analytics/track-event "place order" {:placed-total (int total)
-                                                :placed-total-minus-store-credit (int (orders/non-store-credit-payment-amount order))})
   (google-analytics/track-event "orders" "placed_total" nil (int total))
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))
   (pixlee-analytics/track-event "converted:photo" (pixlee-order (named-searches/current-named-searches app-state) order)))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (segment-analytics/identify (get-in app-state keypaths/user))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (segment-analytics/identify (get-in app-state keypaths/user))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
 
