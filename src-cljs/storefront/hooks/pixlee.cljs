@@ -7,14 +7,6 @@
             [clojure.string :as str])
   (:import goog.json.Serializer))
 
-(defn analytics-js-loaded? [] (.hasOwnProperty js/window "Pixlee_Analytics"))
-
-(defn insert []
-  (when-not (analytics-js-loaded?)
-    (tags/insert-tag-with-src
-     "//assets.pixlee.com/assets/pixlee_events.js"
-     "ugc-analytics")))
-
 (defn write-json [data]
   (.serialize (goog.json.Serializer.) (clj->js data)))
 
@@ -47,9 +39,3 @@
   (api-request "/products"
                {:params  {:per_page 100}
                 :handler (partial m/handle-message events/pixlee-api-success-fetch-named-search-album-ids)}))
-
-(defn track-event [event-name args]
-  (when (analytics-js-loaded?)
-    (.trigger (.-events (js/Pixlee_Analytics. (:api-key config/pixlee)))
-              event-name
-              (clj->js args))))
