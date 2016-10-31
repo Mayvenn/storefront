@@ -736,7 +736,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  swipeEnd: function swipeEnd(e) {
 	    if (!this.state.dragging) {
-	      e.preventDefault();
+        if (this.props.swipe) {
+          e.preventDefault();
+        }
 	      return;
 	    }
 	    var touchObject = this.state.touchObject;
