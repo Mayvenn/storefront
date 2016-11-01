@@ -13,7 +13,7 @@
       (ui/modal {:on-close on-close
                  :bg-class "bg-darken-4"}
                 [:div.bg-white.rounded.p2
-                 (ui/modal-close {:on-close on-close})
+                 (ui/modal-close {:on-close on-close :data-test "dismiss-email-capture"})
                  [:form.col-12.flex.flex-column.items-center
                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
                   [:div.h3.navy.bold.mb2 "Become an Insider"]
