@@ -140,10 +140,12 @@
 (def talkable-banner
   (component/html
    [:div.container.py2
-    (homepage-images
-     (assets/path "/images/homepage/mobile_talkable_banner.png")
-     (assets/path "/images/homepage/desktop_talkable_banner.png")
-     "refer friends, earn rewards, get 20% off")]))
+    [:a
+     (utils/route-to events/navigate-friend-referrals)
+     (homepage-images
+      (assets/path "/images/homepage/mobile_talkable_banner.png")
+      (assets/path "/images/homepage/desktop_talkable_banner.png")
+      "refer friends, earn rewards, get 20% off")]]))
 
 (defn component [{:keys [named-searches store-slug talkable-banner?]} owner opts]
   (component/create
