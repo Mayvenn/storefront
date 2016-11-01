@@ -31,3 +31,6 @@
 
 (defn apple-pay? [data]
   (display-feature? data "apple-pay"))
+
+(defn talkable-banner? [data]
+  (display-feature? data "talkable-banner"))
