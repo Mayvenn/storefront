@@ -213,7 +213,7 @@
                                  (assoc-in keypaths/facebook-email-denied nil))
         opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/popup-session))]
     (cond-> signed-out-app-state
-      (and experiments/email-popup? (not opted-in?))
+      (not opted-in?)
       (assoc-in keypaths/popup-session "dismissed"))))
 
 (defmethod transition-state events/control-change-state
@@ -367,7 +367,7 @@
                                 (assoc-in keypaths/order order))
         opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/popup-session))]
     (cond-> signed-in-app-state
-      (and experiments/email-popup? (not opted-in?))
+      (not opted-in?)
       (assoc-in keypaths/popup-session "signed-in"))))
 
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]

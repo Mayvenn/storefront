@@ -41,11 +41,10 @@
             [clojure.set :as set]))
 
 (defn potentially-show-email-popup [app-state]
-  (let [in-experiment?      (experiments/email-popup? app-state)
-        is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
+  (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
         not-seen-popup-yet? (not (get-in app-state keypaths/popup-session))
         signed-in?          (get-in app-state keypaths/user-id)]
-    (when (and in-experiment? is-on-homepage? not-seen-popup-yet?)
+    (when (and is-on-homepage? not-seen-popup-yet?)
       (if signed-in?
         (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "signed-in")
         (handle-message events/show-email-popup)))))
@@ -162,7 +161,7 @@
       (let [path (routes/current-path app-state)]
         (exception-handler/refresh))))
 
-  (when experiments/email-popup? (update-popup-session app-state)))
+  (update-popup-session app-state))
 
 (defmethod perform-effects events/navigate-home [_ _ _ app-state]
   (potentially-show-email-popup app-state))
@@ -225,7 +224,7 @@
     (handle-message events/control-stylist-commissions-fetch)))
 
 (defmethod perform-effects events/control [_ _ args app-state]
-  (when experiments/email-popup? (update-popup-session app-state)))
+  (update-popup-session app-state))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args app-state]
   (when (empty? (get-in app-state keypaths/errors))
@@ -802,8 +801,7 @@
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
   (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
-(defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state]
-  (potentially-show-email-popup app-state))
+(defmethod perform-effects events/convert [dispatch event {:keys [variation] :as args} app-state])
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)

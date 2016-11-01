@@ -26,9 +26,6 @@
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
 
-(defn email-popup? [data]
-  (display-feature? data "email-popup"))
-
 (defn show-fields? [data]
   (display-feature? data "show-fields"))
 
