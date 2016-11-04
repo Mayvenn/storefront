@@ -20,15 +20,16 @@
                                                  :path
                                                  routes/navigation-message-for)
         is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
-    (ui/teal-button
-     (merge
-      {:spinning? (and (= id selected-look-id) requesting?)}
-      (if requesting?
-        {:on-click utils/noop-callback}
-        (if is-shared-cart-link?
-          (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
-          (apply utils/route-to nav-message))))
-     "Buy this look")))
+    (when (or (not is-shared-cart-link?) id)
+      (ui/teal-button
+       (merge
+        {:spinning? (and (= id selected-look-id) requesting?)}
+        (if requesting?
+          {:on-click utils/noop-callback}
+          (if is-shared-cart-link?
+            (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
+            (apply utils/route-to nav-message))))
+       "Buy this look"))))
 
 (defn image-attribution [requesting? selected-look-id {:keys [user-handle social-service] :as look}]
   [:div.bg-light-silver.p1
