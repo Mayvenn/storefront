@@ -154,6 +154,15 @@ Thanks,
                                        :data-test "start-checkout-button"})]
        [:div.h5.gray.center.py2 "OR"]
 
+       [:div.pb2 (ui/large-aqua-button
+                  {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                   :spinning? redirecting-to-paypal?
+                   :disabled? updating?
+                   :data-test "paypal-checkout"}
+                  [:div
+                   "Check out with "
+                   [:span.medium.italic "PayPal™"]])]
+
        (when show-apple-pay?
          [:div.pb2 (ui/large-apple-pay-button
                     {:on-click (utils/send-event-callback events/control-checkout-cart-apple-pay)
@@ -163,14 +172,6 @@ Thanks,
                      "Check out with "
                      [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.mtp4.ml1 {:style {:width "4rem"
                                                                                               :height "2rem"}}]])])
-       [:div.pb2 (ui/large-aqua-button
-                  {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                   :spinning? redirecting-to-paypal?
-                   :disabled? updating?
-                   :data-test "paypal-checkout"}
-                  [:div
-                   "Check out with "
-                   [:span.medium.italic "PayPal™"]])]
 
        (when share-carts?
          [:div.border-top.border-dark-silver.py2
