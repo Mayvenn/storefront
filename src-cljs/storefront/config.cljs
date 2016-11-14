@@ -73,6 +73,6 @@
 
 (def byliner-uri
   (case js/environment
-    "production" "//t.mayvenn.com/"
-    "acceptance" "//t.diva-acceptance.com/"
-    "//localhost:3013/"))
+    "production" "https://t.mayvenn.com/"
+    "acceptance" "https://t.diva-acceptance.com/"
+    "http://localhost:3013/"))
