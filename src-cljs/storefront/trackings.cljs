@@ -7,6 +7,7 @@
             [storefront.hooks.convert :as convert]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.woopra :as woopra]
+            [storefront.hooks.stringer :as stringer]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
@@ -24,10 +25,12 @@
 
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
+    (js/console.log "track page view!")
     (riskified/track-page path)
     (woopra/track-page (get-in app-state keypaths/session-id)
                        (get-in app-state keypaths/order-user)
                        path)
+    (stringer/track-page path)
     (google-analytics/track-page path)
     (facebook-analytics/track-page path)))
 
@@ -85,10 +88,12 @@
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
+  (stringer/track-identify (get-in app-state keypaths/user))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
+  (stringer/track-identify (:user (get-in app-state keypaths/order)))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (:user (get-in app-state keypaths/order))}))
 

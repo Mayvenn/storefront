@@ -29,6 +29,7 @@
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stripe :as stripe]
+            [storefront.hooks.stringer :as stringer]
             [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.exception-handler :as exception-handler]
@@ -90,6 +91,7 @@
 
 (defmethod perform-effects events/app-start [dispatch event args app-state]
   (svg/insert-sprite)
+  (stringer/insert-tracking)
   (google-analytics/insert-tracking)
   (convert/insert-tracking)
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
