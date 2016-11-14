@@ -25,7 +25,6 @@
 
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
-    (js/console.log "track page view!")
     (riskified/track-page path)
     (woopra/track-page (get-in app-state keypaths/session-id)
                        (get-in app-state keypaths/order-user)

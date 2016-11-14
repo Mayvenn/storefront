@@ -64,3 +64,15 @@
                   :mosaic     {:albumId 952508}}
     {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :mosaic     {:albumId 965034}}))
+
+(def stringer-src
+  (case js/environment
+    "production" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"
+    "acceptance" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"
+    "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"))
+
+(def byliner-uri
+  (case js/environment
+    "production" "//t.mayvenn.com/"
+    "acceptance" "//t.diva-acceptance.com/"
+    "//localhost:3013/"))
