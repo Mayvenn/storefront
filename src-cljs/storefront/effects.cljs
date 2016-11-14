@@ -106,6 +106,7 @@
 (defmethod perform-effects events/app-stop [_ event args app-state]
   (convert/remove-tracking)
   (riskified/remove-beacon)
+  (stringer/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))
 
