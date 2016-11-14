@@ -28,3 +28,7 @@ stringer.init({serverURI: '" config/byliner-uri "',sourceSite: 'storefront'});})
 (defn track-identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")
     (.identify js/window.stringer email id)))
+
+(defn track-clear []
+  (when (.hasOwnProperty js/window "stringer")
+    (.clear js/window.stringer)))

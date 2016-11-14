@@ -136,3 +136,6 @@
 (defmethod perform-track events/apple-pay-availability [_ event {:keys [available?]} app-state]
   (when available?
     (convert/track-conversion "apple-pay-available")))
+
+(defmethod perform-track events/control-sign-out [_ _ _ _]
+  (stringer/track-clear))
