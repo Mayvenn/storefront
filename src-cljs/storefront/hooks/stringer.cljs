@@ -14,7 +14,6 @@ stringer.init({serverURI: '" config/byliner-uri "',sourceSite: 'storefront'});})
    "stringer"))
 
 (defn remove-tracking []
-  (js-delete js/window "stringer")
   (remove-tags-by-class "stringer")
   (remove-tag-by-src config/stringer-src))
 
