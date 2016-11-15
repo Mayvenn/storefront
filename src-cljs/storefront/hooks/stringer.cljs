@@ -4,7 +4,7 @@
 
 (defn insert-tracking []
   (insert-tag-with-text
-   (str "(function() {var stringer = window.stringer = window.stringer || [],methods = ['init', 'track', 'identify', 'clear']; function stub(method) {return function() {var args = Array.prototype.slice.call(arguments); args.unshift(method); stringer.push(args); return stringer;};} for (var i = 0; i < methods.length; i++) {var k = methods[i]; stringer[k] = stub(k);}
+   (str "(function() {var stringer = window.stringer = window.stringer || [],methods = ['init', 'track', 'identify', 'clear']; if (stringer.snippetRan || stringer.loaded) { return; } stringer.snippetRan = true; function stub(method) {return function() {var args = Array.prototype.slice.call(arguments); args.unshift(method); stringer.push(args); return stringer;};} for (var i = 0; i < methods.length; i++) {var k = methods[i]; stringer[k] = stub(k);}
 
 var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true; script.src = '" config/stringer-src "';
 

@@ -67,9 +67,9 @@
 
 (def stringer-src
   (case js/environment
-    "production" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"
-    "acceptance" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"
-    "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-04f8ef.js"))
+    "production" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"
+    "acceptance" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"
+    "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"))
 
 (def byliner-uri
   (case js/environment
