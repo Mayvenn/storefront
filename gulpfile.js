@@ -46,7 +46,7 @@ gulp.task('refresh-deps', function () {
 
 gulp.task('clean-min-js', function () {
   return del(['./target/min-js']);
-})
+});
 
 gulp.task('minify-js', ['clean-min-js'], function () {
   return gulp.src('src-cljs/storefront/*.js')
@@ -96,7 +96,7 @@ gulp.task('rev-assets', function () {
     .pipe(revAll.revision())
     .pipe(gulp.dest('resources/public/cdn'))
     .pipe(revAll.manifestFile())
-    .pipe(gulp.dest('resources'))
+    .pipe(gulp.dest('resources'));
 });
 
 gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
@@ -119,7 +119,7 @@ gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
       });
     });
   });
-})
+});
 
 gulp.task('gzip', function () {
   return gulp.src('resources/public/cdn/**')
