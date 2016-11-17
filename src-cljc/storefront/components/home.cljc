@@ -2,6 +2,7 @@
   (:require [storefront.platform.component-utils :as utils]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
+            [storefront.platform.date :as date]
             [storefront.platform.video :as video]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
@@ -87,16 +88,22 @@
   [:a
    (assoc (utils/route-to events/navigate-categories)
           :data-test "home-banner")
-   (case store-slug
-     "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                 (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                 "Get 15% Off Hair Extensions Mayvenn")
-     "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+   (if
+       (date/between "2016-11-24T21:00:00.000-08:00"
+                     "2016-11-30T00:00:00.000-08:00")
+     (homepage-images (assets/path "/images/homepage/black_friday/mobile_banner.jpg")
+                      (assets/path "/images/homepage/black_friday/desktop_banner.jpg")
+                      "Get 15% Off Hair Extensions Mayvenn")
+     (case store-slug
+       "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/peak/desktop_banner.jpg")
                                    "Get 15% Off Hair Extensions Mayvenn")
-     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                      (assets/path "/images/homepage/desktop_banner.jpg")
-                      "Get 15% Off Hair Extensions Mayvenn"))])
+       "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                     (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+                                     "Get 15% Off Hair Extensions Mayvenn")
+       (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                        (assets/path "/images/homepage/desktop_banner.jpg")
+                        "Get 15% Off Hair Extensions Mayvenn")))])
 
 (def about-mayvenn
   (component/html
