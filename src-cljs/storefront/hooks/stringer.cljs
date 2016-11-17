@@ -15,15 +15,15 @@
 
 (defn track-event [event-name payload]
   (if (.hasOwnProperty js/window "stringer")
-    (.track js/window.stringer event-name (clj->js payload))))
+    (.track js/stringer event-name (clj->js payload))))
 
 (defn track-page [path]
   (track-event "pageview" {:path path}))
 
 (defn track-identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")
-    (.identify js/window.stringer email id)))
+    (.identify js/stringer email id)))
 
 (defn track-clear []
   (when (.hasOwnProperty js/window "stringer")
-    (.clear js/window.stringer)))
+    (.clear js/stringer)))
