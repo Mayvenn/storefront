@@ -14,11 +14,11 @@
   (remove-tag-by-src stringer-src))
 
 (defn track-event [event-name payload]
-  (.track js/window.stringer event-name (clj->js payload)))
+  (if (.hasOwnProperty js/window "stringer")
+    (.track js/window.stringer event-name (clj->js payload))))
 
 (defn track-page [path]
-  (when (.hasOwnProperty js/window "stringer")
-    (track-event "pageview" {:path path})))
+  (track-event "pageview" {:path path}))
 
 (defn track-identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")
