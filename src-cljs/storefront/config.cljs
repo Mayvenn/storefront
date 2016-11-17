@@ -1,5 +1,7 @@
 (ns storefront.config)
 
+(def environment js/environment)
+
 (def report-errors?
   (not= "development" js/environment))
 
@@ -65,14 +67,4 @@
     {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :mosaic     {:albumId 965034}}))
 
-(def stringer-src
-  (case js/environment
-    "production" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"
-    "acceptance" "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"
-    "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-786b278.js"))
 
-(def byliner-uri
-  (case js/environment
-    "production" "https://t.mayvenn.com/"
-    "acceptance" "https://t.diva-acceptance.com/"
-    "http://localhost:3013/"))
