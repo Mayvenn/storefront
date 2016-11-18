@@ -88,9 +88,7 @@
   [:a
    (assoc (utils/route-to events/navigate-categories)
           :data-test "home-banner")
-   (if
-       (date/between "2016-11-24T21:00:00.000-08:00"
-                     "2016-11-30T00:00:00.000-08:00")
+   (if (date/between date/black-friday "2016-11-30T00:00:00.000-08:00")
      (homepage-images (assets/path "/images/homepage/black_friday/mobile_banner.jpg")
                       (assets/path "/images/homepage/black_friday/desktop_banner.jpg")
                       "Get 15% Off Hair Extensions Mayvenn")
