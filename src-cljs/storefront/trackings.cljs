@@ -12,7 +12,8 @@
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.components.money-formatters :as mf]
+            [clojure.string :as str]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -88,7 +89,24 @@
 (defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
+(defn payment-flow [{:keys [payments]}]
+  (or (some #{"apple-pay" "paypal"} (map :payment-type payments))
+      "mayvenn"))
+
+(defn stringer-order-completed [{:keys [number total promotion-codes] :as order} shipping-methods]
+  (let [items (orders/product-items order)]
+    {:flow                    (payment-flow order)
+     :order_number            number
+     :order_total             total
+     :non_store_credit_amount (orders/non-store-credit-payment-amount order)
+     :shipping_method         (:name (orders/shipping-method-details shipping-methods (orders/shipping-item order)))
+     :skus                    (->> items (map :sku) (str/join ","))
+     :variant_ids             (->> items (map :id) (str/join ","))
+     :promo_codes             (->> promotion-codes (str/join ","))
+     :total_quantity          (orders/product-quantity order)}))
+
 (defmethod perform-track events/order-completed [_ event {:keys [total] :as order} app-state]
+  (stringer/track-event "checkout-complete" (stringer-order-completed order (get-in app-state keypaths/shipping-methods)))
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
   (convert/track-conversion "place-order")
   (convert/track-revenue (convert-revenue order))
