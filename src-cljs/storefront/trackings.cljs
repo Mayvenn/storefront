@@ -35,6 +35,8 @@
     (facebook-analytics/track-page path)))
 
 (defmethod perform-track events/app-start [_ event args app-state]
+  (when (get-in app-state keypaths/user-id)
+    (stringer/track-identify (get-in app-state keypaths/user)))
   (track-page-view app-state))
 
 (defmethod perform-track events/navigate [_ event args app-state]
