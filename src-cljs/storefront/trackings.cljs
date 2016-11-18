@@ -156,13 +156,13 @@
                                              :order_number (get-in app-state keypaths/order-number)}))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (checkout-initiate "mayvenn"))
+  (checkout-initiate app-state "mayvenn"))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
-  (checkout-initiate "applepay"))
+  (checkout-initiate app-state "applepay"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
-  (checkout-initiate "paypal"))
+  (checkout-initiate app-state "paypal"))
 
 (defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
