@@ -60,10 +60,19 @@
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
-    (woopra/track-add-to-bag {:variant variant
+    (stringer/track-event "add_to_cart" {:order_number (get-in app-state keypaths/order-number)
+                                         :quantity     quantity
+                                         :variant_id   (:id variant)
+                                         :name         (:variant-name variant)
+                                         :origin       (-> variant :variant_attrs :origin)
+                                         :style        (-> variant :variant_attrs :style)
+                                         :color        (-> variant :variant_attrs :color)
+                                         :length       (-> variant :variant_attrs :length)
+                                         :material     (-> variant :variant_attrs :material)})
+    (woopra/track-add-to-bag {:variant    variant
                               :session-id (get-in app-state keypaths/session-id)
-                              :quantity quantity
-                              :order (get-in app-state keypaths/order)})))
+                              :quantity   quantity
+                              :order      (get-in app-state keypaths/order)})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
