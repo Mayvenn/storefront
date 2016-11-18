@@ -150,3 +150,16 @@
 
 (defmethod perform-track events/control-sign-out [_ _ _ _]
   (stringer/track-clear))
+
+(defn- checkout-initiate [app-state flow]
+  (stringer/track-event "checkout-initiate" {:flow flow
+                                             :order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
+  (checkout-initiate "mayvenn"))
+
+(defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
+  (checkout-initiate "applepay"))
+
+(defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
+  (checkout-initiate "paypal"))
