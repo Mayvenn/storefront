@@ -67,6 +67,7 @@
                           "externs/talkable.js"
                           "externs/react-slick.js"
                           "externs/pixlee.js"
+                          "externs/stringer.js"
                           "externs/wistia.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
@@ -96,6 +97,7 @@
                           "externs/fastpass.js"
                           "externs/talkable.js"
                           "externs/react-slick.js"
+                          "externs/stringer.js"
                           "externs/pixlee.js"
                           "externs/wistia.js"]
                 :optimizations :advanced}}}}
