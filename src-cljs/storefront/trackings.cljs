@@ -148,12 +148,13 @@
 
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
-    (stringer/track-event "email_capture-capture"
-                          {:email (get-in app-state keypaths/captured-email)})
-    (woopra/track-user-email-captured
-     (get-in app-state keypaths/session-id)
-     (get-in app-state keypaths/user)
-     (get-in app-state keypaths/captured-email))))
+    (let [captured-email (get-in app-state keypaths/captured-email)]
+      (stringer/track-identify {:email captured-email})
+      (stringer/track-event "email_capture-capture" {:email captured-email})
+      (woopra/track-user-email-captured
+       (get-in app-state keypaths/session-id)
+       (get-in app-state keypaths/user)
+       captured-email))))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
   (convert/track-conversion "apple-pay-checkout"))
