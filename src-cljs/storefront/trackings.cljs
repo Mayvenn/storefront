@@ -163,3 +163,6 @@
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
   (checkout-initiate "paypal"))
+
+(defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
+  (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
