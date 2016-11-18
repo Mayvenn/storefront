@@ -27,7 +27,7 @@
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
     (riskified/track-page path)
-    (stringer/track-page path)
+    (stringer/track-page)
     (woopra/track-page (get-in app-state keypaths/session-id)
                        (get-in app-state keypaths/order-user)
                        path)
