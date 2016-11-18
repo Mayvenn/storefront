@@ -26,10 +26,10 @@
 (defn- track-page-view [app-state]
   (let [path (routes/current-path app-state)]
     (riskified/track-page path)
+    (stringer/track-page path)
     (woopra/track-page (get-in app-state keypaths/session-id)
                        (get-in app-state keypaths/order-user)
                        path)
-    (stringer/track-page path)
     (google-analytics/track-page path)
     (facebook-analytics/track-page path)))
 
@@ -128,12 +128,12 @@
 
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
+    (stringer/track-event "email_capture-capture"
+                          {:email (get-in app-state keypaths/captured-email)})
     (woopra/track-user-email-captured
      (get-in app-state keypaths/session-id)
      (get-in app-state keypaths/user)
-     (get-in app-state keypaths/captured-email))
-    (stringer/track-event "email_capture-capture"
-                          {:email (get-in app-state keypaths/captured-email)})))
+     (get-in app-state keypaths/captured-email))))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
   (convert/track-conversion "apple-pay-checkout"))
