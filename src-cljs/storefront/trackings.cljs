@@ -122,7 +122,9 @@
     (woopra/track-user-email-captured
      (get-in app-state keypaths/session-id)
      (get-in app-state keypaths/user)
-     (get-in app-state keypaths/captured-email))))
+     (get-in app-state keypaths/captured-email))
+    (stringer/track-event "email_capture-capture"
+                          {:email (get-in app-state keypaths/captured-email)})))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
   (convert/track-conversion "apple-pay-checkout"))
