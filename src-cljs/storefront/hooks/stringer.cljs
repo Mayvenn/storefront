@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
             [storefront.config :as config]))
 
-(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-a2ceefe.js")
+(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-a2d24d0.js")
 
 (defn insert-tracking []
   (insert-tag-with-text
