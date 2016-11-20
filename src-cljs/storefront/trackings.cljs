@@ -180,7 +180,7 @@
   (checkout-initiate app-state "mayvenn"))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
-  (checkout-initiate app-state "applepay"))
+  (checkout-initiate app-state "apple-pay"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
   (checkout-initiate app-state "paypal"))
