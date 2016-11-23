@@ -138,10 +138,12 @@
                            (get-in app-state keypaths/order-user)
                            variation))
 
-(defmethod perform-track events/enable-feature [_ event {:keys [feature ga-name]} app-state]
+(defmethod perform-track events/enable-feature [_ event {:keys [feature ga-name experiment]} app-state]
   (let [ga-name (or ga-name feature)]
     (google-analytics/set-dimension "dimension1" ga-name)
-    (google-analytics/track-event "experiment-joined" ga-name))
+    (google-analytics/track-event "experiment_join" ga-name))
+  (stringer/track-event "experiment-joined" {:name experiment
+                                             :variation feature})
   (woopra/track-experiment (get-in app-state keypaths/session-id)
                            (get-in app-state keypaths/order-user)
                            feature))
