@@ -80,14 +80,6 @@
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
-(defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (google-analytics/track-event "orders" "initiate_checkout")
-  (facebook-analytics/track-event "InitiateCheckout"))
-
-(defmethod perform-track events/control-checkout-cart-paypal-setup [_ event _ app-state]
-  (google-analytics/track-event "orders" "initiate_checkout")
-  (facebook-analytics/track-event "InitiateCheckout"))
-
 (defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
@@ -158,15 +150,6 @@
        (get-in app-state keypaths/user)
        captured-email))))
 
-(defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
-  (convert/track-conversion "apple-pay-checkout"))
-
-(defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (convert/track-conversion "checkout"))
-
-(defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
-  (convert/track-conversion "paypal-checkout"))
-
 (defmethod perform-track events/apple-pay-availability [_ event {:keys [available?]} app-state]
   (when available?
     (convert/track-conversion "apple-pay-available")))
@@ -176,16 +159,21 @@
 
 (defn- checkout-initiate [app-state flow]
   (stringer/track-event "checkout-initiate" {:flow flow
-                                             :order_number (get-in app-state keypaths/order-number)}))
+                                             :order_number (get-in app-state keypaths/order-number)})
+  (google-analytics/track-event "orders" "initiate_checkout")
+  (facebook-analytics/track-event "InitiateCheckout"))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
-  (checkout-initiate app-state "mayvenn"))
+  (checkout-initiate app-state "mayvenn")
+  (convert/track-conversion "checkout"))
 
 (defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
-  (checkout-initiate app-state "apple-pay"))
+  (checkout-initiate app-state "apple-pay")
+  (convert/track-conversion "apple-pay-checkout"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
-  (checkout-initiate app-state "paypal"))
+  (checkout-initiate app-state "paypal")
+  (convert/track-conversion "paypal-checkout"))
 
 (defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
