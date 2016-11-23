@@ -243,7 +243,9 @@
      :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
-                              (select-auth-keys %))}))
+                              (-> %
+                                  select-auth-keys
+                                  (assoc :type "email-password")))}))
 
 (defn facebook-reset-password [uid access-token reset-token order-number order-token]
   (api-req
@@ -258,7 +260,9 @@
      :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
-                              (select-auth-keys %))}))
+                              (-> %
+                                  select-auth-keys
+                                  (assoc :type "facebook")))}))
 
 (defn forgot-password [email]
   (api-req
