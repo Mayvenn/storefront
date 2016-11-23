@@ -88,12 +88,12 @@
       "mayvenn"))
 
 (defn stringer-order-completed [{:keys [number total promotion-codes] :as order} shipping-methods]
-  (let [items (orders/product-items order)]
+  (let [items           (orders/product-items order)]
     {:flow                    (payment-flow order)
      :order_number            number
      :order_total             total
      :non_store_credit_amount (orders/non-store-credit-payment-amount order)
-     :shipping_method         (:name (orders/shipping-method-details shipping-methods (orders/shipping-item order)))
+     :shipping_method         (:product-name (orders/shipping-item order))
      :skus                    (->> items (map :sku) (str/join ","))
      :variant_ids             (->> items (map :id) (str/join ","))
      :promo_codes             (->> promotion-codes (str/join ","))

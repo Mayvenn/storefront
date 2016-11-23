@@ -58,6 +58,8 @@
                                                              :token order-token
                                                              :session-id sid
                                                              :utm-params utm-params}
+                                               :socket-timeout 30000
+                                               :conn-timeout 30000
                                                :headers {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
