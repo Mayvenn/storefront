@@ -152,20 +152,18 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches store-slug talkable-banner?]} owner opts]
+(defn component [{:keys [named-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
     [:section (pick-style named-searches)]
     [:section video-popup]
     [:section about-mayvenn]
-    (when talkable-banner?
-      [:section talkable-banner])]))
+    [:section talkable-banner]]))
 
 (defn query [data]
-  {:named-searches   (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :talkable-banner? (experiments/talkable-banner? data)
-   :store-slug       (get-in data keypaths/store-slug)})
+  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
+   :store-slug     (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
