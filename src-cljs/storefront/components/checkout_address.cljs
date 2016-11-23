@@ -32,7 +32,7 @@
                        :value       value})))))
 
 (defn ^:private shipping-address-component
-  [{:keys [focused shipping-address states email guest? places-loaded? shipping-expanded? field-errors]} owner]
+  [{:keys [focused shipping-address states email guest? places-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -92,58 +92,57 @@
                                    :errors          (get field-errors ["shipping-address" "address1"])
                                    :value           (:address1 shipping-address)}))
 
-     (when shipping-expanded?
-       [:.flex.flex-column.items-center.col-12
-        [:.col-12
-         (ui/text-field-group
-          {:data-test "shipping-address2"
-           :errors    (get field-errors ["shipping-address" "address2"])
-           :id        "shipping-address2"
-           :keypath   keypaths/checkout-shipping-address-address2
-           :focused   focused
-           :label     "Apt/Suite"
-           :name      "shipping-address2"
-           :type      "text"
-           :value     (:address2 shipping-address)}
-          {:data-test  "shipping-zip"
-           :errors     (get field-errors ["shipping-address" "zipcode"])
-           :id         "shipping-zip"
-           :keypath    keypaths/checkout-shipping-address-zip
-           :focused    focused
-           :label      "Zip Code"
-           :max-length 5
-           :min-length 5
-           :name       "shipping-zip"
-           :pattern    "\\d{5}"
-           :required   true
-           :title      "zip code must be 5 digits"
-           :type       "text"
-           :value      (:zipcode shipping-address)})]
+     [:.flex.flex-column.items-center.col-12
+      [:.col-12
+       (ui/text-field-group
+        {:data-test "shipping-address2"
+         :errors    (get field-errors ["shipping-address" "address2"])
+         :id        "shipping-address2"
+         :keypath   keypaths/checkout-shipping-address-address2
+         :focused   focused
+         :label     "Apt/Suite"
+         :name      "shipping-address2"
+         :type      "text"
+         :value     (:address2 shipping-address)}
+        {:data-test  "shipping-zip"
+         :errors     (get field-errors ["shipping-address" "zipcode"])
+         :id         "shipping-zip"
+         :keypath    keypaths/checkout-shipping-address-zip
+         :focused    focused
+         :label      "Zip Code"
+         :max-length 5
+         :min-length 5
+         :name       "shipping-zip"
+         :pattern    "\\d{5}"
+         :required   true
+         :title      "zip code must be 5 digits"
+         :type       "text"
+         :value      (:zipcode shipping-address)})]
 
-        (ui/text-field {:data-test "shipping-city"
-                        :errors    (get field-errors ["shipping-address" "city"])
-                        :id        "shipping-city"
-                        :keypath   keypaths/checkout-shipping-address-city
-                        :focused   focused
-                        :label     "City"
-                        :name      "shipping-city"
-                        :required  true
-                        :type      "text"
-                        :value     (:city shipping-address)})
+      (ui/text-field {:data-test "shipping-city"
+                      :errors    (get field-errors ["shipping-address" "city"])
+                      :id        "shipping-city"
+                      :keypath   keypaths/checkout-shipping-address-city
+                      :focused   focused
+                      :label     "City"
+                      :name      "shipping-city"
+                      :required  true
+                      :type      "text"
+                      :value     (:city shipping-address)})
 
-        (ui/select-field {:data-test   "shipping-state"
-                          :errors      (get field-errors ["shipping-address" "state"])
-                          :id          :shipping-state
-                          :keypath     keypaths/checkout-shipping-address-state
-                          :focused     focused
-                          :label       "State"
-                          :options     states
-                          :placeholder "State"
-                          :required    true
-                          :value       (:state shipping-address)})])])))
+      (ui/select-field {:data-test   "shipping-state"
+                        :errors      (get field-errors ["shipping-address" "state"])
+                        :id          :shipping-state
+                        :keypath     keypaths/checkout-shipping-address-state
+                        :focused     focused
+                        :label       "State"
+                        :options     states
+                        :placeholder "State"
+                        :required    true
+                        :value       (:state shipping-address)})]])))
 
 (defn ^:private billing-address-component
-  [{:keys [focused billing-address states bill-to-shipping-address? places-loaded? billing-expanded? field-errors]} owner]
+  [{:keys [focused billing-address states bill-to-shipping-address? places-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -203,55 +202,54 @@
                                       :errors          (get field-errors ["billing-address" "address1"])
                                       :value           (:address1 billing-address)}))
 
-        (when billing-expanded?
-          [:.flex.flex-column.items-center.col-12
-           [:.col-12
-            (ui/text-field-group
-             {:type      "text"
-              :label     "Apt/Suite"
-              :keypath   keypaths/checkout-billing-address-address2
-              :focused   focused
-              :value     (:address2 billing-address)
-              :errors    (get field-errors ["billing-address" "address2"])
-              :name      "billing-address2"
-              :id        "billing-address2"
-              :data-test "billing-address2"}
-             {:type       "text"
-              :label      "Zip Code"
-              :keypath    keypaths/checkout-billing-address-zip
-              :focused    focused
-              :value      (:zipcode billing-address)
-              :errors     (get field-errors ["billing-address" "zipcode"])
-              :name       "billing-zip"
-              :id         "billing-zip"
-              :data-test  "billing-zip"
-              :required   true
-              :max-length 5
-              :min-length 5
-              :pattern    "\\d{5}"
-              :title      "zip code must be 5 digits"})]
+        [:.flex.flex-column.items-center.col-12
+         [:.col-12
+          (ui/text-field-group
+           {:type      "text"
+            :label     "Apt/Suite"
+            :keypath   keypaths/checkout-billing-address-address2
+            :focused   focused
+            :value     (:address2 billing-address)
+            :errors    (get field-errors ["billing-address" "address2"])
+            :name      "billing-address2"
+            :id        "billing-address2"
+            :data-test "billing-address2"}
+           {:type       "text"
+            :label      "Zip Code"
+            :keypath    keypaths/checkout-billing-address-zip
+            :focused    focused
+            :value      (:zipcode billing-address)
+            :errors     (get field-errors ["billing-address" "zipcode"])
+            :name       "billing-zip"
+            :id         "billing-zip"
+            :data-test  "billing-zip"
+            :required   true
+            :max-length 5
+            :min-length 5
+            :pattern    "\\d{5}"
+            :title      "zip code must be 5 digits"})]
 
-           (ui/text-field {:data-test "billing-city"
-                           :errors    (get field-errors ["billing-address" "city"])
-                           :id        "billing-city"
-                           :keypath   keypaths/checkout-billing-address-city
-                           :focused   focused
-                           :label     "City"
-                           :name      "billing-city"
-                           :required  true
-                           :type      "text"
-                           :value     (:city billing-address)})
+         (ui/text-field {:data-test "billing-city"
+                         :errors    (get field-errors ["billing-address" "city"])
+                         :id        "billing-city"
+                         :keypath   keypaths/checkout-billing-address-city
+                         :focused   focused
+                         :label     "City"
+                         :name      "billing-city"
+                         :required  true
+                         :type      "text"
+                         :value     (:city billing-address)})
 
-           (ui/select-field {:data-test   "billing-state"
-                             :errors      (get field-errors ["billing-address" "state"])
-                             :id          :billing-state
-                             :keypath     keypaths/checkout-billing-address-state
-                             :focused     focused
-                             :label       "State"
-                             :options     states
-                             :placeholder "State"
-                             :required    true
-                             :value       (:state billing-address)})])])])))
+         (ui/select-field {:data-test   "billing-state"
+                           :errors      (get field-errors ["billing-address" "state"])
+                           :id          :billing-state
+                           :keypath     keypaths/checkout-billing-address-state
+                           :focused     focused
+                           :label       "State"
+                           :options     states
+                           :placeholder "State"
+                           :required    true
+                           :value       (:state billing-address)})]])])))
 
 (defn component
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
@@ -273,30 +271,24 @@
                                                  :data-test "address-form-submit"})]])])))
 
 (defn query [data]
-  (let [places-loaded?   (get-in data keypaths/loaded-places)
-        states           (map (juxt :name :abbr) (get-in data keypaths/states))
-        field-errors     (get-in data keypaths/field-errors)
-        always-expanded? (experiments/show-fields? data)]
+  (let [places-loaded? (get-in data keypaths/loaded-places)
+        states         (map (juxt :name :abbr) (get-in data keypaths/states))
+        field-errors   (get-in data keypaths/field-errors)]
     {:saving?               (utils/requesting? data request-keys/update-addresses)
      :step-bar              (checkout-steps/query data)
      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
                              :states                    states
                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
                              :places-loaded?            places-loaded?
-                             :always-expanded?          always-expanded?
-                             :billing-expanded?         (or always-expanded?
-                                                            (not (empty? (get-in data keypaths/checkout-billing-address-address1))))
                              :field-errors              field-errors
                              :focused                   (get-in data keypaths/ui-focus)}
-     :shipping-address-data {:shipping-address   (get-in data keypaths/checkout-shipping-address)
-                             :states             states
-                             :email              (get-in data keypaths/checkout-guest-email)
-                             :guest?             (get-in data keypaths/checkout-as-guest)
-                             :places-loaded?     places-loaded?
-                             :shipping-expanded? (or always-expanded?
-                                                     (not (empty? (get-in data keypaths/checkout-shipping-address-address1))))
-                             :field-errors       field-errors
-                             :focused            (get-in data keypaths/ui-focus)}}))
+     :shipping-address-data {:shipping-address (get-in data keypaths/checkout-shipping-address)
+                             :states           states
+                             :email            (get-in data keypaths/checkout-guest-email)
+                             :guest?           (get-in data keypaths/checkout-as-guest)
+                             :places-loaded?   places-loaded?
+                             :field-errors     field-errors
+                             :focused          (get-in data keypaths/ui-focus)}}))
 
 (defn built-component [data opts]
   (om/build component (query data)))
