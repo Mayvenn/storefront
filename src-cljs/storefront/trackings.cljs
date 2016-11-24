@@ -179,5 +179,4 @@
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [type] :as args} app-state]
-  (js/console.log "hola" (clj->js args))
   (stringer/track-event "reset_password" {:type type}))
