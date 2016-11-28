@@ -179,7 +179,7 @@
                               (select-keys % [:states]))}))
 
 (defn select-user-keys [user]
-  (select-keys user [:email :token :store_slug :id]))
+  (select-keys user [:email :token :store_slug :id :is_new_user]))
 
 (defn select-auth-keys [args]
   (-> args
@@ -199,7 +199,9 @@
      :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-auth-sign-in
-                              (select-auth-keys %))}))
+                              (-> %
+                                  select-auth-keys
+                                  (assoc :flow "email-password")))}))
 
 (defn facebook-sign-in [uid access-token stylist-id order-number order-token]
   (api-req
@@ -213,8 +215,15 @@
      :order-number order-number
      :order-token order-token}
     :handler
-    #(messages/handle-message events/api-success-auth-sign-in
-                              (select-auth-keys %))}))
+    (fn [response]
+      (let [auth-keys (-> (select-auth-keys response)
+                          (assoc :flow "facebook"))
+            ;; Since we use facebook sign-in for both sign-in and sign-up, we
+            ;; need to trigger the appropriate event. Diva tells us when this
+            ;; flow has created a new user.
+            new-user? (get-in auth-keys [:user :is_new_user])
+            success-event (if new-user? events/api-success-auth-sign-up events/api-success-auth-sign-in)]
+        (messages/handle-message success-event auth-keys)))}))
 
 (defn sign-up [email password stylist-id order-number order-token]
   (api-req
@@ -229,7 +238,9 @@
      :order-token order-token}
     :handler
     #(messages/handle-message events/api-success-auth-sign-up
-                              (select-auth-keys %))}))
+                              (-> %
+                                  select-auth-keys
+                                  (assoc :flow "email-password")))}))
 
 (defn reset-password [password reset-token order-number order-token]
   (api-req
@@ -245,7 +256,7 @@
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
                                   select-auth-keys
-                                  (assoc :type "email-password")))}))
+                                  (assoc :flow "email-password")))}))
 
 (defn facebook-reset-password [uid access-token reset-token order-number order-token]
   (api-req
@@ -262,7 +273,7 @@
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
                                   select-auth-keys
-                                  (assoc :type "facebook")))}))
+                                  (assoc :flow "facebook")))}))
 
 (defn forgot-password [email]
   (api-req

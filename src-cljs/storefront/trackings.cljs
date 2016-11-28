@@ -112,6 +112,15 @@
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
                           :user       (get-in app-state keypaths/user)}))
 
+(defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
+  (stringer/track-event "sign_in" {:type flow}))
+
+(defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
+  (stringer/track-event "sign_up" {:type flow}))
+
+(defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
+  (stringer/track-event "reset_password" {:type flow}))
+
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
   (stringer/track-identify (:user (get-in app-state keypaths/order)))
   (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
@@ -177,6 +186,3 @@
 
 (defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
-
-(defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [type] :as args} app-state]
-  (stringer/track-event "reset_password" {:type type}))
