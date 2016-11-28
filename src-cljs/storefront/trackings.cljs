@@ -87,7 +87,7 @@
   (or (some #{"apple-pay" "paypal"} (map :payment-type payments))
       "mayvenn"))
 
-(defn stringer-order-completed [{:keys [number total promotion-codes] :as order} shipping-methods]
+(defn stringer-order-completed [{:keys [number total promotion-codes] :as order}]
   (let [items           (orders/product-items order)]
     {:flow                    (payment-flow order)
      :order_number            number
@@ -100,7 +100,7 @@
      :total_quantity          (orders/product-quantity order)}))
 
 (defmethod perform-track events/order-completed [_ event {:keys [total] :as order} app-state]
-  (stringer/track-event "checkout-complete" (stringer-order-completed order (get-in app-state keypaths/shipping-methods)))
+  (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (facebook-analytics/track-event "Purchase" {:value (str total) :currency "USD"})
   (convert/track-conversion "place-order")
   (convert/track-revenue (convert-revenue order))
