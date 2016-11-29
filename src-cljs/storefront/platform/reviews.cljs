@@ -4,7 +4,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.app-routes :as routes]
+            [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]))
 
 (def product-options-by-named-search

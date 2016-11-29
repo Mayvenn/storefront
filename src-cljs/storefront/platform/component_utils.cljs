@@ -3,8 +3,8 @@
             [storefront.hooks.fastpass :as fastpass]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
+            [storefront.history :as history]
             [storefront.routes :as routes]
-            [storefront.app-routes :as app-routes]
             [storefront.utils.query :as query]))
 
 (defn position [pred coll]
@@ -26,12 +26,12 @@
   (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
 (defn route-to [navigation-event & [args]]
-  {:href (app-routes/path-for navigation-event args)
+  {:href (routes/path-for navigation-event args)
    :on-click
    (fn [e]
      (.preventDefault e)
      (handle-message events/control-menu-collapse-all)
-     (routes/enqueue-navigate navigation-event args))})
+     (history/enqueue-navigate navigation-event args))})
 
 (defn requesting?
   ([data request-key] (requesting? data :request-key request-key))

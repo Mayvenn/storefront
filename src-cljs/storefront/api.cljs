@@ -4,7 +4,7 @@
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.states :as states]
-            [storefront.app-routes :as app-routes]
+            [storefront.routes :as routes]
             [storefront.cache :as c]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
             [storefront.events :as events]
@@ -741,7 +741,7 @@
 (defn get-static-content [[_ _ & static-content-id :as nav-event]]
   (static-content-req
    GET
-   (str "/static" (app-routes/path-for nav-event))
+   (str "/static" (routes/path-for nav-event))
    request-keys/get-static-content
    {:handler #(messages/handle-message events/api-success-get-static-content
                                        {:id      static-content-id

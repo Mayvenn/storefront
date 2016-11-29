@@ -9,7 +9,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.app-routes :as app-routes]
+            [storefront.routes :as routes]
             [clojure.string :as str]))
 
 (def section-inner :div.ml3.py2)
@@ -44,7 +44,7 @@
    (selectable current-navigation-message event-name {} content))
   ([current-navigation-message event-name event-args content]
    [:span
-    (when (app-routes/current-page? current-navigation-message event-name event-args)
+    (when (routes/current-page? current-navigation-message event-name event-args)
       {:class "border-navy border-bottom border-width-2 bold pyp1"})
     content]))
 

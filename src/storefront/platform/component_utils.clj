@@ -1,8 +1,8 @@
 (ns storefront.platform.component-utils
-  (:require [storefront.app-routes :as app-routes]))
+  (:require [storefront.routes :as routes]))
 
 (defn route-to [navigation-event & [args]]
-  {:href (app-routes/path-for navigation-event args)})
+  {:href (routes/path-for navigation-event args)})
 
 (defn noop-callback [e])
 

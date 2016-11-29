@@ -1,4 +1,4 @@
-(ns storefront.app-routes
+(ns storefront.routes
   (:require [bidi.bidi :as bidi]
             [clojure.walk :refer [keywordize-keys]]
             [storefront.events :as events]

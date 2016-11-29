@@ -4,7 +4,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.top-level :refer [top-level-component]]
-            [storefront.routes :as routes]
+            [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.platform.messages :as messages]
             [storefront.effects :refer [perform-effects]]
@@ -64,7 +64,7 @@
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
-  (routes/set-current-page))
+  (history/set-current-page))
 
 (defn dom-ready [f]
   (if (not= (.-readyState js/document)
@@ -74,7 +74,7 @@
 
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
-  (routes/start-history)
+  (history/start-history)
   (om/root
    top-level-component
    app-state

@@ -9,7 +9,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
-            [storefront.app-routes :as app-routes]
+            [storefront.routes :as routes]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [clojure.string :as str]))
@@ -255,7 +255,7 @@
                          named-searches
                          user-email]} _ _]
   (component/create
-   (let [current-page? (partial app-routes/current-page? nav-message)]
+   (let [current-page? (partial routes/current-page? nav-message)]
      [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
       [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
        [:div.flex-auto.col-4

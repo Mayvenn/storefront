@@ -1,5 +1,5 @@
-(ns storefront.routes
-  (:require [storefront.app-routes :refer [path-for navigation-message-for]]
+(ns storefront.history
+  (:require [storefront.routes :refer [path-for navigation-message-for]]
             [storefront.platform.messages :refer [handle-message]]
             [goog.events]
             [goog.history.EventType :as EventType]

@@ -18,7 +18,7 @@
              [response :refer [content-type redirect response]]]
             [storefront
              [api :as api]
-             [app-routes :as routes]
+             [routes :as routes]
              [config :as config]
              [cookies :as cookies]
              [events :as events]

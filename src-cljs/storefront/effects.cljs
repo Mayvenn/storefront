@@ -36,7 +36,7 @@
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message handle-later]]
-            [storefront.routes :as routes]
+            [storefront.history :as history]
             [storefront.utils.maps :as maps]
             [storefront.utils.query :as query]
             [clojure.set :as set]))
@@ -142,7 +142,7 @@
       (cookie-jar/save-pending-promo-code
        (get-in app-state keypaths/cookie)
        pending-promo-code)
-      (routes/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
+      (history/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
 
     (let [utm-params (some-> nav-args
                              :query-params
@@ -197,16 +197,16 @@
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect events/navigate-sign-in)))
+    (history/enqueue-redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/user-token))
-    (routes/enqueue-redirect events/navigate-sign-in)
+    (history/enqueue-redirect events/navigate-sign-in)
 
     (not (stylists/own-store? app-state))
     (do
-      (routes/enqueue-redirect events/navigate-home)
+      (history/enqueue-redirect events/navigate-home)
       (handle-message events/flash-show-failure {:message "Page not found"}))
 
     :else nil))
@@ -303,12 +303,12 @@
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
-    (routes/enqueue-redirect events/navigate-cart)
+    (history/enqueue-redirect events/navigate-cart)
 
     (not (or (= event events/navigate-checkout-sign-in)
              (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
-    (routes/enqueue-redirect events/navigate-checkout-sign-in)))
+    (history/enqueue-redirect events/navigate-checkout-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
@@ -332,7 +332,7 @@
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
   (when paypal
-    (routes/enqueue-redirect events/navigate-order-complete {:number number}))
+    (history/enqueue-redirect events/navigate-order-complete {:number number}))
   (when (and number order-token)
     (api/get-completed-order number order-token)))
 
@@ -346,7 +346,7 @@
   (handle-message events/order-completed order))
 
 (defn redirect-to-return-navigation [app-state]
-  (apply routes/enqueue-redirect
+  (apply history/enqueue-redirect
          (get-in app-state keypaths/return-navigation-message)))
 
 (defn redirect-when-signed-in [app-state]
@@ -359,7 +359,7 @@
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-getsat-sign-in [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (routes/enqueue-redirect events/navigate-sign-in)))
+    (history/enqueue-redirect events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -423,7 +423,7 @@
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))
-  (routes/enqueue-navigate events/navigate-home)
+  (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-show-success {:message "Logged out successfully"}))
 
 (defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} app-state]
@@ -498,7 +498,7 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
-  (routes/enqueue-navigate events/navigate-checkout-address))
+  (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
   (apple-pay/begin (get-in app-state keypaths/order)
@@ -659,7 +659,7 @@
   (handle-message events/flash-show-success {:message "Your password was changed successfully. You are now signed in."}))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
-  (routes/enqueue-navigate events/navigate-home)
+  (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
@@ -668,7 +668,7 @@
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state)
-  (routes/enqueue-navigate events/navigate-home)
+  (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-show-success {:message "Account updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args app-state]
@@ -732,7 +732,7 @@
   (when event
     (handle-message event {:order order}))
   (when navigate
-    (routes/enqueue-navigate navigate {:number (:number order)})))
+    (history/enqueue-navigate navigate {:number (:number order)})))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response app-state]
   (handle-message events/flash-show-failure {:message "Something went wrong. Please refresh and try again or contact customer service."}))
@@ -749,12 +749,12 @@
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
 
 (defmethod perform-effects events/api-failure-order-not-created-from-shared-cart [_ event args app-state]
-  (routes/enqueue-navigate events/navigate-home))
+  (history/enqueue-navigate events/navigate-home))
 
 (defmethod perform-effects events/api-failure-errors [_ event errors app-state]
   (condp = (:error-code errors)
     "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event) events/navigate-checkout-confirmation)
-                            (routes/enqueue-redirect events/navigate-checkout-payment)
+                            (history/enqueue-redirect events/navigate-checkout-payment)
                             (handle-later events/api-failure-errors errors)
                             (scroll/snap-to-top))
     (scroll/snap-to-top)))
