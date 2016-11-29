@@ -161,8 +161,7 @@
     (handle-message events/control-popup-hide)
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
-      (let [path (routes/current-path app-state)]
-        (exception-handler/refresh))))
+      (exception-handler/refresh)))
 
   (update-popup-session app-state))
 
