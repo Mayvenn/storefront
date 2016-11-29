@@ -16,7 +16,7 @@
 (defn track-event
   ([event-name] (track-event event-name {}))
   ([event-name payload]
-   (if (.hasOwnProperty js/window "stringer")
+   (when (.hasOwnProperty js/window "stringer")
      (.track js/stringer event-name (clj->js payload)))))
 
 (defn track-page []
