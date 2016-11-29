@@ -1,7 +1,5 @@
 (ns storefront.routes
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.app-routes :refer [path-for navigation-message-for]]
+  (:require [storefront.app-routes :refer [path-for navigation-message-for]]
             [storefront.platform.messages :refer [handle-message]]
             [goog.events]
             [goog.history.EventType :as EventType]
@@ -48,6 +46,3 @@
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]
     (js/window.requestAnimationFrame #(.setToken app-history path))))
-
-(defn current-path [app-state]
-  (apply path-for (get-in app-state keypaths/navigation-message)))

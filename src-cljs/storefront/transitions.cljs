@@ -1,7 +1,6 @@
 (ns storefront.transitions
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.named-searches :as named-searches]

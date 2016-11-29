@@ -1,7 +1,7 @@
 (ns storefront.trackings
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
+            [storefront.app-routes :as routes]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.convert :as convert]

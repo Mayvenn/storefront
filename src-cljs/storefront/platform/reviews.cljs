@@ -4,7 +4,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.routes :as routes]
+            [storefront.app-routes :as routes]
             [storefront.keypaths :as keypaths]))
 
 (def product-options-by-named-search
@@ -116,6 +116,6 @@ Lengths: 12\" to 28\""
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
-  {:url     (routes/current-path data)
-   :named-search   (named-searches/current-named-search data)
-   :loaded? (get-in data keypaths/loaded-reviews)})
+  {:url          (routes/current-path data)
+   :named-search (named-searches/current-named-search data)
+   :loaded?      (get-in data keypaths/loaded-reviews)})

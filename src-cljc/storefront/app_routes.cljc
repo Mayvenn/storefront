@@ -2,6 +2,7 @@
   (:require [bidi.bidi :as bidi]
             [clojure.walk :refer [keywordize-keys]]
             [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
             [storefront.platform.uri :as uri]
             [storefront.config :as config]
             #?(:cljs [cljs.reader :refer [read-string]])))
@@ -75,6 +76,9 @@
     (when path
       (uri/set-query-string path query-params))))
 
+(defn current-path [app-state]
+  (apply path-for (get-in app-state keypaths/navigation-message)))
+
 (defn navigation-message-for
   ([uri] (navigation-message-for uri nil))
   ([uri query-params]
@@ -85,5 +89,6 @@
           keywordize-keys)])))
 
 (defn current-page? [[current-event current-args] target-event & [args]]
-  (and (= (take (count target-event) current-event) target-event)
-       (reduce #(and %1 (= (%2 args) (%2 current-args))) true (keys args))))
+  (and (= (take (count target-event) current-event)
+          target-event)
+       (every? #(= (%1 args) (%1 current-args)) (keys args))))
