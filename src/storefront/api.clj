@@ -5,8 +5,8 @@
   (http/get (str (:internal-endpoint storeback-config) path)
             (merge
              {:throw-exceptions false
-              :socket-timeout 10000
-              :conn-timeout 10000
+              :socket-timeout 30000
+              :conn-timeout 30000
               :as :json}
              params)))
 
@@ -14,8 +14,8 @@
   (http/post (str (:internal-endpoint storeback-config) path)
              (merge {:content-type :json
                      :throw-exceptions false
-                     :socket-timeout 10000
-                     :conn-timeout 10000
+                     :socket-timeout 30000
+                     :conn-timeout 30000
                      :as :json
                      :coerce :always}
                     params)))
