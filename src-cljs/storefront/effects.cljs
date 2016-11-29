@@ -119,6 +119,13 @@
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
+(defn redirect
+  ([event] (redirect event nil))
+  ([event args] (handle-message events/redirect {:nav-message [event args]})))
+
+(defmethod perform-effects events/redirect [_ event {:keys [nav-message]} app-state]
+  (apply history/enqueue-redirect nav-message))
+
 (defmethod perform-effects events/navigate [dispatch event args app-state]
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (refresh-account app-state)
@@ -142,7 +149,7 @@
       (cookie-jar/save-pending-promo-code
        (get-in app-state keypaths/cookie)
        pending-promo-code)
-      (history/enqueue-redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
+      (redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
 
     (let [utm-params (some-> nav-args
                              :query-params
@@ -158,7 +165,8 @@
          (get-in app-state keypaths/cookie)
          utm-params)))
 
-    (handle-message events/control-popup-hide)
+    (when (get-in app-state keypaths/popup)
+      (handle-message events/control-popup-hide))
 
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (exception-handler/refresh)))
@@ -197,17 +205,17 @@
 
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (history/enqueue-redirect events/navigate-sign-in)))
+    (redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/user-token))
-    (history/enqueue-redirect events/navigate-sign-in)
+    (redirect events/navigate-sign-in)
 
     (not (stylists/own-store? app-state))
     (do
-      (history/enqueue-redirect events/navigate-home)
-      (handle-message events/flash-show-failure {:message "Page not found"}))
+      (redirect events/navigate-home)
+      (handle-message events/flash-later-show-failure {:message "Page not found"}))
 
     :else nil))
 
@@ -303,12 +311,12 @@
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (cond
     (not (get-in app-state keypaths/order-number))
-    (history/enqueue-redirect events/navigate-cart)
+    (redirect events/navigate-cart)
 
     (not (or (= event events/navigate-checkout-sign-in)
              (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
-    (history/enqueue-redirect events/navigate-checkout-sign-in)))
+    (redirect events/navigate-checkout-sign-in)))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
@@ -331,10 +339,10 @@
   (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
-  (when paypal
-    (history/enqueue-redirect events/navigate-order-complete {:number number}))
   (when (and number order-token)
-    (api/get-completed-order number order-token)))
+    (api/get-completed-order number order-token))
+  (when paypal
+    (redirect events/navigate-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args app-state]
   (talkable/show-referrals app-state))
@@ -346,20 +354,20 @@
   (handle-message events/order-completed order))
 
 (defn redirect-to-return-navigation [app-state]
-  (apply history/enqueue-redirect
+  (apply redirect
          (get-in app-state keypaths/return-navigation-message)))
 
 (defn redirect-when-signed-in [app-state]
   (when (get-in app-state keypaths/user-email)
     (redirect-to-return-navigation app-state)
-    (handle-message events/flash-show-success {:message "You are already signed in."})))
+    (handle-message events/flash-later-show-success {:message "You are already signed in."})))
 
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
 (defmethod perform-effects events/navigate-getsat-sign-in [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
-    (history/enqueue-redirect events/navigate-sign-in)))
+    (redirect events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -423,8 +431,11 @@
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))
-  (history/enqueue-navigate events/navigate-home)
-  (handle-message events/flash-show-success {:message "Logged out successfully"}))
+  (if (= events/navigate-home (get-in app-state keypaths/navigation-event))
+    (handle-message events/flash-show-success {:message "Logged out successfully"})
+    (do
+      (history/enqueue-navigate events/navigate-home)
+      (handle-message events/flash-later-show-success {:message "Logged out successfully"}))))
 
 (defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} app-state]
   (api/add-to-bag
@@ -650,17 +661,17 @@
       redirect-to-return-navigation)))
 
 (defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _]
-  (handle-message events/flash-show-success {:message "Logged in successfully"}))
+  (handle-message events/flash-later-show-success {:message "Logged in successfully"}))
 
 (defmethod perform-effects events/api-success-auth-sign-up [dispatch event args app-state]
-  (handle-message events/flash-show-success {:message "Welcome! You have signed up successfully."}))
+  (handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
 
 (defmethod perform-effects events/api-success-auth-reset-password [dispatch event args app-state]
-  (handle-message events/flash-show-success {:message "Your password was changed successfully. You are now signed in."}))
+  (handle-message events/flash-later-show-success {:message "Your password was changed successfully. You are now signed in."}))
 
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (history/enqueue-navigate events/navigate-home)
-  (handle-message events/flash-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
+  (handle-message events/flash-later-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
 
 (defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
   (when community-url
@@ -669,7 +680,7 @@
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state)
   (history/enqueue-navigate events/navigate-home)
-  (handle-message events/flash-show-success {:message "Account updated"}))
+  (handle-message events/flash-later-show-success {:message "Account updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args app-state]
   (save-cookie app-state)
@@ -743,7 +754,8 @@
 (defmethod perform-effects events/api-failure-stylist-account-photo-too-large [_ event response app-state]
   (handle-message events/flash-show-failure {:message "Whoa, the photo you uploaded is too large"}))
 
-(defmethod perform-effects events/flash-show [_ event args app-state] (scroll/snap-to-top))
+(defmethod perform-effects events/flash-show [_ event args app-state]
+  (scroll/snap-to-top))
 
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
@@ -753,8 +765,9 @@
 
 (defmethod perform-effects events/api-failure-errors [_ event errors app-state]
   (condp = (:error-code errors)
-    "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event) events/navigate-checkout-confirmation)
-                            (history/enqueue-redirect events/navigate-checkout-payment)
+    "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event)
+                                   events/navigate-checkout-confirmation)
+                            (redirect events/navigate-checkout-payment)
                             (handle-later events/api-failure-errors errors)
                             (scroll/snap-to-top))
     (scroll/snap-to-top)))

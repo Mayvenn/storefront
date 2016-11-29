@@ -24,25 +24,22 @@
 
 (defmethod perform-track :default [dispatch event args app-state])
 
-(defn- track-page-view [app-state]
-  (let [path (routes/current-path app-state)]
-    (riskified/track-page path)
-    (stringer/track-page)
-    (woopra/track-page (get-in app-state keypaths/session-id)
-                       (get-in app-state keypaths/order-user)
-                       path)
-    (google-analytics/track-page path)
-    (facebook-analytics/track-page path)))
-
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
-    (stringer/track-identify (get-in app-state keypaths/user)))
-  (track-page-view app-state))
+    (stringer/track-identify (get-in app-state keypaths/user))))
 
 (defmethod perform-track events/navigate [_ event args app-state]
-  (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
-      (track-page-view app-state))))
+  (when (and (not= (get-in app-state keypaths/navigation-message)
+                   (get-in app-state keypaths/previous-navigation-message))
+             (not (get-in app-state keypaths/redirecting?)))
+    (let [path (routes/current-path app-state)]
+      (riskified/track-page path)
+      (stringer/track-page)
+      (woopra/track-page (get-in app-state keypaths/session-id)
+                         (get-in app-state keypaths/order-user)
+                         path)
+      (google-analytics/track-page path)
+      (facebook-analytics/track-page path))))
 
 (defmethod perform-track events/navigate-categories [_ event args app-state]
   (convert/track-conversion "view-categories"))

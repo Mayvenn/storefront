@@ -228,7 +228,7 @@
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
    :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
    :errors         (get-in data keypaths/errors)
-   :flash-failure  (get-in data keypaths/flash-failure-message)
+   :flash-failure  (get-in data keypaths/flash-now-failure-message)
    :referrals      (get-in data keypaths/stylist-referrals)
    :focused        (get-in data keypaths/ui-focus)})
 

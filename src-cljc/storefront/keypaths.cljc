@@ -59,6 +59,7 @@
 
 (def stylist-banner-hidden (conj ui :stylist-banner-hidden?))
 (def api-requests (conj ui :api-requests))
+(def redirecting? (conj ui :redirecting?))
 (def return-navigation-message (conj ui :return-navigation-message))
 (def previous-navigation-message (conj ui :previous-navigation-message))
 (def navigation-message (conj ui :navigation-message))
@@ -158,12 +159,16 @@
 (def pending-talkable-order (conj ui :pending-talkable-order))
 
 (def flash (conj ui :flash))
-(def flash-success (conj flash :success))
-(def flash-success-message (conj flash-success :message))
-(def flash-success-nav (conj flash-success :navigation))
-(def flash-failure (conj flash :failure))
-(def flash-failure-message (conj flash-failure :message))
-(def flash-failure-nav (conj flash-failure :navigation))
+(def flash-now (conj flash :now))
+(def flash-now-success (conj flash-now :success))
+(def flash-now-success-message (conj flash-now-success :message))
+(def flash-now-failure (conj flash-now :failure))
+(def flash-now-failure-message (conj flash-now-failure :message))
+(def flash-later (conj flash :later))
+(def flash-later-success (conj flash-later :success))
+(def flash-later-success-message (conj flash-later-success :message))
+(def flash-later-failure (conj flash-later :failure))
+(def flash-later-failure-message (conj flash-later-failure :message))
 
 (def billing-address [:billing-address])
 

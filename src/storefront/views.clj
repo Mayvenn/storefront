@@ -75,6 +75,8 @@
      ;; json as it goes into the JS file
      (raw (str "var data = " (-> (sanitize data)
                                  (assoc-in keypaths/static (get-in data keypaths/static))
+                                 ;; Allow frontend to track pageview on first navigate event (or on first redirected page)
+                                 (assoc-in keypaths/navigation-message nil)
                                  pr-str
                                  generate-string) ";"))]
     [:script {:type "text/javascript"}

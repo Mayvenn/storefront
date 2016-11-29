@@ -13,6 +13,7 @@
 (defpath external-redirect-community)
 (defpath external-redirect-paypal-setup)
 
+(defpath redirect)
 (defpath navigate)
 (defpath navigate-home)
 (defpath navigate-category)
@@ -222,6 +223,8 @@
 (defpath flash-dismiss)
 (defpath flash-show-success)
 (defpath flash-show-failure)
+(defpath flash-later-show-success)
+(defpath flash-later-show-failure)
 
 (defpath referral-thank-you-show)
 (defpath referral-thank-you-hide)

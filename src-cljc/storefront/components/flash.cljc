@@ -46,9 +46,9 @@
           success]))))))
 
 (defn query [data]
-  {:success            (get-in data keypaths/flash-success-message)
-   :failure            (get-in data keypaths/flash-failure-message)
-   :errors             (get-in data keypaths/errors)})
+  {:success (get-in data keypaths/flash-now-success-message)
+   :failure (get-in data keypaths/flash-now-failure-message)
+   :errors  (get-in data keypaths/errors)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

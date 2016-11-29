@@ -25,8 +25,8 @@
 
 (defn clear-flash [app-state]
   (-> app-state
-      (assoc-in keypaths/flash-success nil)
-      (assoc-in keypaths/flash-failure nil)
+      (assoc-in keypaths/flash-now-success nil)
+      (assoc-in keypaths/flash-now-failure nil)
       (assoc-in keypaths/errors {})))
 
 (defmulti transition-state identity)
@@ -65,14 +65,22 @@
         app-state
         (assoc-in app-state keypaths/checkout-credit-card-name default)))))
 
+(defmethod transition-state events/redirect [_ event {:keys [nav-message]} app-state]
+  (assoc-in app-state keypaths/redirecting? true))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (-> app-state
       collapse-menus
       add-return-event
       (add-pending-promo-code args)
+      clear-flash
+      (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
+      (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
+      (assoc-in keypaths/flash-later-success nil)
+      (assoc-in keypaths/flash-later-failure nil)
+      (assoc-in keypaths/redirecting? false)
       (assoc-in keypaths/previous-navigation-message
                 (get-in app-state keypaths/navigation-message))
-      clear-flash
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]
@@ -521,15 +529,21 @@
 (defmethod transition-state events/flash-show-success [_ _ {:keys [message]} app-state]
   (-> app-state
       clear-flash
-      (assoc-in keypaths/flash-success {:message message})))
-
-(defmethod transition-state events/flash-dismiss [_ event args app-state]
-  (clear-flash app-state))
+      (assoc-in keypaths/flash-now-success {:message message})))
 
 (defmethod transition-state events/flash-show-failure [_ _ {:keys [message]} app-state]
   (-> app-state
       clear-flash
-      (assoc-in keypaths/flash-failure {:message message})))
+      (assoc-in keypaths/flash-now-failure {:message message})))
+
+(defmethod transition-state events/flash-later-show-success [_ _ {:keys [message]} app-state]
+  (assoc-in app-state keypaths/flash-later-success {:message message}))
+
+(defmethod transition-state events/flash-later-show-failure [_ _ {:keys [message]} app-state]
+  (assoc-in app-state keypaths/flash-later-failure {:message message}))
+
+(defmethod transition-state events/flash-dismiss [_ event args app-state]
+  (clear-flash app-state))
 
 (defmethod transition-state events/convert
   [_ event {:keys [variation feature]} app-state]

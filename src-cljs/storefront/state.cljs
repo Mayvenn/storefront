@@ -152,10 +152,10 @@
                            :password ""}
           :cart initial-cart-state
           :checkout initial-checkout-state
-          :flash {:success {:message nil
-                            :navigation []}
-                  :failure {:message nil
-                            :navigation []}}
+          :flash {:now   {:success {:message nil}
+                          :failure {:message nil}}
+                  :later {:success {:message nil}
+                          :failure {:message nil}}}
           :review-components-count 0
           :places-enabled true
           :static nil
