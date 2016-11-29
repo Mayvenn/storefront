@@ -1,5 +1,6 @@
 (ns storefront.app-routes
   (:require [bidi.bidi :as bidi]
+            [clojure.walk :refer [keywordize-keys]]
             [storefront.events :as events]
             [storefront.platform.uri :as uri]
             [storefront.config :as config]
@@ -73,6 +74,15 @@
                             (apply concat (seq args)))]
     (when path
       (uri/set-query-string path query-params))))
+
+(defn navigation-message-for
+  ([uri] (navigation-message-for uri nil))
+  ([uri query-params]
+   (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+     [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
+      (-> params
+          (merge (when (seq query-params) {:query-params query-params}))
+          keywordize-keys)])))
 
 (defn current-page? [[current-event current-args] target-event & [args]]
   (and (= (take (count target-event) current-event) target-event)

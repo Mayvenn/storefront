@@ -1,10 +1,8 @@
 (ns storefront.routes
-  (:require [bidi.bidi :as bidi]
-            [storefront.keypaths :as keypaths]
+  (:require [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.app-routes :refer [edn->bidi bidi->edn app-routes path-for]]
+            [storefront.app-routes :refer [path-for navigation-message-for]]
             [storefront.platform.messages :refer [handle-message]]
-            [clojure.walk :refer [keywordize-keys]]
             [goog.events]
             [goog.history.EventType :as EventType]
             [cemerick.url :refer [url]])
@@ -30,15 +28,6 @@
     (goog.events/listen EventType/NAVIGATE (fn [e] (callback)))))
 
 (def app-history)
-
-(defn navigation-message-for
-  ([uri] (navigation-message-for uri nil))
-  ([uri query-params]
-   (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
-     [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
-      (-> params
-          (merge (when query-params {:query-params query-params}))
-          keywordize-keys)])))
 
 (defn set-current-page []
   (let [uri          (.getToken app-history)

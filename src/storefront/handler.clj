@@ -217,10 +217,9 @@
 
 (defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route routes/app-routes uri)]
-      (when nav-event
-        (let [nav-event  (routes/bidi->edn nav-event)
-              render-ctx {:storeback-config storeback-config
+    (let [[nav-event params] (routes/navigation-message-for uri (:query-params req))]
+      (when (not= nav-event events/navigate-not-found)
+        (let [render-ctx {:storeback-config storeback-config
                           :environment      environment}
               data       (as-> {} data
                                (assoc-in data keypaths/welcome-url

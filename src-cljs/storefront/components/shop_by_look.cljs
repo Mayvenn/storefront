@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.routes :as routes]
+            [storefront.app-routes :as routes]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
