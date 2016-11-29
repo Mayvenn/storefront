@@ -24,6 +24,8 @@ if [[ ! $SOME_DUPS = 0 ]]; then
     echo "trackings:"
     echo "  " `tracking_dups`
   ) 1>&2
+else
+  echo "No duplicate handlers found"
 fi
 
 exit $SOME_DUPS
