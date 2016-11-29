@@ -54,11 +54,11 @@
 
 (defn enqueue-redirect [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]
-    (.replaceToken app-history path)))
+    (js/window.requestAnimationFrame #(.replaceToken app-history path))))
 
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]
-    (.setToken app-history path)))
+    (js/window.requestAnimationFrame #(.setToken app-history path))))
 
 (defn current-path [app-state]
   (apply path-for (get-in app-state keypaths/navigation-message)))
