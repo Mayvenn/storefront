@@ -43,11 +43,11 @@
 
 (defn potentially-show-email-popup [app-state]
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
-        not-seen-popup-yet? (not (get-in app-state keypaths/popup-session))
+        not-seen-popup-yet? (not (get-in app-state keypaths/email-capture-session))
         signed-in?          (get-in app-state keypaths/user-id)]
     (when (and is-on-homepage? not-seen-popup-yet?)
       (if signed-in?
-        (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "signed-in")
+        (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
         (handle-message events/show-email-popup)))))
 
 (defn refresh-account [app-state]
@@ -81,9 +81,9 @@
   [app-state named-search]
   (refresh-products app-state (:product-ids named-search)))
 
-(defn update-popup-session [app-state]
-  (when-let [value (get-in app-state keypaths/popup-session)]
-    (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) value)))
+(defn update-email-capture-session [app-state]
+  (when-let [value (get-in app-state keypaths/email-capture-session)]
+    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
 
 (defmulti perform-effects identity)
 
@@ -171,7 +171,7 @@
     (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
       (exception-handler/refresh)))
 
-  (update-popup-session app-state))
+  (update-email-capture-session app-state))
 
 (defmethod perform-effects events/navigate-home [_ _ _ app-state]
   (potentially-show-email-popup app-state))
@@ -234,11 +234,11 @@
     (handle-message events/control-stylist-commissions-fetch)))
 
 (defmethod perform-effects events/control [_ _ args app-state]
-  (update-popup-session app-state))
+  (update-email-capture-session app-state))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args app-state]
   (when (empty? (get-in app-state keypaths/errors))
-    (cookie-jar/save-popup-session (get-in app-state keypaths/cookie) "opted-in")))
+    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in")))
 
 (defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
   (let [user-id (get-in app-state keypaths/user-id)
@@ -828,4 +828,4 @@
   (apple-pay/verify-eligible))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args app-state]
-  (update-popup-session app-state))
+  (update-email-capture-session app-state))

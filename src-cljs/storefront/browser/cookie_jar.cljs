@@ -42,7 +42,7 @@
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
-(def popup-session
+(def email-capture-session
   {:domain        nil
    :max-age       1800
    :optional-keys []
@@ -84,14 +84,14 @@
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
 (def clear-utm-params (partial clear-cookie utm-params))
 (def clear-account (partial clear-cookie account-cookies))
-(def clear-popup-session (partial clear-cookie popup-session))
+(def clear-email-capture-session (partial clear-cookie email-capture-session))
 
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
 
-(def retrieve-popup-session (comp :popup-session (partial retrieve popup-session)))
+(def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
 (def ^:private session-id-length 24)
 
@@ -114,12 +114,12 @@
 (def save-user (partial save-cookie user))
 (def save-order (partial save-cookie order))
 
-(defn save-popup-session [cookie value]
+(defn save-email-capture-session [cookie value]
   (let [max-age (condp = value
                   "signed-in" four-weeks
                   "opted-in"  (* 200 one-year)
                   "dismissed" 1800)]
-    (.set cookie :popup-session value max-age "/" (:domain popup-session) config/secure?)))
+    (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
 
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))

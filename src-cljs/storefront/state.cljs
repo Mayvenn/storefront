@@ -139,7 +139,7 @@
           :show-apple-pay? false
 
           :expanded-commission-order-id #{nil}
-          :popup-session (cookie-jar/retrieve-popup-session cookie)
+          :email-capture-session (cookie-jar/retrieve-email-capture-session cookie)
 
           :sign-in {:email ""
                     :password ""}

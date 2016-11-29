@@ -218,10 +218,10 @@
                                  (assoc-in keypaths/billing-address {})
                                  (assoc-in keypaths/shipping-address {})
                                  (assoc-in keypaths/facebook-email-denied nil))
-        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/popup-session))]
+        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/email-capture-session))]
     (cond-> signed-out-app-state
       (not opted-in?)
-      (assoc-in keypaths/popup-session "dismissed"))))
+      (assoc-in keypaths/email-capture-session "dismissed"))))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -372,10 +372,10 @@
                                               keypaths/reset-password-password
                                               keypaths/reset-password-token)
                                 (assoc-in keypaths/order order))
-        opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/popup-session))]
+        opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/email-capture-session))]
     (cond-> signed-in-app-state
       (not opted-in?)
-      (assoc-in keypaths/popup-session "signed-in"))))
+      (assoc-in keypaths/email-capture-session "signed-in"))))
 
 (defmethod transition-state events/api-success-forgot-password [_ event args app-state]
   (clear-fields app-state keypaths/forgot-password-email))
@@ -592,7 +592,7 @@
 (defmethod transition-state events/control-email-captured-dismiss [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/popup nil)
-      (assoc-in keypaths/popup-session "dismissed")))
+      (assoc-in keypaths/email-capture-session "dismissed")))
 
 (defmethod transition-state events/control-email-captured-submit [_ event args app-state]
   (let [email (get-in app-state keypaths/captured-email)]
@@ -603,7 +603,7 @@
       (-> app-state
           (assoc-in keypaths/errors {})
           (assoc-in keypaths/popup nil)
-          (assoc-in keypaths/popup-session "opted-in")))))
+          (assoc-in keypaths/email-capture-session "opted-in")))))
 
 (defmethod transition-state events/show-email-popup [_ event args app-state]
   (assoc-in app-state keypaths/popup :email-capture))
