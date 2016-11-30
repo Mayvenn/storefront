@@ -28,3 +28,6 @@
 
 (defn apple-pay? [data]
   (display-feature? data "apple-pay"))
+
+(defn hero-shop-look? [data]
+  (display-feature? data "hero-shop-look"))

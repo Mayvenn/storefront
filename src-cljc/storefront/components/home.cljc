@@ -84,9 +84,11 @@
      (utils/route-to events/navigate-categories)
      [:span.dark-gray.bold "shop now"])]])
 
-(defn banner [store-slug]
+(defn banner [store-slug hero->shop-look?]
   [:a
-   (assoc (utils/route-to events/navigate-categories)
+   (assoc (utils/route-to (if hero->shop-look?
+                            events/navigate-shop-by-look
+                            events/navigate-categories))
           :data-test "home-banner")
    (case store-slug
      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
@@ -151,18 +153,19 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches store-slug]} owner opts]
+(defn component [{:keys [named-searches store-slug hero->shop-look?]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (banner store-slug)]
+    [:section (banner store-slug hero->shop-look?)]
     [:section (pick-style named-searches)]
     [:section video-popup]
     [:section about-mayvenn]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :store-slug     (get-in data keypaths/store-slug)})
+  {:hero->shop-look? (experiments/hero-shop-look? data)
+   :named-searches   (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
+   :store-slug       (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
