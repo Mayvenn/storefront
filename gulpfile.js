@@ -123,7 +123,6 @@ gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
 
 gulp.task('gzip', function () {
   return gulp.src('resources/public/cdn/**')
-    .pipe(gulpIgnore.exclude("*.map"))
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('resources/public/cdn'));
 });
