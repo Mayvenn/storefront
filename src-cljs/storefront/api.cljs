@@ -716,8 +716,9 @@
                                        {:order %
                                         :navigate events/navigate-cart})
     :error-handler #(do
-                      (messages/handle-message events/api-failure-order-not-created-from-shared-cart)
-                      (default-error-handler %))}))
+                      ;; Order is important here, for correct display of errors
+                      (default-error-handler %)
+                      (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
 
 (defn send-referrals [referral]
   (api-req

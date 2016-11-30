@@ -523,6 +523,10 @@
       clear-flash
       (assoc-in keypaths/errors (update errors :field-errors (partial group-by :path)))))
 
+(defmethod transition-state events/api-failure-order-not-created-from-shared-cart [_ event args app-state]
+  (when-let [error-message (get-in app-state keypaths/error-message)]
+    (assoc-in app-state keypaths/flash-later-failure {:message error-message})))
+
 (defmethod transition-state events/api-failure-pending-promo-code [_ event args app-state]
   (assoc-in app-state keypaths/pending-promo-code nil))
 
