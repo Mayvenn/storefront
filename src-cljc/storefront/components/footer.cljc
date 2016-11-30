@@ -104,7 +104,7 @@
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
-      [:span "© 2016 "] "Mayvenn"]
+      [:span "© " (date/full-year (date/current-date)) " "] "Mayvenn"]
      [:div.right
       [:a.white
        (utils/route-to events/navigate-content-help) "Contact Us"]

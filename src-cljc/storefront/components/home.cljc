@@ -88,20 +88,16 @@
   [:a
    (assoc (utils/route-to events/navigate-categories)
           :data-test "home-banner")
-   (if (date/after date/black-friday)
-     (homepage-images (assets/path "/images/homepage/black_friday/mobile_banner.jpg")
-                      (assets/path "/images/homepage/black_friday/desktop_banner.jpg")
-                      "Get 15% Off Hair Extensions Mayvenn")
-     (case store-slug
-       "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/peak/desktop_banner.jpg")
+   (case store-slug
+     "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                 (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                 "Get 15% Off Hair Extensions Mayvenn")
+     "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/mimi/desktop_banner.jpg")
                                    "Get 15% Off Hair Extensions Mayvenn")
-       "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
-                                     (assets/path "/images/homepage/mimi/desktop_banner.jpg")
-                                     "Get 15% Off Hair Extensions Mayvenn")
-       (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                        (assets/path "/images/homepage/desktop_banner.jpg")
-                        "Get 15% Off Hair Extensions Mayvenn")))])
+     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                      (assets/path "/images/homepage/desktop_banner.jpg")
+                      "Get 15% Off Hair Extensions Mayvenn"))])
 
 (def about-mayvenn
   (component/html
