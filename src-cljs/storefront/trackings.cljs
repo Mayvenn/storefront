@@ -29,9 +29,7 @@
     (stringer/track-identify (get-in app-state keypaths/user))))
 
 (defmethod perform-track events/navigate [_ event args app-state]
-  (when (and (not= (get-in app-state keypaths/navigation-message)
-                   (get-in app-state keypaths/previous-navigation-message))
-             (not (get-in app-state keypaths/redirecting?)))
+  (when (not (get-in app-state keypaths/redirecting?))
     (let [path (routes/current-path app-state)]
       (riskified/track-page path)
       (stringer/track-page)
