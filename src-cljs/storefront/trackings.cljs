@@ -195,3 +195,6 @@
 
 (defmethod perform-track events/api-success-update-order-update-cart-payments [_ events args app-state]
   (stringer/track-event "checkout-payment_enter" {:order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/api-success-update-order-update-shipping-method [_ events args app-state]
+  (stringer/track-event "checkout-shipping_method_change" {:order_number (get-in app-state keypaths/order-number)}))
