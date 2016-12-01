@@ -201,5 +201,5 @@
                         {:order_number (get-in app-state keypaths/order-number)
                          :shipping_method (get-in app-state keypaths/checkout-selected-shipping-method-name)}))
 
-(defmethod perform-track events/api-success-forgot-password [_ events args app-state]
-  (stringer/track-event "request_reset_password" {:email (get-in app-state keypaths/forgot-password-email)}))
+(defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
+  (stringer/track-event "request_reset_password" {:email email}))

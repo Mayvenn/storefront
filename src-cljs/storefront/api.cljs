@@ -283,7 +283,7 @@
    {:params
     {:email (.toLowerCase (str email))}
     :handler
-    #(messages/handle-message events/api-success-forgot-password)}))
+    #(messages/handle-message events/api-success-forgot-password {:email email})}))
 
 (defn mayvenn->spree-address [states address]
   (-> address
