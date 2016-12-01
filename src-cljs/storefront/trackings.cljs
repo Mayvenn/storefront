@@ -110,7 +110,10 @@
                           :user       (get-in app-state keypaths/user)}))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
-  (stringer/track-event "sign_in" {:type flow}))
+  (if (routes/current-page? (get-in app-state keypaths/navigation-message) events/navigate-checkout-sign-in)
+    (stringer/track-event "checkout-sing_in" {:type flow
+                                              :order-number (get-in app-state keypaths/order-number)})
+    (stringer/track-event "sign_in" {:type flow})))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (stringer/track-event "sign_up" {:type flow}))
