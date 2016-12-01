@@ -111,14 +111,14 @@
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
                             events/navigate-checkout-sign-in)
     (stringer/track-event "checkout-sign_in" {:type flow
-                                              :order-number (get-in app-state keypaths/order-number)})
+                                              :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_in" {:type flow})))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (if (= (first (get-in app-state keypaths/return-navigation-message))
          events/navigate-checkout-address)
     (stringer/track-event "checkout-sign_up" {:type flow
-                                              :order-number (get-in app-state keypaths/order-number)})
+                                              :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_up" {:type flow})))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
@@ -189,3 +189,9 @@
 
 (defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/api-success-update-order-update-address [_ events args app-state]
+  (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/api-success-update-order-update-cart-payments [_ events args app-state]
+  (stringer/track-event "checkout-payment_enter" {:order_number (get-in app-state keypaths/order-number)}))
