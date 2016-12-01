@@ -4,6 +4,7 @@
                :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.accessors.stylists :refer [own-store?]]
@@ -11,16 +12,25 @@
             [storefront.platform.date :as date]
             [storefront.keypaths :as keypaths]))
 
-(def minimal-footer-events
+(def experiment-minimal-footer-events
   #{events/navigate-sign-in
     events/navigate-sign-up
     events/navigate-forgot-password
     events/navigate-reset-password
-    events/navigate-cart
     events/navigate-checkout-sign-in
     events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
+
+(def minimal-footer-events
+  (conj experiment-minimal-footer-events
+        events/navigate-cart))
+
+(defn minimal-footer? [nav-event experiment?]
+  (let [minimal-events (if experiment?
+                         experiment-minimal-footer-events
+                         minimal-footer-events)]
+    (minimal-events nav-event)))
 
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
@@ -141,6 +151,7 @@
    :own-store?     (own-store? data)})
 
 (defn built-component [data opts]
-  (if (minimal-footer-events (get-in data keypaths/navigation-event))
+  (if (minimal-footer? (get-in data keypaths/navigation-event)
+                       (experiments/checkout-header? data))
     (component/build minimal-component (contacts-query data) nil)
     (component/build full-component (query data) nil)))

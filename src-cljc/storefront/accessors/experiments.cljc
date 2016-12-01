@@ -31,3 +31,6 @@
 
 (defn hero-shop-look? [data]
   (display-feature? data "hero-shop-look"))
+
+(defn checkout-header? [data]
+  (display-feature? data "checkout-header"))
