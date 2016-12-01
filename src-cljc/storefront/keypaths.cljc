@@ -152,6 +152,7 @@
 (def checkout-credit-card-existing-cards (conj checkout :credit-card-existing-cards))
 (def checkout-credit-card-selected-id (conj checkout :credit-card-selected-id))
 (def checkout-selected-shipping-method (conj checkout :shipping-method))
+(def checkout-selected-shipping-method-name (conj checkout-selected-shipping-method :name))
 (def checkout-selected-shipping-method-sku (conj checkout-selected-shipping-method :sku))
 (def checkout-selected-payment-methods (conj checkout :payment-methods))
 
