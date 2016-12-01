@@ -131,6 +131,12 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
+(defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
+  (when (= [events/navigate-home {}]
+         (get-in app-state keypaths/return-navigation-message))
+    (assoc-in app-state keypaths/return-navigation-message
+              [events/navigate-checkout-address {}])))
+
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
     (get-in app-state keypaths/user-email)
