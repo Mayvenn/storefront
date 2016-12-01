@@ -296,7 +296,11 @@
 
 (defn minimal-component [store _ _]
   (component/create
-   (header nil (middle store) nil nil)))
+   (header
+    [[:div.hide-on-mb {:style {:min-height "80px"}} ui/nbsp]]
+    (middle store)
+    nil
+    nil)))
 
 (defn store-query [data]
   {:expanded? (get-in data keypaths/store-info-expanded)
