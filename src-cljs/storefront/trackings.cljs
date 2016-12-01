@@ -116,7 +116,10 @@
     (stringer/track-event "sign_in" {:type flow})))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
-  (stringer/track-event "sign_up" {:type flow}))
+  (if (= (first (get-in app-state keypaths/return-navigation-message)) events/navigate-checkout-address)
+    (stringer/track-event "checkout-sign_up" {:type flow
+                                              :order-number (get-in app-state keypaths/order-number)})
+    (stringer/track-event "sign_up" {:type flow})))
 
 (defmethod perform-track events/api-success-auth-reset-password [_ events {:keys [flow] :as args} app-state]
   (stringer/track-event "reset_password" {:type flow}))
