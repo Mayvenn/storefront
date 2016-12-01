@@ -259,29 +259,29 @@
   [[:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]]
    (lower-left-desktop-nav current-page?)])
 
-(defn middle [{:keys [store store-expanded?]}]
+(defn middle [{:keys [store expanded?]}]
   (if (sans-stylist? (:store_slug store))
     (list (logo "40px"))
     (list
      (logo "30px")
-     (store-dropdown store-expanded? store))))
+     (store-dropdown expanded? store))))
 
-(defn right [{:keys [store account-expanded? user-email cart-quantity stylist? current-page?]}]
+(defn right [{:keys [store expanded? user-email cart-quantity stylist? current-page?]}]
   [[:div.flex.justify-end.items-center
     [:div.flex-auto.hide-on-mb.pr2
      (cond
-       stylist?   (stylist-account account-expanded? current-page? store)
-       user-email (customer-account account-expanded? current-page? user-email)
+       stylist?   (stylist-account expanded? current-page? store)
+       user-email (customer-account expanded? current-page? user-email)
        :else      guest-account)]
     (shopping-bag cart-quantity)]
    (lower-right-desktop-nav current-page?)])
 
-(defn flyout [{:keys [stylist? shop-expanded? current-page? named-searches]}]
-  (shop-panel stylist? shop-expanded? current-page? named-searches))
+(defn flyout [{:keys [stylist? expanded? current-page? named-searches]}]
+  (shop-panel stylist? expanded? current-page? named-searches))
 
 (defn component [{:keys [store auth cart shop context]} _ _]
   (component/create
-   (let [context (assoc context :current-page? (partial routes/current-page? (get context :nav-message)))]
+   (let [context (assoc context :current-page? (partial routes/current-page? (:nav-message context)))]
      (header
       (left context)
       (middle store)
@@ -293,18 +293,18 @@
    (header nil (middle store) nil nil)))
 
 (defn store-query [data]
-  {:store           (get-in data keypaths/store)
-   :store-expanded? (get-in data keypaths/store-info-expanded)})
+  {:expanded? (get-in data keypaths/store-info-expanded)
+   :store     (get-in data keypaths/store)})
 
 (defn auth-query [data]
-  {:account-expanded? (get-in data keypaths/account-menu-expanded)
-   :user-email        (get-in data keypaths/user-email)})
+  {:expanded?  (get-in data keypaths/account-menu-expanded)
+   :user-email (get-in data keypaths/user-email)})
 
 (defn cart-query [data]
   {:cart-quantity (orders/product-quantity (get-in data keypaths/order))})
 
 (defn shop-query [data]
-  {:shop-expanded? (get-in data keypaths/shop-menu-expanded)
+  {:expanded?      (get-in data keypaths/shop-menu-expanded)
    :named-searches (named-searches/current-named-searches data)})
 
 (defn context-query [data]
