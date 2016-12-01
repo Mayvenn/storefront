@@ -2,10 +2,12 @@
   (:require [storefront.platform.component-utils :as utils]
             [storefront.assets :as assets]
             [storefront.components.svg :as svg]
+            [storefront.components.nav :as nav]
             [storefront.events :as events]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.keypaths :as keypaths]
@@ -245,49 +247,80 @@
                            :href           "https://blog.mayvenn.com"}
      "Blog"]]])
 
-(defn component [{:keys [nav-message
-                         account-expanded?
-                         shop-expanded?
-                         store-expanded?
-                         stylist?
-                         cart-quantity
-                         store
-                         named-searches
-                         user-email]} _ _]
+(defn header [left middle right flyout]
+  [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+   [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
+    (into [:div.flex-auto.col-4] left)
+    (into [:div.flex.flex-column.justify-center.flex-auto.col-4 {:style {:min-width popup-width}}] middle)
+    (into [:div.flex-auto.col-4] right)]
+   flyout])
+
+(defn left [{:keys [current-page?]}]
+  [[:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]]
+   (lower-left-desktop-nav current-page?)])
+
+(defn middle [{:keys [store store-expanded?]}]
+  (if (sans-stylist? (:store_slug store))
+    (list (logo "40px"))
+    (list
+     (logo "30px")
+     (store-dropdown store-expanded? store))))
+
+(defn right [{:keys [store account-expanded? user-email cart-quantity stylist? current-page?]}]
+  [[:div.flex.justify-end.items-center
+    [:div.flex-auto.hide-on-mb.pr2
+     (cond
+       stylist?   (stylist-account account-expanded? current-page? store)
+       user-email (customer-account account-expanded? current-page? user-email)
+       :else      guest-account)]
+    (shopping-bag cart-quantity)]
+   (lower-right-desktop-nav current-page?)])
+
+(defn flyout [{:keys [stylist? shop-expanded? current-page? named-searches]}]
+  (shop-panel stylist? shop-expanded? current-page? named-searches))
+
+(defn component [{:keys [store auth cart shop context]} _ _]
   (component/create
-   (let [current-page? (partial routes/current-page? nav-message)]
-     [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
-      [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
-       [:div.flex-auto.col-4
-        [:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]]
-        (lower-left-desktop-nav current-page?)]
-       (into [:div.flex.flex-column.justify-center.flex-auto.col-4 {:style {:min-width popup-width}}]
-             (if (sans-stylist? (:store_slug store))
-               (list (logo "40px"))
-               (list
-                (logo "30px")
-                (store-dropdown store-expanded? store))))
-       [:div.flex-auto.col-4
-        [:div.flex.justify-end.items-center
-         [:div.flex-auto.hide-on-mb.pr2
-          (cond
-            stylist?   (stylist-account account-expanded? current-page? store)
-            user-email (customer-account account-expanded? current-page? user-email)
-            :else      guest-account)]
-         (shopping-bag cart-quantity)]
-        (lower-right-desktop-nav current-page?)]]
-      (shop-panel stylist? shop-expanded? current-page? named-searches)])))
+   (let [context (assoc context :current-page? (partial routes/current-page? (get context :nav-message)))]
+     (header
+      (left context)
+      (middle store)
+      (right (merge store auth cart context))
+      (flyout (merge shop context))))))
+
+(defn minimal-component [store _ _]
+  (component/create
+   (header nil (middle store) nil nil)))
+
+(defn store-query [data]
+  {:store           (get-in data keypaths/store)
+   :store-expanded? (get-in data keypaths/store-info-expanded)})
+
+(defn auth-query [data]
+  {:account-expanded? (get-in data keypaths/account-menu-expanded)
+   :user-email        (get-in data keypaths/user-email)})
+
+(defn cart-query [data]
+  {:cart-quantity (orders/product-quantity (get-in data keypaths/order))})
+
+(defn shop-query [data]
+  {:shop-expanded? (get-in data keypaths/shop-menu-expanded)
+   :named-searches (named-searches/current-named-searches data)})
+
+(defn context-query [data]
+  {:stylist?    (own-store? data)
+   :nav-message (get-in data keypaths/navigation-message)})
 
 (defn query [data]
-  {:store             (get-in data keypaths/store)
-   :store-expanded?   (get-in data keypaths/store-info-expanded)
-   :account-expanded? (get-in data keypaths/account-menu-expanded)
-   :shop-expanded?    (get-in data keypaths/shop-menu-expanded)
-   :cart-quantity     (orders/product-quantity (get-in data keypaths/order))
-   :stylist?          (own-store? data)
-   :nav-message       (get-in data keypaths/navigation-message)
-   :user-email        (get-in data keypaths/user-email)
-   :named-searches    (named-searches/current-named-searches data)})
+  {:store   (store-query data)
+   :auth    (auth-query data)
+   :cart    (cart-query data)
+   :shop    (shop-query data)
+   :context (context-query data)})
 
 (defn built-component [data opts]
-  (component/build component (query data) nil))
+  (let [maybe-minimal? (experiments/checkout-header? data)]
+    (if (and maybe-minimal?
+             (nav/minimal? (get-in data keypaths/navigation-event) maybe-minimal?))
+      (component/build minimal-component (store-query data) nil)
+      (component/build component (query data) nil))))
