@@ -81,7 +81,8 @@
    [:div.col-6.col-4-on-tb-dt.mx-auto
     ;; button color should be light-silver/transparent
     (ui/large-ghost-button
-     (utils/route-to events/navigate-categories)
+     (assoc (utils/route-to events/navigate-categories)
+            :data-test "nav-categories")
      [:span.dark-gray.bold "shop now"])]])
 
 (defn banner [store-slug hero->shop-look?]
