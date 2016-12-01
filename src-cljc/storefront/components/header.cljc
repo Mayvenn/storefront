@@ -96,7 +96,7 @@
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
 
 ;; Sharing this width ensure the popup is centered on mobile
-(def popup-width          "188px")
+(def popup-width "188px")
 
 (defn social-link [img href title last?]
   [:a.f5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
@@ -220,13 +220,25 @@
     (when stylist?
       [:div.col-4 (products-section current-page? "Stylist Products" (filter named-searches/is-stylist-product? named-searches))])]])
 
-(defn desktop-nav-link-options [current-page? nav-event]
+(defn nav-link-options [current-page? nav-event]
   (merge
    {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)}
    (when (current-page? nav-event) {:class selected-link})
    (utils/route-to nav-event)))
 
-(defn lower-left-desktop-nav [current-page?]
+(def upper-left
+  [:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]])
+
+(defn upper-right [{:keys [store expanded? user-email cart-quantity stylist? current-page?]}]
+  [:div.flex.justify-end.items-center
+   [:div.flex-auto.hide-on-mb.pr2
+    (cond
+      stylist?   (stylist-account expanded? current-page? store)
+      user-email (customer-account expanded? current-page? user-email)
+      :else      guest-account)]
+   (shopping-bag cart-quantity)])
+
+(defn lower-left [current-page?]
   [:div.hide-on-mb {:style {:margin-top "-12px"}}
    [:div.right.h6
     [:a.dark-gray.col.py1 (merge
@@ -235,13 +247,13 @@
                             :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
                            (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
-    [:a.dark-gray.col.py1.ml4 (desktop-nav-link-options current-page? events/navigate-shop-by-look)
+    [:a.dark-gray.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
 
-(defn lower-right-desktop-nav [current-page?]
+(defn lower-right [current-page?]
   [:div.hide-on-mb {:style {:margin-top "-12px"}}
    [:div.h6
-    [:a.dark-gray.col.py1.mr4 (desktop-nav-link-options current-page? events/navigate-content-guarantee)
+    [:a.dark-gray.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
      "Guarantee"]
     [:a.dark-gray.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                            :href           "https://blog.mayvenn.com"}
@@ -251,13 +263,13 @@
   [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
    [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
     (into [:div.flex-auto.col-4] left)
-    (into [:div.flex.flex-column.justify-center.flex-auto.col-4 {:style {:min-width popup-width}}] middle)
+    (into [:div.flex-auto.col-4.flex.flex-column.justify-center {:style {:min-width popup-width}}] middle)
     (into [:div.flex-auto.col-4] right)]
    flyout])
 
 (defn left [{:keys [current-page?]}]
-  [[:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]]
-   (lower-left-desktop-nav current-page?)])
+  [upper-left
+   (lower-left current-page?)])
 
 (defn middle [{:keys [store expanded?]}]
   (if (sans-stylist? (:store_slug store))
@@ -266,15 +278,9 @@
      (logo "30px")
      (store-dropdown expanded? store))))
 
-(defn right [{:keys [store expanded? user-email cart-quantity stylist? current-page?]}]
-  [[:div.flex.justify-end.items-center
-    [:div.flex-auto.hide-on-mb.pr2
-     (cond
-       stylist?   (stylist-account expanded? current-page? store)
-       user-email (customer-account expanded? current-page? user-email)
-       :else      guest-account)]
-    (shopping-bag cart-quantity)]
-   (lower-right-desktop-nav current-page?)])
+(defn right [{:keys [current-page?] :as data}]
+  [(upper-right data)
+   (lower-right current-page?)])
 
 (defn flyout [{:keys [stylist? expanded? current-page? named-searches]}]
   (shop-panel stylist? expanded? current-page? named-searches))
