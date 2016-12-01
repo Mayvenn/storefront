@@ -126,7 +126,6 @@
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
-          :previous-navigation-message []
           :errors {}
           :browse-named-search-query {}
           :browse-variant-quantity 1

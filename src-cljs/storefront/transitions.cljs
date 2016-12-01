@@ -79,8 +79,6 @@
       (assoc-in keypaths/flash-later-success nil)
       (assoc-in keypaths/flash-later-failure nil)
       (assoc-in keypaths/redirecting? false)
-      (assoc-in keypaths/previous-navigation-message
-                (get-in app-state keypaths/navigation-message))
       (assoc-in keypaths/navigation-message [event args])))
 
 (defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]

@@ -168,8 +168,7 @@
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))
 
-    (when-not (= [nav-event nav-args] (get-in app-state keypaths/previous-navigation-message))
-      (exception-handler/refresh)))
+    (exception-handler/refresh))
 
   (update-email-capture-session app-state))
 
