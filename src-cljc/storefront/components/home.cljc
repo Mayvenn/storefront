@@ -45,7 +45,7 @@
                              {:style {:height "80px"}})]
      [:div.mb3.dark-gray.medium.f4 name]]))
 
-(defn pick-style [named-searches]
+(defn pick-style [named-searches hero->shop-look?]
   [:div.container.center.py3
    [:div.flex.flex-column
     [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
@@ -81,8 +81,11 @@
    [:div.col-6.col-4-on-tb-dt.mx-auto
     ;; button color should be light-silver/transparent
     (ui/large-ghost-button
-     (assoc (utils/route-to events/navigate-categories)
-            :data-test "nav-categories")
+     (if hero->shop-look?
+       (assoc (utils/route-to events/navigate-shop-by-look)
+              :data-test "nav-shop-look")
+       (assoc (utils/route-to events/navigate-categories)
+              :data-test "nav-categories"))
      [:span.dark-gray.bold "shop now"])]])
 
 (defn banner [store-slug hero->shop-look?]
@@ -105,7 +108,7 @@
                       (assets/path "/images/homepage/desktop_banner.jpg")
                       "Get 15% Off Hair Extensions Mayvenn"))])
 
-(def about-mayvenn
+(defn about-mayvenn [hero->shop-look?]
   (component/html
    [:div.container.gray.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
@@ -128,7 +131,11 @@
 
     [:div.col-6.col-4-on-tb-dt.mx-auto
      (ui/teal-button
-      (utils/route-to events/navigate-categories)
+      (if hero->shop-look?
+        (assoc (utils/route-to events/navigate-shop-by-look)
+               :data-test "nav-shop-look")
+        (assoc (utils/route-to events/navigate-categories)
+               :data-test "nav-categories"))
       "shop now")]]))
 
 (def video-popup
@@ -158,9 +165,9 @@
   (component/create
    [:div.m-auto
     [:section (banner store-slug hero->shop-look?)]
-    [:section (pick-style named-searches)]
+    [:section (pick-style named-searches hero->shop-look?)]
     [:section video-popup]
-    [:section about-mayvenn]
+    [:section (about-mayvenn hero->shop-look?)]
     [:section talkable-banner]]))
 
 (defn query [data]
