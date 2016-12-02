@@ -159,6 +159,12 @@
        (get-in app-state keypaths/user)
        captured-email))))
 
+(defmethod perform-track events/show-email-popup [_ events args app-state]
+  (stringer/track-event "email_capture-deploy" {}))
+
+(defmethod perform-track events/control-email-captured-dismiss [_ events args app-state]
+  (stringer/track-event "email_capture-dismiss" {}))
+
 (defmethod perform-track events/apple-pay-availability [_ event {:keys [available?]} app-state]
   (when available?
     (convert/track-conversion "apple-pay-available")))
