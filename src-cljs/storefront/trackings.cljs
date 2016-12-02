@@ -58,12 +58,18 @@
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
-    (stringer/track-event "add_to_cart" {:variant_id    (:id variant)
-                                         :variant_sku   (:sku variant)
-                                         :variant_price (:price variant)
-                                         :order_number  (get-in app-state keypaths/order-number)
-                                         :order_total   (get-in app-state keypaths/order-total)
-                                         :quantity      quantity})
+    (stringer/track-event "add_to_cart" {:variant_id       (:id variant)
+                                         :variant_sku      (:sku variant)
+                                         :variant_price    (:price variant)
+                                         :variant_name     (:variant-name variant)
+                                         :variant_origin   (-> variant :variant_attrs :origin)
+                                         :variant_style    (-> variant :variant_attrs :style)
+                                         :variant_color    (-> variant :variant_attrs :color)
+                                         :variant_length   (-> variant :variant_attrs :length)
+                                         :variant_material (-> variant :variant_attrs :material)
+                                         :order_number     (get-in app-state keypaths/order-number)
+                                         :order_total      (get-in app-state keypaths/order-total)
+                                         :quantity         quantity})
     (woopra/track-add-to-bag {:variant    variant
                               :session-id (get-in app-state keypaths/session-id)
                               :quantity   quantity
