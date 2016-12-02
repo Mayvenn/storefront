@@ -666,6 +666,7 @@
              :allow-dormant allow-dormant?}
     :handler #(messages/handle-message events/api-success-update-order-add-promotion-code
                                        {:order %
+                                        :promo-code promo-code
                                         :allow-dormant? allow-dormant?})
     :error-handler #(if allow-dormant?
                       (messages/handle-message events/api-failure-pending-promo-code %)
@@ -691,7 +692,8 @@
    request-keys/remove-promotion-code
    {:params {:number number :token token :code promo-code}
     :handler #(messages/handle-message events/api-success-update-order-remove-promotion-code
-                                       {:order %})}))
+                                       {:order %
+                                        :promo-code promo-code})}))
 
 (defn create-shared-cart [order-number order-token]
   (api-req
