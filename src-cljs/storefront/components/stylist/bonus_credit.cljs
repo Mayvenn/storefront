@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.bonus-credit
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
@@ -53,7 +54,8 @@
                          page
                          pages
                          history
-                         fetching?]}
+                         fetching?
+                         hero->shop-look?]}
                  owner opts]
   (om/component
    (html
@@ -96,7 +98,9 @@
 
               [:p.btn.mt1
                [:a.navy
-                (utils/route-to events/navigate-categories)
+                (utils/route-to (if hero->shop-look?
+                                  events/navigate-shop-by-look
+                                  events/navigate-categories))
                 "Shop now " ui/rarr]]])])]
 
        [:.col-right-on-tb-dt.col-4-on-tb-dt
@@ -104,12 +108,13 @@
           (show-lifetime-total lifetime-total))]]))))
 
 (defn query [data]
-  {:available-credit      (get-in data keypaths/user-total-available-store-credit)
-   :award-amount          (get-in data keypaths/stylist-bonuses-award-amount)
-   :milestone-amount      (get-in data keypaths/stylist-bonuses-milestone-amount)
-   :progress-amount       (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
-   :lifetime-total        (get-in data keypaths/stylist-bonuses-lifetime-total)
-   :page                  (get-in data keypaths/stylist-bonuses-page)
-   :pages                 (get-in data keypaths/stylist-bonuses-pages)
-   :history               (seq (get-in data keypaths/stylist-bonuses-history))
-   :fetching?             (utils/requesting? data request-keys/get-stylist-bonus-credits)})
+  {:available-credit (get-in data keypaths/user-total-available-store-credit)
+   :award-amount     (get-in data keypaths/stylist-bonuses-award-amount)
+   :milestone-amount (get-in data keypaths/stylist-bonuses-milestone-amount)
+   :progress-amount  (get-in data keypaths/stylist-bonuses-progress-to-next-bonus)
+   :lifetime-total   (get-in data keypaths/stylist-bonuses-lifetime-total)
+   :page             (get-in data keypaths/stylist-bonuses-page)
+   :pages            (get-in data keypaths/stylist-bonuses-pages)
+   :history          (seq (get-in data keypaths/stylist-bonuses-history))
+   :fetching?        (utils/requesting? data request-keys/get-stylist-bonus-credits)
+   :hero->shop-look? (experiments/hero-shop-look? data)})
