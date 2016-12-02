@@ -203,8 +203,9 @@
 
 (defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {promo-code :promo-code} app-state]
   (stringer/track-event "promo_add" {:order_number (get-in app-state keypaths/order-number)
-                                     :code promo-code}))
+                                     :promotion_code promo-code}))
 
 (defmethod perform-track events/api-success-update-order-remove-promotion-code [_ events {promo-code :promo-code} app-state]
   (stringer/track-event "promo_remove" {:order_number (get-in app-state keypaths/order-number)
-                                        :code promo-code}))
+                                        :promotion_code promo-code}))
+
