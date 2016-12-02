@@ -46,7 +46,9 @@
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
 
-(defmethod perform-track events/control-bundle-option-select [_ event _ app-state]
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [step-name selected-options]} app-state]
+  (stringer/track-event "select_bundle_option" {:option_name  step-name
+                                                :option_value (step-name selected-options)})
   (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
     (google-analytics/track-page (str (routes/current-path app-state)
                                       "/choose_"
@@ -218,7 +220,3 @@
 (defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {promo-code :promo-code :as args} app-state]
   (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
                                          :promotion_code promo-code}))
-
-(defmethod perform-track events/control-bundle-option-select [_ events {:keys [step-name selected-options]} app-state]
-  (stringer/track-event "select_bundle_option" {:option_name  step-name
-                                                :option_value (step-name selected-options)}))
