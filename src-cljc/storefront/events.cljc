@@ -214,6 +214,7 @@
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
 (defpath api-failure-errors)
+(defpath api-failure-errors-invalid-promo-code)
 (defpath api-failure-pending-promo-code)
 (defpath api-failure-stylist-account-photo-too-large)
 (defpath api-failure-order-not-created-from-shared-cart)

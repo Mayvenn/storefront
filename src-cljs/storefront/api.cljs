@@ -670,7 +670,12 @@
                                         :allow-dormant? allow-dormant?})
     :error-handler #(if allow-dormant?
                       (messages/handle-message events/api-failure-pending-promo-code %)
-                      (default-error-handler %))}))
+                      (let [response-body (get-in % [:response :body])]
+                        (if (and (waiter-style? response-body)
+                                 (= (:error-code response-body) "promotion-not-found"))
+                          (messages/handle-message events/api-failure-errors-invalid-promo-code
+                                                   (assoc (waiter-style->std-error response-body) :promo-code promo-code))
+                          (default-error-handler %))))}))
 
 (defn add-to-bag [{:keys [token number variant] :as params}]
   (api-req

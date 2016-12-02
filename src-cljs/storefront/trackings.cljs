@@ -209,3 +209,6 @@
   (stringer/track-event "promo_remove" {:order_number (get-in app-state keypaths/order-number)
                                         :promotion_code promo-code}))
 
+(defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {promo-code :promo-code :as args} app-state]
+  (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
+                                         :promotion_code promo-code}))
