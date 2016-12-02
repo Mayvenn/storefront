@@ -91,8 +91,8 @@
      (map-indexed display-bagged-variant bagged-variants)
      checkout-button]))
 
-(defn option-html [later-step?
-                   {:keys [name image price-delta checked? sold-out? selections]}]
+(defn option-html [step-name later-step?
+                   {:keys [name image price-delta checked? sold-out? selections] :as thing}]
   [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
@@ -104,7 +104,8 @@
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selected-options selections})}]
+                                                       {:selected-options selections
+                                                        :step-name step-name})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-silver
       {:src image :alt name
@@ -133,7 +134,7 @@
        {:key   (string/replace (str name step-name) #"\W+" "-")
         :style {:height "72px"}
         :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
-       (option-html later-step? option)])]])
+       (option-html step-name later-step? option)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]

@@ -218,3 +218,7 @@
 (defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {promo-code :promo-code :as args} app-state]
   (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
                                          :promotion_code promo-code}))
+
+(defmethod perform-track events/control-bundle-option-select [_ events {:keys [step-name selected-options]} app-state]
+  (stringer/track-event "select_bundle_option" {:option_name  step-name
+                                                :option_value (step-name selected-options)}))
