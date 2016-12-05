@@ -148,11 +148,7 @@
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
       (stringer/track-identify {:email captured-email})
-      (stringer/track-event "email_capture-capture" {:email captured-email})
-      (woopra/track-user-email-captured
-       (get-in app-state keypaths/session-id)
-       (get-in app-state keypaths/user)
-       captured-email))))
+      (stringer/track-event "email_capture-capture" {:email captured-email}))))
 
 (defmethod perform-track events/apple-pay-availability [_ event {:keys [available?]} app-state]
   (when available?
