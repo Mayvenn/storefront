@@ -41,8 +41,8 @@
 
 (defn enqueue-redirect [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]
-    (js/window.requestAnimationFrame #(.replaceToken app-history path))))
+    (.setTimeout js/window #(.replaceToken app-history path))))
 
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (path-for navigation-event args)]
-    (js/window.requestAnimationFrame #(.setToken app-history path))))
+    (.setTimeout js/window #(.setToken app-history path))))
