@@ -645,9 +645,6 @@
     :navigate events/navigate-checkout-confirmation
     :place-order? (:place-order? stripe-response)}))
 
-(defmethod perform-effects events/stripe-failure-create-token [_ _ stripe-response app-state]
-  (handle-message events/flash-show-failure {:message (get-in stripe-response [:error :message])}))
-
 (defn create-stripe-token [app-state args]
   ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
   (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]

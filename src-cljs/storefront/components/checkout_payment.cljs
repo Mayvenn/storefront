@@ -21,7 +21,8 @@
             save-credit-card?
             selected-saved-card-id
             saved-cards
-            fetching-saved-cards?]} :credit-card}
+            fetching-saved-cards?]} :credit-card
+    field-errors                    :field-errors}
    owner]
   (om/component
    (html
@@ -46,14 +47,16 @@
 
         (when (or (empty? saved-cards) (= selected-saved-card-id "add-new-card"))
           [:div
-           (ui/text-field {:data-test "payment-form-name"
+           (ui/text-field {:errors    (get field-errors ["cardholder-name"])
+                           :data-test "payment-form-name"
                            :keypath   keypaths/checkout-credit-card-name
                            :focused   focused
                            :label     "Cardholder's Name"
                            :name      "name"
                            :required  true
                            :value     name})
-           (ui/text-field {:auto-complete "off"
+           (ui/text-field {:errors        (get field-errors ["card-number"])
+                           :auto-complete "off"
                            :class         "cardNumber"
                            :data-test     "payment-form-number"
                            :keypath       keypaths/checkout-credit-card-number
@@ -65,7 +68,8 @@
                            :value         (cc/format-cc-number number)})
            [:div.col-12
             (ui/text-field-group
-             {:label         "Expiration (MM/YY)"
+             {:errors        (get field-errors["card-expiration"])
+              :label         "Expiration (MM/YY)"
               :keypath       keypaths/checkout-credit-card-expiration
               :focused       focused
               :value         (cc/format-expiration expiration)
@@ -75,7 +79,8 @@
               :class         "cardExpiry"
               :type          "tel"
               :required      true}
-             {:label         "Security Code"
+             {:errors        (get field-errors["security-code"])
+              :label         "Security Code"
               :keypath       keypaths/checkout-credit-card-ccv
               :focused       focused
               :value         ccv
@@ -113,6 +118,7 @@
            disabled?
            loaded-stripe?
            store-credit
+           field-errors
            credit-card]}
    owner]
   (om/component
@@ -138,7 +144,8 @@
 
          (when-not fully-covered?
            [:div
-            (om/build credit-card-form-component {:credit-card credit-card})
+            (om/build credit-card-form-component {:credit-card credit-card
+                                                  :field-errors field-errors})
             [:.h5.gray
              "You can review your order on the next page before we charge your card."]])
 
@@ -167,7 +174,8 @@
                            (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                            (not fully-covered?))
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
-      :step-bar       (checkout-steps/query data)}
+      :step-bar       (checkout-steps/query data)
+      :field-errors   (:field-errors (get-in data keypaths/errors))}
      (credit-card-form-query data))))
 
 (defn built-component [data opts]
