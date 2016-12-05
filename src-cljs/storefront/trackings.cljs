@@ -121,23 +121,8 @@
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
   (stringer/track-identify (:user (get-in app-state keypaths/order))))
 
-;; We have 2 ways to enable a feature: via convert.com, or our own code. Each
-;; needs to report to GA, and both do it differently. Convert does everything
-;; for us, as part of their `script` tag. Our own code sets up the dimension and
-;; sends it to GA by tracking an event.
-;;
-;; We would like convert to be able to trigger events/enable-feature, because
-;; that's what being put in a variation does. However, this code prevents
-;; that... events/enable-feature would overwrite the dimension set by convert.
-(defmethod perform-track events/convert [_ event {:keys [variation]} app-state]
-  (woopra/track-experiment (get-in app-state keypaths/session-id)
-                           (get-in app-state keypaths/order-user)
-                           variation))
-
-(defmethod perform-track events/enable-feature [_ event {:keys [feature ga-name experiment]} app-state]
-  (let [ga-name (or ga-name feature)]
-    (google-analytics/set-dimension "dimension1" ga-name)
-    (google-analytics/track-event "experiment_join" ga-name))
+(defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
+  (google-analytics/track-event "experiment_join" feature)
   (stringer/track-event "experiment-joined" {:name experiment
                                              :variation feature})
   (woopra/track-experiment (get-in app-state keypaths/session-id)

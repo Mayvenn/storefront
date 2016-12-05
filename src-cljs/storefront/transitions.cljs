@@ -553,10 +553,6 @@
 (defmethod transition-state events/flash-dismiss [_ event args app-state]
   (clear-flash app-state))
 
-(defmethod transition-state events/convert
-  [_ event {:keys [variation feature]} app-state]
-  (update-in app-state keypaths/features conj (or feature variation)))
-
 (defmethod transition-state events/enable-feature
   [_ event {:keys [feature]} app-state]
   (update-in app-state keypaths/features conj feature))
