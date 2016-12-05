@@ -33,9 +33,6 @@
     (let [path (routes/current-path app-state)]
       (riskified/track-page path)
       (stringer/track-page)
-      (woopra/track-page (get-in app-state keypaths/session-id)
-                         (get-in app-state keypaths/order-user)
-                         path)
       (google-analytics/track-page path)
       (facebook-analytics/track-page path))))
 
@@ -69,11 +66,7 @@
                                          :variant_material (-> variant :variant_attrs :material)
                                          :order_number     (get-in app-state keypaths/order-number)
                                          :order_total      (get-in app-state keypaths/order-total)
-                                         :quantity         quantity})
-    (woopra/track-add-to-bag {:variant    variant
-                              :session-id (get-in app-state keypaths/session-id)
-                              :quantity   quantity
-                              :order      (get-in app-state keypaths/order)})))
+                                         :quantity         quantity})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))

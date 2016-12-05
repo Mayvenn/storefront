@@ -75,23 +75,3 @@
 
 (defn track-experiment [session-id user variation]
   (track-event "experiment_joined" session-id user {:ce_variation variation}))
-
-(defn track-page [session-id user path]
-  (let [domain (when js/window.location js/window.location.hostname)]
-    (track-event "pv" session-id user
-                 {:ce_url    path
-                  :ce_title  (.-innerText (js/document.querySelector "title"))
-                  :ce_domain domain
-                  :ce_uri    (str domain path)})))
-
-(defn track-add-to-bag [{:keys [variant session-id quantity order] :as args}]
-  (track-event "line_item_added" session-id (:user order)
-               (merge {:ce_order_number         (:number order)
-                       :ce_order_total          (-> order :total $)
-                       :ce_sku                  (:sku variant)
-                       :ce_quantity             quantity
-                       :ce_item_price           (:price variant)
-                       :ce_line_item_subtotal   ($ (* (:price variant) quantity))
-                       :ce_store_id             (-> order :stylist-ids last)}
-                      (order->visitor-data order))))
-
