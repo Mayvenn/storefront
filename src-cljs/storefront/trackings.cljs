@@ -99,9 +99,7 @@
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/track-identify (get-in app-state keypaths/user))
-  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
-                          :user       (get-in app-state keypaths/user)}))
+  (stringer/track-identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
@@ -121,9 +119,7 @@
   (stringer/track-event "reset_password" {:type flow}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (stringer/track-identify (:user (get-in app-state keypaths/order)))
-  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
-                          :user       (:user (get-in app-state keypaths/order))}))
+  (stringer/track-identify (:user (get-in app-state keypaths/order))))
 
 ;; We have 2 ways to enable a feature: via convert.com, or our own code. Each
 ;; needs to report to GA, and both do it differently. Convert does everything
