@@ -15,7 +15,6 @@
 
 /* Basscss Core */
 
-@import 'basscss-type-scale';
 @import 'custom-type-scale.css';
 @import 'basscss-typography';
 @import 'custom-typography.css';
@@ -109,19 +108,10 @@
 /* Custom variables */
 
 :root {
-    --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-graphik: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
 
     --serif: serif;
     --sans-serif: var(--font-family-graphik);
-
-    --h1: 3.3rem;
-    --h2: 2rem;
-    --h3: 1.5rem;
-    --h4: 1.1666667rem;
-    --h5: 1rem;
-    --h6: 0.875rem;
-
-    --paragraph: 1rem;
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
@@ -167,6 +157,11 @@
     --line-height-3: 1.6666;
     --line-height-4: 2;
     --line-height-5: 2.6666;
+
+    --space-1: 5px;
+    --space-2: 10px;
+    --space-3: 15px;
+    --space-4: 20px;
 
     --bold-font-weight: 600;
 

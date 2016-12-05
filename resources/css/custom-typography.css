@@ -3,7 +3,7 @@
 
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
-.medium      { font-weight: 500; }
+.medium      { font-weight: 400; }
 .light       { font-weight: 300; }
 
 .titleize { text-transform: capitalize; }
