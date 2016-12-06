@@ -24,6 +24,3 @@
                                 :host                    config/woopra-host}
                                (user->event-data user)
                                params))}))
-
-(defn track-experiment [session-id user variation]
-  (track-event "experiment_joined" session-id user {:ce_variation variation}))

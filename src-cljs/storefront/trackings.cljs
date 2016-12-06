@@ -124,10 +124,7 @@
 (defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
   (google-analytics/track-event "experiment_join" feature)
   (stringer/track-event "experiment-joined" {:name experiment
-                                             :variation feature})
-  (woopra/track-experiment (get-in app-state keypaths/session-id)
-                           (get-in app-state keypaths/order-user)
-                           feature))
+                                             :variation feature}))
 
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
