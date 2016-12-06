@@ -180,7 +180,7 @@
                (get-in app-state keypaths/static-id))
     (api/get-static-content event)))
 
-(defmethod perform-effects events/navigate-content-about-us [_ [_ _ & static-content-id :as event] _ app-state]
+(defmethod perform-effects events/navigate-content-about-us [_ _ _ app-state]
   (wistia/load))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
