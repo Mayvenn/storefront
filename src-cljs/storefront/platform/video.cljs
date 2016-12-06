@@ -1,6 +1,7 @@
 (ns storefront.platform.video
   (:require [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.accessors.videos :as videos]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
             [om.core :as om]
@@ -33,11 +34,8 @@
            :on-touch-start on-close}
           "close video"]])))))
 
-(def video-name->id
-  {:home "66ysezzxwk"})
-
 (defn query [data]
-  {:video-id (video-name->id (get-in data keypaths/video))})
+  {:video-id (videos/name->id (get-in data keypaths/video))})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

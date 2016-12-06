@@ -12,6 +12,7 @@
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.videos :as videos]
             [storefront.components.money-formatters :as mf]
             [clojure.string :as str]))
 
@@ -220,3 +221,7 @@
 (defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {promo-code :promo-code :as args} app-state]
   (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
                                          :promotion_code promo-code}))
+
+(defmethod perform-track events/video-played [_ events {video-id :video-id} app-state]
+  (when-let [video-tag (videos/id->tag video-id)]
+    (stringer/track-event "video-play" {:video_tag video-tag})))

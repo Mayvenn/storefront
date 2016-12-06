@@ -151,6 +151,7 @@
 (defpath control-commission-order-expand)
 
 (defpath control-play-video)
+(defpath video-played)
 
 (defpath api)
 (defpath api-start)
