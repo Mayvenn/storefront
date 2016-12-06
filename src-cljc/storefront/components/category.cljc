@@ -92,7 +92,7 @@
      checkout-button]))
 
 (defn option-html [step-name later-step?
-                   {:keys [name image price-delta checked? sold-out? selections] :as thing}]
+                   {:keys [name image price-delta checked? sold-out? selections]}]
   [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
