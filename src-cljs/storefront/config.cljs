@@ -32,11 +32,6 @@
     "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"
     "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js"))
 
-(def woopra-host
-  (case js/environment
-    "production" "mayvenn.com"
-    "diva-acceptance.com"))
-
 (def convert-project-id (case js/environment
                           "production" "10003995-10005092"
                           "10003995-10005089"))

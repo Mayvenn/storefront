@@ -6,7 +6,6 @@
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.riskified :as riskified]
-            [storefront.hooks.woopra :as woopra]
             [storefront.hooks.stringer :as stringer]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
@@ -34,9 +33,6 @@
     (let [path (routes/current-path app-state)]
       (riskified/track-page path)
       (stringer/track-page)
-      (woopra/track-page (get-in app-state keypaths/session-id)
-                         (get-in app-state keypaths/order-user)
-                         path)
       (google-analytics/track-page path)
       (facebook-analytics/track-page path))))
 
@@ -61,16 +57,18 @@
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
-    (stringer/track-event "add_to_cart" {:variant_id    (:id variant)
-                                         :variant_sku   (:sku variant)
-                                         :variant_price (:price variant)
-                                         :order_number  (get-in app-state keypaths/order-number)
-                                         :order_total   (get-in app-state keypaths/order-total)
-                                         :quantity      quantity})
-    (woopra/track-add-to-bag {:variant    variant
-                              :session-id (get-in app-state keypaths/session-id)
-                              :quantity   quantity
-                              :order      (get-in app-state keypaths/order)})))
+    (stringer/track-event "add_to_cart" {:variant_id       (:id variant)
+                                         :variant_sku      (:sku variant)
+                                         :variant_price    (:price variant)
+                                         :variant_name     (:variant-name variant)
+                                         :variant_origin   (-> variant :variant_attrs :origin)
+                                         :variant_style    (-> variant :variant_attrs :style)
+                                         :variant_color    (-> variant :variant_attrs :color)
+                                         :variant_length   (-> variant :variant_attrs :length)
+                                         :variant_material (-> variant :variant_attrs :material)
+                                         :order_number     (get-in app-state keypaths/order-number)
+                                         :order_total      (get-in app-state keypaths/order-total)
+                                         :quantity         quantity})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
@@ -103,9 +101,7 @@
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/track-identify (get-in app-state keypaths/user))
-  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
-                          :user       (get-in app-state keypaths/user)}))
+  (stringer/track-identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
@@ -125,42 +121,18 @@
   (stringer/track-event "reset_password" {:type flow}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (stringer/track-identify (:user (get-in app-state keypaths/order)))
-  (woopra/track-identify {:session-id (get-in app-state keypaths/session-id)
-                          :user       (:user (get-in app-state keypaths/order))}))
+  (stringer/track-identify (:user (get-in app-state keypaths/order))))
 
-;; We have 2 ways to enable a feature: via convert.com, or our own code. Each
-;; needs to report to GA, and both do it differently. Convert does everything
-;; for us, as part of their `script` tag. Our own code sets up the dimension and
-;; sends it to GA by tracking an event.
-;;
-;; We would like convert to be able to trigger events/enable-feature, because
-;; that's what being put in a variation does. However, this code prevents
-;; that... events/enable-feature would overwrite the dimension set by convert.
-(defmethod perform-track events/convert [_ event {:keys [variation]} app-state]
-  (woopra/track-experiment (get-in app-state keypaths/session-id)
-                           (get-in app-state keypaths/order-user)
-                           variation))
-
-(defmethod perform-track events/enable-feature [_ event {:keys [feature ga-name experiment]} app-state]
-  (let [ga-name (or ga-name feature)]
-    (google-analytics/set-dimension "dimension1" ga-name)
-    (google-analytics/track-event "experiment_join" ga-name))
+(defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
+  (google-analytics/track-event "experiment_join" feature)
   (stringer/track-event "experiment-joined" {:name experiment
-                                             :variation feature})
-  (woopra/track-experiment (get-in app-state keypaths/session-id)
-                           (get-in app-state keypaths/order-user)
-                           feature))
+                                             :variation feature}))
 
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
       (stringer/track-identify {:email captured-email})
-      (stringer/track-event "email_capture-capture" {:email captured-email})
-      (woopra/track-user-email-captured
-       (get-in app-state keypaths/session-id)
-       (get-in app-state keypaths/user)
-       captured-email))))
+      (stringer/track-event "email_capture-capture" {:email captured-email}))))
 
 (defmethod perform-track events/show-email-popup [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))
