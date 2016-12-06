@@ -13,7 +13,11 @@
         (set! (.-_wq js/window) (clj->js [])))
     (.push js/_wq (clj->js {:id "_all"
                             :onReady (fn [video]
-                                       (.bind video "play" #(m/handle-message events/video-played {:video-id (.hashedId video)})))}))))
+                                       (let [position (cond
+                                                        (= video (.api js/Wistia "center_")) "center"
+                                                        :else "unknown")]
+                                         (.bind video "play" #(m/handle-message events/video-played {:video-id (.hashedId video)
+                                                                                                     :position position}))))}))))
 
 (defn attach [video-id]
   (tags/insert-tag-with-src (str "//fast.wistia.com/embed/medias/" video-id ".jsonp") (str "wistia_" video-id))
@@ -21,5 +25,5 @@
 
 (defn detach [video-id]
   (when (js-loaded?)
-    (when-let [player (.api js/Wistia video-id)]
-      (.remove player))))
+    (when-let [video (.api js/Wistia video-id)]
+      (.remove video))))

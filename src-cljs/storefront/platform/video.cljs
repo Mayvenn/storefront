@@ -27,7 +27,8 @@
           {:style {:padding-top "56.25%"}}
           [:div.wistia_responsive_wrapper.absolute.left-0.top-0.container-size
            [:span.wistia_embed.container-size
-            {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")}
+            {:class (str "wistia_async_" video-id " videoFoam=true autoPlay=true volume=0.33")
+             :id (str "center_" (videos/id->name video-id))}
             ui/nbsp]]]
          [:div.light-silver.p3.col-12.center
           {:on-click       on-close

@@ -222,6 +222,7 @@
   (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
                                          :promotion_code promo-code}))
 
-(defmethod perform-track events/video-played [_ events {video-id :video-id} app-state]
-  (when-let [video-tag (videos/id->tag video-id)]
-    (stringer/track-event "video-play" {:video_tag video-tag})))
+(defmethod perform-track events/video-played [_ events {:keys [video-id position]} app-state]
+  (when-let [content (videos/id->name video-id)]
+    (stringer/track-event "video-play" {:content  (name content)
+                                        :position (name position)})))

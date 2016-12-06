@@ -1,11 +1,13 @@
 var Wistia = {};
 /**
- * @return {!_WistiaPlayer}
+ * @return {!_WistiaVideo}
  */
 Wistia.api = function() {};
 
-function _WistiaPlayer() {};
-_WistiaPlayer.prototype.remove = function() {};
+function _WistiaVideo() {};
+_WistiaVideo.prototype.remove = function() {};
+_WistiaVideo.prototype.bind = function (event, callback) {};
+_WistiaVideo.prototype.hashedId = function () {};
 
 var _wq = [];
 /**
@@ -19,7 +21,3 @@ _WistiaEventRegistration.id = "";
  * @param {!_WistiaVideo} video
  */
 _WistiaEventRegistration.onReady = function (video) {};
-
-function _WistiaVideo () {};
-_WistiaVideo.prototype.bind = function (event, callback) {};
-_WistiaVideo.prototype.hashedId = function () {};
