@@ -6,7 +6,6 @@
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.riskified :as riskified]
-            [storefront.hooks.woopra :as woopra]
             [storefront.hooks.stringer :as stringer]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
