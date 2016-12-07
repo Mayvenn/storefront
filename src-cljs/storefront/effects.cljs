@@ -231,7 +231,6 @@
     (api/get-stylist-stats user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
-  (api/get-shipping-methods)
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
     (handle-message events/control-stylist-commissions-fetch)))
 

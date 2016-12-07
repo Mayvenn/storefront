@@ -41,10 +41,9 @@
      [:div "Price: " (mf/as-money unit-price)]
      [:div "Quantity: " quantity]]]])
 
-(defn short-shipping-name [shipping-methods shipping-item]
-  (-> shipping-methods
-      (orders/shipping-method-details shipping-item)
-      :name
+(defn short-shipping-name [shipping-item]
+  (-> shipping-item
+      :product-name
       str
       (str/replace #"^Free " "")))
 
@@ -67,11 +66,10 @@
               (if (> quantity 1) "s" ""))
       :price (orders/products-subtotal order)}]))
 
-(defn shipping-subtotals [shipping-methods order]
-  (when (seq shipping-methods)
-    (let [shipping-item (orders/shipping-item order)]
-      [{:name  (short-shipping-name shipping-methods shipping-item)
-        :price (:unit-price shipping-item)}])))
+(defn shipping-subtotals [order]
+  (let [shipping-item (orders/shipping-item order)]
+    [{:name  (short-shipping-name shipping-item)
+      :price (:unit-price shipping-item)}]))
 
 (defn discount-subtotals [order]
   ;; Can't use (:adjustments order) because stylists cannot see
@@ -85,10 +83,10 @@
        (map (fn [[name amount]]
               {:name name :price amount}))))
 
-(defn show-subtotals [shipping-methods order]
+(defn show-subtotals [order]
   (for [{:keys [name price]} (concat (product-subtotals order)
                                      (discount-subtotals order)
-                                     (shipping-subtotals shipping-methods order)
+                                     (shipping-subtotals order)
                                      (store-credit-subtotals order))]
     [:div.clearfix.mxn1.my2 {:key name}
      [:div.px1.col.col-8
@@ -102,12 +100,12 @@
   [:div.h3.p2.col-12.right-align.navy.border-top.border-silver
    (mf/as-money commissionable-amount)])
 
-(defn show-order [products shipping-methods order]
+(defn show-order [products order]
   [:div.px2
    (for [item (orders/product-items order)]
      (show-item products item))
 
-   (show-subtotals shipping-methods order)])
+   (show-subtotals order)])
 
 (defn payout-bar [& content]
   [:div.bg-lighten-4.flex.items-center.px2.py1
@@ -161,7 +159,6 @@
 
 (defn show-commission [{:keys [id number order commissionable-amount] :as commission}
                        expanded?
-                       shipping-methods
                        products]
   [:div {:key id}
    (show-collapsed-commission expanded? commission)
@@ -173,7 +170,7 @@
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
                           [:.gray.bg-light-silver
-                           (show-order products shipping-methods order)
+                           (show-order products order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])
 
@@ -196,7 +193,7 @@
      [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
 
-(defn component [{:keys [commissions expanded? shipping-methods products fetching?]}]
+(defn component [{:keys [commissions expanded? products fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
@@ -208,7 +205,7 @@
           (when-let [history (seq history)]
             [:div.mb3
              (for [commission history]
-               (show-commission commission expanded? shipping-methods products))
+               (show-commission commission expanded? products))
              (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
           (when (zero? pages) empty-commissions)]
 
@@ -218,6 +215,5 @@
 (defn query [data]
   {:commissions      (get-in data keypaths/stylist-commissions)
    :expanded?        (get-in data keypaths/expanded-commission-order-id)
-   :shipping-methods (get-in data keypaths/shipping-methods)
    :products         (get-in data keypaths/products)
    :fetching?        (utils/requesting? data request-keys/get-stylist-commissions)})
