@@ -18,6 +18,7 @@
                          city
                          state-id
                          states
+                         phone
                          field-errors]} owner opts]
   (component/create
    [:form
@@ -122,7 +123,18 @@
                         :options     states
                         :placeholder "State"
                         :required    true
-                        :value       state-id})]]
+                        :value       state-id})
+
+      (ui/text-field {:data-test "account-phone"
+                      :errors    (get field-errors ["address" "phone"])
+                      :id        :account-phone
+                      :keypath   (conj keypaths/stylist-manage-account :address :phone)
+                      :focused   focused
+                      :label     "Mobile Phone"
+                      :name      "account-phone"
+                      :required  true
+                      :type      "tel"
+                      :value     phone})]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
@@ -148,6 +160,7 @@
    :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
    :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
    :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state_id))
+   :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
    :states         (map (juxt :name :id) (get-in data keypaths/states))
    :field-errors   (get-in data keypaths/field-errors)
    :focused        (get-in data keypaths/ui-focus)})
