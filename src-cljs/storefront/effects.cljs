@@ -305,7 +305,6 @@
   (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)
   (refresh-current-order app-state)
-  (api/get-shipping-methods)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
