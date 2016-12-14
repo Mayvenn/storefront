@@ -9,7 +9,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.stylists :refer [own-store?]]
+            [storefront.accessors.stylists :refer [own-store? community-url]]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.platform.component-utils :as utils]
@@ -173,7 +173,7 @@
     (when store-photo [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:div.truncate store-nickname]]
    (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
-   [:a.teal.block (utils/navigate-community) "Community"]
+   [:a.teal.block community-url "Community"]
    (account-link (current-page? events/navigate-stylist-account) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]

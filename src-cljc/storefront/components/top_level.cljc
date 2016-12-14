@@ -37,15 +37,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-#?(:cljs
-   (defn getsat-top-level-component [data owner opts]
-     (component/create
-      [:div
-       [:.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "45px"}}]
-       (flash/built-component data nil)
-       [:main {:role "main"}
-        (sign-in/requires-sign-in sign-in/built-redirect-getsat-component data nil)]])))
-
 (defn main-component [nav-event]
   (condp = nav-event
     #?@(:cljs
@@ -85,8 +76,6 @@
 (defn top-level-component [data owner opts]
   (component/create
    (cond
-     (get-in data keypaths/get-satisfaction-login?)
-     [:div #?(:cljs (component/build getsat-top-level-component data opts))]
 
      #?@(:cljs
          [(and config/enable-style-guide?

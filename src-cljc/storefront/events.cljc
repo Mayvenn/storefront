@@ -10,7 +10,6 @@
 (defpath order-completed)
 
 (defpath external-redirect-welcome)
-(defpath external-redirect-community)
 (defpath external-redirect-paypal-setup)
 
 (defpath redirect)
@@ -20,7 +19,6 @@
 (defpath navigate-categories)
 (defpath navigate-product)
 (defpath navigate-sign-in)
-(defpath navigate-getsat-sign-in)
 (defpath navigate-sign-up)
 (defpath navigate-forgot-password)
 (defpath navigate-reset-password)

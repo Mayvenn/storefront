@@ -224,8 +224,6 @@
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
-(def get-satisfaction-login? [:get-satisfaction-login?])
-
 (def email-capture-session (conj ui :email-capture-session))
 
 (defn ->str [keypath]

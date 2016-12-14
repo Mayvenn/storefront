@@ -19,9 +19,6 @@
     {:checked checked-val
      :value checked-val}))
 
-(defn navigate-community []
-  {:href "#"})
-
 (defn expand-menu-callback [keypath]
   noop-callback)
 

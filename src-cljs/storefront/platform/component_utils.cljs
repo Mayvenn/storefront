@@ -1,6 +1,5 @@
 (ns storefront.platform.component-utils
   (:require [storefront.events :as events]
-            [storefront.hooks.fastpass :as fastpass]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.history :as history]
@@ -68,12 +67,6 @@
                                 {:file (-> (.. e -target -files)
                                            array-seq
                                            first)}))})
-
-(defn navigate-community
-  "Can't be a def because (fastpass/community-url) is impure."
-  []
-  {:href (or (fastpass/community-url) "#")
-   :on-click (send-event-callback events/external-redirect-community)})
 
 (defn select-all-text [e]
   (let [el (.-target e)

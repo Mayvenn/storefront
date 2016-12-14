@@ -21,7 +21,6 @@
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook :as facebook]
-            [storefront.hooks.fastpass :as fastpass]
             [storefront.hooks.seo :as seo]
             [storefront.hooks.svg :as svg]
             [storefront.hooks.pixlee :as pixlee]
@@ -112,9 +111,6 @@
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
-
-(defmethod perform-effects events/external-redirect-community [_ event args app-state]
-  (set! (.-location js/window) (fastpass/community-url)))
 
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
@@ -365,9 +361,6 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
-(defmethod perform-effects events/navigate-getsat-sign-in [_ event args app-state]
-  (when-not (get-in app-state keypaths/user-token)
-    (redirect events/navigate-sign-in)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -672,10 +665,6 @@
 (defmethod perform-effects events/api-success-forgot-password [_ event args app-state]
   (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-later-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
-
-(defmethod perform-effects events/api-success-account [_ event {:keys [community-url]} app-state]
-  (when community-url
-    (fastpass/insert-fastpass community-url)))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args app-state]
   (save-cookie app-state)

@@ -40,8 +40,7 @@
                                  events/navigate-sign-up
                                  events/navigate-forgot-password
                                  events/navigate-reset-password
-                                 events/navigate-checkout-sign-in
-                                 events/navigate-getsat-sign-in})
+                                 events/navigate-checkout-sign-in})
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
@@ -80,11 +79,6 @@
       (assoc-in keypaths/flash-later-failure nil)
       (assoc-in keypaths/redirecting? false)
       (assoc-in keypaths/navigation-message [event args])))
-
-(defmethod transition-state events/navigate-getsat-sign-in [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/get-satisfaction-login? true)
-      (assoc-in keypaths/return-navigation-message [event args])))
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)

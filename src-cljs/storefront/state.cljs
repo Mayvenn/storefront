@@ -89,7 +89,6 @@
      :features #{}
 
      :session-id (cookie-jar/force-session-id cookie)
-     :get-satisfaction-login? false
 
      :user (cookie-jar/retrieve-login cookie)
      :order (cookie-jar/retrieve-current-order cookie)

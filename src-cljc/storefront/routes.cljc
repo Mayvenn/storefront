@@ -14,11 +14,11 @@
   (read-string (name value)))
 
 (def static-page-routes
-  {"/guarantee"                             (edn->bidi events/navigate-content-guarantee)
-   "/help"                                  (edn->bidi events/navigate-content-help)
-   "/about-us"                              (edn->bidi events/navigate-content-about-us)
-   "/policy/privacy"                        (edn->bidi events/navigate-content-privacy)
-   "/policy/tos"                            (edn->bidi events/navigate-content-tos)})
+  {"/guarantee"      (edn->bidi events/navigate-content-guarantee)
+   "/help"           (edn->bidi events/navigate-content-help)
+   "/about-us"       (edn->bidi events/navigate-content-about-us)
+   "/policy/privacy" (edn->bidi events/navigate-content-privacy)
+   "/policy/tos"     (edn->bidi events/navigate-content-tos)})
 
 (def static-api-routes
   ["/static" static-page-routes])
@@ -43,7 +43,6 @@
               ["/categories/hair/" :named-search-slug] (edn->bidi events/navigate-category)
               ["/products/" :product-slug]             (edn->bidi events/navigate-product)
               "/login"                                 (edn->bidi events/navigate-sign-in)
-              "/login/getsat"                          (edn->bidi events/navigate-getsat-sign-in)
               "/signup"                                (edn->bidi events/navigate-sign-up)
               "/password/recover"                      (edn->bidi events/navigate-forgot-password)
               ["/m/" :reset-token]                     (edn->bidi events/navigate-reset-password)

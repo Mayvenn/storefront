@@ -7,7 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.stylists :refer [own-store?]]
+            [storefront.accessors.stylists :refer [own-store? community-url]]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.routes :as routes]
             [clojure.string :as str]))
@@ -78,7 +78,7 @@
       [:li [:a.teal.block (utils/route-to events/navigate-stylist-account-profile)
             (row (selectable? events/navigate-stylist-account
                               [:span {:data-test "account-settings"} "Account Settings"]))]]
-      [:li [:a.teal.block (utils/navigate-community) (row "Community")]]]]))
+      [:li [:a.teal.block community-url (row "Community")]]]]))
 
 (defn products-section [selectable? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
