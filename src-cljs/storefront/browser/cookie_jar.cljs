@@ -128,7 +128,6 @@
 (def save-utm-params (partial save-cookie utm-params))
 
 (defn save-telligent-cookie [cookie contents max-age]
-  (prn contents max-age)
   (save-cookie {:domain (root-domain)
                 :max-age max-age
                 :optional-keys []
