@@ -292,8 +292,6 @@
                                                     "text/plain"))
                (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
                (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
-               (GET "/eq_cookie" [] (-> (response "OK")
-                                        (update :headers assoc "Set-Cookie" "AuthenticatedUser=uaIsxKOi+359Evt+E6zPuQ==$iY4eVzl8CRTnFQbBCcNI+eqr89ze3TsBr5pupub4OSA=$1k75ddOo4Xan+NITcjrloE1be16u9tdN8sFuqKIL6yHBA7sPQ535wKoPzeetb65en/TifspKlNc0VBW+YZY92/dvdHqkDY6IySC5E9ctW6wQ+IbP5HDJ5mipSem9TeiYhKGA8FWecZ/JJObOBrsvsA==;Max-Age=2419200;Path=/;Domain=mayvenn.com; HttpOnly")))
                (static-routes ctx)
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)

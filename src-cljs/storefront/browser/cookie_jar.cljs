@@ -134,4 +134,4 @@
                 :optional-keys []
                 :required-keys ["AuthenticatedUser"]}
                cookie
-               {"AuthenticatedUser" (js/escape contents)}))
+               {"AuthenticatedUser" contents}))
