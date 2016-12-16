@@ -54,3 +54,5 @@
 
 (def stripe-create-token [:stripe-create-token])
 (def stripe-apple-pay-availability [:stripe-apple-pay-availability])
+
+(def login-telligent [:login-telligent])

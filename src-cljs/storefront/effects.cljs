@@ -256,6 +256,8 @@
                (< config/allowed-version-drift (- remote-version app-version)))
       (handle-later events/app-restart))))
 
+(defmethod perform-effects events/api-success-telligent-login [_ event {:keys [cookie max-age]} app-state]
+  (cookie-jar/save-telligent-cookie (get-in app-state keypaths/cookie) cookie max-age))
 
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
   (ensure-products app-state
@@ -816,3 +818,7 @@
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args app-state]
   (update-email-capture-session app-state))
+
+(defmethod perform-effects events/control-stylist-community [_ event args app-state]
+  (api/telligent-sign-in (get-in app-state keypaths/user-id)
+                         (get-in app-state keypaths/user-token)))

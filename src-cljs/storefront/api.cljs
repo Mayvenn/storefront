@@ -10,7 +10,8 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.maps :refer [filter-nil]]))
+            [storefront.utils.maps :refer [filter-nil]]
+            [clojure.set :as set]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -754,3 +755,12 @@
    {:handler #(messages/handle-message events/api-success-get-static-content
                                        {:id      static-content-id
                                         :content %})}))
+
+(defn telligent-sign-in [user-id token]
+  (api-req
+   POST
+   "/v2/login/telligent"
+   request-keys/login-telligent
+   {:params {:token token
+             :user-id user-id}
+    :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))

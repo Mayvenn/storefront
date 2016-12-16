@@ -89,6 +89,7 @@
 (defpath control-stylist-commissions-fetch)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
+(defpath control-stylist-community)
 
 (defpath control-menu-expand)
 (defpath control-menu-collapse-all)
@@ -208,6 +209,8 @@
 (defpath api-success-shipping-methods)
 
 (defpath api-success-get-static-content)
+
+(defpath api-success-telligent-login)
 
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
