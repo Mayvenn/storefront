@@ -27,6 +27,10 @@
                       "production" "//staticw2.yotpo.com/ZmvkoIuVo61VsbHVPaqDPZpkfGm6Ce2kjVmSqFw9/widget.js"
                       "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))
 
+(def telligent-community-url (case js/environment
+                               "production" "http://telligentps.mayvenn.com/"
+                               "http://telligentps.mayvenn.com/"))
+
 (def talkable-script
   (case js/environment
     "production" "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn.min.js"

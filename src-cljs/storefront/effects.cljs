@@ -111,6 +111,9 @@
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
+(defmethod perform-effects events/external-redirect-telligent [_ event args app-state]
+  (set! (.-location js/window) config/telligent-community-url))
+
 (defn redirect
   ([event] (redirect event nil))
   ([event args] (handle-message events/redirect {:nav-message [event args]})))
@@ -253,7 +256,8 @@
       (handle-later events/app-restart))))
 
 (defmethod perform-effects events/api-success-telligent-login [_ event {:keys [cookie max-age]} app-state]
-  (cookie-jar/save-telligent-cookie (get-in app-state keypaths/cookie) cookie max-age))
+  (cookie-jar/save-telligent-cookie (get-in app-state keypaths/cookie) cookie max-age)
+  (handle-message events/external-redirect-telligent))
 
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args app-state]
   (ensure-products app-state

@@ -11,6 +11,7 @@
 
 (defpath external-redirect-welcome)
 (defpath external-redirect-paypal-setup)
+(defpath external-redirect-telligent)
 
 (defpath redirect)
 (defpath navigate)
