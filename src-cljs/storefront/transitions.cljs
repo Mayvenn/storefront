@@ -80,6 +80,10 @@
       (assoc-in keypaths/redirecting? false)
       (assoc-in keypaths/navigation-message [event args])))
 
+(defmethod transition-state events/navigate-sign-in
+  [_ event {:keys [query-params]} app-state]
+  (assoc-in app-state keypaths/telligent-community-url (:return-url query-params)))
+
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
                                                   (get-in app-state keypaths/products)

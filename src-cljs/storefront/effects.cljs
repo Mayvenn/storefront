@@ -357,8 +357,11 @@
 
 (defn redirect-when-signed-in [app-state]
   (when (get-in app-state keypaths/user-email)
-    (redirect-to-return-navigation app-state)
-    (handle-message events/flash-later-show-success {:message "You are already signed in."})))
+    (if (get-in app-state keypaths/telligent-community-url)
+      (handle-message events/external-redirect-telligent)
+      (do
+        (redirect-to-return-navigation app-state)
+        (handle-message events/flash-later-show-success {:message "You are already signed in."})))))
 
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
