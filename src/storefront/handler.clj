@@ -215,7 +215,7 @@
                    slurp
                    render-static-page)}))
 
-(defn site-routes [{:keys [storeback-config leads-config environment telligent-url] :as ctx}]
+(defn site-routes [{:keys [storeback-config leads-config environment] :as ctx}]
   (fn [{:keys [uri store] :as req}]
     (let [[nav-event params] (routes/navigation-message-for uri (:query-params req))]
       (when (not= nav-event events/navigate-not-found)
