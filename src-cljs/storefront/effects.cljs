@@ -112,7 +112,8 @@
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
 
 (defmethod perform-effects events/external-redirect-telligent [_ event args app-state]
-  (set! (.-location js/window) config/telligent-community-url))
+  (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
+                                   config/telligent-community-url)))
 
 (defn redirect
   ([event] (redirect event nil))
@@ -355,11 +356,15 @@
   (apply redirect
          (get-in app-state keypaths/return-navigation-message)))
 
+(defn ^:private redirect-to-telligent-as-user [app-state]
+  (api/telligent-sign-in (get-in app-state keypaths/user-id)
+                         (get-in app-state keypaths/user-token))
+  (handle-message events/flash-later-show-success {:message "Redirecting to the stylist community"}) )
+
 (defn redirect-when-signed-in [app-state]
   (when (get-in app-state keypaths/user-email)
     (if (get-in app-state keypaths/telligent-community-url)
-      (api/telligent-sign-in (get-in app-state keypaths/user-id)
-                             (get-in app-state keypaths/user-token))
+      (redirect-to-telligent-as-user app-state)
       (do
         (redirect-to-return-navigation app-state)
         (handle-message events/flash-later-show-success {:message "You are already signed in."})))))
@@ -659,8 +664,10 @@
       fetch-most-recent-order
       redirect-to-return-navigation)))
 
-(defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _]
-  (handle-message events/flash-later-show-success {:message "Logged in successfully"}))
+(defmethod perform-effects events/api-success-auth-sign-in [_ _ _ app-state]
+  (if (get-in app-state keypaths/telligent-community-url)
+    (redirect-to-telligent-as-user app-state)
+    (handle-message events/flash-later-show-success {:message "Logged in successfully"})))
 
 (defmethod perform-effects events/api-success-auth-sign-up [dispatch event args app-state]
   (handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))

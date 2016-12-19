@@ -11,7 +11,9 @@
             [storefront.state :as state]
             [storefront.utils.query :as query]
             [storefront.utils.maps :refer [map-values key-by]]
-            [clojure.string :as string]))
+            [storefront.config :as config]
+            [clojure.string :as string]
+            [cemerick.url :as url]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -80,9 +82,14 @@
       (assoc-in keypaths/redirecting? false)
       (assoc-in keypaths/navigation-message [event args])))
 
+(def ^:private hostname (comp :host url/url))
+
 (defmethod transition-state events/navigate-sign-in
-  [_ event {:keys [query-params]} app-state]
-  (assoc-in app-state keypaths/telligent-community-url (:return-url query-params)))
+  [_ event {{:keys [telligent-url]} :query-params} app-state]
+  (if telligent-url
+    (when (= (hostname telligent-url) (hostname config/telligent-community-url))
+      (assoc-in app-state keypaths/telligent-community-url telligent-url))
+    (assoc-in app-state keypaths/telligent-community-url nil)))
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
