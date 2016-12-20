@@ -31,7 +31,6 @@
    :error-code (if errors "invalid-input" "generic-error")
    :field-errors (when errors (convert-to-paths errors))})
 
-
 (defn rails-exception->std-error [resp]
   {:error-message "Something went wrong. Please refresh and try again or contact customer service."
    :error-code "backend-exception"
