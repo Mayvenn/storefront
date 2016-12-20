@@ -85,6 +85,7 @@
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
 (def clear-utm-params (partial clear-cookie utm-params))
+(def clear-telligent-session (partial clear-cookie telligent-session))
 (defn clear-account [cookie]
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))

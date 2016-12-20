@@ -85,12 +85,18 @@
 
 (def ^:private hostname (comp :host url/url))
 
-(defmethod transition-state events/navigate-sign-in
-  [_ event {{:keys [telligent-url]} :query-params} app-state]
+(defn assoc-valid-telligent-url [app-state telligent-url]
   (if telligent-url
     (when (= (hostname telligent-url) (hostname config/telligent-community-url))
       (assoc-in app-state keypaths/telligent-community-url telligent-url))
     (assoc-in app-state keypaths/telligent-community-url nil)))
+
+(defmethod transition-state events/navigate-sign-in
+  [_ event {{:keys [telligent-url]} :query-params} app-state]
+  (assoc-valid-telligent-url app-state telligent-url))
+
+(defmethod transition-state events/navigate-sign-out [_ event {{:keys [telligent-url]} :query-params} app-state]
+  (assoc-valid-telligent-url app-state telligent-url))
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)

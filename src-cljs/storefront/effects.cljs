@@ -372,8 +372,12 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
-(defmethod perform-effects events/navigate-sign-out [_ _ _ _]
-  (handle-message events/sign-out))
+(defmethod perform-effects events/navigate-sign-out [_ _ {{:keys [telligent-url]} :query-params} app-state]
+  (if telligent-url
+    (do
+      (cookie-jar/clear-telligent-session (get-in app-state keypaths/cookie))
+      (handle-message events/external-redirect-telligent))
+    (handle-message events/sign-out)))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
