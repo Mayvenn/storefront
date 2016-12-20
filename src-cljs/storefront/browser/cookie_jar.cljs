@@ -77,10 +77,10 @@
       attrs
       (clear-cookie spec cookie))))
 
-(defn save-cookie [{:keys [max-age domain secure] :as spec} cookie attrs]
+(defn save-cookie [{:keys [max-age domain] :as spec} cookie attrs]
   (doseq [attr (all-keys spec)]
     (if-let [val (get attrs attr)]
-      (.set    cookie attr val max-age "/" domain (or secure config/secure?))
+      (.set    cookie attr val max-age "/" domain (get spec :secure config/secure?))
       (.remove cookie attr             "/" domain))))
 
 (def clear-order (partial clear-cookie order))
