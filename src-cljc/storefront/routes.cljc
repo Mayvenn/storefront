@@ -43,6 +43,7 @@
               ["/categories/hair/" :named-search-slug] (edn->bidi events/navigate-category)
               ["/products/" :product-slug]             (edn->bidi events/navigate-product)
               "/login"                                 (edn->bidi events/navigate-sign-in)
+              "/logout"                                (edn->bidi events/navigate-sign-out)
               "/signup"                                (edn->bidi events/navigate-sign-up)
               "/password/recover"                      (edn->bidi events/navigate-forgot-password)
               ["/m/" :reset-token]                     (edn->bidi events/navigate-reset-password)

@@ -20,6 +20,7 @@
 (defpath navigate-categories)
 (defpath navigate-product)
 (defpath navigate-sign-in)
+(defpath navigate-sign-out)
 (defpath navigate-sign-up)
 (defpath navigate-forgot-password)
 (defpath navigate-reset-password)
@@ -272,3 +273,5 @@
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
 (defpath show-email-popup)
+
+(defpath sign-out)

@@ -372,6 +372,8 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
+(defmethod perform-effects events/navigate-sign-out [_ _ _ _]
+  (handle-message events/sign-out))
 (defmethod perform-effects events/navigate-sign-up [_ event args app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
@@ -432,14 +434,7 @@
   (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
 
 (defmethod perform-effects events/control-sign-out [_ event args app-state]
-  (cookie-jar/clear-account (get-in app-state keypaths/cookie))
-  (handle-message events/control-menu-collapse-all)
-  (abort-pending-requests (get-in app-state keypaths/api-requests))
-  (if (= events/navigate-home (get-in app-state keypaths/navigation-event))
-    (handle-message events/flash-show-success {:message "Logged out successfully"})
-    (do
-      (history/enqueue-navigate events/navigate-home)
-      (handle-message events/flash-later-show-success {:message "Logged out successfully"}))))
+  (handle-message events/sign-out))
 
 (defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} app-state]
   (api/add-to-bag
@@ -833,3 +828,13 @@
 (defmethod perform-effects events/control-stylist-community [_ event args app-state]
   (api/telligent-sign-in (get-in app-state keypaths/user-id)
                          (get-in app-state keypaths/user-token)))
+
+(defmethod perform-effects events/sign-out [_ event args app-state]
+  (cookie-jar/clear-account (get-in app-state keypaths/cookie))
+  (handle-message events/control-menu-collapse-all)
+  (abort-pending-requests (get-in app-state keypaths/api-requests))
+  (if (= events/navigate-home (get-in app-state keypaths/navigation-event))
+    (handle-message events/flash-show-success {:message "Logged out successfully"})
+    (do
+      (history/enqueue-navigate events/navigate-home)
+      (handle-message events/flash-later-show-success {:message "Logged out successfully"}))))

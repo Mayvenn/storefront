@@ -49,12 +49,13 @@
    :optional-keys []
    :required-keys [:popup-session]})
 
-(def account-cookies
-  (let [specs [user order pending-promo]]
-    {:domain nil
-     :max-age       four-weeks
-     :optional-keys (apply concat (map :optional-keys specs))
-     :required-keys (apply concat (map :required-keys specs))}))
+(def telligent-session
+  {:domain        (root-domain)
+   :max-age       nil ;; determined dynamically
+   :optional-keys []
+   :required-keys ["AuthenticatedUser"]})
+
+(def account-specs [user order pending-promo telligent-session])
 
 (defn all-keys [spec]
   (concat (:optional-keys spec) (:required-keys spec)))
@@ -84,7 +85,9 @@
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
 (def clear-utm-params (partial clear-cookie utm-params))
-(def clear-account (partial clear-cookie account-cookies))
+(defn clear-account [cookie]
+  (doseq [spec account-specs]
+    (clear-cookie spec cookie)))
 (def clear-email-capture-session (partial clear-cookie email-capture-session))
 
 (def retrieve-login (partial retrieve user))
@@ -128,9 +131,4 @@
 (def save-utm-params (partial save-cookie utm-params))
 
 (defn save-telligent-cookie [cookie contents max-age]
-  (save-cookie {:domain (root-domain)
-                :max-age max-age
-                :optional-keys []
-                :required-keys ["AuthenticatedUser"]}
-               cookie
-               {"AuthenticatedUser" contents}))
+  (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

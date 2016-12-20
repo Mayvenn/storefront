@@ -39,6 +39,7 @@
 
 (def return-event-blacklisted? #{events/navigate-not-found
                                  events/navigate-sign-in
+                                 events/navigate-sign-out
                                  events/navigate-sign-up
                                  events/navigate-forgot-password
                                  events/navigate-reset-password
@@ -217,20 +218,6 @@
   (-> app-state
       (assoc-in keypaths/popup :video)
       (assoc-in keypaths/video video)))
-
-(defmethod transition-state events/control-sign-out [_ event args app-state]
-  (let [signed-out-app-state (-> app-state
-                                 (assoc-in keypaths/user {})
-                                 (assoc-in keypaths/order nil)
-                                 (assoc-in keypaths/stylist state/initial-stylist-state)
-                                 (assoc-in keypaths/checkout state/initial-checkout-state)
-                                 (assoc-in keypaths/billing-address {})
-                                 (assoc-in keypaths/shipping-address {})
-                                 (assoc-in keypaths/facebook-email-denied nil))
-        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/email-capture-session))]
-    (cond-> signed-out-app-state
-      (not opted-in?)
-      (assoc-in keypaths/email-capture-session "dismissed"))))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -616,3 +603,17 @@
 
 (defmethod transition-state events/show-email-popup [_ event args app-state]
   (assoc-in app-state keypaths/popup :email-capture))
+
+(defmethod transition-state events/sign-out [_ event args app-state]
+  (let [signed-out-app-state (-> app-state
+                                 (assoc-in keypaths/user {})
+                                 (assoc-in keypaths/order nil)
+                                 (assoc-in keypaths/stylist state/initial-stylist-state)
+                                 (assoc-in keypaths/checkout state/initial-checkout-state)
+                                 (assoc-in keypaths/billing-address {})
+                                 (assoc-in keypaths/shipping-address {})
+                                 (assoc-in keypaths/facebook-email-denied nil))
+        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/email-capture-session))]
+    (cond-> signed-out-app-state
+      (not opted-in?)
+      (assoc-in keypaths/email-capture-session "dismissed"))))

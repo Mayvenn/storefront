@@ -144,9 +144,6 @@
   (when available?
     (convert/track-conversion "apple-pay-available")))
 
-(defmethod perform-track events/control-sign-out [_ _ _ _]
-  (stringer/track-clear))
-
 (defn- checkout-initiate [app-state flow]
   (stringer/track-event "checkout-initiate" {:flow flow
                                              :order_number (get-in app-state keypaths/order-number)})
@@ -198,3 +195,7 @@
   (when-let [content (videos/id->name video-id)]
     (stringer/track-event "video-play" {:content  (name content)
                                         :position (name position)})))
+
+(defmethod perform-track events/sign-out [_ _ _ _]
+  (stringer/track-clear))
+
