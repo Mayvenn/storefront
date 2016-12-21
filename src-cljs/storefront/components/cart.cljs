@@ -231,7 +231,6 @@ Thanks,
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
-                                     (experiments/apple-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)

@@ -26,9 +26,6 @@
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
 
-(defn apple-pay? [data]
-  (display-feature? data "apple-pay"))
-
 (defn hero-shop-look? [data]
   (display-feature? data "hero-shop-look"))
 
