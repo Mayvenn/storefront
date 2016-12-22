@@ -132,7 +132,6 @@
    :own-store?     (own-store? data)})
 
 (defn built-component [data opts]
-  (if (nav/minimal? (get-in data keypaths/navigation-event)
-                    (experiments/checkout-header? data))
+  (if (nav/minimal-events (get-in data keypaths/navigation-event))
     (component/build minimal-component (contacts-query data) nil)
     (component/build full-component (query data) nil)))

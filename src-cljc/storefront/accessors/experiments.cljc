@@ -1,6 +1,5 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]
-            [clojure.set :as set]))
+  (:require [storefront.keypaths :as keypaths]))
 
 (defn determine-features [data]
   data
@@ -28,6 +27,3 @@
 
 (defn hero-shop-look? [data]
   (display-feature? data "hero-shop-look"))
-
-(defn checkout-header? [data]
-  (display-feature? data "checkout-header"))

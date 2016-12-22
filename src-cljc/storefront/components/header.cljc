@@ -1,20 +1,17 @@
 (ns storefront.components.header
-  (:require [storefront.platform.component-utils :as utils]
+  (:require [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.stylists :refer [community-url own-store?]]
             [storefront.assets :as assets]
-            [storefront.components.svg :as svg]
-            [storefront.components.nav :as nav]
-            [storefront.events :as events]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.stylists :refer [own-store? community-url]]
-            [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
-            [storefront.platform.component-utils :as utils]
+            [storefront.components.nav :as nav]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [clojure.string :as str]))
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]))
 
 (defn fake-href-menu-expand [keypath]
   {:href "#"
@@ -329,8 +326,6 @@
    :context (context-query data)})
 
 (defn built-component [data opts]
-  (let [maybe-minimal? (experiments/checkout-header? data)]
-    (if (and maybe-minimal?
-             (nav/minimal? (get-in data keypaths/navigation-event) maybe-minimal?))
-      (component/build minimal-component (store-query data) nil)
-      (component/build component (query data) nil))))
+  (if (nav/minimal-events (get-in data keypaths/navigation-event))
+    (component/build minimal-component (store-query data) nil)
+    (component/build component (query data) nil)))
