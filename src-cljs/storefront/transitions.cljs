@@ -284,9 +284,16 @@
   (assoc-in app-state keypaths/disable-apple-pay-button? false) )
 
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
-  (-> app-state
+  (let [valid-id? (set (conj (map :id cards) "add-new-card"))]
+    (cond-> app-state
+      :start
       (assoc-in keypaths/checkout-credit-card-existing-cards cards)
-      (assoc-in keypaths/checkout-credit-card-selected-id (:id default-card))))
+
+      (not (valid-id? (get-in app-state keypaths/checkout-credit-card-selected-id)))
+      (assoc-in keypaths/checkout-credit-card-selected-id nil)
+
+      :finally
+      (update-in keypaths/checkout-credit-card-selected-id #(or % (:id default-card))))))
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
