@@ -24,6 +24,3 @@
 
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
-
-(defn hero-shop-look? [data]
-  (display-feature? data "hero-shop-look"))

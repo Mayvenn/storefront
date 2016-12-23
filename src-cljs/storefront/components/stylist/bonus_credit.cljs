@@ -54,8 +54,7 @@
                          page
                          pages
                          history
-                         fetching?
-                         hero->shop-look?]}
+                         fetching?]}
                  owner opts]
   (om/component
    (html
@@ -98,9 +97,7 @@
 
               [:p.btn.mt1
                [:a.navy
-                (utils/route-to (if hero->shop-look?
-                                  events/navigate-shop-by-look
-                                  events/navigate-categories))
+                (utils/route-to events/navigate-shop-by-look)
                 "Shop now " ui/rarr]]])])]
 
        [:.col-right-on-tb-dt.col-4-on-tb-dt
@@ -116,5 +113,4 @@
    :page             (get-in data keypaths/stylist-bonuses-page)
    :pages            (get-in data keypaths/stylist-bonuses-pages)
    :history          (seq (get-in data keypaths/stylist-bonuses-history))
-   :fetching?        (utils/requesting? data request-keys/get-stylist-bonus-credits)
-   :hero->shop-look? (experiments/hero-shop-look? data)})
+   :fetching?        (utils/requesting? data request-keys/get-stylist-bonus-credits)})

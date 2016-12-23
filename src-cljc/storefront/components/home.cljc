@@ -45,7 +45,7 @@
                              {:style {:height "80px"}})]
      [:div.mb3.dark-gray.medium.f4 name]]))
 
-(defn pick-style [named-searches hero->shop-look?]
+(defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
     [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
@@ -81,18 +81,13 @@
    [:div.col-6.col-4-on-tb-dt.mx-auto
     ;; button color should be light-silver/transparent
     (ui/large-ghost-button
-     (if hero->shop-look?
-       (assoc (utils/route-to events/navigate-shop-by-look)
-              :data-test "nav-shop-look")
-       (assoc (utils/route-to events/navigate-categories)
-              :data-test "nav-categories"))
+     (assoc (utils/route-to events/navigate-shop-by-look)
+            :data-test "nav-shop-look")
      [:span.dark-gray.bold "shop now"])]])
 
-(defn banner [store-slug hero->shop-look?]
+(defn banner [store-slug]
   [:a
-   (assoc (utils/route-to (if hero->shop-look?
-                            events/navigate-shop-by-look
-                            events/navigate-categories))
+   (assoc (utils/route-to events/navigate-shop-by-look)
           :data-test "home-banner")
    (case store-slug
      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
@@ -111,7 +106,7 @@
                       (assets/path "/images/homepage/desktop_banner.jpg")
                       "Get 15% Off Hair Extensions Mayvenn"))])
 
-(defn about-mayvenn [hero->shop-look?]
+(defn about-mayvenn []
   (component/html
    [:div.container.gray.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
@@ -134,11 +129,8 @@
 
     [:div.col-6.col-4-on-tb-dt.mx-auto
      (ui/teal-button
-      (if hero->shop-look?
-        (assoc (utils/route-to events/navigate-shop-by-look)
-               :data-test "nav-shop-look")
-        (assoc (utils/route-to events/navigate-categories)
-               :data-test "nav-categories"))
+      (assoc (utils/route-to events/navigate-shop-by-look)
+             :data-test "nav-shop-look")
       "shop now")]]))
 
 (def video-popup
@@ -164,19 +156,18 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches store-slug hero->shop-look?]} owner opts]
+(defn component [{:keys [named-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (banner store-slug hero->shop-look?)]
-    [:section (pick-style named-searches hero->shop-look?)]
+    [:section (banner store-slug)]
+    [:section (pick-style named-searches)]
     [:section video-popup]
-    [:section (about-mayvenn hero->shop-look?)]
+    [:section (about-mayvenn)]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:hero->shop-look? (experiments/hero-shop-look? data)
-   :named-searches   (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :store-slug       (get-in data keypaths/store-slug)})
+  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
+   :store-slug     (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

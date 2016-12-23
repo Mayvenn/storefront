@@ -185,7 +185,7 @@ Thanks,
                                   [:div.flex-grow "Share your bag"]])
           [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]])))
 
-(defn empty-component [{:keys [promotions hero->shop-look?]} owner]
+(defn empty-component [{:keys [promotions]} owner]
   (om/component
    (html
     (ui/narrow-container
@@ -200,9 +200,7 @@ Thanks,
          (:description promo)
          promos/bundle-discount-description)]]
 
-     (ui/teal-button (utils/route-to (if hero->shop-look?
-                                       events/navigate-shop-by-look
-                                       events/navigate-categories))
+     (ui/teal-button (utils/route-to events/navigate-shop-by-look)
                      "Shop Now")))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
@@ -238,8 +236,7 @@ Thanks,
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)}))
 
 (defn empty-cart-query [data]
-  {:promotions       (get-in data keypaths/promotions)
-   :hero->shop-look? (experiments/hero-shop-look? data)})
+  {:promotions (get-in data keypaths/promotions)})
 
 (defn component [{:keys [fetching-order?
                          item-count
