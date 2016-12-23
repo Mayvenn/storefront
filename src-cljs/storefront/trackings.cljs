@@ -70,6 +70,11 @@
                                          :order_total      (get-in app-state keypaths/order-total)
                                          :quantity         quantity})))
 
+(defmethod perform-track events/api-success-update-order-from-shared-cart [_ _ {:keys [order]} app-state]
+  (let [line-items (orders/product-items order)]
+    (stringer/track-event "bulk_add_to_cart" {:skus (str/join "," (map :sku line-items))
+                                              :variant_ids (str/join "," (map :id line-items))})))
+
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
 
