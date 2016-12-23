@@ -34,6 +34,7 @@
     (merge {:style {:height height}
             :title "Mayvenn"
             :item-prop "logo"
+            :data-test "header-logo"
             :content (str "https:" (assets/path "/images/header_logo.png"))}
            (utils/route-to events/navigate-home))]))
 
