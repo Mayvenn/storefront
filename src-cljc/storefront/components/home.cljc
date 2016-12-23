@@ -83,7 +83,7 @@
     (ui/large-ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
             :data-test "nav-shop-look")
-     [:span.dark-gray.bold "shop now"])]])
+     [:span.dark-gray.bold "shop our looks"])]])
 
 (defn banner [store-slug]
   [:a
@@ -131,7 +131,7 @@
      (ui/teal-button
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
-      "shop now")]]))
+      "shop our looks")]]))
 
 (def video-popup
   (component/html

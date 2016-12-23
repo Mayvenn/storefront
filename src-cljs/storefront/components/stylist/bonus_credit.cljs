@@ -98,7 +98,7 @@
               [:p.btn.mt1
                [:a.navy
                 (utils/route-to events/navigate-shop-by-look)
-                "Shop now " ui/rarr]]])])]
+                "Shop our looks" ui/rarr]]])])]
 
        [:.col-right-on-tb-dt.col-4-on-tb-dt
         (when (pos? lifetime-total)
