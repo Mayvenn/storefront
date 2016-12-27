@@ -151,10 +151,7 @@
   (cond-> app-state
     (get-in app-state keypaths/user-email)
     ;; help with analytics of funnel
-    (assoc-in keypaths/navigation-message [event {:query-params {:loggedin true}}])
-
-    true
-    (assoc-in keypaths/places-enabled true)))
+    (assoc-in keypaths/navigation-message [event {:query-params {:loggedin true}}])))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
@@ -489,9 +486,7 @@
     (assoc-in keypaths/checkout-shipping-address shipping-address)))
 
 (defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath] :as args} app-state]
-  (-> app-state
-      (update-in address-keypath merge address)
-      (assoc-in keypaths/places-enabled false)))
+  (update-in app-state address-keypath merge address))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
   (-> app-state

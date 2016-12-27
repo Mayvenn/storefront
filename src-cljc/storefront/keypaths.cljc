@@ -80,8 +80,6 @@
 (def video (conj ui :video))
 (def ui-ugc-category-popup-offset (conj ui :popup-ugc-category-offset))
 
-(def places-enabled (conj ui :places-enabled))
-
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def bundle-builder (conj ui :bundle-builder))
