@@ -5,6 +5,8 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.nav :as nav]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
@@ -166,6 +168,11 @@
          (get-in app-state keypaths/cookie)
          utm-params)))
 
+    (when-let [notifications (seq (get-in app-state keypaths/experiments-buckets-to-notify))]
+      (doseq [[experiment variation] notifications]
+        (convert/join-variation experiment variation))
+      (handle-message events/experiments-manually-notified))
+
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))
 
@@ -324,12 +331,19 @@
     (not (get-in app-state keypaths/order-number))
     (redirect events/navigate-cart)
 
-    (not (or (= event events/navigate-checkout-sign-in)
+    (not (or (nav/checkout-auth-events event)
              (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
-    (redirect events/navigate-checkout-sign-in)))
+    (if (experiments/address-login? app-state)
+      (redirect events/navigate-checkout-guest-address-or-sign-in)
+      (redirect events/navigate-checkout-sign-in))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
+  (facebook/insert))
+
+(defmethod perform-effects events/navigate-checkout-guest-address-or-sign-in [_ event args app-state]
+  (places-autocomplete/insert-places-autocomplete)
+  (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
 
 (defn- fetch-saved-cards [app-state]
@@ -524,6 +538,8 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
+  ;; TODO: this leans on the auth wall + redirect-to-return-navigation
+  ;; functionality. Maybe it's time to take direct control of checkout flow.
   (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]

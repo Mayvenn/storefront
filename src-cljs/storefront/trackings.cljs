@@ -109,12 +109,15 @@
   (stringer/track-identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
+  ;; TODO: track checkout-sign_in on checkout-sign-in-simple page too
+  ;; TODO: is sign-in still the current nav message after events/api-success-auth-sign-in?
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
                             events/navigate-checkout-sign-in)
     (stringer/track-event "checkout-sign_in" {:type flow
                                               :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_in" {:type flow})))
 
+;; TODO: Do this on checkout "confirm and guest sign up"
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (if (= (first (get-in app-state keypaths/return-navigation-message))
          events/navigate-checkout-address)

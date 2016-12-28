@@ -1,5 +1,6 @@
 (ns storefront.hooks.convert
   (:require [storefront.browser.tags :as tags]
+            [storefront.accessors.experiments :as experiments]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.messages :as m]
@@ -29,8 +30,12 @@
      (get goal-ids js/environment)
      (get goal-ids "sandbox"))))
 
+(defn ^:private ensure-queue []
+  (or (.hasOwnProperty js/window "_conv_q")
+      (set! (.-_conv_q js/window) (clj->js []))))
+
 (defn insert-tracking []
-  (or (.hasOwnProperty js/window "_conv_q") (set! (.-_conv_q js/window) (clj->js [])))
+  (ensure-queue)
   (tags/insert-tag-with-callback (tags/src-tag (str "//cdn-3.convertexperiments.com/js/"
                                                     config/convert-project-id
                                                     ".js" )
@@ -41,12 +46,15 @@
 (defn remove-tracking []
   (tags/remove-tags-by-class "convert"))
 
-(defn ^:private track [& args]
-  (when (.hasOwnProperty js/window "_conv_q")
-    (.push js/_conv_q (clj->js args))))
+(defn ^:private enqueue [& args]
+  (ensure-queue)
+  (.push js/_conv_q (clj->js args)))
 
 (defn track-conversion [label]
-  (track "triggerConversion" (label->goal-id label)))
+  (enqueue "triggerConversion" (label->goal-id label)))
 
 (defn track-revenue [{:keys [order-number revenue products-count]}]
-  (track "sendRevenue" order-number revenue products-count (label->goal-id "revenue")))
+  (enqueue "sendRevenue" order-number revenue products-count (label->goal-id "revenue")))
+
+(defn join-variation [experiment variation]
+  (enqueue "assignVariation" (:convert-id experiment) (:convert-id variation)))

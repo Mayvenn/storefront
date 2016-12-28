@@ -227,6 +227,10 @@
 
 (def email-capture-session (conj ui :email-capture-session))
 
+(def experiments [:experiments])
+(def experiments-manually-bucketed (conj experiments :manually-bucketed))
+(def experiments-buckets-to-notify (conj experiments :buckets-to-notify))
+
 (defn ->str [keypath]
   (string/join "-" (map name keypath)))
 

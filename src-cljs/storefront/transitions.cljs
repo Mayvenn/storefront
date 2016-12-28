@@ -6,6 +6,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.nav :as nav]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
@@ -39,17 +40,9 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(def return-event-blacklisted? #{events/navigate-not-found
-                                 events/navigate-sign-in
-                                 events/navigate-sign-out
-                                 events/navigate-sign-up
-                                 events/navigate-forgot-password
-                                 events/navigate-reset-password
-                                 events/navigate-checkout-sign-in})
-
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
-    (if (return-event-blacklisted? return-event)
+    (if (nav/return-blacklisted? return-event)
       app-state
       (assoc-in app-state keypaths/return-navigation-message [return-event return-args]))))
 
@@ -143,12 +136,22 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
+(defmethod transition-state events/navigate-checkout [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-id)
+    (experiments/ensure-bucketed-for app-state js/environment "address-login")))
+
+;; TODO: Where should direct loads of navigate-checkout-guest-address-or-sign-in
+;; advance to? That is, there are 2 "next steps" in the checkout flow:
+;; checkout-sign-in-simple if you want to log in, or checkout-payment if you
+;; provide a guest address.
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
+  ;; Direct loads of checkout-sign-in should advance to checkout flow, not return to home page
   (when (= [events/navigate-home {}]
          (get-in app-state keypaths/return-navigation-message))
     (assoc-in app-state keypaths/return-navigation-message
               [events/navigate-checkout-address {}])))
 
+;; TODO: do this on navigate-checkout-guest-address-or-sign-in too; navigate-checkout-sign-in-simple too?
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
     (get-in app-state keypaths/user-email)
@@ -602,7 +605,10 @@
 
 (defmethod transition-state events/enable-feature
   [_ event {:keys [feature]} app-state]
-  (update-in app-state keypaths/features conj feature))
+  (experiments/enable-feature app-state feature))
+
+(defmethod transition-state events/experiments-manually-notified [_ event _ app-state]
+  (assoc-in app-state keypaths/experiments-buckets-to-notify #{}))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))

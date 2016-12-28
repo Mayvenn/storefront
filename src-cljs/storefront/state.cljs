@@ -122,6 +122,9 @@
                         :zipcode ""
                         :phone ""}
 
+     :experiments {:manually-bucketed #{} ;; E.g., #{"address-login"}; names of experiments for which we've done the coin flip to bucket the user into a variation
+                   :buckets-to-notify #{}} ;; Pairs of experiment/variation (as defined in experiments/manual-experiments which convert should be told about)
+
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
