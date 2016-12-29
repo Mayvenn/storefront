@@ -32,7 +32,7 @@
                        :value       value})))))
 
 (defn ^:private shipping-address-component
-  [{:keys [focused shipping-address states email guest? places-loaded? field-errors]} owner]
+  [{:keys [focused shipping-address states email guest? become-guest? places-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -60,7 +60,7 @@
         :data-test "shipping-last-name"
         :required  true})]
 
-     (when guest?
+     (when (or guest? become-guest?)
        (ui/text-field {:data-test "shipping-email"
                        :errors    (get field-errors ["email"])
                        :id        "shipping-email"
@@ -252,7 +252,7 @@
                            :value       (:state billing-address)})]])])))
 
 (defn component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
+  [{:keys [saving? become-guest? step-bar billing-address-data shipping-address-data]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -260,7 +260,8 @@
 
      (ui/narrow-container
       [:form.col-12.flex.flex-column.items-center
-       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit)
+       {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit
+                                              {:become-guest? (:become-guest? shipping-address-data)})
         :data-test "address-form"}
 
        (om/build shipping-address-component shipping-address-data)
@@ -286,6 +287,7 @@
                              :states           states
                              :email            (get-in data keypaths/checkout-guest-email)
                              :guest?           (get-in data keypaths/checkout-as-guest)
+                             :become-guest?    false
                              :places-loaded?   places-loaded?
                              :field-errors     field-errors
                              :focused          (get-in data keypaths/ui-focus)}}))

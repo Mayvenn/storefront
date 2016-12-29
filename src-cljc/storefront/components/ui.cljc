@@ -88,6 +88,9 @@
 (defn large-aqua-button [attrs & content]
   (large-button :color/aqua attrs content))
 
+(defn facebook-button [attrs & content]
+  (small-button :color/facebook attrs content))
+
 (defn large-facebook-button [attrs & content]
   (large-button :color/facebook attrs content))
 

@@ -169,8 +169,15 @@
   (checkout-initiate app-state "paypal")
   (convert/track-conversion "paypal-checkout"))
 
-(defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
+(defn track-become-guest [app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
+  (track-become-guest app-state))
+
+(defmethod perform-track events/control-checkout-update-addresses-submit [_ events {:keys [become-guest?]} app-state]
+  (when become-guest?
+    (track-become-guest app-state)))
 
 (defmethod perform-track events/api-success-update-order-update-address [_ events args app-state]
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))

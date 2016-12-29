@@ -294,8 +294,14 @@
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 
-(defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
+(defn become-guest [app-state]
   (assoc-in app-state keypaths/checkout-as-guest true))
+
+(defmethod transition-state events/control-checkout-update-addresses-submit [_ event {:keys [become-guest?]} app-state]
+  (when become-guest? (become-guest app-state)))
+
+(defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
+  (become-guest app-state))
 
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
