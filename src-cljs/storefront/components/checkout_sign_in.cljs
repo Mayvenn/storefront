@@ -27,7 +27,7 @@
   (om/component
    (html
     (ui/narrow-container
-     [:h2.center.my2.mb3.navy "Sign in to your account"]
+     [:h2.h3.center.my2.mb3 "Sign in to your account"]
      (om/build sign-in/password-component sign-in-form-data)))))
 
 (defn built-component [data opts]
