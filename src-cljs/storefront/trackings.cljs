@@ -110,6 +110,8 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
   ;; TODO: is sign-in still the current nav message after events/api-success-auth-sign-in?
+  ;; TODO: if so, should this also allow events/navigate-checkout-returning-or-new-customer,
+  ;; so that FB sign-in is tracked?
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
                             events/navigate-checkout-sign-in)
     (stringer/track-event "checkout-sign_in" {:type flow

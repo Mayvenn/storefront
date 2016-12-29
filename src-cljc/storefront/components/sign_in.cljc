@@ -8,20 +8,13 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn form-component
-  [{:keys [facebook-loaded?
-           email
-           password
-           focused
-           show-password?
-           field-errors]} _ _]
+(defn password-component [{:keys [email
+                                  password
+                                  focused
+                                  show-password?
+                                  field-errors]} _ _]
   (component/create
-   [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
-
-    (facebook/sign-in-button facebook-loaded?)
-    [:div.h5.gray.light.my2 "OR"]
-
-    [:form.col-12.flex.flex-column.items-center
+   [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
 
      (ui/text-field {:data-test  "user-email"
@@ -55,7 +48,17 @@
                       :value   show-password?})]
 
       [:div.right.col-6.right-align
-       [:a.gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]]
+       [:a.gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]]))
+
+(defn form-component
+  [{:keys [facebook-loaded?] :as data} _ _]
+  (component/create
+   [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
+
+    (facebook/sign-in-button facebook-loaded?)
+    [:div.h5.gray.light.my2 "OR"]
+
+    (component/build password-component data nil)
 
     [:div.clearfix.center.gray.mb2 "Don't have an account? "
      [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]]))
