@@ -21,7 +21,8 @@
        [:div.col-10.col-8-on-tb.col-4-on-dt.mx-auto
         [:div.clearfix.mxn1
          [:div.col.col-6.p1
-          (ui/teal-button (utils/route-to events/navigate-checkout-sign-in)
+          (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
+                                 :data-test "begin-password-sign-in-button")
                           "Sign in")]
          [:div.col.col-6.p1
           (facebook/small-sign-in-button facebook-loaded?)]]]]]
