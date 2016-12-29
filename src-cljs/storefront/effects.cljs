@@ -335,13 +335,13 @@
              (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
     (if (experiments/address-login? app-state)
-      (redirect events/navigate-checkout-returning-or-new-customer)
+      (redirect events/navigate-checkout-returning-or-guest)
       (redirect events/navigate-checkout-sign-in))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
 
-(defmethod perform-effects events/navigate-checkout-returning-or-new-customer [_ event args app-state]
+(defmethod perform-effects events/navigate-checkout-returning-or-guest [_ event args app-state]
   (places-autocomplete/insert-places-autocomplete)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
@@ -541,7 +541,7 @@
   ;; TODO: if the address-login? experiment wins, this may not be correct. Or
   ;; rather, it would probably be useful for allowing checkout-sign-in to
   ;; advance to checkout-address, but it's incredibly convoluted that you have
-  ;; to go through checkout-returning-or-new-customer first.
+  ;; to go through checkout-returning-or-guest first.
   (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]

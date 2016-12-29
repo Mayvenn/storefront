@@ -3,7 +3,7 @@
                :cljs [storefront.component :as component])
             #?@(:cljs [[storefront.components.cart :as cart]
                        [storefront.components.checkout-sign-in :as checkout-sign-in]
-                       [storefront.components.checkout-returning-or-new-customer :as checkout-returning-or-new-customer]
+                       [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
@@ -42,26 +42,26 @@
 (defn main-component [nav-event]
   (condp = nav-event
     #?@(:cljs
-        [events/navigate-reset-password                     reset-password/built-component
-         events/navigate-shop-by-look                       shop-by-look/built-component
-         events/navigate-shop-by-look-details               shop-by-look-details/built-component
-         events/navigate-stylist-dashboard-commissions      stylist.dashboard/built-component
-         events/navigate-stylist-dashboard-bonus-credit     stylist.dashboard/built-component
-         events/navigate-stylist-dashboard-referrals        stylist.dashboard/built-component
-         events/navigate-stylist-account-profile            stylist.account/built-component
-         events/navigate-stylist-account-password           stylist.account/built-component
-         events/navigate-stylist-account-commission         stylist.account/built-component
-         events/navigate-stylist-account-social             stylist.account/built-component
-         events/navigate-account-manage                     (partial sign-in/requires-sign-in account/built-component)
-         events/navigate-account-referrals                  (partial sign-in/requires-sign-in friend-referrals/built-component)
-         events/navigate-friend-referrals                   friend-referrals/built-component
-         events/navigate-cart                               cart/built-component
-         events/navigate-checkout-returning-or-new-customer checkout-returning-or-new-customer/built-component
-         events/navigate-checkout-sign-in                   checkout-sign-in/built-component
-         events/navigate-checkout-address                   (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
-         events/navigate-checkout-payment                   (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)
-         events/navigate-checkout-confirmation              (partial checkout-sign-in/requires-sign-in-or-guest checkout-confirmation/built-component)
-         events/navigate-order-complete                     checkout-complete/built-component])
+        [events/navigate-reset-password                 reset-password/built-component
+         events/navigate-shop-by-look                   shop-by-look/built-component
+         events/navigate-shop-by-look-details           shop-by-look-details/built-component
+         events/navigate-stylist-dashboard-commissions  stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-bonus-credit stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-referrals    stylist.dashboard/built-component
+         events/navigate-stylist-account-profile        stylist.account/built-component
+         events/navigate-stylist-account-password       stylist.account/built-component
+         events/navigate-stylist-account-commission     stylist.account/built-component
+         events/navigate-stylist-account-social         stylist.account/built-component
+         events/navigate-account-manage                 (partial sign-in/requires-sign-in account/built-component)
+         events/navigate-account-referrals              (partial sign-in/requires-sign-in friend-referrals/built-component)
+         events/navigate-friend-referrals               friend-referrals/built-component
+         events/navigate-cart                           cart/built-component
+         events/navigate-checkout-returning-or-guest    checkout-returning-or-guest/built-component
+         events/navigate-checkout-sign-in               checkout-sign-in/built-component
+         events/navigate-checkout-address               (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
+         events/navigate-checkout-payment               (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)
+         events/navigate-checkout-confirmation          (partial checkout-sign-in/requires-sign-in-or-guest checkout-confirmation/built-component)
+         events/navigate-order-complete                 checkout-complete/built-component])
 
     events/navigate-home              home/built-component
     events/navigate-categories        categories/built-component

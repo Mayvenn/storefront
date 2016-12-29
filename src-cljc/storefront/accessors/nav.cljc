@@ -13,11 +13,11 @@
   #{events/navigate-cart})
 
 (def checkout-auth-events
-  #{events/navigate-checkout-returning-or-new-customer
+  #{events/navigate-checkout-returning-or-guest
     events/navigate-checkout-sign-in})
 
 (def checkout-flow-events
-  #{events/navigate-checkout-returning-or-new-customer
+  #{events/navigate-checkout-returning-or-guest
     events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
