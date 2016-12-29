@@ -103,6 +103,7 @@
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
   (talkable/insert)
+  (places-autocomplete/insert)
   (refresh-account app-state)
   (refresh-current-order app-state)
   (doseq [feature (get-in app-state keypaths/features)]
@@ -342,7 +343,7 @@
   (facebook/insert))
 
 (defmethod perform-effects events/navigate-checkout-returning-or-guest [_ event args app-state]
-  (places-autocomplete/insert-places-autocomplete)
+  (places-autocomplete/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
 
@@ -351,7 +352,7 @@
     (api/get-saved-cards user-id (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (places-autocomplete/insert-places-autocomplete)
+  (places-autocomplete/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
 

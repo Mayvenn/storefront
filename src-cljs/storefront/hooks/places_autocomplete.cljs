@@ -25,11 +25,7 @@
         (#(assoc % :address1 (str (:street-number %) " " (:street %))))
         (dissoc :street :street-number))))
 
-(defn insert-places-autocomplete []
-  (let [containers (.querySelectorAll js/document ".pac-container")]
-    (dotimes [i (.-length containers)]
-      (let [node (aget containers i)]
-        (.removeChild (.-parentNode node) node))))
+(defn insert []
   (when-not (.hasOwnProperty js/window "google")
     (tags/insert-tag-with-callback
      (tags/src-tag (str "https://maps.googleapis.com/maps/api/js?key="
@@ -52,3 +48,9 @@
       (.addListener autocomplete
                     "place_changed"
                     (wrapped-callback autocomplete address-keypath)))))
+
+(defn remove-containers []
+  (let [containers (.querySelectorAll js/document ".pac-container")]
+    (dotimes [i (.-length containers)]
+      (let [node (aget containers i)]
+        (.removeChild (.-parentNode node) node)))))
