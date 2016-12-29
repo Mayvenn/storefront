@@ -138,12 +138,8 @@
 
 (defmethod transition-state events/navigate-checkout [_ event args app-state]
   (when-not (get-in app-state keypaths/user-id)
-    (experiments/ensure-bucketed-for app-state js/environment "address-login")))
+    (experiments/bucket-for app-state js/environment "address-login")))
 
-;; TODO: Where should direct loads of navigate-checkout-returning-or-new-customer
-;; advance to? That is, there are 2 "next steps" in the checkout flow:
-;; checkout-sign-in if you want to log in, or checkout-payment if you
-;; provide a guest address.
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   ;; Direct loads of checkout-sign-in should advance to checkout flow, not return to home page
   (when (= [events/navigate-home {}]

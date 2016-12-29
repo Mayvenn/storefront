@@ -49,25 +49,22 @@
   #?(:clj  (java.lang.Integer/parseInt s radix)
      :cljs (js/parseInt s radix)))
 
-(defn ensure-bucketed-for [data environment experiment-name]
+(defn bucket-for [data environment experiment-name]
   ;; NOTE: called in a transition, so MUST return data, and MUST be pure
-  (if (contains? (get-in data keypaths/experiments-manually-bucketed) experiment-name)
-    data
-    (let [{:keys [variations] :as experiment} (manual-experiments environment experiment-name)
-          ;; We want to randomly bucket a user into a variation. We can use
-          ;; session-id for this. This algorithm turns session-id into session-n
-          ;; an integer that: ranges from 0 to 1295, is randomly distributed
-          ;; across all the users, and is deterministic for any given user.
-          ;; (Because it is cookied, it sticks with the customer for a long time
-          ;; - one year.) Caveat: since it is associated with a browser, it will
-          ;; have different values on different devices for the same person.
-          ;; This is somewhat unavoidable since it has to work for logged-out
-          ;; users too.
-          session-n                           (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
-          {:keys [feature] :as variation}     (nth variations (mod session-n (count variations)))]
-      (cond-> data
-        true    (update-in keypaths/experiments-manually-bucketed conj experiment-name)
-        true    (update-in keypaths/experiments-buckets-to-notify conj [experiment variation])
-        ;; The feature is enabled even before convert is notified, so that a
-        ;; decision can be made and acted on in the same event.
-        feature (enable-feature feature)))))
+  (let [{:keys [variations] :as experiment} (manual-experiments environment experiment-name)
+        ;; We want to randomly bucket a user into a variation. We can use
+        ;; session-id for this. This algorithm turns session-id into session-n
+        ;; an integer that: ranges from 0 to 1295, is randomly distributed
+        ;; across all the users, and is deterministic for any given user.
+        ;; (Because it is cookied, it sticks with the customer for a long time
+        ;; - one year.) Caveat: since it is associated with a browser, it will
+        ;; have different values on different devices for the same person.
+        ;; This is somewhat unavoidable since it has to work for logged-out
+        ;; users too.
+        session-n                           (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
+        {:keys [feature] :as variation}     (nth variations (mod session-n (count variations)))]
+    (cond-> data
+      true    (update-in keypaths/experiments-buckets-to-notify conj [experiment variation])
+      ;; The feature is enabled even before convert is notified, so that a
+      ;; decision can be made and acted on in the same event.
+      feature (enable-feature feature))))

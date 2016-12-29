@@ -538,8 +538,10 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
-  ;; TODO: this leans on the auth wall + redirect-to-return-navigation
-  ;; functionality. Maybe it's time to take direct control of checkout flow.
+  ;; TODO: if the address-login? experiment wins, this may not be correct. Or
+  ;; rather, it would probably be useful for allowing checkout-sign-in to
+  ;; advance to checkout-address, but it's incredibly convoluted that you have
+  ;; to go through checkout-returning-or-new-customer first.
   (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
