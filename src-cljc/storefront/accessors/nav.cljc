@@ -14,12 +14,10 @@
 
 ;; TODO: add navigate-checkout-sign-in-simple
 (def checkout-auth-events
-  #{events/navigate-checkout-sign-in
-    events/navigate-checkout-guest-address-or-sign-in})
+  #{events/navigate-checkout-sign-in})
 
 (def checkout-flow-events
-  #{events/navigate-checkout-guest-address-or-sign-in
-    events/navigate-checkout-address
+  #{events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 

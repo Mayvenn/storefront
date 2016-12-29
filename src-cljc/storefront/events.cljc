@@ -70,7 +70,6 @@
 
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
-(defpath navigate-checkout-guest-address-or-sign-in)
 (defpath navigate-checkout-address)
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)

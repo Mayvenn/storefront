@@ -3,7 +3,6 @@
                :cljs [storefront.component :as component])
             #?@(:cljs [[storefront.components.cart :as cart]
                        [storefront.components.checkout-sign-in :as checkout-sign-in]
-                       [storefront.components.checkout-sign-in-or-guest-address :as checkout-sign-in-or-guest-address]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
@@ -57,7 +56,6 @@
          events/navigate-friend-referrals                  friend-referrals/built-component
          events/navigate-cart                              cart/built-component
          events/navigate-checkout-sign-in                  checkout-sign-in/built-component
-         events/navigate-checkout-guest-address-or-sign-in checkout-sign-in-or-guest-address/built-component
          events/navigate-checkout-address                  (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
          events/navigate-checkout-payment                  (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)
          events/navigate-checkout-confirmation             (partial checkout-sign-in/requires-sign-in-or-guest checkout-confirmation/built-component)

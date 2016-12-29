@@ -140,10 +140,11 @@
   (when-not (get-in app-state keypaths/user-id)
     (experiments/ensure-bucketed-for app-state js/environment "address-login")))
 
-;; TODO: Where should direct loads of navigate-checkout-guest-address-or-sign-in
-;; advance to? That is, there are 2 "next steps" in the checkout flow:
+;; TODO: How should we handle direct loads when user is in the address-login
+;; experiment? That is, there are 2 "next steps" in the checkout flow:
 ;; checkout-sign-in-simple if you want to log in, or checkout-payment if you
-;; provide a guest address.
+;; provide a guest address. In no scenario should you go to
+;; navigate-checkout-address next.
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   ;; Direct loads of checkout-sign-in should advance to checkout flow, not return to home page
   (when (= [events/navigate-home {}]
@@ -151,7 +152,9 @@
     (assoc-in app-state keypaths/return-navigation-message
               [events/navigate-checkout-address {}])))
 
-;; TODO: do this on navigate-checkout-guest-address-or-sign-in too; navigate-checkout-sign-in-simple too?
+;; TODO: do this when navigating from checkout-sign-in-simple to
+;; navigate-checkout-payment too if user is a guest in the address-login
+;; experiment?
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
     (get-in app-state keypaths/user-email)
