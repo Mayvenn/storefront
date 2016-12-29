@@ -1,7 +1,6 @@
 (ns storefront.components.checkout-sign-in
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -23,16 +22,8 @@
      [:div.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 
-(defn or-guest-address-component [sign-in-form-data owner]
-  (om/component
-   (html
-    (ui/narrow-container
-     [:h2.center.my2.navy "New page"]))))
-
 (defn built-component [data opts]
-  (if (experiments/address-login? data)
-    (om/build or-guest-address-component (sign-in/query data) opts)
-    (om/build component (sign-in/query data) opts)))
+  (om/build component (sign-in/query data) opts))
 
 (defn requires-sign-in-or-guest [authorized-component data opts]
   (if (or (get-in data keypaths/user-id)

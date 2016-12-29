@@ -334,13 +334,17 @@
     (not (or (nav/checkout-auth-events event)
              (get-in app-state keypaths/user-id)
              (get-in app-state keypaths/checkout-as-guest)))
-    (redirect events/navigate-checkout-sign-in)))
+    (if (experiments/address-login? app-state)
+      (redirect events/navigate-checkout-returning-or-new-customer)
+      (redirect events/navigate-checkout-sign-in))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
-  (facebook/insert)
-  (when (experiments/address-login? app-state)
-    (places-autocomplete/insert-places-autocomplete)
-    (api/get-states (get-in app-state keypaths/api-cache))))
+  (facebook/insert))
+
+(defmethod perform-effects events/navigate-checkout-returning-or-new-customer [_ event args app-state]
+  (places-autocomplete/insert-places-autocomplete)
+  (api/get-states (get-in app-state keypaths/api-cache))
+  (facebook/insert))
 
 (defn- fetch-saved-cards [app-state]
   (when-let [user-id (get-in app-state keypaths/user-id)]

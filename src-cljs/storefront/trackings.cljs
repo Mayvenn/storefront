@@ -109,7 +109,6 @@
   (stringer/track-identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
-  ;; TODO: track checkout-sign_in on checkout-sign-in-simple page too
   ;; TODO: is sign-in still the current nav message after events/api-success-auth-sign-in?
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
                             events/navigate-checkout-sign-in)
