@@ -131,6 +131,7 @@
   (apply history/enqueue-redirect nav-message))
 
 (defmethod perform-effects events/navigate [dispatch event args app-state]
+  ;; TODO: This is all triggered on pages we're redirecting through. :(
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (refresh-account app-state)
     (api/get-sms-number)
@@ -171,7 +172,11 @@
 
     (when-let [notifications (seq (get-in app-state keypaths/experiments-buckets-to-notify))]
       (doseq [[experiment variation] notifications]
-        (convert/join-variation experiment variation))
+        (convert/join-variation experiment variation)
+        (when-let [feature (:feature variation)]
+          ;; We've already put the feature into keypaths/features... but we
+          ;; still need to trigger tracking
+          (handle-message events/enable-feature {:feature feature})))
       (handle-message events/experiments-manually-notified))
 
     (when (get-in app-state keypaths/popup)
