@@ -62,7 +62,14 @@
         ;; This is somewhat unavoidable since it has to work for logged-out
         ;; users too.
         session-n                           (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
-        {:keys [feature] :as variation}     (nth variations (mod session-n (count variations)))]
+
+        {:keys [feature] :as variation} (if (= "production" environment)
+                                          (first variations) ;; Always Off
+                                          (nth variations (mod session-n (count variations))) ;; Random
+                                          ;; HEAT helpers, can be removed after address-login is feature complete
+                                          #_(first variations) ;; Always Off
+                                          #_(last variations)) ;; Always On
+        ]
     (cond-> data
       true    (update-in keypaths/experiments-buckets-to-notify conj [experiment variation])
       ;; The feature is enabled even before convert is notified, so that a
