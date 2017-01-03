@@ -61,11 +61,13 @@
         ;; have different values on different devices for the same person.
         ;; This is somewhat unavoidable since it has to work for logged-out
         ;; users too.
-        session-n                           (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
+        session-n                       (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
+        exp-offset                      (reduce + (map int experiment-name))
 
         {:keys [feature] :as variation} (if (= "production" environment)
                                           (first variations) ;; Always Off
-                                          (nth variations (mod session-n (count variations))) ;; Random
+                                          (nth variations (mod (+ exp-offset session-n)
+                                                               (count variations))) ;; Random
                                           ;; HEAT helpers, can be removed after address-login is feature complete
                                           #_(first variations) ;; Always Off
                                           #_(last variations)) ;; Always On
