@@ -24,3 +24,6 @@
 
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
+
+(defn view-look? [data]
+  (display-feature? data "view-look"))
