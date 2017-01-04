@@ -247,6 +247,7 @@
 
 (defpath convert)
 (defpath enable-feature)
+(defpath bucketed-for)
 
 (defpath reviews)
 (defpath reviews-component-mounted)
@@ -278,5 +279,3 @@
 (defpath show-email-popup)
 
 (defpath sign-out)
-
-(defpath experiments-manually-notified)

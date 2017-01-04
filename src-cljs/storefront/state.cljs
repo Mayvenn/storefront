@@ -122,7 +122,7 @@
                         :zipcode ""
                         :phone ""}
 
-     :experiments {:buckets-to-notify #{}} ;; Pairs of experiment/variation (as defined in experiments/manual-experiments which convert should be told about)
+     :experiments {:bucketed #{}}
 
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]

@@ -170,15 +170,6 @@
          (get-in app-state keypaths/cookie)
          utm-params)))
 
-    (when-let [notifications (seq (get-in app-state keypaths/experiments-buckets-to-notify))]
-      (doseq [[experiment variation] notifications]
-        (convert/join-variation experiment variation)
-        (when-let [feature (:feature variation)]
-          ;; We've already put the feature into keypaths/features... but we
-          ;; still need to trigger tracking
-          (handle-message events/enable-feature {:feature feature})))
-      (handle-message events/experiments-manually-notified))
-
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))
 
@@ -332,17 +323,26 @@
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
-(defmethod perform-effects events/navigate-checkout [_ event args app-state]
-  (cond
-    (not (get-in app-state keypaths/order-number))
-    (redirect events/navigate-cart)
+(defn ensure-bucketed-for [app-state experiment-name]
+  (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment-name)]
+    (when-not already-bucketed?
+      (handle-message events/bucketed-for {:experiment experiment-name})
+      (when-let [feature (experiments/feature-for app-state js/environment experiment-name)]
+        (handle-message events/enable-feature {:feature feature})))))
 
-    (not (or (nav/checkout-auth-events event)
-             (get-in app-state keypaths/user-id)
-             (get-in app-state keypaths/checkout-as-guest)))
-    (if (experiments/address-login? app-state)
-      (redirect events/navigate-checkout-returning-or-guest)
-      (redirect events/navigate-checkout-sign-in))))
+(defmethod perform-effects events/navigate-checkout [_ event args app-state]
+  (let [have-cart? (get-in app-state keypaths/order-number)]
+    (if-not have-cart?
+      (redirect events/navigate-cart)
+      (let [authenticated?  (or (get-in app-state keypaths/user-id)
+                                (get-in app-state keypaths/checkout-as-guest))
+            authenticating? (nav/checkout-auth-events event)]
+        (when-not authenticated?
+          (ensure-bucketed-for app-state "address-login"))
+        (when-not (or authenticated? authenticating?)
+          (redirect (if (experiments/address-login? app-state js/environment)
+                      events/navigate-checkout-returning-or-guest
+                      events/navigate-checkout-sign-in)))))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
@@ -881,3 +881,7 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
+
+(defmethod perform-effects events/bucketed-for [_ event {experiment-name :experiment} app-state]
+  (let [[experiment variation] (experiments/experiment-and-variation-for app-state js/environment experiment-name)]
+    (convert/join-variation experiment variation)))

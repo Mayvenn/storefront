@@ -136,10 +136,6 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
-(defmethod transition-state events/navigate-checkout [_ event args app-state]
-  (when-not (get-in app-state keypaths/user-id)
-    (experiments/bucket-for app-state js/environment "address-login")))
-
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   ;; Direct loads of checkout-sign-in should advance to checkout flow, not return to home page
   (when (= [events/navigate-home {}]
@@ -604,12 +600,12 @@
 (defmethod transition-state events/flash-dismiss [_ event args app-state]
   (clear-flash app-state))
 
+(defmethod transition-state events/bucketed-for [_ event {:keys [experiment]} app-state]
+  (update-in app-state keypaths/experiments-bucketed conj experiment))
+
 (defmethod transition-state events/enable-feature
   [_ event {:keys [feature]} app-state]
   (experiments/enable-feature app-state feature))
-
-(defmethod transition-state events/experiments-manually-notified [_ event _ app-state]
-  (assoc-in app-state keypaths/experiments-buckets-to-notify #{}))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))
