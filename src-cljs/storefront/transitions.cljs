@@ -603,9 +603,8 @@
 (defmethod transition-state events/bucketed-for [_ event {:keys [experiment]} app-state]
   (update-in app-state keypaths/experiments-bucketed conj experiment))
 
-(defmethod transition-state events/enable-feature
-  [_ event {:keys [feature]} app-state]
-  (experiments/enable-feature app-state feature))
+(defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
+  (update-in app-state keypaths/features conj feature))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))

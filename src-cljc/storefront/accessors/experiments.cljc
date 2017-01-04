@@ -60,9 +60,6 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn enable-feature [data feature]
-  (update-in data keypaths/features conj feature))
-
 (defn kinky-straight? [data]
   (display-feature? data "kinky-straight-2"))
 
