@@ -136,12 +136,18 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
+(defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
+  (let [direct-load? (= [events/navigate-home {}]
+                        (get-in app-state keypaths/return-navigation-message))]
+    (when direct-load?
+      (assoc-in app-state keypaths/return-navigation-message
+                [events/navigate-checkout-address {}]))))
+
+(defmethod transition-state events/navigate-checkout-returning-or-guest [_ event args app-state]
+  (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
+
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
-  ;; Direct loads of checkout-sign-in should advance to checkout flow, not return to home page
-  (when (= [events/navigate-home {}]
-         (get-in app-state keypaths/return-navigation-message))
-    (assoc-in app-state keypaths/return-navigation-message
-              [events/navigate-checkout-address {}])))
+  (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
