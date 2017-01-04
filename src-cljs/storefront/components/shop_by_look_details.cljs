@@ -19,7 +19,7 @@
                   "pinterest" svg/pinterest
                   "twitter"   svg/twitter})
 
-(defn add-to-button [requesting? {:keys [id purchase-link]}]
+(defn add-to-button [requesting? {:keys [id purchase-link] :as look}]
   (let [[nav-event nav-args :as nav-message] (-> purchase-link
                                                  url/url-decode
                                                  url/url
@@ -55,9 +55,7 @@
         [:div.right.inline-block {:style {:width  "20px"
                                           :height "20px"}}
          (social-icon (:social-service look))]]
-       [:p.f4.px3.py1.gray.bg-light-silver
-        ;;TODO Figure out where this information will be, seems like (:description look)
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus bibendum ligula ex, vel ultrices velit fermentum sit amet. Vivamus condimentum nulla tincidunt ex vulputate sagittis. Mauris vestibulum nisl ac sapien commodo iaculis nec nec elit."]]]
+       [:p.f4.px3.py1.gray.bg-light-silver (:title look)]]]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
       [:div.p2
        [:div.p2.center.h3.border-bottom.border-dark-silver (str item-count " items in this look")]

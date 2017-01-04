@@ -160,7 +160,7 @@
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
 (defn ^:private parse-ugc-album [album]
-  (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products]}]
+  (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products title]}]
          (let [medium-cdn-url (:medium_url pixlee_cdn_photos)]
            {:id             id
             :content-type   content_type
@@ -171,7 +171,8 @@
                               medium-cdn-url)
             :large-photo    (:large_url pixlee_cdn_photos)
             :social-service source
-            :purchase-link  (:link (first products))}))
+            :purchase-link  (:link (first products))
+            :title          title}))
        album))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
