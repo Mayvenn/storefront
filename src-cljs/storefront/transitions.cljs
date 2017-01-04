@@ -141,6 +141,9 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
+  (assoc-in app-state keypaths/selected-look-id look-id))
+
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (when (= [events/navigate-home {}]
          (get-in app-state keypaths/return-navigation-message))

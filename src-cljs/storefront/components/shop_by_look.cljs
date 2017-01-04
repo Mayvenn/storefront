@@ -27,9 +27,11 @@
         {:spinning? (and (= id selected-look-id) requesting?)}
         (if requesting?
           {:on-click utils/noop-callback}
-          (if is-shared-cart-link?
-            (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
-            (apply utils/route-to nav-message))))
+          (if view-look?
+            (utils/route-to events/navigate-shop-by-look-details {:look-id id})
+            (if is-shared-cart-link?
+              (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
+              (apply utils/route-to nav-message)))))
        (if view-look?
          "View this look"
          "Shop this look")))))

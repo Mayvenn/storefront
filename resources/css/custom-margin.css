@@ -34,6 +34,12 @@
 .mxnp4 { margin-left: -4px; margin-right: -4px; }
 .mxnp5 { margin-left: -5px; margin-right: -5px; }
 .mxnp6 { margin-left: -6px; margin-right: -6px; }
+.mbnp1 { margin-bottom: -1px; }
+.mbnp2 { margin-bottom: -2px; }
+.mbnp3 { margin-bottom: -3px; }
+.mbnp4 { margin-bottom: -4px; }
+.mbnp5 { margin-bottom: -5px; }
+.mbnp6 { margin-bottom: -6px; }
 
 :root {
   --space-1: .5rem;

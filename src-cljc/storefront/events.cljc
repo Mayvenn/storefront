@@ -48,6 +48,7 @@
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
 (defpath navigate-shop-by-look)
+(defpath navigate-shop-by-look-details)
 
 (defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
