@@ -16,23 +16,20 @@
                 (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
                 (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
-(defn manual-experiments [environment experiment-name]
-  ;; TODO: For Deploy of address-login: ensure we have convert-ids for production
-  (let [production? (= "production" environment)
-        experiments {"address-login" {:convert-id (if production? "" "100011894")
-                                      :variations [{:name       "original"
-                                                    :convert-id (if production? "" "100073286")}
-                                                   {:name       "variation"
-                                                    :convert-id (if production? "" "100073287")
-                                                    :feature    "address-login"}]}}]
-    (get experiments experiment-name)))
+(def manual-experiments
+  {"address-login" [{:name "original"}
+                    {:name "variation" :feature "address-login"}]})
 
 (defn str->int [s radix]
   #?(:clj  (java.lang.Integer/parseInt s radix)
      :cljs (js/parseInt s radix)))
 
-(defn experiment-and-variation-for [data environment experiment-name]
-  (let [{:keys [variations] :as experiment} (manual-experiments environment experiment-name)
+(defn char->int [c]
+  #?(:clj  (int c)
+     :cljs (.charCodeAt c 0)))
+
+(defn variation-for [data experiment]
+  (let [variations (get manual-experiments experiment)
 
         ;; We want to randomly bucket a user into a variation. We can use
         ;; session-id for this. This algorithm turns session-id into session-n
@@ -44,24 +41,21 @@
         ;; This is somewhat unavoidable since it has to work for logged-out
         ;; users too.
         session-n  (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
-        exp-offset (reduce + (map int experiment-name))
+        ;; We also want to avoid always assigning the same set of people to the
+        ;; same side of an experiment.
+        exp-offset (reduce + (map char->int experiment))
 
-        variation (if (= "production" environment)
-                    ;; TODO: For Deploy of address-login: remove this branch
-                    ;; Always Off
-                    (first variations)
-                    (nth variations (mod (+ exp-offset session-n)
-                                         (count variations))) ;; Random
-                    ;; HEAT helpers, can be removed after address-login is feature complete
-                    ;; Always Off
-                    #_(first variations)
-                    ;; Always On
-                    #_(last variations))]
-    [experiment variation]))
+        variation (nth variations (mod (+ exp-offset session-n)
+                                       (count variations))) ;; Random
+        ;; local HEAT helpers, can be removed after address-login is feature complete
+        ;; Always Off
+        #_(first variations)
+        ;; Always On
+        #_(last variations)]
+    variation))
 
-(defn feature-for [data environment experiment-name]
-  (let [[_ {:keys [feature]}] (experiment-and-variation-for data environment experiment-name)]
-    feature))
+(defn feature-for [data experiment]
+  (:feature (variation-for data experiment)))
 
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
@@ -78,6 +72,6 @@
 (defn view-look? [data]
   (display-feature? data "view-look"))
 
-(defn address-login? [data environment]
+(defn address-login? [data]
   (or (display-feature? data "address-login")
-      (= "address-login" (feature-for data environment "address-login"))))
+      (= "address-login" (feature-for data "address-login"))))

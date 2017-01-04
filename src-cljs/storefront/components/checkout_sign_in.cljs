@@ -31,7 +31,7 @@
      (om/build sign-in/password-component sign-in-form-data)))))
 
 (defn built-component [data opts]
-  (if (experiments/address-login? data js/environment)
+  (if (experiments/address-login? data)
     (om/build simple-component (sign-in/query data) opts)
     (om/build component (sign-in/query data) opts)))
 

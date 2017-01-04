@@ -323,11 +323,11 @@
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
-(defn ensure-bucketed-for [app-state experiment-name]
-  (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment-name)]
+(defn ensure-bucketed-for [app-state experiment]
+  (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment)]
     (when-not already-bucketed?
-      (handle-message events/bucketed-for {:experiment experiment-name})
-      (when-let [feature (experiments/feature-for app-state js/environment experiment-name)]
+      (handle-message events/bucketed-for {:experiment experiment})
+      (when-let [feature (experiments/feature-for app-state experiment)]
         (handle-message events/enable-feature {:feature feature})))))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
@@ -340,7 +340,7 @@
         (when-not authenticated?
           (ensure-bucketed-for app-state "address-login"))
         (when-not (or authenticated? authenticating?)
-          (redirect (if (experiments/address-login? app-state js/environment)
+          (redirect (if (experiments/address-login? app-state)
                       events/navigate-checkout-returning-or-guest
                       events/navigate-checkout-sign-in)))))))
 
@@ -882,6 +882,6 @@
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
 
-(defmethod perform-effects events/bucketed-for [_ event {experiment-name :experiment} app-state]
-  (let [[experiment variation] (experiments/experiment-and-variation-for app-state js/environment experiment-name)]
+(defmethod perform-effects events/bucketed-for [_ event {:keys [experiment]} app-state]
+  (let [variation (experiments/variation-for app-state experiment)]
     (convert/join-variation experiment variation)))

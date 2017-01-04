@@ -56,5 +56,21 @@
 (defn track-revenue [{:keys [order-number revenue products-count]}]
   (enqueue "sendRevenue" order-number revenue products-count (label->goal-id "revenue")))
 
-(defn join-variation [experiment variation]
-  (enqueue "assignVariation" (:convert-id experiment) (:convert-id variation)))
+(def manual-experiments
+  ;; TODO: For Deploy of address-login: ensure we have convert-ids for production
+  ;; FIXME: Even the non-production ids are just stolen from some old experiment
+  (let [production? (= "production" js/environment)]
+    {"address-login" {:id         (if production? "" "100011894")
+                      :variations {"original"  {:id (if production? "" "100073286")}
+                                   "variation" {:id (if production? "" "100073287")}}}}))
+
+(defn name->id [experiment-name]
+  (get-in manual-experiments [experiment-name :id]))
+
+(defn name-and-variation->variation-id [experiment-name variation]
+  (get-in manual-experiments [experiment-name :variations (:name variation) :id]))
+
+(defn join-variation [experiment-name variation]
+  (enqueue "assignVariation"
+           (name->id experiment-name)
+           (name-and-variation->variation-id experiment-name variation)))
