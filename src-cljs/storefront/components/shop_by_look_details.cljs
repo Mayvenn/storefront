@@ -31,17 +31,20 @@
   (om/component
    (html
     [:div
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
-      [:a.p2.left.col-12.gray
-       (utils/route-to events/navigate-shop-by-look)
-       [:span
-        [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                         :src   (assets/path "/images/icons/carat-left.png")}]
-        "back to shop by look"]]
+     [:div.clearfix
+      [:div.col-6-on-tb-dt.px3
+       [:a.p2.left.col-12.gray
+        (utils/route-to events/navigate-shop-by-look)
+        [:span
+         [:img.px1.mbnp4 {:style {:height "1.25rem"}
+                          :src   (assets/path "/images/icons/carat-left.png")}]
+         "back to shop by look"]]
+
+       [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]]
+
+     [:div.clearfix
       (when look
-        [:div
-         [:div.col-12
-          [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
          [:img.block.col-12 {:src (:photo look)}]
          [:div
           [:div.px3.py2.mbp1.bg-light-silver
@@ -50,14 +53,14 @@
                                              :height "20px"}}
             (social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])]
-     (let [line-items (:line-items shared-cart)
-           item-count (->> line-items (map :quantity) (reduce +))]
-       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
-        [:div.p2
-         [:div.p2.center.h3.border-bottom.border-dark-silver (str item-count " items in this look")]
-         (order-summary/display-line-items line-items products)]
-        [:div (add-to-cart-button requesting? shared-cart)]])])))
+            [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])
+      (when shared-cart
+        (let [line-items (:line-items shared-cart)
+              item-count (->> line-items (map :quantity) (reduce +))]
+          [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
+           [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
+           (order-summary/display-line-items line-items products)
+           (add-to-cart-button requesting? shared-cart)]))]])))
 
 (defn query [data]
   {:shared-cart (get-in data keypaths/shared-cart-current)
