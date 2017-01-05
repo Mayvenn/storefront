@@ -44,7 +44,7 @@
 
      [:div.clearfix
       (when look
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt.mb3
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          [:img.block.col-12 {:src (:photo look)}]
          [:div
           [:div.px3.py2.mbp1.bg-light-silver
@@ -57,7 +57,7 @@
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]
-          [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
+          [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
            [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
            (order-summary/display-line-items line-items products)
            (add-to-cart-button requesting? shared-cart)]))]])))
