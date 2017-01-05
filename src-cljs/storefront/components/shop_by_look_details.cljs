@@ -39,12 +39,11 @@
   (->> shared-cart
        :line-items
        (map :product-id)
-       (map (partial products/closeup-img products))
+       (map (partial products/large-img products))
        distinct))
 
 (defn imgs [look shared-cart products]
-  ;; TODO: parse-ugc-album could turn photos (urls) into imgs (:src and :alt)
-  (cons {:src (:large-photo look)}
+  (cons (-> look :imgs :large)
         (distinct-product-imgs shared-cart products)))
 
 (defn component [{:keys [creating-order? look shared-cart products]} owner opts]

@@ -14,7 +14,8 @@
             [storefront.utils.maps :refer [map-values key-by]]
             [storefront.config :as config]
             [clojure.string :as string]
-            [cemerick.url :as url]))
+            [cemerick.url :as url]
+            [clojure.set :as set]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -158,9 +159,24 @@
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
 (defn ^:private parse-ugc-album [album]
-  (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products title]}]
-         (let [medium-cdn-url                       (:medium_url pixlee_cdn_photos)
-               large-cdn-url                        (:large_url pixlee_cdn_photos)
+  (map (fn [{:keys [id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
+         (let [extract-img-urls (fn [coll original large medium small]
+                                  (-> coll
+                                      (select-keys [original large medium small])
+                                      (set/rename-keys {original :original
+                                                        large    :large
+                                                        medium   :medium
+                                                        small    :small})
+                                      (->>
+                                       (remove (comp string/blank? val))
+                                       (into {}))))
+               root-img-urls    (extract-img-urls item :source_url :big_url :medium_url :thumbnail_url)
+               cdn-img-urls     (extract-img-urls pixlee_cdn_photos :original_url :large_url :medium_url :small_url)
+
+               imgs (reduce-kv (fn [result name url] (assoc result name {:src url :alt title}))
+                               {}
+                               (merge root-img-urls cdn-img-urls))
+
                [nav-event nav-args :as nav-message] (-> products
                                                         first
                                                         :link
@@ -181,10 +197,7 @@
             :content-type   content_type
             :source-url     source_url
             :user-handle    user_name
-            :photo          (if (string/blank? medium-cdn-url)
-                              medium_url
-                              medium-cdn-url)
-            :large-photo    large-cdn-url
+            :imgs           imgs
             :social-service source
             :shared-cart-id (:shared-cart-id nav-args)
             :links          {:view-named-search view-named-search-link

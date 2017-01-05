@@ -35,8 +35,8 @@
     {:src (size-url img)
      :alt (:name product)}))
 
-(defn thumbnail-img [products product-id]
+(defn small-img [products product-id]
   (product-img-with-size (get products product-id) :small))
 
-(defn closeup-img [products product-id]
+(defn large-img [products product-id]
   (product-img-with-size (get products product-id) :large))

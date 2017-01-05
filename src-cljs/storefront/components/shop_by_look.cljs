@@ -11,8 +11,8 @@
             [storefront.accessors.experiments :as experiments]
             [cemerick.url :as url]))
 
-(defn image-thumbnail [photo]
-  [:img.col-12.block {:src photo}])
+(defn image-thumbnail [img]
+  [:img.col-12.block img])
 
 (defn buy-look-button [creating-order? selected-look-id {:keys [id links]} view-look?]
   (let [{:keys [purchase view-look view-named-search]} links]
@@ -47,16 +47,16 @@
        {:style {:width "101px" :height "85px"}} ]
       [:p.gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.container.clearfix.mtn2
-      (for [{:keys [id content-type user-handle photo purchase-link source-url social-service] :as look} looks]
+      (for [{:keys [id content-type user-handle imgs purchase-link source-url social-service] :as look} looks]
         [:div
          {:key id}
          [:div.py2.col-12.col.hide-on-tb-dt {:key (str "small-" id)}
-          (image-thumbnail photo)
+          (image-thumbnail (:medium imgs))
           (image-attribution creating-order? selected-look-id look view-look?)]
          [:div.py2.px2.col.col-4.hide-on-mb {:key (str "large-" id)}
           [:div.relative.hoverable.overflow-hidden
            {:style {:padding-top "100%"}}
-           [:div.absolute.top-0 (image-thumbnail photo)]
+           [:div.absolute.top-0 (image-thumbnail (:medium imgs))]
            [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution creating-order? selected-look-id look view-look?)]]]])]])))
 
 (defn query [data]

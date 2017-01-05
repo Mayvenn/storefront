@@ -30,7 +30,7 @@
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
    [:img.left.border.border-silver.mr3
-    (assoc (products/thumbnail-img products product-id)
+    (assoc (products/small-img products product-id)
            :style {:width "5rem"})]
    [:div.overflow-hidden
     [:div.h4.medium.titleize (products/product-title item)]
