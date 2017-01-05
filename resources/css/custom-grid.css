@@ -1,32 +1,7 @@
 /* responsive grid helpers */
 
-.multi-cols-1 { columns: 1; }
-.multi-cols-2 { columns: 2; }
-.multi-cols-3 { columns: 3; }
-.multi-cols-4 { columns: 4; }
-.multi-cols-5 { columns: 5; }
-.multi-cols-6 { columns: 6; }
-.multi-cols-7 { columns: 7; }
-.multi-cols-8 { columns: 8; }
-.multi-cols-9 { columns: 9; }
-.multi-cols-10 { columns: 10; }
-.multi-cols-11 { columns: 11; }
-.multi-cols-12 { columns: 12; }
-
 .container-height { height: 100% }
 .container-size { width: 100%; height: 100% }
-
-/* postcss turns break-before into
-
--webkit-column-break-before
-page-break-before
-break-before
-
-But page-break-before causes weird layout in Chrome, so this manually sets
--webkit-column-break-before as higher priority.
-*/
-.break-before { break-before: always; -webkit-column-break-before: always; }
-.break-after { break-after: always; -webkit-column-break-after: always; }
 
 @media (--on-tablet) {
     .col-on-tb {
