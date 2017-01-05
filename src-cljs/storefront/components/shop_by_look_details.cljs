@@ -30,10 +30,10 @@
 (defn component [{:keys [requesting? look shared-cart products]} owner opts]
   (om/component
    (html
-    [:div
+    [:div.container
      [:div.clearfix
-      [:div.col-6-on-tb-dt.px3
-       [:a.p2.left.col-12.gray
+      [:div.col-6-on-tb-dt
+       [:a.p2.px3-on-tb-dt.left.col-12.gray
         (utils/route-to events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
@@ -44,7 +44,7 @@
 
      [:div.clearfix
       (when look
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt.mb3
          [:img.block.col-12 {:src (:photo look)}]
          [:div
           [:div.px3.py2.mbp1.bg-light-silver

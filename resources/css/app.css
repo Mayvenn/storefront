@@ -39,9 +39,8 @@
 
 /* Optional Modules (extensions to Basscss Core) */
 
-/* @import 'basscss-addons/modules/responsive-margin'; */ /* deprecated in favor of custom names */
 @import 'custom-responsive-margin.css';
-/* @import 'basscss-addons/modules/responsive-padding'; */ /* unused */
+@import 'custom-responsive-padding.css';
 @import 'basscss-addons/modules/colors';
 @import 'custom-colors.css';
 @import 'basscss-addons/modules/background-colors';
