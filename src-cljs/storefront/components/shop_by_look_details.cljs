@@ -19,23 +19,14 @@
                   "pinterest" svg/pinterest
                   "twitter"   svg/twitter})
 
-(defn add-to-button [requesting? {:keys [id purchase-link] :as look}]
-  (let [[nav-event nav-args :as nav-message] (-> purchase-link
-                                                 url/url-decode
-                                                 url/url
-                                                 :path
-                                                 routes/navigation-message-for)
-        is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
-    (when (or (not is-shared-cart-link?) id)
-      (ui/teal-button
-       (if requesting?
-         {:on-click utils/noop-callback}
-         (if is-shared-cart-link?
-           (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
-           (apply utils/route-to nav-message)))
-       "Add items to bag"))))
+(defn add-to-cart-button [requesting? {:keys [number]}]
+  (ui/teal-button
+   (if requesting?
+     {:on-click utils/noop-callback}
+     (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number}))
+   "Add items to bag"))
 
-(defn component [{:keys [requesting? look item-count line-items products]} owner opts]
+(defn component [{:keys [requesting? look shared-cart products]} owner opts]
   (om/component
    (html
     [:div
@@ -46,36 +37,36 @@
         [:img.px1.mbnp4 {:style {:height "1.25rem"}
                          :src   (assets/path "/images/icons/carat-left.png")}]
         "back to shop by look"]]
-      [:div.col-12
-       [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]
-      [:img.block.col-12 {:src (:photo look)}]
-      [:div
-       [:div.px3.py2.mbp1.bg-light-silver
-        [:div.medium.gray.h5.inline-block (str "@" (:user-handle look))]
-        [:div.right.inline-block {:style {:width  "20px"
-                                          :height "20px"}}
-         (social-icon (:social-service look))]]
-       [:p.f4.px3.py1.gray.bg-light-silver (:title look)]]]
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
-      [:div.p2
-       [:div.p2.center.h3.border-bottom.border-dark-silver (str item-count " items in this look")]
-       (order-summary/display-line-items line-items products)]
-      [:div (add-to-button requesting? look)]]])))
+      (when look
+        [:div
+         [:div.col-12
+          [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]
+         [:img.block.col-12 {:src (:photo look)}]
+         [:div
+          [:div.px3.py2.mbp1.bg-light-silver
+           [:div.medium.gray.h5.inline-block (str "@" (:user-handle look))]
+           [:div.right.inline-block {:style {:width  "20px"
+                                             :height "20px"}}
+            (social-icon (:social-service look))]]
+          (when (:title look) [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])]
+     (let [line-items (:line-items shared-cart)
+           item-count (->> line-items (map :quantity) (reduce +))]
+       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
+        [:div.p2
+         [:div.p2.center.h3.border-bottom.border-dark-silver (str item-count " items in this look")]
+         (order-summary/display-line-items line-items products)]
+        [:div (add-to-cart-button requesting? shared-cart)]])])))
 
 (defn query [data]
-  (let [look-id (get-in data keypaths/selected-look-id)]
-    {:look        (->> keypaths/ugc-looks
+  (let [shared-cart (get-in data keypaths/shared-cart-current)]
+    {:shared-cart shared-cart
+     :look        (->> keypaths/ugc-looks
                        (get-in data)
                        (remove (comp #{"video"} :content-type))
-                       (filter #(= (str (:id %)) look-id))
+                       (filter #(= (str (:shared-cart-id %)) (:id shared-cart)))
                        (first))
      :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
-     ;;TODO these must get fetched on load
-     :products    (get-in data keypaths/products)
-     ;;TODO these must get fetched on load
-     :item-count  0
-     ;;TODO these must get fetched on load
-     :line-items  []}))
+     :products    (get-in data keypaths/products)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

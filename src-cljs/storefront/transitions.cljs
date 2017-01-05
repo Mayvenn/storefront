@@ -9,6 +9,7 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
+            [storefront.routes :as routes]
             [storefront.utils.query :as query]
             [storefront.utils.maps :refer [map-values key-by]]
             [storefront.config :as config]
@@ -141,9 +142,6 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
-(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
-  (assoc-in app-state keypaths/selected-look-id look-id))
-
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (when (= [events/navigate-home {}]
          (get-in app-state keypaths/return-navigation-message))
@@ -161,7 +159,27 @@
 
 (defn ^:private parse-ugc-album [album]
   (map (fn [{:keys [id user_name content_type pixlee_cdn_photos medium_url source source_url products title]}]
-         (let [medium-cdn-url (:medium_url pixlee_cdn_photos)]
+         (let [medium-cdn-url                       (:medium_url pixlee_cdn_photos)
+               large-cdn-url                        (:large_url pixlee_cdn_photos)
+               [nav-event nav-args :as nav-message] (-> products
+                                                        first
+                                                        :link
+                                                        url/url-decode
+                                                        url/url
+                                                        :path
+                                                        routes/navigation-message-for)
+               view-named-search-link               (when (= nav-event events/navigate-category) nav-message)
+               view-look-link                       (when (= nav-event events/navigate-shared-cart)
+                                                      ;; both navigate-shared-cart and
+                                                      ;; navigate-shop-by-look-details have
+                                                      ;; :shared-cart-id in the nav-message
+                                                      [events/navigate-shop-by-look-details nav-args])
+               ;; TODO: if the view-look? experiment wins, we will not need the purchase-link, nor selected-look-id
+               purchase-link                        (when (= nav-event events/navigate-shared-cart)
+                                                      ;; both navigate-shared-cart and
+                                                      ;; control-create-order-from-shared-cart have
+                                                      ;; :shared-cart-id in the nav-message
+                                                      [events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id)])]
            {:id             id
             :content-type   content_type
             :source-url     source_url
@@ -169,9 +187,12 @@
             :photo          (if (string/blank? medium-cdn-url)
                               medium_url
                               medium-cdn-url)
-            :large-photo    (:large_url pixlee_cdn_photos)
+            :large-photo    large-cdn-url
             :social-service source
-            :purchase-link  (:link (first products))
+            :shared-cart-id (:shared-cart-id nav-args)
+            :links          {:view-named-search view-named-search-link
+                             :view-look         view-look-link
+                             :purchase          purchase-link}
             :title          title}))
        album))
 
@@ -401,10 +422,13 @@
   (-> app-state
       (update-in keypaths/order merge order)))
 
-(defmethod transition-state events/api-success-shared-cart [_ event {:keys [cart]} app-state]
+(defmethod transition-state events/api-success-shared-cart-create [_ event {:keys [cart]} app-state]
   (-> app-state
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
+
+(defmethod transition-state events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
+  (assoc-in app-state keypaths/shared-cart-current cart))
 
 (defmethod transition-state events/control-stylist-referral-add-another [_ event args app-state]
   (update-in app-state keypaths/stylist-referrals conj state/empty-referral))

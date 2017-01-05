@@ -182,6 +182,10 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/fetch-mosaic))
 
+(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [shared-cart-id]} app-state]
+  (pixlee/fetch-mosaic)
+  (api/fetch-shared-cart shared-cart-id))
+
 (defn fetch-named-search-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
@@ -842,3 +846,6 @@
     (do
       (history/enqueue-navigate events/navigate-home)
       (handle-message events/flash-later-show-success {:message "Logged out successfully"}))))
+
+(defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
+  (ensure-products app-state (map :product-id (:line-items cart))))

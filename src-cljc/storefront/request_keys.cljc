@@ -50,6 +50,7 @@
 (def checkout [:checkout])
 (def send-referrals [:send-referrals])
 (def create-shared-cart [:create-shared-cart])
+(def fetch-shared-cart [:fetch-shared-cart])
 (def create-order-from-shared-cart [:create-order-from-shared-cart])
 
 (def stripe-create-token [:stripe-create-token])

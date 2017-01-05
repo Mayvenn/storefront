@@ -195,7 +195,8 @@
 (defpath api-success-get-saved-cards)
 (defpath api-success-sms-number)
 
-(defpath api-success-shared-cart)
+(defpath api-success-shared-cart-create)
+(defpath api-success-shared-cart-fetch)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-from-shared-cart)

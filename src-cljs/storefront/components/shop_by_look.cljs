@@ -14,27 +14,21 @@
 (defn image-thumbnail [photo]
   [:img.col-12.block {:src photo}])
 
-(defn buy-look-button [requesting? selected-look-id {:keys [id purchase-link]} view-look?]
-  (let [[nav-event nav-args :as nav-message] (-> purchase-link
-                                                 url/url-decode
-                                                 url/url
-                                                 :path
-                                                 routes/navigation-message-for)
-        is-shared-cart-link? (= nav-event events/navigate-shared-cart)]
-    (when (or (not is-shared-cart-link?) id)
-      (ui/teal-button
-       (merge
-        {:spinning? (and (= id selected-look-id) requesting?)}
-        (if requesting?
-          {:on-click utils/noop-callback}
+(defn buy-look-button [requesting? selected-look-id {:keys [id links]} view-look?]
+  (let [{:keys [purchase view-look view-named-search]} links]
+    (ui/teal-button
+     (merge
+      {:spinning? (and (= id selected-look-id) requesting?)}
+      (if requesting?
+        {:on-click utils/noop-callback}
+        (if view-named-search
+          (apply utils/route-to view-named-search)
           (if view-look?
-            (utils/route-to events/navigate-shop-by-look-details {:look-id id})
-            (if is-shared-cart-link?
-              (utils/fake-href events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id))
-              (apply utils/route-to nav-message)))))
-       (if view-look?
-         "View this look"
-         "Shop this look")))))
+            (apply utils/route-to view-look)
+            (apply utils/fake-href purchase)))))
+     (if view-look?
+       "View this look"
+       "Shop this look"))))
 
 (defn image-attribution [requesting? selected-look-id {:keys [user-handle social-service] :as look} view-look?]
   [:div.bg-light-silver.p1

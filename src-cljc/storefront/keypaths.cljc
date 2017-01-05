@@ -108,8 +108,10 @@
 (def manage-account-email (conj manage-account :email))
 (def manage-account-password (conj manage-account :password))
 
-(def shared-cart-url (conj ui :shared-cart-url))
-(def shared-cart-id (conj ui :shared-cart-id))
+(def shared-cart (conj ui :shared-cart))
+(def shared-cart-current (conj shared-cart :current))
+(def shared-cart-url (conj shared-cart :url))
+(def shared-cart-id (conj shared-cart :id))
 
 (def selected-look-id (conj ui :selected-look-id))
 

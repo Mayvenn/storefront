@@ -707,7 +707,16 @@
    request-keys/create-shared-cart
    {:params  {:order-number order-number
               :order-token  order-token}
-    :handler #(messages/handle-message events/api-success-shared-cart
+    :handler #(messages/handle-message events/api-success-shared-cart-create
+                                       {:cart %})}))
+
+(defn fetch-shared-cart [shared-cart-id]
+  (api-req
+   GET
+   "/fetch-shared-cart"
+   request-keys/fetch-shared-cart
+   {:params  {:shared-cart-id shared-cart-id}
+    :handler #(messages/handle-message events/api-success-shared-cart-fetch
                                        {:cart %})}))
 
 (defn create-order-from-cart [shared-cart-id user-id user-token stylist-id]
