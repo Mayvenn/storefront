@@ -21,9 +21,8 @@
 
 (defn add-to-cart-button [requesting? {:keys [number]}]
   (ui/teal-button
-   (if requesting?
-     {:on-click utils/noop-callback}
-     (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number}))
+   (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
+          :spinning? requesting?)
    "Add items to bag"))
 
 (defn component [{:keys [requesting? look shared-cart products]} owner opts]
