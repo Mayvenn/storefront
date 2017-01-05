@@ -38,10 +38,10 @@
      (merge {:data-test (str "named-search-" slug)}
             (utils/route-to events/navigate-category {:named-search-slug slug}))
      [:img.unselectable (merge
-                         (utils/img-attrs (:model-circle representative-images) :small)
+                         (utils/img-attrs model-circle :small)
                          {:style {:height "128px"}})]
      [:img.mt3.unselectable (merge
-                             (utils/img-attrs (:product representative-images) :small)
+                             (utils/img-attrs product :small)
                              {:style {:height "80px"}})]
      [:div.mb3.dark-gray.medium.f4 name]]))
 
