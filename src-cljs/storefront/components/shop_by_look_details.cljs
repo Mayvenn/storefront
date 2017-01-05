@@ -62,7 +62,7 @@
      :look        (->> keypaths/ugc-looks
                        (get-in data)
                        (remove (comp #{"video"} :content-type))
-                       (filter #(= (str (:shared-cart-id %)) (:id shared-cart)))
+                       (filter #(= (str (:shared-cart-id %)) (:number shared-cart)))
                        (first))
      :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products    (get-in data keypaths/products)}))
