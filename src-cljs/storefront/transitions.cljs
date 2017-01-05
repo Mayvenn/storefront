@@ -170,11 +170,8 @@
                                                         routes/navigation-message-for)
                view-named-search-link               (when (= nav-event events/navigate-category) nav-message)
                view-look-link                       (when (= nav-event events/navigate-shared-cart)
-                                                      ;; both navigate-shared-cart and
-                                                      ;; navigate-shop-by-look-details have
-                                                      ;; :shared-cart-id in the nav-message
-                                                      [events/navigate-shop-by-look-details nav-args])
-               ;; TODO: if the view-look? experiment wins, we will not need the purchase-link, nor selected-look-id
+                                                      [events/navigate-shop-by-look-details {:look-id id}])
+               ;; TODO: if the view-look? experiment wins, we will not need the purchase-link
                purchase-link                        (when (= nav-event events/navigate-shared-cart)
                                                       ;; both navigate-shared-cart and
                                                       ;; control-create-order-from-shared-cart have
@@ -197,11 +194,21 @@
        album))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
-  (assoc-in app-state keypaths/ugc-looks (parse-ugc-album data)))
+  (assoc-in app-state keypaths/ugc-looks
+            (->> data
+                 parse-ugc-album
+                 ;; we have no design for how to play videos on the shop-by-look pages
+                 (remove (comp #{"video"} :content-type)))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album [_ event {:keys [album-data named-search-slug]} app-state]
   (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
             (parse-ugc-album album-data)))
+
+(defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
+  (assoc-in app-state keypaths/selected-look-id nil))
+
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
+  (assoc-in app-state keypaths/selected-look-id (js/parseInt look-id)))
 
 (defmethod transition-state events/control-popup-ugc-category [_ event {:keys [offset]} app-state]
   (-> app-state

@@ -34,7 +34,8 @@
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
-            [storefront.utils.maps :as maps]))
+            [storefront.utils.maps :as maps]
+            [storefront.utils.query :as query]))
 
 (defn potentially-show-email-popup [app-state]
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
@@ -182,10 +183,6 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
   (pixlee/fetch-mosaic))
 
-(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [shared-cart-id]} app-state]
-  (pixlee/fetch-mosaic)
-  (api/fetch-shared-cart shared-cart-id))
-
 (defn fetch-named-search-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
@@ -201,6 +198,14 @@
                (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
       (pixlee/fetch-named-search-album-ids))
     (fetch-named-search-album app-state)))
+
+(defmethod perform-effects events/pixlee-api-success-fetch-mosaic [_ event _ app-state]
+  (when-let [look-id (get-in app-state keypaths/selected-look-id)]
+    ;; we're on the /shop/look/details page, so fetch the corresponding cart
+    (let [shared-cart-id (->> (get-in app-state keypaths/ugc-looks)
+                              (query/get {:id look-id})
+                              :shared-cart-id)]
+      (api/fetch-shared-cart shared-cart-id))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ app-state]
   (fetch-named-search-album app-state))

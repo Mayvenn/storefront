@@ -8,6 +8,7 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
+            [storefront.utils.query :as query]
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -59,15 +60,11 @@
         [:div (add-to-cart-button requesting? shared-cart)]])])))
 
 (defn query [data]
-  (let [shared-cart (get-in data keypaths/shared-cart-current)]
-    {:shared-cart shared-cart
-     :look        (->> keypaths/ugc-looks
-                       (get-in data)
-                       (remove (comp #{"video"} :content-type))
-                       (filter #(= (str (:shared-cart-id %)) (:number shared-cart)))
-                       (first))
-     :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :products    (get-in data keypaths/products)}))
+  {:shared-cart (get-in data keypaths/shared-cart-current)
+   :look        (->> (get-in data keypaths/ugc-looks)
+                     (query/get {:id (get-in data keypaths/selected-look-id)}))
+   :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :products    (get-in data keypaths/products)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
