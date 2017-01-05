@@ -12,7 +12,8 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.order-summary :as order-summary]
-            [cemerick.url :as url]))
+            [cemerick.url :as url]
+            [clojure.string :as str]))
 
 (def social-icon {"instagram" svg/instagram
                   "facebook"  svg/facebook-f
@@ -47,7 +48,8 @@
            [:div.right.inline-block {:style {:width  "20px"
                                              :height "20px"}}
             (social-icon (:social-service look))]]
-          (when (:title look) [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])]
+          (when-not (str/blank? (:title look))
+            [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])]
      (let [line-items (:line-items shared-cart)
            item-count (->> line-items (map :quantity) (reduce +))]
        [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
