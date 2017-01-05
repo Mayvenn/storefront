@@ -77,16 +77,14 @@
        [:.right-align.gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
-(defn ^:private display-line-item [{:keys [id product-name variant-attrs unit-price] :as line-item}
+(defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
                                    quantity-line]
   [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
    [:a.left.mr1
     [:img.border.border-dark-silver.rounded
-     {:src   thumbnail
-      :alt   product-name
-      :style {:width  "7.33em"
-              :height "7.33em"}}]]
+     (assoc thumbnail :style {:width  "7.33em"
+                              :height "7.33em"})]]
    [:.overflow-hidden.h5.dark-gray.p1
     [:a.dark-gray.medium.titleize (products/product-title line-item)]
     [:.mt1.h6.line-height-2
@@ -100,7 +98,7 @@
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
-     (products/thumbnail-url products product-id)
+     (products/thumbnail-img products product-id)
      [:div "Quantity: " quantity])))
 
 (defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
@@ -109,7 +107,7 @@
           removing? (get delete-line-item-requests variant-id)]
       (display-line-item
        line-item
-       (products/thumbnail-url products product-id)
+       (products/thumbnail-img products product-id)
        [:.mt2.flex.items-center.justify-between
         (if removing?
           [:.h3 {:style {:width "1.2em"}} ui/spinner]

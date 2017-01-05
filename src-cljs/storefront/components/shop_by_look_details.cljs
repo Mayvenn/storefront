@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.carousel :as carousel]
             [storefront.assets :as assets]
             [storefront.events :as events]
             [storefront.routes :as routes]
@@ -14,20 +15,39 @@
             [storefront.accessors.orders :as orders]
             [storefront.components.order-summary :as order-summary]
             [cemerick.url :as url]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [storefront.accessors.products :as products]))
 
-(def social-icon {"instagram" svg/instagram
-                  "facebook"  svg/facebook-f
-                  "pinterest" svg/pinterest
-                  "twitter"   svg/twitter})
-
-(defn add-to-cart-button [requesting? {:keys [number]}]
+(defn add-to-cart-button [creating-order? {:keys [number]}]
   (ui/teal-button
    (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
-          :spinning? requesting?)
+          :spinning? creating-order?)
    "Add items to bag"))
 
-(defn component [{:keys [requesting? look shared-cart products]} owner opts]
+(defn carousel [imgs]
+  (let [items (mapv (fn [img]
+                      {:id   (subs (:src img) (max 0 (- (count img) 50)))
+                       :body [:img.col-12 img]})
+                    imgs)]
+    (om/build carousel/component
+              {:slides (map :body items)
+               :settings {:dots true
+                          :dotsClass "carousel-dots"}}
+              {:react-key "look-carousel"})))
+
+(defn distinct-product-imgs [shared-cart products]
+  (->> shared-cart
+       :line-items
+       (map :product-id)
+       (map (partial products/closeup-img products))
+       distinct))
+
+(defn imgs [look shared-cart products]
+  ;; TODO: parse-ugc-album could turn photos (urls) into imgs (:src and :alt)
+  (cons {:src (:large-photo look)}
+        (distinct-product-imgs shared-cart products)))
+
+(defn component [{:keys [creating-order? look shared-cart products]} owner opts]
   (om/component
    (html
     [:div.container
@@ -45,13 +65,13 @@
      [:div.clearfix
       (when look
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-         [:img.block.col-12 {:src (:photo look)}]
+         (carousel (imgs look shared-cart products))
          [:div
           [:div.px3.py2.mbp1.bg-light-silver
            [:div.medium.gray.h5.inline-block (str "@" (:user-handle look))]
            [:div.right.inline-block {:style {:width  "20px"
                                              :height "20px"}}
-            (social-icon (:social-service look))]]
+            (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
             [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])
       (when shared-cart
@@ -60,14 +80,14 @@
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
            [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
            (order-summary/display-line-items line-items products)
-           (add-to-cart-button requesting? shared-cart)]))]])))
+           (add-to-cart-button creating-order? shared-cart)]))]])))
 
 (defn query [data]
-  {:shared-cart (get-in data keypaths/shared-cart-current)
-   :look        (->> (get-in data keypaths/ugc-looks)
-                     (query/get {:id (get-in data keypaths/selected-look-id)}))
-   :requesting? (utils/requesting? data request-keys/create-order-from-shared-cart)
-   :products    (get-in data keypaths/products)})
+  {:shared-cart     (get-in data keypaths/shared-cart-current)
+   :look            (->> (get-in data keypaths/ugc-looks)
+                         (query/get {:id (get-in data keypaths/selected-look-id)}))
+   :creating-order? (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :products        (get-in data keypaths/products)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

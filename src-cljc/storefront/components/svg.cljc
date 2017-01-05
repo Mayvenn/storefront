@@ -126,6 +126,13 @@
    [:svg.container-size
     (svg-xlink "styleseat")]))
 
+(def social-icon
+  {"instagram" instagram
+   "facebook"  facebook-f
+   "pinterest" pinterest
+   "twitter"   twitter
+   "styleseat" styleseat})
+
 ;; Footer
 
 (defn ^:private mayvenn-on-social [title xlink]

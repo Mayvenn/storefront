@@ -27,12 +27,11 @@
    [:div.col.col-3.px1 c]
    [:div.col.col-3.px1 d]])
 
-(defn show-item [products {:keys [id product-name product-id unit-price variant-attrs quantity] :as item}]
+(defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
    [:img.left.border.border-silver.mr3
-    {:style {:width "5rem"}
-     :src   (products/thumbnail-url products product-id)
-     :alt   product-name}]
+    (assoc (products/thumbnail-img products product-id)
+           :style {:width "5rem"})]
    [:div.overflow-hidden
     [:div.h4.medium.titleize (products/product-title item)]
     [:div.line-height-3.h5.mt1

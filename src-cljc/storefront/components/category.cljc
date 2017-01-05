@@ -212,11 +212,10 @@
    [:img.col-12 (utils/img-attrs image :large)]])
 
 (defn carousel [images {:keys [slug]}]
-  (let [items (->> images
-                   (map-indexed (fn [idx image]
-                                  {:id   (subs (:large_url image) (max 0 (- (count image) 50)))
-                                   :body (carousel-image image)}))
-                   vec)]
+  (let [items (mapv (fn [image]
+                      {:id   (subs (:large_url image) (max 0 (- (count image) 50)))
+                       :body (carousel-image image)})
+                    images)]
     (component/build carousel/component
                      {:slides (map :body items)
                       :settings {:dots true

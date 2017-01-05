@@ -39,12 +39,7 @@
    [:div.flex.items-center.rounded-bottom.bg-white.py2.px3
     [:div.flex-auto.gray.bold "@" user-handle]
     [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}
-     (case social-service
-       "instagram" svg/instagram
-       "facebook"  svg/facebook-f
-       "pinterest" svg/pinterest
-       "twitter"   svg/twitter
-       nil)]]])
+     (svg/social-icon social-service)]]])
 
 (defn component [{:keys [album]} owner opts]
   (om/component
