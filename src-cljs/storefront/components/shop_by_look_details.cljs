@@ -25,15 +25,11 @@
    "Add items to bag"))
 
 (defn carousel [imgs]
-  (let [items (mapv (fn [{:keys [src] :as img}]
-                      {:id   (subs src (max 0 (- (count src) 50)))
-                       :body [:img.col-12 img]})
-                    imgs)]
-    (om/build carousel/component
-              {:slides (map :body items)
-               :settings {:dots true
-                          :dotsClass "carousel-dots"}}
-              {:react-key "look-carousel"})))
+  (om/build carousel/component
+            {:slides (mapv (fn [img] [:img.col-12 img]) imgs)
+             :settings {:dots true
+                        :dotsClass "carousel-dots"}}
+            {:react-key "look-carousel"}))
 
 (defn distinct-product-imgs [shared-cart products]
   (->> shared-cart
