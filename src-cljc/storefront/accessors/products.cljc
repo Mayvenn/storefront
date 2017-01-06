@@ -27,13 +27,14 @@
     (clojure.string/join " " strs)))
 
 (defn product-img-with-size [product size]
-  (let [size-url (keyword (str (name size) "_url"))
-        img      (query/get
-                  {:type                   "product"
-                   (comp boolean size-url) true}
-                  (get product :images))]
-    {:src (size-url img)
-     :alt (:name product)}))
+  (when product
+    (let [size-url (keyword (str (name size) "_url"))
+          img      (query/get
+                    {:type                   "product"
+                     (comp boolean size-url) true}
+                    (get product :images))]
+      {:src (size-url img)
+       :alt (:name product)})))
 
 (defn small-img [products product-id]
   (product-img-with-size (get products product-id) :small))

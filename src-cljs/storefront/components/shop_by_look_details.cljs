@@ -25,8 +25,8 @@
    "Add items to bag"))
 
 (defn carousel [imgs]
-  (let [items (mapv (fn [img]
-                      {:id   (subs (:src img) (max 0 (- (count img) 50)))
+  (let [items (mapv (fn [{:keys [src] :as img}]
+                      {:id   (subs src (max 0 (- (count src) 50)))
                        :body [:img.col-12 img]})
                     imgs)]
     (om/build carousel/component
@@ -40,6 +40,7 @@
        :line-items
        (map :product-id)
        (map (partial products/large-img products))
+       (remove nil?)
        distinct))
 
 (defn imgs [look shared-cart products]
