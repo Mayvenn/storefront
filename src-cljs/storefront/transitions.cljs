@@ -184,11 +184,10 @@
                                                         url/url
                                                         :path
                                                         routes/navigation-message-for)
-               view-named-search-link               (when (= nav-event events/navigate-category) nav-message)
                view-look-link                       (when (= nav-event events/navigate-shared-cart)
                                                       [events/navigate-shop-by-look-details {:look-id id}])
-               ;; TODO: if the view-look? experiment wins, we will not need the purchase-link
-               purchase-link                        (when (= nav-event events/navigate-shared-cart)
+               ;; TODO: if the view-look? experiment wins, we will not need the purchase-look-link
+               purchase-look-link                   (when (= nav-event events/navigate-shared-cart)
                                                       ;; both navigate-shared-cart and
                                                       ;; control-create-order-from-shared-cart have
                                                       ;; :shared-cart-id in the nav-message
@@ -200,9 +199,9 @@
             :imgs           imgs
             :social-service source
             :shared-cart-id (:shared-cart-id nav-args)
-            :links          {:view-named-search view-named-search-link
-                             :view-look         view-look-link
-                             :purchase          purchase-link}
+            :links          {:view-other    nav-message
+                             :view-look     view-look-link
+                             :purchase-look purchase-look-link}
             :title          title}))
        album))
 

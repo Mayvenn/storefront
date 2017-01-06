@@ -15,16 +15,16 @@
   [:img.col-12.block img])
 
 (defn buy-look-button [creating-order? selected-look-id {:keys [id links]} view-look?]
-  (let [{:keys [purchase view-look view-named-search]} links]
+  (let [{:keys [purchase-look view-look view-other]} links]
     (ui/teal-button
      (merge
       {:spinning? (and (= id selected-look-id) creating-order?)
        :disabled? creating-order?}
-      (if view-named-search
-        (apply utils/route-to view-named-search)
+      (if (or view-look purchase-look)
         (if view-look?
           (apply utils/route-to view-look)
-          (apply utils/fake-href purchase))))
+          (apply utils/fake-href purchase-look))
+        (apply utils/route-to view-other)))
      (if view-look?
        "View this look"
        "Shop this look"))))
