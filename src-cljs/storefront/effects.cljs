@@ -81,6 +81,14 @@
   (when-let [value (get-in app-state keypaths/email-capture-session)]
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
 
+(defn redirect
+  ([event] (redirect event nil))
+  ([event args] (handle-message events/redirect {:nav-message [event args]})))
+
+(defn page-not-found []
+  (redirect events/navigate-home)
+  (handle-message events/flash-later-show-failure {:message "Page not found"}))
+
 (defmulti perform-effects identity)
 
 (defmethod perform-effects :default [dispatch event args app-state])
@@ -115,10 +123,6 @@
 (defmethod perform-effects events/external-redirect-telligent [_ event args app-state]
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
                                    config/telligent-community-url)))
-
-(defn redirect
-  ([event] (redirect event nil))
-  ([event args] (handle-message events/redirect {:nav-message [event args]})))
 
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} app-state]
   (apply history/enqueue-redirect nav-message))
@@ -202,10 +206,11 @@
 (defmethod perform-effects events/pixlee-api-success-fetch-mosaic [_ event _ app-state]
   (when-let [look-id (get-in app-state keypaths/selected-look-id)]
     ;; we're on the /shop/look/details page, so fetch the corresponding cart
-    (let [shared-cart-id (->> (get-in app-state keypaths/ugc-looks)
-                              (query/get {:id look-id})
-                              :shared-cart-id)]
-      (api/fetch-shared-cart shared-cart-id))))
+    (if-let [shared-cart-id (->> (get-in app-state keypaths/ugc-looks)
+                                 (query/get {:id look-id})
+                                 :shared-cart-id)]
+      (api/fetch-shared-cart shared-cart-id)
+      (page-not-found))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ app-state]
   (fetch-named-search-album app-state))
@@ -220,9 +225,7 @@
     (redirect events/navigate-sign-in)
 
     (not (stylists/own-store? app-state))
-    (do
-      (redirect events/navigate-home)
-      (handle-message events/flash-later-show-failure {:message "Page not found"}))
+    (page-not-found)
 
     :else nil))
 
