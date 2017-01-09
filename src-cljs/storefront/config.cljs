@@ -69,4 +69,11 @@
     {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :mosaic     {:albumId 965034}}))
 
+(def manual-experiments
+  (case js/environment
+    "production"
+    ;; TODO: To enable experiment on production, define the variations and deploy
+    {"address-login" []}
 
+    {"address-login" [{:name "original"}
+                      {:name "variation" :feature "address-login"}]}))

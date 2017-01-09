@@ -16,10 +16,6 @@
                 (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
                 (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
-(def manual-experiments
-  {"address-login" [{:name "original"}
-                    {:name "variation" :feature "address-login"}]})
-
 (defn str->int [s radix]
   #?(:clj  (java.lang.Integer/parseInt s radix)
      :cljs (js/parseInt s radix)))
@@ -29,7 +25,7 @@
      :cljs (.charCodeAt c 0)))
 
 (defn variation-for [data experiment]
-  (let [variations (get manual-experiments experiment)
+  (let [variations (get-in data (conj keypaths/experiments-manual experiment))
 
         ;; We want to randomly bucket a user into a variation. We can use
         ;; session-id for this. This algorithm turns session-id into session-n
@@ -46,12 +42,7 @@
         exp-offset (reduce + (map char->int experiment))
 
         variation (nth variations (mod (+ exp-offset session-n)
-                                       (count variations))) ;; Random
-        ;; local HEAT helpers, can be removed after address-login is feature complete
-        ;; Always Off
-        #_(first variations)
-        ;; Always On
-        #_(last variations)]
+                                       (count variations)))]
     variation))
 
 (defn feature-for [data experiment]
