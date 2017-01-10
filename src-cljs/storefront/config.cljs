@@ -43,6 +43,26 @@
                           "production" "10003995-10005092"
                           "10003995-10005089"))
 
+(def convert-goals
+  (case js/environment
+    "production"
+    {"view-categories"     "100016254"
+     "view-category"       "100016255"
+     "place-order"         "100016055"
+     "revenue"             "100016054"
+     "apple-pay-checkout"  "100017135"
+     "checkout"            "100017136"
+     "paypal-checkout"     "100017137"
+     "apple-pay-available" "100017138"}
+    {"view-categories"     "100016257"
+     "view-category"       "100016256"
+     "place-order"         "100016047"
+     "revenue"             "100016046"
+     "apple-pay-checkout"  "100017131"
+     "checkout"            "100017132"
+     "paypal-checkout"     "100017133"
+     "apple-pay-available" "100017134"}))
+
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))
