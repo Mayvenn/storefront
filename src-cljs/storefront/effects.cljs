@@ -131,50 +131,47 @@
   (apply history/enqueue-redirect nav-message))
 
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
-(defmethod perform-effects events/navigate [dispatch event args app-state]
-  (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
-    ;; TODO: are nav-event and nav-args ever different from event and args?
-    (refresh-account app-state)
-    (api/get-sms-number)
-    (api/get-promotions (get-in app-state keypaths/api-cache)
-                        (or
-                         (first (get-in app-state keypaths/order-promotion-codes))
-                         (get-in app-state keypaths/pending-promo-code)))
+(defmethod perform-effects events/navigate [_ event {:keys [query-params] :as args} app-state]
+  (refresh-account app-state)
+  (api/get-sms-number)
+  (api/get-promotions (get-in app-state keypaths/api-cache)
+                      (or
+                       (first (get-in app-state keypaths/order-promotion-codes))
+                       (get-in app-state keypaths/pending-promo-code)))
 
-    (let [order-number (get-in app-state keypaths/order-number)
-          loaded-order? (boolean (get-in app-state (conj keypaths/order :total)))
-          checkout-page? (= (take 2 event) events/navigate-checkout)]
-      (when (and order-number
-                 (or (not checkout-page?)
-                     (not loaded-order?)))
-        (api/get-order order-number (get-in app-state keypaths/order-token))))
-    (seo/set-tags app-state)
-    (scroll/snap-to-top)
+  (let [order-number   (get-in app-state keypaths/order-number)
+        loaded-order?  (boolean (get-in app-state (conj keypaths/order :total)))
+        checkout-page? (routes/current-page? [event args] events/navigate-checkout)]
+    (when (and order-number
+               (or (not checkout-page?)
+                   (not loaded-order?)))
+      (api/get-order order-number (get-in app-state keypaths/order-token))))
+  (seo/set-tags app-state)
+  (scroll/snap-to-top)
 
-    (when-let [pending-promo-code (-> nav-args :query-params :sha)]
-      (cookie-jar/save-pending-promo-code
+  (when-let [pending-promo-code (:sha query-params)]
+    (cookie-jar/save-pending-promo-code
+     (get-in app-state keypaths/cookie)
+     pending-promo-code)
+    (redirect event (update-in args [:query-params] dissoc :sha)))
+
+  (let [utm-params (some-> query-params
+                           (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                           (set/rename-keys {:utm_source   :storefront/utm-source
+                                             :utm_medium   :storefront/utm-medium
+                                             :utm_campaign :storefront/utm-campaign
+                                             :utm_content  :storefront/utm-content
+                                             :utm_term     :storefront/utm-term})
+                           (maps/filter-nil))]
+    (when (seq utm-params)
+      (cookie-jar/save-utm-params
        (get-in app-state keypaths/cookie)
-       pending-promo-code)
-      (redirect nav-event (update-in nav-args [:query-params] dissoc :sha)))
+       utm-params)))
 
-    (let [utm-params (some-> nav-args
-                             :query-params
-                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                             (set/rename-keys {:utm_source   :storefront/utm-source
-                                               :utm_medium   :storefront/utm-medium
-                                               :utm_campaign :storefront/utm-campaign
-                                               :utm_content  :storefront/utm-content
-                                               :utm_term     :storefront/utm-term})
-                             (maps/filter-nil))]
-      (when (seq utm-params)
-        (cookie-jar/save-utm-params
-         (get-in app-state keypaths/cookie)
-         utm-params)))
+  (when (get-in app-state keypaths/popup)
+    (handle-message events/control-popup-hide))
 
-    (when (get-in app-state keypaths/popup)
-      (handle-message events/control-popup-hide))
-
-    (exception-handler/refresh))
+  (exception-handler/refresh)
 
   (update-email-capture-session app-state))
 
