@@ -46,7 +46,7 @@
 (defn component [{:keys [creating-order? look shared-cart products]} owner opts]
   (om/component
    (html
-    [:div.container
+    [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.gray
