@@ -130,9 +130,10 @@
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} app-state]
   (apply history/enqueue-redirect nav-message))
 
+;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [dispatch event args app-state]
-  ;; TODO: This is all triggered on pages we're redirecting through. :(
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
+    ;; TODO: are nav-event and nav-args ever different from event and args?
     (refresh-account app-state)
     (api/get-sms-number)
     (api/get-promotions (get-in app-state keypaths/api-cache)
