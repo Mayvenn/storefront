@@ -17,6 +17,7 @@
             [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
             [storefront.events :as events]
+            [storefront.routes :as routes]
             [storefront.history :as history]
             [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.convert :as convert]
