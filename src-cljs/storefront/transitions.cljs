@@ -149,12 +149,6 @@
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
-(defmethod transition-state events/navigate-checkout-address [_ event args app-state]
-  (cond-> app-state
-    (get-in app-state keypaths/user-email)
-    ;; help with analytics of funnel
-    (assoc-in keypaths/navigation-message [event {:query-params {:loggedin true}}])))
-
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
