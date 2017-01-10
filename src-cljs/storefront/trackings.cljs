@@ -115,10 +115,10 @@
                                               :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_in" {:type flow})))
 
-;; TODO: Do this on checkout "confirm and guest sign up"
+;; TODO: Make sure this happens on "confirm and guest sign up"
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
-  (if (= (first (get-in app-state keypaths/return-navigation-message))
-         events/navigate-checkout-address)
+  (if (routes/current-page? (get-in app-state keypaths/navigation-message)
+                            events/navigate-checkout)
     (stringer/track-event "checkout-sign_up" {:type flow
                                               :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_up" {:type flow})))
