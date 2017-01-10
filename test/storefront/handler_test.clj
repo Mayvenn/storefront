@@ -210,6 +210,20 @@
                     (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
                       (is (.contains cookie "preferred-store-slug=;Max-Age=0;") (str cookie))))))
 
+(deftest redirects-classes
+  (with-handler handler
+    (testing "http"
+      (let [resp (handler (mock/request :get "http://classes.mayvenn.com"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
+               (get-in resp [:headers "Location"])))))
+
+    (testing "https"
+      (let [resp (handler (mock/request :get "https://classes.mayvenn.com"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
+               (get-in resp [:headers "Location"])))))))
+
 (deftest redirects-vistaprint
   (with-handler handler
     (testing "http"

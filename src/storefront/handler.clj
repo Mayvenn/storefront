@@ -106,6 +106,9 @@
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains server-name server-port] :as req}]
     (cond
+      (= "classes" (first subdomains))
+      (redirect "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform")
+
       (= "vistaprint" (first subdomains))
       (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
