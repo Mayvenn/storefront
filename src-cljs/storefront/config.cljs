@@ -72,8 +72,14 @@
 (def manual-experiments
   (case js/environment
     "production"
-    ;; TODO: To enable experiment on production, define the variations and deploy
-    {"address-login" []}
+    ;; TODO: To enable experiment on production, define experiment convert id and the
+    ;; variations and deploy.
+    ;; DO NOT define the variations until you want to deploy - it will corrupt
+    ;; Convert and keep too many users out of the experiment
+    {"address-login" {:convert-id nil
+                      :variations []}}
 
-    {"address-login" [{:name "original"}
-                      {:name "variation" :feature "address-login"}]}))
+    ;; FIXME: Even the non-production ids are just stolen from some old experiment
+    {"address-login" {:convert-id "100011894"
+                      :variations [{:name "original" :convert-id "100073286"}
+                                   {:name "variation" :convert-id "100073287" :feature "address-login"}]}}))

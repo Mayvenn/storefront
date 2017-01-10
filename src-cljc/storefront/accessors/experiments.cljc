@@ -25,7 +25,7 @@
      :cljs (.charCodeAt c 0)))
 
 (defn variation-for [data experiment]
-  (let [variations (get-in data (conj keypaths/experiments-manual experiment))
+  (let [variations (get-in data (conj keypaths/experiments-manual experiment :variations))
 
         ;; We want to randomly bucket a user into a variation. We can use
         ;; session-id for this. This algorithm turns session-id into session-n
