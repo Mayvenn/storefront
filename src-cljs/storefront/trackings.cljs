@@ -110,11 +110,12 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
   (if (routes/current-page? (get-in app-state keypaths/navigation-message)
-                            events/navigate-checkout-sign-in)
+                            events/navigate-checkout)
     (stringer/track-event "checkout-sign_in" {:type flow
                                               :order_number (get-in app-state keypaths/order-number)})
     (stringer/track-event "sign_in" {:type flow})))
 
+;; TODO: Do this on checkout "confirm and guest sign up"
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (if (= (first (get-in app-state keypaths/return-navigation-message))
          events/navigate-checkout-address)
@@ -167,8 +168,15 @@
   (checkout-initiate app-state "paypal")
   (convert/track-conversion "paypal-checkout"))
 
-(defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
+(defn track-become-guest [app-state]
   (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)}))
+
+(defmethod perform-track events/control-checkout-as-guest-submit [_ events args app-state]
+  (track-become-guest app-state))
+
+(defmethod perform-track events/control-checkout-update-addresses-submit [_ events {:keys [become-guest?]} app-state]
+  (when become-guest?
+    (track-become-guest app-state)))
 
 (defmethod perform-track events/api-success-update-order-update-address [_ events args app-state]
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))

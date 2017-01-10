@@ -16,8 +16,40 @@
                 (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
                 (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
+(defn str->int [s radix]
+  #?(:clj  (java.lang.Integer/parseInt s radix)
+     :cljs (js/parseInt s radix)))
+
+(defn char->int [c]
+  #?(:clj  (int c)
+     :cljs (.charCodeAt c 0)))
+
+(defn variation-for [data experiment]
+  (let [variations (get-in data (conj keypaths/experiments-manual experiment :variations))
+
+        ;; We want to randomly bucket a user into a variation. We can use
+        ;; session-id for this. This algorithm turns session-id into session-n
+        ;; an integer that: ranges from 0 to 1295, is randomly distributed
+        ;; across all the users, and is deterministic for any given user.
+        ;; (Because it is cookied, it sticks with the customer for a long time
+        ;; - one year.) Caveat: since it is associated with a browser, it will
+        ;; have different values on different devices for the same person.
+        ;; This is somewhat unavoidable since it has to work for logged-out
+        ;; users too.
+        session-n  (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
+        ;; We also want to avoid always assigning the same set of people to the
+        ;; same side of an experiment.
+        exp-offset (reduce + (map char->int experiment))
+
+        variation (nth variations (mod (+ exp-offset session-n)
+                                       (count variations)))]
+    variation))
+
+(defn feature-for [data experiment]
+  (:feature (variation-for data experiment)))
+
 (defn display-feature? [data feature]
-  ((set (get-in data keypaths/features)) feature))
+  (contains? (set (get-in data keypaths/features)) feature))
 
 (defn kinky-straight? [data]
   (display-feature? data "kinky-straight-2"))
@@ -27,3 +59,7 @@
 
 (defn view-look? [data]
   (display-feature? data "view-look"))
+
+(defn address-login? [data]
+  (or (display-feature? data "address-login")
+      (= "address-login" (feature-for data "address-login"))))

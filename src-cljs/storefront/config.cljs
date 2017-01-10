@@ -43,6 +43,26 @@
                           "production" "10003995-10005092"
                           "10003995-10005089"))
 
+(def convert-goals
+  (case js/environment
+    "production"
+    {"view-categories"     "100016254"
+     "view-category"       "100016255"
+     "place-order"         "100016055"
+     "revenue"             "100016054"
+     "apple-pay-checkout"  "100017135"
+     "checkout"            "100017136"
+     "paypal-checkout"     "100017137"
+     "apple-pay-available" "100017138"}
+    {"view-categories"     "100016257"
+     "view-category"       "100016256"
+     "place-order"         "100016047"
+     "revenue"             "100016046"
+     "apple-pay-checkout"  "100017131"
+     "checkout"            "100017132"
+     "paypal-checkout"     "100017133"
+     "apple-pay-available" "100017134"}))
+
 (def google-analytics-property (case js/environment
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))
@@ -69,4 +89,17 @@
     {:api-key    "iiQ27jLOrmKgTfIcRIk"
      :mosaic     {:albumId 965034}}))
 
+(def manual-experiments
+  (case js/environment
+    "production"
+    ;; TODO: To enable experiment on production, define experiment convert id and the
+    ;; variations and deploy.
+    ;; DO NOT define the variations until you want to deploy - it will corrupt
+    ;; Convert and keep too many users out of the experiment
+    {"address-login" {:convert-id nil
+                      :variations []}}
 
+    ;; FIXME: Even the non-production ids are just stolen from some old experiment
+    {"address-login" {:convert-id "100011894"
+                      :variations [{:name "original" :convert-id "100073286"}
+                                   {:name "variation" :convert-id "100073287" :feature "address-login"}]}}))

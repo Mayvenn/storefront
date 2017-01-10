@@ -2,10 +2,10 @@
   (:require [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :refer [community-url own-store?]]
+            [storefront.accessors.nav :as nav]
             [storefront.assets :as assets]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            [storefront.components.nav :as nav]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]

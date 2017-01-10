@@ -70,6 +70,7 @@
 
 (defpath navigate-checkout)
 (defpath navigate-checkout-sign-in)
+(defpath navigate-checkout-returning-or-guest)
 (defpath navigate-checkout-address)
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
@@ -246,6 +247,7 @@
 
 (defpath convert)
 (defpath enable-feature)
+(defpath bucketed-for)
 
 (defpath reviews)
 (defpath reviews-component-mounted)

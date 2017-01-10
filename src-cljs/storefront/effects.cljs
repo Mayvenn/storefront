@@ -5,6 +5,8 @@
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.nav :as nav]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
@@ -101,6 +103,7 @@
   (riskified/insert-beacon (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
   (talkable/insert)
+  (places-autocomplete/insert)
   (refresh-account app-state)
   (refresh-current-order app-state)
   (doseq [feature (get-in app-state keypaths/features)]
@@ -128,6 +131,7 @@
   (apply history/enqueue-redirect nav-message))
 
 (defmethod perform-effects events/navigate [dispatch event args app-state]
+  ;; TODO: This is all triggered on pages we're redirecting through. :(
   (let [[nav-event nav-args] (get-in app-state keypaths/navigation-message)]
     (refresh-account app-state)
     (api/get-sms-number)
@@ -319,17 +323,34 @@
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
-(defmethod perform-effects events/navigate-checkout [_ event args app-state]
-  (cond
-    (not (get-in app-state keypaths/order-number))
-    (redirect events/navigate-cart)
+(defn ensure-bucketed-for [app-state experiment]
+  (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment)]
+    (when-not already-bucketed?
+      (when-let [variation (experiments/variation-for app-state experiment)]
+        (handle-message events/bucketed-for {:experiment experiment :variation variation}))
+      (when-let [feature (experiments/feature-for app-state experiment)]
+        (handle-message events/enable-feature {:feature feature})))))
 
-    (not (or (= event events/navigate-checkout-sign-in)
-             (get-in app-state keypaths/user-id)
-             (get-in app-state keypaths/checkout-as-guest)))
-    (redirect events/navigate-checkout-sign-in)))
+(defmethod perform-effects events/navigate-checkout [_ event args app-state]
+  (let [have-cart? (get-in app-state keypaths/order-number)]
+    (if-not have-cart?
+      (redirect events/navigate-cart)
+      (let [authenticated?  (or (get-in app-state keypaths/user-id)
+                                (get-in app-state keypaths/checkout-as-guest))
+            authenticating? (nav/checkout-auth-events event)]
+        (when-not authenticated?
+          (ensure-bucketed-for app-state "address-login"))
+        (when-not (or authenticated? authenticating?)
+          (redirect (if (experiments/address-login? app-state)
+                      events/navigate-checkout-returning-or-guest
+                      events/navigate-checkout-sign-in)))))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
+  (facebook/insert))
+
+(defmethod perform-effects events/navigate-checkout-returning-or-guest [_ event args app-state]
+  (places-autocomplete/remove-containers)
+  (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
 
 (defn- fetch-saved-cards [app-state]
@@ -337,7 +358,7 @@
     (api/get-saved-cards user-id (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args app-state]
-  (places-autocomplete/insert-places-autocomplete)
+  (places-autocomplete/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
 
@@ -524,6 +545,10 @@
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
+  ;; TODO: if the address-login? experiment wins, this may not be correct. Or
+  ;; rather, it would probably be useful for allowing checkout-sign-in to
+  ;; advance to checkout-address, but it's incredibly convoluted that you have
+  ;; to go through checkout-returning-or-guest first.
   (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
@@ -857,3 +882,6 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
+
+(defmethod perform-effects events/bucketed-for [_ event {:keys [experiment variation]} app-state]
+  (convert/join-variation experiment variation))

@@ -6,6 +6,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.nav :as nav]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.hooks.talkable :as talkable]
             [storefront.state :as state]
@@ -39,17 +40,9 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(def return-event-blacklisted? #{events/navigate-not-found
-                                 events/navigate-sign-in
-                                 events/navigate-sign-out
-                                 events/navigate-sign-up
-                                 events/navigate-forgot-password
-                                 events/navigate-reset-password
-                                 events/navigate-checkout-sign-in})
-
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
-    (if (return-event-blacklisted? return-event)
+    (if (nav/return-blacklisted? return-event)
       app-state
       (assoc-in app-state keypaths/return-navigation-message [return-event return-args]))))
 
@@ -143,11 +136,18 @@
 (defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
   (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
+(defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
+  (let [direct-load? (= [events/navigate-home {}]
+                        (get-in app-state keypaths/return-navigation-message))]
+    (when direct-load?
+      (assoc-in app-state keypaths/return-navigation-message
+                [events/navigate-checkout-address {}]))))
+
+(defmethod transition-state events/navigate-checkout-returning-or-guest [_ event args app-state]
+  (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
+
 (defmethod transition-state events/navigate-checkout-sign-in [_ event args app-state]
-  (when (= [events/navigate-home {}]
-         (get-in app-state keypaths/return-navigation-message))
-    (assoc-in app-state keypaths/return-navigation-message
-              [events/navigate-checkout-address {}])))
+  (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (cond-> app-state
@@ -292,8 +292,14 @@
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 
-(defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
+(defn become-guest [app-state]
   (assoc-in app-state keypaths/checkout-as-guest true))
+
+(defmethod transition-state events/control-checkout-update-addresses-submit [_ event {:keys [become-guest?]} app-state]
+  (when become-guest? (become-guest app-state)))
+
+(defmethod transition-state events/control-checkout-as-guest-submit [_ event args app-state]
+  (become-guest app-state))
 
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
@@ -600,8 +606,10 @@
 (defmethod transition-state events/flash-dismiss [_ event args app-state]
   (clear-flash app-state))
 
-(defmethod transition-state events/enable-feature
-  [_ event {:keys [feature]} app-state]
+(defmethod transition-state events/bucketed-for [_ event {:keys [experiment]} app-state]
+  (update-in app-state keypaths/experiments-bucketed conj experiment))
+
+(defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
   (update-in app-state keypaths/features conj feature))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]

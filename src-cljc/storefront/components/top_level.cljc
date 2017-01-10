@@ -2,13 +2,14 @@
   (:require #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             #?@(:cljs [[storefront.components.cart :as cart]
+                       [storefront.components.checkout-sign-in :as checkout-sign-in]
+                       [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
-                       [storefront.components.checkout-sign-in :as checkout-sign-in]
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
@@ -55,6 +56,7 @@
          events/navigate-account-referrals              (partial sign-in/requires-sign-in friend-referrals/built-component)
          events/navigate-friend-referrals               friend-referrals/built-component
          events/navigate-cart                           cart/built-component
+         events/navigate-checkout-returning-or-guest    checkout-returning-or-guest/built-component
          events/navigate-checkout-sign-in               checkout-sign-in/built-component
          events/navigate-checkout-address               (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
          events/navigate-checkout-payment               (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)

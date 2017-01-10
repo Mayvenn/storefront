@@ -1,5 +1,6 @@
 (ns storefront.state
   (:require [storefront.events :as events]
+            [storefront.config :as config]
             [clojure.string :as string]
             [storefront.browser.cookie-jar :as cookie-jar]))
 
@@ -121,6 +122,9 @@
                         :state_id 0
                         :zipcode ""
                         :phone ""}
+
+     :experiments {:bucketed #{}
+                   :manual config/manual-experiments}
 
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
