@@ -148,7 +148,12 @@
                    (not loaded-order?)))
       (api/get-order order-number (get-in app-state keypaths/order-token))))
   (seo/set-tags app-state)
-  (handle-later events/snap {:top (get-in app-state keypaths/restore-scroll-top 0)} 200)
+  (let [restore-scroll-top (get-in app-state keypaths/restore-scroll-top 0)]
+    (if (zero? restore-scroll-top)
+      ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
+      (scroll/snap-to-top)
+      ;; Otherwise give the screen some time to render before trying to restore scroll
+      (handle-later events/snap {:top restore-scroll-top} 100)))
 
   (when-let [pending-promo-code (:sha query-params)]
     (cookie-jar/save-pending-promo-code
