@@ -101,5 +101,5 @@
 
     ;; FIXME: Even the non-production ids are just stolen from some old experiment
     {"address-login" {:convert-id "100011894"
-                      :variations [{:name "original" :convert-id "100073286"}
-                                   {:name "variation" :convert-id "100073287" :feature "address-login"}]}}))
+                      :variations [#_{:name "original" :convert-id "100073286"}
+                                   #_{:name "variation" :convert-id "100073287" :feature "address-login"}]}}))
