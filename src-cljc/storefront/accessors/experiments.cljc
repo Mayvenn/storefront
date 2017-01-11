@@ -41,8 +41,9 @@
         ;; same side of an experiment.
         exp-offset (reduce + (map char->int experiment))
 
-        variation (nth variations (mod (+ exp-offset session-n)
-                                       (count variations)))]
+        variation (when (seq variations)
+                    (nth variations (mod (+ exp-offset session-n)
+                                         (count variations))))]
     variation))
 
 (defn feature-for [data experiment]
