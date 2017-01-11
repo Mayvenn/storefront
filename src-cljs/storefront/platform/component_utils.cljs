@@ -32,6 +32,17 @@
      (handle-message events/control-menu-collapse-all)
      (history/enqueue-navigate navigation-event args))})
 
+(defn route-back-or-to [can-go-back? navigation-event & [args]]
+  {:href (routes/path-for navigation-event args)
+   :on-click
+   (fn [e]
+     (.preventDefault e)
+     (handle-message events/control-menu-collapse-all)
+     ;; when possible use history.back(), so that scroll is restored
+     (if can-go-back?
+       (js/history.back)
+       (history/enqueue-navigate navigation-event args)))})
+
 (defn requesting?
   ([data request-key] (requesting? data :request-key request-key))
   ([data request-search request-key]

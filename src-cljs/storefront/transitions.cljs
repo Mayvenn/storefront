@@ -40,6 +40,27 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
+(defn maintain-scroll-state [app-state {:keys [leaving-scroll-top browser-nav?]}]
+  (if (get-in app-state keypaths/redirecting?)
+    app-state
+    ;; "prior"   -> page before that
+    ;; "leaving" -> page you're leaving
+    ;; "going"   -> page you're going to
+    (let [prior-scroll-top    (get-in app-state keypaths/prior-scroll-state)
+          ;; In our app, browser-nav? indicates the back/forward browser buttons were used
+          ;; it is also triggered by history.back()
+          ;; in any of those cases we want to restore scroll position
+          ;; all other cases are "new" navigations, and we want to scroll to top
+          restore-scroll-top  (if browser-nav? prior-scroll-top 0)]
+      (-> app-state
+          (assoc-in keypaths/prior-scroll-state leaving-scroll-top)
+          (assoc-in keypaths/restore-scroll-top restore-scroll-top)))))
+
+(defn save-prior-nav-message [app-state]
+  (if (get-in app-state keypaths/redirecting?)
+    app-state
+    (assoc-in app-state keypaths/prior-navigation-message (get-in app-state keypaths/navigation-message))))
+
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
     (if (nav/return-blacklisted? return-event)
@@ -65,18 +86,22 @@
 (defmethod transition-state events/redirect [_ event {:keys [nav-message]} app-state]
   (assoc-in app-state keypaths/redirecting? true))
 
-(defmethod transition-state events/navigate [_ event args app-state]
-  (-> app-state
-      collapse-menus
-      add-return-event
-      (add-pending-promo-code args)
-      clear-flash
-      (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
-      (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
-      (assoc-in keypaths/flash-later-success nil)
-      (assoc-in keypaths/flash-later-failure nil)
-      (assoc-in keypaths/redirecting? false)
-      (assoc-in keypaths/navigation-message [event args])))
+(defmethod transition-state events/navigate [_ event {:keys [nav-snapshot] :as args} app-state]
+  (let [args (dissoc args :nav-snapshot)]
+    (-> app-state
+        collapse-menus
+        add-return-event
+        (add-pending-promo-code args)
+        clear-flash
+        (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
+        (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
+        (assoc-in keypaths/flash-later-success nil)
+        (assoc-in keypaths/flash-later-failure nil)
+        ;; order is important from here on
+        (maintain-scroll-state nav-snapshot)
+        save-prior-nav-message
+        (assoc-in keypaths/redirecting? false)
+        (assoc-in keypaths/navigation-message [event args]))))
 
 (def ^:private hostname (comp :host url/url))
 

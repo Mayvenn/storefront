@@ -156,6 +156,8 @@
 (defpath control-play-video)
 (defpath video-played)
 
+(defpath snap)
+
 (defpath api)
 (defpath api-start)
 (defpath api-end)

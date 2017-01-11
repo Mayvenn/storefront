@@ -23,18 +23,19 @@
     (.setUseFragment false)
     (.setPathPrefix "")
     (.setEnabled true)
-    (goog.events/listen EventType/NAVIGATE (fn [e] (callback)))))
+    (goog.events/listen EventType/NAVIGATE (fn [e] (callback (.-isNavigation e))))))
 
 (def app-history)
 
-(defn set-current-page []
-  (let [uri          (.getToken app-history)
-        ;; TODO: If this fix (that we stop assuming location.href will be
-        ;; available) works, there are several other places that use location
-        ;; that also need to be fixed
-        query-params (:query (url (or js/window.location.href js/document.URL "")))]
+(defn set-current-page [browser-nav?]
+  (let [uri                  (.getToken app-history)
+        query-params         (:query (url (or js/window.location.href js/document.URL "")))
+        [nav-event nav-args] (navigation-message-for uri query-params)]
     (apply handle-message
-           (navigation-message-for uri query-params))))
+           [nav-event (assoc nav-args
+                             :nav-snapshot
+                             {:leaving-scroll-top js/document.body.scrollTop
+                              :browser-nav?       browser-nav?})])))
 
 (defn start-history []
   (set! app-history (make-history set-current-page)))

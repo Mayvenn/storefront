@@ -43,14 +43,14 @@
   (cons (-> look :imgs :large)
         (distinct-product-imgs shared-cart products)))
 
-(defn component [{:keys [creating-order? look shared-cart products]} owner opts]
+(defn component [{:keys [creating-order? look shared-cart products will-return-to-shop-by-look?]} owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.gray
-        (utils/route-to events/navigate-shop-by-look)
+        (utils/route-back-or-to will-return-to-shop-by-look? events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
                           :src   (assets/path "/images/icons/carat-left.png")}]
@@ -79,11 +79,13 @@
            (add-to-cart-button creating-order? shared-cart)]))]])))
 
 (defn query [data]
-  {:shared-cart     (get-in data keypaths/shared-cart-current)
-   :look            (->> (get-in data keypaths/ugc-looks)
-                         (query/get {:id (get-in data keypaths/selected-look-id)}))
-   :creating-order? (utils/requesting? data request-keys/create-order-from-shared-cart)
-   :products        (get-in data keypaths/products)})
+  {:shared-cart                  (get-in data keypaths/shared-cart-current)
+   :look                         (->> (get-in data keypaths/ugc-looks)
+                                      (query/get {:id (get-in data keypaths/selected-look-id)}))
+   :creating-order?              (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :products                     (get-in data keypaths/products)
+   ;; NOTE: not using current-page? because it would return true for navigate-shop-by-look-details too
+   :will-return-to-shop-by-look? (= events/navigate-shop-by-look (get-in data keypaths/prior-navigation-event))})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

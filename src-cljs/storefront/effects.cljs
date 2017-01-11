@@ -148,7 +148,7 @@
                    (not loaded-order?)))
       (api/get-order order-number (get-in app-state keypaths/order-token))))
   (seo/set-tags app-state)
-  (scroll/snap-to-top)
+  (handle-later events/snap {:top (get-in app-state keypaths/restore-scroll-top 0)} 200)
 
   (when-let [pending-promo-code (:sha query-params)]
     (cookie-jar/save-pending-promo-code
@@ -793,6 +793,9 @@
 
 (defmethod perform-effects events/flash-show [_ event args app-state]
   (scroll/snap-to-top))
+
+(defmethod perform-effects events/snap [_ _ {:keys [top]} app-state]
+  (scroll/snap-to top))
 
 (defmethod perform-effects events/api-failure-pending-promo-code [_ event args app-state]
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
