@@ -64,3 +64,6 @@
 (defn address-login? [data]
   (or (display-feature? data "address-login")
       (= "address-login" (feature-for data "address-login"))))
+
+(defn price-strikeout? [data]
+  (display-feature? data "price-strikeout"))
