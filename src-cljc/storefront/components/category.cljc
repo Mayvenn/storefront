@@ -278,7 +278,7 @@
                          adding-to-bag?
                          bagged-variants
                          ugc
-                         proposed-cart-quantity
+                         proposed-bundle-count
                          selected-variant
                          price-strikeout?]}
                  owner opts]
@@ -303,7 +303,7 @@
              (starting-at (:initial-variants bundle-builder)))
            (when (and price-strikeout?
                       (named-searches/eligible-for-triple-bundle-discount? named-search))
-             (triple-bundle-upsell proposed-cart-quantity))]
+             (triple-bundle-upsell proposed-bundle-count))]
           (if fetching-variants?
             [:div.h2.mb2 ui/spinner]
             [:div
@@ -320,7 +320,7 @@
                  (no-variant-summary (bundle-builder/next-step bundle-builder)))]
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 (if price-strikeout?
-                  (triple-bundle-upsell proposed-cart-quantity)
+                  (triple-bundle-upsell proposed-bundle-count)
                   triple-bundle-upsell-static))
               (when selected-variant
                 (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
@@ -335,18 +335,22 @@
         bundle-builder   (get-in data keypaths/bundle-builder)
         variant-quantity (get-in data keypaths/browse-variant-quantity)
         selected-variant (bundle-builder/selected-variant bundle-builder)]
-    {:named-search           named-search
-     :bundle-builder         bundle-builder
-     :variant-quantity       variant-quantity
-     :selected-variant       selected-variant
-     :fetching-variants?     (not (named-searches/products-loaded? data named-search))
-     :adding-to-bag?         (utils/requesting? data request-keys/add-to-bag)
-     :bagged-variants        (get-in data keypaths/browse-recently-added-variants)
-     :reviews                (reviews/query data)
-     :ugc                    (ugc/query data)
-     :proposed-cart-quantity (+ (orders/product-quantity (get-in data keypaths/order))
-                                (if selected-variant variant-quantity 0))
-     :price-strikeout?       (experiments/price-strikeout? data)}))
+    {:named-search          named-search
+     :bundle-builder        bundle-builder
+     :variant-quantity      variant-quantity
+     :selected-variant      selected-variant
+     :fetching-variants?    (not (named-searches/products-loaded? data named-search))
+     :adding-to-bag?        (utils/requesting? data request-keys/add-to-bag)
+     :bagged-variants       (get-in data keypaths/browse-recently-added-variants)
+     :reviews               (reviews/query data)
+     :ugc                   (ugc/query data)
+     :proposed-bundle-count (+ (->> (get-in data keypaths/order)
+                                    orders/product-items
+                                    (filter products/bundle?)
+                                    (map :quantity)
+                                    (reduce +))
+                               (if selected-variant variant-quantity 0))
+     :price-strikeout?      (experiments/price-strikeout? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
