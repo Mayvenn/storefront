@@ -127,8 +127,6 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(def included-named-search? (complement :stylist_only?))
-
 (declare reset-options)
 (defn ^:private auto-advance [{:keys [flow selected-options selected-variants] :as bundle-builder}]
   (or (when-let [next-step (next-step bundle-builder)]
