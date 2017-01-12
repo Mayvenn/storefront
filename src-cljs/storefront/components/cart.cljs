@@ -147,7 +147,7 @@ Thanks,
                            :spinning? applying-coupon?}
                           "Apply")]]]
 
-       (summary/display-order-summary order {:read-only? false})
+       (summary/display-order-summary order {:read-only? false} price-strikeout?)
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}

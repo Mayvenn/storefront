@@ -14,9 +14,9 @@
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
    [:tr.h5.line-height-4
-    (merge row-attrs
-           (when (neg? amount)
-             {:class "teal"}))
+    (merge (when (neg? amount)
+             {:class "teal"})
+           row-attrs)
     [:td name]
     [:td.right-align.medium
      {:class (when-not (neg? amount)
@@ -42,7 +42,7 @@
       "Offer and Rebate Details ➤"]]]
    [:div.border-bottom.border-dark-silver ui/nbsp]])
 
-(defn display-order-summary [order {:keys [read-only?]}]
+(defn display-order-summary [order {:keys [read-only?]} price-strikeout?]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
@@ -51,20 +51,23 @@
      [:.py2.border-top.border-bottom.border-dark-silver
       [:table.col-12
        [:tbody
-        (summary-row "Subtotal"
-                                      (orders/products-subtotal order))
-
-        (for [{:keys [name price coupon-code]} adjustments]
-          (when-not (= price 0)
-            (summary-row
-             {:key name}
-             [:div
-              (orders/display-adjustment-name name)
-              (when (and (not read-only?) coupon-code)
-                [:a.ml1.h6.light-gray
-                 (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
-                 "Remove"])]
-             price)))
+        (summary-row "Subtotal" (orders/products-subtotal order))
+        (for [{:keys [name price coupon-code] :as adj} adjustments]
+          (do
+            (prn adj)
+            (when-not (= price 0)
+              (summary-row
+               (merge {:key name}
+                      ;; coupon-code present, but nil means this adjustment is the bundle discount
+                      (when (and price-strikeout? (= [:coupon-code nil] (find adj :coupon-code)))
+                        {:class "red"}))
+               [:div
+                (orders/display-adjustment-name name)
+                (when (and (not read-only?) coupon-code)
+                  [:a.ml1.h6.light-gray
+                   (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                   "Remove"])]
+               price))))
 
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
@@ -80,6 +83,7 @@
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
                                    quantity-line
+                                   bundle-quantity
                                    price-strikeout?]
   [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
    [:a.left.mr1
@@ -91,36 +95,42 @@
     [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div (if price-strikeout?
-             "Price Each: "
-             "Price: ")
-      (as-money-without-cents unit-price)]
+     (if price-strikeout?
+       [:div "Price Each: " (ui/strike-price {:price            unit-price
+                                              :bundle-quantity  bundle-quantity
+                                              :price-strikeout? price-strikeout?
+                                              :bundle-eligible? (products/bundle? line-item)})]
+       [:div "Price: " (as-money-without-cents unit-price)])
      quantity-line]]])
 
 (defn display-line-items [line-items products price-strikeout?]
-  (for [{:keys [quantity product-id] :as line-item} line-items]
-    (display-line-item
-     line-item
-     (products/small-img products product-id)
-     [:div "Quantity: " quantity]
-     price-strikeout?)))
-
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests price-strikeout?]
-  (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
-    (let [updating? (get update-line-item-requests variant-id)
-          removing? (get delete-line-item-requests variant-id)]
+  (let [bundle-quantity (orders/line-item-quantity (filter products/bundle? line-items))]
+    (for [{:keys [quantity product-id] :as line-item} line-items]
       (display-line-item
        line-item
        (products/small-img products product-id)
-       [:.mt2.flex.items-center.justify-between
-        (if removing?
-          [:.h3 {:style {:width "1.2em"}} ui/spinner]
-          [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
-        [:.h3
-         (when-let [variant (query/get {:id variant-id}
-                                       (:variants (get products product-id)))]
-           (ui/counter quantity
-                       updating?
-                       (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
-                       (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]
+       [:div "Quantity: " quantity]
+       bundle-quantity
        price-strikeout?))))
+
+(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests price-strikeout?]
+  (let [bundle-quantity (orders/line-item-quantity (filter products/bundle? line-items))]
+    (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
+      (let [updating? (get update-line-item-requests variant-id)
+            removing? (get delete-line-item-requests variant-id)]
+        (display-line-item
+         line-item
+         (products/small-img products product-id)
+         [:.mt2.flex.items-center.justify-between
+          (if removing?
+            [:.h3 {:style {:width "1.2em"}} ui/spinner]
+            [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+          [:.h3
+           (when-let [variant (query/get {:id variant-id}
+                                         (:variants (get products product-id)))]
+             (ui/counter quantity
+                         updating?
+                         (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
+                         (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]
+         bundle-quantity
+         price-strikeout?)))))

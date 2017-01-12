@@ -164,14 +164,6 @@
    (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
    (quantity-and-price-structure ui/nbsp "$--.--")))
 
-(defn strike-price [price proposed-bundle-count price-strikeout?]
-  (if (and price-strikeout?
-           (>= proposed-bundle-count 3))
-    [:span
-     [:span.strike.mr1 (as-money-without-cents price)]
-     [:span.red {:item-prop "price"} (as-money (* 0.9 price))]]
-    [:span {:item-prop "price"} (as-money-without-cents price)]))
-
 (defn variant-summary [{:keys [flow
                                variant
                                variant-quantity
@@ -182,7 +174,10 @@
      (variant-name variant flow)
      (quantity-and-price-structure
       (counter-or-out-of-stock can_supply? variant-quantity)
-      (strike-price price proposed-bundle-count price-strikeout?)))))
+      (ui/strike-price {:price price
+                        :bundle-quantity proposed-bundle-count
+                        :price-strikeout? price-strikeout?
+                        :bundle-eligible? (products/bundle? variant)})))))
 
 (def triple-bundle-upsell-static
   (component/html [:p.center.p2.navy promos/bundle-discount-description]))
@@ -247,7 +242,10 @@
      [:div.light-gray.f6 "Starting at"]
      [:div.gray.f2.light
       {:item-prop "price"}
-      (strike-price cheapest-price proposed-bundle-count price-strikeout?)]]))
+      (ui/strike-price {:price cheapest-price
+                        :bundle-quantity proposed-bundle-count
+                        :price-strikeout? price-strikeout?
+                        :bundle-eligible? true})]]))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
@@ -359,8 +357,7 @@
      :proposed-bundle-count (+ (->> (get-in data keypaths/order)
                                     orders/product-items
                                     (filter products/bundle?)
-                                    (map :quantity)
-                                    (reduce +))
+                                    orders/line-item-quantity)
                                (if selected-variant variant-quantity 0))
      :price-strikeout?      (experiments/price-strikeout? data)}))
 

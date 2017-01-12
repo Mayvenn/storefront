@@ -1,4 +1,5 @@
-(ns storefront.accessors.orders)
+(ns storefront.accessors.orders
+  (:require [storefront.accessors.products :as products]))
 
 (defn incomplete? [order]
   (and (-> order :state #{"cart"} boolean)
@@ -57,8 +58,13 @@
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
 
+(defn line-item-quantity [line-items]
+  (->> line-items
+       (map :quantity)
+       (reduce +)))
+
 (defn product-quantity [order]
-  (reduce + 0 (map :quantity (product-items order))))
+  (line-item-quantity (product-items order)))
 
 (defn products-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-items order))))

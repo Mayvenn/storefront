@@ -388,3 +388,12 @@
        [:div.border.circle.border-dark-gray.h6.center.ml1
         {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
         bar-width])]))
+
+(defn strike-price [{:keys [price bundle-quantity bundle-eligible? price-strikeout?]}]
+  (if (and price-strikeout?
+           (>= bundle-quantity 3)
+           bundle-eligible?)
+    [:span
+     [:span.strike.mr1 (mf/as-money-without-cents price)]
+     [:span.red {:item-prop "price"} (mf/as-money (* 0.9 price))]]
+    [:span {:item-prop "price"} (mf/as-money-without-cents price)]))
