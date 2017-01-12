@@ -25,7 +25,8 @@
            placing-order?
            requires-additional-payment?
            payment delivery order
-           products]}
+           products
+           price-strikeout?]}
    owner]
   (om/component
    (html
@@ -38,7 +39,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items (orders/product-items order) products)]]
+        (summary/display-line-items (orders/product-items order) products price-strikeout?)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -67,7 +68,8 @@
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
    :payment                      (checkout-payment/credit-card-form-query data)
-   :delivery                     (checkout-delivery/query data)})
+   :delivery                     (checkout-delivery/query data)
+   :price-strikeout?             (experiments/price-strikeout? data)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

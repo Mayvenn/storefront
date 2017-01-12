@@ -79,7 +79,8 @@
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
-                                   quantity-line]
+                                   quantity-line
+                                   price-strikeout?]
   [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
    [:a.left.mr1
     [:img.border.border-dark-silver.rounded
@@ -90,18 +91,21 @@
     [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div "Price Each: "
+     [:div (if price-strikeout?
+             "Price Each: "
+             "Price: ")
       (as-money-without-cents unit-price)]
      quantity-line]]])
 
-(defn display-line-items [line-items products]
+(defn display-line-items [line-items products price-strikeout?]
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
      (products/small-img products product-id)
-     [:div "Quantity: " quantity])))
+     [:div "Quantity: " quantity]
+     price-strikeout?)))
 
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
+(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests price-strikeout?]
   (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
     (let [updating? (get update-line-item-requests variant-id)
           removing? (get delete-line-item-requests variant-id)]
@@ -118,4 +122,5 @@
            (ui/counter quantity
                        updating?
                        (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
-                       (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]))))
+                       (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]
+       price-strikeout?))))

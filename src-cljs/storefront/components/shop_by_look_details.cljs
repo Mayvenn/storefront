@@ -43,7 +43,7 @@
   (cons (-> look :imgs :large)
         (distinct-product-imgs shared-cart products)))
 
-(defn component [{:keys [creating-order? look shared-cart products will-return-to-shop-by-look?]} owner opts]
+(defn component [{:keys [creating-order? look shared-cart products will-return-to-shop-by-look? price-strikeout?]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -75,7 +75,7 @@
               item-count (->> line-items (map :quantity) (reduce +))]
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
            [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
-           (order-summary/display-line-items line-items products)
+           (order-summary/display-line-items line-items products price-strikeout?)
            (add-to-cart-button creating-order? shared-cart)]))]])))
 
 (defn query [data]
@@ -85,7 +85,8 @@
    :creating-order?              (utils/requesting? data request-keys/create-order-from-shared-cart)
    :products                     (get-in data keypaths/products)
    ;; NOTE: not using current-page? because it would return true for navigate-shop-by-look-details too
-   :will-return-to-shop-by-look? (= events/navigate-shop-by-look (get-in data keypaths/prior-navigation-event))})
+   :will-return-to-shop-by-look? (= events/navigate-shop-by-look (get-in data keypaths/prior-navigation-event))
+   :price-strikeout?             (experiments/price-strikeout? data)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
