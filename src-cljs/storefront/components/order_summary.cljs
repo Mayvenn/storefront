@@ -53,21 +53,19 @@
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
         (for [{:keys [name price coupon-code] :as adj} adjustments]
-          (do
-            (prn adj)
-            (when-not (= price 0)
-              (summary-row
-               (merge {:key name}
-                      ;; coupon-code present, but nil means this adjustment is the bundle discount
-                      (when (and price-strikeout? (= [:coupon-code nil] (find adj :coupon-code)))
-                        {:class "red"}))
-               [:div
-                (orders/display-adjustment-name name)
-                (when (and (not read-only?) coupon-code)
-                  [:a.ml1.h6.light-gray
-                   (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
-                   "Remove"])]
-               price))))
+          (when-not (= price 0)
+            (summary-row
+             (merge {:key name}
+                    ;; coupon-code present, but nil means this adjustment is the bundle discount
+                    (when (and price-strikeout? (= [:coupon-code nil] (find adj :coupon-code)))
+                      {:class "red"}))
+             [:div
+              (orders/display-adjustment-name name)
+              (when (and (not read-only?) coupon-code)
+                [:a.ml1.h6.light-gray
+                 (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                 "Remove"])]
+             price)))
 
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
