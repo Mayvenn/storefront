@@ -90,7 +90,7 @@
     [:.mt1.h6.line-height-2
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
-     [:div "Price: "
+     [:div "Price Each: "
       (as-money-without-cents unit-price)]
      quantity-line]]])
 
