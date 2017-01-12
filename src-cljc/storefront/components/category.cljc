@@ -1,6 +1,6 @@
 (ns storefront.components.category
   (:require [storefront.platform.component-utils :as utils]
-            [storefront.components.money-formatters :refer [as-money-without-cents]]
+            [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.products :as products]
@@ -164,15 +164,25 @@
    (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
    (quantity-and-price-structure ui/nbsp "$--.--")))
 
+(defn strike-price [price proposed-bundle-count price-strikeout?]
+  (if (and price-strikeout?
+           (>= proposed-bundle-count 3))
+    [:span
+     [:span.strike.mr1 (as-money-without-cents price)]
+     [:span.red {:item-prop "price"} (as-money (* 0.9 price))]]
+    [:span {:item-prop "price"} (as-money-without-cents price)]))
+
 (defn variant-summary [{:keys [flow
                                variant
-                               variant-quantity]}]
+                               variant-quantity
+                               proposed-bundle-count
+                               price-strikeout?]}]
   (let [{:keys [can_supply? price]} variant]
     (summary-structure
      (variant-name variant flow)
      (quantity-and-price-structure
       (counter-or-out-of-stock can_supply? variant-quantity)
-      [:span {:item-prop "price"} (as-money-without-cents price)]))))
+      (strike-price price proposed-bundle-count price-strikeout?)))))
 
 (def triple-bundle-upsell-static
   (component/html [:p.center.p2.navy promos/bundle-discount-description]))
@@ -231,13 +241,13 @@
                                  :dotsClass "carousel-dots"}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
-(defn starting-at [variants]
+(defn starting-at [variants proposed-bundle-count price-strikeout?]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center
      [:div.light-gray.f6 "Starting at"]
      [:div.gray.f2.light
       {:item-prop "price"}
-      (as-money-without-cents cheapest-price)]]))
+      (strike-price cheapest-price proposed-bundle-count price-strikeout?)]]))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
@@ -300,7 +310,7 @@
            (full-bleed-narrow (carousel carousel-images named-search))
            (when (and (not fetching-variants?)
                       needs-selections?)
-             (starting-at (:initial-variants bundle-builder)))
+             (starting-at (:initial-variants bundle-builder) proposed-bundle-count price-strikeout?))
            (when (and price-strikeout?
                       (named-searches/eligible-for-triple-bundle-discount? named-search))
              (triple-bundle-upsell proposed-bundle-count))]
@@ -314,9 +324,11 @@
              [:div schema-org-offer-props
               [:div.my2
                (if selected-variant
-                 (variant-summary {:flow             (:flow bundle-builder)
-                                   :variant          selected-variant
-                                   :variant-quantity variant-quantity})
+                 (variant-summary {:flow                  (:flow bundle-builder)
+                                   :variant               selected-variant
+                                   :variant-quantity      variant-quantity
+                                   :proposed-bundle-count proposed-bundle-count
+                                   :price-strikeout?      price-strikeout?})
                  (no-variant-summary (bundle-builder/next-step bundle-builder)))]
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 (if price-strikeout?
