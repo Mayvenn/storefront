@@ -700,21 +700,19 @@
       (not opted-in?)
       (assoc-in keypaths/email-capture-session "dismissed"))))
 
-(def stripe-error-param-translation
+(def stripe->storefront-field
   {"number"    "card-number"
    "exp_month" "card-expiration"
    "exp_year"  "card-expiration"
    "cvc"       "security-code"})
 
 (defmethod transition-state events/stripe-failure-create-token [_ event stripe-response app-state]
-  ;; get the :type :code and :message from :error in stripe response
-  ;; define field errors based on :type (:type -> path) and :long message = :message
-  ;; add :field-errors, :error-code and :error-message into errors
-  ;; we should check first - if the path doesn't match, then dont generate field-errors and flash the message instead.
-  (let [error         (:error stripe-response)
-        error-code    (:code error)
-        path          (-> (:param error) (stripe-error-param-translation nil))
-        message       (:message error)
-        field-errors  (when path {[path] [{:path [path] :long-message message}]})
-        flash-message (if field-errors "Oops! Please fix the errors below." message)]
-    (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code error-code :error-message flash-message})))
+  (let [{:keys [code message param]} (:error stripe-response)
+        field                        (stripe->storefront-field param)]
+    (assoc-in app-state keypaths/errors
+              {:field-errors  (when field
+                                {[field] [{:path [field] :long-message message}]})
+               :error-code    code
+               :error-message (if field
+                                "Oops! Please fix the errors below."
+                                message)})))
