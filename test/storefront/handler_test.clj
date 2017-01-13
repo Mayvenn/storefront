@@ -262,13 +262,13 @@
                      (get-in resp [:headers "Location"]))))
 
             (testing "it records the utm params associated with the request"
-              (is (= 1 (count (waiter-requests))))
+              (is (= 1 (count waiter-requests)))
               (is (= {:utm-source   "source"
                       :utm-campaign "campaign"
                       :utm-term     "term"
                       :utm-content  "content"
                       :utm-medium   "medium"}
-                     (-> (waiter-requests) first :body (parse-string true) :utm-params)))))))))
+                     (-> waiter-requests first :body (parse-string true) :utm-params)))))))))
 
   (testing "when waiter returns a non-200 response without an error-code"
     (with-standalone-server [waiter (standalone-server (constantly {:status  500
