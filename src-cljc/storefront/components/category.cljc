@@ -20,6 +20,9 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]))
 
+(defn normalize-variant [variant]
+  (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))
+
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
@@ -77,7 +80,7 @@
    (number->words quantity)
    " "
    ;; TODO keys need to be renamed in cellar at some point
-   (products/product-title (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))])
+   (products/product-title (normalize-variant variant))])
 
 (def checkout-button
   (component/html
@@ -177,7 +180,7 @@
       (ui/strike-price {:price price
                         :bundle-quantity proposed-bundle-count
                         :price-strikeout? price-strikeout?
-                        :bundle-eligible? (products/bundle? variant)})))))
+                        :bundle-eligible? (products/bundle? (normalize-variant variant))})))))
 
 (def triple-bundle-upsell-static
   (component/html [:p.center.p2.navy promos/bundle-discount-description]))
