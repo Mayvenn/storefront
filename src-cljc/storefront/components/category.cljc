@@ -361,7 +361,7 @@
                                     orders/product-items
                                     (filter products/bundle?)
                                     orders/line-item-quantity)
-                               (if selected-variant variant-quantity 0))
+                               #_(if selected-variant variant-quantity 0))
      :price-strikeout?      (experiments/price-strikeout? data)}))
 
 (defn built-component [data opts]
