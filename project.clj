@@ -104,7 +104,7 @@
   {:uberjar {:aot :all}
    :dev {:source-paths ["dev/clj"]
          :dependencies [[pjstadig/humane-test-output "0.6.0"]
-                        [standalone-test-server "0.5.1"]
+                        [standalone-test-server "0.6.1"]
                         [ring/ring-mock "0.3.0"]
                         [org.clojure/tools.namespace "0.2.11"]
                         [figwheel-sidecar "0.3.1"]]

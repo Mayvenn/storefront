@@ -121,11 +121,9 @@
                          :request-method :get})
 
 (defn assert-request [req storeback-resp asserter]
-  (let [[get-requests endpoint]
-        (recording-endpoint {:handler (constantly storeback-resp)})]
-    (with-standalone-server [ss (standalone-server endpoint)]
-      (with-handler handler
-        (asserter (handler (merge default-req-params req)))))))
+  (with-standalone-server [ss (standalone-server (constantly storeback-resp))]
+    (with-handler handler
+      (asserter (handler (merge default-req-params req))))))
 
 (deftest redirects-to-https-preserving-query-params
   (testing "mayvenn.com"
@@ -262,13 +260,13 @@
                      (get-in resp [:headers "Location"]))))
 
             (testing "it records the utm params associated with the request"
-              (is (= 1 (count waiter-requests)))
+              (is (requests-count? waiter-requests 1))
               (is (= {:utm-source   "source"
                       :utm-campaign "campaign"
                       :utm-term     "term"
                       :utm-content  "content"
                       :utm-medium   "medium"}
-                     (-> waiter-requests first :body (parse-string true) :utm-params)))))))))
+                     (-> @waiter-requests first :body (parse-string true) :utm-params)))))))))
 
   (testing "when waiter returns a non-200 response without an error-code"
     (with-standalone-server [waiter (standalone-server (constantly {:status  500
