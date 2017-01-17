@@ -19,7 +19,7 @@
 (defn component [{:keys [allowed? promo]} owner opts]
   (component/create
    (when (and allowed? promo)
-     [:div.white.center.pp5.bg-teal.f5.bold
+     [:div.white.center.pp5.bg-teal.h5.bold
       (:description promo)])))
 
 (defn query [data]

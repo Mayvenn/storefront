@@ -43,7 +43,7 @@
      [:img.mt3.unselectable (merge
                              (utils/img-attrs product :small)
                              {:style {:height "80px"}})]
-     [:div.mb3.dark-gray.medium.f4 name]]))
+     [:div.mb3.dark-gray.medium name]]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
@@ -78,7 +78,7 @@
                                                  {:breakpoint 500
                                                   :settings   (swipe 2)}]}))}
                      nil)]
-   [:div.col-6.col-4-on-tb-dt.mx-auto
+   [:div.col-8.col-4-on-tb-dt.mx-auto
     ;; button color should be light-silver/transparent
     (ui/large-ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
@@ -111,23 +111,20 @@
    [:div.container.gray.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
-    [:div.clearfix.f5
+    [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "stylist recommended"]
-      [:p.line-height-5
-       "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
+      [:h3.center.bold.mb3 "stylist recommended"]
+      [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "30 day guarantee"]
-      [:p.line-height-5
-       "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
+      [:h3.center.bold.mb3 "30 day guarantee"]
+      [:p.h5 "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange them within 30 days for FREE!"]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "fast free shipping"]
-      [:p.line-height-5
-       "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
+      [:h3.center.bold.mb3 "fast free shipping"]
+      [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
 
-    [:div.col-6.col-4-on-tb-dt.mx-auto
+    [:div.col-8.col-4-on-tb-dt.mt1.mx-auto
      (ui/teal-button
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")

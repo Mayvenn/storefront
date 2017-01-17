@@ -21,10 +21,8 @@
 
 (defn shop-section [named-searches own-store?]
   [:div.col-12
-   [:div.medium.border-bottom.border-dark-silver.mb1
-    [:div.hide-on-mb.f4 "Shop"]
-    [:div.hide-on-tb-dt "Shop"]]
-   [:nav.clearfix.f5
+   [:div.medium.border-bottom.border-dark-silver.mb1 "Shop"]
+   [:nav.clearfix
     {:role "navigation" :aria-label "Shop Products"}
     [:div.col.col-6
      (products-section (filter named-searches/is-extension? named-searches))]
@@ -35,10 +33,8 @@
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
-   [:div.medium.border-bottom.border-dark-silver.mb1
-    [:div.hide-on-mb.f4 "Contact"]
-    [:div.hide-on-tb-dt "Contact"]]
-   [:div.gray.light.f5
+   [:div.medium.border-bottom.border-dark-silver.mb1 "Contact"]
+   [:div.gray.light
     [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
     [:span.hide-on-mb call-number] ;; desktop
     " | 9am-5pm PST M-F"
@@ -48,18 +44,18 @@
     (ui/ghost-button {:href (str "tel://" call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      [:div.px1 svg/phone-ringing]
-                      [:div.left-align "Call Now"]])
+                      svg/phone-ringing
+                      [:div.ml1.left-align "Call Now"]])
     (ui/ghost-button {:href (str "sms://+1" sms-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      [:div.px1 svg/message-bubble]
-                      [:div.left-align "Send Message"]])
+                      svg/message-bubble
+                      [:div.ml1.left-align "Send Message"]])
     (ui/ghost-button {:href (str "mailto:" contact-email)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      [:div.px1 svg/mail-envelope]
-                      [:div.left-align "Send Email"]])]])
+                      svg/mail-envelope
+                      [:div.ml1.left-align "Send Email"]])]])
 
 (def social-section
   (component/html
@@ -91,7 +87,7 @@
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 social-section]]]
 
-    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.f6
+    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h6
      [:div.left
       {:item-prop "name"
        :content "Mayvenn Hair"}
@@ -115,8 +111,8 @@
    [:div.border-top.border-dark-silver.bg-white
     [:div.container
      [:div.center.px3.my2.line-height-4
-      [:div.medium.f4.gray "Need Help?"]
-      [:div.gray.light.f5
+      [:div.medium.gray "Need Help?"]
+      [:div.gray.light.h5
        [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]]
        [:span.hide-on-mb call-number]
        " | 9am-5pm PST M-F"]]]]))

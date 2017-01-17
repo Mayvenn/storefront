@@ -108,14 +108,20 @@
 /* Custom variables */
 
 :root {
-    --font-family-graphik: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-roboto: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
 
     --serif: serif;
-    --sans-serif: var(--font-family-graphik);
+    --sans-serif: var(--font-family-roboto);
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: 400;
+
+    --font-weight:         var(--light-font-weight); /* Not medium... by default, we use lightest font */
+    --heading-font-weight: var(--light-font-weight); /* Not bolder by default, use .medium or .bold */
+
+    --light-font-weight:  300;
+    --medium-font-weight: 400;
+    --bold-font-weight:   700; /* Roboto's bold */
 
     --button-line-height: 1.2;
     --button-background-color: var(--teal);
@@ -162,8 +168,6 @@
     --space-2: 10px;
     --space-3: 15px;
     --space-4: 20px;
-
-    --bold-font-weight: 600;
 
     --caps-letter-spacing: 0.1em;
 

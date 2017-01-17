@@ -46,7 +46,7 @@
                          (if (pos? cart-quantity) "fill-navy" "fill-black"))})
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:div.center.navy.f5 {:data-test "populated-cart"} cart-quantity]])])
+      [:div.center.navy.h6.line-height-1 {:data-test "populated-cart"} cart-quantity]])])
 
 (defn triangle-up [width class]
   [:div.absolute.inline-block
@@ -97,7 +97,7 @@
 (def popup-width "188px")
 
 (defn social-link [img href title last?]
-  [:a.f5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
+  [:a.h5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
    (merge {:href href}
           (when last?
             {:class "rounded-bottom-1"}))
@@ -118,16 +118,16 @@
     [:a
      [:div {:style {:margin-bottom "10px"}}
       [:div.flex.justify-center.items-center.mtp3
-       [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
-       [:div.truncate.fit.f4.navy {:data-test "nickname"} nickname]]
+       [:span.line-height-1.gray.nowrap.mrp3.h7 "HAIR BY"]
+       [:div.truncate.fit.h4.navy {:data-test "nickname"} nickname]]
       [:div.relative navy-carrot-bottom]]]
     [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
      [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit
       notch-up
       [:div.dark-gray
-       [:div.p1.f6
+       [:div.p1.h6
         [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
-        [:h4.f4.regular store-name]]
+        [:h4.regular store-name]]
        (when instagram-account
          (social-link
           [:div.mlp1.fill-light-gray {:style {:width "15px" :height "15px"}} svg/instagram]
@@ -237,25 +237,24 @@
    (shopping-bag cart-quantity)])
 
 (defn lower-left [current-page?]
-  [:div.hide-on-mb {:style {:margin-top "-12px"}}
-   [:div.right.h6
-    [:a.dark-gray.col.py1 (merge
-                           {:href           "/categories"
-                            :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
-                            :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
-                           (when (current-page? events/navigate-category) {:class selected-link}))
+  [:div.right
+   [:div.hide-on-mb {:style {:margin-top "-12px"}}
+    [:a.dark-gray.col.py1.mr4 (merge
+                               {:href           "/categories"
+                                :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
+                                :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
+                               (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
     [:a.dark-gray.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
 
 (defn lower-right [current-page?]
   [:div.hide-on-mb {:style {:margin-top "-12px"}}
-   [:div.h6
-    [:a.dark-gray.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
-     "Guarantee"]
-    [:a.dark-gray.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                           :href           "https://blog.mayvenn.com"}
-     "Blog"]]])
+   [:a.dark-gray.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
+    "Guarantee"]
+   [:a.dark-gray.col.py1.ml4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
+                              :href           "https://blog.mayvenn.com"}
+    "Blog"]])
 
 (defn header [left middle right flyout]
   [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}

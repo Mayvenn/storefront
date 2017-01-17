@@ -115,8 +115,8 @@
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
-     [:div.f3.titleize name])
-   [:div.f5.line-height-2
+     [:div.h4.titleize name])
+   [:div.h6.line-height-2
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
@@ -124,12 +124,12 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:h3.clearfix.f4
+   [:h3.clearfix.h5
     [:div.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.gray.f4.regular
+      [:div.overflow-hidden.gray.h5.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
@@ -183,10 +183,10 @@
                         :bundle-eligible? (products/bundle? (normalize-variant variant))})))))
 
 (def triple-bundle-upsell-static
-  (component/html [:p.center.p2.navy promos/bundle-discount-description]))
+  (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
 
 (defn triple-bundle-upsell [count]
-  (into [:p.center.p2.red]
+  (into [:p.center.h5.p2.red]
         (case count
           0 ["Get a Bundle Discount:" [:br] "Buy any 3 items & get 10% OFF your entire order!"]
           1 ["Add just 2 more items & get 10% OFF your entire order!"]
@@ -242,8 +242,8 @@
 (defn starting-at [variants proposed-bundle-count price-strikeout?]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center
-     [:div.light-gray.f6 "Starting at"]
-     [:div.gray.f2.light
+     [:div.gray.h6 "Starting at"]
+     [:div.dark-gray.h2.light
       {:item-prop "price"}
       (ui/strike-price {:price cheapest-price
                         :bundle-quantity proposed-bundle-count

@@ -3,6 +3,7 @@
 html {
   background-color: var(--white);
   background-size: 47px 51px;
+  font-weight: var(--font-weight);
 }
 
 @media only screen and (max-resolution: 200dpi) {
@@ -41,11 +42,11 @@ a {
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 
 :root {
-    --font-family-graphik: -apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --sans-serif: -apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: 400;
+    --heading-font-weight: var(--bold-font-weight);
     --heading-margin-top: 0;
     --heading-margin-bottom: 0;
 
@@ -58,5 +59,7 @@ a {
     --list-margin-bottom: 0;
 
     --serif: serif;
-    --sans-serif: var(--font-family-graphik);
+
+    --font-weight: 400;
+    --bold-font-weight: 600;
 }

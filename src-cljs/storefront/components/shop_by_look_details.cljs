@@ -76,7 +76,7 @@
                                              :height "20px"}}
             (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.f4.px3.py1.gray.bg-light-silver (decode-title (:title look))])]])
+            [:p.h5.px3.py1.gray.bg-light-silver (decode-title (:title look))])]])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]

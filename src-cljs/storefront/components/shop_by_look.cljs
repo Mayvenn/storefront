@@ -32,7 +32,7 @@
 (defn image-attribution [creating-order? selected-look-id {:keys [user-handle social-service] :as look} view-look?]
   [:div.bg-light-silver.p1
    [:div.flex.items-center.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
-    [:div.flex-auto.f4.gray.bold {:style {:word-break "break-all"}} "@" user-handle]
+    [:div.flex-auto.h5.gray.bold {:style {:word-break "break-all"}} "@" user-handle]
     [:div.ml1 {:style {:width "15px" :height "15px"}}
      (svg/social-icon social-service)]]
    (buy-look-button creating-order? selected-look-id look view-look?)])

@@ -72,27 +72,6 @@
     [:div.col-4.h6 ".875rem"]
     [:div.col-6.h6.mb2 "10.5px or 12px"]]
 
-   [:p.h4.my3 "The rem based fonts scale to large screens, but for designs that need the same font size on all screens, use the " [:code ".fN"] " helpers:"]
-
-   [:div.flex.flex-wrap
-    [:div.col-2.f1 ".f1"]
-    [:div.col-10.f1.mb2 "40px"]
-
-    [:div.col-2.f2 ".f2"]
-    [:div.col-10.f2.mb2 "24px"]
-
-    [:div.col-2.f3 ".f3"]
-    [:div.col-10.f3.mb2 "18px"]
-
-    [:div.col-2.f4 ".f4"]
-    [:div.col-10.f4.mb2 "14px"]
-
-    [:div.col-2.f5 ".f5"]
-    [:div.col-10.f5.mb2 "12px"]
-
-    [:div.col-2.f6 ".f6"]
-    [:div.col-10.f6.mb2 "10.5px"]]
-
    (header "Text Links")
    [:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} ":a.navy - Learn more"]]])
 

@@ -10,11 +10,11 @@
 
 (def success-img
   (svg/circled-check {:class "stroke-teal align-middle"
-                      :style {:width flash-line-height :height flash-line-height}}))
+                      :style {:width "1em" :height "1em"}}))
 
 (def error-img
   (svg/error {:class "fill-orange"
-              :style {:width flash-line-height :height flash-line-height}}))
+              :style {:width "1em" :height "1em"}}))
 
 (defn success-box [box-opts body]
   [:div.teal.bg-teal.border.border-teal.rounded.light.letter-spacing-1

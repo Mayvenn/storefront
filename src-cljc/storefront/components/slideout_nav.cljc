@@ -21,7 +21,7 @@
   ([left right]
    [:div.clearfix.pyp1
     [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
-    [:div.col.col-10.line-height-3 right]]))
+    [:div.col.col-10 right]]))
 
 (def menu-x
   (component/html
@@ -91,7 +91,7 @@
                (utils/route-to events/navigate-category {:named-search-slug slug}))
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
-         [:div.teal.titleize
+         [:div.teal.titleize.h5
           (selectable? events/navigate-category {:named-search-slug slug} name)])]])]])
 
 (defn extensions-section [selectable? named-searches]
