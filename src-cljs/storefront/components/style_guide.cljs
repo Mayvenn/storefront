@@ -120,7 +120,7 @@
                       body])]
     [:section
      (header "Spacing")
-     [:div.h4.light.mb2.gray "Margin puts space between elements. Padding puts space within elements."]
+     [:div.h4.light.mb2.dark-gray "Margin puts space between elements. Padding puts space within elements."]
 
      [:h3 "Key"]
      (subsection
@@ -157,7 +157,7 @@
      [:h3 "Padding"]
 
      [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
-     [:p.mt1.light-gray "So, " [:code.gray ".pl1"] ", " [:code.gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
+     [:p.mt1.light-gray "So, " [:code.dark-gray ".pl1"] ", " [:code.dark-gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
 
      (subsection
       "in rems"
@@ -202,8 +202,7 @@
   (subheader "Grays")
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "black" "000000")
-   (color-swatch "dark-gray" "333333")
-   (color-swatch "gray" "666666")
+   (color-swatch "dark-gray" "666666")
    (color-swatch "light-gray" "b4b4b4")
    (color-swatch "dark-silver" "dadada")
    (color-swatch "silver" "ebebeb")

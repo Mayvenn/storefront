@@ -46,7 +46,7 @@
                          commission
                          social]} owner opts]
   (component/create
-   [:div.bg-white.gray
+   [:div.bg-white.dark-gray
     [:div.container.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div

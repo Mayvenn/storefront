@@ -112,7 +112,7 @@
    [:div.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:div.border-dotted-top.border-dotted-bottom.border-gray.h5
+  [:div.border-dotted-top.border-dotted-bottom.border-dark-gray.h5
    (if (= status "paid")
      [:div.bg-aqua
       (payout-bar
@@ -168,7 +168,7 @@
                         :component "div"}
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
-                          [:.gray.bg-light-silver
+                          [:.dark-gray.bg-light-silver
                            (show-order products order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])

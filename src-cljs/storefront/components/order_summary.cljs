@@ -75,7 +75,7 @@
      [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
-       [:.right-align.gray
+       [:.right-align.dark-gray
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}

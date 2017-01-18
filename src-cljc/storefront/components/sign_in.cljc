@@ -48,7 +48,7 @@
                       :value   show-password?})]
 
       [:div.right.col-6.right-align
-       [:a.gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]]))
+       [:a.dark-gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]]))
 
 (defn form-component
   [{:keys [facebook-loaded?] :as data} _ _]
@@ -56,11 +56,11 @@
    [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
 
     (facebook/sign-in-button facebook-loaded?)
-    [:div.h5.gray.light.my2 "OR"]
+    [:div.h5.dark-gray.light.my2 "OR"]
 
     (component/build password-component data nil)
 
-    [:div.clearfix.center.gray.my2 "Don't have an account? "
+    [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
      [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]]))
 
 (defn component [form-data owner opts]

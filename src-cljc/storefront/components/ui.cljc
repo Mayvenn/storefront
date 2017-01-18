@@ -16,7 +16,7 @@
   [:div.container
    [:div.m-auto.col-8-on-tb.col-6-on-dt
     ;; TODO: should this div be in the callers?
-    (into [:div.gray.p2] content)]])
+    (into [:div.dark-gray.p2] content)]])
 
 (def spinner
   "Spinner that fills line at current font size, assuming line-height is 1.2"
@@ -150,7 +150,7 @@
     (cond-> {:for id}
       value?       (add-classes "has-value")
       error?       (add-classes "orange")
-      (not error?) (add-classes "gray"))
+      (not error?) (add-classes "dark-gray"))
     label]])
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]

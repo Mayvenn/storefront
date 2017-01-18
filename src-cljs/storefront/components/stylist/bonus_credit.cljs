@@ -17,7 +17,7 @@
                       :style {:width "1.5rem" :height "1.5rem"}}))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.gray.flex.items-center.justify-between.py1
+  [:.dark-gray.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1 check-svg]
    [:.flex-auto.h6
@@ -75,7 +75,7 @@
              (ui/progress-indicator {:value  progress-amount
                                      :maximum milestone-amount})]
 
-            [:.h6.gray
+            [:.h6.dark-gray
              "You earn "
              (mf/as-money-without-cents award-amount)
              " in credit for every "

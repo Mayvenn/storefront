@@ -43,7 +43,7 @@
 
 (defn quantity-and-price-structure [quantity price]
   [:div
-   [:div.right-align.gray.h6 "PRICE"]
+   [:div.right-align.dark-gray.h6 "PRICE"]
    [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
     [:div.navy price]]])
@@ -73,7 +73,7 @@
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.my1.p1.py2.caps.gray.bg-silver.medium.center
+  [:div.h6.my1.p1.py2.caps.dark-gray.bg-silver.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -100,10 +100,10 @@
   [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
-             sold-out?   "bg-light-gray gray light"
+             sold-out?   "bg-light-gray dark-gray light"
              later-step? "bg-dark-silver muted light"
              checked?    "bg-teal white medium"
-             true        "bg-white gray light")}
+             true        "bg-white dark-gray light")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
@@ -127,9 +127,9 @@
    [:h3.clearfix.h5
     [:div.left.navy.medium.shout
      (name step-name)
-     (when selected-option [:span.inline-block.mxp2.gray " - "])]
+     (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.gray.h5.regular
+      [:div.overflow-hidden.dark-gray.h5.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
@@ -199,7 +199,7 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
-  [:div.border.border-gray.mt2.p2.rounded
+  [:div.border.border-dark-gray.mt2.p2.rounded
    [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
@@ -212,7 +212,7 @@
         (into [:div.clearfix.my2]
               (for [[title value] attrs]
                 [:dl.col.m0.inline-block {:class size}
-                 [:dt.mx1.gray.shout.h6 title]
+                 [:dt.mx1.dark-gray.shout.h6 title]
                  [:dd.mx1.ml0.h5.navy.medium value]]))))
     (when (seq summary)
       [:div.my2
@@ -220,7 +220,7 @@
        [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h5.gray
+    [:div.h5.dark-gray
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
@@ -241,9 +241,9 @@
 
 (defn starting-at [variants proposed-bundle-count price-strikeout?]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
-    [:div.center
-     [:div.gray.h6 "Starting at"]
-     [:div.dark-gray.h2.light
+    [:div.center.dark-gray
+     [:div.h6 "Starting at"]
+     [:div.h2
       {:item-prop "price"}
       (ui/strike-price {:price cheapest-price
                         :bundle-quantity proposed-bundle-count

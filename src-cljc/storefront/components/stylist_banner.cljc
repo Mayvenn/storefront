@@ -9,7 +9,7 @@
 
 (def close-button
   (component/html
-   ;; TODO: this was fill-gray, but got lost
+   ;; TODO: this was fill-dark-gray, but got lost
    (ui/modal-close {:on-close (utils/send-event-callback events/control-stylist-banner-close)})))
 
 (def banner-copy

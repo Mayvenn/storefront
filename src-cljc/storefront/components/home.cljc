@@ -48,7 +48,7 @@
 (defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
-    [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
+    [:h2.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
     [:h3.h2.order-1.dark-gray.bold.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
@@ -108,7 +108,7 @@
 
 (defn about-mayvenn []
   (component/html
-   [:div.container.gray.py3
+   [:div.container.dark-gray.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5

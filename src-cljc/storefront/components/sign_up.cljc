@@ -20,7 +20,7 @@
 
     (facebook/sign-in-button facebook-loaded?)
 
-    [:div.h5.center.gray.light.my2 "OR"]
+    [:div.h5.center.dark-gray.light.my2 "OR"]
 
     [:form.col-12.flex.flex-column.items-center
      {:on-submit (utils/send-event-callback events/control-sign-up-submit)}
@@ -49,12 +49,12 @@
      (ui/submit-button "Sign Up"
                        {:data-test "user-submit"})
 
-     [:div.gray.mt2.mb2.col-12.left
+     [:div.dark-gray.mt2.mb2.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :value   show-password?})]
 
-     [:div.center.gray.mt2.mb2 "Already have an account? "
+     [:div.center.dark-gray.mt2.mb2 "Already have an account? "
       [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]])))
 
 (defn query [data]

@@ -37,8 +37,8 @@
      (video-view source-url)
      (image-view (:large imgs)))
    [:div.flex.items-center.rounded-bottom.bg-white.py2.px3
-    [:div.flex-auto.gray.bold "@" user-handle]
-    [:div.fill-gray.stroke-gray {:style {:width "15px" :height "15px"}}
+    [:div.flex-auto.dark-gray.bold "@" user-handle]
+    [:div.fill-dark-gray.stroke-dark-gray {:style {:width "15px" :height "15px"}}
      (svg/social-icon social-service)]]])
 
 (defn component [{:keys [album]} owner opts]
@@ -60,7 +60,7 @@
                              :responsive    [{:breakpoint 1000
                                               :settings   {:slidesToShow 2}}]}}
                  opts)
-       [:p.center.gray.m2
+       [:p.center.dark-gray.m2
         "Want to show up on our homepage? "
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 

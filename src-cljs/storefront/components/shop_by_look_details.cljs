@@ -56,7 +56,7 @@
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
-       [:a.p2.px3-on-tb-dt.left.col-12.gray
+       [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
         (utils/route-back-or-to will-return-to-shop-by-look? events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
@@ -71,12 +71,12 @@
          (carousel (imgs look shared-cart products))
          [:div
           [:div.px3.py2.mbp1.bg-light-silver
-           [:div.medium.gray.h5.inline-block (str "@" (:user-handle look))]
+           [:div.medium.dark-gray.h5.inline-block (str "@" (:user-handle look))]
            [:div.right.inline-block {:style {:width  "20px"
                                              :height "20px"}}
             (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.h5.px3.py1.gray.bg-light-silver (decode-title (:title look))])]])
+            [:p.h5.px3.py1.dark-gray.bg-light-silver (decode-title (:title look))])]])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]

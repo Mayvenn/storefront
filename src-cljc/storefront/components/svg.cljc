@@ -34,7 +34,7 @@
 
 (def micro-dollar-sign
   (component/html
-   [:svg {:class "stroke-gray" :style {:width "14px" :height "14px"}}
+   [:svg {:class "stroke-dark-gray" :style {:width "14px" :height "14px"}}
     (svg-xlink "micro-dollar-sign")]))
 
 (def large-dollar
@@ -167,7 +167,7 @@
 
 (def play-video-muted
   (component/html
-   [:svg {:class "fill-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
+   [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
 
 (def guarantee

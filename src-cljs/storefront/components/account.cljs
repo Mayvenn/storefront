@@ -46,7 +46,7 @@
                      :type      "password"
                      :hint      (when show-password? password)})
 
-     [:div.gray.mtn2.mb2.col-12.left
+     [:div.dark-gray.mtn2.mb2.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :value   show-password?})]]
@@ -71,7 +71,7 @@
                          fetching?
                          profile]} owner opts]
   (component/create
-   [:div.container.bg-white.gray
+   [:div.container.bg-white.dark-gray
     [:div.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div.ml3

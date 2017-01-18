@@ -92,7 +92,7 @@
               :required      true})]
            (when (and (not guest?) (empty? saved-cards))
              [:div.mb2
-              [:label.gray
+              [:label.dark-gray
                [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
                                   {:type      "checkbox"
                                    :data-test "payment-form-save-credit-card"})]
@@ -146,7 +146,7 @@
            [:div
             (om/build credit-card-form-component {:credit-card credit-card
                                                   :field-errors field-errors})
-            [:.h5.gray
+            [:.h5.dark-gray
              "You can review your order on the next page before we charge your card."]])
 
          (when loaded-stripe?

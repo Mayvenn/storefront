@@ -13,7 +13,7 @@
 (defn component [{:keys [facebook-loaded? address]} owner]
   (om/component
    (html
-    [:div.gray
+    [:div.dark-gray
      [:div.border-bottom.border-dark-silver
       [:div.container.py3
        [:div.col-8.mx-auto.mb1.center

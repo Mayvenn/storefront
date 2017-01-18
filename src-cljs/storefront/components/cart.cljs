@@ -72,7 +72,7 @@ Thanks,
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
-                [:.h5.gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
                 [:.border-top.border-bottom.border-dark-silver.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
@@ -83,7 +83,7 @@ Thanks,
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]
                 [:div.mt3.mb1
-                 [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12
+                 [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
@@ -153,7 +153,7 @@ Thanks,
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
-       [:div.h5.gray.center.py2 "OR"]
+       [:div.h5.dark-gray.center.py2 "OR"]
 
        [:div.pb2 (ui/large-aqua-button
                   {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
@@ -184,7 +184,7 @@ Thanks,
                                    {:style {:width  "24px"
                                             :height "18px"}}]
                                   [:div.flex-grow "Share your bag"]])
-          [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]])))
+          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]])))
 
 (defn empty-component [{:keys [promotions]} owner]
   (om/component

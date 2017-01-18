@@ -17,7 +17,7 @@
                  [:form.col-12.flex.flex-column.items-center
                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
                   [:div.h3.navy.bold.mb2 "Become an Insider"]
-                  [:p.h5.gray.mb2
+                  [:p.h5.dark-gray.mb2
                    "Want exclusive offers and first access to products? Sign up for our email alerts below!"]
                   [:div.col-12.border-top.border-silver ui/nbsp]
                   (ui/text-field {:errors   (get field-errors ["email"])
@@ -29,7 +29,7 @@
                                   :type     "email"
                                   :value    email})
                   [:div.col-12.mtn2.mb2 (ui/submit-button "Submit")]
-                  [:p.h6.gray.mb2
+                  [:p.h6.dark-gray.mb2
                    "By signing up, you agree to receive Mayvenn emails and promotions. "
                    "You can unsubscribe at any time. See our Privacy Policy for details."]]])))))
 

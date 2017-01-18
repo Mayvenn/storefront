@@ -15,7 +15,7 @@
 
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
-    [:a.block.py1.gray.light.titleize (merge {:key slug}
+    [:a.block.py1.dark-gray.light.titleize (merge {:key slug}
                                              (utils/route-to events/navigate-category {:named-search-slug slug}))
      name]))
 
@@ -34,12 +34,12 @@
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
    [:div.medium.border-bottom.border-dark-silver.mb1 "Contact"]
-   [:div.gray.light
+   [:div.dark-gray.light
     [:div.py1
-     [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+     [:span.hide-on-tb-dt [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
      " | 9am-5pm PST M-F"]
-    [:a.block.py1.gray {:href (str "mailto:" contact-email)} contact-email]]
+    [:a.block.py1.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.hide-on-tb-dt
     (ui/ghost-button {:href (str "tel://" call-number)
@@ -112,9 +112,9 @@
    [:div.border-top.border-dark-silver.bg-white
     [:div.container
      [:div.center.px3.my2
-      [:div.my1.medium.gray "Need Help?"]
-      [:div.gray.light.h5
-       [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]]
+      [:div.my1.medium.dark-gray "Need Help?"]
+      [:div.dark-gray.light.h5
+       [:span.hide-on-tb-dt [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
        [:span.hide-on-mb call-number]
        " | 9am-5pm PST M-F"]]]]))
 

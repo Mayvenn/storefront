@@ -22,7 +22,7 @@
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
        {:style {:width "2.5rem" :height "2.5rem"}
-        :class (if (seq instagram-account) "fill-teal" "fill-gray")}
+        :class (if (seq instagram-account) "fill-teal" "fill-dark-gray")}
        svg/instagram]
       [:div.flex-auto
        (ui/text-field {:data-test "account-instagram"
@@ -38,7 +38,7 @@
      [:div.flex.col-12
       [:div.flex-none.mr2.mt1
        {:style {:width "2.5rem" :height "2.5rem"}
-        :class (if (seq styleseat-account) "fill-teal" "fill-gray")}
+        :class (if (seq styleseat-account) "fill-teal" "fill-dark-gray")}
        svg/styleseat]
       [:div.flex-auto
        (ui/text-field {:data-test "account-styleseat"

@@ -21,7 +21,7 @@
         svg-circle-size {:r inner-radius :cy radius :cx radius :stroke-width stroke-width :fill "none"}]
     [:svg {:width diameter :height diameter}
      [:g {:transform (str "rotate(-90 " radius " " radius ")")}
-      [:circle.stroke-gray svg-circle-size]
+      [:circle.stroke-dark-gray svg-circle-size]
       [:circle.stroke-teal (merge svg-circle-size {:style {:stroke-dasharray  circumference
                                                            :stroke-dashoffset arc-length}})]]]))
 
@@ -32,8 +32,8 @@
     (html
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
      [:div.relative
-      [:div.h6.line-height-1.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
-      [:div.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
+      [:div.h6.line-height-1.dark-gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
+      [:div.border-dashed.border-dark-gray.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
   (html
@@ -48,7 +48,7 @@
   [:div.relative
    [:div.center.absolute.overlay.m-auto {:style {:height "50%"}}
     [:div.h5.line-height-1.teal.medium.mbp4 (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:div.h7.line-height-1.gray "of " (mf/as-money-without-cents earning-amount)]]
+    [:div.h7.line-height-1.dark-gray "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
@@ -65,8 +65,8 @@
       [:div.mr1 (ui/circle-picture profile-picture-url)]
       [:div.flex-auto
        [:div.h3.navy name]
-       [:div.h6.gray
-        [:div.gray "Joined " (f/long-date join-date)]
+       [:div.h6.dark-gray
+        [:div.dark-gray "Joined " (f/long-date join-date)]
         (when (= state :paid)
           [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
       [:div.ml1.mr3-on-tb-dt (state-icon state earning-amount commissioned-revenue)]])))
@@ -74,7 +74,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in referrals since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:div.h6.gray
+    [:div.h6.dark-gray
      [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
@@ -107,7 +107,7 @@
   (html
    [:div.center.p3.hide-on-mb
     [:div.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
-    [:p.h3.gray "Looks like you haven't" [:br] "referred anyone yet."]]))
+    [:p.h3.dark-gray "Looks like you haven't" [:br] "referred anyone yet."]]))
 
 (defn component [{:keys [earning-amount
                          bonus-amount
@@ -167,7 +167,7 @@
                      " "
                      (when flash-failure flash-failure)])])
                 [:div.h3.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
-                [:p.light.gray.my2
+                [:p.light.dark-gray.my2
                  "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]

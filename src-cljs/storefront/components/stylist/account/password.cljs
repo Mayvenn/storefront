@@ -28,7 +28,7 @@
                      :value     password
                      :hint      (when show-password? password)})
 
-     [:div.gray.mtn2.mb2.col-12.left
+     [:div.dark-gray.mtn2.mb2.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :value   show-password?})]]

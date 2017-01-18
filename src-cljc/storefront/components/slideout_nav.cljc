@@ -28,8 +28,8 @@
    [:div.absolute {:style {:width "60px"}}
     [:div.relative.rotate-45.p2 {:style {:height "60px"}
                                  :on-click #(messages/handle-message events/control-menu-collapse-all)}
-     [:div.absolute.border-right.border-gray {:style {:width "18px" :height "36px"}}]
-     [:div.absolute.border-bottom.border-gray {:style {:width "36px" :height "18px"}}]]]))
+     [:div.absolute.border-right.border-dark-gray {:style {:width "18px" :height "36px"}}]
+     [:div.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
 
 (def logo
   (component/html
@@ -53,7 +53,7 @@
    {:style {:border-bottom-left-radius "8px"}
     :class (when (zero? credit) :invisible)}
    [:div.h5.px2.py1.line-height-1
-    [:span.gray "Credit: "] [:span.navy (as-money credit)]]])
+    [:span.dark-gray "Credit: "] [:span.navy (as-money credit)]]])
 
 (defn customer-section [selectable? user-email]
   [:nav {:role "navigation" :aria-label "Mayvenn Account"}
@@ -147,7 +147,7 @@
                (utils/route-to events/navigate-sign-in))
         "Sign In"]]
       [:div.col-6.p1.center.h5
-       [:div.gray "No account?"]
+       [:div.dark-gray "No account?"]
        [:a.teal
         (merge {:data-test "sign-up"}
                (utils/route-to events/navigate-sign-up))
