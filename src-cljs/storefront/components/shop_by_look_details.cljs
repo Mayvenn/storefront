@@ -43,6 +43,13 @@
   (cons (-> look :imgs :large)
         (distinct-product-imgs shared-cart products)))
 
+(defn decode-title [title]
+  (try
+    ;; Sometimes Pixlee gives us URL encoded titles
+    (js/decodeURIComponent title)
+    (catch :default e
+      title)))
+
 (defn component [{:keys [creating-order? look shared-cart products will-return-to-shop-by-look? price-strikeout?]} owner opts]
   (om/component
    (html
@@ -69,7 +76,7 @@
                                              :height "20px"}}
             (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.f4.px3.py1.gray.bg-light-silver (:title look)])]])
+            [:p.f4.px3.py1.gray.bg-light-silver (decode-title (:title look))])]])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]
