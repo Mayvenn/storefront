@@ -25,9 +25,12 @@
 
 (def essence-faux-line-item
   [:div
-   [:div.flex.border.border-orange.py1
+   [:div.flex.border.border-orange.py2
     [:div.flex-none.mx1 {:style {:width "7.33em"}}
-     [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
+     [:div.hide-on-mb
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "110px" :height "112px"}]]
+     [:div.hide-on-tb-dt
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "123px" :height "125px"}]]]
     [:div.flex-auto.mr1
      [:div.h6.mb1
       [:div.bold.shout.mb1.h5 "bonus gift!"]
