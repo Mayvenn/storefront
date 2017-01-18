@@ -146,7 +146,7 @@
            [:div
             (om/build credit-card-form-component {:credit-card credit-card
                                                   :field-errors field-errors})
-            [:.h5.dark-gray
+            [:.h5
              "You can review your order on the next page before we charge your card."]])
 
          (when loaded-stripe?

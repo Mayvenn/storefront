@@ -72,7 +72,7 @@
     (let [items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
                        [:.my4.clearfix
                         (render-stat stat (get stats stat))]))]
-      [:div.bg-teal.light-gray.center
+      [:div.bg-teal.white.center
        [:div.bg-darken-bottom-1
         (om/build carousel/component
                   {:slides items

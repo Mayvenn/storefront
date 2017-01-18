@@ -75,7 +75,7 @@
      [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
-       [:.right-align.dark-gray
+       [:.right-align
         (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
@@ -88,8 +88,8 @@
     [:img.border.border-gray.rounded
      (assoc thumbnail :style {:width  "7.33em"
                               :height "7.33em"})]]
-   [:.overflow-hidden.h5.dark-gray.p1
-    [:a.dark-gray.medium.titleize (products/product-title line-item)]
+   [:.overflow-hidden.h5.p1
+    [:a.medium.titleize (products/product-title line-item)]
     [:.mt1.h6.line-height-1
      (when-let [length (:length variant-attrs)]
        [:div.pyp2 "Length: " length])
@@ -122,7 +122,7 @@
          [:.mt1.flex.items-center.justify-between
           (if removing?
             [:.h3 {:style {:width "1.2em"}} ui/spinner]
-            [:a.gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+            [:a.gray.medium (utils/fake-href events/control-cart-remove variant-id) "Remove"])
           [:.h3
            (when-let [variant (query/get {:id variant-id}
                                          (:variants (get products product-id)))]

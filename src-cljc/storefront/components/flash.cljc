@@ -9,7 +9,7 @@
 (def flash-line-height "1.25em")
 
 (def success-img
-  (svg/circled-check {:class "stroke-teal align-middle"
+  (svg/circled-check {:class "stroke-teal"
                       :style {:width "1em" :height "1em"}}))
 
 (def error-img

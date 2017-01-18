@@ -108,7 +108,7 @@
 
 (defn about-mayvenn []
   (component/html
-   [:div.container.dark-gray.py3
+   [:div.container.py3
     [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5

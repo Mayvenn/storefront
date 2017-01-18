@@ -139,7 +139,7 @@
      (when (= status "paid") "+") (mf/as-money amount)]
     [:div.h3.navy (:full-name order)]]
 
-   [:div.gray.h6
+   [:div.dark-gray.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
                [:div.right.h2.mtn2.mr1
@@ -185,7 +185,7 @@
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:div.h6.gray
+    [:div.h6.dark-gray
      [:div.p2.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]

@@ -115,7 +115,7 @@ Thanks,
    (html
     [:div.container.p2
      [:div.py3.h3.center
-      [:.gray
+      [:.dark-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
      [:div.h3.py1

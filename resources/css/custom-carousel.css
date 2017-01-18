@@ -30,7 +30,7 @@
     font-size: 0;
     padding: 3px;
     border-radius: 50%;
-    border: 1px solid var(--gray);
+    border: 1px solid var(--dark-gray);
     opacity: 0.623529;
 }
 .carousel-dots li.slick-active a div {
