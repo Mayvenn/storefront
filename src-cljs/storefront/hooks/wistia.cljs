@@ -18,12 +18,3 @@
                                                         :else "unknown")]
                                          (.bind video "play" #(m/handle-message events/video-played {:video-id (.hashedId video)
                                                                                                      :position position}))))}))))
-
-(defn attach [video-id]
-  (tags/insert-tag-with-src (str "//fast.wistia.com/embed/medias/" video-id ".jsonp") (str "wistia_" video-id))
-  (load))
-
-(defn detach [video-id]
-  (when (js-loaded?)
-    (when-let [video (.api js/Wistia video-id)]
-      (.remove video))))

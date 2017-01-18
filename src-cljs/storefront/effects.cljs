@@ -837,12 +837,6 @@
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
 
-(defmethod perform-effects events/video-component-mounted [_ event {:keys [video-id]} app-state]
-  (wistia/attach video-id))
-
-(defmethod perform-effects events/video-component-unmounted [_ event {:keys [video-id]} app-state]
-  (wistia/detach video-id))
-
 (defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
   (handle-message events/flash-dismiss)
   (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
