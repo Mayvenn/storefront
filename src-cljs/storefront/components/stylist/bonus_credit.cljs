@@ -39,7 +39,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:div.h6.light-gray
+    [:div.h6.gray
      [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]

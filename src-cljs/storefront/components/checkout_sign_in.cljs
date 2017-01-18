@@ -19,7 +19,7 @@
                             :data-test "guest-checkout-button"}
                            "Guest Checkout")
 
-     [:div.my3 [:.col-2.m-auto.border.border-dark-silver]]
+     [:div.my3 [:.col-2.m-auto.border.border-gray]]
      [:h2.center.my2.navy "Already registered?"]
      [:div.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))

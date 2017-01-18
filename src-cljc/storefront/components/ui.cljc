@@ -41,7 +41,7 @@
   (let [color (color-kw {:color/teal      "btn-primary bg-teal white"
                          :color/navy      "btn-primary bg-navy white"
                          :color/aqua      "btn-primary bg-aqua white"
-                         :color/ghost     "btn-outline border-light-gray dark-gray"
+                         :color/ghost     "btn-outline border-gray dark-gray"
                          :color/facebook  "btn-primary bg-fb-blue white"
                          :color/apple-pay "btn-primary bg-black white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
@@ -160,7 +160,7 @@
     ;; .z1.relative is for adjacent text-fields with left in error and right
     ;; not in error; keeps the left field's right border/inset 2px;
     error?       (add-classes "z1 field-is-error relative border-orange inset-orange x-group-item-2")
-    (not error?) (add-classes "border-dark-silver x-group-item")))
+    (not error?) (add-classes "border-gray x-group-item")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
@@ -251,7 +251,7 @@
        ;; Doesn't need z-index, even when field has focus, because background of select is transparent
        [:div.right.relative
         [:div.absolute.floating-label--icon
-         (svg/dropdown-arrow {:class "stroke-light-gray"
+         (svg/dropdown-arrow {:class "stroke-gray"
                               :style {:width "1.2rem" :height "1.2rem"}})]])
      (floating-label label id status)
      [:select.col-12.bg-clear
@@ -328,7 +328,7 @@
    {:data-scrollable "not-a-modal"}
    [:a.pointer.h3.right {:href "#" :on-click on-close :data-test data-test}
     [:div {:alt "Close"}
-     (svg/close-x {:class (or class "stroke-white fill-dark-silver")})]]])
+     (svg/close-x {:class (or class "stroke-white fill-gray")})]]])
 
 (defn circle-picture
   ([src] (circle-picture {} src))

@@ -40,7 +40,7 @@
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
       "Offer and Rebate Details" ui/nbsp "➤"]]]
-   [:div.border-bottom.border-dark-silver ui/nbsp]])
+   [:div.border-bottom.border-gray ui/nbsp]])
 
 (defn display-order-summary [order {:keys [read-only?]} price-strikeout?]
   (let [adjustments   (orders/all-order-adjustments order)
@@ -48,7 +48,7 @@
         shipping-item (orders/shipping-item order)
         store-credit  (-> order :cart-payments :store-credit)]
     [:div
-     [:.py2.border-top.border-bottom.border-dark-silver
+     [:.py2.border-top.border-bottom.border-gray
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
@@ -62,7 +62,7 @@
              [:div
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
-                [:a.ml1.h6.light-gray
+                [:a.ml1.h6.gray
                  (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
                  "Remove"])]
              price)))
@@ -83,9 +83,9 @@
                                    quantity-line
                                    bundle-quantity
                                    price-strikeout?]
-  [:.clearfix.mb1.border-bottom.border-dark-silver.py3 {:key id}
+  [:.clearfix.mb1.border-bottom.border-gray.py3 {:key id}
    [:a.left.mr1
-    [:img.border.border-dark-silver.rounded
+    [:img.border.border-gray.rounded
      (assoc thumbnail :style {:width  "7.33em"
                               :height "7.33em"})]]
    [:.overflow-hidden.h5.dark-gray.p1
@@ -122,7 +122,7 @@
          [:.mt1.flex.items-center.justify-between
           (if removing?
             [:.h3 {:style {:width "1.2em"}} ui/spinner]
-            [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+            [:a.gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
           [:.h3
            (when-let [variant (query/get {:id variant-id}
                                          (:variants (get products product-id)))]

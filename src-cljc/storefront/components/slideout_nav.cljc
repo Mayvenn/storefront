@@ -13,8 +13,8 @@
             [clojure.string :as str]))
 
 (def section-inner :div.ml3.py2)
-(def section-outer :div.border-bottom.border-dark-silver.bg-white.dark-gray)
-(def section-outer-darker :div.border-bottom.border-dark-silver)
+(def section-outer :div.border-bottom.border-gray.bg-white.dark-gray)
+(def section-outer-darker :div.border-bottom.border-gray)
 
 (defn row
   ([right] (row nil right))
@@ -49,7 +49,7 @@
     content]))
 
 (defn store-credit-flag [credit]
-  [:div.right.border-bottom.border-left.border-dark-silver.bg-white
+  [:div.right.border-bottom.border-left.border-gray.bg-white
    {:style {:border-bottom-left-radius "8px"}
     :class (when (zero? credit) :invisible)}
    [:div.h5.px2.py1.line-height-1
@@ -82,7 +82,7 @@
 
 (defn products-section [selectable? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-dark-silver.navy title])
+   (row [:div.border-bottom.border-gray.navy title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}

@@ -97,11 +97,11 @@
 
 (defn option-html [step-name later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
+  [:label.btn.border-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
-             sold-out?   "bg-light-gray dark-gray light"
-             later-step? "bg-dark-silver muted light"
+             sold-out?   "bg-gray dark-gray light"
+             later-step? "bg-gray muted light"
              checked?    "bg-teal white medium"
              true        "bg-white dark-gray light")}
    [:input.hide {:type      "radio"
@@ -195,7 +195,7 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-dark-silver.p2.my2.center.navy.shout.medium.h6
+   [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]

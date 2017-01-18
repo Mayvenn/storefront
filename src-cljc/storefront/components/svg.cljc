@@ -87,7 +87,7 @@
 
 (def counter-inc
   (component/html
-   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
 (defn close-x [{:keys [class]}]
@@ -97,7 +97,7 @@
 
 (def counter-dec
   (component/html
-   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-dec")]))
 
 ;; Social

@@ -139,7 +139,7 @@
      (when (= status "paid") "+") (mf/as-money amount)]
     [:div.h3.navy (:full-name order)]]
 
-   [:div.light-gray.h6
+   [:div.gray.h6
     (four-up "Status" "Ship Date" "Order"
              (when order
                [:div.right.h2.mtn2.mr1
@@ -178,14 +178,14 @@
    [:div.center
     [:div.p2.border-bottom.border-silver
      [:div.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
-     [:p.h3.light-gray "Looks like you don't have any commissions yet."]]
+     [:p.h3.gray "Looks like you don't have any commissions yet."]]
     [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylist-urls/store-url]]]))
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:div.h6.light-gray
+    [:div.h6.gray
      [:div.p2.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]

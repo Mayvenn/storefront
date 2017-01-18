@@ -82,7 +82,7 @@
                 {})
       [:div.absolute
        {:style {:top "1.5rem" :right "1.5rem"}}
-       (ui/modal-close {:class    "stroke-dark-gray fill-dark-silver"
+       (ui/modal-close {:class    "stroke-dark-gray fill-gray"
                         :on-close on-close})]]))))
 
 

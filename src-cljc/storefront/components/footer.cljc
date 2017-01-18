@@ -21,7 +21,7 @@
 
 (defn shop-section [named-searches own-store?]
   [:div.col-12
-   [:div.medium.border-bottom.border-dark-silver.mb1 "Shop"]
+   [:div.medium.border-bottom.border-gray.mb1 "Shop"]
    [:nav.clearfix
     {:role "navigation" :aria-label "Shop Products"}
     [:div.col.col-6
@@ -33,7 +33,7 @@
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
-   [:div.medium.border-bottom.border-dark-silver.mb1 "Contact"]
+   [:div.medium.border-bottom.border-gray.mb1 "Contact"]
    [:div.dark-gray.light
     [:div.py1
      [:span.hide-on-tb-dt [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
@@ -61,9 +61,9 @@
 (def social-section
   (component/html
    [:div
-    [:div.medium.border-bottom.border-dark-silver
+    [:div.medium.border-bottom.border-gray
      [:div.hide-on-mb ui/nbsp]]
-    [:div.border-bottom.border-dark-silver.p1.flex.items-center.justify-around.py2
+    [:div.border-bottom.border-gray.p1.flex.items-center.justify-around.py2
      [:a.block {:item-prop "sameAs"
                 :href "https://www.facebook.com/MayvennHair"}
       [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-facebook]]
@@ -81,7 +81,7 @@
                               contacts
                               own-store?]} owner opts]
   (component/create
-   [:div.h5.border-top.border-dark-silver.bg-light-silver
+   [:div.h5.border-top.border-gray.bg-light-silver
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (shop-section named-searches own-store?)]
@@ -109,7 +109,7 @@
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
-   [:div.border-top.border-dark-silver.bg-white
+   [:div.border-top.border-gray.bg-white
     [:div.container
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Need Help?"]

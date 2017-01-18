@@ -12,14 +12,14 @@
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
 
 (defn subheader [& copy]
-  (into [:div.shout.medium.light-gray] copy))
+  (into [:div.shout.medium.gray] copy))
 
 (defn- section-link [name navigation-event]
   [:a.h5 (utils/route-to navigation-event) name])
 
 (def ^:private styles-menu
   [:nav.col.col-2
-   [:div.border-bottom.border-dark-silver.p1
+   [:div.border-bottom.border-gray.p1
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
     [:h1.hide "Mayvenn Styleguide"]]
    [:ul.list-reset.py2.col-8.mx-auto
@@ -108,9 +108,9 @@
   (let [box (fn [class px]
              [:div {:key (str class "-" px)}
               [:div.m1
-               [:div.border-dashed.border-light-gray.inline-block.center
+               [:div.border-dashed.border-gray.inline-block.center
                 [:div.border.border-teal.inline-block {:class class}
-                 [:div.border.border-light-gray.inline-block.bg-silver
+                 [:div.border.border-gray.inline-block.bg-silver
                   [:div
                    [:p.h6 (str "." class)]
                    [:p.h6 px]]]]]]])
@@ -125,11 +125,11 @@
      [:h3 "Key"]
      (subsection
       ""
-      [:div.border-dashed.border-light-gray.inline-block.p1.center.h6
+      [:div.border-dashed.border-gray.inline-block.p1.center.h6
        "Margin"
        [:div.border.border-teal.p1
         "Padding"
-        [:div.border.border-light-gray.p1.bg-silver
+        [:div.border.border-gray.p1.bg-silver
          "Content"]]])
 
      [:h3 "Margin"]
@@ -156,8 +156,8 @@
 
      [:h3 "Padding"]
 
-     [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
-     [:p.mt1.light-gray "So, " [:code.dark-gray ".pl1"] ", " [:code.dark-gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
+     [:p.mt1.gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
+     [:p.mt1.gray "So, " [:code.dark-gray ".pl1"] ", " [:code.dark-gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
 
      (subsection
       "in rems"
@@ -186,7 +186,7 @@
     [:div.p4
      {:class (str "bg-" color-class
                   (when (#{"black" "fb-blue"} color-class) " white")
-                  (when (#{"white"} color-class) " border border-light-gray"))}
+                  (when (#{"white"} color-class) " border border-gray"))}
      [:div.mt4
       [:div.titleize color-class]
       [:div "#" hex]]]]])
@@ -203,8 +203,7 @@
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "black" "000000")
    (color-swatch "dark-gray" "666666")
-   (color-swatch "light-gray" "b4b4b4")
-   (color-swatch "dark-silver" "dadada")
+   (color-swatch "gray" "cccccc")
    (color-swatch "silver" "ebebeb")
    (color-swatch "light-silver" "f8f8f8")
    (color-swatch "white" "ffffff")]

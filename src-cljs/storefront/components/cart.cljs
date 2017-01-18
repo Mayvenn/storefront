@@ -73,7 +73,7 @@ Thanks,
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
                 [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-                [:.border-top.border-bottom.border-dark-silver.py2.flex.justify-center
+                [:.border-top.border-bottom.border-gray.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
                  [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
@@ -115,7 +115,7 @@ Thanks,
    (html
     [:div.container.p2
      [:div.py3.h3.center
-      [:.light-gray
+      [:.gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
      [:div.h3.py1
@@ -175,7 +175,7 @@ Thanks,
                                                                                               :height "2rem"}}]])])
 
        (when share-carts?
-         [:div.border-top.border-dark-silver.py2
+         [:div.border-top.border-gray.py2
           (ui/large-ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
                                   :spinning? requesting-shared-cart?
                                   :data-test "share-cart"}

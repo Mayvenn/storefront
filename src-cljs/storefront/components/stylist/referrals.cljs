@@ -172,7 +172,7 @@
                  " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]
                 (for [[idx referral] (map-indexed vector referrals)]
-                  [:div.py2.border-top.border-dark-silver
+                  [:div.py2.border-top.border-gray
                    {:key idx :data-test "referral-entry"}
                    [:div.h3.dark-gray.my2 "Enter your "(get ordinal idx)" referral"
                     (when (pos? idx) [:a.mr1.flex.items-center.right
@@ -212,7 +212,7 @@
                                                 :type      "email"
                                                 :value     (:email referral)})]])
                 (when (< (count referrals) 5)
-                  [:div.py3.border-top.border-dark-silver
+                  [:div.py3.border-top.border-gray
                    [:div.col-10.mx-auto
                     (ui/large-ghost-button
                      (merge (utils/fake-href events/control-stylist-referral-add-another)

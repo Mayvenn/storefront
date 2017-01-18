@@ -14,7 +14,7 @@
   (om/component
    (html
     [:div.dark-gray
-     [:div.border-bottom.border-dark-silver
+     [:div.border-bottom.border-gray
       [:div.container.py3
        [:div.col-8.mx-auto.mb1.center
         [:h1.h3.mb1 "Secure checkout"]

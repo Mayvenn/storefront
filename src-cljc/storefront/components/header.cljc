@@ -88,7 +88,7 @@
 
 (def notch-up
   (component/html
-   (carrot-top {:width-px 5 :bg-color "border-white" :border-color "border-dark-silver"})))
+   (carrot-top {:width-px 5 :bg-color "border-white" :border-color "border-gray"})))
 
 (def selected-link        "border-navy border-bottom border-width-2")
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
@@ -97,7 +97,7 @@
 (def popup-width "188px")
 
 (defn social-link [img href title last?]
-  [:a.h5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
+  [:a.h5.navy.block.p1.border-top.border-gray.bg-light-silver
    (merge {:href href}
           (when last?
             {:class "rounded-bottom-1"}))
@@ -122,7 +122,7 @@
        [:div.truncate.fit.h4.navy {:data-test "nickname"} nickname]]
       [:div.relative navy-carrot-bottom]]]
     [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
-     [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit
+     [:div.relative.border.border-gray.rounded-1.bg-white.top-lit
       notch-up
       [:div.dark-gray
        [:div.p1.h6
@@ -130,13 +130,13 @@
         [:h4.regular store-name]]
        (when instagram-account
          (social-link
-          [:div.mlp1.fill-light-gray {:style {:width "15px" :height "15px"}} svg/instagram]
+          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/instagram]
           (str "http://instagram.com/" instagram-account)
           "Follow me on Instagram"
           (not styleseat-account)))
        (when styleseat-account
          (social-link
-          [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}} svg/styleseat]
+          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/styleseat]
           (str "https://www.styleseat.com/v/" styleseat-account)
           "Book me on StyleSeat"
           true))]]])])
@@ -149,11 +149,11 @@
     [:div.dark-gray.flex-auto.right-align.h6 link]
     [:div.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:div.absolute.right-0 {:style {:max-width "140px"}}
-    [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
+    [:div.relative.border.border-gray.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:div.absolute {:style {:right "15px"}} notch-up]
      [:div.h5.bg-white.rounded-1
       (into [:div.px2.py1] menu)
-      [:div.border-bottom.border-dark-silver]
+      [:div.border-bottom.border-gray]
       [:a.navy.block.py1.center.bg-light-silver.rounded-bottom-1
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
@@ -197,7 +197,7 @@
 
 (defn products-section [current-page? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-dark-silver.dark-gray title])
+   (row [:div.border-bottom.border-gray.dark-gray title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
@@ -257,7 +257,7 @@
     "Blog"]])
 
 (defn header [left middle right flyout]
-  [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+  [:div.clearfix.relative.border-bottom.border-gray {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
    [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
     (into [:div.flex-auto.col-4] left)
     (into [:div.flex-auto.col-4.flex.flex-column.justify-center {:style {:min-width popup-width}}] middle)

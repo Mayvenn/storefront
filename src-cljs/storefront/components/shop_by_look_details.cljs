@@ -81,7 +81,7 @@
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-           [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
+           [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
            (order-summary/display-line-items line-items products price-strikeout?)
            [:div.mt3
             (add-to-cart-button creating-order? shared-cart)]]))]])))
