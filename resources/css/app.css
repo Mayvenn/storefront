@@ -130,25 +130,22 @@
     --border-radius: 4px;
     --border-radius-1: 8px;
 
-    --teal:        #40CBAC;
+    --teal:        #40cbac;
 
-    --green:       #00CC00;
-    --red:         #FF0000;
+    --green:       #00cc00;
+    --red:         #ff0000;
 
     --navy:        #175674;
-    --orange:      #E8A50C;
-    --aqua:        #49BBF0;
+    --orange:      #e8a50c;
+    --aqua:        #49bbf0;
 
-    --white:        #FFFFFF;
-    --light-silver: #F8F8F8;
-    --silver:       #EBEBEB;
-    --dark-silver:  #DADADA;
-    --light-gray:   #B4B4B4;
-    --gray:         #CCCCCC;
+    --white:        #ffffff;
+    --light-gray:   #ebebeb;
+    --gray:         #cccccc;
     --dark-gray:    #666666;
     --black:        #000000;
 
-    --facebook-blue: #3B5998;
+    --facebook-blue: #3b5998;
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);

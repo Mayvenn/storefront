@@ -79,7 +79,7 @@
                                                   :settings   (swipe 2)}]}))}
                      nil)]
    [:div.col-8.col-4-on-tb-dt.mx-auto
-    ;; button color should be light-silver/transparent
+    ;; button color should be light-gray/transparent
     (ui/large-ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
             :data-test "nav-shop-look")

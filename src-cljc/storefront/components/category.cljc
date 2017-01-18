@@ -73,7 +73,7 @@
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.my1.p1.py2.caps.dark-gray.bg-silver.medium.center
+  [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -111,7 +111,7 @@
                                                        {:selected-options selections
                                                         :step-name step-name})}]
    (if image
-     [:img.mbp4.content-box.circle.border-light-silver
+     [:img.mbp4.content-box.circle.border-light-gray
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
@@ -319,7 +319,7 @@
             [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
-               [:div.border-bottom.border-silver.border-width-2
+               [:div.border-bottom.border-light-gray.border-width-2
                 (for [step (bundle-builder/steps bundle-builder)]
                   (step-html step))])
              [:div schema-org-offer-props

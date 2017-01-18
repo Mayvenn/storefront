@@ -20,7 +20,7 @@
    (let [btn-behavior {:href     welcome-url
                        :on-click (utils/send-event-callback events/external-redirect-welcome)}
          btn-copy "Become a Mayvenn"]
-     [:div.bg-dark-gray.light-silver.p2
+     [:div.bg-dark-gray.light-gray.p2
       ;; Mobile layout
       [:div.hide-on-tb-dt
        [:div.right close-button]

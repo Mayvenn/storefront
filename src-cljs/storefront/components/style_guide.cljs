@@ -110,7 +110,7 @@
               [:div.m1
                [:div.border-dashed.border-gray.inline-block.center
                 [:div.border.border-teal.inline-block {:class class}
-                 [:div.border.border-gray.inline-block.bg-silver
+                 [:div.border.border-gray.inline-block.bg-light-gray
                   [:div
                    [:p.h6 (str "." class)]
                    [:p.h6 px]]]]]]])
@@ -129,7 +129,7 @@
        "Margin"
        [:div.border.border-teal.p1
         "Padding"
-        [:div.border.border-gray.p1.bg-silver
+        [:div.border.border-gray.p1.bg-light-gray
          "Content"]]])
 
      [:h3 "Margin"]
@@ -204,8 +204,7 @@
    (color-swatch "black" "000000")
    (color-swatch "dark-gray" "666666")
    (color-swatch "gray" "cccccc")
-   (color-swatch "silver" "ebebeb")
-   (color-swatch "light-silver" "f8f8f8")
+   (color-swatch "light-gray" "ebebeb")
    (color-swatch "white" "ffffff")]
 
   (subheader "Success dialog and error handling")
@@ -281,7 +280,7 @@
    [:section
     (header "Navigation")
     [:.dark-gray
-     [:div.bg-light-silver
+     [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
        (component/build tabs/component
                         {:selected-tab (get-in data keypaths/navigation-event)}

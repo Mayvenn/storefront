@@ -19,7 +19,7 @@
                   [:div.h3.navy.bold.mb2 "Become an Insider"]
                   [:p.h5.dark-gray.mb2
                    "Want exclusive offers and first access to products? Sign up for our email alerts below!"]
-                  [:div.col-12.border-top.border-silver ui/nbsp]
+                  [:div.col-12.border-top.border-light-gray ui/nbsp]
                   (ui/text-field {:errors   (get field-errors ["email"])
                                   :keypath  keypaths/captured-email
                                   :focused  focused

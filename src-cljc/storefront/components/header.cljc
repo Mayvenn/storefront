@@ -84,7 +84,7 @@
 
 (def navy-carrot-bottom
   (component/html
-   (carrot-down {:width-px 4 :bg-color "border-light-silver" :border-color "border-navy"})))
+   (carrot-down {:width-px 4 :bg-color "border-light-gray" :border-color "border-navy"})))
 
 (def notch-up
   (component/html
@@ -97,7 +97,7 @@
 (def popup-width "188px")
 
 (defn social-link [img href title last?]
-  [:a.h5.navy.block.p1.border-top.border-gray.bg-light-silver
+  [:a.h5.navy.block.p1.border-top.border-gray.bg-light-gray
    (merge {:href href}
           (when last?
             {:class "rounded-bottom-1"}))
@@ -154,7 +154,7 @@
      [:div.h5.bg-white.rounded-1
       (into [:div.px2.py1] menu)
       [:div.border-bottom.border-gray]
-      [:a.navy.block.py1.center.bg-light-silver.rounded-bottom-1
+      [:a.navy.block.py1.center.bg-light-gray.rounded-bottom-1
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]

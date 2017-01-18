@@ -81,7 +81,7 @@
                               contacts
                               own-store?]} owner opts]
   (component/create
-   [:div.h5.border-top.border-gray.bg-light-silver
+   [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (shop-section named-searches own-store?)]

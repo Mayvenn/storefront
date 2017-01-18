@@ -17,7 +17,7 @@
     [:.container.dark-gray
      (om/build stylist-dashboard-stats-component {:stats stats})
 
-     [:div.bg-light-silver
+     [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
        (om/build tabs/component {:selected-tab nav-event}
                  {:opts {:tab-refs ["bonuses" "commissions" "referrals"]

@@ -89,7 +89,7 @@
                       :fetching? fetching?})
 
            (when (pos? available-credit)
-             [:.center.bg-light-silver.p2
+             [:.center.bg-light-gray.p2
               [:p
                "Bonus credits available " [:span.navy (mf/as-money available-credit)]
                [:br]

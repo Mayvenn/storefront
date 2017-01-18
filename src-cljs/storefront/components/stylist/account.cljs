@@ -20,8 +20,8 @@
                 :top "-12px" :left "-12px"}}]])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if photo-saving? "border-light-silver" "border-teal")}
-    [:div.circle.border-light-silver.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
+     :class (if photo-saving? "border-light-gray" "border-teal")}
+    [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
    "Change Photo"
    [:input.hide
@@ -55,7 +55,7 @@
       [:div.ml3
        (store-credit available-credit)]]
 
-     [:div.bg-light-silver.mt3.mxn2 ;; Oppose padding on page
+     [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}
                        {:opts {:tab-refs ["profile" "password" "commission" "social"]
                                :labels   ["Profile" "Password" "Commission" "Social"]

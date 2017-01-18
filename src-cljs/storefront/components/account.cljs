@@ -53,7 +53,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
@@ -77,7 +77,7 @@
       [:div.ml3
        (when available-credit (store-credit available-credit))]]
 
-     [:div.bg-light-silver.mt3.mxn2 ;; Oppose padding on page
+     [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}
                        {:opts {:tab-refs ["profile"]
                                :labels   ["Profile"]

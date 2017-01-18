@@ -29,7 +29,7 @@
 
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
-   [:img.left.border.border-silver.mr3
+   [:img.left.border.border-light-gray.mr3
     (assoc (products/small-img products product-id)
            :style {:width "5rem"})]
    [:div.overflow-hidden
@@ -96,7 +96,7 @@
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:div.h3.p2.col-12.right-align.navy.border-top.border-silver
+  [:div.h3.p2.col-12.right-align.navy.border-top.border-light-gray
    (mf/as-money commissionable-amount)])
 
 (defn show-order [products order]
@@ -128,7 +128,7 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:div.p2.border-bottom.border-right.border-left.border-silver
+  [:div.p2.border-bottom.border-right.border-left.border-light-gray
    (when order
      {:class "pointer"
       :on-click (toggle-expanded-commission expanded? number)})
@@ -168,7 +168,7 @@
                         :component "div"}
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
-                          [:.dark-gray.bg-light-silver
+                          [:.dark-gray.bg-light-gray
                            (show-order products order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])
@@ -176,7 +176,7 @@
 (def empty-commissions
   (html
    [:div.center
-    [:div.p2.border-bottom.border-silver
+    [:div.p2.border-bottom.border-light-gray
      [:div.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
      [:p.h3.gray "Looks like you don't have any commissions yet."]]
     [:.py3.h4

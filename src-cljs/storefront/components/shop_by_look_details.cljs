@@ -70,13 +70,13 @@
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          (carousel (imgs look shared-cart products))
          [:div
-          [:div.px3.py2.mbp1.bg-light-silver
+          [:div.px3.py2.mbp1.bg-light-gray
            [:div.medium.dark-gray.h5.inline-block (str "@" (:user-handle look))]
            [:div.right.inline-block {:style {:width  "20px"
                                              :height "20px"}}
             (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.h5.px3.py1.dark-gray.bg-light-silver (decode-title (:title look))])]])
+            [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])]])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]

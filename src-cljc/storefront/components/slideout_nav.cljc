@@ -155,7 +155,7 @@
 
 (def sign-out-section
   (component/html
-   [:div.pb4.bg-light-silver
+   [:div.pb4.bg-light-gray
     [:a.block.navy.center.col-12.p3
      (merge {:data-test "sign-out"}
             (utils/fake-href events/control-sign-out))

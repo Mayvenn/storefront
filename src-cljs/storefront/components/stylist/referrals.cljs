@@ -60,7 +60,7 @@
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
-     [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-silver.p2
+     [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-gray.p2
       {:key (str name join-date)}
       [:div.mr1 (ui/circle-picture profile-picture-url)]
       [:div.flex-auto
@@ -97,7 +97,7 @@
       [:p.py1.h5.black message]
       [:div.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
-     [:div.p2.clearfix.hide-on-tb-dt.border-bottom.border-light-silver
+     [:div.p2.clearfix.hide-on-tb-dt.border-bottom.border-light-gray
       [:div.left.mx1.fill-navy svg/large-mail]
       [:div.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                                  :data-test "refer-button-mobile"})]
@@ -240,9 +240,9 @@
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
               [:div.flex.flex-column.items-center.justify-center.pt4
-               [:div.m1 (svg/circled-check {:class "stroke-light-silver"
+               [:div.m1 (svg/circled-check {:class "stroke-light-gray"
                                             :style {:height "70px" :width "70px"}})]
-               [:div.h3.light-silver.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
+               [:div.h3.light-gray.center {:data-test "referral-thanks"} "Thank you for your referral!"]]))))
 
 (defn built-thanks-component [_ _]
   (om/build thanks-component nil nil))

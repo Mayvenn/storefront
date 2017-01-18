@@ -333,7 +333,7 @@
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-light-silver.overflow-hidden
+   [:div.circle.bg-light-gray.overflow-hidden
     (merge {:style {:width width :height width}} attrs)
     (if src
       [:img {:style {:width width :height width :object-fit "cover"} :src src}]

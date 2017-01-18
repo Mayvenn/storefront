@@ -64,7 +64,7 @@
 
     [:div.col.col-12.col-6-on-tb-dt
      [:div.mx-auto.col-12.col-10-on-tb-dt
-      [:div.border-silver.border-top.hide-on-tb-dt.mb3]
+      [:div.border-light-gray.border-top.hide-on-tb-dt.mb3]
       (ui/text-field {:data-test  "account-address1"
                       :errors     (get field-errors ["address" "address1"])
                       :id         "account-address1"
@@ -138,7 +138,7 @@
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
