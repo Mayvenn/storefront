@@ -191,7 +191,7 @@
           0 ["Get a Bundle Discount:" [:br] "Buy any 3 items & get 10% OFF your entire order!"]
           1 ["Add just 2 more items & get 10% OFF your entire order!"]
           2 ["Almost there!" [:br] "Add just 1 more item & get 10% OFF your entire order!"]
-          ["Bundle Discount Applied:" [:br] "You’ve received 10% OFF your entire order."])))
+          ["Bundle Discount Applied:" [:br] "You’ve received 10% OFF your entire order!"])))
 
 (def shipping-and-guarantee
   (component/html
