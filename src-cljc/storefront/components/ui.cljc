@@ -115,7 +115,7 @@
        :value title
        :disabled (boolean disabled?)}])))
 
-(def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html " &nbsp;"}}]))
+(def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def new-flag
   (component/html
@@ -140,7 +140,7 @@
       (svg/error {:class "fill-orange" :style {:width "1.5rem" :height "1.5rem"}})]]))
 
 (defn ^:private field-error-message [error data-test]
-  [:div.orange.mtp2.mb1.bold
+  [:div.orange.mtp2.mb1.bold.h5
    (when error {:data-test (str data-test "-error")})
    (or (:long-message error) nbsp)])
 

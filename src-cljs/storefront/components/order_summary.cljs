@@ -36,7 +36,7 @@
       " with your order."]
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
-      "Offer and Rebate Details ➤"]]]
+      "Offer and Rebate Details" ui/nbsp "➤"]]]
    [:div.border-bottom.border-dark-silver ui/nbsp]])
 
 (defn display-order-summary [order {:keys [read-only?]} price-strikeout?]
@@ -80,7 +80,7 @@
                                    quantity-line
                                    bundle-quantity
                                    price-strikeout?]
-  [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
+  [:.clearfix.mb1.border-bottom.border-dark-silver.py3 {:key id}
    [:a.left.mr1
     [:img.border.border-dark-silver.rounded
      (assoc thumbnail :style {:width  "7.33em"
