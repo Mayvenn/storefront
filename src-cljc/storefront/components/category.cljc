@@ -225,7 +225,7 @@
        [:p.mt2 {:key idx} item])]]])
 
 (defn carousel-image [image]
-  [:div.col-12.overflow-hidden {:style {:max-height "31rem"}}
+  [:div.col-12.overflow-hidden {:style {:max-height "90.625%"}}
    [:img.col-12 (utils/img-attrs image :large)]])
 
 (defn carousel [images {:keys [slug]}]
