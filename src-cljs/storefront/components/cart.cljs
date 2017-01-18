@@ -133,19 +133,18 @@ Thanks,
                                               price-strikeout?)]
 
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:form
+       [:form.clearfix.mxn1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:div.flex.items-center
-         [:div.col-8.pr1
-          (ui/text-field {:keypath keypaths/cart-coupon-code
-                          :focused focused
-                          :label   "Promo code"
-                          :value   coupon-code})]
-         [:div.col-4.pl1.mb3.inline-block
-          (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                           :disabled? updating?
-                           :spinning? applying-coupon?}
-                          "Apply")]]]
+        [:div.col.col-8.px1
+         (ui/text-field {:keypath keypaths/cart-coupon-code
+                         :focused focused
+                         :label   "Promo code"
+                         :value   coupon-code})]
+        [:div.col.col-4.px1.mb3.inline-block
+         (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                          :disabled? updating?
+                          :spinning? applying-coupon?}
+                         "Apply")]]
 
        (summary/display-order-summary order {:read-only? false} price-strikeout?)
 
