@@ -41,17 +41,17 @@
   ;; TODO: is there a way to use vector-effect: non-scaling-stroke; to unify
   ;; micro-dollar-sign and large-dollar?
   (component/html
-   [:svg {:class "stroke-white" :style {:width "72px" :height "72px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-dollar")]))
 
 (def large-percent
   (component/html
-   [:svg {:class "stroke-white" :style {:width "72px" :height "72px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-percent")]))
 
 (def large-payout
   (component/html
-   [:svg {:class "stroke-white" :style {:width "62px" :height "60px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-payout")]))
 
 (def large-mail

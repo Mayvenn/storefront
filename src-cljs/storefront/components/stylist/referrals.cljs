@@ -47,9 +47,8 @@
   ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
   [:div.relative
    [:div.center.absolute.overlay.m-auto {:style {:height "50%"}}
-    ;; Explicit font size because font-scaling breaks the circular progress
-    [:div.h3.teal.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:div.h6.gray.line-height-1 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
+    [:div.h5.line-height-1.teal.medium.mbp4 (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
+    [:div.h7.line-height-1.gray "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])

@@ -1,7 +1,7 @@
 /* We want h0 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in rems. 5.25rem is 63px... close enough. */
 
-.h0 { font-size: 5.25rem; }
+.h0 { font-size: 64px; }
 
 h1, .h1          { font-size: 28px; line-height: 36px; }
 h2, .h2          { font-size: 24px; line-height: 32px; }
