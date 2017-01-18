@@ -68,7 +68,7 @@ Thanks,
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:.bg-white.rounded.p2.center
+              [:.bg-white.rounded.p4.center
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h3.navy.medium "Share your bag"]

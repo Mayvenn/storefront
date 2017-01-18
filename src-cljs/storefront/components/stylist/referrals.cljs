@@ -155,7 +155,7 @@
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:div.bg-white.rounded.p2
+              [:div.bg-white.rounded.p4
                (ui/modal-close {:on-close on-close})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (or (seq errors) flash-failure)

@@ -8,7 +8,7 @@
    (html
     (ui/modal {:on-close on-close
                :bg-class "bg-darken-4"}
-              [:div.bg-white.rounded.p2
+              [:div.bg-white.rounded.p4
                (ui/modal-close {:on-close on-close})
                [:div.flex.flex-column.items-center.justify-center.py2.gray
                 [:h3.navy.mb3 "Offer and Rebate Details"]

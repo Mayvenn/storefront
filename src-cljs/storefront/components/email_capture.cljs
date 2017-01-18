@@ -12,7 +12,7 @@
      (html
       (ui/modal {:on-close on-close
                  :bg-class "bg-darken-4"}
-                [:div.bg-white.rounded.p2
+                [:div.bg-white.rounded.p4
                  (ui/modal-close {:on-close on-close :data-test "dismiss-email-capture"})
                  [:form.col-12.flex.flex-column.items-center
                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
