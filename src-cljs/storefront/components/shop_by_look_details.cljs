@@ -83,7 +83,8 @@
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
            [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
            (order-summary/display-line-items line-items products price-strikeout?)
-           (add-to-cart-button creating-order? shared-cart)]))]])))
+           [:div.mt3
+            (add-to-cart-button creating-order? shared-cart)]]))]])))
 
 (defn query [data]
   {:shared-cart                  (get-in data keypaths/shared-cart-current)

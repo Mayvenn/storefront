@@ -107,7 +107,7 @@
       (display-line-item
        line-item
        (products/small-img products product-id)
-       [:div "Quantity: " quantity]
+       [:div.pyp2 "Quantity: " quantity]
        bundle-quantity
        price-strikeout?))))
 
@@ -119,7 +119,7 @@
         (display-line-item
          line-item
          (products/small-img products product-id)
-         [:.mt2.flex.items-center.justify-between
+         [:.mt1.flex.items-center.justify-between
           (if removing?
             [:.h3 {:style {:width "1.2em"}} ui/spinner]
             [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
