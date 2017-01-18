@@ -69,7 +69,7 @@
            [:div.col-12
             (ui/text-field-group
              {:errors        (get field-errors["card-expiration"])
-              :label         "Expiration (MM/YY)"
+              :label         "Exp. (MM/YY)"
               :keypath       keypaths/checkout-credit-card-expiration
               :focused       focused
               :value         (cc/format-expiration expiration)

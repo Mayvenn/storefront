@@ -146,11 +146,11 @@
 
 (defn ^:private floating-label [label id {:keys [error? value?]}]
   [:div.absolute
-   [:label.floating-label--label.col-12.h6.relative
+   [:label.floating-label--label.col-12.h7.relative
     (cond-> {:for id}
       value?       (add-classes "has-value")
       error?       (add-classes "orange")
-      (not error?) (add-classes "light-gray"))
+      (not error?) (add-classes "gray"))
     label]])
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
@@ -164,7 +164,7 @@
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
-    true                      (add-classes "floating-label--input rounded border-none h3")
+    true                      (add-classes "h5 floating-label--input rounded border-none")
     error?                    (add-classes "field-is-error pr4")
     (and error? (not value?)) (add-classes "orange")
     value?                    (add-classes "has-value")))
@@ -182,7 +182,7 @@
      (field-error-icon status)
      (floating-label label id status)
      [:label
-      [:input.col-12.h4
+      [:input.col-12
        (field-class (merge {:key         label
                             :placeholder label
                             :value       (or value "")
@@ -254,7 +254,7 @@
          (svg/dropdown-arrow {:class "stroke-light-gray"
                               :style {:width "1.2rem" :height "1.2rem"}})]])
      (floating-label label id status)
-     [:select.col-12.h4.bg-clear
+     [:select.col-12.bg-clear
       (field-class (merge {:key         label
                            :value       (or value "")
                            :on-change   #(handle-message events/control-change-state
