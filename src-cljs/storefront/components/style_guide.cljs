@@ -9,7 +9,10 @@
             [clojure.string :as string]))
 
 (defn- header [name]
-  [:h2.h3.my3.underline [:a {:name (string/lower-case name)} name]])
+  [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
+
+(defn subheader [& copy]
+  (into [:div.shout.medium.light-gray] copy))
 
 (defn- section-link [name navigation-event]
   [:a.h5 (utils/route-to navigation-event) name])
@@ -35,50 +38,51 @@
       [:li (section-link "Progress" events/navigate-style-guide-progress)]
       [:li (section-link "Carousels" events/navigate-style-guide-carousel)]]]]])
 
+(def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
+
+(defn font-size [font-class mb-sizes tb-dt-sizes]
+  [:div
+   [:div.mb2
+    (subheader
+     [:div.hide-on-tb-dt (str mb-sizes "px")]
+     [:div.hide-on-mb (str tb-dt-sizes "px")])]
+
+   [:div.mb4 {:class font-class} lorem]])
+
+(defn font-weight [font-class weight-name]
+  [:div
+   (subheader weight-name)
+
+   [:div.mb4 {:class font-class} lorem]])
+
 (def ^:private typography
   [:section
    (header "Typography")
 
-   [:div.flex.flex-wrap
-    [:div.col-2.h1 ".h1"]
-    [:div.col-4.h1 "3.3rem"]
-    [:div.col-6.h1 "40px or 53px"]
-    [:div.col-2.h2.light ".h2.light"]
-    [:div.col-10.h2.light.mb2.gray " for subtitles of .h1"]
+   [:div.col-8-on-tb-dt.py3
+    [:div.mb2 (subheader "font-size/line-height")]
 
-    [:div.col-2.h2 ".h2"]
-    [:div.col-4.h2 "2rem"]
-    [:div.col-6.h2 "24px or 32px"]
-    [:div.col-2.h3.light ".h3.light"]
-    [:div.col-10.h3.light.mb2.gray " for subtitles of .h2"]
+    (font-size :h1 "28/36" "24/30")
+    (font-size :h2 "24/32" "21/29")
+    (font-size :h3 "20/28" "18/24")
+    (font-size :h4 "18/26" "16/24")
+    (font-size :h5 "16/24" "14/22")
+    (font-size :h6 "14/22" "12/20")
+    (font-size :h7 "10/18" "10/18")
 
-    [:div.col-2.h3 ".h3"]
-    [:div.col-4.h3 "1.5rem"]
-    [:div.col-6.h3.mb2 "18px or 24px"]
+    [:div.mb2 (subheader "font-weight")]
 
-    [:div.col-2.h4 ".h4"]
-    [:div.col-4.h4 "1.2rem"]
-    [:div.col-6.h4.mb2 "14px or 19px"]
+    (font-weight :light "300")
+    (font-weight :medium "400")
+    (font-weight :bold "700")]
 
-    [:div.col-2.h5 ".h5"]
-    [:div.col-4.h5 "1rem"]
-    [:div.col-6.h5.mb2 "12px or 16px"]
-
-    [:div.col-2.p "p"]
-    [:div.col-4.p "1rem"]
-    [:div.col-6.p.mb2 "12px or 16px"]
-
-    [:div.col-2.h6 ".h6"]
-    [:div.col-4.h6 ".875rem"]
-    [:div.col-6.h6.mb2 "10.5px or 12px"]]
-
-   (header "Text Links")
-   [:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} ":a.navy - Learn more"]]])
+   #_(header "Text Links")
+   #_[:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} "Learn more"]]])
 
 (def ^:private buttons
   [:section
    (header "Buttons")
-   [:h3 "Normal"]
+   (subheader "Normal")
    [:div.flex.flex-wrap.mxn1
     [:div.col-4.p1.mb1 (ui/teal-button {} "ui/teal-button")]
     [:div.col-4.p1.mb1 (ui/navy-button {} "ui/navy-button")]
@@ -86,7 +90,7 @@
     [:div.col-4.p1.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
     [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]
 
-   [:h3.mt4 "Large"]
+   (subheader "Large")
    [:div.flex.flex-wrap.mxn1
     [:div.col-6.p1.mb1 (ui/large-teal-button {} "ui/large-teal-button")]
     [:div.col-6.p1.mb1 (ui/large-navy-button {} "ui/large-navy-button")]
@@ -95,10 +99,10 @@
     [:div.col-6.p1.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]])
 
 (def ^:private increment->size
-  {1 ".5rem"
-   2 "1rem"
-   3 "2rem"
-   4 "4rem"})
+  {1 "5px"
+   2 "10px"
+   3 "15px"
+   4 "20px"})
 
 (def ^:private spacing
   (let [box (fn [class px]
@@ -177,40 +181,43 @@
              (box class (str increment "px"))])])])]))
 
 (defn color-swatch [color-class hex]
- [:div.flex.items-center
-  [:div
-   [:div.circle.p4.m2.border.border-light-silver
-    {:class (str "bg-" color-class)}]]
-  [:div.flex
-   [:div.mt2.flex-column.bold.underline.shout.dark-gray
-    [:div.my1 "Class"]
-    [:div.my1 "HEX"]]
-   [:div.mt2.ml2.flex-column
-    [:div.my1 (str "." color-class)]
-    [:div.my1 "#" hex]]]])
+  [:div.col-6.col-4-on-tb.col-2-on-dt
+   [:div.p1
+    [:div.p4
+     {:class (str "bg-" color-class
+                  (when (#{"black" "fb-blue"} color-class) " white")
+                  (when (#{"white"} color-class) " border border-light-gray"))}
+     [:div.mt4
+      [:div.titleize color-class]
+      [:div "#" hex]]]]])
 
 (def ^:private colors
  [:section
-  (header "Color")
-  [:div.col.col-6
-   [:h3 "Primary"]
-   (color-swatch "teal" "40CBAC")
-   (color-swatch "navy" "175674")]
-  [:div.col.col-6
-   [:h3 "Secondary"]
-   (color-swatch "aqua" "49BBF0")
-   (color-swatch "orange" "E8A50C")]
-  [:h3 "Neutrals"]
-  [:div.col.col-6
-   (color-swatch "white" "FFFFFF")
-   (color-swatch "light-silver" "F8F8F8")
-   (color-swatch "silver" "EBEBEB")
-   (color-swatch "dark-silver" "DADADA")]
-  [:div.col.col-6
-   (color-swatch "light-gray" "B4B4B4")
-   (color-swatch "gray" "666666")
+  (header "Palette")
+
+  (subheader "Primary")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "teal" "40cbac")]
+
+  (subheader "Grays")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "black" "000000")
    (color-swatch "dark-gray" "333333")
-   (color-swatch "black" "000000")]])
+   (color-swatch "gray" "666666")
+   (color-swatch "light-gray" "b4b4b4")
+   (color-swatch "dark-silver" "dadada")
+   (color-swatch "silver" "ebebeb")
+   (color-swatch "light-silver" "f8f8f8")
+   (color-swatch "white" "ffffff")]
+
+  (subheader "Success dialog and error handling")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "green" "00cc00")
+   (color-swatch "red" "ff0000")]
+
+  (subheader "Third party")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "fb-blue" "3b5998")]])
 
 (defn ^:private form [data errors]
   [:div
@@ -260,16 +267,16 @@
   [:section
    (header "Form Fields")
    [:div
-    [:h3.mb1 "Active"] (form data {:first-name []
-                                   :last-name  []
-                                   :phone      []
-                                   :besty      []})]
+    (subheader "Active") (form data {:first-name []
+                                     :last-name  []
+                                     :phone      []
+                                     :besty      []})]
    [:div
-    [:h3.mb1 "Errors"] (form data {:first-name [{:long-message "Wrong"}]
-                                   :last-name  [{:long-message "wrong"}]
-                                   :phone      [{:long-message "Wrong"}]
-                                   :password   [{:long-message "Incorrect"}]
-                                   :besty      [{:long-message "wrong"}]})]])
+    (subheader "Errors") (form data {:first-name [{:long-message "Wrong"}]
+                                     :last-name  [{:long-message "wrong"}]
+                                     :phone      [{:long-message "Wrong"}]
+                                     :password   [{:long-message "Incorrect"}]
+                                     :besty      [{:long-message "wrong"}]})]])
 
 (defn ^:private navigation [data _ _]
   (component/create
@@ -345,11 +352,22 @@
 
 (defn component [data owner opts]
   (component/create
-   [:div.col-12.bg-white.clearfix
-    styles-menu
+   [:div.mx3
+    [:div.container
+     [:div {:style {:margin "50px 0"}}
+      [:h1.mb4 "Mayvenn Style Guide"]
+      (subheader
+       [:span.hide-on-tb-dt "mobile"]
+       [:span.hide-on-mb.hide-on-dt "tablet"]
+       [:span.hide-on-mb-tb "desktop"]
+       " breakpoint")]
 
-    [:div.col.col-10.px3.py3.border-left.border-dark-silver
-     (condp = (get-in data keypaths/navigation-event)
+     colors
+     typography
+     (form-fields data)
+     buttons
+
+     #_(condp = (get-in data keypaths/navigation-event)
        events/navigate-style-guide typography
        events/navigate-style-guide-color colors
        events/navigate-style-guide-buttons buttons
@@ -359,7 +377,7 @@
        events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
        events/navigate-style-guide-progress (component/build progress data opts)
-       events/navigate-style-guide-carousel (component/build carousel data opts))]])) 
+       events/navigate-style-guide-carousel (component/build carousel data opts))]]))
 
 (defn built-component [data opts]
   (component/build component data opts))

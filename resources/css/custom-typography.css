@@ -1,6 +1,8 @@
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
 
+h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .h6, .h7 { font-weight: var(--heading-font-weight); }
+
 .regular { font-weight: var(--font-weight); }
 .light   { font-weight: var(--light-font-weight); }
 .medium  { font-weight: var(--medium-font-weight); }
@@ -61,6 +63,8 @@
     --darken-2: rgba(0, 0, 0, .125);
 
     --font-weight: var(--medium-font-weight);
+
+    --heading-font-weight: var(--bold-font-weight);
 
     --light-font-weight: 300;
     --medium-font-weight: 400;
