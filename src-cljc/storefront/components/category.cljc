@@ -29,7 +29,7 @@
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
-  [:h2.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
+  [:h2.medium.titleize.navy {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
@@ -73,7 +73,7 @@
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.line-height-3.my1.p1.py2.caps.gray.bg-silver.medium.center
+  [:div.h6.my1.p1.py2.caps.gray.bg-silver.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -97,12 +97,12 @@
 
 (defn option-html [step-name later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size
+  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
              sold-out?   "bg-light-gray gray light"
              later-step? "bg-dark-silver muted light"
-             checked?    "bg-teal white regular"
+             checked?    "bg-teal white medium"
              true        "bg-white gray light")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
@@ -116,7 +116,7 @@
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
      [:div.h4.titleize name])
-   [:div.h6.line-height-2
+   [:div.h6
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
@@ -220,7 +220,7 @@
        [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h5.gray.line-height-2
+    [:div.h5.gray
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 

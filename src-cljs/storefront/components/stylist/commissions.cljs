@@ -34,7 +34,7 @@
            :style {:width "5rem"})]
    [:div.overflow-hidden
     [:div.h4.medium.titleize (products/product-title item)]
-    [:div.line-height-3.h5.mt1
+    [:div.h5.mt1
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: " (mf/as-money unit-price)]
@@ -146,7 +146,7 @@
                 {:class (if (expanded? number) "gray" "dark-gray")}
                 "..."]))]
 
-   [:div.medium.h6.line-height-3
+   [:div.medium.h6
     (four-up
      [:div.titleize {:class (status-look status)} status]
      (f/short-date commission-date)

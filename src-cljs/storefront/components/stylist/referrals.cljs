@@ -32,7 +32,7 @@
     (html
      ;; Absolute centering: https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/
      [:div.relative
-      [:div.h6.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
+      [:div.h6.line-height-1.gray.center.absolute.overlay.m-auto {:style {:height "1em"}} "No Sales"]
       [:div.border-dashed.border-gray.circle {:style {:width width :height width}}]])))
 
 (def paid-icon
@@ -49,7 +49,7 @@
    [:div.center.absolute.overlay.m-auto {:style {:height "50%"}}
     ;; Explicit font size because font-scaling breaks the circular progress
     [:div.h3.teal.light {:style {:font-size "18px"}} (mf/as-money-without-cents (js/Math.floor commissioned-revenue))]
-    [:div.h6.gray.line-height-3 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
+    [:div.h6.gray.line-height-1 {:style {:font-size "9px"}} "of " (mf/as-money-without-cents earning-amount)]]
    (circular-progress {:radius         state-radius
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
@@ -66,7 +66,7 @@
       [:div.mr1 (ui/circle-picture profile-picture-url)]
       [:div.flex-auto
        [:div.h3.navy name]
-       [:div.h6.gray.line-height-4
+       [:div.h6.gray
         [:div.gray "Joined " (f/long-date join-date)]
         (when (= state :paid)
           [:div "Credit Earned: " [:span.navy (mf/as-money-without-cents bonus-due) " on " (f/short-date paid-at)]])]]
@@ -95,14 +95,14 @@
     [:div
      [:div.py2.px3.hide-on-mb
       [:div.center.fill-navy svg/large-mail]
-      [:p.py1.h5.black.line-height-2 message]
+      [:p.py1.h5.black message]
       [:div.h4.col-8.mx-auto.mb3 (refer-button {:data-test "refer-button-desktop"})]]
 
      [:div.p2.clearfix.hide-on-tb-dt.border-bottom.border-light-silver
       [:div.left.mx1.fill-navy svg/large-mail]
       [:div.right.ml2.m1.h4.col-4 (refer-button {:class "btn-big"
                                                  :data-test "refer-button-mobile"})]
-      [:p.overflow-hidden.py1.h5.black.line-height-2 message]]]))
+      [:p.overflow-hidden.py1.h5.black message]]]))
 
 (def empty-referrals
   (html
@@ -168,7 +168,7 @@
                      " "
                      (when flash-failure flash-failure)])])
                 [:div.h3.my1.center.navy.medium "Refer a stylist and earn " (mf/as-money-without-cents bonus-amount)]
-                [:p.light.gray.line-height-3.my2
+                [:p.light.gray.my2
                  "Do you know a stylist who would be a great Mayvenn?"
                  " Enter their information below and when they sell " (mf/as-money-without-cents earning-amount)
                  " of Mayvenn products you will earn " (mf/as-money-without-cents bonus-amount) "!"]

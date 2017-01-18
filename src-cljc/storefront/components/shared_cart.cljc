@@ -26,7 +26,7 @@
         [:p.gray
          "Shop with confidence: Wear it, dye it, even color it. "
          "If you do not love your Mayvenn hair we will exchange it within 30 days of purchase!"]]]
-      [:div.p3.h4.center.line-height-3
+      [:div.p3.h4.center
        (or (:description advertised-promo) promos/bundle-discount-description)]
       [:form
        {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart {:shared-cart-id shared-cart-id})}

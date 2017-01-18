@@ -151,14 +151,14 @@
    [:div.absolute.right-0 {:style {:max-width "140px"}}
     [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:div.absolute {:style {:right "15px"}} notch-up]
-     [:div.h6.bg-white.rounded-1
-      (into [:div.px2.py1.line-height-4] menu)
+     [:div.h5.bg-white.rounded-1
+      (into [:div.px2.py1] menu)
       [:div.border-bottom.border-dark-silver]
       [:a.navy.block.py1.center.bg-light-silver.rounded-bottom-1
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
-  [:a.teal.block (utils/route-to nav-event)
+  [:a.py1.teal.block (utils/route-to nav-event)
    [:span (when current-page? {:class padded-selected-link}) title]])
 
 (defn stylist-account [expanded?
@@ -193,15 +193,15 @@
   ([left right]
    [:div.clearfix.pyp1
     [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
-    [:div.col.col-10.line-height-3 right]]))
+    [:div.col.col-10.pyp1 right]]))
 
 (defn products-section [current-page? title named-searches]
   [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-dark-silver.dark-gray.h5 title])
+   (row [:div.border-bottom.border-dark-silver.dark-gray title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
-       [:a.h6.bold (utils/route-to events/navigate-category {:named-search-slug slug})
+       [:a.h5.bold (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.teal.titleize

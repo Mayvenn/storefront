@@ -10,7 +10,7 @@
                :bg-class "bg-darken-4"}
               [:div.bg-white.rounded.p2
                (ui/modal-close {:on-close on-close})
-               [:div.flex.flex-column.items-center.justify-center.py2.line-height-3.gray
+               [:div.flex.flex-column.items-center.justify-center.py2.gray
                 [:h3.navy.mb3 "Offer and Rebate Details"]
                 [:p.mb2 "Included with your purchase is a 1 year subscription to ESSENCE magazine ($10 value)."]
                 [:p.mb3

@@ -137,9 +137,9 @@
             {:color "teal"
              :data-test "store-credit-note"}
             [:.p2.navy
-             [:.h5 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+             [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
              (when-not fully-covered?
-               [:.h6.mt1.line-height-2
+               [:.h6.mt1
                 "Please enter an additional payment method below for the remaining total on your order."])]))
 
          (when-not fully-covered?

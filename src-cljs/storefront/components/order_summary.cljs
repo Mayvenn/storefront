@@ -13,12 +13,12 @@
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
-   [:tr.h5.line-height-4
+   [:tr.h5
     (merge (when (neg? amount)
              {:class "teal"})
            row-attrs)
-    [:td name]
-    [:td.right-align.medium
+    [:td.pyp3 name]
+    [:td.pyp3.right-align.medium
      {:class (when-not (neg? amount)
                "navy")}
      (as-money-or-free amount)]]))
@@ -27,12 +27,9 @@
   [:div
    [:div.flex.border.border-orange.py1
     [:div.flex-none.mx1 {:style {:width "7.33em"}}
-     [:div.hide-on-mb
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
-     [:div.hide-on-tb-dt
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
+     [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
     [:div.flex-auto.mr1
-     [:div.h6.mb1.line-height-2
+     [:div.h6.mb1
       [:div.bold.shout.mb1.h5 "bonus gift!"]
       "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is "
       [:span.underline "included"]
@@ -90,15 +87,15 @@
                               :height "7.33em"})]]
    [:.overflow-hidden.h5.dark-gray.p1
     [:a.dark-gray.medium.titleize (products/product-title line-item)]
-    [:.mt1.h6.line-height-2
+    [:.mt1.h6.line-height-1
      (when-let [length (:length variant-attrs)]
-       [:div "Length: " length])
+       [:div.pyp2 "Length: " length])
      (if price-strikeout?
-       [:div "Price Each: " (ui/strike-price {:price            unit-price
-                                              :bundle-quantity  bundle-quantity
-                                              :price-strikeout? price-strikeout?
-                                              :bundle-eligible? (products/bundle? line-item)})]
-       [:div "Price: " (as-money-without-cents unit-price)])
+       [:div.pyp2 "Price Each: " (ui/strike-price {:price            unit-price
+                                                   :bundle-quantity  bundle-quantity
+                                                   :price-strikeout? price-strikeout?
+                                                   :bundle-eligible? (products/bundle? line-item)})]
+       [:div.pyp2 "Price: " (as-money-without-cents unit-price)])
      quantity-line]]])
 
 (defn display-line-items [line-items products price-strikeout?]

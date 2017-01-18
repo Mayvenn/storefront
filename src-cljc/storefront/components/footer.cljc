@@ -15,9 +15,9 @@
 
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
-    [:a (merge {:key slug}
-               (utils/route-to events/navigate-category {:named-search-slug slug}))
-     [:div.gray.light.titleize name]]))
+    [:a.block.py1.gray.light.titleize (merge {:key slug}
+                                             (utils/route-to events/navigate-category {:named-search-slug slug}))
+     name]))
 
 (defn shop-section [named-searches own-store?]
   [:div.col-12
@@ -35,10 +35,11 @@
   [:div
    [:div.medium.border-bottom.border-dark-silver.mb1 "Contact"]
    [:div.gray.light
-    [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
-    [:span.hide-on-mb call-number] ;; desktop
-    " | 9am-5pm PST M-F"
-    [:a.block.gray {:href (str "mailto:" contact-email)} contact-email]]
+    [:div.py1
+     [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+     [:span.hide-on-mb call-number] ;; desktop
+     " | 9am-5pm PST M-F"]
+    [:a.block.py1.gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.hide-on-tb-dt
     (ui/ghost-button {:href (str "tel://" call-number)
@@ -83,9 +84,9 @@
    [:div.h5.border-top.border-dark-silver.bg-light-silver
     [:div.container
      [:div.col-12.clearfix
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 (shop-section named-searches own-store?)]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 (contacts-section contacts)]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2.line-height-4 social-section]]]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (shop-section named-searches own-store?)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (contacts-section contacts)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h6
      [:div.left
@@ -110,8 +111,8 @@
   (component/create
    [:div.border-top.border-dark-silver.bg-white
     [:div.container
-     [:div.center.px3.my2.line-height-4
-      [:div.medium.gray "Need Help?"]
+     [:div.center.px3.my2
+      [:div.my1.medium.gray "Need Help?"]
       [:div.gray.light.h5
        [:span.hide-on-tb-dt [:a.gray {:href (str "tel://" call-number)} call-number]]
        [:span.hide-on-mb call-number]
