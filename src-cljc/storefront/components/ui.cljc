@@ -140,9 +140,10 @@
       (svg/error {:class "red" :style {:width "1.5rem" :height "1.5rem"}})]]))
 
 (defn ^:private field-error-message [error data-test]
-  [:div.red.my1.h6.center.medium
-   (when error {:data-test (str data-test "-error")})
-   (or (:long-message error) nbsp)])
+  (when error
+    [:div.red.my1.h6.center.medium
+     {:data-test (str data-test "-error")}
+     (or (:long-message error) nbsp)]))
 
 (defn ^:private floating-label [label id {:keys [error? value?]}]
   [:div.absolute
@@ -196,11 +197,13 @@
                                                :value   (.. e -target -value)}))}
                            input-attributes)
                     status)]
-      (when hint? [:div.p1 hint])]]))
+      (when hint? [:div.p1
+                   (when error? {:class "red"})
+                   hint])]]))
 
 (defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]
-    [:div.col-12.mb1
+    [:div.col-12.mb2
      (plain-text-field label keypath value (not (nil? error))
                        (dissoc input-attributes :label :keypath :value :errors))
      (field-error-message error data-test)]))
@@ -211,7 +214,7 @@
   [& fields]
   {:pre [(zero? (rem 12 (count fields)))]}
   (let [col-size (str "col col-" (/ 12 (count fields)))]
-    [:div.mb1
+    [:div.mb2
      (into [:div.clearfix]
            (concat
             (for [[idx {:keys [label keypath value errors] :as field}]
@@ -270,13 +273,13 @@
 
 (defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
   (let [error (first errors)]
-    [:div.col-12.mb1
+    [:div.col-12.mb2
      (plain-select-field label keypath value options (not (nil? error))
                          (dissoc select-attributes :label :keypath :value :options :errors))
      (field-error-message error data-test)]))
 
 (defn check-box [{:keys [label keypath value label-classes] :as attributes}]
-  [:div.col-12.mb1
+  [:div.col-12.mb2
    [:label {:class label-classes}
     [:input.mr1
      (merge (utils/toggle-checkbox keypath value)

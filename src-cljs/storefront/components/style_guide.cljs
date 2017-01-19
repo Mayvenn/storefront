@@ -216,7 +216,7 @@
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "fb-blue" "3b5998")]])
 
-(defn ^:private form [data errors]
+(defn ^:private form [data]
   [:div
    (ui/text-field-group
     {:type    "text"
@@ -225,21 +225,27 @@
      :keypath [:style-guide :form :first-name]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :first-name])
-     :errors  (:first-name errors)}
+     :errors  (if (= "wrong" (get-in data [:style-guide :form :first-name]))
+                [{:long-message "wrong"}]
+                [])}
     {:type    "text"
      :label   "Last Name"
      :id      "last-name"
      :keypath [:style-guide :form :last-name]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :last-name])
-     :errors  (:last-name errors)})
+     :errors  (if (= "wrong" (get-in data [:style-guide :form :last-name]))
+                [{:long-message "wrong"}]
+                [])})
    (ui/text-field
     {:type     "text"
      :label    "Mobile Phone"
      :keypath  [:style-guide :form :phone]
      :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :phone])
-     :errors   (:phone errors)
+     :errors   (if (= "wrong" (get-in data [:style-guide :form :phone]))
+                 [{:long-message "wrong"}]
+                 [])
      :required true})
    (ui/text-field
     {:type     "password"
@@ -248,10 +254,14 @@
      :keypath  [:style-guide :form :password]
      :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :password])
-     :errors   (:password errors)
+     :errors   (if (= "wrong" (get-in data [:style-guide :form :password]))
+                 [{:long-message "Incorrect"}]
+                 [])
      :hint     (get-in data [:style-guide :form :password])
      :required true})
-   (ui/select-field {:errors      (:besty errors)
+   (ui/select-field {:errors      (if (= "jacob" (get-in data [:style-guide :form :besty]))
+                                    [{:long-message "wrong"}]
+                                    [])
                      :id          "id-is-required"
                      :keypath     [:style-guide :form :besty]
                      :focused     (get-in data keypaths/ui-focus)
@@ -264,17 +274,7 @@
 (defn ^:private form-fields [data]
   [:section
    (header "Form Fields")
-   [:div
-    (subheader "Active") (form data {:first-name []
-                                     :last-name  []
-                                     :phone      []
-                                     :besty      []})]
-   [:div
-    (subheader "Errors") (form data {:first-name [{:long-message "Wrong"}]
-                                     :last-name  [{:long-message "wrong"}]
-                                     :phone      [{:long-message "Wrong"}]
-                                     :password   [{:long-message "Incorrect"}]
-                                     :besty      [{:long-message "wrong"}]})]])
+   (form data)])
 
 (defn ^:private navigation [data _ _]
   (component/create
