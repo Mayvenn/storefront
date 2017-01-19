@@ -42,7 +42,7 @@ h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5, .h6, .h7 { font-weight: va
 
 @font-face {
   font-family: 'Roboto';
-  src: url('/fonts/Roboto-Medium-webfont.woff') format('woff');
+  src: url('/fonts/Roboto-Regular-webfont.woff') format('woff');
   font-weight:  400;
   font-style:   normal;
   font-stretch: normal;

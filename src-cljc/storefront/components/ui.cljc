@@ -140,7 +140,7 @@
       (svg/error {:class "red" :style {:width "1.5rem" :height "1.5rem"}})]]))
 
 (defn ^:private field-error-message [error data-test]
-  [:div.red.my1.h6.center
+  [:div.red.my1.h6.center.medium
    (when error {:data-test (str data-test "-error")})
    (or (:long-message error) nbsp)])
 
