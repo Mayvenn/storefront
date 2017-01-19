@@ -6,8 +6,6 @@
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]))
 
-(def flash-line-height "1.25em")
-
 (def success-img
   (svg/circled-check {:class "stroke-teal"
                       :style {:width "1em" :height "1em"}}))
@@ -36,14 +34,12 @@
         (or failure (seq errors))
         (error-box
          {:data-test "flash-error"}
-         [:div.px2 {:style {:line-height flash-line-height}}
-          (or failure (get errors :error-message))])
+         [:div.px2 (or failure (get errors :error-message))])
 
         success
         (success-box
          {:data-test "flash-success"}
-         [:div.px2 {:style {:line-height flash-line-height}}
-          success]))))))
+         [:div.px2 success]))))))
 
 (defn query [data]
   {:success (get-in data keypaths/flash-now-success-message)
