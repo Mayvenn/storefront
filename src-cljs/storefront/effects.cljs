@@ -331,9 +331,8 @@
   (let [already-bucketed? (contains? (get-in app-state keypaths/experiments-bucketed) experiment)]
     (when-not already-bucketed?
       (when-let [variation (experiments/variation-for app-state experiment)]
-        (handle-message events/bucketed-for {:experiment experiment :variation variation}))
-      (when-let [feature (experiments/feature-for app-state experiment)]
-        (handle-message events/enable-feature {:feature feature})))))
+        (handle-message events/bucketed-for {:experiment experiment :variation variation})
+        (handle-message events/enable-feature {:experiment experiment :feature (:feature variation)})))))
 
 (defmethod perform-effects events/navigate-checkout [_ event args app-state]
   (let [have-cart? (get-in app-state keypaths/order-number)]
