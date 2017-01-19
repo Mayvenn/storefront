@@ -1,8 +1,10 @@
 (ns storefront.components.checkout-returning-or-guest
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
+            [storefront.components.checkout-sign-in :as checkout-sign-in]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
@@ -40,3 +42,13 @@
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
+
+
+(defn requires-sign-in-or-guest [authorized-component data opts]
+  (if (or (get-in data keypaths/user-id)
+          (get-in data keypaths/checkout-as-guest))
+    (authorized-component data nil)
+    (if (experiments/address-login? data)
+      ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
+      [:div.h1.my4 ui/spinner]
+      (checkout-sign-in/built-full-component data nil))))

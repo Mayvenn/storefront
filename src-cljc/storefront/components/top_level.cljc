@@ -58,9 +58,9 @@
          events/navigate-cart                           cart/built-component
          events/navigate-checkout-returning-or-guest    checkout-returning-or-guest/built-component
          events/navigate-checkout-sign-in               checkout-sign-in/built-component
-         events/navigate-checkout-address               (partial checkout-sign-in/requires-sign-in-or-guest checkout-address/built-component)
-         events/navigate-checkout-payment               (partial checkout-sign-in/requires-sign-in-or-guest checkout-payment/built-component)
-         events/navigate-checkout-confirmation          (partial checkout-sign-in/requires-sign-in-or-guest checkout-confirmation/built-component)
+         events/navigate-checkout-address               (partial checkout-returning-or-guest/requires-sign-in-or-guest checkout-address/built-component)
+         events/navigate-checkout-payment               (partial checkout-returning-or-guest/requires-sign-in-or-guest checkout-payment/built-component)
+         events/navigate-checkout-confirmation          (partial checkout-returning-or-guest/requires-sign-in-or-guest checkout-confirmation/built-component)
          events/navigate-order-complete                 checkout-complete/built-component])
 
     events/navigate-home              home/built-component

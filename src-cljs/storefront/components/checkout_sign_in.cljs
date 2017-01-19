@@ -8,7 +8,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn component [sign-in-form-data owner]
+(defn full-component [sign-in-form-data owner]
   (om/component
    (html
     (ui/narrow-container
@@ -23,7 +23,10 @@
      [:div.h6.center.mb2 "Sign into your account below, and checkout even faster!"]
      (om/build sign-in/form-component sign-in-form-data)))))
 
-(defn simple-component [sign-in-form-data owner]
+(defn built-full-component [data opts]
+  (om/build full-component (sign-in/query data) opts))
+
+(defn component [sign-in-form-data owner]
   (om/component
    (html
     (ui/narrow-container
@@ -32,11 +35,5 @@
 
 (defn built-component [data opts]
   (if (experiments/address-login? data)
-    (om/build simple-component (sign-in/query data) opts)
-    (om/build component (sign-in/query data) opts)))
-
-(defn requires-sign-in-or-guest [authorized-component data opts]
-  (if (or (get-in data keypaths/user-id)
-          (get-in data keypaths/checkout-as-guest))
-    (authorized-component data nil)
-    (built-component data nil)))
+    (om/build component (sign-in/query data) opts)
+    (built-full-component data opts)))
