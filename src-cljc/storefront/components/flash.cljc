@@ -13,7 +13,7 @@
                       :style {:width "1em" :height "1em"}}))
 
 (def error-img
-  (svg/error {:class "fill-orange"
+  (svg/error {:class "red"
               :style {:width "1em" :height "1em"}}))
 
 (defn success-box [box-opts body]
@@ -23,7 +23,7 @@
     [:div.overflow-hidden body]]])
 
 (defn error-box [box-opts body]
-  [:div.orange.bg-orange.border.border-orange.rounded.light.letter-spacing-1
+  [:div.red.bg-red.border.border-red.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
     [:div.right.ml1 error-img]
     [:div.overflow-hidden body]]])
