@@ -252,7 +252,7 @@
                            :value       (:state billing-address)})]])])))
 
 (defn component
-  [{:keys [saving? become-guest? step-bar billing-address-data shipping-address-data]} owner]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -286,6 +286,9 @@
      :shipping-address-data {:shipping-address (get-in data keypaths/checkout-shipping-address)
                              :states           states
                              :email            (get-in data keypaths/checkout-guest-email)
+                             ;; TODO: remove guest? if address-login? experiment
+                             ;; wins. It won't be possible to already be a guest
+                             ;; when you hit the address page.
                              :guest?           (get-in data keypaths/checkout-as-guest)
                              :become-guest?    false
                              :places-loaded?   places-loaded?
