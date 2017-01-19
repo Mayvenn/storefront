@@ -156,7 +156,8 @@
   (cond-> {:class wrapper-class}
     true         (add-classes "rounded border pp1 x-group-item")
     focused?     (add-classes "glow")
-    error?       (add-classes "border-red")
+    ;; .z1.relative keeps border between adjacent fields red if one of them is in error
+    error?       (add-classes "border-red z1 relative")
     (not error?) (add-classes "border-gray")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
