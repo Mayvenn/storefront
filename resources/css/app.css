@@ -168,9 +168,9 @@
 
     --caps-letter-spacing: 0.1em;
 
-    --floating-label--input-text-height: 1.5rem; /* height, not including paddding */
-    --floating-label--input-padding-x: 0.6rem;
-    --floating-label--input-padding-y: 0.75em;
-    --floating-label--input-label-padding-y: 0;
+    --floating-label--input-text-height: 19px; /* height, not including paddding */
+    --floating-label--input-padding-x: 10px;
+    --floating-label--input-padding-y: 12px;
+    --floating-label--input-label-padding-y: 1px;
 }
 
