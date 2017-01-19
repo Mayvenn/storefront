@@ -14,9 +14,9 @@
     [:div.gray
      [:div.border-bottom.border-dark-silver
       [:div.container.py2
-       [:div.col-8.mx-auto.mb1
-        [:h1.h3.center.mb1 "Been here before?"]
-        [:p.h4.center "Sign in and we'll speed you through a secure checkout."]]
+       [:div.col-8.mx-auto.mb1.center
+        [:h1.h3.mb1 "Secure checkout"]
+        [:p.h4.mb1 "Sign in or checkout as a guest."]]
 
        [:div.col-10.col-8-on-tb.col-4-on-dt.mx-auto
         [:div.clearfix.mxn1
@@ -29,11 +29,7 @@
 
      [:div.container.py2
       [:div.col-8.mx-auto
-       [:h2.h3.center.mb1 "I'm new here"]
-       [:p.h4.center
-        "Just 3 simple steps to securely checkout."
-        [:br]
-        "You'll have an opportunity to create an account after placing your order."]]]
+       [:h2.h3.center.mb1 "Checkout as a guest"]]]
 
      (om/build checkout-address/component address)])))
 
