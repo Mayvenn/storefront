@@ -97,8 +97,8 @@
     ;; DO NOT define the variations until you want to deploy - it will corrupt
     ;; Convert and keep too many users out of the experiment
     {"address-login" {:convert-id nil #_"100013592"
-                      :variations [#_{:name "original" :convert-id "100079506" :feature "address-login-control"}
-                                   #_{:name "variation" :convert-id "100079507" :feature "address-login"}]}}
+                      :variations [#_{:convert-id "100079506" :feature "address-login-control"}
+                                   #_{:convert-id "100079507" :feature "address-login"}]}}
 
     {"address-login" {:convert-id "100013593"
                       :variations [{:convert-id "100079508" :feature "address-login-control"}
