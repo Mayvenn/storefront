@@ -34,7 +34,7 @@
 
 (defn link-to-search [{:keys [slug name long-name representative-images]}]
   (let [{:keys [model-circle product]} representative-images]
-    [:a.p1.center.flex.flex-column.items-center
+    [:a.p1.black.center.flex.flex-column.items-center
      (merge {:data-test (str "named-search-" slug)}
             (utils/route-to events/navigate-category {:named-search-slug slug}))
      [:img.unselectable (merge
@@ -43,13 +43,13 @@
      [:img.mt3.unselectable (merge
                              (utils/img-attrs product :small)
                              {:style {:height "80px"}})]
-     [:div.mb3.dark-gray.medium name]]))
+     [:div.mb3.medium name]]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
-    [:h2.h5.order-2.dark-gray.medium.py1 "100% virgin human hair + free shipping"]
-    [:h3.h2.order-1.dark-gray.bold.py1 "pick your style"]]
+    [:h2.h4.order-2.medium.py1 "100% virgin human hair + free shipping"]
+    [:h3.h1.order-1.py1 "pick your style"]]
    [:nav.my2
     {:role "navigation" :aria-label "Pick your style"}
     (component/build carousel/component
@@ -83,7 +83,7 @@
     (ui/large-ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
             :data-test "nav-shop-look")
-     [:span.dark-gray.bold "shop our looks"])]])
+     "shop our looks")]])
 
 (defn banner [store-slug]
   [:a
@@ -109,23 +109,23 @@
 (defn about-mayvenn []
   (component/html
    [:div.container.py3
-    [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
+    [:h2.h1.line-length.mx-auto.center.py1 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.center.bold.mb3 "stylist recommended"]
+      [:h3.h2.center.mb3 "stylist recommended"]
       [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.center.bold.mb3 "30 day guarantee"]
+      [:h3.h2.center.mb3 "30 day guarantee"]
       [:p.h5 "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange them within 30 days for FREE!"]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.center.bold.mb3 "fast free shipping"]
+      [:h3.h2.center.mb3 "fast free shipping"]
       [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
 
     [:div.col-8.col-4-on-tb-dt.mt1.mx-auto
-     (ui/teal-button
+     (ui/large-teal-button
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
       "shop our looks")]]))
@@ -138,14 +138,14 @@
      (assets/path "/images/homepage/desktop_video.png")
      "Hair Extension Reviews Mayvenn")
     [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1.container-height
+     [:div.flex.flex-column.items-center.justify-center.white.medium.bg-darken-2.center.shadow.letter-spacing-1.container-height
       [:div.mt4 svg/play-video]
       [:h2.h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))
 
 (def talkable-banner
   (component/html
-   [:div.container.py2
+   [:div.container.py4
     [:a
      (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
      (homepage-images

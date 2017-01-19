@@ -201,7 +201,7 @@
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
-       [:a.h5.bold (utils/route-to events/navigate-category {:named-search-slug slug})
+       [:a.h5.medium (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.teal.titleize
@@ -238,22 +238,22 @@
 
 (defn lower-left [current-page?]
   [:div.right
-   [:div.hide-on-mb {:style {:margin-top "-12px"}}
-    [:a.dark-gray.col.py1.mr4 (merge
-                               {:href           "/categories"
-                                :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
-                                :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
-                               (when (current-page? events/navigate-category) {:class selected-link}))
+   [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+    [:a.black.col.py1.mr4 (merge
+                           {:href           "/categories"
+                            :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
+                            :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
+                           (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
-    [:a.dark-gray.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
+    [:a.black.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
 
 (defn lower-right [current-page?]
-  [:div.hide-on-mb {:style {:margin-top "-12px"}}
-   [:a.dark-gray.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
+  [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+   [:a.black.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
     "Guarantee"]
-   [:a.dark-gray.col.py1.ml4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                              :href           "https://blog.mayvenn.com"}
+   [:a.black.col.py1.ml4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
+                          :href           "https://blog.mayvenn.com"}
     "Blog"]])
 
 (defn header [left middle right flyout]

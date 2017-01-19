@@ -45,7 +45,7 @@
   ([current-navigation-message event-name event-args content]
    [:span
     (when (routes/current-page? current-navigation-message event-name event-args)
-      {:class "border-navy border-bottom border-width-2 bold pyp1"})
+      {:class "border-navy border-bottom border-width-2 medium pyp1"})
     content]))
 
 (defn store-credit-flag [credit]
