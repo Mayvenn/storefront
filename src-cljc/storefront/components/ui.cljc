@@ -154,12 +154,12 @@
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
   (cond-> {:class wrapper-class}
-    true         (add-classes "rounded border pp1")
+    true         (add-classes "rounded border pp1 x-group-item")
     focused?     (add-classes "glow")
     ;; .z1.relative is for adjacent text-fields with left in error and right
     ;; not in error; keeps the left field's right border/inset 2px;
-    error?       (add-classes "z1 field-is-error relative border-red inset-red x-group-item-2")
-    (not error?) (add-classes "border-gray x-group-item")))
+    error?       (add-classes "z1 field-is-error relative border-red inset-red")
+    (not error?) (add-classes "border-gray")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
