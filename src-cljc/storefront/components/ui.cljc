@@ -156,13 +156,13 @@
   (cond-> {:class wrapper-class}
     true         (add-classes "rounded border pp1 x-group-item")
     focused?     (add-classes "glow")
-    error?       (add-classes "field-is-error border-red")
+    error?       (add-classes "border-red")
     (not error?) (add-classes "border-gray")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
     true                      (add-classes "floating-label--input rounded border-none")
-    error?                    (add-classes "field-is-error pr4 red")
+    error?                    (add-classes "pr4 red")
     value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field
