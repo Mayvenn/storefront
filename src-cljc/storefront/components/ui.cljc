@@ -137,20 +137,18 @@
     ;; z3 puts the icon above the field, even when it has focus
     [:div.right.relative.z3
      [:div.absolute.floating-label--icon
-      (svg/error {:class "fill-orange" :style {:width "1.5rem" :height "1.5rem"}})]]))
+      (svg/error {:class "red" :style {:width "1.5rem" :height "1.5rem"}})]]))
 
 (defn ^:private field-error-message [error data-test]
-  [:div.orange.mtp2.mb1.bold.h5
+  [:div.red.my1.h6.center
    (when error {:data-test (str data-test "-error")})
    (or (:long-message error) nbsp)])
 
 (defn ^:private floating-label [label id {:keys [error? value?]}]
   [:div.absolute
-   [:label.floating-label--label.col-12.h7.relative
+   [:label.floating-label--label.col-12.h7.relative.gray.medium
     (cond-> {:for id}
-      value?       (add-classes "has-value")
-      error?       (add-classes "orange")
-      (not error?) (add-classes "dark-gray"))
+      value? (add-classes "has-value"))
     label]])
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
@@ -159,14 +157,13 @@
     focused?     (add-classes "glow")
     ;; .z1.relative is for adjacent text-fields with left in error and right
     ;; not in error; keeps the left field's right border/inset 2px;
-    error?       (add-classes "z1 field-is-error relative border-orange inset-orange x-group-item-2")
+    error?       (add-classes "z1 field-is-error relative border-red inset-red x-group-item-2")
     (not error?) (add-classes "border-gray x-group-item")))
 
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
-    true                      (add-classes "h5 floating-label--input rounded border-none")
-    error?                    (add-classes "field-is-error pr4")
-    (and error? (not value?)) (add-classes "orange")
+    true                      (add-classes "floating-label--input rounded border-none")
+    error?                    (add-classes "field-is-error pr4 red")
     value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field

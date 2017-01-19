@@ -244,6 +244,7 @@
    (ui/text-field
     {:type     "password"
      :label    "Password"
+     :id       "password"
      :keypath  [:style-guide :form :password]
      :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :password])

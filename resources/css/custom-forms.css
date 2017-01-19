@@ -37,9 +37,6 @@ select:focus,
   /* Webkit has a nice glow ring */
   outline: -webkit-focus-ring-color auto 5px;
 
-  /* Everyone should be 'teal' */
-  outline-color: var(--teal);
-
   /* z2 puts the glowing field above the field inset but below the error icon */
   z-index: 2;
   position: relative;
@@ -53,11 +50,6 @@ select:focus {
   outline-offset: -2px;
 }
 
-select:focus.field-is-error,
-.glow.field-is-error {
-  outline-color: var(--orange);
-}
-
 select,
 input[type=date] {
   appearance: none;
@@ -68,8 +60,7 @@ input:focus {
 }
 
 :root {
-  --teal:  #40CBAC;
-  --orange: #E8A50C;
+  --red: #FF0000;
 
   --border-radius: 4px;
 
