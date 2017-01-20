@@ -92,10 +92,9 @@
 (def manual-experiments
   (case js/environment
     "production"
-    ;; TODO: To enable experiment on production uncomment variations and deploy.
-    ;; DO NOT define the variations until you want to deploy.
-    {"address-login" {:variations [#_{:feature "address-login-control"}
-                                   #_{:feature "address-login"}]}}
-
-    {"address-login" {:variations [{:feature "address-login-control"}
+    {"address-login" {:enabled?   true
+                      :variations [{:feature "address-login-control"}
+                                   {:feature "address-login"}]}}
+    {"address-login" {:enabled?   true
+                      :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))

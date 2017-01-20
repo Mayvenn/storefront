@@ -25,26 +25,26 @@
      :cljs (.charCodeAt c 0)))
 
 (defn variation-for [data experiment]
-  (let [variations (get-in data (conj keypaths/experiments-manual experiment :variations))
+  (let [{:keys [enabled? variations]} (get-in data (conj keypaths/experiments-manual experiment))]
+    (when enabled?
+      (let [;; We want to randomly bucket a user into a variation. We can use
+            ;; session-id for this. This algorithm turns session-id into session-n
+            ;; an integer that: ranges from 0 to 1295, is randomly distributed
+            ;; across all the users, and is deterministic for any given user.
+            ;; (Because it is cookied, it sticks with the customer for a long time
+            ;; - one year.) Caveat: since it is associated with a browser, it will
+            ;; have different values on different devices for the same person.
+            ;; This is somewhat unavoidable since it has to work for logged-out
+            ;; users too.
+            session-n  (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
+            ;; We also want to avoid always assigning the same set of people to the
+            ;; same side of an experiment.
+            exp-offset (reduce + (map char->int experiment))
 
-        ;; We want to randomly bucket a user into a variation. We can use
-        ;; session-id for this. This algorithm turns session-id into session-n
-        ;; an integer that: ranges from 0 to 1295, is randomly distributed
-        ;; across all the users, and is deterministic for any given user.
-        ;; (Because it is cookied, it sticks with the customer for a long time
-        ;; - one year.) Caveat: since it is associated with a browser, it will
-        ;; have different values on different devices for the same person.
-        ;; This is somewhat unavoidable since it has to work for logged-out
-        ;; users too.
-        session-n  (-> (get-in data keypaths/session-id) (subs 0 2) (str->int 36))
-        ;; We also want to avoid always assigning the same set of people to the
-        ;; same side of an experiment.
-        exp-offset (reduce + (map char->int experiment))
-
-        variation (when (seq variations)
-                    (nth variations (mod (+ exp-offset session-n)
-                                         (count variations))))]
-    variation))
+            variation (when (seq variations)
+                        (nth variations (mod (+ exp-offset session-n)
+                                             (count variations))))]
+        variation))))
 
 (defn feature-for [data experiment]
   (:feature (variation-for data experiment)))
