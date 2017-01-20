@@ -84,7 +84,7 @@
 
 (def navy-carrot-bottom
   (component/html
-   (carrot-down {:width-px 4 :bg-color "border-light-gray" :border-color "border-navy"})))
+   (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-navy"})))
 
 (def notch-up
   (component/html
