@@ -13,24 +13,22 @@
 (defn component [{:keys [facebook-loaded? address]} owner]
   (om/component
    (html
-    [:div.dark-gray
-     [:div.border-bottom.border-gray
-      [:div.container.py3
-       [:div.col-8.mx-auto.mb1.center
-        [:h1.h3.mb1 "Secure checkout"]
-        [:p.h4.mb1 "Sign in or checkout as a guest."]]
+    [:div.container.p2
+     (ui/narrow-container
+      [:div ;; Tries to match what's going on in checkout-address/component
+       [:div.center
+        [:h1 "Secure checkout"]
+        [:p "Sign in or checkout as a guest."]]
 
-       [:div.col-10.col-8-on-tb.col-4-on-dt.mx-auto
-        [:div.clearfix.mxn1
-         [:div.col.col-6.p1
-          (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
-                                 :data-test "begin-password-sign-in-button")
-                          "Sign in")]
-         [:div.col.col-6.p1
-          (facebook/small-sign-in-button facebook-loaded?)]]]]]
+       [:div.clearfix.mxn1.my2
+        [:div.col.col-6.p1
+         (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
+                                :data-test "begin-password-sign-in-button")
+                         "Sign in")]
+        [:div.col.col-6.p1
+         (facebook/small-sign-in-button facebook-loaded?)]]])
 
-     [:h2.h3.center.mt3 "Checkout as a guest"]
-
+     [:h2.mt1.center "Checkout as a guest"]
      (om/build checkout-address/component address)])))
 
 (defn query [data]
