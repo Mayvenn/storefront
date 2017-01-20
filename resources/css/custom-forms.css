@@ -11,6 +11,7 @@
 }
 
 .floating-label--input {
+  line-height: 1.2; /* Required to avoid cutting off mobile layout placeholder text on select fields */
   padding: var(--floating-label--input-padding-y) var(--floating-label--input-padding-x);
   height: calc(var(--floating-label--input-text-height) + var(--floating-label--input-padding-y) * 2);
 }
