@@ -45,7 +45,7 @@
    (svg/bag {:class (str "absolute overlay m-auto "
                          (if (pos? cart-quantity) "fill-navy" "fill-black"))})
    (when (pos? cart-quantity)
-     [:div.absolute.overlay.m-auto {:style {:height "10px"}}
+     [:div.absolute.overlay.m-auto {:style {:height "9px"}}
       [:div.center.navy.h6.line-height-1 {:data-test "populated-cart"} cart-quantity]])])
 
 (defn triangle-up [width class]
