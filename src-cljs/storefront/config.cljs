@@ -92,14 +92,10 @@
 (def manual-experiments
   (case js/environment
     "production"
-    ;; TODO: To enable experiment on production, uncomment experiment convert
-    ;; id, variations, and deploy.
-    ;; DO NOT define the variations until you want to deploy - it will corrupt
-    ;; Convert and keep too many users out of the experiment
-    {"address-login" {:convert-id nil #_"100013592"
-                      :variations [#_{:convert-id "100079506" :feature "address-login-control"}
-                                   #_{:convert-id "100079507" :feature "address-login"}]}}
+    ;; TODO: To enable experiment on production uncomment variations and deploy.
+    ;; DO NOT define the variations until you want to deploy.
+    {"address-login" {:variations [#_{:feature "address-login-control"}
+                                   #_{:feature "address-login"}]}}
 
-    {"address-login" {:convert-id "100013593"
-                      :variations [{:convert-id "100079508" :feature "address-login-control"}
-                                   {:convert-id "100079509" :feature "address-login"}]}}))
+    {"address-login" {:variations [{:feature "address-login-control"}
+                                   {:feature "address-login"}]}}))

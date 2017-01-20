@@ -879,6 +879,3 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
-
-(defmethod perform-effects events/bucketed-for [_ event {:keys [experiment variation]} app-state]
-  (convert/join-variation experiment variation))

@@ -34,9 +34,3 @@
 
 (defn track-revenue [{:keys [order-number revenue products-count]}]
   (enqueue "sendRevenue" order-number revenue products-count (label->goal-id "revenue")))
-
-(defn experiment-name->id [experiment-name]
-  (get-in config/manual-experiments [experiment-name :convert-id]))
-
-(defn join-variation [experiment-name variation]
-  (enqueue "assignVariation" (experiment-name->id experiment-name) (:convert-id variation)))
