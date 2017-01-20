@@ -15,7 +15,7 @@
    (html
     [:div.gray
      [:div.border-bottom.border-dark-silver
-      [:div.container.py2
+      [:div.container.py3
        [:div.col-8.mx-auto.mb1.center
         [:h1.h3.mb1 "Secure checkout"]
         [:p.h4.mb1 "Sign in or checkout as a guest."]]
@@ -29,9 +29,7 @@
          [:div.col.col-6.p1
           (facebook/small-sign-in-button facebook-loaded?)]]]]]
 
-     [:div.container.py2
-      [:div.col-8.mx-auto
-       [:h2.h3.center.mb1 "Checkout as a guest"]]]
+     [:h2.h3.center.mt3 "Checkout as a guest"]
 
      (om/build checkout-address/component address)])))
 
