@@ -41,5 +41,5 @@
   (get-in config/manual-experiments [experiment-name :convert-id]))
 
 (defn join-variation [experiment-name variation]
-  (prn experiment-name (:feature variation))
+  (js/console.log (str experiment-name " " (:feature variation)))
   (enqueue "assignVariation" (experiment-name->id experiment-name) (:convert-id variation)))
