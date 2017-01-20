@@ -31,9 +31,9 @@
   (om/component
    (html
     (ui/narrow-container
-     [:h2.h3.center.my2.mb3 "Sign in to your account"]
+     [:h1.center.my2.mb3 "Sign in to your account"]
      (om/build sign-in/password-component sign-in-form-data)
-     [:div.h5.gray.light.center.mt1.mb2 "OR"]
+     [:div.dark-gray.center.mb2 "OR"]
      (facebook/sign-in-button facebook-loaded?)))))
 
 (defn built-component [data opts]
