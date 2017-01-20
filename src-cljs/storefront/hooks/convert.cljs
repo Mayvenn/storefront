@@ -27,7 +27,9 @@
 
 (defn ^:private enqueue [& args]
   (ensure-queue)
-  (.push js/_conv_q (clj->js args)))
+  (let [q-args (clj->js args)]
+    (js/console.log q-args)
+    (.push js/_conv_q q-args)))
 
 (defn track-conversion [label]
   (enqueue "triggerConversion" (label->goal-id label)))
@@ -39,4 +41,5 @@
   (get-in config/manual-experiments [experiment-name :convert-id]))
 
 (defn join-variation [experiment-name variation]
+  (prn experiment-name (:feature variation))
   (enqueue "assignVariation" (experiment-name->id experiment-name) (:convert-id variation)))
