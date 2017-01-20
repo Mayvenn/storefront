@@ -132,13 +132,6 @@
      (aget (.-options elem)
            (.-selectedIndex elem)))))
 
-(defn ^:private field-error-icon [{:keys [error?]}]
-  (when error?
-    ;; z3 puts the icon above the field, even when it has focus
-    [:div.right.relative.z3
-     [:div.absolute.floating-label--icon
-      (svg/error {:class "red" :style {:width "1.5rem" :height "1.5rem"}})]]))
-
 (defn ^:private field-error-message [error data-test]
   (when error
     [:div.red.my1.h6.center.medium
@@ -163,7 +156,7 @@
 (defn ^:private field-class [base {:keys [error? value?]}]
   (cond-> base
     true                      (add-classes "floating-label--input rounded border-none")
-    error?                    (add-classes "pr4 red")
+    error?                    (add-classes "red")
     value?                    (add-classes "has-value")))
 
 (defn ^:private plain-text-field
@@ -176,7 +169,6 @@
                           :hint?    hint?
                           :value?   (seq value)}]
     [:div.clearfix (field-wrapper-class wrapper-class status)
-     (field-error-icon status)
      (floating-label label id status)
      [:label
       [:input.col-12
@@ -245,7 +237,6 @@
                        :value? (seq selected-text)}]
     [:div.clearfix
      (field-wrapper-class "" status)
-     (field-error-icon status)
      (when (not error?)
        ;; Doesn't need z-index, even when field has focus, because background of select is transparent
        [:div.right.relative
