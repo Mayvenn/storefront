@@ -255,7 +255,7 @@
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
   (om/component
    (html
-    [:div.container.p2
+    [:div.container
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container

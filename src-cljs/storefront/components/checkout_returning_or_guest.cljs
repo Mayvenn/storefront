@@ -15,7 +15,7 @@
    (html
     [:div
      (ui/narrow-container ;; Tries to match what's going on in checkout-address/component
-      [:div.px2
+      [:div
        [:div.center
         [:h1 "Secure checkout"]
         [:p "Sign in or checkout as a guest."]]

@@ -9,9 +9,10 @@
     (ui/facebook-button
      {:on-click (utils/send-event-callback events/control-facebook-sign-in)
       :data-test "facebook-button"}
-     [:div.flex.items-center.justify-center
-      [:span "Sign in with"]
-      [:img.ml2 {:src "/images/FacebookWhite.png" :width 20 :height 20}]])))
+     [:div.col-8-on-tb-dt.mx-auto
+      [:div.flex.items-center.justify-around
+       [:span "Sign in with"]
+       [:img {:src "/images/FacebookWhite.png" :width 20 :height 20}]]])))
 
 (defn- large-button [loaded? click-event]
   (if loaded?
