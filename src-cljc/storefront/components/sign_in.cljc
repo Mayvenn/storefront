@@ -41,7 +41,7 @@
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})
 
-     [:div.mt2.col-12.mb3
+     [:div.col-12.mt2
       [:div.left.col-6
        (ui/check-box {:label   "Show password"
                       :keypath keypaths/account-show-password?
@@ -60,7 +60,7 @@
 
     (component/build password-component data nil)
 
-    [:div.clearfix.center.gray.mb2 "Don't have an account? "
+    [:div.clearfix.center.gray.my2 "Don't have an account? "
      [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]]))
 
 (defn component [form-data owner opts]

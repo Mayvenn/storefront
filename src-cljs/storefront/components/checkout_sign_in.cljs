@@ -4,6 +4,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
+            [storefront.components.facebook :as facebook]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -26,12 +27,14 @@
 (defn built-full-component [data opts]
   (om/build full-component (sign-in/query data) opts))
 
-(defn component [sign-in-form-data owner]
+(defn component [{:keys [facebook-loaded?] :as sign-in-form-data} owner]
   (om/component
    (html
     (ui/narrow-container
      [:h2.h3.center.my2.mb3 "Sign in to your account"]
-     (om/build sign-in/password-component sign-in-form-data)))))
+     (om/build sign-in/password-component sign-in-form-data)
+     [:div.h5.gray.light.center.mt1.mb2 "OR"]
+     (facebook/sign-in-button facebook-loaded?)))))
 
 (defn built-component [data opts]
   (if (experiments/address-login? data)
