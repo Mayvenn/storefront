@@ -150,7 +150,7 @@
   (component/html
    [:div.container.py2
     [:a
-     (utils/route-to events/navigate-friend-referrals)
+     (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
      (homepage-images
       (assets/path "/images/homepage/mobile_talkable_banner.png")
       (assets/path "/images/homepage/desktop_talkable_banner.png")
