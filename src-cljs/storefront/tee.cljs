@@ -78,9 +78,10 @@
   (if-let [room-id (last (re-find #"listen=(.*)&?" js/window.location.search))]
     (do
       (js/console.log "Listening mode active:" room-id)
-      (swap! app-state assoc :tap (create-listener room-id listener-handle-message))
+      (swap! app-state assoc :tap (create-listener room-id (partial listener-handle-message app-state)))
       listener-handle-message)
     (do
+      (js/console.log "Recording mode active")
       (swap! app-state assoc :tap (create-producer))
       handle-message)))
 

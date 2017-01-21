@@ -57,6 +57,8 @@
      ;; rename transition to transition-log to log messages
      (try
        (let [app-state-before @app-state]
+         (when-let [tap (:tap app-state-before)]
+           (tee/tee tap message))
          (om/transact! (om/root-cursor app-state) #(transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
@@ -71,18 +73,10 @@
      (catch :default e
        (exception-handler/report e)))))
 
-(defn install-tap [app-state]
-  (if-let [room-id (last (re-find #"listen=(.*)&?" js/window.location.search))]
-    (do
-      (js/console.log "Listening mode active: " room-id)
-      (set! messages/handle-message (partial listener-handle-message app-state))
-      (tee/create-listener room-id (fn [msg] (apply messages/handle-message msg))))
-    (tee/create-producer)))
-
 (defn reload-app [app-state]
-  (set! messages/handle-message (partial handle-message app-state))
-  (install-tap app-state)
-  (routes/start-history)
+  (let [handler (tee/install-tap app-state handle-message listener-handle-message)]
+    (set! messages/handle-message (partial handler app-state)))
+  (history/start-history)
   (handle-message app-state events/app-start)
   (history/set-current-page true))
 
