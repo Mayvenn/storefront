@@ -24,8 +24,8 @@
   mobile-asset can be any height but must be 640px wide
   desktop-asset should be 408px high and at least 1024px wide"
   [mobile-asset desktop-asset alt-text]
-  [:div
-   [:div.hide-on-mb.bg-center.bg-no-repeat
+  [:span.block
+   [:span.block.hide-on-mb.bg-center.bg-no-repeat
     {:style {:height "408px"
              :background-image (assets/css-url desktop-asset)}
      :title alt-text}]
