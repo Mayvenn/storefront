@@ -125,11 +125,11 @@
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
    [:h3.clearfix.h5
-    [:div.left.navy.medium.shout
+    [:span.block.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.dark-gray.h5.regular
+      [:span.block.overflow-hidden.dark-gray.h5.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
