@@ -100,5 +100,5 @@
       (flash/built-component data nil)
       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str (get-in data keypaths/navigation-event))}
        ((main-component (get-in data keypaths/navigation-event)) data nil)]
-      [:footer {:role "contentinfo"}
+      [:footer
        (footer/built-component data nil)]])))
