@@ -176,7 +176,8 @@
   first and last fields, and avoids doubling of borders between fields."
   [& fields]
   {:pre [(zero? (rem 12 (count fields)))]}
-  (let [col-size (str "col col-" (/ 12 (count fields)))]
+  (let [col-size (str "col col-" (/ 12 (count fields)))
+        some-errors? (some (comp seq :errors) fields)]
     [:div.mb2
      (into [:div.clearfix]
            (concat
@@ -195,7 +196,10 @@
                      (assoc :wrapper-class wrapper-class)))))
             (for [{:keys [errors data-test]} fields]
               [:div {:class col-size}
-               (field-error-message (first errors) data-test)])))]))
+               (cond
+                 (seq errors) (field-error-message (first errors) data-test)
+                 some-errors? nbsp
+                 :else nil)])))]))
 
 (def ^:private custom-select-dropdown
   (component/html
