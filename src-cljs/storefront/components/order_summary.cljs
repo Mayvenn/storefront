@@ -42,11 +42,13 @@
       "Offer and Rebate Details" ui/nbsp "➤"]]]
    [:div.border-bottom.border-gray ui/nbsp]])
 
-(defn display-order-summary [order {:keys [read-only?]} price-strikeout?]
+(defn display-order-summary [order available-store-credit {:keys [read-only?]} price-strikeout?]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
-        store-credit  (-> order :cart-payments :store-credit)]
+        store-credit  (min (:total order) (or available-store-credit
+                                              (-> order :cart-payments :store-credit :amount)
+                                              0.0))]
     [:div
      [:.py2.border-top.border-bottom.border-gray
       [:table.col-12
@@ -70,13 +72,13 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when store-credit
-          (summary-row "Store Credit" (- (:amount store-credit))))]]]
+        (when (pos? store-credit)
+          (summary-row "Store Credit" (- store-credit)))]]]
      [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
        [:.right-align
-        (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
+        (as-money (- (:total order) store-credit))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail

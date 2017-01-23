@@ -26,6 +26,7 @@
            requires-additional-payment?
            payment delivery order
            products
+           available-store-credit
            price-strikeout?]}
    owner]
   (om/component
@@ -54,7 +55,7 @@
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
            (om/build checkout-payment/credit-card-form-component payment)])
-        (summary/display-order-summary order {:read-only? true} price-strikeout?)
+        (summary/display-order-summary order available-store-credit {:read-only? true} price-strikeout?)
         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                          :disabled? updating-shipping?
                                          :data-test "confirm-form-submit"})]]]])))
@@ -69,6 +70,7 @@
    :order                        (get-in data keypaths/order)
    :payment                      (checkout-payment/credit-card-form-query data)
    :delivery                     (checkout-delivery/query data)
+   :available-store-credit       (get-in data keypaths/user-total-available-store-credit)
    :price-strikeout?             (experiments/price-strikeout? data)})
 
 (defn built-component [data opts]
