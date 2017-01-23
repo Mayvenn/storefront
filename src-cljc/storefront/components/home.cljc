@@ -85,25 +85,26 @@
      "shop our looks")]])
 
 (defn banner [store-slug]
-  [:a
-   (assoc (utils/route-to events/navigate-shop-by-look)
-          :data-test "home-banner")
-   (case store-slug
-     "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                 (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                 "Get 15% Off Hair Extensions Mayvenn")
-     "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/mimi/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-     "touchedbytokyo" (homepage-images (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
-                                       (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
-                                       "Get 15% Off Hair Extensions Mayvenn")
-     "msroshposh" (homepage-images (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                      (assets/path "/images/homepage/desktop_banner.jpg")
-                      "Get 15% Off Hair Extensions Mayvenn"))])
+  [:h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look)
+           :data-test "home-banner")
+    (case store-slug
+      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                  "Get 15% Off Hair Extensions Mayvenn")
+      "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                    (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+                                    "Get 15% Off Hair Extensions Mayvenn")
+      "touchedbytokyo" (homepage-images (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
+                                        (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
+                                        "Get 15% Off Hair Extensions Mayvenn")
+      "msroshposh" (homepage-images (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
+                                    (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
+                                    "Get 15% Off Hair Extensions Mayvenn")
+      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                       (assets/path "/images/homepage/desktop_banner.jpg")
+                       "Get 15% Off Hair Extensions Mayvenn"))]])
 
 (defn about-mayvenn []
   (component/html
