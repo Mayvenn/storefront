@@ -197,6 +197,12 @@
               [:div {:class col-size}
                (field-error-message (first errors) data-test)])))]))
 
+(def ^:private custom-select-dropdown
+  (component/html
+   [:div.absolute.floating-label--icon
+    (svg/dropdown-arrow {:class "stroke-gray"
+                         :style {:width "1.2em" :height "1em"}})]))
+
 (defn ^:private plain-select-field
   [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
   (let [option-text   first
@@ -207,14 +213,8 @@
                            option-text)
         status        {:error? error?
                        :value? (seq selected-text)}]
-    [:div.clearfix
+    [:div.clearfix.relative
      (field-wrapper-class "" status)
-     (when (not error?)
-       ;; Doesn't need z-index, even when field has focus, because background of select is transparent
-       [:div.right.relative
-        [:div.absolute.floating-label--icon
-         (svg/dropdown-arrow {:class "stroke-gray"
-                              :style {:width "1.2rem" :height "1.2rem"}})]])
      (floating-label label id status)
      [:select.col-12.bg-clear
       (field-class (merge {:key         label
@@ -231,7 +231,8 @@
         [:option
          {:key   (option-value option)
           :value (option-value option)}
-         (option-text option)])]]))
+         (option-text option)])]
+     custom-select-dropdown]))
 
 (defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
   (let [error (first errors)]
