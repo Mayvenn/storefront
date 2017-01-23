@@ -68,7 +68,7 @@
                            :value         (cc/format-cc-number number)})
            [:div.col-12
             (ui/text-field-group
-             {:errors        (get field-errors["card-expiration"])
+             {:errors        (get field-errors ["card-expiration"])
               :label         "Exp. (MM/YY)"
               :keypath       keypaths/checkout-credit-card-expiration
               :focused       focused
@@ -79,7 +79,7 @@
               :class         "cardExpiry"
               :type          "tel"
               :required      true}
-             {:errors        (get field-errors["security-code"])
+             {:errors        (get field-errors ["security-code"])
               :label         "Security Code"
               :keypath       keypaths/checkout-credit-card-ccv
               :focused       focused
