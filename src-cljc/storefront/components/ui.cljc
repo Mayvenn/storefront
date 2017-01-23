@@ -293,7 +293,7 @@
 (defn modal-close [{:keys [class data-test on-close]}]
   [:div.clearfix
    {:data-scrollable "not-a-modal"}
-   [:a.pointer.h3.right {:href "#" :on-click on-close :data-test data-test :alt "Close"}
+   [:a.pointer.h3.right {:href "#" :on-click on-close :data-test data-test :title "Close"}
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
 (defn circle-picture
