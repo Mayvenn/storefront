@@ -94,7 +94,7 @@
       (stylist-banner/built-component data nil)
       (promotion-banner/built-component data nil)
       #?(:cljs (popup/built-component data nil))
-      [:header {:role "banner"}
+      [:header
        (header/built-component data nil)
        (slideout-nav/built-component data nil)]
       (flash/built-component data nil)
