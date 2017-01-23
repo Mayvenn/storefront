@@ -127,8 +127,6 @@
     --button-font-weight: var(--medium-font-weight);
     --button-padding-y: var(--space-2);
     --button-padding-x: var(--space-2);
-    --button-large-padding-y: var(--space-3);
-    --button-large-padding-x: var(--space-3);
 
     --border-radius: 5px;
     --border-radius-1: 8px;

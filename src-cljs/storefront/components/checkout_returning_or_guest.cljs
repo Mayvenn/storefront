@@ -26,7 +26,7 @@
                                 :data-test "begin-password-sign-in-button")
                          "Sign in")]
         [:div.col.col-6.p1
-         (facebook/small-sign-in-button facebook-loaded?)]]])
+         (facebook/narrow-sign-in-button facebook-loaded?)]]])
 
      [:h2.mt1.center "Checkout as a guest"]
      (om/build checkout-address/component address)])))

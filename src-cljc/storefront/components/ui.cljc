@@ -47,70 +47,42 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(defn ^:private button-sizes [size-kw]
-  (let [size (size-kw {:size/small "col-12 h4"
-                       :size/large "col-12 h3 btn-large"})]
-    (assert size (str "Button size " size-kw " has not been defined."))
-    size))
-
-(defn ^:private button-class [color-kw size-kw {:keys [class]}]
+(defn ^:private button-class [color-kw {:keys [class]}]
   (str/join " "
-            ["btn"
-             (button-sizes size-kw)
+            ["btn col-12 h4"
              (button-colors color-kw)
              class]))
 
-(defn ^:private small-button [color-kw attrs & content]
-  (button (assoc attrs
-                 :class          (button-class color-kw :size/small attrs))
-          (into [:div] content)))
-
-(defn ^:private large-button [color-kw attrs & content]
-  (button (assoc attrs
-                 :class          (button-class color-kw :size/large attrs))
+(defn ^:private color-button [color-kw attrs & content]
+  (button (assoc attrs :class (button-class color-kw attrs))
           (into [:div] content)))
 
 (defn teal-button [attrs & content]
-  (small-button :color/teal attrs content))
-
-(defn large-teal-button [attrs & content]
-  (large-button :color/teal attrs content))
+  (color-button :color/teal attrs content))
 
 (defn navy-button [attrs & content]
-  (small-button :color/navy attrs content))
-
-(defn large-navy-button [attrs & content]
-  (large-button :color/navy attrs content))
+  (color-button :color/navy attrs content))
 
 (defn aqua-button [attrs & content]
-  (small-button :color/aqua attrs content))
-
-(defn large-aqua-button [attrs & content]
-  (large-button :color/aqua attrs content))
+  (color-button :color/aqua attrs content))
 
 (defn facebook-button [attrs & content]
-  (small-button :color/facebook attrs content))
+  (color-button :color/facebook attrs content))
 
-(defn large-facebook-button [attrs & content]
-  (large-button :color/facebook attrs content))
-
-(defn large-apple-pay-button [attrs & content]
-  (large-button :color/apple-pay attrs content))
+(defn apple-pay-button [attrs & content]
+  (color-button :color/apple-pay attrs content))
 
 (defn ghost-button [attrs & content]
-  (small-button :color/ghost attrs content))
-
-(defn large-ghost-button [attrs & content]
-  (large-button :color/ghost attrs content))
+  (color-button :color/ghost attrs content))
 
 (defn submit-button
   ([title] (submit-button title {}))
   ([title {:keys [spinning? disabled? data-test] :as attrs}]
    (if spinning?
-     (large-button :color/teal attrs)
+     (color-button :color/teal attrs)
      [:input
       {:type "submit"
-       :class (button-class :color/teal :size/large attrs)
+       :class (button-class :color/teal attrs)
        :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))

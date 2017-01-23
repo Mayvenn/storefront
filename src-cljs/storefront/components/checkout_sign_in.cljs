@@ -15,9 +15,9 @@
     (ui/narrow-container
      [:h2.center.my2.navy "I'm new here"]
 
-     (ui/large-teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
-                            :data-test "guest-checkout-button"}
-                           "Guest Checkout")
+     (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
+                      :data-test "guest-checkout-button"}
+                     "Guest Checkout")
 
      [:div.my3 [:.col-2.m-auto.border.border-gray]]
      [:h2.center.my2.navy "Already registered?"]

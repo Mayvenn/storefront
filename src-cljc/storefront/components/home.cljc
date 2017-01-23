@@ -80,7 +80,7 @@
                      nil)]
    [:div.col-8.col-4-on-tb-dt.mx-auto
     ;; button color should be light-gray/transparent
-    (ui/large-ghost-button
+    (ui/ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
             :data-test "nav-shop-look")
      "shop our looks")]])
@@ -125,7 +125,7 @@
       [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
 
     [:div.col-8.col-4-on-tb-dt.mt1.mx-auto
-     (ui/large-teal-button
+     (ui/teal-button
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
       "shop our looks")]]))

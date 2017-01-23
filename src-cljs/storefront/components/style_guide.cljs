@@ -82,21 +82,12 @@
 (def ^:private buttons
   [:section
    (header "Buttons")
-   (subheader "Normal")
    [:div.flex.flex-wrap.mxn1
     [:div.col-4.p1.mb1 (ui/teal-button {} "ui/teal-button")]
     [:div.col-4.p1.mb1 (ui/navy-button {} "ui/navy-button")]
     [:div.col-4.p1.mb1 (ui/ghost-button {} "ui/ghost-button")]
     [:div.col-4.p1.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]
-
-   (subheader "Large")
-   [:div.flex.flex-wrap.mxn1
-    [:div.col-6.p1.mb1 (ui/large-teal-button {} "ui/large-teal-button")]
-    [:div.col-6.p1.mb1 (ui/large-navy-button {} "ui/large-navy-button")]
-    [:div.col-6.p1.mb1 (ui/large-teal-button {:disabled? true} "(ui/large-teal-button {:disabled? true})")]
-    [:div.col-6.p1.mb1 (ui/large-aqua-button {} "ui/large-aqua-button")]
-    [:div.col-6.p1.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]])
+    [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]])
 
 (def ^:private increment->size
   {1 "5px"

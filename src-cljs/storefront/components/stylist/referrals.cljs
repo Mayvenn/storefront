@@ -214,7 +214,7 @@
                 (when (< (count referrals) 5)
                   [:div.py3.border-top.border-gray
                    [:div.col-10.mx-auto
-                    (ui/large-ghost-button
+                    (ui/ghost-button
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test "another-referral-button"})
                      [:div.flex.items-center.justify-center.h4.line-height-1
