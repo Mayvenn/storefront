@@ -22,7 +22,7 @@
 
 (defn svg-xlink
   ([id] (svg-xlink {} id))
-  ([opts id] [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\" />")}}]))
+  ([opts id] [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\"></use>")}}]))
 
 (defn error [opts]
   [:svg opts (svg-xlink "circled-exclamation")])
