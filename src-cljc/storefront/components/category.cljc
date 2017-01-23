@@ -132,7 +132,7 @@
       [:span.block.overflow-hidden.dark-gray.h5.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
-   [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
+   [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [name] :as option} options]
       [:div.flex.flex-column.justify-center.pp3
        {:key   (string/replace (str name step-name) #"\W+" "-")
