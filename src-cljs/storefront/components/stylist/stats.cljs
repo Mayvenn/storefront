@@ -60,7 +60,7 @@
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      [:div
-      [:.py2.h0 re-center-money (mf/as-money-without-cents amount)]
+      [:.py2.h0 re-center-money [:div.line-height-1 (mf/as-money-without-cents amount)]]
       [:div "Sales since you joined Mayvenn"]]
      [:div
       [:.py2.h0 svg/large-percent]
