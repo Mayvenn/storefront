@@ -59,7 +59,7 @@
   [:section
    (header "Typography")
 
-   [:div.col-8-on-tb-dt.py3
+   [:div.col-8-on-tb-dt.my3
     [:div.mb2 (subheader "font-size/line-height")]
 
     (font-size :h1 "28/36" "24/30")
@@ -82,12 +82,12 @@
 (def ^:private buttons
   [:section
    (header "Buttons")
-   [:div.flex.flex-wrap.mxn1
-    [:div.col-4.p1.mb1 (ui/teal-button {} "ui/teal-button")]
-    [:div.col-4.p1.mb1 (ui/navy-button {} "ui/navy-button")]
-    [:div.col-4.p1.mb1 (ui/ghost-button {} "ui/ghost-button")]
-    [:div.col-4.p1.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]])
+   [:div.clearfix.mxn1
+    [:div.col.col-4.p1 (ui/teal-button {} "ui/teal-button")]
+    [:div.col.col-4.p1 (ui/navy-button {} "ui/navy-button")]
+    [:div.col.col-4.p1 (ui/ghost-button {} "ui/ghost-button")]
+    [:div.col.col-4.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
+    [:div.col.col-4.p1 (ui/aqua-button {} "ui/aqua-button")]]])
 
 (def ^:private increment->size
   {1 "5px"
