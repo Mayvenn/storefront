@@ -20,13 +20,6 @@
     "pending" "teal"
     "paid" "navy"))
 
-(defn four-up [a b c d]
-  [:div.clearfix.mxn1
-   [:div.col.col-3.px1 a]
-   [:div.col.col-3.px1 b]
-   [:div.col.col-3.px1 c]
-   [:div.col.col-3.px1 d]])
-
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
    [:img.left.border.border-light-gray.mr3
@@ -139,19 +132,14 @@
      (when (= status "paid") "+") (mf/as-money amount)]
     [:div.h3.navy (:full-name order)]]
 
-   [:div.dark-gray.h6
-    (four-up "Status" "Ship Date" "Order"
-             (when order
-               [:div.right.h2.mtn2.mr1
-                {:class (if (expanded? number) "gray" "dark-gray")}
-                "..."]))]
-
-   [:div.medium.h6
-    (four-up
-     [:div.titleize {:class (status-look status)} status]
-     (f/short-date commission-date)
-     number
-     nil)]])
+   [:div.dark-gray.h6.flex.justify-between
+    [:div "Status" [:div.medium.titleize {:class (status-look status)} status]]
+    [:div "Ship Date" [:div.medium (f/short-date commission-date)]]
+    [:div "Order" [:div.medium number]]
+    [:div (when order
+            [:div.medium.h2
+             {:class (if (expanded? number) "gray" "dark-gray")}
+             "..."])]]])
 
 (defn transition-group [options & children]
   (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
