@@ -145,7 +145,7 @@
 
 (def talkable-banner
   (component/html
-   [:div.container.py4
+   [:h2.container.py4
     [:a
      (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
      (homepage-images
