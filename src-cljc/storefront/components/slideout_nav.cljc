@@ -56,7 +56,7 @@
     [:span.dark-gray "Credit: "] [:span.navy (as-money credit)]]])
 
 (defn customer-section [selectable? user-email]
-  [:nav {:role "navigation" :aria-label "Mayvenn Account"}
+  [:nav {:aria-label "Mayvenn Account"}
    (row [:div.truncate user-email])
    [:ul.list-reset
     [:li [:a.teal.block (utils/route-to events/navigate-account-manage)
@@ -67,7 +67,7 @@
 
 (defn store-section [selectable? store]
   (let [{store-photo :profile_picture_url nickname :store_nickname} store]
-    [:nav {:role "navigation" :aria-label "Mayvenn Account"}
+    [:nav {:aria-label "Mayvenn Account"}
      (row
       [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
       [:div nickname])
@@ -81,7 +81,7 @@
       [:li [:a.teal.block community-url (row "Community")]]]]))
 
 (defn products-section [selectable? title named-searches]
-  [:nav {:role "navigation" :aria-label (str "Shop " title)}
+  [:nav {:aria-label (str "Shop " title)}
    (row [:div.border-bottom.border-gray.navy title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
@@ -121,7 +121,7 @@
 (defn help-section [selectable?]
   [section-outer-darker
    [section-inner
-    [:nav {:role "navigation" :aria-label "Help"}
+    [:nav {:aria-label "Help"}
      [:ul.list-reset
       [:li [:a.teal (utils/route-to events/navigate-shop-by-look)
             (row (selectable? events/navigate-shop-by-look "Shop By Look"))]]

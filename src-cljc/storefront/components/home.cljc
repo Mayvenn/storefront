@@ -50,8 +50,7 @@
    [:div.flex.flex-column
     [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
     [:h3.h1.order-1.p1 "pick your style"]]
-   [:nav.my2
-    {:role "navigation" :aria-label "Pick your style"}
+   [:nav.my2 {:aria-label "Pick your style"}
     (component/build carousel/component
                      {:slides   (map link-to-search named-searches)
                       :settings (let [slide-count (count named-searches)

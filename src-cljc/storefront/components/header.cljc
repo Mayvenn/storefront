@@ -196,7 +196,7 @@
     [:div.col.col-10.pyp1 right]]))
 
 (defn products-section [current-page? title named-searches]
-  [:nav {:role "navigation" :aria-label (str "Shop " title)}
+  [:nav {:aria-label (str "Shop " title)}
    (row [:div.border-bottom.border-gray.dark-gray title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]

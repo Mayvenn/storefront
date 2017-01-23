@@ -26,8 +26,7 @@
 (defn shop-section [named-searches own-store?]
   [:div.col-12
    [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-   [:nav.clearfix
-    {:role "navigation" :aria-label "Shop Products"}
+   [:nav.clearfix {:aria-label "Shop Products"}
     [:div.col.col-6
      (products-section (filter named-searches/is-extension? named-searches))]
     [:div.col.col-6
