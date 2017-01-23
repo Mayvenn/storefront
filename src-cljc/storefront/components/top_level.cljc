@@ -98,7 +98,7 @@
        (header/built-component data nil)
        (slideout-nav/built-component data nil)]
       (flash/built-component data nil)
-      [:main.bg-white.flex-auto {:role "main" :data-test (keypaths/->component-str (get-in data keypaths/navigation-event))}
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str (get-in data keypaths/navigation-event))}
        ((main-component (get-in data keypaths/navigation-event)) data nil)]
       [:footer {:role "contentinfo"}
        (footer/built-component data nil)]])))
