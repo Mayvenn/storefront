@@ -115,8 +115,8 @@
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
-     [:div.h4.titleize name])
-   [:div.h6
+     [:span.block.h4.titleize name])
+   [:span.block.h6
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
