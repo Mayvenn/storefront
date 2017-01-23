@@ -54,11 +54,13 @@
   ([app-state event] (handle-message app-state event nil))
   ([app-state event args]
    (let [message [event args]]
+     (prn event)
      ;; rename transition to transition-log to log messages
      (try
        (let [app-state-before @app-state]
          (when-let [tap (:tap app-state-before)]
-           (tee/tee tap message))
+           #_(tee/tee tap message)
+           (tee/snapshot tap @app-state))
          (om/transact! (om/root-cursor app-state) #(transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)

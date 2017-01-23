@@ -70,7 +70,7 @@
                                      (let [[source-cmd storefront-data] body]
                                        (condp = source-cmd
                                          :event (apply handler storefront-data)
-                                         :snapshot (apply handler events/listener-sync storefront-data)
+                                         :snapshot (handler events/listener-sync storefront-data)
                                          :disconnect (js/console.log "Source Disconnected")
                                          :connect (js/console.log "Source Connected"))))))}))
 
@@ -88,9 +88,14 @@
 (defn tee [connection [event args]]
   (send-command connection [:event [event (dissoc args :xhr)]]))
 
+(defn debug [x]
+  #_(apply str (repeat 20999 "x"))
+  x)
+
 (defn snapshot [connection app-state]
-  (send-command connection [:snapshot (dissoc app-state
-                                              :cookie
-                                              :tap
-                                              :api-cache
-                                              :routes)]))
+  (send-command connection [:snapshot (-> app-state
+                                          (dissoc :cookie :tap :api-cache :routes)
+                                          ;; TODO: only remove :xhr keys
+                                          (update :ui dissoc :api-requests)
+                                          debug)]))
+

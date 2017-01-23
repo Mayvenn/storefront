@@ -41,7 +41,8 @@
   app-state)
 
 (defmethod transition-state events/listener-sync [_ _ changes app-state]
-  (merge app-state changes))
+  (prn changes)
+  (assoc changes :tap (:tap app-state)))
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
