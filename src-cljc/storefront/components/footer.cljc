@@ -11,7 +11,11 @@
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
+            [storefront.platform.numbers :as numbers]
             [storefront.keypaths :as keypaths]))
+
+(defn phone-href [tel-num]
+  (apply str "tel://+" (filter numbers/digits tel-num)))
 
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
@@ -36,13 +40,13 @@
    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
    [:div.dark-gray.light
     [:div.py1
-     [:span.hide-on-tb-dt [:a.dark-gray {:href (str "tel://" call-number)} call-number]] ;; mobile
+     [:span.hide-on-tb-dt [:a.dark-gray {:href (phone-href call-number)} call-number]] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
      " | 9am-5pm PST M-F"]
     [:a.block.py1.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
 
    [:div.py1.hide-on-tb-dt
-    (ui/ghost-button {:href (str "tel://" call-number)
+    (ui/ghost-button {:href (phone-href call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
                       svg/phone-ringing
@@ -114,7 +118,7 @@
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Need Help?"]
       [:div.dark-gray.light.h5
-       [:span.hide-on-tb-dt [:a.dark-gray {:href (str "tel://" call-number)} call-number]]
+       [:span.hide-on-tb-dt [:a.dark-gray {:href (phone-href call-number)} call-number]]
        [:span.hide-on-mb call-number]
        " | 9am-5pm PST M-F"]]]]))
 
