@@ -24,7 +24,7 @@
   (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))
 
 (defn page [wide-left wide-right-and-narrow]
-  [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
+  [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"}
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
