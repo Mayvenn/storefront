@@ -46,44 +46,33 @@
      [:div.mb3.medium name]]))
 
 (defn popular-grid [featured-searches]
-  (let [width "100%" #_320 #_240
-        height "13.33333333vw" #_240 #_180 #_120
-        cell-tag :div.col.col-6.col-4-on-tb-dt.center.overflow-hidden]
+  (let [aspect-ratio "90.6%"
+        grid-block (fn [key content] [:div.col.col-6.col-4-on-tb-dt.border.border-white.relative.mx0
+                                     {:key   key
+                                      :style {:max-width  "100vh"
+                                              :max-height "100%"
+                                              :overflow   "hidden"}}
+                                     [:div {:style {:margin-top aspect-ratio}} ""]
+                                     [:div.overlay.container-size.absolute content]])]
     [:div.container.center.py3.mb4
      [:div.flex.flex-column
       [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
       [:h3.h1.order-1.p1 "Shop our styles"]]
-     [:nav.my2.px2 {:aria-label "Shop our styles"}
-      (for [{:keys [representative-images name slug]} featured-searches]
-        (let [{:keys [model-full product]} representative-images]
-          [cell-tag {:key slug}
-           [:a.block.black.mxp2.myp1.relative
-            (merge {:data-test (str "named-search-" slug)}
-                   (utils/route-to events/navigate-category {:named-search-slug slug})
-                   {:style {:width width
-                            :height height}})
-            [:img.absolute.container-size (merge (utils/img-attrs model-full :large)
-                                  {:style {:object-fit "cover"
-                                           :object-position "top center"
-                                           :left "0"
-                                           :top "0"}})]
-            [:h2.absolute.z1.white.center.medium.flex.flex-column.items-center.justify-center
-             {:style {:bottom "0"
-                      :right "0"
-                      :left "0"
-                      :top "0"}}
-             [:span.titleize
-              {:style {:text-shadow "0 0 5px #000"
-                       :margin-top "64px"}}
-              name]]]]))
-
-      [cell-tag
-       [:a.block.mxp2.myp1.bg-light-teal.white.flex.flex-column.items-center.justify-center
-        (merge (utils/route-to events/navigate-shop-by-look)
-               {:style {:width width
-                        :height height}})
-        [:h2.medium "Need inspiration?"]
-        [:h2.medium "Try shop by look."]]]]]))
+     (for [{:keys [representative-images name slug]} featured-searches]
+       (let [{:keys [model-full]} representative-images]
+         (grid-block slug
+                     [:a.block.container-size
+                      (merge {:data-test (str "named-search-" slug)}
+                             (utils/route-to events/navigate-category {:named-search-slug slug}))
+                      [:img.absolute.container-size.overlay (utils/img-attrs model-full :large)]
+                      [:h2.white.absolute.flex.flex-column.items-center.justify-center.container-height.medium.titleize.overlay
+                       {:style {:text-shadow "0 0 35px #000"
+                                :margin-top  "12.5%"}}
+                       name]])))
+     (grid-block "spare-block"
+                 [:div.bg-light-teal.flex.flex-column.items-center.justify-center.container-height
+                  [:h2.white.medium "Need inspiration?"]
+                  [:h2.white.medium "Try shop by look."]])]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
@@ -197,7 +186,7 @@
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
-    (if homepage-grid?
+    (if true #_homepage-grid?
       [:section (popular-grid featured-searches)]
       [:section (pick-style named-searches)])
     [:section video-popup]
