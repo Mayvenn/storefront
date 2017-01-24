@@ -31,7 +31,8 @@
              [named-searches :as named-searches]]
             [comb.template :as template]
             [storefront.utils.maps :refer [key-by]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.xml :as xml]))
 
 (defn storefront-site-defaults
   [env]
@@ -261,6 +262,27 @@
                                ""]
                               private-disalloweds))))
 
+(defn sitemap [{:keys [storeback-config]}]
+  (letfn [(url [[location priority]]
+            {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
+                                  priority (conj {:tag :priority :content [(str priority)]}))})]
+    (with-out-str (xml/emit {:tag     :urlset
+                             :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
+                             :content (mapv url [["https://mayvenn.com"]
+                                                 ["https://welcome.mayvenn.com"                         "0.60"]
+                                                 ["https://shop.mayvenn.com"                            "1.00"]
+                                                 ["https://shop.mayvenn.com/guarantee"                  "0.60"]
+                                                 ["https://shop.mayvenn.com/help"                       "0.60"]
+                                                 ["https://shop.mayvenn.com/about-us"                   "0.60"]
+                                                 ["https://shop.mayvenn.com/categories/hair/straight"   "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/loose-wave" "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/body-wave"  "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/deep-wave"  "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/curly"      "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/closures"   "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/frontals"   "0.80"]
+                                                 ["https://shop.mayvenn.com/shop/look"                  "0.80"]])}))))
+
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
@@ -293,6 +315,8 @@
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (content-type (response (robots req))
                                                     "text/plain"))
+               (GET "/sitemap.xml" req (content-type (response (sitemap ctx))
+                                                    "text/xml"))
                (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
                (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
                (static-routes ctx)
