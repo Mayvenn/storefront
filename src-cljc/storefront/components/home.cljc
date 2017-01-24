@@ -46,28 +46,25 @@
      [:div.mb3.medium name]]))
 
 (defn popular-grid [featured-searches]
-  (let [width "320px"
-        height "240px"]
+  (let [width "100%" #_320 #_240
+        height "13.33333333vw" #_240 #_180 #_120
+        cell-tag :div.col.col-6.col-4-on-tb-dt.center.overflow-hidden]
     [:div.container.center.py3.mb4
      [:div.flex.flex-column
       [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
       [:h3.h1.order-1.p1 "Shop our styles"]]
-     [:nav.my2 {:aria-label "Shop our styles"
-                :style {:width "960px"}}
+     [:nav.my2.px2 {:aria-label "Shop our styles"}
       (for [{:keys [representative-images name slug]} featured-searches]
         (let [{:keys [model-full product]} representative-images]
-          [:div.col.col-4.center.overflow-hidden
-           {:key slug}
+          [cell-tag {:key slug}
            [:a.block.black.mxp2.myp1.relative
             (merge {:data-test (str "named-search-" slug)}
                    (utils/route-to events/navigate-category {:named-search-slug slug})
                    {:style {:width width
                             :height height}})
-            [:img.absolute (merge (utils/img-attrs model-full :large)
-                                  {:width "100%"
-                                   :height "100%"
-                                   :style {:object-fit "cover"
-                                           :object-position "top"
+            [:img.absolute.container-size (merge (utils/img-attrs model-full :large)
+                                  {:style {:object-fit "cover"
+                                           :object-position "top center"
                                            :left "0"
                                            :top "0"}})]
             [:h2.absolute.z1.white.center.medium.flex.flex-column.items-center.justify-center
@@ -80,7 +77,7 @@
                        :margin-top "64px"}}
               name]]]]))
 
-      [:div.col.col-4.block.center.overflow-hidden
+      [cell-tag
        [:a.block.mxp2.myp1.bg-light-teal.white.flex.flex-column.items-center.justify-center
         (merge (utils/route-to events/navigate-shop-by-look)
                {:style {:width width
