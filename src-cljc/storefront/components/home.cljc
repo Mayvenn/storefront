@@ -45,6 +45,49 @@
                              {:style {:height "80px"}})]
      [:div.mb3.medium name]]))
 
+(defn popular-grid [featured-searches]
+  (let [width "320px"
+        height "240px"]
+    [:div.container.center.py3.mb4
+     [:div.flex.flex-column
+      [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
+      [:h3.h1.order-1.p1 "Shop our styles"]]
+     [:nav.my2 {:aria-label "Shop our styles"
+                :style {:width "960px"}}
+      (for [{:keys [representative-images name slug]} featured-searches]
+        (let [{:keys [model-full product]} representative-images]
+          [:div.col.col-4.center.overflow-hidden
+           {:key slug}
+           [:a.block.black.mxp2.myp1.relative
+            (merge {:data-test (str "named-search-" slug)}
+                   (utils/route-to events/navigate-category {:named-search-slug slug})
+                   {:style {:width width
+                            :height height}})
+            [:img.absolute (merge (utils/img-attrs model-full :large)
+                                  {:width "100%"
+                                   :height "100%"
+                                   :style {:object-fit "cover"
+                                           :object-position "top"
+                                           :left "0"
+                                           :top "0"}})]
+            [:h2.absolute.z1.white.center.medium.flex.flex-column.items-center.justify-center
+             {:style {:bottom "0"
+                      :right "0"
+                      :left "0"
+                      :top "0"}}
+             [:span.titleize
+              {:style {:text-shadow "0 0 5px #000"
+                       :margin-top "64px"}}
+              name]]]]))
+
+      [:div.col.col-4.block.center.overflow-hidden
+       [:a.block.mxp2.myp1.bg-light-teal.white.flex.flex-column.items-center.justify-center
+        (merge (utils/route-to events/navigate-shop-by-look)
+               {:style {:width width
+                        :height height}})
+        [:h2.medium "Need inspiration?"]
+        [:h2.medium "Try shop by look."]]]]]))
+
 (defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
@@ -153,18 +196,24 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches store-slug]} owner opts]
+(defn component [{:keys [named-searches featured-searches store-slug homepage-grid?]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
-    [:section (pick-style named-searches)]
+    (if homepage-grid?
+      [:section (popular-grid featured-searches)]
+      [:section (pick-style named-searches)])
     [:section video-popup]
     [:section (about-mayvenn)]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :store-slug     (get-in data keypaths/store-slug)})
+  (let [named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))]
+    {:named-searches    named-searches
+     :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
+                                named-searches)
+     :store-slug        (get-in data keypaths/store-slug)
+     :homepage-grid?    (experiments/homepage-grid? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
