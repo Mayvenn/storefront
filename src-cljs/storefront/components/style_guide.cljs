@@ -261,7 +261,24 @@
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Besty"
                      :required    true
-                     :value       (get-in data [:style-guide :form :besty])})])
+                     :value       (get-in data [:style-guide :form :besty])})
+   (ui/text-field
+    {:type    "text"
+     :label   "Always wrong textfield"
+     :id      (str key "-" :first-name)
+     :keypath [:style-guide :form :always-wrong]
+     :focused (get-in data keypaths/ui-focus)
+     :value   (get-in data [:style-guide :form :always-wrong])
+     :errors  [{:long-message "your answer is always incorrect"}]})
+   (ui/select-field {:errors      [{:long-message "your answer is always incorrect"}]
+                     :id          "id-is-required"
+                     :keypath     [:style-guide :form :wrong-choices]
+                     :focused     (get-in data keypaths/ui-focus)
+                     :label       "Wrong Choices select field"
+                     :options     [["Corey" "corey"] ["Jacob" "jacob"]]
+                     :placeholder "Wrong Choices"
+                     :required    true
+                     :value       (get-in data [:style-guide :form :wrong-choices])})])
 
 (defn ^:private form-fields [data]
   [:section
