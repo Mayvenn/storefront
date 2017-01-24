@@ -1,10 +1,1 @@
 /* Basscss Btn Sizes */
-
-.btn-large {
-  padding: var(--button-large-padding-y) var(--button-large-padding-x);
-}
-
-:root {
-  --button-large-padding-y: 1.2rem;
-  --button-large-padding-x: 1.25rem;
-}

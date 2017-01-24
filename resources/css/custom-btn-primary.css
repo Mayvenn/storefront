@@ -19,8 +19,7 @@
 
 .btn-primary:disabled,
 .btn-primary.is-disabled {
-    background-color: var(--silver);
-    color: var(--light-gray);
+    background-color: var(--light-gray);
 }
 
 :root {

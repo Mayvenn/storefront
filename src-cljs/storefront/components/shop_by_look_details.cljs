@@ -56,7 +56,7 @@
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
-       [:a.p2.px3-on-tb-dt.left.col-12.gray
+       [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
         (utils/route-back-or-to will-return-to-shop-by-look? events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
@@ -70,20 +70,21 @@
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          (carousel (imgs look shared-cart products))
          [:div
-          [:div.px3.py2.mbp1.bg-light-silver
-           [:div.medium.gray.h5.inline-block (str "@" (:user-handle look))]
+          [:div.px3.py2.mbp1.bg-light-gray
+           [:div.medium.dark-gray.h5.inline-block (str "@" (:user-handle look))]
            [:div.right.inline-block {:style {:width  "20px"
                                              :height "20px"}}
             (svg/social-icon (:social-service look))]]
           (when-not (str/blank? (:title look))
-            [:p.f4.px3.py1.gray.bg-light-silver (decode-title (:title look))])]])
+            [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])]])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-           [:div.p2.center.h3.medium.border-bottom.border-dark-silver (str item-count " items in this look")]
+           [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
            (order-summary/display-line-items line-items products price-strikeout?)
-           (add-to-cart-button creating-order? shared-cart)]))]])))
+           [:div.mt3
+            (add-to-cart-button creating-order? shared-cart)]]))]])))
 
 (defn query [data]
   {:shared-cart                  (get-in data keypaths/shared-cart-current)

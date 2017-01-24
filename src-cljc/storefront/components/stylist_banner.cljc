@@ -9,18 +9,18 @@
 
 (def close-button
   (component/html
-   ;; TODO: this was fill-gray, but got lost
+   ;; TODO: this was fill-dark-gray, but got lost
    (ui/modal-close {:on-close (utils/send-event-callback events/control-stylist-banner-close)})))
 
 (def banner-copy
-  (component/html [:p.f5.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
+  (component/html [:p.h5.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))
 
 (defn component [{:keys [welcome-url]} owner opts]
   (component/create
    (let [btn-behavior {:href     welcome-url
                        :on-click (utils/send-event-callback events/external-redirect-welcome)}
          btn-copy "Become a Mayvenn"]
-     [:div.bg-dark-gray.light-silver.p2
+     [:div.bg-dark-gray.light-gray.p2
       ;; Mobile layout
       [:div.hide-on-tb-dt
        [:div.right close-button]

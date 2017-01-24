@@ -21,8 +21,8 @@
        {:data-test "checkout-success-message"}
        "Thank you for your order!"]
 
-      [:.py2.line-height-3
-       [:p.my2.gray
+      [:.py2
+       [:p.my2.dark-gray
         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
      [:div.mb2

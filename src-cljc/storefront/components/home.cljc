@@ -24,8 +24,8 @@
   mobile-asset can be any height but must be 640px wide
   desktop-asset should be 408px high and at least 1024px wide"
   [mobile-asset desktop-asset alt-text]
-  [:div
-   [:div.hide-on-mb.bg-center.bg-no-repeat
+  [:span.block
+   [:span.block.hide-on-mb.bg-center.bg-no-repeat
     {:style {:height "408px"
              :background-image (assets/css-url desktop-asset)}
      :title alt-text}]
@@ -34,7 +34,7 @@
 
 (defn link-to-search [{:keys [slug name long-name representative-images]}]
   (let [{:keys [model-circle product]} representative-images]
-    [:a.p1.center.flex.flex-column.items-center
+    [:a.p1.black.center.flex.flex-column.items-center
      (merge {:data-test (str "named-search-" slug)}
             (utils/route-to events/navigate-category {:named-search-slug slug}))
      [:img.unselectable (merge
@@ -43,15 +43,54 @@
      [:img.mt3.unselectable (merge
                              (utils/img-attrs product :small)
                              {:style {:height "80px"}})]
-     [:div.mb3.dark-gray.medium.f4 name]]))
+     [:div.mb3.medium name]]))
+
+(defn popular-grid [featured-searches]
+  (let [width "100%" #_320 #_240
+        height "13.33333333vw" #_240 #_180 #_120
+        cell-tag :div.col.col-6.col-4-on-tb-dt.center.overflow-hidden]
+    [:div.container.center.py3.mb4
+     [:div.flex.flex-column
+      [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
+      [:h3.h1.order-1.p1 "Shop our styles"]]
+     [:nav.my2.px2 {:aria-label "Shop our styles"}
+      (for [{:keys [representative-images name slug]} featured-searches]
+        (let [{:keys [model-full product]} representative-images]
+          [cell-tag {:key slug}
+           [:a.block.black.mxp2.myp1.relative
+            (merge {:data-test (str "named-search-" slug)}
+                   (utils/route-to events/navigate-category {:named-search-slug slug})
+                   {:style {:width width
+                            :height height}})
+            [:img.absolute.container-size (merge (utils/img-attrs model-full :large)
+                                  {:style {:object-fit "cover"
+                                           :object-position "top center"
+                                           :left "0"
+                                           :top "0"}})]
+            [:h2.absolute.z1.white.center.medium.flex.flex-column.items-center.justify-center
+             {:style {:bottom "0"
+                      :right "0"
+                      :left "0"
+                      :top "0"}}
+             [:span.titleize
+              {:style {:text-shadow "0 0 5px #000"
+                       :margin-top "64px"}}
+              name]]]]))
+
+      [cell-tag
+       [:a.block.mxp2.myp1.bg-light-teal.white.flex.flex-column.items-center.justify-center
+        (merge (utils/route-to events/navigate-shop-by-look)
+               {:style {:width width
+                        :height height}})
+        [:h2.medium "Need inspiration?"]
+        [:h2.medium "Try shop by look."]]]]]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
-    [:h2.h5.order-2.gray.medium.py1 "100% virgin human hair + free shipping"]
-    [:h3.h2.order-1.dark-gray.bold.py1 "pick your style"]]
-   [:nav.my2
-    {:role "navigation" :aria-label "Pick your style"}
+    [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
+    [:h3.h1.order-1.p1 "pick your style"]]
+   [:nav.my2 {:aria-label "Pick your style"}
     (component/build carousel/component
                      {:slides   (map link-to-search named-searches)
                       :settings (let [slide-count (count named-searches)
@@ -78,56 +117,54 @@
                                                  {:breakpoint 500
                                                   :settings   (swipe 2)}]}))}
                      nil)]
-   [:div.col-6.col-4-on-tb-dt.mx-auto
-    ;; button color should be light-silver/transparent
-    (ui/large-ghost-button
+   [:div.col-8.col-4-on-tb-dt.mx-auto
+    ;; button color should be light-gray/transparent
+    (ui/ghost-button
      (assoc (utils/route-to events/navigate-shop-by-look)
             :data-test "nav-shop-look")
-     [:span.dark-gray.bold "shop our looks"])]])
+     "shop our looks")]])
 
 (defn banner [store-slug]
-  [:a
-   (assoc (utils/route-to events/navigate-shop-by-look)
-          :data-test "home-banner")
-   (case store-slug
-     "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                 (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                 "Get 15% Off Hair Extensions Mayvenn")
-     "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/mimi/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-     "touchedbytokyo" (homepage-images (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
-                                       (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
-                                       "Get 15% Off Hair Extensions Mayvenn")
-     "msroshposh" (homepage-images (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-     (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                      (assets/path "/images/homepage/desktop_banner.jpg")
-                      "Get 15% Off Hair Extensions Mayvenn"))])
+  [:h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look)
+           :data-test "home-banner")
+    (case store-slug
+      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                  "Get 15% Off Hair Extensions Mayvenn")
+      "lovelymimi" (homepage-images (assets/path "/images/homepage/mimi/mobile_banner.jpg")
+                                    (assets/path "/images/homepage/mimi/desktop_banner.jpg")
+                                    "Get 15% Off Hair Extensions Mayvenn")
+      "touchedbytokyo" (homepage-images (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
+                                        (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
+                                        "Get 15% Off Hair Extensions Mayvenn")
+      "msroshposh" (homepage-images (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
+                                    (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
+                                    "Get 15% Off Hair Extensions Mayvenn")
+      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
+                       (assets/path "/images/homepage/desktop_banner.jpg")
+                       "Get 15% Off Hair Extensions Mayvenn"))]])
 
 (defn about-mayvenn []
   (component/html
-   [:div.container.gray.py3
-    [:h2.line-length.mx-auto.center.dark-gray.bold.py1 "why people love Mayvenn hair"]
+   [:div.container.py3
+    [:h2.h1.line-length.mx-auto.center.p1 "why people love Mayvenn hair"]
 
-    [:div.clearfix.f5
+    [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "stylist recommended"]
-      [:p.line-height-5
-       "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
-
-     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "30 day guarantee"]
-      [:p.line-height-5
-       "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange it within 30 days for FREE!"]]
+      [:h3.h2.center.mb3 "stylist recommended"]
+      [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:h3.f3.center.bold.mb3 "fast free shipping"]
-      [:p.line-height-5
-       "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
+      [:h3.h2.center.mb3 "30 day guarantee"]
+      [:p.h5 "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange them within 30 days for FREE!"]]
 
-    [:div.col-6.col-4-on-tb-dt.mx-auto
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
+      [:h3.h2.center.mb3 "fast free shipping"]
+      [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]]]
+
+    [:div.col-8.col-4-on-tb-dt.mt1.mx-auto
      (ui/teal-button
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
@@ -141,14 +178,14 @@
      (assets/path "/images/homepage/desktop_video.png")
      "Hair Extension Reviews Mayvenn")
     [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.white.bold.bg-darken-2.center.shadow.letter-spacing-1.container-height
+     [:div.flex.flex-column.items-center.justify-center.white.medium.bg-darken-2.center.shadow.letter-spacing-1.container-height
       [:div.mt4 svg/play-video]
       [:h2.h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))
 
 (def talkable-banner
   (component/html
-   [:div.container.py2
+   [:h2.container.py4
     [:a
      (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
      (homepage-images
@@ -156,18 +193,24 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches store-slug]} owner opts]
+(defn component [{:keys [named-searches featured-searches store-slug homepage-grid?]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
-    [:section (pick-style named-searches)]
+    (if homepage-grid?
+      [:section (popular-grid featured-searches)]
+      [:section (pick-style named-searches)])
     [:section video-popup]
     [:section (about-mayvenn)]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))
-   :store-slug     (get-in data keypaths/store-slug)})
+  (let [named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))]
+    {:named-searches    named-searches
+     :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
+                                named-searches)
+     :store-slug        (get-in data keypaths/store-slug)
+     :homepage-grid?    (experiments/homepage-grid? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

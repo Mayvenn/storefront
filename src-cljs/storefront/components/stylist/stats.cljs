@@ -31,7 +31,7 @@
 (defmulti render-stat (fn [name stat] name))
 
 (defmethod render-stat :previous-payout [_ {:keys [amount date]}]
-  [:.my3
+  [:.my4
    {:key "previous-payout" :class stat-card}
    [:.p1 "LAST PAYMENT"]
    (if (> amount 0)
@@ -39,11 +39,11 @@
       [:.py2.h0 re-center-money (ui/big-money amount)]
       [:div "On " (f/long-date date)]]
      [:div
-      [:div {:style {:padding "18px"}} svg/large-payout]
+      [:.py2.h0 svg/large-payout]
       [:div "Your last payment will show here."]])])
 
 (defmethod render-stat :next-payout [_ {:keys [amount]}]
-  [:.my3
+  [:.my4
    {:key "next-payment" :class stat-card}
    [:.p1 "NEXT PAYMENT"]
    (if (> amount 0)
@@ -51,27 +51,28 @@
       [:.py2.h0 re-center-money (ui/big-money amount)]
       [:div "Payment " (in-x-days)]]
      [:div
-      [:.py2 svg/large-dollar]
+      [:.py2.h0 svg/large-dollar]
       [:div "See your next payment amount here."]])])
 
 (defmethod render-stat :lifetime-payouts [_ {:keys [amount]}]
-  [:.my3
+  [:.my4
    {:class stat-card :key "render-stat"}
    [:.p1 "LIFETIME COMMISSIONS"]
    (if (> amount 0)
      [:div
-      [:.py2.h0 re-center-money (mf/as-money-without-cents amount)]
+      [:.py2.h0 re-center-money [:div.line-height-1 (mf/as-money-without-cents amount)]]
       [:div "Sales since you joined Mayvenn"]]
      [:div
-      [:.py2 svg/large-percent]
+      [:.py2.h0 svg/large-percent]
       [:div "All sales since you joined Mayvenn."]])])
 
 (defn stylist-dashboard-stats-component [{:keys [stats]} owner]
   (om/component
    (html
     (let [items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
-                       (render-stat stat (get stats stat))))]
-      [:div.bg-teal.light-silver.center
+                       [:.my4.clearfix
+                        (render-stat stat (get stats stat))]))]
+      [:div.bg-teal.white.center
        [:div.bg-darken-bottom-1
         (om/build carousel/component
                   {:slides items

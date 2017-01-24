@@ -36,7 +36,7 @@
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
-     [:.h4.dark-gray.col-12.my1 "Shipping Address"]
+     [:.h4.col-12.my1 "Shipping Address"]
      [:.col-12
       (ui/text-field-group
        {:type       "text"
@@ -146,9 +146,9 @@
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
-     [:.h4.dark-gray.col-12.my1 "Billing Address"]
+     [:.h4.col-12.my1 "Billing Address"]
      [:.col-12.my1
-      [:label.h6.gray.py1
+      [:label.h6.dark-gray.py1
        [:input.mr1
         (merge (utils/toggle-checkbox keypaths/checkout-bill-to-shipping-address
                                       bill-to-shipping-address?)
@@ -255,7 +255,7 @@
   [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
   (om/component
    (html
-    [:div.container.p2
+    [:div.container
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container

@@ -19,14 +19,14 @@
           (ui/circle-picture {:class "mx-auto"} profile_picture_url)])
        [:p.center.h3.navy.medium
         store_nickname " has created a bag for you!"]]
-      [:div.flex.items-center.px1.py3.border-gray.border-top.border-bottom
+      [:div.flex.items-center.px1.py3.border-dark-gray.border-top.border-bottom
        svg/guarantee
        [:div.ml2.flex-auto
         [:p.medium.navy.shout.mb2 "Free shipping & 30 day guarantee"]
-        [:p.gray
+        [:p.dark-gray
          "Shop with confidence: Wear it, dye it, even color it. "
          "If you do not love your Mayvenn hair we will exchange it within 30 days of purchase!"]]]
-      [:div.p3.h4.center.line-height-3
+      [:div.p3.h4.center
        (or (:description advertised-promo) promos/bundle-discount-description)]
       [:form
        {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart {:shared-cart-id shared-cart-id})}

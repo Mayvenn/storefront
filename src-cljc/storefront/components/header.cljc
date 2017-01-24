@@ -45,8 +45,8 @@
    (svg/bag {:class (str "absolute overlay m-auto "
                          (if (pos? cart-quantity) "fill-navy" "fill-black"))})
    (when (pos? cart-quantity)
-     [:div.absolute.overlay.m-auto {:style {:height "10px"}}
-      [:div.center.navy.f5 {:data-test "populated-cart"} cart-quantity]])])
+     [:div.absolute.overlay.m-auto {:style {:height "9px"}}
+      [:div.center.navy.h6.line-height-1 {:data-test "populated-cart"} cart-quantity]])])
 
 (defn triangle-up [width class]
   [:div.absolute.inline-block
@@ -84,11 +84,11 @@
 
 (def navy-carrot-bottom
   (component/html
-   (carrot-down {:width-px 4 :bg-color "border-light-silver" :border-color "border-navy"})))
+   (carrot-down {:width-px 4 :bg-color "border-white" :border-color "border-navy"})))
 
 (def notch-up
   (component/html
-   (carrot-top {:width-px 5 :bg-color "border-white" :border-color "border-dark-silver"})))
+   (carrot-top {:width-px 5 :bg-color "border-white" :border-color "border-gray"})))
 
 (def selected-link        "border-navy border-bottom border-width-2")
 (def padded-selected-link "border-navy border-bottom border-width-2 pyp3")
@@ -97,7 +97,7 @@
 (def popup-width "188px")
 
 (defn social-link [img href title last?]
-  [:a.f5.navy.block.p1.border-top.border-dark-silver.bg-light-silver
+  [:a.h5.navy.block.p1.border-top.border-gray.bg-light-gray
    (merge {:href href}
           (when last?
             {:class "rounded-bottom-1"}))
@@ -118,25 +118,25 @@
     [:a
      [:div {:style {:margin-bottom "10px"}}
       [:div.flex.justify-center.items-center.mtp3
-       [:span.line-height-1.gray.nowrap.mrp3.f6 "HAIR BY"]
-       [:div.truncate.fit.f4.navy {:data-test "nickname"} nickname]]
+       [:span.line-height-1.dark-gray.nowrap.mrp3.h7 "HAIR BY"]
+       [:div.truncate.fit.h4.navy {:data-test "nickname"} nickname]]
       [:div.relative navy-carrot-bottom]]]
     [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
-     [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit
+     [:div.relative.border.border-gray.rounded-1.bg-white.top-lit
       notch-up
       [:div.dark-gray
-       [:div.p1.f6
+       [:div.p1.h6
         [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
-        [:h4.f4.regular store-name]]
+        [:h4.regular store-name]]
        (when instagram-account
          (social-link
-          [:div.mlp1.fill-light-gray {:style {:width "15px" :height "15px"}} svg/instagram]
+          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/instagram]
           (str "http://instagram.com/" instagram-account)
           "Follow me on Instagram"
           (not styleseat-account)))
        (when styleseat-account
          (social-link
-          [:div.mlp1.fill-dark-silver {:style {:width "15px" :height "15px"}} svg/styleseat]
+          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/styleseat]
           (str "https://www.styleseat.com/v/" styleseat-account)
           "Book me on StyleSeat"
           true))]]])])
@@ -149,16 +149,16 @@
     [:div.dark-gray.flex-auto.right-align.h6 link]
     [:div.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:div.absolute.right-0 {:style {:max-width "140px"}}
-    [:div.relative.border.border-dark-silver.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
+    [:div.relative.border.border-gray.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
      [:div.absolute {:style {:right "15px"}} notch-up]
-     [:div.h6.bg-white.rounded-1
-      (into [:div.px2.py1.line-height-4] menu)
-      [:div.border-bottom.border-dark-silver]
-      [:a.navy.block.py1.center.bg-light-silver.rounded-bottom-1
+     [:div.h5.bg-white.rounded-1
+      (into [:div.px2.py1] menu)
+      [:div.border-bottom.border-gray]
+      [:a.navy.block.py1.center.bg-light-gray.rounded-bottom-1
        (utils/fake-href events/control-sign-out) "Logout"]]]]))
 
 (defn account-link [current-page? nav-event title]
-  [:a.teal.block (utils/route-to nav-event)
+  [:a.py1.teal.block (utils/route-to nav-event)
    [:span (when current-page? {:class padded-selected-link}) title]])
 
 (defn stylist-account [expanded?
@@ -193,15 +193,15 @@
   ([left right]
    [:div.clearfix.pyp1
     [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
-    [:div.col.col-10.line-height-3 right]]))
+    [:div.col.col-10.pyp1 right]]))
 
 (defn products-section [current-page? title named-searches]
-  [:nav {:role "navigation" :aria-label (str "Shop " title)}
-   (row [:div.border-bottom.border-dark-silver.dark-gray.h5 title])
+  [:nav {:aria-label (str "Shop " title)}
+   (row [:div.border-bottom.border-gray.dark-gray title])
    [:ul.my1.list-reset
     (for [{:keys [name slug]} named-searches]
       [:li {:key slug}
-       [:a.h6.bold (utils/route-to events/navigate-category {:named-search-slug slug})
+       [:a.h5.medium (utils/route-to events/navigate-category {:named-search-slug slug})
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.teal.titleize
@@ -237,28 +237,27 @@
    (shopping-bag cart-quantity)])
 
 (defn lower-left [current-page?]
-  [:div.hide-on-mb {:style {:margin-top "-12px"}}
-   [:div.right.h6
-    [:a.dark-gray.col.py1 (merge
+  [:div.right
+   [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+    [:a.black.col.py1.mr4 (merge
                            {:href           "/categories"
                             :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
                             :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
                            (when (current-page? events/navigate-category) {:class selected-link}))
      "Shop"]
-    [:a.dark-gray.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
+    [:a.black.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
 
 (defn lower-right [current-page?]
-  [:div.hide-on-mb {:style {:margin-top "-12px"}}
-   [:div.h6
-    [:a.dark-gray.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
-     "Guarantee"]
-    [:a.dark-gray.col.py1 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                           :href           "https://blog.mayvenn.com"}
-     "Blog"]]])
+  [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+   [:a.black.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
+    "Guarantee"]
+   [:a.black.col.py1.ml4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
+                          :href           "https://blog.mayvenn.com"}
+    "Blog"]])
 
 (defn header [left middle right flyout]
-  [:div.clearfix.relative.border-bottom.border-dark-silver {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+  [:div.clearfix.relative.border-bottom.border-gray {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
    [:div.flex.items-stretch.justify-center.bg-white.clearfix {:style {:min-height "60px"}}
     (into [:div.flex-auto.col-4] left)
     (into [:div.flex-auto.col-4.flex.flex-column.justify-center {:style {:min-width popup-width}}] middle)

@@ -4,23 +4,28 @@
             [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]))
 
+(defn narrow-sign-in-button [loaded?]
+  (when loaded?
+    (ui/facebook-button
+     {:on-click (utils/send-event-callback events/control-facebook-sign-in)
+      :data-test "facebook-button"}
+     [:div.col-8-on-tb-dt.mx-auto
+      [:div.flex.items-center.justify-around
+       [:span "Sign in with"]
+       [:img {:src "/images/FacebookWhite.png" :width 20 :height 20}]]])))
 
-(defn- button [btn-style loaded? click-event copy]
+(defn- wide-button [loaded? click-event]
   (if loaded?
-    (btn-style
+    (ui/facebook-button
      {:on-click (utils/send-event-callback click-event)
       :data-test "facebook-button"}
      [:div.flex.items-center.justify-center
-      {:style {:max-height "1.2em"}}
-      [:img.mr2 {:src "/images/FacebookWhite.png" :width 29 :height 29}]
-      [:span copy]])
-    [:div {:style {:height "3.25rem"}}]))
-
-(defn small-sign-in-button [loaded?]
-  (button ui/facebook-button loaded? events/control-facebook-sign-in "Sign in"))
+      [:span "Sign in with Facebook"]
+      [:img.ml2 {:src "/images/FacebookWhite.png" :width 20 :height 20}]])
+    [:div {:style {:height "2.6666em"}}]))
 
 (defn sign-in-button [loaded?]
-  (button ui/large-facebook-button loaded? events/control-facebook-sign-in "Sign in with Facebook"))
+  (wide-button loaded? events/control-facebook-sign-in))
 
 (defn reset-button [loaded?]
-  (button ui/large-facebook-button loaded? events/control-facebook-reset "Sign in with Facebook"))
+  (wide-button loaded? events/control-facebook-reset))

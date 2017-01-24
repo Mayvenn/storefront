@@ -48,7 +48,7 @@
   --button-font-size: inherit;
   --button-font-weight: var(--bold-font-weight);
   --button-line-height: 1.125rem;
-  --button-letter-spacing: 1px;
+  --button-letter-spacing: 0;
   --button-padding-y: 1rem;
   --button-padding-x: 1rem;
   --darken-1: rgba(0, 0, 0, .075);

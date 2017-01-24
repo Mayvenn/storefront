@@ -1,10 +1,12 @@
-/* 1-4 defined by basscss typography module */
-.line-height-5 { line-height: var(--line-height-5); }
-
 .serif       { font-family: var(--serif); }
 .sans-serif  { font-family: var(--sans-serif); }
-.medium      { font-weight: 500; }
-.light       { font-weight: 300; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
+
+.regular { font-weight: var(--font-weight); }
+.light   { font-weight: var(--light-font-weight); }
+.medium  { font-weight: var(--medium-font-weight); }
+.bold    { font-weight: var(--bold-font-weight); }
 
 .titleize { text-transform: capitalize; }
 .shout { text-transform: uppercase; }
@@ -30,36 +32,26 @@
 
 .font-style-normal { font-style: normal; }
 
-/* Use customized Graphik fonts when applying .medium or .bold */
-/* This was broken in old styles. */
 @font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Light.woff') format('woff');
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Light-webfont.woff') format('woff');
   font-weight:  300;
   font-style:   normal;
   font-stretch: normal;
 }
 
 @font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Regular-Web.woff') format('woff');
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Regular-webfont.woff') format('woff');
   font-weight:  400;
   font-style:   normal;
   font-stretch: normal;
 }
 
 @font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Medium-Web.woff') format('woff');
-  font-weight:  500;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Graphik';
-  src: url('/fonts/Graphik-Semibold-Web.woff') format('woff');
-  font-weight:  600;
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-Bold-webfont.woff') format('woff');
+  font-weight:  700;
   font-style:   normal;
   font-stretch: normal;
 }
@@ -68,7 +60,13 @@
     --serif: serif;
     --sans-serif: sans-serif;
 
-    --line-height-5: 2.6666;
-
     --darken-2: rgba(0, 0, 0, .125);
+
+    --font-weight: var(--medium-font-weight);
+
+    --heading-font-weight: var(--bold-font-weight);
+
+    --light-font-weight: 300;
+    --medium-font-weight: 400;
+    --bold-font-weight: 700;
 }

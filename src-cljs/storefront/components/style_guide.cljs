@@ -9,14 +9,17 @@
             [clojure.string :as string]))
 
 (defn- header [name]
-  [:h2.h3.my3.underline [:a {:name (string/lower-case name)} name]])
+  [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
+
+(defn subheader [& copy]
+  (into [:div.shout.medium.gray] copy))
 
 (defn- section-link [name navigation-event]
   [:a.h5 (utils/route-to navigation-event) name])
 
 (def ^:private styles-menu
   [:nav.col.col-2
-   [:div.border-bottom.border-dark-silver.p1
+   [:div.border-bottom.border-gray.p1
     [:div.img-logo.bg-no-repeat.bg-center.bg-contain {:style {:height "35px"}}]
     [:h1.hide "Mayvenn Styleguide"]]
    [:ul.list-reset.py2.col-8.mx-auto
@@ -35,99 +38,70 @@
       [:li (section-link "Progress" events/navigate-style-guide-progress)]
       [:li (section-link "Carousels" events/navigate-style-guide-carousel)]]]]])
 
+(def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
+
+(defn font-size [font-class mb-sizes tb-dt-sizes]
+  [:div
+   [:div.mb2
+    (subheader
+     [:div.hide-on-tb-dt (str mb-sizes "px")]
+     [:div.hide-on-mb (str tb-dt-sizes "px")])]
+
+   [:div.mb4 {:class font-class} lorem]])
+
+(defn font-weight [font-class weight-name]
+  [:div
+   (subheader weight-name)
+
+   [:div.mb4 {:class font-class} lorem]])
+
 (def ^:private typography
   [:section
    (header "Typography")
 
-   [:div.flex.flex-wrap
-    [:div.col-2.h1 ".h1"]
-    [:div.col-4.h1 "3.3rem"]
-    [:div.col-6.h1 "40px or 53px"]
-    [:div.col-2.h2.light ".h2.light"]
-    [:div.col-10.h2.light.mb2.gray " for subtitles of .h1"]
+   [:div.col-8-on-tb-dt.my3
+    [:div.mb2 (subheader "font-size/line-height")]
 
-    [:div.col-2.h2 ".h2"]
-    [:div.col-4.h2 "2rem"]
-    [:div.col-6.h2 "24px or 32px"]
-    [:div.col-2.h3.light ".h3.light"]
-    [:div.col-10.h3.light.mb2.gray " for subtitles of .h2"]
+    (font-size :h1 "28/36" "24/30")
+    (font-size :h2 "24/32" "21/29")
+    (font-size :h3 "20/28" "18/24")
+    (font-size :h4 "18/26" "16/24")
+    (font-size :h5 "16/24" "14/22")
+    (font-size :h6 "14/22" "12/20")
+    (font-size :h7 "10/18" "10/18")
 
-    [:div.col-2.h3 ".h3"]
-    [:div.col-4.h3 "1.5rem"]
-    [:div.col-6.h3.mb2 "18px or 24px"]
+    [:div.mb2 (subheader "font-weight")]
 
-    [:div.col-2.h4 ".h4"]
-    [:div.col-4.h4 "1.2rem"]
-    [:div.col-6.h4.mb2 "14px or 19px"]
+    (font-weight :light "300")
+    (font-weight :medium "400")
+    (font-weight :bold "700")]
 
-    [:div.col-2.h5 ".h5"]
-    [:div.col-4.h5 "1rem"]
-    [:div.col-6.h5.mb2 "12px or 16px"]
-
-    [:div.col-2.p "p"]
-    [:div.col-4.p "1rem"]
-    [:div.col-6.p.mb2 "12px or 16px"]
-
-    [:div.col-2.h6 ".h6"]
-    [:div.col-4.h6 ".875rem"]
-    [:div.col-6.h6.mb2 "10.5px or 12px"]]
-
-   [:p.h4.my3 "The rem based fonts scale to large screens, but for designs that need the same font size on all screens, use the " [:code ".fN"] " helpers:"]
-
-   [:div.flex.flex-wrap
-    [:div.col-2.f1 ".f1"]
-    [:div.col-10.f1.mb2 "40px"]
-
-    [:div.col-2.f2 ".f2"]
-    [:div.col-10.f2.mb2 "24px"]
-
-    [:div.col-2.f3 ".f3"]
-    [:div.col-10.f3.mb2 "18px"]
-
-    [:div.col-2.f4 ".f4"]
-    [:div.col-10.f4.mb2 "14px"]
-
-    [:div.col-2.f5 ".f5"]
-    [:div.col-10.f5.mb2 "12px"]
-
-    [:div.col-2.f6 ".f6"]
-    [:div.col-10.f6.mb2 "10.5px"]]
-
-   (header "Text Links")
-   [:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} ":a.navy - Learn more"]]])
+   #_(header "Text Links")
+   #_[:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} "Learn more"]]])
 
 (def ^:private buttons
   [:section
    (header "Buttons")
-   [:h3 "Normal"]
-   [:div.flex.flex-wrap.mxn1
-    [:div.col-4.p1.mb1 (ui/teal-button {} "ui/teal-button")]
-    [:div.col-4.p1.mb1 (ui/navy-button {} "ui/navy-button")]
-    [:div.col-4.p1.mb1 (ui/ghost-button {} "ui/ghost-button")]
-    [:div.col-4.p1.mb1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col-4.p1.mb1 (ui/aqua-button {} "ui/aqua-button")]]
-
-   [:h3.mt4 "Large"]
-   [:div.flex.flex-wrap.mxn1
-    [:div.col-6.p1.mb1 (ui/large-teal-button {} "ui/large-teal-button")]
-    [:div.col-6.p1.mb1 (ui/large-navy-button {} "ui/large-navy-button")]
-    [:div.col-6.p1.mb1 (ui/large-teal-button {:disabled? true} "(ui/large-teal-button {:disabled? true})")]
-    [:div.col-6.p1.mb1 (ui/large-aqua-button {} "ui/large-aqua-button")]
-    [:div.col-6.p1.mb1 (ui/large-ghost-button {} "ui/large-ghost-button")]]])
+   [:div.clearfix.mxn1
+    [:div.col.col-4.p1 (ui/teal-button {} "ui/teal-button")]
+    [:div.col.col-4.p1 (ui/navy-button {} "ui/navy-button")]
+    [:div.col.col-4.p1 (ui/ghost-button {} "ui/ghost-button")]
+    [:div.col.col-4.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
+    [:div.col.col-4.p1 (ui/aqua-button {} "ui/aqua-button")]]])
 
 (def ^:private increment->size
-  {1 ".5rem"
-   2 "1rem"
-   3 "2rem"
-   4 "4rem"})
+  {1 "5px"
+   2 "10px"
+   3 "15px"
+   4 "20px"})
 
 (def ^:private spacing
   (let [box (fn [class px]
              [:div {:key (str class "-" px)}
               [:div.m1
-               [:div.border-dashed.border-light-gray.inline-block.center
+               [:div.border-dashed.border-gray.inline-block.center
                 [:div.border.border-teal.inline-block {:class class}
-                 [:div.border.border-light-gray.inline-block.bg-silver
+                 [:div.border.border-gray.inline-block.bg-light-gray
                   [:div
                    [:p.h6 (str "." class)]
                    [:p.h6 px]]]]]]])
@@ -137,16 +111,16 @@
                       body])]
     [:section
      (header "Spacing")
-     [:div.h4.light.mb2.gray "Margin puts space between elements. Padding puts space within elements."]
+     [:div.h4.light.mb2.dark-gray "Margin puts space between elements. Padding puts space within elements."]
 
      [:h3 "Key"]
      (subsection
       ""
-      [:div.border-dashed.border-light-gray.inline-block.p1.center.h6
+      [:div.border-dashed.border-gray.inline-block.p1.center.h6
        "Margin"
        [:div.border.border-teal.p1
         "Padding"
-        [:div.border.border-light-gray.p1.bg-silver
+        [:div.border.border-gray.p1.bg-light-gray
          "Content"]]])
 
      [:h3 "Margin"]
@@ -173,8 +147,8 @@
 
      [:h3 "Padding"]
 
-     [:p.mt1.light-gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
-     [:p.mt1.light-gray "So, " [:code.gray ".pl1"] ", " [:code.gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
+     [:p.mt1.gray "Backgrounds and borders are usually symmetrical around their content. For example, buttons look best when their content is equidistant from their edges. Therefore, padding is usually symmetrical too."]
+     [:p.mt1.gray "So, " [:code.dark-gray ".pl1"] ", " [:code.dark-gray ".pl2"] ", etc. exist, but are discouraged and are not show here."]
 
      (subsection
       "in rems"
@@ -198,42 +172,43 @@
              (box class (str increment "px"))])])])]))
 
 (defn color-swatch [color-class hex]
- [:div.flex.items-center
-  [:div
-   [:div.circle.p4.m2.border.border-light-silver
-    {:class (str "bg-" color-class)}]]
-  [:div.flex
-   [:div.mt2.flex-column.bold.underline.shout.dark-gray
-    [:div.my1 "Class"]
-    [:div.my1 "HEX"]]
-   [:div.mt2.ml2.flex-column
-    [:div.my1 (str "." color-class)]
-    [:div.my1 "#" hex]]]])
+  [:div.col-6.col-4-on-tb.col-2-on-dt
+   [:div.p1
+    [:div.p4
+     {:class (str "bg-" color-class
+                  (when (#{"black" "fb-blue"} color-class) " white")
+                  (when (#{"white"} color-class) " border border-gray"))}
+     [:div.mt4
+      [:div.titleize color-class]
+      [:div "#" hex]]]]])
 
 (def ^:private colors
  [:section
-  (header "Color")
-  [:div.col.col-6
-   [:h3 "Primary"]
-   (color-swatch "teal" "40CBAC")
-   (color-swatch "navy" "175674")]
-  [:div.col.col-6
-   [:h3 "Secondary"]
-   (color-swatch "aqua" "49BBF0")
-   (color-swatch "orange" "E8A50C")]
-  [:h3 "Neutrals"]
-  [:div.col.col-6
-   (color-swatch "white" "FFFFFF")
-   (color-swatch "light-silver" "F8F8F8")
-   (color-swatch "silver" "EBEBEB")
-   (color-swatch "dark-silver" "DADADA")]
-  [:div.col.col-6
-   (color-swatch "light-gray" "B4B4B4")
-   (color-swatch "gray" "666666")
-   (color-swatch "dark-gray" "333333")
-   (color-swatch "black" "000000")]])
+  (header "Palette")
 
-(defn ^:private form [data errors]
+  (subheader "Primary")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "light-teal" "9fe5d5")
+   (color-swatch "teal" "40cbac")]
+
+  (subheader "Grays")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "black" "000000")
+   (color-swatch "dark-gray" "666666")
+   (color-swatch "gray" "cccccc")
+   (color-swatch "light-gray" "ebebeb")
+   (color-swatch "white" "ffffff")]
+
+  (subheader "Success dialog and error handling")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "green" "00cc00")
+   (color-swatch "red" "ff0000")]
+
+  (subheader "Third party")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "fb-blue" "3b5998")]])
+
+(defn ^:private form [data]
   [:div
    (ui/text-field-group
     {:type    "text"
@@ -242,32 +217,43 @@
      :keypath [:style-guide :form :first-name]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :first-name])
-     :errors  (:first-name errors)}
+     :errors  (if (= "wrong" (get-in data [:style-guide :form :first-name]))
+                [{:long-message "wrong"}]
+                [])}
     {:type    "text"
      :label   "Last Name"
      :id      "last-name"
      :keypath [:style-guide :form :last-name]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :last-name])
-     :errors  (:last-name errors)})
+     :errors  (if (= "wrong" (get-in data [:style-guide :form :last-name]))
+                [{:long-message "wrong"}]
+                [])})
    (ui/text-field
     {:type     "text"
      :label    "Mobile Phone"
      :keypath  [:style-guide :form :phone]
      :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :phone])
-     :errors   (:phone errors)
+     :errors   (if (= "wrong" (get-in data [:style-guide :form :phone]))
+                 [{:long-message "wrong"}]
+                 [])
      :required true})
    (ui/text-field
     {:type     "password"
      :label    "Password"
+     :id       "password"
      :keypath  [:style-guide :form :password]
      :focused  (get-in data keypaths/ui-focus)
      :value    (get-in data [:style-guide :form :password])
-     :errors   (:password errors)
+     :errors   (if (= "wrong" (get-in data [:style-guide :form :password]))
+                 [{:long-message "Incorrect"}]
+                 [])
      :hint     (get-in data [:style-guide :form :password])
      :required true})
-   (ui/select-field {:errors      (:besty errors)
+   (ui/select-field {:errors      (if (= "jacob" (get-in data [:style-guide :form :besty]))
+                                    [{:long-message "wrong"}]
+                                    [])
                      :id          "id-is-required"
                      :keypath     [:style-guide :form :besty]
                      :focused     (get-in data keypaths/ui-focus)
@@ -275,29 +261,36 @@
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Besty"
                      :required    true
-                     :value       (get-in data [:style-guide :form :besty])})])
+                     :value       (get-in data [:style-guide :form :besty])})
+   (ui/text-field
+    {:type    "text"
+     :label   "Always wrong textfield"
+     :id      (str key "-" :first-name)
+     :keypath [:style-guide :form :always-wrong]
+     :focused (get-in data keypaths/ui-focus)
+     :value   (get-in data [:style-guide :form :always-wrong])
+     :errors  [{:long-message "your answer is always incorrect"}]})
+   (ui/select-field {:errors      [{:long-message "your answer is always incorrect"}]
+                     :id          "id-is-required"
+                     :keypath     [:style-guide :form :wrong-choices]
+                     :focused     (get-in data keypaths/ui-focus)
+                     :label       "Wrong Choices select field"
+                     :options     [["Corey" "corey"] ["Jacob" "jacob"]]
+                     :placeholder "Wrong Choices"
+                     :required    true
+                     :value       (get-in data [:style-guide :form :wrong-choices])})])
 
 (defn ^:private form-fields [data]
   [:section
    (header "Form Fields")
-   [:div
-    [:h3.mb1 "Active"] (form data {:first-name []
-                                   :last-name  []
-                                   :phone      []
-                                   :besty      []})]
-   [:div
-    [:h3.mb1 "Errors"] (form data {:first-name [{:long-message "Wrong"}]
-                                   :last-name  [{:long-message "wrong"}]
-                                   :phone      [{:long-message "Wrong"}]
-                                   :password   [{:long-message "Incorrect"}]
-                                   :besty      [{:long-message "wrong"}]})]])
+   (form data)])
 
 (defn ^:private navigation [data _ _]
   (component/create
    [:section
     (header "Navigation")
     [:.dark-gray
-     [:div.bg-light-silver
+     [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
        (component/build tabs/component
                         {:selected-tab (get-in data keypaths/navigation-event)}
@@ -366,11 +359,22 @@
 
 (defn component [data owner opts]
   (component/create
-   [:div.col-12.bg-white.clearfix
-    styles-menu
+   [:div.mx3
+    [:div.container
+     [:div {:style {:margin "50px 0"}}
+      [:h1.mb4 "Mayvenn Style Guide"]
+      (subheader
+       [:span.hide-on-tb-dt "mobile"]
+       [:span.hide-on-mb.hide-on-dt "tablet"]
+       [:span.hide-on-mb-tb "desktop"]
+       " breakpoint")]
 
-    [:div.col.col-10.px3.py3.border-left.border-dark-silver
-     (condp = (get-in data keypaths/navigation-event)
+     colors
+     typography
+     (form-fields data)
+     buttons
+
+     #_(condp = (get-in data keypaths/navigation-event)
        events/navigate-style-guide typography
        events/navigate-style-guide-color colors
        events/navigate-style-guide-buttons buttons
@@ -380,7 +384,7 @@
        events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
        events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
        events/navigate-style-guide-progress (component/build progress data opts)
-       events/navigate-style-guide-carousel (component/build carousel data opts))]])) 
+       events/navigate-style-guide-carousel (component/build carousel data opts))]]))
 
 (defn built-component [data opts]
   (component/build component data opts))

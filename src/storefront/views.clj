@@ -115,7 +115,7 @@
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
     (page/include-css (assets/path "/css/app.css"))]
-   [:body.bg-light-silver
+   [:body.bg-light-gray
     [:div.container
      [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
       {:style "min-height: 100vh;"}

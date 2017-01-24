@@ -20,21 +20,14 @@
     "pending" "teal"
     "paid" "navy"))
 
-(defn four-up [a b c d]
-  [:div.clearfix.mxn1
-   [:div.col.col-3.px1 a]
-   [:div.col.col-3.px1 b]
-   [:div.col.col-3.px1 c]
-   [:div.col.col-3.px1 d]])
-
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
-   [:img.left.border.border-silver.mr3
+   [:img.left.border.border-light-gray.mr3
     (assoc (products/small-img products product-id)
            :style {:width "5rem"})]
    [:div.overflow-hidden
     [:div.h4.medium.titleize (products/product-title item)]
-    [:div.line-height-3.h5.mt1
+    [:div.h5.mt1
      (when-let [length (:length variant-attrs)]
        [:div "Length: " length])
      [:div "Price: " (mf/as-money unit-price)]
@@ -96,7 +89,7 @@
       (mf/as-money price)]]))
 
 (defn show-grand-total [commissionable-amount]
-  [:div.h3.p2.col-12.right-align.navy.border-top.border-silver
+  [:div.h3.p2.col-12.right-align.navy.border-top.border-light-gray
    (mf/as-money commissionable-amount)])
 
 (defn show-order [products order]
@@ -112,7 +105,7 @@
    [:div.center.flex-auto content]])
 
 (defn show-payout [{:keys [amount status payout-date]}]
-  [:div.border-dotted-top.border-dotted-bottom.border-gray.h5
+  [:div.border-dotted-top.border-dotted-bottom.border-dark-gray.h5
    (if (= status "paid")
      [:div.bg-aqua
       (payout-bar
@@ -128,7 +121,7 @@
 
 (defn show-collapsed-commission [expanded?
                                  {:keys [number amount status commission-date order]}]
-  [:div.p2.border-bottom.border-right.border-left.border-silver
+  [:div.p2.border-bottom.border-right.border-left.border-light-gray
    (when order
      {:class "pointer"
       :on-click (toggle-expanded-commission expanded? number)})
@@ -139,19 +132,14 @@
      (when (= status "paid") "+") (mf/as-money amount)]
     [:div.h3.navy (:full-name order)]]
 
-   [:div.light-gray.h6
-    (four-up "Status" "Ship Date" "Order"
-             (when order
-               [:div.right.h2.mtn2.mr1
-                {:class (if (expanded? number) "gray" "dark-gray")}
-                "..."]))]
-
-   [:div.medium.h6.line-height-3
-    (four-up
-     [:div.titleize {:class (status-look status)} status]
-     (f/short-date commission-date)
-     number
-     nil)]])
+   [:div.dark-gray.h6.flex.justify-between
+    [:div "Status" [:div.medium.titleize {:class (status-look status)} status]]
+    [:div "Ship Date" [:div.medium (f/short-date commission-date)]]
+    [:div "Order" [:div.medium number]]
+    [:div (when order
+            [:div.medium.h2
+             {:class (if (expanded? number) "gray" "dark-gray")}
+             "..."])]]])
 
 (defn transition-group [options & children]
   (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
@@ -168,7 +156,7 @@
                         :component "div"}
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
-                          [:.gray.bg-light-silver
+                          [:.dark-gray.bg-light-gray
                            (show-order products order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])
@@ -176,16 +164,16 @@
 (def empty-commissions
   (html
    [:div.center
-    [:div.p2.border-bottom.border-silver
+    [:div.p2.border-bottom.border-light-gray
      [:div.img-receipt-icon.bg-no-repeat.bg-center {:style {:height "8em"}}]
-     [:p.h3.light-gray "Looks like you don't have any commissions yet."]]
+     [:p.h3.gray "Looks like you don't have any commissions yet."]]
     [:.py3.h4
      [:p.mx4.pb2 "Get started by sharing your store with your clients:"]
      [:p.medium stylist-urls/store-url]]]))
 
 (defn show-commission-rate [rate]
   (let [message (list "Earn " rate "% commission on all sales. (tax and store credit excluded)")]
-    [:div.h6.light-gray
+    [:div.h6.dark-gray
      [:div.p2.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]

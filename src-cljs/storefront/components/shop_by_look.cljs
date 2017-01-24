@@ -30,9 +30,9 @@
        "Shop this look"))))
 
 (defn image-attribution [creating-order? selected-look-id {:keys [user-handle social-service] :as look} view-look?]
-  [:div.bg-light-silver.p1
+  [:div.bg-light-gray.p1
    [:div.flex.items-center.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
-    [:div.flex-auto.f4.gray.bold {:style {:word-break "break-all"}} "@" user-handle]
+    [:div.flex-auto.h5.dark-gray.bold {:style {:word-break "break-all"}} "@" user-handle]
     [:div.ml1 {:style {:width "15px" :height "15px"}}
      (svg/social-icon social-service)]]
    (buy-look-button creating-order? selected-look-id look view-look?)])
@@ -41,11 +41,11 @@
   (om/component
    (html
     [:div
-     [:div.center.bg-light-silver.py3
+     [:div.center.bg-light-gray.py3
       [:h1.h2.navy "shop by look"]
       [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
-      [:p.gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
+      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite look and click it to easily add it to your bag!"]]
      [:div.container.clearfix.mtn2
       (for [{:keys [id content-type user-handle imgs purchase-link source-url social-service] :as look} looks]
         [:div

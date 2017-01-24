@@ -22,7 +22,7 @@
 
 (defn svg-xlink
   ([id] (svg-xlink {} id))
-  ([opts id] [:use (merge opts {:xlinkHref (str "#" id)})]))
+  ([opts id] [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\"></use>")}}]))
 
 (defn error [opts]
   [:svg opts (svg-xlink "circled-exclamation")])
@@ -34,24 +34,24 @@
 
 (def micro-dollar-sign
   (component/html
-   [:svg {:class "stroke-gray" :style {:width "14px" :height "14px"}}
+   [:svg {:class "stroke-dark-gray" :style {:width "14px" :height "14px"}}
     (svg-xlink "micro-dollar-sign")]))
 
 (def large-dollar
   ;; TODO: is there a way to use vector-effect: non-scaling-stroke; to unify
   ;; micro-dollar-sign and large-dollar?
   (component/html
-   [:svg {:class "stroke-white" :style {:width "72px" :height "72px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-dollar")]))
 
 (def large-percent
   (component/html
-   [:svg {:class "stroke-white" :style {:width "72px" :height "72px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-percent")]))
 
 (def large-payout
   (component/html
-   [:svg {:class "stroke-white" :style {:width "62px" :height "60px"}}
+   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-payout")]))
 
 (def large-mail
@@ -87,7 +87,7 @@
 
 (def counter-inc
   (component/html
-   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
 (defn close-x [{:keys [class]}]
@@ -97,7 +97,7 @@
 
 (def counter-dec
   (component/html
-   [:svg {:class "stroke-white fill-dark-silver" :style {:width "1.2em" :height "1.2em"}}
+   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-dec")]))
 
 ;; Social
@@ -138,7 +138,7 @@
 (defn ^:private mayvenn-on-social [title xlink]
   (let [title-id (str "social-title-" xlink)]
     (component/html
-     [:svg.container-size {:class "fill-dark-gray" :role "img" :aria-labeledby title-id}
+     [:svg.container-size {:class "fill-dark-gray" :role "img" :aria-labelledby title-id}
       [:title {:id title-id} title]
       (svg-xlink {:role "presentation"} xlink)])))
 
@@ -167,7 +167,7 @@
 
 (def play-video-muted
   (component/html
-   [:svg {:class "fill-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
+   [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
 
 (def guarantee

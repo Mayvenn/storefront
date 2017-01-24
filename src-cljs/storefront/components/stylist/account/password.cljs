@@ -28,14 +28,14 @@
                      :value     password
                      :hint      (when show-password? password)})
 
-     [:div.gray.mtn2.mb2.col-12.left
+     [:div.dark-gray.mtn2.mb2.col-12.left
       (ui/check-box {:label   "Show password"
                      :keypath keypaths/account-show-password?
                      :value   show-password?})]]
 
     [:div.my2.col-12.clearfix
      ui/nbsp
-     [:div.border-silver.border-top.hide-on-mb.mb3]
+     [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))

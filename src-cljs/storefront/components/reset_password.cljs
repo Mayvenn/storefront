@@ -23,14 +23,14 @@
                       :type       "password"
                       :value      reset-password
                       :hint       (when show-password? reset-password)})
-      [:div.gray.mtn2.mb2.col-12.left
+      [:div.dark-gray.mtn2.mb2.col-12.left
        (ui/check-box {:label   "Show password"
                       :keypath keypaths/account-show-password?
                       :focused focused
                       :value   show-password?})]
 
       (ui/submit-button "Update")]
-     [:.h5.center.gray.light.my2 "OR"]
+     [:.h5.center.dark-gray.light.my2 "OR"]
      (facebook/reset-button loaded-facebook?)))))
 
 (defn query [data]

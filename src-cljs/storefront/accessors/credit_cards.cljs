@@ -1,12 +1,11 @@
 (ns storefront.accessors.credit-cards
   (:require [clojure.string :as string]
+            [storefront.platform.numbers :as numbers]
             [goog.string]))
-
-(def digits (into #{} (map str (range 0 10))))
 
 (defn filter-cc-number-format [s]
   (->> s
-       (filter digits)
+       (filter numbers/digits)
        (take 16)))
 
 (defn format-cc-number [s]
@@ -18,7 +17,7 @@
 
 (defn parse-expiration [s]
   (->> s
-       (filter digits)
+       (filter numbers/digits)
        (split-at 2)
        (map (partial apply str))))
 

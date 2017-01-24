@@ -13,42 +13,44 @@
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
-   [:tr.h5.line-height-4
+   [:tr.h5
     (merge (when (neg? amount)
              {:class "teal"})
            row-attrs)
-    [:td name]
-    [:td.right-align.medium
+    [:td.pyp3 name]
+    [:td.pyp3.right-align.medium
      {:class (when-not (neg? amount)
                "navy")}
      (as-money-or-free amount)]]))
 
 (def essence-faux-line-item
   [:div
-   [:div.flex.border.border-orange.py1
+   [:div.flex.border.border-orange.py2
     [:div.flex-none.mx1 {:style {:width "7.33em"}}
      [:div.hide-on-mb
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "94px" :height "96px"}]]
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "110px" :height "112px"}]]
      [:div.hide-on-tb-dt
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "72px" :height "70px"}]]]
+      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "123px" :height "125px"}]]]
     [:div.flex-auto.mr1
-     [:div.h6.mb1.line-height-2
+     [:div.h6.mb1
       [:div.bold.shout.mb1.h5 "bonus gift!"]
       "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is "
       [:span.underline "included"]
       " with your order."]
      [:a.h6.navy
       (utils/fake-href events/control-essence-offer-details)
-      "Offer and Rebate Details ➤"]]]
-   [:div.border-bottom.border-dark-silver ui/nbsp]])
+      "Offer and Rebate Details" ui/nbsp "➤"]]]
+   [:div.border-bottom.border-gray ui/nbsp]])
 
-(defn display-order-summary [order {:keys [read-only?]} price-strikeout?]
+(defn display-order-summary [order available-store-credit {:keys [read-only?]} price-strikeout?]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
-        store-credit  (-> order :cart-payments :store-credit)]
+        store-credit  (min (:total order) (or available-store-credit
+                                              (-> order :cart-payments :store-credit :amount)
+                                              0.0))]
     [:div
-     [:.py2.border-top.border-bottom.border-dark-silver
+     [:.py2.border-top.border-bottom.border-gray
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
@@ -62,7 +64,7 @@
              [:div
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
-                [:a.ml1.h6.light-gray
+                [:a.ml1.h6.gray
                  (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
                  "Remove"])]
              price)))
@@ -70,35 +72,35 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when store-credit
-          (summary-row "Store Credit" (- (:amount store-credit))))]]]
+        (when (pos? store-credit)
+          (summary-row "Store Credit" (- store-credit)))]]]
      [:.py2.h2
       [:.flex
        [:.flex-auto.light "Total"]
-       [:.right-align.gray
-        (as-money (- (:total order) (:amount store-credit 0.0)))]]] ]))
+       [:.right-align
+        (as-money (- (:total order) store-credit))]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
                                    quantity-line
                                    bundle-quantity
                                    price-strikeout?]
-  [:.clearfix.mb1.border-bottom.border-dark-silver.py2 {:key id}
+  [:.clearfix.mb1.border-bottom.border-gray.py3 {:key id}
    [:a.left.mr1
-    [:img.border.border-dark-silver.rounded
+    [:img.border.border-gray.rounded
      (assoc thumbnail :style {:width  "7.33em"
                               :height "7.33em"})]]
-   [:.overflow-hidden.h5.dark-gray.p1
-    [:a.dark-gray.medium.titleize (products/product-title line-item)]
-    [:.mt1.h6.line-height-2
+   [:.overflow-hidden.h5.p1
+    [:a.medium.titleize (products/product-title line-item)]
+    [:.mt1.h6.line-height-1
      (when-let [length (:length variant-attrs)]
-       [:div "Length: " length])
+       [:div.pyp2 "Length: " length])
      (if price-strikeout?
-       [:div "Price Each: " (ui/strike-price {:price            unit-price
-                                              :bundle-quantity  bundle-quantity
-                                              :price-strikeout? price-strikeout?
-                                              :bundle-eligible? (products/bundle? line-item)})]
-       [:div "Price: " (as-money-without-cents unit-price)])
+       [:div.pyp2 "Price Each: " (ui/strike-price {:price            unit-price
+                                                   :bundle-quantity  bundle-quantity
+                                                   :price-strikeout? price-strikeout?
+                                                   :bundle-eligible? (products/bundle? line-item)})]
+       [:div.pyp2 "Price: " (as-money-without-cents unit-price)])
      quantity-line]]])
 
 (defn display-line-items [line-items products price-strikeout?]
@@ -107,7 +109,7 @@
       (display-line-item
        line-item
        (products/small-img products product-id)
-       [:div "Quantity: " quantity]
+       [:div.pyp2 "Quantity: " quantity]
        bundle-quantity
        price-strikeout?))))
 
@@ -119,10 +121,10 @@
         (display-line-item
          line-item
          (products/small-img products product-id)
-         [:.mt2.flex.items-center.justify-between
+         [:.mt1.flex.items-center.justify-between
           (if removing?
             [:.h3 {:style {:width "1.2em"}} ui/spinner]
-            [:a.light-gray (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+            [:a.gray.medium (utils/fake-href events/control-cart-remove variant-id) "Remove"])
           [:.h3
            (when-let [variant (query/get {:id variant-id}
                                          (:variants (get products product-id)))]

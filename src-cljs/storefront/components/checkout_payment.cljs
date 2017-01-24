@@ -68,8 +68,8 @@
                            :value         (cc/format-cc-number number)})
            [:div.col-12
             (ui/text-field-group
-             {:errors        (get field-errors["card-expiration"])
-              :label         "Expiration (MM/YY)"
+             {:errors        (get field-errors ["card-expiration"])
+              :label         "Exp. (MM/YY)"
               :keypath       keypaths/checkout-credit-card-expiration
               :focused       focused
               :value         (cc/format-expiration expiration)
@@ -79,7 +79,7 @@
               :class         "cardExpiry"
               :type          "tel"
               :required      true}
-             {:errors        (get field-errors["security-code"])
+             {:errors        (get field-errors ["security-code"])
               :label         "Security Code"
               :keypath       keypaths/checkout-credit-card-ccv
               :focused       focused
@@ -92,7 +92,7 @@
               :required      true})]
            (when (and (not guest?) (empty? saved-cards))
              [:div.mb2
-              [:label.gray
+              [:label.dark-gray
                [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
                                   {:type      "checkbox"
                                    :data-test "payment-form-save-credit-card"})]
@@ -137,16 +137,16 @@
             {:color "teal"
              :data-test "store-credit-note"}
             [:.p2.navy
-             [:.h5 [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+             [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
              (when-not fully-covered?
-               [:.h6.mt1.line-height-2
+               [:.h6.mt1
                 "Please enter an additional payment method below for the remaining total on your order."])]))
 
          (when-not fully-covered?
            [:div
             (om/build credit-card-form-component {:credit-card credit-card
                                                   :field-errors field-errors})
-            [:.h5.gray
+            [:.h5
              "You can review your order on the next page before we charge your card."]])
 
          (when loaded-stripe?

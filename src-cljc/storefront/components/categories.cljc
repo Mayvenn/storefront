@@ -21,12 +21,12 @@
       [:img.col-12.block (utils/img-attrs (:model-full representative-images) :large)]]
      [:div.absolute.overlay.bg-darken-2
       [:div.flex.items-center.container-height
-       [:div.h3.bold.white.col-12.titleize.shadow.nowrap name]]]]]])
+       [:div.h2.medium.white.col-12.titleize.shadow.nowrap name]]]]]])
 
 (defn component [{:keys [named-searches]} owner opts]
   (component/create
    [:div.container
-    [:nav.m2 {:role "navigation" :aria-labelledby "select-style-header"}
+    [:nav.m2 {:aria-labelledby "select-style-header"}
      [:h2#select-style-header.py2.center.navy.regular "Select your favorite style"]
      [:ul.list-reset.clearfix.mxn1.center
       (map-indexed link-to-search named-searches)]]]))

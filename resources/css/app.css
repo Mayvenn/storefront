@@ -15,7 +15,6 @@
 
 /* Basscss Core */
 
-@import 'basscss-type-scale';
 @import 'custom-type-scale.css';
 @import 'basscss-typography';
 @import 'custom-typography.css';
@@ -70,7 +69,6 @@
 /* From basscss v7 */
 
 @import 'basscss-ui-utility-groups';
-@import 'custom-ui-utility-groups';
 
 /* Carousel */
 
@@ -109,46 +107,47 @@
 /* Custom variables */
 
 :root {
-    --font-family-graphik: 'Graphik',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
+    --font-family-roboto: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;
 
     --serif: serif;
-    --sans-serif: var(--font-family-graphik);
-
-    --h1: 3.3rem;
-    --h2: 2rem;
-    --h3: 1.5rem;
-    --h4: 1.1666667rem;
-    --h5: 1rem;
-    --h6: 0.875rem;
-
-    --paragraph: 1rem;
+    --sans-serif: var(--font-family-roboto);
 
     --font-family: var(--sans-serif);
     --heading-font-family: var(--sans-serif);
-    --heading-font-weight: 400;
+
+    --font-weight:         var(--light-font-weight); /* Not medium... by default, we use lightest font */
+    --heading-font-weight: var(--light-font-weight); /* Not bolder by default, use .medium or .bold */
+
+    --light-font-weight:  300;
+    --medium-font-weight: 400;
+    --bold-font-weight:   700; /* Roboto's bold */
 
     --button-line-height: 1.2;
     --button-background-color: var(--teal);
-    --button-border-radius: var(--border-radius);
+    --button-font-weight: var(--medium-font-weight);
+    --button-padding-y: var(--space-2);
+    --button-padding-x: var(--space-2);
 
-    --border-radius: 4px;
+    --border-radius: 5px;
     --border-radius-1: 8px;
 
-    --teal:        #40CBAC;
-    --navy:        #175674;
-    --orange:      #E8A50C;
-    --aqua:        #49BBF0;
+    --teal:        #40cbac;
+    --light-teal:  #9fe5d5;
 
-    --white:        #FFFFFF;
-    --light-silver: #F8F8F8;
-    --silver:       #EBEBEB;
-    --dark-silver:  #DADADA;
-    --light-gray:   #B4B4B4;
-    --gray:         #666666;
-    --dark-gray:    #333333;
+    --green:       #00cc00;
+    --red:         #ff0000;
+
+    --navy:        #175674;
+    --orange:      #e8a50c;
+    --aqua:        #49bbf0;
+
+    --white:        #ffffff;
+    --light-gray:   #ebebeb;
+    --gray:         #cccccc;
+    --dark-gray:    #666666;
     --black:        #000000;
 
-    --facebook-blue: #3B5998;
+    --facebook-blue: #3b5998;
 
     --lighten-1: rgba(255, 255, 255, .125);
     --lighten-2: rgba(255, 255, 255, .375);
@@ -163,18 +162,17 @@
     --darken-5: rgba(0, 0, 0, .875);
 
     --line-height-1: 1;
-    --line-height-2: 1.3333;
-    --line-height-3: 1.6666;
-    --line-height-4: 2;
-    --line-height-5: 2.6666;
 
-    --bold-font-weight: 600;
+    --space-1: 5px;
+    --space-2: 10px;
+    --space-3: 15px;
+    --space-4: 20px;
 
     --caps-letter-spacing: 0.1em;
 
-    --floating-label--input-text-height: 1.5rem; /* height, not including paddding */
-    --floating-label--input-padding-x: 0.6rem;
-    --floating-label--input-padding-y: 0.75em;
-    --floating-label--input-label-padding-y: 0;
+    --floating-label--input-text-height: 19px; /* height, not including paddding */
+    --floating-label--input-padding-x: 10px;
+    --floating-label--input-padding-y: 12px;
+    --floating-label--input-label-padding-y: 3px;
 }
 

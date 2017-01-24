@@ -33,7 +33,7 @@
                                   :height "100%"
                                   :id (str "center_" (videos/id->name video-id))}
             ui/nbsp]]]
-         [:div.light-silver.p3.col-12.center
+         [:div.light-gray.p3.col-12.center
           {:on-click       on-close
            :on-touch-start on-close}
           "close video"]])))))

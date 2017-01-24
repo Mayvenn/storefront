@@ -68,12 +68,12 @@ Thanks,
   (om/component
    (html
     (ui/modal {:on-close on-close}
-              [:.bg-white.rounded.p2.center
+              [:.bg-white.rounded.p4.center
                (ui/modal-close {:on-close on-close :data-test "share-url-close"})
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
-                [:.h5.gray.light.my2 "Share this link so your customers know exactly what to buy"]
-                [:.border-top.border-bottom.border-dark-silver.py2.flex.justify-center
+                [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
+                [:.border-top.border-bottom.border-gray.py2.flex.justify-center
                  [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
                   (share-icon "img-fb-share")]
                  [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
@@ -83,7 +83,7 @@ Thanks,
                  [:a.mx1 {:href (email-link share-url store-nickname)}
                   (share-icon "img-email-share")]]
                 [:div.mt3.mb1
-                 [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12
+                 [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12
                   {:type "text"
                    :value share-url
                    :data-test "share-url"
@@ -101,6 +101,7 @@ Thanks,
                               order
                               products
                               coupon-code
+                              available-store-credit
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
@@ -115,7 +116,7 @@ Thanks,
    (html
     [:div.container.p2
      [:div.py3.h3.center
-      [:.light-gray
+      [:.dark-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
      [:div.h3.py1
@@ -133,30 +134,32 @@ Thanks,
                                               price-strikeout?)]
 
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:form
+       [:form.clearfix.mxn1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-        [:div.flex.items-center
-         [:div.col-8.pr1
-          (ui/text-field {:keypath keypaths/cart-coupon-code
-                          :focused focused
-                          :label   "Promo code"
-                          :value   coupon-code})]
-         [:div.col-4.pl1.mb3.inline-block
-          (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                           :disabled? updating?
-                           :spinning? applying-coupon?}
-                          "Apply")]]]
+        [:div.col.col-8.px1
+         (ui/text-field {:keypath keypaths/cart-coupon-code
+                         :focused focused
+                         :label   "Promo code"
+                         :value   coupon-code})]
+        [:div.col.col-4.px1.mb3.inline-block
+         (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                          :disabled? updating?
+                          :spinning? applying-coupon?}
+                         "Apply")]]
 
-       (summary/display-order-summary order {:read-only? false} price-strikeout?)
+       (summary/display-order-summary order
+                                      available-store-credit
+                                      {:read-only? false}
+                                      price-strikeout?)
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
-       [:div.h5.gray.center.py2 "OR"]
+       [:div.h5.dark-gray.center.py2 "OR"]
 
-       [:div.pb2 (ui/large-aqua-button
+       [:div.pb2 (ui/aqua-button
                   {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                    :spinning? redirecting-to-paypal?
                    :disabled? updating?
@@ -166,7 +169,7 @@ Thanks,
                    [:span.medium.italic "PayPal™"]])]
 
        (when show-apple-pay?
-         [:div.pb2 (ui/large-apple-pay-button
+         [:div.pb2 (ui/apple-pay-button
                     {:on-click (utils/send-event-callback events/control-checkout-cart-apple-pay)
                      :data-test "apple-pay-checkout"
                      :disabled? disable-apple-pay-button?}
@@ -176,16 +179,16 @@ Thanks,
                                                                                               :height "2rem"}}]])])
 
        (when share-carts?
-         [:div.border-top.border-dark-silver.py2
-          (ui/large-ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
-                                  :spinning? requesting-shared-cart?
-                                  :data-test "share-cart"}
-                                 [:div.flex.items-center.justify-center
-                                  [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                                   {:style {:width  "24px"
-                                            :height "18px"}}]
-                                  [:div.flex-grow "Share your bag"]])
-          [:div.h5.pt2.gray.light "Click the button above to share this bag with customers."]])]]])))
+         [:div.border-top.border-gray.py2
+          (ui/ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
+                            :spinning? requesting-shared-cart?
+                            :data-test "share-cart"}
+                           [:div.flex.items-center.justify-center
+                            [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
+                             {:style {:width  "24px"
+                                      :height "18px"}}]
+                            [:div.flex-grow "Share your bag"]])
+          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]])))
 
 (defn empty-component [{:keys [promotions]} owner]
   (om/component
@@ -236,7 +239,8 @@ Thanks,
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :price-strikeout?          (experiments/price-strikeout? data)}))
+     :price-strikeout?          (experiments/price-strikeout? data)
+     :available-store-credit    (get-in data keypaths/user-total-available-store-credit)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

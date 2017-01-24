@@ -1,5 +1,7 @@
 (ns storefront.platform.numbers)
 
+(def digits (into #{} (map str (range 0 10))))
+
 (defn parse-float [s]
   (Float/parseFloat (str s)))
 

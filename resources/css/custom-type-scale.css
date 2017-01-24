@@ -1,11 +1,24 @@
 /* We want h0 to be 64px on small screens. But to have it grow on large screens
  * we need to specify it in rems. 5.25rem is 63px... close enough. */
 
-.h0 { font-size: 5.25rem; }
+.h0 { font-size: 64px; }
 
-.f1 { font-size: 40px; }
-.f2 { font-size: 24px; }
-.f3 { font-size: 18px; }
-.f4 { font-size: 14px; }
-.f5 { font-size: 12px; }
-.f6 { font-size: 9px; }
+h1, .h1          { font-size: 28px; line-height: 36px; }
+h2, .h2          { font-size: 24px; line-height: 32px; }
+h3, .h3          { font-size: 20px; line-height: 28px; }
+h4, .h4, p, html { font-size: 18px; line-height: 26px; }
+h5, .h5          { font-size: 16px; line-height: 24px; }
+h6, .h6          { font-size: 14px; line-height: 22px; }
+h7, .h7          { font-size: 10px; line-height: 18px; }
+
+@media (--on-tablet-and-desktop) {
+    h1, .h1          { font-size: 24px; line-height: 30px; }
+    h2, .h2          { font-size: 21px; line-height: 29px; }
+    h3, .h3          { font-size: 18px; line-height: 24px; }
+    h4, .h4, p, html { font-size: 16px; line-height: 24px; }
+    h5, .h5          { font-size: 14px; line-height: 22px; }
+    h6, .h6          { font-size: 12px; line-height: 20px; }
+    h7, .h7          { font-size: 10px; line-height: 18px; }
+}
+
+@custom-media --on-tablet-and-desktop (min-width: 750px);

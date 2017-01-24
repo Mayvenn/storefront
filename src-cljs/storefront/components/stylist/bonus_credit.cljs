@@ -17,7 +17,7 @@
                       :style {:width "1.5rem" :height "1.5rem"}}))
 
 (defn display-stylist-bonus [{:keys [revenue-surpassed amount created-at]}]
-  [:.gray.flex.items-center.justify-between.py1
+  [:.dark-gray.flex.items-center.justify-between.py1
    {:key revenue-surpassed}
    [:.mr1 check-svg]
    [:.flex-auto.h6
@@ -39,7 +39,7 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:div.h6.light-gray
+    [:div.h6.gray
      [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
@@ -75,7 +75,7 @@
              (ui/progress-indicator {:value  progress-amount
                                      :maximum milestone-amount})]
 
-            [:.h6.gray
+            [:.h6.dark-gray
              "You earn "
              (mf/as-money-without-cents award-amount)
              " in credit for every "
@@ -89,7 +89,7 @@
                       :fetching? fetching?})
 
            (when (pos? available-credit)
-             [:.center.bg-light-silver.p2.line-height-2
+             [:.center.bg-light-gray.p2
               [:p
                "Bonus credits available " [:span.navy (mf/as-money available-credit)]
                [:br]

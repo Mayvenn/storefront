@@ -24,12 +24,12 @@
   (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))
 
 (defn page [wide-left wide-right-and-narrow]
-  [:div.clearfix.mxn2 {:item-type "http://schema.org/Product"}
+  [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"}
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
-  [:h2.medium.titleize.navy.h3.line-height-2 {:item-prop "name"} name])
+  [:h2.medium.titleize.navy {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
@@ -43,7 +43,7 @@
 
 (defn quantity-and-price-structure [quantity price]
   [:div
-   [:div.right-align.gray.h6 "PRICE"]
+   [:div.right-align.dark-gray.h6 "PRICE"]
    [:div.flex.h2 {:style {:min-height "1.5em"}} ; prevent slight changes to size depending on content of counter
     [:div.flex-auto quantity]
     [:div.navy price]]])
@@ -61,19 +61,19 @@
     [:span.h4 "Currently out of stock"]))
 
 (defn add-to-bag-button [adding-to-bag? variant quantity]
-  (ui/large-navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
-                                                               {:variant  variant
-                                                                :quantity quantity})
-                         :data-test "add-to-bag"
-                         :spinning? adding-to-bag?}
-                        "Add to bag"))
+  (ui/navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
+                                                         {:variant  variant
+                                                          :quantity quantity})
+                   :data-test "add-to-bag"
+                   :spinning? adding-to-bag?}
+                  "Add to bag"))
 
 (defn ^:private number->words [n]
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-variant [idx {:keys [quantity variant]}]
-  [:div.h6.line-height-3.my1.p1.py2.caps.gray.bg-silver.medium.center
+  [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
@@ -87,7 +87,7 @@
    [:div
     {:data-test "cart-button"
      :data-ref "cart-button"}
-    (ui/large-teal-button (utils/route-to events/navigate-cart) "Check out")]))
+    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn bagged-variants-and-checkout [bagged-variants]
   (when (seq bagged-variants)
@@ -97,13 +97,13 @@
 
 (defn option-html [step-name later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-light-gray.p1.flex.flex-column.justify-center.items-center.container-size
+  [:label.btn.border-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
-             sold-out?   "bg-light-gray gray light"
-             later-step? "bg-dark-silver muted light"
-             checked?    "bg-teal white regular"
-             true        "bg-white gray light")}
+             sold-out?   "bg-gray dark-gray light"
+             later-step? "bg-gray muted light"
+             checked?    "bg-teal white medium"
+             true        "bg-white dark-gray light")}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
@@ -111,12 +111,12 @@
                                                        {:selected-options selections
                                                         :step-name step-name})}]
    (if image
-     [:img.mbp4.content-box.circle.border-light-silver
+     [:img.mbp4.content-box.circle.border-light-gray
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
-     [:div.f3.titleize name])
-   [:div.f5.line-height-2
+     [:span.block.h4.titleize name])
+   [:span.block.h6
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
@@ -124,15 +124,15 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:h3.clearfix.f4
-    [:div.left.navy.medium.shout
+   [:h3.clearfix.h5
+    [:span.block.left.navy.medium.shout
      (name step-name)
-     (when selected-option [:span.inline-block.mxp2.gray " - "])]
+     (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
     (when selected-option
-      [:div.overflow-hidden.gray.f4.regular
+      [:span.block.overflow-hidden.dark-gray.h5.regular
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
-   [:radiogroup.flex.flex-wrap.content-stretch.mxnp3
+   [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [name] :as option} options]
       [:div.flex.flex-column.justify-center.pp3
        {:key   (string/replace (str name step-name) #"\W+" "-")
@@ -183,10 +183,10 @@
                         :bundle-eligible? (products/bundle? (normalize-variant variant))})))))
 
 (def triple-bundle-upsell-static
-  (component/html [:p.center.p2.navy promos/bundle-discount-description]))
+  (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
 
 (defn triple-bundle-upsell [count]
-  (into [:p.center.p2.red]
+  (into [:p.center.h5.p2.red]
         (case count
           0 ["Get a Bundle Discount:" [:br] "Buy any 3 items & get 10% OFF your entire order!"]
           1 ["Add just 2 more items & get 10% OFF your entire order!"]
@@ -195,11 +195,11 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-dark-silver.p2.my2.center.navy.shout.medium.h6
+   [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
-  [:div.border.border-gray.mt2.p2.rounded
+  [:div.border.border-dark-gray.mt2.p2.rounded
    [:h3.h4.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
@@ -212,7 +212,7 @@
         (into [:div.clearfix.my2]
               (for [[title value] attrs]
                 [:dl.col.m0.inline-block {:class size}
-                 [:dt.mx1.gray.shout.h6 title]
+                 [:dt.mx1.dark-gray.shout.h6 title]
                  [:dd.mx1.ml0.h5.navy.medium value]]))))
     (when (seq summary)
       [:div.my2
@@ -220,12 +220,12 @@
        [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])
-    [:div.h5.gray.line-height-2
+    [:div.h5.dark-gray
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
 (defn carousel-image [image]
-  [:div.col-12.overflow-hidden {:style {:max-height "31rem"}}
+  [:div.col-12.overflow-hidden {:style {:max-height "90.625%"}}
    [:img.col-12 (utils/img-attrs image :large)]])
 
 (defn carousel [images {:keys [slug]}]
@@ -241,9 +241,9 @@
 
 (defn starting-at [variants proposed-bundle-count price-strikeout?]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
-    [:div.center
-     [:div.light-gray.f6 "Starting at"]
-     [:div.gray.f2.light
+    [:div.center.dark-gray
+     [:div.h6 "Starting at"]
+     [:div.h2
       {:item-prop "price"}
       (ui/strike-price {:price cheapest-price
                         :bundle-quantity proposed-bundle-count
@@ -319,7 +319,7 @@
             [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
-               [:div.border-bottom.border-silver.border-width-2
+               [:div.border-bottom.border-light-gray.border-width-2
                 (for [step (bundle-builder/steps bundle-builder)]
                   (step-html step))])
              [:div schema-org-offer-props
