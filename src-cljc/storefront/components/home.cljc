@@ -186,7 +186,7 @@
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
-    (if true #_homepage-grid?
+    (if homepage-grid?
       [:section (popular-grid featured-searches)]
       [:section (pick-style named-searches)])
     [:section video-popup]
