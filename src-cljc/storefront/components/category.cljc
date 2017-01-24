@@ -209,7 +209,7 @@
                        (filter second))
             ;;This won't work if we have 5 possible attrs
             size (str "col-" (/ 12 (count attrs)))]
-        (into [:div.clearfix.my2]
+        (into [:div.clearfix.mxn1.my2]
               (for [[title value] attrs]
                 [:dl.col.m0.inline-block {:class size}
                  [:dt.mx1.dark-gray.shout.h6 title]
