@@ -78,7 +78,9 @@
       [:.flex
        [:.flex-auto.light "Total"]
        [:.right-align
-        (as-money (- (:total order) store-credit))]]] ]))
+        (cond-> (:total order)
+          use-store-credit? (- store-credit)
+          true              as-money)]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
