@@ -101,7 +101,6 @@ Thanks,
                               order
                               products
                               coupon-code
-                              available-store-credit
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
@@ -148,8 +147,8 @@ Thanks,
                          "Apply")]]
 
        (summary/display-order-summary order
-                                      available-store-credit
-                                      {:read-only? false}
+                                      {:read-only?        false
+                                       :use-store-credit? false}
                                       price-strikeout?)
 
        [:form
@@ -239,8 +238,7 @@ Thanks,
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :price-strikeout?          (experiments/price-strikeout? data)
-     :available-store-credit    (get-in data keypaths/user-total-available-store-credit)}))
+     :price-strikeout?          (experiments/price-strikeout? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

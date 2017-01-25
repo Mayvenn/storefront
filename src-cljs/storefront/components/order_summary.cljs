@@ -42,7 +42,7 @@
       "Offer and Rebate Details" ui/nbsp "➤"]]]
    [:div.border-bottom.border-gray ui/nbsp]])
 
-(defn display-order-summary [order available-store-credit {:keys [read-only?]} price-strikeout?]
+(defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]} price-strikeout?]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
@@ -72,7 +72,7 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when (pos? store-credit)
+        (when (and use-store-credit? (pos? store-credit))
           (summary-row "Store Credit" (- store-credit)))]]]
      [:.py2.h2
       [:.flex
