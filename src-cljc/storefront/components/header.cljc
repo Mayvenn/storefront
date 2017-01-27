@@ -111,15 +111,15 @@
                        instagram-account :instagram_account
                        styleseat-account :styleseat_account
                        store-photo :profile_picture_url}]
-  [:div.center
+  [:div.center {:height "30px"}
    (ui/drop-down
     expanded?
     keypaths/store-info-expanded
     [:a
-     [:div {:style {:margin-bottom "10px"}}
-      [:div.flex.justify-center.items-center.mtp3
+     [:div {:style {:margin-bottom "6px"}}
+      [:div.flex.justify-center.items-center
        [:span.line-height-1.dark-gray.nowrap.mrp3.h7 "HAIR BY"]
-       [:div.truncate.fit.h4.navy {:data-test "nickname"} nickname]]
+       [:div.truncate.fit.navy.h5 {:data-test "nickname"} nickname]]
       [:div.relative navy-carrot-bottom]]]
     [:div.absolute.left-0.right-0.mx-auto {:style {:width popup-width}}
      [:div.relative.border.border-gray.rounded-1.bg-white.top-lit
