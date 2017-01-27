@@ -111,9 +111,17 @@
       (assoc-in app-state keypaths/telligent-community-url telligent-url))
     (assoc-in app-state keypaths/telligent-community-url nil)))
 
+(defn assoc-valid-path [app-state path]
+  (let [[event msg] (routes/navigation-message-for path)]
+    (if (not= event events/navigate-not-found)
+      (assoc-in app-state keypaths/return-navigation-message [event msg])
+      app-state)))
+
 (defmethod transition-state events/navigate-sign-in
-  [_ event {{:keys [telligent-url]} :query-params} app-state]
-  (assoc-valid-telligent-url app-state telligent-url))
+  [_ event {{:keys [telligent-url path]} :query-params} app-state]
+  (-> app-state
+      (assoc-valid-telligent-url telligent-url)
+      (assoc-valid-path path)))
 
 (defmethod transition-state events/navigate-sign-out [_ event {{:keys [telligent-url]} :query-params} app-state]
   (assoc-valid-telligent-url app-state telligent-url))

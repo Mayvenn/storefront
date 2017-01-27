@@ -198,12 +198,13 @@
     (when-let [named-search (named-searches/current-named-search data)]
       (let [{:keys [product-ids]} named-search
             user-token            (cookies/get req "user-token")]
-        (when-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
+        (if-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
           (let [products-by-id (key-by :id products)]
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data)))))))))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight? data))))))
+          (redirect (str "/login?path=" (:uri req))))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
