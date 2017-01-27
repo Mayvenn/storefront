@@ -205,11 +205,15 @@
   [_ event {:keys [named-search-slug] :as args} app-state]
   (reviews/insert-reviews)
   (let [named-search (named-searches/current-named-search app-state)]
-    (refresh-named-search-products app-state named-search)
-    (when (and (accessors.pixlee/content-available? named-search)
-               (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
-      (pixlee/fetch-named-search-album-ids))
-    (fetch-named-search-album app-state)))
+    (if (or (not (:stylist_only? named-search))
+            (stylists/own-store? app-state))
+      (do
+        (refresh-named-search-products app-state named-search)
+        (when (and (accessors.pixlee/content-available? named-search)
+                   (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
+          (pixlee/fetch-named-search-album-ids))
+        (fetch-named-search-album app-state))
+      (page-not-found))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-mosaic [_ event _ app-state]
   (when-let [look-id (get-in app-state keypaths/selected-look-id)]
