@@ -5,7 +5,9 @@
   (let [first-tag (.querySelector js/document selector)]
     (.insertBefore (.-parentNode first-tag) tag first-tag)))
 
-(def insert-body-bottom (partial insert-before-selector "script"))
+(defn insert-body-bottom [tag]
+  (.appendChild js/document.body tag))
+
 (def insert-in-head (partial insert-before-selector "head link"))
 
 (defn src-tag
