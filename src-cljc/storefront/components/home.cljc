@@ -51,10 +51,10 @@
                        [:div.col.col-6.col-4-on-tb-dt.border.border-white.relative {:key key}
                         [:div {:style {:margin-top aspect-ratio}} ""]
                         content])]
-    [:div.container.center.py3.mb4
-     [:div.flex.flex-column
-      [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
-      [:h3.h1.order-1.p1 "Shop our styles"]]
+    [:div.container.center.py4.my4
+     [:div.flex.flex-column.my4
+      [:h2.h4.order-2.medium "100% virgin human hair + free shipping"]
+      [:h3.h1.order-1 "Shop our styles"]]
      (for [{:keys [representative-images name slug]} featured-searches]
        (let [{:keys [model-full]} representative-images]
          (grid-block slug
