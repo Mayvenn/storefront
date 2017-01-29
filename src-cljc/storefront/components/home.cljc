@@ -53,7 +53,7 @@
                         content])]
     [:div.container.center.py4.my4
      [:div.flex.flex-column.my4
-      [:h2.h4.order-2.medium "100% virgin human hair + free shipping"]
+      [:h2.h4.order-2 "100% virgin human hair + free shipping"]
       [:h3.h1.order-1 "Shop our styles"]]
      (for [{:keys [representative-images name slug]} featured-searches]
        (let [{:keys [model-full]} representative-images]
@@ -71,7 +71,10 @@
                   (assoc (utils/route-to events/navigate-shop-by-look)
                          :data-test "nav-shop-look")
                   [:div.flex.container-size.justify-center.items-center
-                   [:h2
+                   [:h2.h3.hide-on-tb-dt
+                    [:div "Need inspiration?"]
+                    [:div "Try shop by look."]]
+                   [:h2.hide-on-mb
                     [:div "Need inspiration?"]
                     [:div "Try shop by look."]]]])]))
 
@@ -138,8 +141,8 @@
 
 (defn about-mayvenn []
   (component/html
-   [:div.container.py3
-    [:h2.h1.line-length.mx-auto.center.p1 "why people love Mayvenn hair"]
+   [:div.container.py4.my4
+    [:h2.h1.line-length.mx-auto.center.py4 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
