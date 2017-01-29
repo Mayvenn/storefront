@@ -46,14 +46,11 @@
      [:div.mb3.medium name]]))
 
 (defn popular-grid [featured-searches]
-  (let [aspect-ratio "90.6%"
-        grid-block (fn [key content] [:div.col.col-6.col-4-on-tb-dt.border.border-white.relative.mx0
-                                     {:key   key
-                                      :style {:max-width  "100vh"
-                                              :max-height "100%"
-                                              :overflow   "hidden"}}
-                                     [:div {:style {:margin-top aspect-ratio}} ""]
-                                     [:div.overlay.container-size.absolute content]])]
+  (let [aspect-ratio "75%"
+        grid-block   (fn [key content]
+                       [:div.col.col-6.col-4-on-tb-dt.border.border-white.relative {:key key}
+                        [:div {:style {:margin-top aspect-ratio}} ""]
+                        content])]
     [:div.container.center.py3.mb4
      [:div.flex.flex-column
       [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
@@ -61,18 +58,22 @@
      (for [{:keys [representative-images name slug]} featured-searches]
        (let [{:keys [model-full]} representative-images]
          (grid-block slug
-                     [:a.block.container-size
+                     [:a.absolute.overlay.overflow-hidden
                       (merge {:data-test (str "named-search-" slug)}
                              (utils/route-to events/navigate-category {:named-search-slug slug}))
-                      [:img.absolute.container-size.overlay (utils/img-attrs model-full :large)]
-                      [:h2.white.absolute.flex.flex-column.items-center.justify-center.container-height.medium.titleize.overlay
-                       {:style {:text-shadow "0 0 35px #000"
-                                :margin-top  "12.5%"}}
+                      [:img.col-12 (utils/img-attrs model-full :large)]
+                      [:h2.white.absolute.col-12.titleize
+                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
+                                :top         "50%"}}
                        name]])))
      (grid-block "spare-block"
-                 [:div.bg-light-teal.flex.flex-column.items-center.justify-center.container-height
-                  [:h2.white.medium "Need inspiration?"]
-                  [:h2.white.medium "Try shop by look."]])]))
+                 [:a.bg-light-teal.white.absolute.overlay
+                  (assoc (utils/route-to events/navigate-shop-by-look)
+                         :data-test "nav-shop-look")
+                  [:div.flex.container-size.justify-center.items-center
+                   [:h2
+                    [:div "Need inspiration?"]
+                    [:div "Try shop by look."]]]])]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
