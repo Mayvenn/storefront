@@ -142,7 +142,7 @@
 (defn about-mayvenn []
   (component/html
    [:div.container.py4.my4
-    [:h2.h1.line-length.mx-auto.center.py4 "why people love Mayvenn hair"]
+    [:h2.h1.line-length.mx-auto.center.p4 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
