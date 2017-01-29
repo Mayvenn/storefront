@@ -11,7 +11,7 @@
 (defn store-credit [available-credit]
   [:div.my3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h1 (ui/big-money available-credit)]])
+   [:div.teal.h0 (ui/big-money available-credit)]])
 
 (defn profile-component [{:keys [focused
                                  saving?
@@ -26,6 +26,7 @@
 
     [:div.col.col-12.col-6-on-tb-dt
      (ui/text-field {:data-test "account-email"
+                     :errors    (get field-errors ["email"])
                      :id        "account-email"
                      :keypath   keypaths/manage-account-email
                      :focused   focused
