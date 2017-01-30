@@ -16,3 +16,8 @@
 
 (defn content-available? [named-search]
   (boolean (sku named-search)))
+
+(defn normalize-user-name [user-name]
+  (if (= (first user-name) \@)
+    (apply str (rest user-name))
+    user-name))

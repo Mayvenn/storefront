@@ -222,7 +222,7 @@
            {:id             id
             :content-type   content_type
             :source-url     source_url
-            :user-handle    user_name
+            :user-handle    (pixlee/normalize-user-name user_name)
             :imgs           imgs
             :social-service source
             :shared-cart-id (:shared-cart-id nav-args)
