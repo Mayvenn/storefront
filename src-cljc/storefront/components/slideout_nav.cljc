@@ -140,7 +140,8 @@
   (component/html
    [section-outer-darker
     [section-inner
-     [:div.pb4.flex.items-center
+     [:div.flex.items-center
+      {:style {"padding-bottom" "75px"}}
       [:div.col-6.p1
        [:a.btn.btn-outline.navy.col-12
         (merge {:data-test "sign-in"}
@@ -155,7 +156,8 @@
 
 (def sign-out-section
   (component/html
-   [:div.pb4.bg-light-gray
+   [:div.bg-light-gray
+    {:style {"padding-bottom" "75px"}}
     [:a.block.navy.center.col-12.p3
      (merge {:data-test "sign-out"}
             (utils/fake-href events/control-sign-out))
