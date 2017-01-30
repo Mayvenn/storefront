@@ -1,22 +1,19 @@
 (ns storefront.transitions
-  (:require [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as products]
-            [storefront.accessors.named-searches :as named-searches]
+  (:require [cemerick.url :as url]
+            [clojure.string :as string]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.hooks.talkable :as talkable]
-            [storefront.state :as state]
-            [storefront.routes :as routes]
-            [storefront.utils.query :as query]
-            [storefront.utils.maps :refer [map-values key-by]]
             [storefront.config :as config]
-            [clojure.string :as string]
-            [cemerick.url :as url]
-            [clojure.set :as set]))
+            [storefront.events :as events]
+            [storefront.hooks.talkable :as talkable]
+            [storefront.keypaths :as keypaths]
+            [storefront.routes :as routes]
+            [storefront.state :as state]
+            [storefront.utils.maps :refer [key-by]]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -185,63 +182,16 @@
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
-(defn ^:private parse-ugc-album [album]
-  (map (fn [{:keys [id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
-         (let [extract-img-urls (fn [coll original large medium small]
-                                  (-> coll
-                                      (select-keys [original large medium small])
-                                      (set/rename-keys {original :original
-                                                        large    :large
-                                                        medium   :medium
-                                                        small    :small})
-                                      (->>
-                                       (remove (comp string/blank? val))
-                                       (into {}))))
-               root-img-urls    (extract-img-urls item :source_url :big_url :medium_url :thumbnail_url)
-               cdn-img-urls     (extract-img-urls pixlee_cdn_photos :original_url :large_url :medium_url :small_url)
-
-               imgs (reduce-kv (fn [result name url] (assoc result name {:src url :alt title}))
-                               {}
-                               (merge root-img-urls cdn-img-urls))
-
-               [nav-event nav-args :as nav-message] (-> products
-                                                        first
-                                                        :link
-                                                        url/url-decode
-                                                        url/url
-                                                        :path
-                                                        routes/navigation-message-for)
-               view-look-link                       (when (= nav-event events/navigate-shared-cart)
-                                                      [events/navigate-shop-by-look-details {:look-id id}])
-               ;; TODO: if the view-look? experiment wins, we will not need the purchase-look-link
-               purchase-look-link                   (when (= nav-event events/navigate-shared-cart)
-                                                      ;; both navigate-shared-cart and
-                                                      ;; control-create-order-from-shared-cart have
-                                                      ;; :shared-cart-id in the nav-message
-                                                      [events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id)])]
-           {:id             id
-            :content-type   content_type
-            :source-url     source_url
-            :user-handle    (pixlee/normalize-user-name user_name)
-            :imgs           imgs
-            :social-service source
-            :shared-cart-id (:shared-cart-id nav-args)
-            :links          {:view-other    nav-message
-                             :view-look     view-look-link
-                             :purchase-look purchase-look-link}
-            :title          title}))
-       album))
-
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
   (assoc-in app-state keypaths/ugc-looks
             (->> data
-                 parse-ugc-album
+                 (pixlee/parse-ugc-album)
                  ;; we have no design for how to play videos on the shop-by-look pages
                  (remove (comp #{"video"} :content-type)))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album [_ event {:keys [album-data named-search-slug]} app-state]
   (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
-            (parse-ugc-album album-data)))
+            (pixlee/parse-ugc-album album-data)))
 
 (defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
   (assoc-in app-state keypaths/selected-look-id nil))
