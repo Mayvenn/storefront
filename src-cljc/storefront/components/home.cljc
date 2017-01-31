@@ -61,7 +61,7 @@
                        (merge {:data-test (str "named-search-" slug)}
                               (utils/route-to events/navigate-category {:named-search-slug slug}))
                        [:img.col-12 (utils/img-attrs model-full :large)]
-                       [:h1.h2.white.absolute.col-12.titleize
+                       [:h3.h2.white.absolute.col-12.titleize
                         {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
                                  :top         "50%"}}
                         name]])))
@@ -70,10 +70,10 @@
                    (assoc (utils/route-to events/navigate-shop-by-look)
                           :data-test "nav-shop-look")
                    [:div.flex.container-size.justify-center.items-center
-                    [:h1.h3.hide-on-tb-dt
+                    [:h3.hide-on-tb-dt
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]
-                    [:h1.hide-on-mb
+                    [:h3.h2.hide-on-mb
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
 
