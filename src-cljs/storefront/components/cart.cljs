@@ -110,7 +110,8 @@ Thanks,
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
-                              price-strikeout?]} owner]
+                              price-strikeout?
+                              field-errors]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -139,7 +140,8 @@ Thanks,
          (ui/text-field {:keypath keypaths/cart-coupon-code
                          :focused focused
                          :label   "Promo code"
-                         :value   coupon-code})]
+                         :value   coupon-code
+                         :errors  (get field-errors ["promo-code"])})]
         [:div.col.col-4.px1.mb3.inline-block
          (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
                           :disabled? updating?
@@ -238,7 +240,8 @@ Thanks,
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :price-strikeout?          (experiments/price-strikeout? data)}))
+     :price-strikeout?          (experiments/price-strikeout? data)
+     :field-errors              (get-in data keypaths/field-errors)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
