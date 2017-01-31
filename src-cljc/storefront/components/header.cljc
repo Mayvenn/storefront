@@ -146,7 +146,7 @@
    expanded?
    keypaths/account-menu-expanded
    [:a.flex.items-center
-    [:div.dark-gray.flex-auto.right-align.h6 link]
+    [:div.dark-gray.flex-auto.right-align.h5 link]
     [:div.relative.ml1.mtn1 {:style {:height "4px"}} navy-carrot-bottom]]
    [:div.absolute.right-0 {:style {:max-width "140px"}}
     [:div.relative.border.border-gray.rounded-1.bg-white.top-lit {:style {:margin-right "-1em" :top "5px"}}
@@ -183,7 +183,7 @@
 
 (def guest-account
   (component/html
-   [:div.right-align.h6
+   [:div.right-align.h5
     [:a.inline-block.dark-gray (utils/route-to events/navigate-sign-in) "Sign In"]
     [:div.inline-block.pxp4.dark-gray "|"]
     [:a.inline-block.dark-gray (utils/route-to events/navigate-sign-up) "Sign Up"]]))
@@ -238,7 +238,7 @@
 
 (defn lower-left [current-page?]
   [:div.right
-   [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+   [:div.h4.hide-on-mb {:style {:margin-top "-12px"}}
     [:a.black.col.py1.mr4 (merge
                            {:href           "/categories"
                             :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
@@ -249,7 +249,7 @@
      "Shop By Look"]]])
 
 (defn lower-right [current-page?]
-  [:div.h5.hide-on-mb {:style {:margin-top "-12px"}}
+  [:div.h4.hide-on-mb {:style {:margin-top "-12px"}}
    [:a.black.col.py1.mr4 (nav-link-options current-page? events/navigate-content-guarantee)
     "Guarantee"]
    [:a.black.col.py1.ml4 {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
