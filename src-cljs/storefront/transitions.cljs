@@ -25,11 +25,14 @@
            app-state
            (or menus keypaths/menus))))
 
+(defn clear-field-errors [app-state]
+  (assoc-in app-state keypaths/errors {}))
+
 (defn clear-flash [app-state]
   (-> app-state
+      clear-field-errors
       (assoc-in keypaths/flash-now-success nil)
-      (assoc-in keypaths/flash-now-failure nil)
-      (assoc-in keypaths/errors {})))
+      (assoc-in keypaths/flash-now-failure nil)))
 
 (defmulti transition-state identity)
 
@@ -381,8 +384,8 @@
 (defmethod transition-state events/api-success-send-stylist-referrals
   [_ event {:keys [results] :as x} app-state]
   (-> app-state
+      clear-field-errors
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
-      (assoc-in keypaths/errors {})
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defn sign-in-user
@@ -458,7 +461,7 @@
                                 (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
     (if (and (seq password) (seq field-errors))
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
-      (assoc-in app-state keypaths/errors {}))))
+      (clear-field-errors app-state))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
@@ -468,7 +471,7 @@
                                 (merge (group-by :path [{:path ["user" "password"] :long-message "New password must be at least 6 characters"}])))]
     (if (seq field-errors)
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
-      (assoc-in app-state keypaths/errors {}))))
+      (clear-field-errors app-state))))
 
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (-> app-state
@@ -526,8 +529,12 @@
 
 (defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
   (-> app-state
+      clear-field-errors
       (assoc-in keypaths/cart-coupon-code "")
       (assoc-in keypaths/pending-promo-code nil)))
+
+(defmethod transition-state events/api-success-update-order-remove-promotion-code [_ event args app-state]
+  (clear-field-errors app-state))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))
@@ -637,7 +644,7 @@
                                            :error-code    "invalid-input"
                                            :error-message "Oops! Please fix the errors below."})
       (-> app-state
-          (assoc-in keypaths/errors {})
+          clear-field-errors
           (assoc-in keypaths/popup nil)
           (assoc-in keypaths/email-capture-session "opted-in")))))
 
