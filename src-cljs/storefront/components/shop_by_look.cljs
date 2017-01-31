@@ -54,10 +54,11 @@
           (image-thumbnail (:medium imgs))
           (image-attribution creating-order? selected-look-id look view-look?)]
          [:div.py2.px2.col.col-4.hide-on-mb {:key (str "large-" id)}
-          [:div.relative.hoverable.overflow-hidden
-           {:style {:padding-top "100%"}}
-           [:div.absolute.top-0 (image-thumbnail (:medium imgs))]
-           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution creating-order? selected-look-id look view-look?)]]]])]])))
+          (ui/aspect-ratio
+           1 1
+           {:class "hoverable"}
+           (image-thumbnail (:medium imgs))
+           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution creating-order? selected-look-id look view-look?)])]])]])))
 
 (defn query [data]
   {:looks            (get-in data keypaths/ugc-looks)

@@ -15,9 +15,10 @@
        (ui/modal
         {:on-close on-close :bg-class "bg-darken-4" :col-class "col-10"}
         [:div
-         [:div.wistia_responsive_padding.relative.col-12
-          {:style {:padding-top "56.25%"}}
-          [:div.wistia_responsive_wrapper.absolute.left-0.top-0.container-size
+         [:div.wistia_responsive_padding
+          (ui/aspect-ratio
+           16 9
+           {:class "wistia_responsive_wrapper"}
            ;; Wistia async embed bug causes the right-click menu to always appear. Using the iframe embed doesn't have this issue.
            [:iframe.wistia_embed {:src (str "//fast.wistia.com/embed/iframe/" video-id "?videoFoam=true&autoPlay=true&volume=0.33")
                                   :allowtransparency true
@@ -32,7 +33,7 @@
                                   :width "100%"
                                   :height "100%"
                                   :id (str "center_" (videos/id->name video-id))}
-            ui/nbsp]]]
+            ui/nbsp])]
          [:div.light-gray.p3.col-12.center
           {:on-click       on-close
            :on-touch-start on-close}

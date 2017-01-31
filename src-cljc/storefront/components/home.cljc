@@ -46,37 +46,36 @@
      [:div.mb3.medium name]]))
 
 (defn popular-grid [featured-searches]
-  (let [aspect-ratio "75%"
-        grid-block   (fn [key content]
-                       [:div.col.col-6.col-4-on-tb-dt.border.border-white.relative {:key key}
-                        [:div {:style {:margin-top aspect-ratio}} ""]
-                        content])]
+  (let [grid-block   (fn [key content]
+                       [:div.col.col-6.col-4-on-tb-dt.pp1 {:key key}
+                        (ui/aspect-ratio 4 3 content)])]
     [:div.container.center.py4.my4
      [:div.flex.flex-column.my4
       [:h1.h4.order-2 "100% virgin human hair + free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
-     (for [{:keys [representative-images name slug]} featured-searches]
-       (let [{:keys [model-full]} representative-images]
-         (grid-block slug
-                     [:a.absolute.overlay.overflow-hidden
-                      (merge {:data-test (str "named-search-" slug)}
-                             (utils/route-to events/navigate-category {:named-search-slug slug}))
-                      [:img.col-12 (utils/img-attrs model-full :large)]
-                      [:h1.h2.white.absolute.col-12.titleize
-                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
-                                :top         "50%"}}
-                       name]])))
-     (grid-block "spare-block"
-                 [:a.bg-light-teal.white.absolute.overlay
-                  (assoc (utils/route-to events/navigate-shop-by-look)
-                         :data-test "nav-shop-look")
-                  [:div.flex.container-size.justify-center.items-center
-                   [:h1.h3.hide-on-tb-dt
-                    [:div "Need inspiration?"]
-                    [:div "Try shop by look."]]
-                   [:h1.hide-on-mb
-                    [:div "Need inspiration?"]
-                    [:div "Try shop by look."]]]])]))
+     [:div.mxnp1
+      (for [{:keys [representative-images name slug]} featured-searches]
+        (let [{:keys [model-full]} representative-images]
+          (grid-block slug
+                      [:a.absolute.overlay.overflow-hidden
+                       (merge {:data-test (str "named-search-" slug)}
+                              (utils/route-to events/navigate-category {:named-search-slug slug}))
+                       [:img.col-12 (utils/img-attrs model-full :large)]
+                       [:h1.h2.white.absolute.col-12.titleize
+                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
+                                 :top         "50%"}}
+                        name]])))
+      (grid-block "spare-block"
+                  [:a.bg-light-teal.white.absolute.overlay
+                   (assoc (utils/route-to events/navigate-shop-by-look)
+                          :data-test "nav-shop-look")
+                   [:div.flex.container-size.justify-center.items-center
+                    [:h1.h3.hide-on-tb-dt
+                     [:div "Need inspiration?"]
+                     [:div "Try shop by look."]]
+                    [:h1.hide-on-mb
+                     [:div "Need inspiration?"]
+                     [:div "Try shop by look."]]]])]]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3

@@ -10,26 +10,29 @@
             [storefront.platform.carousel :as carousel]))
 
 (defn image-view [{:keys [src]}]
-  [:div.bg-black.relative.overflow-hidden
-   {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
-   [:div.absolute.overlay.bg-cover.bg-no-repeat.bg-center
-    {:style {:background-image (str "url(" src ")")}}]])
+  (ui/aspect-ratio
+   1 1
+   {:class "bg-black"}
+   [:div.container-size.bg-cover.bg-no-repeat.bg-center
+    {:style {:background-image (str "url(" src ")")}}]))
 
 (defn video-view [video-url]
-  [:div.bg-black.relative {:style {:padding-top "100%"}}
-   [:div.absolute.overlay.overflow-hidden
-    [:video.container-size.block {:controls true}
-     [:source {:src video-url}]]]])
+  (ui/aspect-ratio
+   1 1
+   {:class "bg-black"}
+   [:video.container-size.block {:controls true}
+    [:source {:src video-url}]]))
 
 (defn unattributed-slide [idx {:keys [imgs content-type]}]
   [:div.p1
    [:a (util/fake-href events/control-popup-ugc-category {:offset idx})
-    [:div.relative.overflow-hidden
-     {:style {:padding-top "100%"}} ;; To keep square aspect ratio. Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/
-     [:div.absolute.overlay.flex.flex-column.justify-center
-      [:img.col-12.block (:medium imgs)]]
+    (ui/aspect-ratio
+     1 1
+     {:class "flex items-center"}
+     [:img.col-12 (:medium imgs)]
      (when (= content-type "video")
-       [:div.col-12.absolute {:style {:top "50%" :margin-top "-32px"}} svg/play-video-muted])]]])
+       [:div.absolute.overlay.flex.items-center.justify-center
+        svg/play-video-muted]))]])
 
 (defn attributed-slide [{:keys [user-handle imgs social-service content-type source-url] :as item}]
   [:div.m1.rounded-bottom
