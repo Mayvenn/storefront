@@ -840,10 +840,6 @@
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
 
-(defmethod perform-effects events/api-success-update-order-modify-promotion-code [_ _ _ app-state]
-  (handle-message events/flash-dismiss)
-  (cookie-jar/clear-pending-promo-code (get-in app-state keypaths/cookie)))
-
 (defn update-cart-flash [app-state msg]
   (handle-message events/flash-show-success {:message msg}))
 
