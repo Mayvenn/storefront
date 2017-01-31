@@ -119,7 +119,7 @@
     [:div.container
      [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
       {:style "min-height: 100vh;"}
-      [:img.py2 {:src (assets/path "/images/header_logo.png")}]
+      [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
       [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
                            :style "max-width: 80%"}]
       [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]

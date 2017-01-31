@@ -8,7 +8,7 @@
 .img-spinner           { background-image: url('/images/spinner.svg'); }
 .img-large-spinner     { background-image: url('/images/large-spinner.svg'); }
 
-.img-logo { background-image: url('/images/header_logo.png'); }
+.img-logo { background-image: url('/images/header_logo.svg'); }
 
 .img-apple-pay { background-image: -webkit-named-image(apple-pay-logo-white); }
 

@@ -35,7 +35,7 @@
             :title "Mayvenn"
             :item-prop "logo"
             :data-test "header-logo"
-            :content (str "https:" (assets/path "/images/header_logo.png"))}
+            :content (str "https:" (assets/path "/images/header_logo.svg"))}
            (utils/route-to events/navigate-home))]))
 
 (defn shopping-bag [cart-quantity]
