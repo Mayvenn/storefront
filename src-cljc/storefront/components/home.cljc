@@ -53,8 +53,8 @@
                         content])]
     [:div.container.center.py4.my4
      [:div.flex.flex-column.my4
-      [:h2.h4.order-2 "100% virgin human hair + free shipping"]
-      [:h3.h1.order-1 "Shop our styles"]]
+      [:h1.h4.order-2 "100% virgin human hair + free shipping"]
+      [:h2.h1.order-1 "Shop our styles"]]
      (for [{:keys [representative-images name slug]} featured-searches]
        (let [{:keys [model-full]} representative-images]
          (grid-block slug
@@ -62,7 +62,7 @@
                       (merge {:data-test (str "named-search-" slug)}
                              (utils/route-to events/navigate-category {:named-search-slug slug}))
                       [:img.col-12 (utils/img-attrs model-full :large)]
-                      [:h2.white.absolute.col-12.titleize
+                      [:h1.h2.white.absolute.col-12.titleize
                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
                                 :top         "50%"}}
                        name]])))
@@ -71,18 +71,18 @@
                   (assoc (utils/route-to events/navigate-shop-by-look)
                          :data-test "nav-shop-look")
                   [:div.flex.container-size.justify-center.items-center
-                   [:h2.h3.hide-on-tb-dt
+                   [:h1.h3.hide-on-tb-dt
                     [:div "Need inspiration?"]
                     [:div "Try shop by look."]]
-                   [:h2.hide-on-mb
+                   [:h1.hide-on-mb
                     [:div "Need inspiration?"]
                     [:div "Try shop by look."]]]])]))
 
 (defn pick-style [named-searches]
   [:div.container.center.py3
    [:div.flex.flex-column
-    [:h2.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
-    [:h3.h1.order-1.p1 "pick your style"]]
+    [:h1.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
+    [:h2.h1.order-1.p1 "pick your style"]]
    [:nav.my2 {:aria-label "Pick your style"}
     (component/build carousel/component
                      {:slides   (map link-to-search named-searches)
@@ -118,7 +118,7 @@
      "shop our looks")]])
 
 (defn banner [store-slug]
-  [:h2
+  [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
@@ -142,7 +142,7 @@
 (defn about-mayvenn []
   (component/html
    [:div.container.py4.my4
-    [:h2.h1.line-length.mx-auto.center.p4 "why people love Mayvenn hair"]
+    [:h1.line-length.mx-auto.center.p4 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
@@ -173,12 +173,12 @@
     [:div.absolute.overlay.bg-darken-2
      [:div.flex.flex-column.items-center.justify-center.white.medium.bg-darken-2.center.shadow.letter-spacing-1.container-height
       [:div.mt4 svg/play-video]
-      [:h2.h1.my2 "Mayvenn in action"]
+      [:h1.my2 "Mayvenn in action"]
       [:p.h3 "see what real customers say"]]]]))
 
 (def talkable-banner
   (component/html
-   [:h2.container.py4
+   [:h1.h2.container.py4
     [:a
      (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
      (homepage-images

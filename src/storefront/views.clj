@@ -136,5 +136,5 @@
     [:title "Something went wrong | Mayvenn"]]
    [:body
     {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
-    [:h4 "Mayvenn Will Be Back Soon"]
-    [:h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))
+    [:h3.h4 "Mayvenn Will Be Back Soon"]
+    [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))

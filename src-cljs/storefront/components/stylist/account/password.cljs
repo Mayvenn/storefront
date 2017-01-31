@@ -14,7 +14,7 @@
   (component/create
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-password-submit)}
-    [:h2.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your password"]
+    [:h1.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your password"]
 
     [:div.col.col-12.col-6-on-tb-dt
      (ui/text-field {:data-test "account-password"

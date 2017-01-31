@@ -25,7 +25,7 @@
     {:on-submit
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.col.col-12.col-6-on-tb-dt
-     [:h2.h3.light.my3.center.col-12 "Update commission info"]
+     [:h1.h3.light.my3.center.col-12 "Update commission info"]
      [:div.col-12.col-10-on-tb-dt.mx-auto
       (ui/select-field {:data-test "payout-method"
                         :errors    (get field-errors ["chosen_payout_method"])

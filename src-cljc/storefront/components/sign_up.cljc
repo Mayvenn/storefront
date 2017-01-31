@@ -16,7 +16,7 @@
            show-password?]} _ _]
   (component/create
    (ui/narrow-container
-    [:h2.center.mt2.mb3.navy "Sign up for an account"]
+    [:h1.h2.center.mt2.mb3.navy "Sign up for an account"]
 
     (facebook/sign-in-button facebook-loaded?)
 

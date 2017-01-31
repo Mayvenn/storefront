@@ -27,7 +27,7 @@
   (component/create
    [:div.container
     [:nav.m2 {:aria-labelledby "select-style-header"}
-     [:h2#select-style-header.py2.center.navy.regular "Select your favorite style"]
+     [:h1#select-style-header.h2.py2.center.navy.regular "Select your favorite style"]
      [:ul.list-reset.clearfix.mxn1.center
       (map-indexed link-to-search named-searches)]]]))
 

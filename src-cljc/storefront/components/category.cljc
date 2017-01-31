@@ -29,7 +29,7 @@
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
-  [:h2.medium.titleize.navy {:item-prop "name"} name])
+  [:h1.h2.medium.titleize.navy {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
@@ -124,7 +124,7 @@
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
   [:div.my2 {:key step-name}
-   [:h3.clearfix.h5
+   [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
      (name step-name)
      (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
@@ -158,7 +158,7 @@
   [:div
    (when (seq desc)
      [:div
-      [:h3.light "Summary"]
+      [:h2.h3.light "Summary"]
       [:div.navy desc]])
    quantity-and-price])
 
@@ -200,7 +200,7 @@
 
 (defn named-search-description [{:keys [colors weights materials summary commentary]}]
   [:div.border.border-dark-gray.mt2.p2.rounded
-   [:h3.h4.medium.navy.shout "Description"]
+   [:h2.h3.medium.navy.shout "Description"]
    [:div {:item-prop "description"}
     (when (or colors weights materials)
       (let [attrs (->> [["Color" colors]
@@ -216,7 +216,7 @@
                  [:dd.mx1.ml0.h5.navy.medium value]]))))
     (when (seq summary)
       [:div.my2
-       [:h4.mbp3.h5 "Includes:"]
+       [:h3.mbp3.h5 "Includes:"]
        [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector summary)]
           [:li.mbp3 {:key idx} item])]])

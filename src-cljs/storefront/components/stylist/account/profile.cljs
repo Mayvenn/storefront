@@ -16,7 +16,7 @@
    [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-profile-submit)}
     [:div.col-12
-     [:h2.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your info"]
+     [:h1.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your info"]
      [:div.col.col-12.col-6-on-tb-dt
       [:div.col-12.col
        (ui/text-field-group
