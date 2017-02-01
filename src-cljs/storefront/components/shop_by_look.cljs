@@ -14,30 +14,23 @@
 (defn image-thumbnail [img]
   [:img.col-12.block img])
 
-(defn buy-look-button [creating-order? selected-look-id {:keys [id links]} view-look?]
-  (let [{:keys [purchase-look view-look view-other]} links]
+(defn view-look-button [{:keys [id links]}]
+  (let [{:keys [view-look view-other]} links]
     (ui/teal-button
-     (merge
-      {:spinning? (and (= id selected-look-id) creating-order?)
-       :disabled? creating-order?}
-      (if (or view-look purchase-look)
-        (if view-look?
-          (apply utils/route-to view-look)
-          (apply utils/fake-href purchase-look))
-        (apply utils/route-to view-other)))
-     (if view-look?
-       "View this look"
-       "Shop this look"))))
+     (if view-look
+       (apply utils/route-to view-look)
+       (apply utils/route-to view-other))
+     "View this look")))
 
-(defn image-attribution [creating-order? selected-look-id {:keys [user-handle social-service] :as look} view-look?]
+(defn image-attribution [{:keys [user-handle social-service] :as look}]
   [:div.bg-light-gray.p1
    [:div.flex.items-center.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
     [:div.flex-auto.h5.dark-gray.bold {:style {:word-break "break-all"}} "@" user-handle]
     [:div.ml1 {:style {:width "15px" :height "15px"}}
      (svg/social-icon social-service)]]
-   (buy-look-button creating-order? selected-look-id look view-look?)])
+   (view-look-button look)])
 
-(defn component [{:keys [looks creating-order? selected-look-id view-look?]} owner opts]
+(defn component [{:keys [looks]} owner opts]
   (om/component
    (html
     [:div
@@ -52,19 +45,16 @@
          {:key id}
          [:div.py2.col-12.col.hide-on-tb-dt {:key (str "small-" id)}
           (image-thumbnail (:medium imgs))
-          (image-attribution creating-order? selected-look-id look view-look?)]
+          (image-attribution look)]
          [:div.py2.px2.col.col-4.hide-on-mb {:key (str "large-" id)}
           (ui/aspect-ratio
            1 1
            {:class "hoverable"}
            (image-thumbnail (:medium imgs))
-           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution creating-order? selected-look-id look view-look?)])]])]])))
+           [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution look)])]])]])))
 
 (defn query [data]
-  {:looks            (get-in data keypaths/ugc-looks)
-   :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
-   :selected-look-id (get-in data keypaths/selected-look-id)
-   :view-look?       (experiments/view-look? data)})
+  {:looks (get-in data keypaths/ugc-looks)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

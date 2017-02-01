@@ -67,10 +67,6 @@
             :shared-cart-id (:shared-cart-id nav-args)
             :links          (merge {:view-other nav-message}
                                    (when (= nav-event events/navigate-shared-cart)
-                                     ;; TODO: if the view-look? experiment wins, we will not need the purchase-look-link
-                                     ;; both navigate-shared-cart and control-create-order-from-shared-cart have
-                                     ;; :shared-cart-id in the nav-message
-                                     {:view-look     [events/navigate-shop-by-look-details {:look-id id}]
-                                      :purchase-look [events/control-create-order-from-shared-cart (assoc nav-args :selected-look-id id)]}))
+                                     {:view-look [events/navigate-shop-by-look-details {:look-id id}]}))
             :title          title}))
        album))
