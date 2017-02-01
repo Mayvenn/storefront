@@ -141,7 +141,8 @@ Thanks,
                          :focused focused
                          :label   "Promo code"
                          :value   coupon-code
-                         :errors  (get field-errors ["promo-code"])})]
+                         :errors  (get field-errors ["promo-code"])
+                         :data-ref "promo-code"})]
         [:div.col.col-4.px1.mb3.inline-block
          (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
                           :disabled? updating?

@@ -84,6 +84,10 @@
   (when-let [value (get-in app-state keypaths/email-capture-session)]
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
 
+(defn scroll-promo-field-to-top []
+  ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
+  (js/window.setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
+
 (defn redirect
   ([event] (redirect event nil))
   ([event args] (handle-message events/redirect {:nav-message [event args]})))
@@ -796,8 +800,9 @@
 (defmethod perform-effects events/api-failure-stylist-account-photo-too-large [_ event response app-state]
   (handle-message events/flash-show-failure {:message "Whoa, the photo you uploaded is too large"}))
 
-(defmethod perform-effects events/flash-show [_ event args app-state]
-  (scroll/snap-to-top))
+(defmethod perform-effects events/flash-show [_ event {:keys [scroll?] :or {scroll? true}} app-state]
+  (when scroll?
+    (scroll/snap-to-top)))
 
 (defmethod perform-effects events/snap [_ _ {:keys [top]} app-state]
   (scroll/snap-to top))
@@ -810,11 +815,13 @@
 
 (defmethod perform-effects events/api-failure-errors [_ event errors app-state]
   (condp = (:error-code errors)
-    "stripe-card-failure" (when (= (get-in app-state keypaths/navigation-event)
-                                   events/navigate-checkout-confirmation)
-                            (redirect events/navigate-checkout-payment)
-                            (handle-later events/api-failure-errors errors)
-                            (scroll/snap-to-top))
+    "stripe-card-failure"      (when (= (get-in app-state keypaths/navigation-event)
+                                        events/navigate-checkout-confirmation)
+                                 (redirect events/navigate-checkout-payment)
+                                 (handle-later events/api-failure-errors errors)
+                                 (scroll/snap-to-top))
+    "promotion-not-found"      (scroll-promo-field-to-top)
+    "ineligible-for-promotion" (scroll-promo-field-to-top)
     (scroll/snap-to-top)))
 
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event args app-state]
@@ -840,16 +847,17 @@
   [_ event {:keys [address-elem address-keypath]} app-state]
   (places-autocomplete/attach address-elem address-keypath))
 
-(defn update-cart-flash [app-state msg]
-  (handle-message events/flash-show-success {:message msg}))
+(defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
+  (handle-message events/flash-show-success {:message "The coupon code was successfully removed from your order."
+                                             :scroll? false}))
 
 (defmethod perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} app-state]
-  (when-not allow-dormant? (update-cart-flash app-state "The coupon code was successfully applied to your order."))
+  (when-not allow-dormant?
+    (handle-message events/flash-show-success {:message "The coupon code was successfully applied to your order."
+                                               :scroll? false})
+    (scroll-promo-field-to-top))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
-
-(defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ app-state]
-  (update-cart-flash app-state "The coupon code was successfully removed from your order."))
 
 (defmethod perform-effects events/inserted-talkable [_ event args app-state]
   (talkable/show-pending-offer app-state)

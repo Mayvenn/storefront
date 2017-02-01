@@ -534,7 +534,9 @@
       (assoc-in keypaths/pending-promo-code nil)))
 
 (defmethod transition-state events/api-success-update-order-remove-promotion-code [_ event args app-state]
-  (clear-field-errors app-state))
+  (-> app-state
+      clear-field-errors
+      (assoc-in keypaths/cart-coupon-code "")))
 
 (defmethod transition-state events/api-success-sms-number [_ event args app-state]
   (assoc-in app-state keypaths/sms-number (:number args)))

@@ -25,8 +25,8 @@
   (snap-to 0))
 
 (defn scroll-to [y]
-  (let [body (.-body js/document)
-        scroll-top (.. js/document -body -scrollTop)
+  (let [body js/document.body
+        scroll-top (.. body -scrollTop)
         dy (- y scroll-top)]
     (animate
      body
@@ -40,6 +40,7 @@
         (set! (.. body -style -transition) "none")))))
 
 (def scroll-padding 35.0)
+;; TODO: rename
 (defn scroll-to-elem [el]
   (let [scroll-top (.. js/document -body -scrollTop)
         el-bottom (object/get (.getBoundingClientRect el) "bottom")
@@ -47,3 +48,13 @@
     (when (> el-bottom window-height)
       (scroll-to (- (+ scroll-top el-bottom scroll-padding)
                     window-height)))))
+
+(defn scroll-elem-to-top [el]
+  (let [el-top (object/get (.getBoundingClientRect el) "top")
+        scroll-top     (.. js/document -body -scrollTop)]
+    (scroll-to (+ scroll-top el-top (- scroll-padding)))))
+
+(defn scroll-selector-to-top [selector]
+  (when-let [el (.querySelector js/document selector)]
+    (scroll-elem-to-top el)))
+
