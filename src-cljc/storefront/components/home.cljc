@@ -47,11 +47,11 @@
 
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
-                       [:div.col.col-6.col-4-on-tb-dt.pp1 {:key key}
+                       [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
                         (ui/aspect-ratio 4 3 content)])]
     [:div.container.center.mb4.pb4
      [:div.flex.flex-column.my4
-      [:h1.h4.order-2.px2 "100% Virgin Human Hair & always fast and free shipping"]
+      [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div.mxnp1
       (for [{:keys [representative-images name slug]} featured-searches]
@@ -60,9 +60,9 @@
                       [:a.absolute.overlay.overflow-hidden
                        (merge {:data-test (str "named-search-" slug)}
                               (utils/route-to events/navigate-category {:named-search-slug slug}))
-                       [:img.col-12 (utils/img-attrs model-grid :small)]
+                       [:img.col-12 (utils/img-attrs model-grid :large)]
                        [:h3.h2.white.absolute.col-12.titleize
-                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
+                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
                                  :top         "50%"}}
                         name]])))
       (grid-block "spare-block"
