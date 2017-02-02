@@ -5,7 +5,6 @@
             [storefront.components.essence :as essence]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.stylist.referrals :as stylist.referrals]
-            [storefront.platform.ugc :as ugc]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
@@ -18,5 +17,4 @@
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)
       :video                (video/built-component data opts)
       :essence              (essence/built-component data opts)
-      :category-ugc         (ugc/built-popup-component data opts)
       nil)))

@@ -35,6 +35,7 @@
             [storefront.components.shared-cart :as shared-cart]
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.stylist-banner :as stylist-banner]
+            [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -78,27 +79,32 @@
     home/built-component))
 
 (defn top-level-component [data owner opts]
-  (component/create
-   (cond
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (component/create
+     (cond
 
-     #?@(:cljs
-         [(and config/enable-style-guide?
-               (= events/navigate-style-guide
-                  (subvec (get-in data keypaths/navigation-event) 0
-                          (min (count (get-in data keypaths/navigation-event))
-                               (count events/navigate-style-guide)))))
-          [:div (style-guide/built-component data nil)]])
+       #?@(:cljs
+           [(and config/enable-style-guide?
+                 (= events/navigate-style-guide
+                    (subvec nav-event 0
+                            (min (count nav-event)
+                                 (count events/navigate-style-guide)))))
+            [:div (style-guide/built-component data nil)]])
 
-     :else
-     [:div.flex.flex-column {:style {:min-height "100vh"}}
-      (stylist-banner/built-component data nil)
-      (promotion-banner/built-component data nil)
-      #?(:cljs (popup/built-component data nil))
-      [:header
-       (header/built-component data nil)
-       (slideout-nav/built-component data nil)]
-      (flash/built-component data nil)
-      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str (get-in data keypaths/navigation-event))}
-       ((main-component (get-in data keypaths/navigation-event)) data nil)]
-      [:footer
-       (footer/built-component data nil)]])))
+       (= nav-event events/navigate-ugc-category)
+       [:div.bg-black.absolute.overlay
+        (ugc/built-popup-component data nil)]
+
+       :else
+       [:div.flex.flex-column {:style {:min-height "100vh"}}
+        (stylist-banner/built-component data nil)
+        (promotion-banner/built-component data nil)
+        #?(:cljs (popup/built-component data nil))
+        [:header
+         (header/built-component data nil)
+         (slideout-nav/built-component data nil)]
+        (flash/built-component data nil)
+        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+         ((main-component nav-event) data nil)]
+        [:footer
+         (footer/built-component data nil)]]))))

@@ -155,6 +155,11 @@
         (assoc-in keypaths/saved-bundle-builder-options bundle-builder-options)
         ensure-bundle-builder)))
 
+(defmethod transition-state events/navigate-ugc-category [_ event {:keys [named-search-slug query-params]} app-state]
+  (-> app-state
+      (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
+      (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params 0))))
+
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 
@@ -201,11 +206,6 @@
 
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id (js/parseInt look-id)))
-
-(defmethod transition-state events/control-popup-ugc-category [_ event {:keys [offset]} app-state]
-  (-> app-state
-      (assoc-in keypaths/popup :category-ugc)
-      (assoc-in keypaths/ui-ugc-category-popup-offset offset)))
 
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album-ids [_ event {:keys [data]} app-state]
   (reduce (fn [app-state {:keys [sku album_id]}]

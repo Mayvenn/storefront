@@ -23,9 +23,9 @@
    [:video.container-size.block {:controls true}
     [:source {:src video-url}]]))
 
-(defn unattributed-slide [idx {:keys [imgs content-type]}]
+(defn unattributed-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
-   [:a (util/fake-href events/control-popup-ugc-category {:offset idx})
+   [:a (util/route-to events/navigate-ugc-category {:named-search-slug slug :query-params {:offset idx}})
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
@@ -44,14 +44,14 @@
     [:div.fill-dark-gray.stroke-dark-gray {:style {:width "15px" :height "15px"}}
      (svg/social-icon social-service)]]])
 
-(defn component [{:keys [album]} owner opts]
+(defn component [{:keys [album slug]} owner opts]
   (om/component
    (html
     (when (seq album)
       [:div.center.mt4
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
-                 {:slides   (map-indexed unattributed-slide album)
+                 {:slides   (map-indexed (partial unattributed-slide slug) album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
                              ;; the slide width calculation
@@ -68,29 +68,31 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  {:album (get-in data (conj keypaths/ugc-named-searches
-                             (:slug (named-searches/current-named-search data))))})
+  (let [slug (:slug (named-searches/current-named-search data))]
+    {:slug  slug
+     :album (get-in data (conj keypaths/ugc-named-searches slug))}))
 
-(defn popup-component [{:keys [offset ugc]} owner {:keys [on-close] :as opts}]
+(defn popup-component [{:keys [offset ugc slug]} owner opts]
   (om/component
    (html
-    (ui/modal
-     {:on-close on-close
-      :bg-class "bg-darken-4"}
-     [:div.relative
-      (om/build carousel/component
-                {:slides       (map attributed-slide (:album ugc))
-                 :settings     {:slidesToShow 1
-                                :initialSlide offset}}
-                {})
-      [:div.absolute
-       {:style {:top "1.5rem" :right "1.5rem"}}
-       (ui/modal-close {:class    "stroke-dark-gray fill-gray"
-                        :on-close on-close})]]))))
+    (let [on-close (:on-click (util/route-to events/navigate-category {:named-search-slug slug}))]
+      (ui/modal
+       {:on-close on-close}
+       [:div.relative
+        (om/build carousel/component
+                  {:slides       (map attributed-slide (:album ugc))
+                   :settings     {:slidesToShow 1
+                                  :initialSlide offset}}
+                  {})
+        [:div.absolute
+         {:style {:top "1.5rem" :right "1.5rem"}}
+         (ui/modal-close {:class    "stroke-dark-gray fill-gray"
+                          :on-close on-close})]])))))
 
 
 (defn popup-query [data]
   {:offset (get-in data keypaths/ui-ugc-category-popup-offset)
+   :slug   (:slug (named-searches/current-named-search data))
    :ugc    (query data)})
 
 (defn built-popup-component [data opts]

@@ -205,19 +205,30 @@
       (when-let [album-id (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search)))] ; else haven't gotten album ids yet
         (pixlee/fetch-named-search-album (:slug named-search) album-id)))))
 
-(defmethod perform-effects events/navigate-category
-  [_ event {:keys [named-search-slug] :as args} app-state]
-  (reviews/insert-reviews)
+(defn ensure-named-search-album [app-state named-search]
+  (refresh-named-search-products app-state named-search)
+  (when (and (accessors.pixlee/content-available? named-search)
+             (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
+    (pixlee/fetch-named-search-album-ids))
+  (fetch-named-search-album app-state))
+
+(defn hidden-search? [app-state named-search]
+  (and (:stylist_only? named-search)
+       (not (stylists/own-store? app-state))))
+
+(defmethod perform-effects events/navigate-category [_ event args app-state]
   (let [named-search (named-searches/current-named-search app-state)]
-    (if (or (not (:stylist_only? named-search))
-            (stylists/own-store? app-state))
+    (if (hidden-search? app-state named-search)
+      (page-not-found)
       (do
-        (refresh-named-search-products app-state named-search)
-        (when (and (accessors.pixlee/content-available? named-search)
-                   (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
-          (pixlee/fetch-named-search-album-ids))
-        (fetch-named-search-album app-state))
-      (page-not-found))))
+        (reviews/insert-reviews)
+        (ensure-named-search-album app-state named-search)))))
+
+(defmethod perform-effects events/navigate-ugc-category [_ event args app-state]
+  (let [named-search (named-searches/current-named-search app-state)]
+    (if (hidden-search? app-state named-search)
+      (page-not-found)
+      (ensure-named-search-album app-state named-search))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-mosaic [_ event _ app-state]
   (when-let [look-id (get-in app-state keypaths/selected-look-id)]

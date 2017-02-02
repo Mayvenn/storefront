@@ -7,20 +7,22 @@
 
 (defn inner-component [{:keys [slides settings]} owner _]
   (om/component
-   (js/React.createElement js/Slider
-                           (clj->js (merge {:pauseOnHover true
-                                            :customPaging custom-dots
-                                            ;; :waitForAnimate true
-                                            ;; TODO: figure out why onMouseUp always
-                                            ;; triggers navigation to link in slide,
-                                            ;; while onTouchEnd doesn't. This prevents
-                                            ;; us from allowing drag on desktop.
-                                            :draggable    false}
-                                           settings))
-                           (html (for [[idx slide] (map-indexed vector slides)]
-                                   ;; Wrapping div allows slider.js to attach
-                                   ;; click handlers without overwriting ours
-                                   [:div {:key idx} slide])))))
+   (if-not (seq slides)
+     (html [:div])
+     (js/React.createElement js/Slider
+                             (clj->js (merge {:pauseOnHover true
+                                              :customPaging custom-dots
+                                              ;; :waitForAnimate true
+                                              ;; TODO: figure out why onMouseUp always
+                                              ;; triggers navigation to link in slide,
+                                              ;; while onTouchEnd doesn't. This prevents
+                                              ;; us from allowing drag on desktop.
+                                              :draggable    false}
+                                             settings))
+                             (html (for [[idx slide] (map-indexed vector slides)]
+                                     ;; Wrapping div allows slider.js to attach
+                                     ;; click handlers without overwriting ours
+                                     [:div {:key idx} slide]))))))
 
 (defn cancel-autoplay [owner]
   (om/set-state! owner {:autoplay false}))

@@ -16,8 +16,9 @@
 (defpath redirect)
 (defpath navigate)
 (defpath navigate-home)
-(defpath navigate-category)
 (defpath navigate-categories)
+(defpath navigate-category)
+(defpath navigate-ugc-category)
 (defpath navigate-product)
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)
@@ -124,7 +125,6 @@
 
 (defpath control-popup-hide)
 (defpath control-popup-show-refer-stylists)
-(defpath control-popup-ugc-category)
 
 (defpath control-counter-inc)
 (defpath control-counter-dec)
