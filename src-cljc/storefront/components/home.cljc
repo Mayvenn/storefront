@@ -49,18 +49,18 @@
   (let [grid-block   (fn [key content]
                        [:div.col.col-6.col-4-on-tb-dt.pp1 {:key key}
                         (ui/aspect-ratio 4 3 content)])]
-    [:div.container.center.py4.my4
+    [:div.container.center.mb4.pb4
      [:div.flex.flex-column.my4
-      [:h1.h4.order-2 "100% virgin human hair + free shipping"]
+      [:h1.h4.order-2.px2 "100% Virgin Human Hair & always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div.mxnp1
       (for [{:keys [representative-images name slug]} featured-searches]
-        (let [{:keys [model-full]} representative-images]
+        (let [{:keys [model-grid]} representative-images]
           (grid-block slug
                       [:a.absolute.overlay.overflow-hidden
                        (merge {:data-test (str "named-search-" slug)}
                               (utils/route-to events/navigate-category {:named-search-slug slug}))
-                       [:img.col-12 (utils/img-attrs model-full :large)]
+                       [:img.col-12 (utils/img-attrs model-grid :small)]
                        [:h3.h2.white.absolute.col-12.titleize
                         {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px, black 0px 0px 25px"
                                  :top         "50%"}}
