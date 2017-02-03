@@ -53,7 +53,7 @@
      [:div.flex.flex-column.my4
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
-     [:div.mxnp1
+     [:div
       (for [{:keys [representative-images name slug]} featured-searches]
         (let [{:keys [model-grid]} representative-images]
           (grid-block slug
