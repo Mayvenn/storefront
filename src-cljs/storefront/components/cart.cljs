@@ -64,12 +64,12 @@ Thanks,
 "
                                    store-nickname))))
 
-(defn share-link-component [{:keys [share-url store-nickname]} owner {:keys [on-close]}]
+(defn share-link-component [{:keys [share-url store-nickname]} owner {:keys [close-attrs]}]
   (om/component
    (html
-    (ui/modal {:on-close on-close}
+    (ui/modal {:close-attrs close-attrs}
               [:.bg-white.rounded.p4.center
-               (ui/modal-close {:on-close on-close :data-test "share-url-close"})
+               (ui/modal-close {:close-attrs close-attrs :data-test "share-url-close"})
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
                 [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]

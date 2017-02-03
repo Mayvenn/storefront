@@ -7,13 +7,13 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn component [{:keys [email field-errors focused]} owner _]
-  (let [on-close (utils/send-event-callback events/control-email-captured-dismiss)]
+  (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)]
     (component/create
      (html
-      (ui/modal {:on-close on-close
+      (ui/modal {:close-attrs close-attrs
                  :bg-class "bg-darken-4"}
                 [:div.bg-white.rounded.p4
-                 (ui/modal-close {:on-close on-close :data-test "dismiss-email-capture"})
+                 (ui/modal-close {:close-attrs close-attrs :data-test "dismiss-email-capture"})
                  [:form.col-12.flex.flex-column.items-center
                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
                   [:div.h3.navy.bold.mb2 "Become an Insider"]

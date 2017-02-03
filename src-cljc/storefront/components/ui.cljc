@@ -272,12 +272,12 @@
       [:div.fixed.overlay]
       menu])])
 
-(defn modal [{:keys [on-close bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
+(defn modal [{:keys [close-attrs bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
   ;; Inspired by https://css-tricks.com/considerations-styling-modal/
   [:div
    ;; The scrim, a sibling to the modal
    [:div.z4.fixed.overlay.bg-darken-4
-    {:on-click on-close}
+    {:on-click (:on-click close-attrs)}
     ;; Set bg-class to override or darken the scrim
     [:div.fixed.overlay {:class bg-class}]]
    ;; The modal itself
@@ -285,7 +285,7 @@
    ;; - centers the contents in the viewport (fixed, translate-center)
    ;; - stays within the bounds of the screen and scrolls when necessary (col-12, max-height, overflow)
    [:div.z4.fixed.translate-center.col-12.overflow-auto {:style    {:max-height "100%"}
-                                                         :on-click on-close}
+                                                         :on-click (:on-click close-attrs)}
     ;; The inner wrapper
     ;; - provides a place to set width of the modal content (col-class)
     ;;   - should be a percentage based width; will be centered with mx-auto
@@ -297,10 +297,10 @@
                          :on-click utils/stop-propagation}]
           body)]])
 
-(defn modal-close [{:keys [class data-test on-close]}]
+(defn modal-close [{:keys [class data-test close-attrs]}]
   [:div.clearfix
    {:data-scrollable "not-a-modal"}
-   [:a.pointer.h3.right {:href "#" :on-click on-close :data-test data-test :title "Close"}
+   [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
 (defn circle-picture

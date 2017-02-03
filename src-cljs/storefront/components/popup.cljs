@@ -9,7 +9,7 @@
             [storefront.keypaths :as keypaths]))
 
 (defn built-component [data _]
-  (let [opts {:opts {:on-close (utils/send-event-callback events/control-popup-hide)}}]
+  (let [opts {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}]
     (condp = (get-in data keypaths/popup)
       :email-capture        (email-capture/built-component data opts)
       :share-cart           (cart/built-share-link-component data opts)

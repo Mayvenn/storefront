@@ -75,9 +75,9 @@
 (defn popup-component [{:keys [offset ugc slug]} owner opts]
   (om/component
    (html
-    (let [on-close (:on-click (util/route-to events/navigate-category {:named-search-slug slug}))]
+    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug slug})]
       (ui/modal
-       {:on-close on-close}
+       {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
                   {:slides       (map attributed-slide (:album ugc))
@@ -87,7 +87,7 @@
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}
          (ui/modal-close {:class    "stroke-dark-gray fill-gray"
-                          :on-close on-close})]])))))
+                          :close-attrs close-attrs})]])))))
 
 
 (defn popup-query [data]

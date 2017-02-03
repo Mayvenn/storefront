@@ -10,7 +10,7 @@
 (def close-button
   (component/html
    ;; TODO: this was fill-dark-gray, but got lost
-   (ui/modal-close {:on-close (utils/send-event-callback events/control-stylist-banner-close)})))
+   (ui/modal-close {:close-attrs (utils/fake-href events/control-stylist-banner-close)})))
 
 (def banner-copy
   (component/html [:p.h5.light.letter-spacing-1 [:span.medium "Are you a stylist?"] " Grow your business & earn extra money by joining Mayvenn!"]))

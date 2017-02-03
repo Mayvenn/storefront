@@ -151,12 +151,12 @@
 (defn refer-component [{:keys                             [focused bonus-amount earning-amount referrals flash-failure]
                         {:keys [field-errors] :as errors} :errors}
                        owner
-                       {:keys [on-close]}]
+                       {:keys [close-attrs]}]
   (om/component
    (html
-    (ui/modal {:on-close on-close}
+    (ui/modal {:close-attrs close-attrs}
               [:div.bg-white.rounded.p4
-               (ui/modal-close {:on-close on-close})
+               (ui/modal-close {:close-attrs close-attrs})
                [:form.p1 {:on-submit (utils/send-event-callback events/control-stylist-referral-submit)}
                 (when (or (seq errors) flash-failure)
                   [:div.mb2
@@ -234,10 +234,10 @@
 (defn built-refer-component [data opts]
   (om/build refer-component (query-refer data) opts))
 
-(defn thanks-component [_ owner {:keys [on-close]}]
+(defn thanks-component [_ owner {:keys [close-attrs]}]
   (om/component
    (html
-    (ui/modal {:on-close on-close
+    (ui/modal {:close-attrs close-attrs
                :bg-class "bg-darken-4"}
               [:div.flex.flex-column.items-center.justify-center.pt4
                [:div.m1 (svg/circled-check {:class "stroke-light-gray"

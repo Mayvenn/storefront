@@ -3,13 +3,13 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.ui :as ui]))
 
-(defn component [_ owner {:keys [on-close]}]
+(defn component [_ owner {:keys [close-attrs]}]
   (om/component
    (html
-    (ui/modal {:on-close on-close
+    (ui/modal {:close-attrs close-attrs
                :bg-class "bg-darken-4"}
               [:div.bg-white.rounded.p4
-               (ui/modal-close {:on-close on-close})
+               (ui/modal-close {:close-attrs close-attrs})
                [:div.flex.flex-column.items-center.justify-center.py2.dark-gray
                 [:h2.h3.navy.mb3 "Offer and Rebate Details"]
                 [:p.mb2 "Included with your purchase is a 1 year subscription to ESSENCE magazine ($10 value)."]
@@ -18,7 +18,7 @@
                  " After your purchase is complete, your name and address will be forwarded to the publisher to fulfill your subscription. "
                  " They will send you a postcard with instructions on how to request a refund, if desired. "
                  " Your first issue will mail 8-12 weeks upon receipt of order."]
-                (ui/navy-button {:on-click on-close} "Close")]]))))
+                (ui/navy-button {:on-click (:on-click close-attrs)} "Close")]]))))
 
 (defn built-component [_ opts]
   (om/build component nil opts))

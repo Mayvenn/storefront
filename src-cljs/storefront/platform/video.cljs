@@ -7,13 +7,13 @@
             [om.core :as om]
             [sablono.core :refer-macros [html]]))
 
-(defn component [{:keys [video-id]} owner {:keys [on-close]}]
+(defn component [{:keys [video-id]} owner {:keys [close-attrs]}]
   (reify
     om/IRender
     (render [this]
       (html
        (ui/modal
-        {:on-close on-close :bg-class "bg-darken-4" :col-class "col-10"}
+        {:close-attrs close-attrs :bg-class "bg-darken-4" :col-class "col-10"}
         [:div
          [:div.wistia_responsive_padding
           (ui/aspect-ratio
@@ -35,8 +35,8 @@
                                   :id (str "center_" (videos/id->name video-id))}
             ui/nbsp])]
          [:div.light-gray.p3.col-12.center
-          {:on-click       on-close
-           :on-touch-start on-close}
+          {:on-click       (:on-click close-attrs)
+           :on-touch-start (:on-click close-attrs)}
           "close video"]])))))
 
 (defn query [data]
