@@ -1,24 +1,22 @@
 (ns storefront.api
-  (:require [clj-http.client :as http]))
+  (:require [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]
-  (http/get (str (:internal-endpoint storeback-config) path)
-            (merge
-             {:throw-exceptions false
-              :socket-timeout 30000
-              :conn-timeout 30000
-              :as :json}
-             params)))
+  (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
+                   :get path
+                   (merge
+                    {:socket-timeout 30000
+                     :conn-timeout   30000
+                     :content-type   :default}
+                    params)))
 
 (defn storeback-post [storeback-config path params]
-  (http/post (str (:internal-endpoint storeback-config) path)
-             (merge {:content-type :json
-                     :throw-exceptions false
-                     :socket-timeout 30000
-                     :conn-timeout 30000
-                     :as :json
-                     :coerce :always}
-                    params)))
+  (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
+                   :post path
+                   (merge {:socket-timeout 30000
+                           :conn-timeout   30000
+                           :coerce         :always}
+                          params)))
 
 (defn store [storeback-config store-slug]
   (when (seq store-slug)
@@ -58,8 +56,6 @@
                                                              :token order-token
                                                              :session-id sid
                                                              :utm-params utm-params}
-                                               :socket-timeout 30000
-                                               :conn-timeout 30000
                                                :headers {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
