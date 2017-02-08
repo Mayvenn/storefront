@@ -6,6 +6,7 @@
                    :get path
                    (merge
                     {:socket-timeout 30000
+                     :as             :json
                      :conn-timeout   30000
                      :content-type   :default}
                     params)))
@@ -15,6 +16,8 @@
                    :post path
                    (merge {:socket-timeout 30000
                            :conn-timeout   30000
+                           :content-type   :json
+                           :as             :json
                            :coerce         :always}
                           params)))
 
