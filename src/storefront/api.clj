@@ -6,9 +6,8 @@
                    :get path
                    (merge
                     {:socket-timeout 30000
-                     :as             :json
                      :conn-timeout   30000
-                     :content-type   :default}
+                     :as             :json}
                     params)))
 
 (defn storeback-post [storeback-config path params]
