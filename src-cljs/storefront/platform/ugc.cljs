@@ -2,6 +2,7 @@
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as util]
@@ -9,21 +10,7 @@
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]))
 
-(defn image-view [{:keys [src]}]
-  (ui/aspect-ratio
-   1 1
-   {:class "bg-black"}
-   [:div.container-size.bg-cover.bg-no-repeat.bg-center
-    {:style {:background-image (str "url(" src ")")}}]))
-
-(defn video-view [video-url]
-  (ui/aspect-ratio
-   1 1
-   {:class "bg-black"}
-   [:video.container-size.block {:controls true}
-    [:source {:src video-url}]]))
-
-(defn unattributed-slide [slug idx {:keys [imgs content-type]}]
+(defn carousel-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
    [:a (util/route-to events/navigate-ugc-category {:named-search-slug slug :query-params {:offset idx}})
     (ui/aspect-ratio
@@ -34,16 +21,6 @@
        [:div.absolute.overlay.flex.items-center.justify-center
         svg/play-video-muted]))]])
 
-(defn attributed-slide [{:keys [user-handle imgs social-service content-type source-url] :as item}]
-  [:div.m1.rounded-bottom
-   (if (= content-type "video")
-     (video-view source-url)
-     (image-view (:large imgs)))
-   [:div.flex.items-center.rounded-bottom.bg-white.py2.px3
-    [:div.flex-auto.dark-gray.bold "@" user-handle]
-    [:div.fill-dark-gray.stroke-dark-gray {:style {:width "15px" :height "15px"}}
-     (svg/social-icon social-service)]]])
-
 (defn component [{:keys [album slug]} owner opts]
   (om/component
    (html
@@ -51,7 +28,7 @@
       [:div.center.mt4
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
-                 {:slides   (map-indexed (partial unattributed-slide slug) album)
+                 {:slides   (map-indexed (partial carousel-slide slug) album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
                              ;; the slide width calculation
@@ -72,15 +49,45 @@
     {:slug  slug
      :album (get-in data (conj keypaths/ugc-named-searches slug))}))
 
-(defn popup-component [{:keys [offset ugc slug]} owner opts]
+(defn content-view [{:keys [imgs content-type source-url] :as item}]
+  (ui/aspect-ratio
+   1 1
+   {:class "bg-black"}
+   (if (= content-type "video")
+     [:video.container-size.block {:controls true}
+      [:source {:src source-url}]]
+     [:div.container-size.bg-cover.bg-no-repeat.bg-center
+      {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
+
+(defn view-look-button [{:keys [links]}]
+  (let [{:keys [view-look view-other]} links]
+    (ui/teal-button
+     (apply util/route-to (or view-look view-other))
+     "View this look")))
+
+(defn user-attribution [{:keys [user-handle social-service]}]
+  [:div.flex.items-center
+   [:div.flex-auto.dark-gray.bold {:style {:word-break "break-all"}} "@" user-handle]
+   [:div.ml1 {:style {:width "15px" :height "15px"}}
+    (svg/social-icon social-service)]])
+
+(defn popup-slide [shop-ugcwidget? {:keys [links] :as item}]
+  [:div.m1.rounded-bottom
+   (content-view item)
+   [:div.bg-white.rounded-bottom.p2
+    [:div.h5.px4 (user-attribution item)]
+    (when (and shop-ugcwidget? (-> links :view-look boolean))
+      [:div.mt2 (view-look-button item)])]])
+
+(defn popup-component [{:keys [offset ugc shop-ugcwidget?]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug slug})]
+    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug (:slug ugc)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides       (map attributed-slide (:album ugc))
+                  {:slides       (map (partial popup-slide shop-ugcwidget?) (:album ugc))
                    :settings     {:slidesToShow 1
                                   :initialSlide offset}}
                   {})
@@ -89,11 +96,10 @@
          (ui/modal-close {:class    "stroke-dark-gray fill-gray"
                           :close-attrs close-attrs})]])))))
 
-
 (defn popup-query [data]
-  {:offset (get-in data keypaths/ui-ugc-category-popup-offset)
-   :slug   (:slug (named-searches/current-named-search data))
-   :ugc    (query data)})
+  {:ugc             (query data)
+   :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
+   :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
 
 (defn built-popup-component [data opts]
   (om/build popup-component (popup-query data) opts))
