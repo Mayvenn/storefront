@@ -31,7 +31,7 @@
                       "//staticw2.yotpo.com/2UyuTzecYoIe4JECHCuqP6ClAOzjnodSFMc7GEuT/widget.js"))
 
 (def telligent-community-url (case js/environment
-                               "production" "https://stylist.mayvenn.com/index.php/new-community-transition-notice/"
+                               "production" "https://community.mayvenn.com"
                                "http://telligentps.mayvenn.com/"))
 
 (def talkable-script
