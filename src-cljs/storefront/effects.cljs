@@ -201,8 +201,11 @@
 
 (defn fetch-named-search-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
+    ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this `when`... it can be inferred by the presence or absence of album-id, below.
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
-      (when-let [album-id (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search)))] ; else haven't gotten album ids yet
+      (when-let [album-id (if (experiments/shop-ugcwidget? app-state)
+                            (get-in config/pixlee [:categories (keyword (:slug named-search))])
+                            (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search))))] ; else haven't gotten album ids yet
         (pixlee/fetch-named-search-album (:slug named-search) album-id)))))
 
 (defn ensure-named-search-album [app-state named-search]
@@ -898,3 +901,7 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
+
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} app-state]
+  ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
+  (fetch-named-search-album app-state))

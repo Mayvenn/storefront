@@ -85,9 +85,23 @@
 (def pixlee
   (case js/environment
     "production" {:api-key    "PUTXr6XBGuAhWqoIP4ir"
-                  :mosaic     {:albumId 952508}}
-    {:api-key    "iiQ27jLOrmKgTfIcRIk"
-     :mosaic     {:albumId 965034}}))
+                  :mosaic     {:albumId 952508}
+                  :categories {:straight   1104027
+                               :loose-wave 1104028
+                               :body-wave  1104029
+                               :deep-wave  1104030
+                               :curly      1104031
+                               :closures   1104032
+                               :frontals   1104033}}
+    {:api-key "iiQ27jLOrmKgTfIcRIk"
+     :mosaic  {:albumId 965034}
+     :categories {:straight   1327330
+                  :loose-wave 1327331
+                  :body-wave  1327332
+                  :deep-wave  1327333
+                  :curly      1331955
+                  :closures   1331956
+                  :frontals   1331957}}))
 
 (def manual-experiments
   (case js/environment
