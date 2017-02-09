@@ -7,7 +7,7 @@
                  [com.stuartsierra/component "0.2.2"]
                  [environ "1.0.0"]
                  [tocsin "0.1.1"]
-                 [tugboat "0.1.5"]
+                 [tugboat "0.1.6"]
                  [compojure "1.4.0"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]
