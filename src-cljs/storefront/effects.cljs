@@ -210,9 +210,9 @@
     ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this `when`... it can be inferred by the presence or absence of album-id, below.
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
       (when-let [album-id (if (experiments/shop-ugcwidget? app-state)
-                            (get-in config/pixlee [:categories (keyword (:slug named-search))])
+                            (get-in config/pixlee [:albums (:slug named-search)])
                             (get-in app-state (conj keypaths/ugc-search-slug->album-id (:slug named-search))))] ; else haven't gotten album ids yet
-        (pixlee/fetch-named-search-album (:slug named-search) album-id)))))
+        (pixlee/fetch-album album-id (:slug named-search))))))
 
 (defn ensure-named-search-album [app-state named-search]
   (when (and (accessors.pixlee/content-available? named-search)

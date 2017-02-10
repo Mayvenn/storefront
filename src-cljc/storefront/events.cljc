@@ -271,10 +271,9 @@
 (defpath checkout-address-place-changed)
 (defpath checkout-address-component-mounted)
 
-(defpath pixlee-api-success-fetch-mosaic)
-(defpath pixlee-api-success-fetch-named-search-album-ids)
-(defpath pixlee-api-success-fetch-named-search-album)
+(defpath pixlee-api-success-fetch-album)
 (defpath pixlee-api-success-fetch-image)
+(defpath pixlee-api-success-fetch-named-search-album-ids)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

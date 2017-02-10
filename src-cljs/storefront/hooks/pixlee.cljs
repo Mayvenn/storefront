@@ -13,23 +13,16 @@
        :response-format (json-response-format {:keywords? true})
        :handler         handler}))
 
-(defn fetch-album-photos [album-id {:keys [params handler]}]
+(defn fetch-album [album-id album-name]
   (api-request (str "/albums/" album-id "/photos")
-               {:params  params
-                :handler handler}))
+               {:params  {:per_page 48}
+                :handler (fn [resp]
+                           (m/handle-message events/pixlee-api-success-fetch-album
+                                             {:album-data (:data resp)
+                                              :album-name album-name}))}))
 
 (defn fetch-mosaic []
-  (fetch-album-photos (-> config/pixlee :mosaic :albumId)
-                      {:params  {:per_page 48}
-                       :handler (partial m/handle-message events/pixlee-api-success-fetch-mosaic)}))
-
-(defn fetch-named-search-album [named-search-slug album-id]
-  (fetch-album-photos album-id
-                      {:params  {:per_page 24}
-                       :handler (fn [resp]
-                                  (m/handle-message events/pixlee-api-success-fetch-named-search-album
-                                                    {:album-data (:data resp)
-                                                     :named-search-slug named-search-slug}))}))
+  (fetch-album (-> config/pixlee :albums :mosaic) :mosaic))
 
 (defn fetch-named-search-album-ids []
   (api-request "/products"
