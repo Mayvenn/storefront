@@ -23,14 +23,14 @@
        [:div.absolute.overlay.flex.items-center.justify-center
         svg/play-video-muted]))]])
 
-(defn component [{:keys [album slug]} owner opts]
+(defn component [{:keys [album named-search]} owner opts]
   (om/component
    (html
     (when (seq album)
       [:div.center.mt4
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
-                 {:slides   (map-indexed (partial carousel-slide slug) album)
+                 {:slides   (map-indexed (partial carousel-slide (:slug named-search)) album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
                              ;; the slide width calculation
@@ -47,10 +47,10 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  (let [slug (:slug (named-searches/current-named-search data))
-        images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
-    {:slug  slug
-     :album images}))
+  (let [named-search (named-searches/current-named-search data)
+        images       (pixlee/images-in-album (get-in data keypaths/ugc) (:slug named-search))]
+    {:named-search named-search
+     :album        images}))
 
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio
@@ -86,12 +86,12 @@
 (defn popup-component [{:keys [offset ugc shop-ugcwidget? named-search]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug (:slug ugc)})]
+    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides       (map (partial popup-slide shop-ugcwidget? named-search) (:album ugc))
+                  {:slides       (map (partial popup-slide shop-ugcwidget? (:named-search ugc)) (:album ugc))
                    :settings     {:slidesToShow 1
                                   :initialSlide offset}}
                   {})
@@ -103,7 +103,6 @@
 (defn popup-query [data]
   {:ugc             (query data)
    :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
-   :named-search    (named-searches/current-named-search data)
    :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
 
 (defn built-popup-component [data opts]
