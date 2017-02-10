@@ -237,9 +237,7 @@
   (let [named-search (named-searches/current-named-search app-state)]
     (if (hidden-search? app-state named-search)
       (page-not-found)
-      (do
-        (refresh-named-search-products app-state named-search)
-        (ensure-named-search-album app-state named-search)))))
+      (ensure-named-search-album app-state named-search))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ app-state]
   (fetch-named-search-album app-state))
