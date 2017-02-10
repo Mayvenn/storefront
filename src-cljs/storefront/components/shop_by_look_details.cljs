@@ -74,11 +74,9 @@
       (when look
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          (carousel (imgs look shared-cart products))
-         [:div
-          [:div.px3.py2.mbp1.bg-light-gray
-           (ugc/user-attribution look)]
-          (when-not (str/blank? (:title look))
-            [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])]])
+         [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
+         (when-not (str/blank? (:title look))
+           [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
       (when shared-cart
         (let [line-items (:line-items shared-cart)
               item-count (->> line-items (map :quantity) (reduce +))]
