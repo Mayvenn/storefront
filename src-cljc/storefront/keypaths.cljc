@@ -46,10 +46,10 @@
 (def sms-number [:sms-number])
 (def api-cache [:api-cache])
 
-(def ugc-albums [:ugc-albums])
-(def ugc-looks (conj ugc-albums :looks))
-(def ugc-named-searches (conj ugc-albums :named-searches))
-(def named-search-slug->pixlee-album-id (conj ugc-albums :named-search-album-ids))
+(def ugc [:ugc])
+(def ugc-images (conj ugc :images))
+(def ugc-albums (conj ugc :albums))
+(def ugc-search-slug->album-id (conj ugc :search-slug->album-id))
 
 (def ui [:ui])
 (def ui-focus (conj ui :focus))

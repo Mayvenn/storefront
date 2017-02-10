@@ -88,7 +88,7 @@
 
 (defn query [data]
   {:shared-cart                  (get-in data keypaths/shared-cart-current)
-   :look                         (->> (get-in data keypaths/ugc-looks)
+   :look                         (->> (get-in data keypaths/ugc-images)
                                       (query/get {:id (get-in data keypaths/selected-look-id)}))
    :creating-order?              (utils/requesting? data request-keys/create-order-from-shared-cart)
    :products                     (get-in data keypaths/products)

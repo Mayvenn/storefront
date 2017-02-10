@@ -4,11 +4,7 @@
             [storefront.events :as events]
             [storefront.config :as config]
             [storefront.platform.messages :as m]
-            [clojure.string :as str])
-  (:import goog.json.Serializer))
-
-(defn write-json [data]
-  (.serialize (goog.json.Serializer.) (clj->js data)))
+            [clojure.string :as str]))
 
 (defn ^:private api-request [path {:keys [params handler]}]
   (GET (str "https://distillery.pixlee.com/api/v2" path)

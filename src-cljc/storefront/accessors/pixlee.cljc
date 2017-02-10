@@ -40,7 +40,7 @@
        (into {}))))
 
 (defn- extract-images
-  [{:keys [id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
+  [{:keys [title pixlee_cdn_photos] :as item}]
   (reduce-kv (fn [result name url] (assoc result name {:src url :alt title}))
              {}
              (merge
@@ -56,18 +56,25 @@
       :path
       routes/navigation-message-for))
 
+(defn parse-ugc-image [{:keys [album_photo_id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
+  (let [[nav-event nav-args :as nav-message] (product-link (first products))]
+    {:id             album_photo_id
+     :content-type   content_type
+     :source-url     source_url
+     :user-handle    (normalize-user-name user_name)
+     :imgs           (extract-images item)
+     :social-service source
+     :shared-cart-id (:shared-cart-id nav-args)
+     :links          (merge {:view-other nav-message}
+                            (when (= nav-event events/navigate-shared-cart)
+                              {:view-look [events/navigate-shop-by-look-details {:look-id album_photo_id}]}))
+     :title          title}))
+
 (defn parse-ugc-album [album]
-  (map (fn [{:keys [id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
-         (let [[nav-event nav-args :as nav-message] (product-link (first products))]
-           {:id             id
-            :content-type   content_type
-            :source-url     source_url
-            :user-handle    (normalize-user-name user_name)
-            :imgs           (extract-images item)
-            :social-service source
-            :shared-cart-id (:shared-cart-id nav-args)
-            :links          (merge {:view-other nav-message}
-                                   (when (= nav-event events/navigate-shared-cart)
-                                     {:view-look [events/navigate-shop-by-look-details {:look-id id}]}))
-            :title          title}))
-       album))
+  (map parse-ugc-image album))
+
+(defn images-by-id [images]
+  (reduce (fn [result img]
+            (assoc result (:id img) img))
+          {}
+          images))

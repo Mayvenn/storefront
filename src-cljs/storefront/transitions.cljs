@@ -191,15 +191,17 @@
   (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-mosaic [_ event {:keys [data]} app-state]
-  (assoc-in app-state keypaths/ugc-looks
-            (->> data
-                 (pixlee/parse-ugc-album)
-                 ;; we have no design for how to play videos on the shop-by-look pages
-                 (remove (comp #{"video"} :content-type)))))
+  (let [images (pixlee/parse-ugc-album data)]
+    (-> app-state
+        (assoc-in (conj keypaths/ugc-albums :mosaic) (map :id images))
+        ;; TODO: remove videos here? or filter them out on the /shop/look and /shop/look/details pages?
+        (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album [_ event {:keys [album-data named-search-slug]} app-state]
-  (assoc-in app-state (conj keypaths/ugc-named-searches named-search-slug)
-            (pixlee/parse-ugc-album album-data)))
+  (let [images (pixlee/parse-ugc-album album-data)]
+    (-> app-state
+        (assoc-in (conj keypaths/ugc-albums named-search-slug) (map :id images))
+        (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
 
 (defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
   (assoc-in app-state keypaths/selected-look-id nil))
@@ -210,7 +212,7 @@
 (defmethod transition-state events/pixlee-api-success-fetch-named-search-album-ids [_ event {:keys [data]} app-state]
   (reduce (fn [app-state {:keys [sku album_id]}]
             (if-let [named-search-slug (pixlee/sku->named-search-slug sku)]
-              (assoc-in app-state (conj keypaths/named-search-slug->pixlee-album-id named-search-slug) album_id)
+              (assoc-in app-state (conj keypaths/ugc-search-slug->album-id named-search-slug) album_id)
               app-state))
           app-state
           data))

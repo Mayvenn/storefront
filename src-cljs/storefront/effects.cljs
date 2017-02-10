@@ -196,8 +196,17 @@
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ app-state]
   (wistia/load))
 
-(defmethod perform-effects events/navigate-shop-by-look [_ event _ app-state]
-  (pixlee/fetch-mosaic))
+(defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} app-state]
+  (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
+    (pixlee/fetch-mosaic)))
+
+(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
+  (if-let [shared-cart-id (->> (get-in app-state keypaths/ugc-images)
+                               (query/get {:id look-id})
+                               :shared-cart-id)]
+    (api/fetch-shared-cart shared-cart-id)
+    ;; TODO: fetch from pixlee media (on success, fetch shared-cart)
+    (page-not-found)))
 
 (defn fetch-named-search-album [app-state]
   (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
@@ -205,13 +214,12 @@
     (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
       (when-let [album-id (if (experiments/shop-ugcwidget? app-state)
                             (get-in config/pixlee [:categories (keyword (:slug named-search))])
-                            (get-in app-state (conj keypaths/named-search-slug->pixlee-album-id (:slug named-search))))] ; else haven't gotten album ids yet
+                            (get-in app-state (conj keypaths/ugc-search-slug->album-id (:slug named-search))))] ; else haven't gotten album ids yet
         (pixlee/fetch-named-search-album (:slug named-search) album-id)))))
 
 (defn ensure-named-search-album [app-state named-search]
-  (refresh-named-search-products app-state named-search)
   (when (and (accessors.pixlee/content-available? named-search)
-             (not (seq (get-in app-state keypaths/named-search-slug->pixlee-album-id))))
+             (not (seq (get-in app-state keypaths/ugc-search-slug->album-id))))
     (pixlee/fetch-named-search-album-ids))
   (fetch-named-search-album app-state))
 
@@ -225,22 +233,16 @@
       (page-not-found)
       (do
         (reviews/insert-reviews)
+        (refresh-named-search-products app-state named-search)
         (ensure-named-search-album app-state named-search)))))
 
 (defmethod perform-effects events/navigate-ugc-category [_ event args app-state]
   (let [named-search (named-searches/current-named-search app-state)]
     (if (hidden-search? app-state named-search)
       (page-not-found)
-      (ensure-named-search-album app-state named-search))))
-
-(defmethod perform-effects events/pixlee-api-success-fetch-mosaic [_ event _ app-state]
-  (when-let [look-id (get-in app-state keypaths/selected-look-id)]
-    ;; we're on the /shop/look/details page, so fetch the corresponding cart
-    (if-let [shared-cart-id (->> (get-in app-state keypaths/ugc-looks)
-                                 (query/get {:id look-id})
-                                 :shared-cart-id)]
-      (api/fetch-shared-cart shared-cart-id)
-      (page-not-found))))
+      (do
+        (refresh-named-search-products app-state named-search)
+        (ensure-named-search-album app-state named-search)))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ app-state]
   (fetch-named-search-album app-state))

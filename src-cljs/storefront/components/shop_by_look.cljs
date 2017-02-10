@@ -38,7 +38,11 @@
            [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution look)])]])]])))
 
 (defn query [data]
-  {:looks (get-in data keypaths/ugc-looks)})
+  (let [image-ids (get-in data (conj keypaths/ugc-albums :mosaic))
+        looks (->> image-ids
+                   (map (get-in data keypaths/ugc-images))
+                   (remove (comp #{"video"} :content-type)))]
+    {:looks looks}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

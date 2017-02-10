@@ -104,7 +104,7 @@
      :sms-number nil
      :stylist initial-stylist-state
      :api-cache {}
-     :ugc-albums {}
+     :ugc {}
 
      :billing-address {:firstname ""
                        :lastname ""

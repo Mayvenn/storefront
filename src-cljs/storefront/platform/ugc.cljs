@@ -45,9 +45,10 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  (let [slug (:slug (named-searches/current-named-search data))]
+  (let [slug (:slug (named-searches/current-named-search data))
+        image-ids (get-in data (conj keypaths/ugc-albums slug))]
     {:slug  slug
-     :album (get-in data (conj keypaths/ugc-named-searches slug))}))
+     :album (map (get-in data keypaths/ugc-images) image-ids)}))
 
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio
