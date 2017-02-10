@@ -29,7 +29,8 @@
 (defn carousel [imgs]
   (om/build carousel/component
             {:slides   imgs
-             :settings {:dots false}}
+             :settings {:dots      true
+                        :dotsClass "carousel-dots"}}
             {:react-key "look-carousel"}))
 
 (defn distinct-product-imgs [shared-cart products]
