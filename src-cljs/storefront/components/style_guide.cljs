@@ -325,8 +325,7 @@
                                  [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]
                         :settings {:swipe true
                                    :arrows true
-                                   :dots true
-                                   :dotsClass "carousel-dots"}}
+                                   :dots true}}
                        {})]
 
      [:div.col-4
@@ -353,8 +352,7 @@
                        :settings {:swipe true
                                   :slidesToShow 3
                                   :arrows true
-                                  :dots true
-                                  :dotsClass "carousel-dots"}}
+                                  :dots true}}
                       {})]]))
 
 (defn component [data owner opts]

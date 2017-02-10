@@ -236,8 +236,7 @@
                     images)]
     (component/build carousel/component
                      {:slides (map :body items)
-                      :settings {:dots true
-                                 :dotsClass "carousel-dots"}}
+                      :settings {:dots true}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
 (defn starting-at [variants proposed-bundle-count price-strikeout?]

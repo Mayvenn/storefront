@@ -78,6 +78,5 @@
                   {:slides items
                    :settings {:arrows true
                               :dots true
-                              :dotsClass "carousel-dots"
                               :swipe true}}
                   {:react-key "stat-swiper"})]]))))

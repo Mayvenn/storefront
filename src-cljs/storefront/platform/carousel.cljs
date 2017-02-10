@@ -12,6 +12,7 @@
      (js/React.createElement js/Slider
                              (clj->js (merge {:pauseOnHover true
                                               :customPaging custom-dots
+                                              :dotsClass "carousel-dots"
                                               ;; :waitForAnimate true
                                               ;; TODO: figure out why onMouseUp always
                                               ;; triggers navigation to link in slide,
