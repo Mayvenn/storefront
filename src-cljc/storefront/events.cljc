@@ -76,6 +76,9 @@
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
 
+(defpath push-nav-stack)
+(defpath pop-nav-stack)
+
 (defpath apple-pay-availability)
 (defpath apple-pay-begin)
 (defpath apple-pay-end)

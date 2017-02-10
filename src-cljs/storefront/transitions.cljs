@@ -56,11 +56,6 @@
           (assoc-in keypaths/prior-scroll-state leaving-scroll-top)
           (assoc-in keypaths/restore-scroll-top restore-scroll-top)))))
 
-(defn save-prior-nav-message [app-state]
-  (if (get-in app-state keypaths/redirecting?)
-    app-state
-    (assoc-in app-state keypaths/prior-navigation-message (get-in app-state keypaths/navigation-message))))
-
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
     (if (nav/return-blacklisted? return-event)
@@ -99,9 +94,19 @@
         (assoc-in keypaths/flash-later-failure nil)
         ;; order is important from here on
         (maintain-scroll-state nav-snapshot)
-        save-prior-nav-message
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
+
+(defmethod transition-state events/push-nav-stack [_ event nav-stack-item app-state]
+  (let [item (merge
+              {:navigation-message (get-in app-state keypaths/navigation-message)}
+              nav-stack-item)
+        nav-stack (get-in app-state keypaths/navigation-stack [])
+        nav-stack (vec (take-last 5 (conj nav-stack item)))]
+    (assoc-in app-state keypaths/navigation-stack nav-stack)))
+
+(defmethod transition-state events/pop-nav-stack [_ _ _ app-state]
+  (update-in app-state keypaths/navigation-stack (comp vec butlast)))
 
 (def ^:private hostname (comp :host url/url))
 

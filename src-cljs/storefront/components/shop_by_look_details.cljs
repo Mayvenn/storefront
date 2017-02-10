@@ -51,18 +51,20 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? look shared-cart products back-will-navigate? back-copy price-strikeout?]} owner opts]
+(defn component [{:keys [creating-order? look shared-cart products back price-strikeout?]} owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-        (utils/route-back-or-to back-will-navigate? events/navigate-shop-by-look)
+        (if back
+          (apply utils/route-back (:navigation-message back))
+          (utils/route-to events/navigate-shop-by-look))
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
                           :src   (assets/path "/images/icons/carat-left.png")}]
-         back-copy]]
+         (or (:back-copy back) "back to shop by look")]]
 
        [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]]
 
@@ -88,19 +90,12 @@
             (add-to-cart-button creating-order? shared-cart)]]))]])))
 
 (defn query [data]
-  (let [prior-nav-message (get-in data keypaths/prior-navigation-message)]
-    {:shared-cart         (get-in data keypaths/shared-cart-current)
-     :look                (pixlee/selected-look data)
-     :creating-order?     (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :products            (get-in data keypaths/products)
-     :back-will-navigate? (not= prior-nav-message (get-in data keypaths/navigation-message))
-     :back-copy           (if (= (get-in data keypaths/prior-navigation-event) events/navigate-ugc-category)
-                            (let [[_ {:keys [named-search-slug]}] prior-nav-message
-                                  named-search (query/get {:slug named-search-slug}
-                                                          (get-in data keypaths/named-searches))]
-                              [:div.inline "back to " [:span.titleize (:long-name named-search)]])
-                            "back to shop by look")
-     :price-strikeout?    (experiments/price-strikeout? data)}))
+  {:shared-cart      (get-in data keypaths/shared-cart-current)
+   :look             (pixlee/selected-look data)
+   :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :products         (get-in data keypaths/products)
+   :back             (last (get-in data keypaths/navigation-stack))
+   :price-strikeout? (experiments/price-strikeout? data)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

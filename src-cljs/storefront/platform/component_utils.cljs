@@ -24,24 +24,24 @@
 (defn collapse-menus-callback [menus]
   (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
-(defn route-to [navigation-event & [args]]
-  {:href (routes/path-for navigation-event args)
+(defn route-to [navigation-event & [navigation-args nav-stack-item]]
+  {:href (routes/path-for navigation-event navigation-args)
    :on-click
    (fn [e]
      (.preventDefault e)
      (handle-message events/control-menu-collapse-all)
-     (history/enqueue-navigate navigation-event args))})
+     (handle-message events/push-nav-stack nav-stack-item) ; TODO: save scroll top here?
+     (history/enqueue-navigate navigation-event navigation-args))})
 
-(defn route-back-or-to [can-go-back? navigation-event & [args]]
-  {:href (routes/path-for navigation-event args)
+(defn route-back [navigation-event & [navigation-args]]
+  {:href (routes/path-for navigation-event navigation-args)
    :on-click
    (fn [e]
      (.preventDefault e)
      (handle-message events/control-menu-collapse-all)
-     ;; when possible use history.back(), so that scroll is restored
-     (if can-go-back?
-       (js/history.back)
-       (history/enqueue-navigate navigation-event args)))})
+     (handle-message events/pop-nav-stack)
+     ;; use history.back(), so that scroll is restored
+     (js/history.back))})
 
 (defn requesting?
   ([data request-key] (requesting? data :request-key request-key))

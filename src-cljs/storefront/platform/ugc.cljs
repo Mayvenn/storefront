@@ -9,7 +9,8 @@
             [storefront.platform.component-utils :as util]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.platform.carousel :as carousel]))
+            [storefront.platform.carousel :as carousel]
+            [goog.string]))
 
 (defn carousel-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
@@ -61,10 +62,11 @@
      [:div.container-size.bg-cover.bg-no-repeat.bg-center
       {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
 
-(defn view-look-button [{:keys [links]}]
-  (let [{:keys [view-look view-other]} links]
+(defn view-look-button [{:keys [links]} nav-stack-item]
+  (let [{:keys [view-look view-other]} links
+        [nav-event nav-args] (or view-look view-other)]
     (ui/teal-button
-     (apply util/route-to (or view-look view-other))
+     (util/route-to nav-event nav-args nav-stack-item)
      "View this look")))
 
 (defn user-attribution [{:keys [user-handle social-service]}]
@@ -73,15 +75,15 @@
    [:div.ml1 {:style {:width "15px" :height "15px"}}
     (svg/social-icon social-service)]])
 
-(defn popup-slide [shop-ugcwidget? {:keys [links] :as item}]
+(defn popup-slide [shop-ugcwidget? named-search {:keys [links] :as item}]
   [:div.m1.rounded-bottom
    (content-view item)
    [:div.bg-white.rounded-bottom.p2
     [:div.h5.px4 (user-attribution item)]
     (when (and shop-ugcwidget? (-> links :view-look boolean))
-      [:div.mt2 (view-look-button item)])]])
+      [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase (:long-name named-search)))})])]])
 
-(defn popup-component [{:keys [offset ugc shop-ugcwidget?]} owner opts]
+(defn popup-component [{:keys [offset ugc shop-ugcwidget? named-search]} owner opts]
   (om/component
    (html
     (let [close-attrs (util/route-to events/navigate-category {:named-search-slug (:slug ugc)})]
@@ -89,7 +91,7 @@
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides       (map (partial popup-slide shop-ugcwidget?) (:album ugc))
+                  {:slides       (map (partial popup-slide shop-ugcwidget? named-search) (:album ugc))
                    :settings     {:slidesToShow 1
                                   :initialSlide offset}}
                   {})
@@ -101,6 +103,7 @@
 (defn popup-query [data]
   {:ugc             (query data)
    :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
+   :named-search    (named-searches/current-named-search data)
    :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
 
 (defn built-popup-component [data opts]

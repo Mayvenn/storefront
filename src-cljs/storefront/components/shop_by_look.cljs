@@ -13,7 +13,7 @@
   [:div.bg-light-gray.p1
    [:div.h5.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
     (ugc/user-attribution look)]
-   (ugc/view-look-button look)])
+   (ugc/view-look-button look {:back-copy "back to shop by look"})])
 
 (defn component [{:keys [looks]} owner opts]
   (om/component
