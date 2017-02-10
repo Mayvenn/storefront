@@ -13,6 +13,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.components.order-summary :as order-summary]
             [cemerick.url :as url]
             [clojure.string :as str]
@@ -88,8 +89,7 @@
 
 (defn query [data]
   {:shared-cart                  (get-in data keypaths/shared-cart-current)
-   :look                         (->> (get-in data keypaths/ugc-images)
-                                      (query/get {:id (get-in data keypaths/selected-look-id)}))
+   :look                         (pixlee/selected-look data)
    :creating-order?              (utils/requesting? data request-keys/create-order-from-shared-cart)
    :products                     (get-in data keypaths/products)
    ;; NOTE: not using current-page? because it would return true for navigate-shop-by-look-details too

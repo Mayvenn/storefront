@@ -203,6 +203,10 @@
         (assoc-in (conj keypaths/ugc-albums named-search-slug) (map :id images))
         (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
 
+(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data]} app-state]
+  (let [image (pixlee/parse-ugc-image image-data)]
+    (assoc-in app-state (conj keypaths/ugc-images (:id image)) image)))
+
 (defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
   (assoc-in app-state keypaths/selected-look-id nil))
 

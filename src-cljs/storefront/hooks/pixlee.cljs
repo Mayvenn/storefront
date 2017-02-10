@@ -35,3 +35,9 @@
   (api-request "/products"
                {:params  {:per_page 100}
                 :handler (partial m/handle-message events/pixlee-api-success-fetch-named-search-album-ids)}))
+
+(defn fetch-image [image-id]
+  (api-request (str "/media/" image-id)
+               {:handler (fn [resp]
+                           (m/handle-message events/pixlee-api-success-fetch-image
+                                             {:image-data (:data resp)}))}))

@@ -274,6 +274,7 @@
 (defpath pixlee-api-success-fetch-mosaic)
 (defpath pixlee-api-success-fetch-named-search-album-ids)
 (defpath pixlee-api-success-fetch-named-search-album)
+(defpath pixlee-api-success-fetch-image)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

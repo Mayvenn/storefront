@@ -3,6 +3,7 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
 
 ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this, or anything derived from it.
@@ -39,16 +40,14 @@
        (remove (comp string/blank? val))
        (into {}))))
 
-(defn- extract-images
-  [{:keys [title pixlee_cdn_photos] :as item}]
+(defn- extract-images [{:keys [title pixlee_cdn_photos] :as item}]
   (reduce-kv (fn [result name url] (assoc result name {:src url :alt title}))
              {}
              (merge
               (extract-img-urls item :source_url :big_url :medium_url :thumbnail_url)
               (extract-img-urls pixlee_cdn_photos :original_url :large_url :medium_url :small_url))))
 
-(defn- product-link
-  [product]
+(defn- product-link [product]
   (-> product
       :link
       url/url-decode
@@ -56,7 +55,7 @@
       :path
       routes/navigation-message-for))
 
-(defn parse-ugc-image [{:keys [album_photo_id user_name content_type source products title source_url pixlee_cdn_photos] :as item}]
+(defn parse-ugc-image [{:keys [album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]
     {:id             album_photo_id
      :content-type   content_type
@@ -80,6 +79,8 @@
           images))
 
 (defn images-in-album [ugc album]
-  (let [image-ids (get-in ugc [:albums album])
-        all-images (get ugc :images)]
-    (map all-images image-ids)))
+  (let [image-ids (get-in ugc [:albums album])]
+    (map (get ugc :images) image-ids)))
+
+(defn selected-look [data]
+  (get-in data (conj keypaths/ugc-images (get-in data keypaths/selected-look-id))))
