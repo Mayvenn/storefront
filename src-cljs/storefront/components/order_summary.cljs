@@ -88,22 +88,23 @@
                                    bundle-quantity
                                    price-strikeout?]
   [:.clearfix.mb1.border-bottom.border-gray.py3 {:key id}
-   [:a.left.mr1
+   [:a.left.mr1.line-height-1
     [:img.border.border-gray.rounded
      (assoc thumbnail :style {:width  "7.33em"
                               :height "7.33em"})]]
-   [:.overflow-hidden.h5.p1
-    [:a.medium.titleize (products/product-title line-item)]
-    [:.mt1.h6.line-height-1
-     (when-let [length (:length variant-attrs)]
-       [:div.pyp2 "Length: " length])
-     (if price-strikeout?
-       [:div.pyp2 "Price Each: " (ui/strike-price {:price            unit-price
-                                                   :bundle-quantity  bundle-quantity
-                                                   :price-strikeout? price-strikeout?
-                                                   :bundle-eligible? (products/bundle? line-item)})]
-       [:div.pyp2 "Price: " (as-money-without-cents unit-price)])
-     quantity-line]]])
+   [:.overflow-hidden.h5
+    [:div.ml1
+     [:a.medium.titleize (products/product-title line-item)]
+     [:.mt1.h6.line-height-1
+      (when-let [length (:length variant-attrs)]
+        [:div.pyp2 "Length: " length])
+      (if price-strikeout?
+        [:div.pyp2 "Price Each: " (ui/strike-price {:price            unit-price
+                                                    :bundle-quantity  bundle-quantity
+                                                    :price-strikeout? price-strikeout?
+                                                    :bundle-eligible? (products/bundle? line-item)})]
+        [:div.pyp2 "Price: " (as-money-without-cents unit-price)])
+      quantity-line]]]])
 
 (defn display-line-items [line-items products price-strikeout?]
   (let [bundle-quantity (orders/line-item-quantity (filter products/bundle? line-items))]
