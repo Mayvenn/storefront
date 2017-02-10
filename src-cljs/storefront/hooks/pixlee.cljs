@@ -6,12 +6,15 @@
             [storefront.platform.messages :as m]
             [clojure.string :as str]))
 
-(defn ^:private api-request [path {:keys [params handler]}]
+(def default-error-handler (partial m/handle-message events/api-failure-bad-server-response))
+
+(defn ^:private api-request [path {:keys [params handler error-handler]}]
   (GET (str "https://distillery.pixlee.com/api/v2" path)
       {:params          (merge {:api_key (:api-key config/pixlee)}
                                params)
        :response-format (json-response-format {:keywords? true})
-       :handler         handler}))
+       :handler         handler
+       :error-handler   (or error-handler default-error-handler)}))
 
 (defn fetch-album [album-id album-name]
   (api-request (str "/albums/" album-id "/photos")
@@ -33,4 +36,6 @@
   (api-request (str "/media/" image-id)
                {:handler (fn [resp]
                            (m/handle-message events/pixlee-api-success-fetch-image
-                                             {:image-data (:data resp)}))}))
+                                             {:image-data (:data resp)}))
+                :error-handler (fn [resp]
+                                 (m/handle-message events/pixlee-api-failure-fetch-album resp))}))

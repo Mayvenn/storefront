@@ -277,6 +277,7 @@
 (defpath pixlee-api-success-fetch-album)
 (defpath pixlee-api-success-fetch-image)
 (defpath pixlee-api-success-fetch-named-search-album-ids)
+(defpath pixlee-api-failure-fetch-album)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

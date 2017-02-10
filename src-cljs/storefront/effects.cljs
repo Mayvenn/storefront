@@ -246,6 +246,9 @@
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)))
 
+(defmethod perform-effects events/pixlee-api-failure-fetch-album [_ event resp app-state]
+  (page-not-found))
+
 (defmethod perform-effects events/navigate-account [_ event args app-state]
   (when-not (get-in app-state keypaths/user-token)
     (redirect events/navigate-sign-in)))
