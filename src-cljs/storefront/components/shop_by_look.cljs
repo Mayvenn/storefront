@@ -1,6 +1,7 @@
 (ns storefront.components.shop-by-look
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]))
@@ -38,9 +39,7 @@
            [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution look)])]])]])))
 
 (defn query [data]
-  (let [image-ids (get-in data (conj keypaths/ugc-albums :mosaic))
-        looks (->> image-ids
-                   (map (get-in data keypaths/ugc-images))
+  (let [looks (->> (pixlee/images-in-album (get-in data keypaths/ugc) :mosaic)
                    (remove (comp #{"video"} :content-type)))]
     {:looks looks}))
 

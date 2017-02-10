@@ -2,6 +2,7 @@
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
@@ -46,9 +47,9 @@
 
 (defn query [data]
   (let [slug (:slug (named-searches/current-named-search data))
-        image-ids (get-in data (conj keypaths/ugc-albums slug))]
+        images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
     {:slug  slug
-     :album (map (get-in data keypaths/ugc-images) image-ids)}))
+     :album images}))
 
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio

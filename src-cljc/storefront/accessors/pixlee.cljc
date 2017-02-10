@@ -78,3 +78,8 @@
             (assoc result (:id img) img))
           {}
           images))
+
+(defn images-in-album [ugc album]
+  (let [image-ids (get-in ugc [:albums album])
+        all-images (get ugc :images)]
+    (map all-images image-ids)))
