@@ -71,8 +71,8 @@
 
 (defn user-attribution [{:keys [user-handle social-service]}]
   [:div.flex.items-center
-   [:div.flex-auto.dark-gray.bold {:style {:word-break "break-all"}} "@" user-handle]
-   [:div.ml1 {:style {:width "15px" :height "15px"}}
+   [:div.flex-auto.dark-gray.medium {:style {:word-break "break-all"}} "@" user-handle]
+   [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
     (svg/social-icon social-service)]])
 
 (defn popup-slide [shop-ugcwidget? named-search {:keys [links] :as item}]

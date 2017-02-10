@@ -3,6 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
+            [storefront.platform.ugc :as ugc]
             [storefront.assets :as assets]
             [storefront.events :as events]
             [storefront.routes :as routes]
@@ -27,9 +28,8 @@
 
 (defn carousel [imgs]
   (om/build carousel/component
-            {:slides (mapv (fn [img] [:img.col-12 img]) imgs)
-             :settings {:dots true
-                        :dotsClass "carousel-dots"}}
+            {:slides   imgs
+             :settings {:dots false}}
             {:react-key "look-carousel"}))
 
 (defn distinct-product-imgs [shared-cart products]
@@ -38,10 +38,11 @@
        (map :product-id)
        (map (partial products/large-img products))
        (remove nil?)
-       distinct))
+       distinct
+       (map (fn [img] [:img.col-12 img]))))
 
 (defn imgs [look shared-cart products]
-  (cons (-> look :imgs :large)
+  (cons (ugc/content-view look)
         (distinct-product-imgs shared-cart products)))
 
 (defn decode-title [title]
@@ -74,10 +75,7 @@
          (carousel (imgs look shared-cart products))
          [:div
           [:div.px3.py2.mbp1.bg-light-gray
-           [:div.medium.dark-gray.h5.inline-block (str "@" (:user-handle look))]
-           [:div.right.inline-block {:style {:width  "20px"
-                                             :height "20px"}}
-            (svg/social-icon (:social-service look))]]
+           (ugc/user-attribution look)]
           (when-not (str/blank? (:title look))
             [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])]])
       (when shared-cart
