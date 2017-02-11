@@ -33,8 +33,8 @@
      (handle-message events/push-nav-stack nav-stack-item) ; TODO: save scroll top here?
      (history/enqueue-navigate navigation-event navigation-args))})
 
-(defn route-back [navigation-event & [navigation-args]]
-  {:href (routes/path-for navigation-event navigation-args)
+(defn route-back [{:keys [navigation-message]}]
+  {:href (apply routes/path-for navigation-message)
    :on-click
    (fn [e]
      (.preventDefault e)
@@ -42,6 +42,11 @@
      (handle-message events/pop-nav-stack)
      ;; use history.back(), so that scroll is restored
      (js/history.back))})
+
+(defn route-back-or-to [back navigation-event & [navigation-args]]
+  (if back
+    (route-back back)
+    (route-to navigation-event navigation-args)))
 
 (defn requesting?
   ([data request-key] (requesting? data :request-key request-key))

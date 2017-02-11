@@ -83,10 +83,10 @@
     (when (and shop-ugcwidget? (-> links :view-look boolean))
       [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase (:long-name named-search)))})])]])
 
-(defn popup-component [{:keys [offset ugc shop-ugcwidget?]} owner opts]
+(defn popup-component [{:keys [ugc offset back shop-ugcwidget?]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-to events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
+    (let [close-attrs (util/route-back-or-to back events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative
@@ -103,6 +103,7 @@
 (defn popup-query [data]
   {:ugc             (query data)
    :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
+   :back            (last (get-in data keypaths/navigation-stack))
    :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
 
 (defn built-popup-component [data opts]

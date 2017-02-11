@@ -59,9 +59,7 @@
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-        (if back
-          (apply utils/route-back (:navigation-message back))
-          (utils/route-to events/navigate-shop-by-look))
+        (utils/route-back-or-to back events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
                           :src   (assets/path "/images/icons/carat-left.png")}]
