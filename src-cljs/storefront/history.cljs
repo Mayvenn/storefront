@@ -1,9 +1,9 @@
 (ns storefront.history
-  (:require [storefront.routes :refer [path-for navigation-message-for]]
-            [storefront.platform.messages :refer [handle-message]]
+  (:require [storefront.routes :as routes]
+            [storefront.platform.messages :as messages]
             [goog.events]
             [goog.history.EventType :as EventType]
-            [cemerick.url :refer [url]])
+            [cemerick.url :as url])
   (:import [goog.history Html5History]))
 
 ;; Html5History transformer defaults to always appending location.search
@@ -29,9 +29,9 @@
 
 (defn set-current-page [browser-nav?]
   (let [uri                  (.getToken app-history)
-        query-params         (:query (url (or js/window.location.href js/document.URL "")))
-        [nav-event nav-args] (navigation-message-for uri query-params)]
-    (apply handle-message
+        query-params         (:query (url/url (or js/window.location.href js/document.URL "")))
+        [nav-event nav-args] (routes/navigation-message-for uri query-params)]
+    (apply messages/handle-message
            [nav-event (assoc nav-args
                              :nav-snapshot
                              {:leaving-scroll-top js/document.body.scrollTop
@@ -41,9 +41,9 @@
   (set! app-history (make-history set-current-page)))
 
 (defn enqueue-redirect [navigation-event & [args]]
-  (when-let [path (path-for navigation-event args)]
+  (when-let [path (routes/path-for navigation-event args)]
     (.setTimeout js/window #(.replaceToken app-history path))))
 
 (defn enqueue-navigate [navigation-event & [args]]
-  (when-let [path (path-for navigation-event args)]
+  (when-let [path (routes/path-for navigation-event args)]
     (.setTimeout js/window #(.setToken app-history path))))
