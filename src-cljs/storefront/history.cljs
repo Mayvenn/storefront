@@ -32,9 +32,8 @@
   (let [uri          (.getToken app-history)
         query-params (:query (url/url (or js/window.location.href js/document.URL "")))
         nav-message  (routes/navigation-message-for uri query-params)]
-    (if browser-nav?
-      (messages/handle-message events/browser-navigate {:navigation-message nav-message})
-      (apply messages/handle-message nav-message))))
+    (messages/handle-message (if browser-nav? events/browser-navigate events/control-navigate)
+                             {:navigation-message nav-message})))
 
 (defn start-history []
   (set! app-history (make-history set-current-page)))

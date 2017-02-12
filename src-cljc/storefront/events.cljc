@@ -79,6 +79,7 @@
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)
+(defpath stash-nav-stack-item)
 (defpath control-navigate)
 (defpath browser-navigate)
 

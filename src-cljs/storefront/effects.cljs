@@ -132,12 +132,13 @@
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
                                    config/telligent-community-url)))
 
-(defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message stack-item]} app-state]
+(defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message]} app-state]
   ;; A user has clicked a link
-  ;; Save scroll position on the page they are leaving
-  (handle-message events/navigation-save (assoc stack-item :final-scroll js/document.body.scrollTop))
-  ;; Make the browser set the URL ... it also triggers (handle-message navigation-message)
-  (apply history/enqueue-navigate navigation-message))
+  ;; The URL has already changed. Save scroll position on the page they are
+  ;; leaving, and handle the nav message.
+  (handle-message events/navigation-save (-> (get-in app-state keypaths/navigation-stashed-stack-item)
+                                             (assoc :final-scroll js/document.body.scrollTop)))
+  (apply handle-message navigation-message))
 
 (defmethod perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} app-state]
   ;; A user has clicked the forward/back button, or maybe a special link that

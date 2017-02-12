@@ -62,6 +62,9 @@
         app-state
         (assoc-in app-state keypaths/checkout-credit-card-name default)))))
 
+(defmethod transition-state events/stash-nav-stack-item [_ _ stack-item app-state]
+  (assoc-in app-state keypaths/navigation-stashed-stack-item stack-item))
+
 (def max-history-length 5)
 
 (defn push-nav-stack [app-state stack-keypath stack-item]
@@ -105,6 +108,7 @@
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
         (assoc-in keypaths/flash-later-failure nil)
+        (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
         ;; order is important from here on
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
