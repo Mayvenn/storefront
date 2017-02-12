@@ -65,13 +65,13 @@
 (defmethod transition-state events/stash-nav-stack-item [_ _ stack-item app-state]
   (assoc-in app-state keypaths/navigation-stashed-stack-item stack-item))
 
-(def max-history-length 5)
+(def max-nav-stack-depth 5)
 
 (defn push-nav-stack [app-state stack-keypath stack-item]
   (let [leaving-nav (get-in app-state keypaths/navigation-message)
         item        (merge {:navigation-message leaving-nav} stack-item)
         nav-stack   (get-in app-state stack-keypath nil)]
-    (->> (conj nav-stack item) (take max-history-length))))
+    (->> (conj nav-stack item) (take max-nav-stack-depth))))
 
 (defmethod transition-state events/navigation-save [_ _ stack-item app-state]
   ;; Going to a new page; add an element to the undo stack, and discard the redo stack
@@ -81,14 +81,14 @@
         (assoc-in keypaths/navigation-redo-stack nil))))
 
 (defmethod transition-state events/navigation-undo [_ _ stack-item app-state]
-  ;; Going to prior page; pop an element from the undo stack, add one to the redo stack
+  ;; Going to prior page; pop an element from the undo stack, push one onto the redo stack
   (let [nav-redo-stack (push-nav-stack app-state keypaths/navigation-redo-stack stack-item)]
     (-> app-state
         (update-in keypaths/navigation-undo-stack rest)
         (assoc-in keypaths/navigation-redo-stack nav-redo-stack))))
 
 (defmethod transition-state events/navigation-redo [_ _ stack-item app-state]
-  ;; Going to next page; pop an element from the redo stack, add one to the undo stack
+  ;; Going to next page; pop an element from the redo stack, push one onto the undo stack
   (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
     (-> app-state
         (assoc-in keypaths/navigation-undo-stack nav-undo-stack)
