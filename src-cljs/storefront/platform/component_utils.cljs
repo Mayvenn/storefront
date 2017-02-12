@@ -32,7 +32,7 @@
      ;; We're about to give control over to the browser; when we get control
      ;; back, we'll need some info about where we've come from
      (handle-message events/stash-nav-stack-item nav-stack-item)
-     (apply history/enqueue-navigate [navigation-event navigation-args]))})
+     (history/enqueue-navigate navigation-event navigation-args))})
 
 (defn route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)
