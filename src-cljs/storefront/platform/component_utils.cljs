@@ -29,18 +29,15 @@
    :on-click
    (fn [e]
      (.preventDefault e)
-     (handle-message events/control-menu-collapse-all)
-     (handle-message events/push-nav-stack nav-stack-item) ; TODO: save scroll top here?
-     (history/enqueue-navigate navigation-event navigation-args))})
+     (handle-message events/control-navigate {:stack-item         nav-stack-item
+                                              :navigation-message [navigation-event navigation-args]}))})
 
 (defn route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)
    :on-click
    (fn [e]
      (.preventDefault e)
-     (handle-message events/control-menu-collapse-all)
-     (handle-message events/pop-nav-stack)
-     ;; use history.back(), so that scroll is restored
+     ;; use history.back(), so that events/browser-navigate is triggered
      (js/history.back))})
 
 (defn route-back-or-to [back navigation-event & [navigation-args]]

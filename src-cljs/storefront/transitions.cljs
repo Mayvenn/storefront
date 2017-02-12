@@ -40,22 +40,6 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(defn maintain-scroll-state [app-state {:keys [leaving-scroll-top browser-nav?]}]
-  (if (get-in app-state keypaths/redirecting?)
-    app-state
-    ;; "prior"   -> page before that
-    ;; "leaving" -> page you're leaving
-    ;; "going"   -> page you're going to
-    (let [prior-scroll-top    (get-in app-state keypaths/prior-scroll-state)
-          ;; In our app, browser-nav? indicates the back/forward browser buttons were used
-          ;; it is also triggered by history.back()
-          ;; in any of those cases we want to restore scroll position
-          ;; all other cases are "new" navigations, and we want to scroll to top
-          restore-scroll-top  (if browser-nav? prior-scroll-top 0)]
-      (-> app-state
-          (assoc-in keypaths/prior-scroll-state leaving-scroll-top)
-          (assoc-in keypaths/restore-scroll-top restore-scroll-top)))))
-
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
     (if (nav/return-blacklisted? return-event)
@@ -78,11 +62,40 @@
         app-state
         (assoc-in app-state keypaths/checkout-credit-card-name default)))))
 
+(def max-history-length 5)
+
+(defn push-nav-stack [app-state stack-keypath stack-item]
+  (let [leaving-nav (get-in app-state keypaths/navigation-message)
+        item        (merge {:navigation-message leaving-nav} stack-item)
+        nav-stack   (get-in app-state stack-keypath nil)]
+    (->> (conj nav-stack item) (take max-history-length))))
+
+(defmethod transition-state events/navigation-save [_ _ stack-item app-state]
+  ;; Going to a new page; add an element to the undo stack, and discard the redo stack
+  (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
+    (-> app-state
+        (assoc-in keypaths/navigation-undo-stack nav-undo-stack)
+        (assoc-in keypaths/navigation-redo-stack nil))))
+
+(defmethod transition-state events/navigation-undo [_ _ stack-item app-state]
+  ;; Going to prior page; pop an element from the undo stack, add one to the redo stack
+  (let [nav-redo-stack (push-nav-stack app-state keypaths/navigation-redo-stack stack-item)]
+    (-> app-state
+        (update-in keypaths/navigation-undo-stack rest)
+        (assoc-in keypaths/navigation-redo-stack nav-redo-stack))))
+
+(defmethod transition-state events/navigation-redo [_ _ stack-item app-state]
+  ;; Going to next page; pop an element from the redo stack, add one to the undo stack
+  (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
+    (-> app-state
+        (assoc-in keypaths/navigation-undo-stack nav-undo-stack)
+        (update-in keypaths/navigation-redo-stack rest))))
+
 (defmethod transition-state events/redirect [_ event {:keys [nav-message]} app-state]
   (assoc-in app-state keypaths/redirecting? true))
 
-(defmethod transition-state events/navigate [_ event {:keys [nav-snapshot] :as args} app-state]
-  (let [args (dissoc args :nav-snapshot)]
+(defmethod transition-state events/navigate [_ event args app-state]
+  (let [args (dissoc args :nav-stack-item)]
     (-> app-state
         collapse-menus
         add-return-event
@@ -93,20 +106,8 @@
         (assoc-in keypaths/flash-later-success nil)
         (assoc-in keypaths/flash-later-failure nil)
         ;; order is important from here on
-        (maintain-scroll-state nav-snapshot)
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
-
-(defmethod transition-state events/push-nav-stack [_ event nav-stack-item app-state]
-  (let [item (merge
-              {:navigation-message (get-in app-state keypaths/navigation-message)}
-              nav-stack-item)
-        nav-stack (get-in app-state keypaths/navigation-stack [])
-        nav-stack (vec (take-last 5 (conj nav-stack item)))]
-    (assoc-in app-state keypaths/navigation-stack nav-stack)))
-
-(defmethod transition-state events/pop-nav-stack [_ _ _ app-state]
-  (update-in app-state keypaths/navigation-stack (comp vec butlast)))
 
 (def ^:private hostname (comp :host url/url))
 

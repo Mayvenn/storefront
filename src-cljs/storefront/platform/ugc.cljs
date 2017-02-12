@@ -103,7 +103,7 @@
 (defn popup-query [data]
   {:ugc             (query data)
    :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
-   :back            (last (get-in data keypaths/navigation-stack))
+   :back            (first (get-in data keypaths/navigation-undo-stack))
    :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
 
 (defn built-popup-component [data opts]

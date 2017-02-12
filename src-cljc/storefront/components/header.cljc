@@ -170,16 +170,16 @@
    [:div.flex.justify-end.items-center
     (when store-photo [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
     [:div.truncate store-nickname]]
-   (account-link (current-page? events/navigate-stylist-dashboard) events/navigate-stylist-dashboard-commissions "Dashboard")
+   (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.teal.block community-url "Community"]
-   (account-link (current-page? events/navigate-stylist-account) events/navigate-stylist-account-profile "Account Settings")))
+   (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
   (account-dropdown
    expanded?
    [:div.truncate user-email]
-   (account-link (current-page? events/navigate-account-manage) events/navigate-account-manage "Account Settings")
-   (account-link (current-page? events/navigate-account-referrals) events/navigate-account-referrals "Refer a Friend")))
+   (account-link (current-page? [events/navigate-account-manage]) events/navigate-account-manage "Account Settings")
+   (account-link (current-page? [events/navigate-account-referrals]) events/navigate-account-referrals "Refer a Friend")))
 
 (def guest-account
   (component/html
@@ -205,7 +205,7 @@
         (row
          (when (named-searches/new-named-search? slug) ui/new-flag)
          [:span.teal.titleize
-          (when (current-page? events/navigate-category {:named-search-slug slug})
+          (when (current-page? [events/navigate-category {:named-search-slug slug}])
             {:class padded-selected-link})
           name])]])]])
 
@@ -221,7 +221,7 @@
 (defn nav-link-options [current-page? nav-event]
   (merge
    {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)}
-   (when (current-page? nav-event) {:class selected-link})
+   (when (current-page? [nav-event]) {:class selected-link})
    (utils/route-to nav-event)))
 
 (def upper-left
@@ -243,7 +243,7 @@
                            {:href           "/categories"
                             :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
                             :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded)}
-                           (when (current-page? events/navigate-category) {:class selected-link}))
+                           (when (current-page? [events/navigate-category]) {:class selected-link}))
      "Shop"]
     [:a.black.col.py1.ml4 (nav-link-options current-page? events/navigate-shop-by-look)
      "Shop By Look"]]])
@@ -284,7 +284,7 @@
 
 (defn component [{:keys [store auth cart shop context]} _ _]
   (component/create
-   (let [context (assoc context :current-page? (partial routes/current-page? (:nav-message context)))]
+   (let [context (assoc context :current-page? (partial routes/sub-page? (:nav-message context)))]
      (header
       (left context)
       (middle store)

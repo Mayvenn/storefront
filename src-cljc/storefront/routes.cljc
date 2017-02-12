@@ -91,7 +91,17 @@
           (merge (when (seq query-params) {:query-params query-params}))
           keywordize-keys)])))
 
-(defn current-page? [[current-event current-args] target-event & [args]]
-  (and (= (take (count target-event) current-event)
-          target-event)
-       (every? #(= (%1 args) (%1 current-args)) (keys args))))
+(defn sub-page?
+  "Returns whether page1 is the same as page2 OR is a 'sub-page'.
+  For example, [events/navigate-checkout-address] is a sub-page of
+  [events/navigate-checkout]"
+  [[page1-event page1-args] [page2-event page2-args]]
+  (and (= (take (count page2-event) page1-event)
+          page2-event)
+       (every? #(= (%1 page2-args) (%1 page1-args)) (keys page2-args))))
+
+(defn exact-page?
+  "Returns whether page1 is the same as page2"
+  [[page1-event page1-args] [page2-event page2-args]]
+  (= [page1-event (or page1-args {})]
+     [page2-event (or page2-args {})]))

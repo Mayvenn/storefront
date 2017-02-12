@@ -1,6 +1,7 @@
 (ns storefront.history
   (:require [storefront.routes :as routes]
             [storefront.platform.messages :as messages]
+            [storefront.events :as events]
             [goog.events]
             [goog.history.EventType :as EventType]
             [cemerick.url :as url])
@@ -28,22 +29,20 @@
 (def app-history)
 
 (defn set-current-page [browser-nav?]
-  (let [uri                  (.getToken app-history)
-        query-params         (:query (url/url (or js/window.location.href js/document.URL "")))
-        [nav-event nav-args] (routes/navigation-message-for uri query-params)]
-    (apply messages/handle-message
-           [nav-event (assoc nav-args
-                             :nav-snapshot
-                             {:leaving-scroll-top js/document.body.scrollTop
-                              :browser-nav?       browser-nav?})])))
+  (let [uri          (.getToken app-history)
+        query-params (:query (url/url (or js/window.location.href js/document.URL "")))
+        nav-message  (routes/navigation-message-for uri query-params)]
+    (if browser-nav?
+      (messages/handle-message events/browser-navigate {:navigation-message nav-message})
+      (apply messages/handle-message nav-message))))
 
 (defn start-history []
   (set! app-history (make-history set-current-page)))
 
 (defn enqueue-redirect [navigation-event & [args]]
   (when-let [path (routes/path-for navigation-event args)]
-    (.setTimeout js/window #(.replaceToken app-history path))))
+    (js/setTimeout #(.replaceToken app-history path))))
 
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (routes/path-for navigation-event args)]
-    (.setTimeout js/window #(.setToken app-history path))))
+    (js/setTimeout #(.setToken app-history path))))

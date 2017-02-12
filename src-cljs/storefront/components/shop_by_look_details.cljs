@@ -88,7 +88,7 @@
    :look             (pixlee/selected-look data)
    :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
    :products         (get-in data keypaths/products)
-   :back             (last (get-in data keypaths/navigation-stack))
+   :back             (first (get-in data keypaths/navigation-undo-stack))
    :price-strikeout? (experiments/price-strikeout? data)})
 
 (defn built-component [data opts]

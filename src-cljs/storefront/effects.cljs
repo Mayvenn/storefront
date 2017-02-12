@@ -86,7 +86,7 @@
 
 (defn scroll-promo-field-to-top []
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
-  (js/window.setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
+  (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
 
 (defn redirect
   ([event] (redirect event nil))
@@ -132,58 +132,88 @@
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
                                    config/telligent-community-url)))
 
+(defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message stack-item]} app-state]
+  ;; A user has clicked a link
+  ;; Save scroll position on the page they are leaving
+  (handle-message events/navigation-save (assoc stack-item :final-scroll js/document.body.scrollTop))
+  ;; Make the browser set the URL ... it also triggers (handle-message navigation-message)
+  (apply history/enqueue-navigate navigation-message))
+
+(defmethod perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} app-state]
+  ;; A user has clicked the forward/back button, or maybe a special link that
+  ;; simulates the back button (utils/route-back). The browser already knows
+  ;; about the URL, so all we have to do is handle the nav message.
+  (let [leaving-nav        (get-in app-state keypaths/navigation-message)
+        leaving-stack-item {:final-scroll js/document.body.scrollTop}
+        back               (first (get-in app-state keypaths/navigation-undo-stack))
+        forward            (first (get-in app-state keypaths/navigation-redo-stack))]
+    (condp routes/exact-page? navigation-message
+      (:navigation-message back)
+      (do
+        (handle-message events/navigation-undo leaving-stack-item)
+        (apply handle-message (assoc-in navigation-message [1 :nav-stack-item] back)))
+
+      (:navigation-message forward)
+      (do
+        (handle-message events/navigation-redo leaving-stack-item)
+        (apply handle-message (assoc-in navigation-message [1 :nav-stack-item] forward)))
+
+      (apply handle-message navigation-message))))
+
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} app-state]
   (apply history/enqueue-redirect nav-message))
 
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
-(defmethod perform-effects events/navigate [_ event {:keys [query-params] :as args} app-state]
-  (refresh-account app-state)
-  (api/get-sms-number)
-  (api/get-promotions (get-in app-state keypaths/api-cache)
-                      (or
-                       (first (get-in app-state keypaths/order-promotion-codes))
-                       (get-in app-state keypaths/pending-promo-code)))
+(defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} app-state]
+  (let [args (dissoc args :nav-stack-item)]
+    (handle-later events/control-menu-collapse-all)
+    (refresh-account app-state)
+    (api/get-sms-number)
+    (api/get-promotions (get-in app-state keypaths/api-cache)
+                        (or
+                         (first (get-in app-state keypaths/order-promotion-codes))
+                         (get-in app-state keypaths/pending-promo-code)))
 
-  (let [order-number   (get-in app-state keypaths/order-number)
-        loaded-order?  (boolean (get-in app-state (conj keypaths/order :total)))
-        checkout-page? (routes/current-page? [event args] events/navigate-checkout)]
-    (when (and order-number
-               (or (not checkout-page?)
-                   (not loaded-order?)))
-      (api/get-order order-number (get-in app-state keypaths/order-token))))
-  (seo/set-tags app-state)
-  (let [restore-scroll-top (get-in app-state keypaths/restore-scroll-top 0)]
-    (if (zero? restore-scroll-top)
-      ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
-      (scroll/snap-to-top)
-      ;; Otherwise give the screen some time to render before trying to restore scroll
-      (handle-later events/snap {:top restore-scroll-top} 100)))
+    (let [order-number   (get-in app-state keypaths/order-number)
+          loaded-order?  (boolean (get-in app-state (conj keypaths/order :total)))
+          checkout-page? (routes/sub-page? [event args] [events/navigate-checkout])]
+      (when (and order-number
+                 (or (not checkout-page?)
+                     (not loaded-order?)))
+        (api/get-order order-number (get-in app-state keypaths/order-token))))
+    (seo/set-tags app-state)
+    (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
+      (if (zero? restore-scroll-top)
+        ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
+        (scroll/snap-to-top)
+        ;; Otherwise give the screen some time to render before trying to restore scroll
+        (handle-later events/snap {:top restore-scroll-top} 100)))
 
-  (when-let [pending-promo-code (:sha query-params)]
-    (cookie-jar/save-pending-promo-code
-     (get-in app-state keypaths/cookie)
-     pending-promo-code)
-    (redirect event (update-in args [:query-params] dissoc :sha)))
-
-  (let [utm-params (some-> query-params
-                           (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                           (set/rename-keys {:utm_source   :storefront/utm-source
-                                             :utm_medium   :storefront/utm-medium
-                                             :utm_campaign :storefront/utm-campaign
-                                             :utm_content  :storefront/utm-content
-                                             :utm_term     :storefront/utm-term})
-                           (maps/filter-nil))]
-    (when (seq utm-params)
-      (cookie-jar/save-utm-params
+    (when-let [pending-promo-code (:sha query-params)]
+      (cookie-jar/save-pending-promo-code
        (get-in app-state keypaths/cookie)
-       utm-params)))
+       pending-promo-code)
+      (redirect event (update-in args [:query-params] dissoc :sha)))
 
-  (when (get-in app-state keypaths/popup)
-    (handle-message events/control-popup-hide))
+    (let [utm-params (some-> query-params
+                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                             (set/rename-keys {:utm_source   :storefront/utm-source
+                                               :utm_medium   :storefront/utm-medium
+                                               :utm_campaign :storefront/utm-campaign
+                                               :utm_content  :storefront/utm-content
+                                               :utm_term     :storefront/utm-term})
+                             (maps/filter-nil))]
+      (when (seq utm-params)
+        (cookie-jar/save-utm-params
+         (get-in app-state keypaths/cookie)
+         utm-params)))
 
-  (exception-handler/refresh)
+    (when (get-in app-state keypaths/popup)
+      (handle-message events/control-popup-hide))
 
-  (update-email-capture-session app-state))
+    (exception-handler/refresh)
+
+    (update-email-capture-session app-state)))
 
 (defmethod perform-effects events/navigate-home [_ _ _ app-state]
   (potentially-show-email-popup app-state))

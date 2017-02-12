@@ -44,7 +44,7 @@
    (selectable current-navigation-message event-name {} content))
   ([current-navigation-message event-name event-args content]
    [:span
-    (when (routes/current-page? current-navigation-message event-name event-args)
+    (when (routes/sub-page? current-navigation-message [event-name event-args])
       {:class "border-navy border-bottom border-width-2 medium pyp1"})
     content]))
 
