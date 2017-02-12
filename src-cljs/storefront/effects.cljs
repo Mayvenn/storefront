@@ -299,29 +299,12 @@
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account user-token)))
 
-(defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-stats user-token)))
-
-(defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
-  (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
-    (handle-message events/control-stylist-commissions-fetch)))
-
 (defmethod perform-effects events/control [_ _ args app-state]
   (update-email-capture-session app-state))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in")))
-
-(defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
-  (let [user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        page (inc (get-in app-state keypaths/stylist-commissions-page 0))]
-    (when (and user-id user-token)
-      (api/get-stylist-commissions user-id
-                                   user-token
-                                   {:page page}))))
 
 (defmethod perform-effects events/app-restart [_ _ _ _]
   (.reload js/window.location))
@@ -344,6 +327,23 @@
                         (mapcat orders/product-items)
                         (map :product-id)
                         set)))
+
+(defmethod perform-effects events/navigate-stylist-dashboard [_ event args app-state]
+  (when-let [user-token (get-in app-state keypaths/user-token)]
+    (api/get-stylist-stats user-token)))
+
+(defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args app-state]
+  (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
+    (handle-message events/control-stylist-commissions-fetch)))
+
+(defmethod perform-effects events/control-stylist-commissions-fetch [_ _ args app-state]
+  (let [user-id (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)
+        page (inc (get-in app-state keypaths/stylist-commissions-page 0))]
+    (when (and user-id user-token)
+      (api/get-stylist-commissions user-id
+                                   user-token
+                                   {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args app-state]
   (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
