@@ -167,7 +167,7 @@
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} app-state]
   (let [args (dissoc args :nav-stack-item)]
-    (handle-later events/control-menu-collapse-all)
+    (handle-message events/control-menu-collapse-all)
     (refresh-account app-state)
     (api/get-sms-number)
     (api/get-promotions (get-in app-state keypaths/api-cache)
