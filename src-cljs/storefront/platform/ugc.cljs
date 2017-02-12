@@ -62,9 +62,8 @@
      [:div.container-size.bg-cover.bg-no-repeat.bg-center
       {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
 
-(defn view-look-button [{:keys [links]} nav-stack-item]
-  (let [{:keys [view-look view-other]} links
-        [nav-event nav-args] (or view-look view-other)]
+(defn view-look-button [{{:keys [view-look view-other]} :links} nav-stack-item]
+  (let [[nav-event nav-args] (or view-look view-other)]
     (ui/teal-button
      (util/route-to nav-event nav-args nav-stack-item)
      "View this look")))

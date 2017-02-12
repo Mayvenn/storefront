@@ -143,9 +143,9 @@
 (defmethod perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} app-state]
   ;; A user has clicked the forward/back button, or maybe a special link that
   ;; simulates the back button (utils/route-back). The browser already knows
-  ;; about the URL, so all we have to do is handle the nav message.
-  (let [leaving-nav        (get-in app-state keypaths/navigation-message)
-        leaving-stack-item {:final-scroll js/document.body.scrollTop}
+  ;; about the URL, so all we have to do is manipulate the undo/redo stacks and
+  ;; handle the nav message.
+  (let [leaving-stack-item {:final-scroll js/document.body.scrollTop}
         back               (first (get-in app-state keypaths/navigation-undo-stack))
         forward            (first (get-in app-state keypaths/navigation-redo-stack))]
     (condp routes/exact-page? navigation-message
