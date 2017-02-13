@@ -196,19 +196,20 @@ Thanks,
   (om/component
    (html
     (ui/narrow-container
-     [:.center {:data-test "empty-bag"}
-      [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
-                         :class "fill-black"})]
+     [:div.p2
+      [:.center {:data-test "empty-bag"}
+       [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
+                          :class "fill-black"})]
 
-      [:p.m2.h2.light "Your bag is empty."]
+       [:p.m2.h2.light "Your bag is empty."]
 
-      [:div.m2
-       (if-let [promo (promos/default-advertised-promotion promotions)]
-         (:description promo)
-         promos/bundle-discount-description)]]
+       [:div.m2
+        (if-let [promo (promos/default-advertised-promotion promotions)]
+          (:description promo)
+          promos/bundle-discount-description)]]
 
-     (ui/teal-button (utils/route-to events/navigate-shop-by-look)
-                     "Shop Our Looks")))))
+      (ui/teal-button (utils/route-to events/navigate-shop-by-look)
+                      "Shop Our Looks")]))))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
