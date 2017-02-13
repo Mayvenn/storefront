@@ -149,7 +149,7 @@
     [:div.clearfix (field-wrapper-class wrapper-class status)
      (floating-label label id status)
      [:label
-      [:input.col-12
+      [:input.col-12.h4.line-height-1
        (field-class (merge {:key         label
                             :placeholder label
                             :value       (or value "")
@@ -166,7 +166,7 @@
                                                :value   (.. e -target -value)}))}
                            input-attributes)
                     status)]
-      (when hint? [:div.p1
+      (when hint? [:div.py1.px2
                    (when error? {:class "red"})
                    hint])]]))
 

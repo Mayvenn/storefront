@@ -16,9 +16,10 @@
      [:div.p2
       [:h2.center.my2.navy "I'm new here"]
 
-      (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
-                       :data-test "guest-checkout-button"}
-                      "Guest Checkout")
+      [:div.col-6-on-tb-dt.mx-auto
+       (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
+                        :data-test "guest-checkout-button"}
+                       "Guest Checkout")]
 
       [:div.my3 [:.col-2.m-auto.border.border-gray]]
       [:h2.center.my2.navy "Already registered?"]

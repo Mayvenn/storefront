@@ -30,9 +30,12 @@
                        :focused focused
                        :value   show-password?})]
 
-       (ui/submit-button "Update")]
+       [:div.col-6-on-tb-dt.mx-auto
+        (ui/submit-button "Update")]]
       [:.h5.center.dark-gray.light.my2 "OR"]
-      (facebook/reset-button loaded-facebook?)]))))
+
+      [:div.col-6-on-tb-dt.mx-auto
+       (facebook/reset-button loaded-facebook?)]]))))
 
 (defn query [data]
   {:reset-password   (get-in data keypaths/reset-password-password)

@@ -268,7 +268,7 @@
         (om/build shipping-address-component shipping-address-data)
         (om/build billing-address-component billing-address-data)
 
-        [:.my2.col-12
+        [:div.my2.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Continue to Payment" {:spinning? saving?
                                                   :data-test "address-form-submit"})]]])])))
 

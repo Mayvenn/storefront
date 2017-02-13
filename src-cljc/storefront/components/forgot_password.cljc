@@ -24,11 +24,13 @@
                       :type       "email"
                       :value      email})
 
-      (ui/submit-button "Reset my password")]
+      [:div.col-6-on-tb-dt.mx-auto
+       (ui/submit-button "Reset my password")]]
 
      [:div.h5.center.dark-gray.light.my2 "OR"]
 
-     (facebook/sign-in-button facebook-loaded?)])))
+     [:div.col-6-on-tb-dt.mx-auto
+      (facebook/sign-in-button facebook-loaded?)]])))
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)

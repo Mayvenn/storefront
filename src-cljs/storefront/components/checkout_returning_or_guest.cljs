@@ -20,7 +20,7 @@
         [:h1 "Secure checkout"]
         [:p "Sign in or checkout as a guest."]]
 
-       [:div.clearfix.mxn1.my2
+       [:div.clearfix.my2.col-6.mx-auto
         [:div.col.col-6.p1
          (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
                                 :data-test "begin-password-sign-in-button")

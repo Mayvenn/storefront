@@ -19,7 +19,8 @@
     [:div.p2
      [:h1.h2.center.mt2.mb3.navy "Sign up for an account"]
 
-     (facebook/sign-in-button facebook-loaded?)
+     [:div.col-6-on-tb-dt.mx-auto
+      (facebook/sign-in-button facebook-loaded?)]
 
      [:div.h5.center.dark-gray.light.my2 "OR"]
 
@@ -47,13 +48,14 @@
                       :value     password
                       :hint      (when show-password? password)})
 
-      (ui/submit-button "Sign Up"
-                        {:data-test "user-submit"})
-
       [:div.dark-gray.mt2.mb2.col-12.left
        (ui/check-box {:label   "Show password"
                       :keypath keypaths/account-show-password?
                       :value   show-password?})]
+
+      [:div.col-6-on-tb-dt
+       (ui/submit-button "Sign Up"
+                         {:data-test "user-submit"})]
 
       [:div.center.dark-gray.mt2.mb2 "Already have an account? "
        [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]])))

@@ -147,11 +147,11 @@
             [:div
              (om/build credit-card-form-component {:credit-card credit-card
                                                    :field-errors field-errors})
-             [:.h5
+             [:div.h5
               "You can review your order on the next page before we charge your card."]])
 
           (when loaded-stripe?
-            [:.my2
+            [:div.my2.col-6-on-tb-dt.mx-auto
              (ui/submit-button "Go to Review Order" {:spinning? saving?
                                                      :disabled? disabled?
                                                      :data-test "payment-form-submit"})])]]))])))

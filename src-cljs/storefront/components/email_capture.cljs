@@ -28,7 +28,7 @@
                                   :required true
                                   :type     "email"
                                   :value    email})
-                  [:div.col-12.my2 (ui/submit-button "Submit")]
+                  [:div.col-6-on-tb-dt.mx-auto.my2 (ui/submit-button "Submit")]
                   [:p.h6.dark-gray.mb2
                    "By signing up, you agree to receive Mayvenn emails and promotions. "
                    "You can unsubscribe at any time. See our Privacy Policy for details."]]])))))
