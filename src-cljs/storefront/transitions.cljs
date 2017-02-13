@@ -168,7 +168,7 @@
 (defmethod transition-state events/navigate-ugc-category [_ event {:keys [named-search-slug query-params]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
-      (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params 0))))
+      (assoc-in keypaths/ui-ugc-category-popup-offset (js/parseInt (:offset query-params 0) 10))))
 
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
