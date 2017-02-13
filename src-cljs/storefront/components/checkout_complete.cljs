@@ -14,19 +14,20 @@
   (om/component
    (html
     (ui/narrow-container
-     [:.my2.center order-complete-check]
+     [:div.p2
+      [:div.my2.center order-complete-check]
 
-     [:.mx3
-      [:.h2.center
-       {:data-test "checkout-success-message"}
-       "Thank you for your order!"]
+      [:div.mx3
+       [:div.h2.center
+        {:data-test "checkout-success-message"}
+        "Thank you for your order!"]
 
-      [:.py2
-       [:p.my2.dark-gray
-        "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
+       [:div.py2
+        [:p.my2.dark-gray
+         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
-     [:div.mb2
-      (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")]))))
+      [:div.mb2
+       (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")]]))))
 
 (defn built-component [data _]
   (om/build component {}))

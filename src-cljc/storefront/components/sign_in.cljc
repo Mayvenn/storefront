@@ -66,8 +66,9 @@
 (defn component [form-data owner opts]
   (component/create
    (ui/narrow-container
-    [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
-    (component/build form-component form-data nil))))
+    [:div.p2
+     [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
+     (component/build form-component form-data nil)])))
 
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)

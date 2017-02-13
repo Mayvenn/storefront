@@ -11,27 +11,28 @@
   (om/component
    (html
     (ui/narrow-container
-     [:h2.center.my2.navy.mb3 "Update Your Password"]
-     [:form.col-12
-      {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
-      (ui/text-field {:errors     (get field-errors ["password"])
-                      :keypath    keypaths/reset-password-password
-                      :focused    focused
-                      :label      "Password"
-                      :min-length 6
-                      :required   true
-                      :type       "password"
-                      :value      reset-password
-                      :hint       (when show-password? reset-password)})
-      [:div.dark-gray.mtn2.mb2.col-12.left
-       (ui/check-box {:label   "Show password"
-                      :keypath keypaths/account-show-password?
-                      :focused focused
-                      :value   show-password?})]
+     [:div.p2
+      [:h2.center.my2.navy.mb3 "Update Your Password"]
+      [:form.col-12
+       {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
+       (ui/text-field {:errors     (get field-errors ["password"])
+                       :keypath    keypaths/reset-password-password
+                       :focused    focused
+                       :label      "Password"
+                       :min-length 6
+                       :required   true
+                       :type       "password"
+                       :value      reset-password
+                       :hint       (when show-password? reset-password)})
+       [:div.dark-gray.mtn2.mb2.col-12.left
+        (ui/check-box {:label   "Show password"
+                       :keypath keypaths/account-show-password?
+                       :focused focused
+                       :value   show-password?})]
 
-      (ui/submit-button "Update")]
-     [:.h5.center.dark-gray.light.my2 "OR"]
-     (facebook/reset-button loaded-facebook?)))))
+       (ui/submit-button "Update")]
+      [:.h5.center.dark-gray.light.my2 "OR"]
+      (facebook/reset-button loaded-facebook?)]))))
 
 (defn query [data]
   {:reset-password   (get-in data keypaths/reset-password-password)

@@ -30,16 +30,17 @@
   (component/create
    (when (or success failure (seq errors))
      (ui/narrow-container
-      (cond
-        (or failure (seq errors))
-        (error-box
-         {:data-test "flash-error"}
-         [:div.px2 (or failure (get errors :error-message))])
+      [:div.p2
+       (cond
+         (or failure (seq errors))
+         (error-box
+          {:data-test "flash-error"}
+          [:div.px2 (or failure (get errors :error-message))])
 
-        success
-        (success-box
-         {:data-test "flash-success"}
-         [:div.px2 success]))))))
+         success
+         (success-box
+          {:data-test "flash-success"}
+          [:div.px2 success]))]))))
 
 (defn query [data]
   {:success (get-in data keypaths/flash-now-success-message)

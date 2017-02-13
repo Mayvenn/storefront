@@ -15,8 +15,7 @@
   [& content]
   [:div.container
    [:div.m-auto.col-8-on-tb.col-6-on-dt
-    ;; TODO: should this div be in the callers?
-    (into [:div.p2] content)]])
+    content]])
 
 (def spinner
   "Spinner that fills line, assuming line-height is 1.5em"
