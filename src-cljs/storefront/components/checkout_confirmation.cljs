@@ -60,9 +60,10 @@
                                         :use-store-credit?      true
                                         :available-store-credit available-store-credit}
                                        price-strikeout?)
-        (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                         :disabled? updating-shipping?
-                                         :data-test "confirm-form-submit"})]]]])))
+        [:div.col-6-on-tb-dt.mx-auto
+         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                          :disabled? updating-shipping?
+                                          :data-test "confirm-form-submit"})]]]]])))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
