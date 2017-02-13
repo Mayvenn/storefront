@@ -645,31 +645,30 @@
                                      :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
       :event events/external-redirect-paypal-setup})))
 
-(defmethod perform-effects events/control-stylist-account-profile-submit [_ events args app-state]
+(defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args app-state]
   (let [user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-profile user-token stylist-account)))
 
-(defmethod perform-effects events/control-stylist-account-password-submit [_ events args app-state]
+(defmethod perform-effects events/control-stylist-account-password-submit [_ _ args app-state]
   (let [user-token            (get-in app-state keypaths/user-token)
         stylist-account       (get-in app-state keypaths/stylist-manage-account)]
     (when (empty? (get-in app-state keypaths/errors))
       (api/update-stylist-account-password user-token stylist-account))))
 
-(defmethod perform-effects events/control-stylist-account-commission-submit [_ events args app-state]
+(defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args app-state]
   (let [user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-commission user-token stylist-account)))
 
-(defmethod perform-effects events/control-stylist-account-social-submit [_ events args app-state]
+(defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ app-state]
   (let [user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-social user-token stylist-account)))
 
-(defmethod perform-effects events/control-stylist-account-photo-pick [_ events args app-state]
-  (let [user-token      (get-in app-state keypaths/user-token)
-        profile-picture (:file args)]
-    (api/update-stylist-account-photo user-token profile-picture)))
+(defmethod perform-effects events/control-stylist-account-photo-pick [_ _ {:keys [file]} app-state]
+  (let [user-token (get-in app-state keypaths/user-token)]
+    (api/update-stylist-account-photo user-token file)))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
