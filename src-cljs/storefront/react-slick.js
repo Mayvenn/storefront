@@ -444,7 +444,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return _react2.default.createElement(
 	      'div',
-	      { className: className, onMouseEnter: this.onInnerSliderEnter, onMouseLeave: this.onInnerSliderLeave },
+	      {
+	        className: className,
+	        onMouseEnter: this.onInnerSliderEnter,
+	        onMouseLeave: this.onInnerSliderLeave,
+	        onMouseOver: this.onInnerSliderOver
+	      },
 	      prevArrow,
 	      _react2.default.createElement(
 	        'div',
@@ -736,9 +741,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  swipeEnd: function swipeEnd(e) {
 	    if (!this.state.dragging) {
-        if (this.props.swipe) {
-          e.preventDefault();
-        }
+	      if (this.props.swipe) {
+	        e.preventDefault();
+	      }
 	      return;
 	    }
 	    var touchObject = this.state.touchObject;
@@ -802,6 +807,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	  onInnerSliderEnter: function onInnerSliderEnter(e) {
+	    if (this.props.autoplay && this.props.pauseOnHover) {
+	      this.pause();
+	    }
+	  },
+	  onInnerSliderOver: function onInnerSliderOver(e) {
 	    if (this.props.autoplay && this.props.pauseOnHover) {
 	      this.pause();
 	    }
@@ -967,8 +977,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        targetSlide = _reactDom2.default.findDOMNode(spec.trackRef).children[spec.slideIndex + spec.slidesToShow + 1];
 	      }
 
-	      targetLeft = targetSlide ? targetSlide.offsetLeft * -1 : 0;
-	      targetLeft += (spec.listWidth - targetSlide.offsetWidth) / 2;
+	      if (targetSlide) {
+	        targetLeft = targetSlide.offsetLeft * -1 + (spec.listWidth - targetSlide.offsetWidth) / 2;
+	      }
 	    }
 	  }
 
@@ -1159,7 +1170,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var listHeight = slideHeight * props.slidesToShow;
 
 	    // pause slider if autoplay is set to false
-	    if (!props.autoplay) this.pause();
+	    if (props.autoplay) {
+	      this.pause();
+	    } else {
+	      this.autoPlay();
+	    }
 
 	    this.setState({
 	      slideCount: slideCount,
@@ -1181,10 +1196,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	  },
 	  getWidth: function getWidth(elem) {
-	    return elem.getBoundingClientRect().width || elem.offsetWidth;
+	    return elem.getBoundingClientRect().width || elem.offsetWidth || 0;
 	  },
 	  getHeight: function getHeight(elem) {
-	    return elem.getBoundingClientRect().height || elem.offsetHeight;
+	    return elem.getBoundingClientRect().height || elem.offsetHeight || 0;
 	  },
 
 	  adaptHeight: function adaptHeight() {
@@ -1420,17 +1435,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  autoPlay: function autoPlay() {
 	    if (this.state.autoPlayTimer) {
-	      return;
+	      clearTimeout(this.state.autoPlayTimer);
 	    }
 	    if (this.props.autoplay) {
 	      this.setState({
-	        autoPlayTimer: setInterval(this.play, this.props.autoplaySpeed)
+	        autoPlayTimer: setTimeout(this.play, this.props.autoplaySpeed)
 	      });
 	    }
 	  },
 	  pause: function pause() {
 	    if (this.state.autoPlayTimer) {
-	      clearInterval(this.state.autoPlayTimer);
+	      clearTimeout(this.state.autoPlayTimer);
 	      this.setState({
 	        autoPlayTimer: null
 	      });
@@ -1906,6 +1921,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      key: '0',
 	      'data-role': 'none',
 	      className: (0, _classnames2.default)(prevClasses),
+	      currentSlide: this.props.currentSlide,
+	      slideCount: this.props.slideCount,
 	      style: { display: 'block' },
 	      onClick: prevHandler
 	    };
@@ -1947,6 +1964,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      key: '1',
 	      'data-role': 'none',
 	      className: (0, _classnames2.default)(nextClasses),
+	      currentSlide: this.props.currentSlide,
+	      slideCount: this.props.slideCount,
 	      style: { display: 'block' },
 	      onClick: nextHandler
 	    };
