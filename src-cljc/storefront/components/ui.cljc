@@ -55,7 +55,7 @@
 
 (defn ^:private button-class [color-kw {:keys [class]}]
   (str/join " "
-            ["btn col-12 h4"
+            ["btn col-12 h5"
              (button-colors color-kw)
              class]))
 
