@@ -42,15 +42,16 @@
       [:h1 "Thank you for your order!"]
       [:p "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]
      (when guest?
-       [:section.py2.mx-auto.center
-        [:img {:src (assets/path "/images/icons/profile.png")
-               :height "55px"
-               :width "55px"}]
-        [:h1 "Create an account"]
-        [:p "Take advantage of express checkout, order tracking, and more when you sign up."]
+       [:div
+        [:section.py2.mx-auto.center
+         [:img {:src (assets/path "/images/icons/profile.png")
+                :height "55px"
+                :width "55px"}]
+         [:h1 "Create an account"]
+         [:p "Take advantage of express checkout, order tracking, and more when you sign up."]
 
-        [:p.py2 "Sign in with Facebook to link your account."]]
-       (sign-up/form sign-up-data {:sign-up-text "Create my account"}))])))
+         [:p.py2 "Sign in with Facebook to link your account."]]
+        (sign-up/form sign-up-data {:sign-up-text "Create my account"})])])))
 
 (defn component [{:keys [address-login?] :as data} opts]
   (if address-login?
