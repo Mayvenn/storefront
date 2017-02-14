@@ -97,6 +97,11 @@
 (defmethod transition-state events/redirect [_ event {:keys [nav-message]} app-state]
   (assoc-in app-state keypaths/redirecting? true))
 
+(defn clear-completed-order [app-state]
+  (cond-> app-state
+    (nav/auth-events (get-in app-state keypaths/navigation-event))
+    (assoc-in keypaths/completed-order nil)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)]
     (-> app-state
@@ -104,6 +109,7 @@
         add-return-event
         (add-pending-promo-code args)
         clear-flash
+        clear-completed-order
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
@@ -234,6 +240,10 @@
   (-> app-state
       ensure-cart-has-shipping-method
       (update-in keypaths/checkout-credit-card-existing-cards empty)))
+
+(defmethod transition-state events/navigate-order-complete [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-id)
+    (add-return-event app-state)))
 
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
@@ -432,8 +442,7 @@
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
-      (update-in keypaths/bundle-builder bundle-builder/rollback)
-      (assoc-in keypaths/completed-order {})))
+      (update-in keypaths/bundle-builder bundle-builder/rollback)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
@@ -499,7 +508,7 @@
         (assoc-in keypaths/checkout-selected-shipping-method
                   (merge (first (get-in app-state keypaths/shipping-methods))
                          (orders/shipping-item order))))
-    (assoc-in app-state keypaths/order {})))
+    (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
@@ -554,15 +563,13 @@
   (assoc-in app-state keypaths/sms-number (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (-> app-state
-      (assoc-in keypaths/order order)
-      (assoc-in keypaths/completed-order {})))
+  (assoc-in app-state keypaths/order order))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
-      (assoc-in keypaths/order {})
+      (assoc-in keypaths/order nil)
       (assoc-in keypaths/completed-order order)
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
@@ -675,6 +682,7 @@
   (let [signed-out-app-state (-> app-state
                                  (assoc-in keypaths/user {})
                                  (assoc-in keypaths/order nil)
+                                 (assoc-in keypaths/completed-order nil)
                                  (assoc-in keypaths/stylist state/initial-stylist-state)
                                  (assoc-in keypaths/checkout state/initial-checkout-state)
                                  (assoc-in keypaths/billing-address {})

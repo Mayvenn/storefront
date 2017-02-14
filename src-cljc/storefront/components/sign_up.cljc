@@ -55,8 +55,6 @@
                        {:data-test "user-submit"})]]])
 
 (defn component [data _ _]
-
-
   (component/create
    (ui/narrow-container
     [:div.p2
