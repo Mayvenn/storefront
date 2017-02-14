@@ -39,7 +39,7 @@
       [:img {:src (assets/path "/images/icons/success.png")
              :height "55px"
              :width "55px"}]
-      [:h1 "Thank you for your order!"]
+      [:h1 {:data-test "checkout-success-message"} "Thank you for your order!"]
       [:p "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]
      (when guest?
        [:div
