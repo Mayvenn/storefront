@@ -379,6 +379,8 @@
       (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
+(defmethod transition-state events/uploadcare-api-success-upload-image
+  [_ _ {:keys [file-info]} app-state])
 
 (defmethod transition-state events/api-partial-success-send-stylist-referrals
   [_ event {:keys [results] :as x} app-state]
@@ -618,6 +620,9 @@
 
 (defmethod transition-state events/inserted-stripe [_ event args app-state]
   (assoc-in app-state keypaths/loaded-stripe true))
+
+(defmethod transition-state events/inserted-uploadcare [_ _ _ app-state]
+  (assoc-in app-state keypaths/loaded-uploadcare true))
 
 (defmethod transition-state events/inserted-facebook [_ event args app-state]
   (assoc-in app-state keypaths/loaded-facebook true))

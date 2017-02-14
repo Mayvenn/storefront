@@ -160,6 +160,8 @@
 
 (defpath control-commission-order-expand)
 
+(defpath control-file-upload-stylist-profile-open)
+
 (defpath control-play-video)
 (defpath video-played)
 
@@ -265,12 +267,13 @@
 (defpath talkable-offer-shown)
 
 (defpath inserted)
-(defpath inserted-places)
-(defpath inserted-facebook)
-(defpath inserted-stripe)
-(defpath inserted-reviews)
-(defpath inserted-talkable)
 (defpath inserted-convert)
+(defpath inserted-facebook)
+(defpath inserted-places)
+(defpath inserted-reviews)
+(defpath inserted-stripe)
+(defpath inserted-talkable)
+(defpath inserted-uploadcare)
 
 (defpath autocomplete-update-address)
 
@@ -282,6 +285,9 @@
 (defpath pixlee-api-success-fetch-image)
 (defpath pixlee-api-success-fetch-named-search-album-ids)
 (defpath pixlee-api-failure-fetch-album)
+
+(defpath uploadcare-api-success-upload-image)
+(defpath uploadcare-api-failure)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

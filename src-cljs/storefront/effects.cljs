@@ -4,9 +4,9 @@
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
             [storefront.accessors.credit-cards :refer [parse-expiration]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
@@ -17,7 +17,6 @@
             [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.routes :as routes]
             [storefront.history :as history]
             [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.convert :as convert]
@@ -34,11 +33,12 @@
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.svg :as svg]
             [storefront.hooks.talkable :as talkable]
+            [storefront.hooks.uploadcare :as uploadcare]
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
-            [storefront.utils.maps :as maps]
-            [storefront.utils.query :as query]))
+            [storefront.routes :as routes]
+            [storefront.utils.maps :as maps]))
 
 (defn potentially-show-email-popup [app-state]
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
@@ -296,6 +296,8 @@
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
+    (when (experiments/uploadcare? app-state)
+      (uploadcare/insert))
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account user-token)))
 
@@ -669,6 +671,12 @@
 (defmethod perform-effects events/control-stylist-account-photo-pick [_ _ {:keys [file]} app-state]
   (let [user-token (get-in app-state keypaths/user-token)]
     (api/update-stylist-account-photo user-token file)))
+
+(defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} app-state]
+  (exception-handler/report error file-info))
+
+(defmethod perform-effects events/control-file-upload-stylist-profile-open [_ _ _ app-state]
+  (uploadcare/dialog))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)

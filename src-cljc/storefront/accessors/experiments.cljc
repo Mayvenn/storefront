@@ -70,3 +70,6 @@
 
 (defn shop-ugcwidget? [data]
   (display-feature? data "shop-ugcwidget"))
+
+(defn uploadcare? [data]
+  (display-feature? data "uploadcare"))

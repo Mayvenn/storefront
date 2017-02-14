@@ -220,12 +220,13 @@
 (def review-components-count (conj ui :review-components-count))
 
 (def loaded (conj ui :loaded))
+(def loaded-convert (conj loaded :convert))
+(def loaded-facebook (conj loaded :facebook))
+(def loaded-places (conj loaded :places))
 (def loaded-reviews (conj loaded :reviews))
 (def loaded-stripe (conj loaded :stripe))
-(def loaded-places (conj loaded :places))
-(def loaded-facebook (conj loaded :facebook))
 (def loaded-talkable (conj loaded :talkable))
-(def loaded-convert (conj loaded :convert))
+(def loaded-uploadcare (conj loaded :uploadcare))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))
 

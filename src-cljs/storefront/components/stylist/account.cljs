@@ -6,10 +6,30 @@
             [storefront.components.stylist.account.social :as account.social]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
+            [storefront.hooks.uploadcare :as uploadcare]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.accessors.experiments :as experiments]))
+
+(defn uploadcare-photo [profile-picture-url photo-saving?]
+  [:label.navy
+   {:on-click (utils/send-event-callback events/control-file-upload-stylist-profile-open)}
+   (when photo-saving?
+     [:div.absolute
+      [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
+       {:style {:width "130px" :height "130px"
+                :top "-12px" :left "-12px"}}]])
+   [:div.mx-auto.circle.border.mb2.content-box
+    {:style {:width "100px" :height "100px" :border-width "3px"}
+     :class (if photo-saving? "border-light-gray" "border-teal")}
+    [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
+     (ui/circle-picture {:width "96px"} profile-picture-url)]]
+   "Change Photo"
+   [:input.hide {:name "mayvenn_stylist[profile_picture]"
+                 :type "hidden"
+                 :data-test "profile-photo"}]])
 
 (defn edit-photo [profile-picture-url photo-saving?]
   [:label.navy
@@ -44,13 +64,16 @@
                          profile
                          password
                          commission
-                         social]} owner opts]
+                         social
+                         uploadcare?]} owner opts]
   (component/create
    [:div.bg-white.dark-gray
     [:div.container.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div
-       (edit-photo profile-picture-url photo-saving?)]
+       (if uploadcare?
+         (uploadcare-photo profile-picture-url photo-saving?)
+         (edit-photo profile-picture-url photo-saving?))]
 
       [:div.ml3
        (store-credit available-credit)]]
@@ -91,7 +114,9 @@
    :profile             (account.profile/query data)
    :password            (account.password/query data)
    :commission          (account.commission/query data)
-   :social              (account.social/query data)})
+   :social              (account.social/query data)
+   :uploadcare?         (and (experiments/uploadcare? data)
+                             (get-in data keypaths/loaded-uploadcare))})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
