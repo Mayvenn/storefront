@@ -423,6 +423,16 @@
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
+(defn update-stylist-account-portrait [user-token stylist-account]
+  (api-req
+   PUT
+   "/stylist"
+   request-keys/update-stylist-account-portrait
+   {:params {:user-token user-token :stylist stylist-account}
+    :handler
+    #(messages/handle-message events/api-success-stylist-account-portrait
+                              {:stylist (select-stylist-account-keys %)})}))
+
 (defn update-stylist-account-photo [user-token profile-picture]
   (let [form-data (doto (js/FormData.)
                     (.append "file" profile-picture (.-name profile-picture))

@@ -389,9 +389,6 @@
       (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
-(defmethod transition-state events/uploadcare-api-success-upload-image
-  [_ _ {:keys [file-info]} app-state])
-
 (defmethod transition-state events/api-partial-success-send-stylist-referrals
   [_ event {:keys [results] :as x} app-state]
   (update-in app-state keypaths/stylist-referrals

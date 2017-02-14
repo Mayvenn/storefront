@@ -17,8 +17,7 @@
   (handle-message events/uploadcare-api-success-upload-image
                   {:file-info (js->clj file-info :keywordize-keys true)}))
 
-(defn ^:private handle-error
-  [error file-info]
+(defn ^:private handle-error [error file-info]
   (handle-message events/uploadcare-api-failure
                   {:error error
                    :file-info (js->clj file-info :keywordize-keys true)}))

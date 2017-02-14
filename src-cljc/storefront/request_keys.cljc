@@ -24,6 +24,7 @@
 (def update-stylist-account-password [:update-stylist-account-password])
 (def update-stylist-account-commission [:update-stylist-account-commission])
 (def update-stylist-account-social [:update-stylist-account-social])
+(def update-stylist-account-portrait [:update-stylist-account-portrait])
 (def get-stylist-stats [:get-stylist-stats])
 (def get-stylist-commissions [:get-stylist-commissions])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
