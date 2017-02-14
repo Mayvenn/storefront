@@ -431,6 +431,8 @@
   (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
+  (when (experiments/address-login? app-state)
+    (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
   (when paypal
@@ -938,5 +940,7 @@
   (ensure-products app-state (map :product-id (:line-items cart))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} app-state]
+  (when (experiments/address-login? app-state)
+    (facebook/insert))
   ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
   (fetch-named-search-album app-state))
