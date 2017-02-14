@@ -93,6 +93,7 @@
 
      :user (cookie-jar/retrieve-login cookie)
      :order (cookie-jar/retrieve-current-order cookie)
+     :completed-order nil
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
 

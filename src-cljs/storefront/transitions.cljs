@@ -432,7 +432,8 @@
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
-      (update-in keypaths/bundle-builder bundle-builder/rollback)))
+      (update-in keypaths/bundle-builder bundle-builder/rollback)
+      (assoc-in keypaths/completed-order {})))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
@@ -553,13 +554,16 @@
   (assoc-in app-state keypaths/sms-number (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (assoc-in app-state keypaths/order order))
+  (-> app-state
+      (assoc-in keypaths/order order)
+      (assoc-in keypaths/completed-order {})))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/order {})
+      (assoc-in keypaths/completed-order order)
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]

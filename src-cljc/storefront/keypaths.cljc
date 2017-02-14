@@ -32,6 +32,9 @@
 (def order-number (conj order :number))
 (def order-user (conj order :user))
 
+(def completed-order [:completed-order])
+(def completed-order-number (conj completed-order :number))
+
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])
 
