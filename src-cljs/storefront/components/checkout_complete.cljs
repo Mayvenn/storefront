@@ -60,7 +60,7 @@
 
 (defn query [data]
   {:address-login? (experiments/address-login? data)
-   :guest?         (not (get-in data keypaths/user))
+   :guest?         (not (get-in data keypaths/user-id))
    :sign-up-data   (sign-up/query data)})
 
 (defn built-component [data opts]
