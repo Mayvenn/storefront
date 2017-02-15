@@ -354,6 +354,7 @@
       (select-keys [:birth_date_1i :birth_date_2i :birth_date_3i
                     :birth-date
                     :profile_picture_url
+                    :portrait
                     :chosen_payout_method
                     :venmo_payout_attributes
                     :paypal_payout_attributes

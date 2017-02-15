@@ -13,19 +13,19 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
 
-(defn uploadcare-photo [profile-picture-url photo-saving?]
+(defn uploadcare-photo [portrait saving?]
   [:div.navy
    {:on-click (utils/send-event-callback events/control-file-upload-stylist-profile-open)}
-   (when photo-saving?
+   (when saving?
      [:div.absolute
       [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
        {:style {:width "130px" :height "130px"
                 :top "-12px" :left "-12px"}}]])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if photo-saving? "border-light-gray" "border-teal")}
+     :class (if saving? "border-light-gray" "border-teal")}
     [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
-     (ui/circle-picture {:width "96px"} profile-picture-url)]]
+     (ui/circle-picture {:width "96px"} (:resizable_url portrait))]]
    "Change Photo"])
 
 (defn edit-photo [profile-picture-url photo-saving?]
@@ -55,8 +55,10 @@
 
 (defn component [{:keys [fetching?
                          photo-saving?
+                         portrait-saving?
                          current-nav-event
                          profile-picture-url
+                         portrait
                          available-credit
                          profile
                          password
@@ -69,7 +71,7 @@
      [:div.flex.justify-center.items-center.center
       [:div
        (if uploadcare?
-         (uploadcare-photo profile-picture-url photo-saving?)
+         (uploadcare-photo portrait portrait-saving?)
          (edit-photo profile-picture-url photo-saving?))]
 
       [:div.ml3
@@ -105,8 +107,10 @@
 (defn query [data]
   {:fetching?           (utils/requesting? data request-keys/get-stylist-account)
    :photo-saving?       (utils/requesting? data request-keys/update-stylist-account-photo)
+   :portrait-saving?    (utils/requesting? data request-keys/update-stylist-account-portrait)
    :current-nav-event   (get-in data keypaths/navigation-event)
    :profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
+   :portrait            (get-in data (conj keypaths/stylist-manage-account :portrait))
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
    :profile             (account.profile/query data)
    :password            (account.password/query data)
