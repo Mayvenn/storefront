@@ -189,6 +189,7 @@
 (defpath api-success-manage-account)
 (defpath api-success-stylist-account)
 (defpath api-success-stylist-account-photo)
+(defpath api-success-stylist-account-portrait)
 (defpath api-success-stylist-account-profile)
 (defpath api-success-stylist-account-password)
 (defpath api-success-stylist-account-commission)
