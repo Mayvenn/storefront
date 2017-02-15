@@ -34,23 +34,23 @@
 (defn address-login-component [{:keys [address-login? guest? sign-up-data]} _]
   (component/create
    (ui/narrow-container
-    [:div.p2
-     [:section.py2.mx-auto.center
+    [:div.p3
+     [:section.mx4-on-tb-dt.center
       [:img {:src (assets/path "/images/icons/success.png")
              :height "55px"
              :width "55px"}]
       [:h1 {:data-test "checkout-success-message"} "Thank you for your order!"]
       [:p "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]
      (when guest?
-       [:div
-        [:section.py2.mx-auto.center
+       [:div.mt3
+        [:section.center
          [:img {:src (assets/path "/images/icons/profile.png")
                 :height "55px"
                 :width "55px"}]
          [:h1 "Create an account"]
-         [:p "Take advantage of express checkout, order tracking, and more when you sign up."]
+         [:p.h5 "Take advantage of express checkout, order tracking, and more when you sign up."]
 
-         [:p.py2 "Sign in with Facebook to link your account."]]
+         [:p.h5.py2 "Sign in with Facebook to link your account."]]
         (sign-up/form sign-up-data {:sign-up-text "Create my account"})])])))
 
 (defn component [{:keys [address-login?] :as data} opts]
