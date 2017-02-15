@@ -156,13 +156,12 @@ Thanks,
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        [:div.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Check out" {:spinning? false
-                                        :disabled? updating?
-                                        :data-test "start-checkout-button"})]]
+        (ui/submit-button "Check out" {:spinning? false
+                                       :disabled? updating?
+                                       :data-test "start-checkout-button"})]
        [:div.h5.dark-gray.center.py2 "OR"]
 
-       [:div.col-6-on-tb-dt.pb2.mx-auto
+       [:div.pb2
         (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                          :spinning? redirecting-to-paypal?
                          :disabled? updating?
@@ -172,7 +171,7 @@ Thanks,
                          [:span.medium.italic "PayPal™"]])]
 
        (when show-apple-pay?
-         [:div.col-6-on-tb-dt.mx-auto.pb2
+         [:div.pb2
           (ui/apple-pay-button
            {:on-click (utils/send-event-callback events/control-checkout-cart-apple-pay)
             :data-test "apple-pay-checkout"
@@ -184,15 +183,14 @@ Thanks,
 
        (when share-carts?
          [:div.border-top.border-gray.py2
-          [:div.col-6-on-tb-dt.mx-auto
-           (ui/ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
-                             :spinning? requesting-shared-cart?
-                             :data-test "share-cart"}
-                            [:div.flex.items-center.justify-center
-                             [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                              {:style {:width  "24px"
-                                       :height "18px"}}]
-                             [:div.flex-grow "Share your bag"]])]
+          (ui/ghost-button {:on-click   (utils/send-event-callback events/control-cart-share-show)
+                            :spinning? requesting-shared-cart?
+                            :data-test "share-cart"}
+                           [:div.flex.items-center.justify-center
+                            [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
+                             {:style {:width  "24px"
+                                      :height "18px"}}]
+                            [:div.flex-grow "Share your bag"]])
           [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]])))
 
 (defn empty-component [{:keys [promotions]} owner]
