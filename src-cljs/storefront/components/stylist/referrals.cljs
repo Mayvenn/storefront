@@ -213,14 +213,14 @@
                                                 :value     (:email referral)})]])
                 (when (< (count referrals) 5)
                   [:div.py3.border-top.border-gray
-                   [:div.col-6-on-tb-dt.mx-auto
+                   [:div.col-12.col-6-on-tb-dt.mx-auto
                     (ui/ghost-button
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test "another-referral-button"})
                      [:div.flex.items-center.justify-center.h5
                       [:div.mr1.flex.items-center svg/counter-inc]
                       [:div "Add Another Referral"]])]])
-                [:div.col-6-on-tb-dt.mx-auto
+                [:div.col-12.col-6-on-tb-dt.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
 
 (defn query-refer [data]

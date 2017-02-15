@@ -30,11 +30,11 @@
                        :focused focused
                        :value   show-password?})]
 
-       [:div.col-6-on-tb-dt.mx-auto
+       [:div.col-12.col-6-on-tb-dt.mx-auto
         (ui/submit-button "Update")]]
       [:.h5.center.dark-gray.light.my2 "OR"]
 
-      [:div.col-6-on-tb-dt.mx-auto
+      [:div.col-12.col-6-on-tb-dt.mx-auto
        (facebook/reset-button loaded-facebook?)]]))))
 
 (defn query [data]

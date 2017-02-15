@@ -16,7 +16,7 @@
            show-password?]}
    {:keys [sign-up-text]}]
   [:div
-   [:div.col-6-on-tb-dt.mx-auto
+   [:div.col-12.col-6-on-tb-dt.mx-auto
     (facebook/sign-in-button facebook-loaded?)]
 
    [:div.h5.center.dark-gray.light.my2 "OR"]
@@ -50,7 +50,7 @@
                     :keypath keypaths/account-show-password?
                     :value   show-password?})]
 
-    [:div.col-6-on-tb-dt
+    [:div.col-12.col-6-on-tb-dt
      (ui/submit-button sign-up-text
                        {:data-test "user-submit"})]]])
 

@@ -60,7 +60,7 @@
                                         :use-store-credit?      true
                                         :available-store-credit available-store-credit}
                                        price-strikeout?)
-        [:div.col-6-on-tb-dt.mx-auto
+        [:div.col-12.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
                                           :disabled? updating-shipping?
                                           :data-test "confirm-form-submit"})]]]]])))

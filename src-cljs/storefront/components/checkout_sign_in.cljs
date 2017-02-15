@@ -16,7 +16,7 @@
      [:div.p2
       [:h2.center.my2.navy "I'm new here"]
 
-      [:div.col-6-on-tb-dt.mx-auto
+      [:div.col-12.col-6-on-tb-dt.mx-auto
        (ui/teal-button {:on-click  (utils/send-event-callback events/control-checkout-as-guest-submit)
                         :data-test "guest-checkout-button"}
                        "Guest Checkout")]
@@ -37,7 +37,8 @@
       [:h1.center.my2.mb3 "Sign in to your account"]
       (om/build sign-in/password-component sign-in-form-data)
       [:div.dark-gray.center.mb2 "OR"]
-      (facebook/sign-in-button facebook-loaded?)]))))
+      [:div.col-12.col-6-on-tb-dt.mx-auto
+       (facebook/sign-in-button facebook-loaded?)]]))))
 
 (defn built-component [data opts]
   (if (experiments/address-login? data)

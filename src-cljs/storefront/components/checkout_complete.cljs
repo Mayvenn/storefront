@@ -28,7 +28,7 @@
        [:p.my2.dark-gray
         "We've received your order and will be processing it right away. Once your order ships we will send you an email confirmation."]]]
 
-     [:div.mb2.mx-auto.col-6-on-tb-dt
+     [:div.mb2.mx-auto.col-12.col-6-on-tb-dt
       (ui/teal-button (utils/route-to events/navigate-home) "Return to Homepage")]])))
 
 (defn address-login-component [{:keys [address-login? guest? sign-up-data]} _]
