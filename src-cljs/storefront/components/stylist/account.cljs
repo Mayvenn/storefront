@@ -14,7 +14,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn uploadcare-photo [profile-picture-url photo-saving?]
-  [:label.navy
+  [:div.navy
    {:on-click (utils/send-event-callback events/control-file-upload-stylist-profile-open)}
    (when photo-saving?
      [:div.absolute
@@ -26,10 +26,7 @@
      :class (if photo-saving? "border-light-gray" "border-teal")}
     [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
      (ui/circle-picture {:width "96px"} profile-picture-url)]]
-   "Change Photo"
-   [:input.hide {:name "mayvenn_stylist[profile_picture]"
-                 :type "hidden"
-                 :data-test "profile-photo"}]])
+   "Change Photo"])
 
 (defn edit-photo [profile-picture-url photo-saving?]
   [:label.navy
