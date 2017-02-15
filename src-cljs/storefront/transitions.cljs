@@ -564,6 +564,7 @@
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
+      (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/order nil)
