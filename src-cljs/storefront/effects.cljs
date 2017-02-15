@@ -839,10 +839,11 @@
   (talkable/show-pending-offer app-state))
 
 (defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
-  (api/update-account-address (get-in app-state keypaths/states)
-                              (get-in app-state keypaths/user)
-                              (:billing-address order)
-                              (:shipping-address order)))
+  (when-not (experiments/address-login? app-state)
+    (api/update-account-address (get-in app-state keypaths/states)
+                                (get-in app-state keypaths/user)
+                                (:billing-address order)
+                                (:shipping-address order))))
 
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} app-state]
   (when place-order?
