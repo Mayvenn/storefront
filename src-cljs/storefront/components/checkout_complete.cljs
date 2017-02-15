@@ -34,7 +34,7 @@
 (defn address-login-component [{:keys [address-login? guest? sign-up-data]} _]
   (component/create
    (ui/narrow-container
-    [:div.py2
+    [:div.p2
      [:section.py2.mx-auto.center
       [:img {:src (assets/path "/images/icons/success.png")
              :height "55px"
