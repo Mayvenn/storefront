@@ -14,7 +14,6 @@
 (def reset-password [:reset-password])
 (def get-account [:get-account])
 (def update-account [:update-account])
-(def update-account-address [:update-account-address])
 (def update-account-profile [:update-account-profile])
 
 (def get-stylist-account [:get-stylist-account])

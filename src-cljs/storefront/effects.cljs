@@ -400,12 +400,8 @@
       (let [authenticated?  (or (get-in app-state keypaths/user-id)
                                 (get-in app-state keypaths/checkout-as-guest))
             authenticating? (nav/checkout-auth-events event)]
-        (when-not authenticated?
-          (ensure-bucketed-for app-state "address-login"))
         (when-not (or authenticated? authenticating?)
-          (redirect (if (experiments/address-login? app-state)
-                      events/navigate-checkout-returning-or-guest
-                      events/navigate-checkout-sign-in)))))))
+          (redirect events/navigate-checkout-returning-or-guest))))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args app-state]
   (facebook/insert))
@@ -433,7 +429,7 @@
   (api/get-shipping-methods))
 
 (defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} app-state]
-  (when (experiments/address-login? app-state)
+  (when (not (get-in app-state keypaths/user-id))
     (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
@@ -609,14 +605,10 @@
 (defmethod perform-effects events/control-cart-remove [_ event variant-id app-state]
   (api/delete-line-item (get-in app-state keypaths/order) variant-id))
 
-(defmethod perform-effects events/control-checkout-as-guest-submit [_ event _ app-state]
-  (redirect-to-return-navigation app-state))
-
 (defmethod perform-effects events/control-checkout-cart-submit [dispatch event args app-state]
-  ;; TODO: if the address-login? experiment wins, this may not be correct. Or
-  ;; rather, it would probably be useful for allowing checkout-sign-in to
-  ;; advance to checkout-address, but it's incredibly convoluted that you have
-  ;; to go through checkout-returning-or-guest first.
+  ;; If logged in, this will send user to checkout-address. If not, this sets
+  ;; things up so that if the user chooses sign-in from the returning-or-guest
+  ;; page, then signs-in, they end up on the address page. Convoluted.
   (history/enqueue-navigate events/navigate-checkout-address))
 
 (defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args app-state]
@@ -838,13 +830,6 @@
   (cookie-jar/clear-order (get-in app-state keypaths/cookie))
   (talkable/show-pending-offer app-state))
 
-(defmethod perform-effects events/api-success-update-order-update-address [_ event {:keys [order]} app-state]
-  (when-not (experiments/address-login? app-state)
-    (api/update-account-address (get-in app-state keypaths/states)
-                                (get-in app-state keypaths/user)
-                                (:billing-address order)
-                                (:shipping-address order))))
-
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} app-state]
   (when place-order?
     (api/place-order order
@@ -956,7 +941,5 @@
   (ensure-products app-state (map :product-id (:line-items cart))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} app-state]
-  (when (experiments/address-login? app-state)
-    (facebook/insert))
   ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
   (fetch-named-search-album app-state))

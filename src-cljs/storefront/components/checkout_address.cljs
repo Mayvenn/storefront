@@ -32,7 +32,7 @@
                        :value       value})))))
 
 (defn ^:private shipping-address-component
-  [{:keys [focused shipping-address states email guest? become-guest? places-loaded? field-errors]} owner]
+  [{:keys [focused shipping-address states email become-guest? places-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -60,7 +60,7 @@
         :data-test "shipping-last-name"
         :required  true})]
 
-     (when (or guest? become-guest?)
+     (when become-guest?
        (ui/text-field {:data-test "shipping-email"
                        :errors    (get field-errors ["email"])
                        :id        "shipping-email"
@@ -287,10 +287,6 @@
      :shipping-address-data {:shipping-address (get-in data keypaths/checkout-shipping-address)
                              :states           states
                              :email            (get-in data keypaths/checkout-guest-email)
-                             ;; TODO: remove guest? if address-login? experiment
-                             ;; wins. It won't be possible to already be a guest
-                             ;; when you hit the address page.
-                             :guest?           (get-in data keypaths/checkout-as-guest)
                              :become-guest?    false
                              :places-loaded?   places-loaded?
                              :field-errors     field-errors

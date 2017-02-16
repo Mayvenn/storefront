@@ -136,7 +136,6 @@
 (defpath control-counter-inc)
 (defpath control-counter-dec)
 
-(defpath control-checkout-as-guest-submit)
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
 (defpath control-checkout-cart-apple-pay)

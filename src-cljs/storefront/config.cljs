@@ -108,9 +108,9 @@
 (def manual-experiments
   (case js/environment
     "production"
-    {"address-login" {:enabled?   true
+    {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}
-    {"address-login" {:enabled?   true
+    {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))

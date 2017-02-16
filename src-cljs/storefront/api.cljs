@@ -3,7 +3,6 @@
             [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.states :as states]
             [storefront.routes :as routes]
             [storefront.cache :as c]
             [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
@@ -285,15 +284,6 @@
     :handler
     #(messages/handle-message events/api-success-forgot-password {:email email})}))
 
-(defn mayvenn->spree-address [states address]
-  (-> address
-      (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])
-      (rename-keys {:first-name :firstname
-                    :last-name :lastname
-                    :state :state_id})
-      (update-in [:state_id] (partial states/abbr->id states))
-      (merge {:country_id 49})))
-
 (defn spree->mayvenn-address [address]
   (-> address
       (dissoc :country_id)
@@ -335,19 +325,6 @@
     :handler
     #(messages/handle-message events/api-success-manage-account
                               (select-user-keys %))}))
-
-(defn update-account-address [states {:keys [id email user-token]} billing-address shipping-address]
-  (api-req
-   PUT
-   "/users"
-   request-keys/update-account-address
-   {:params
-    {:id id
-     :email email
-     :token user-token
-     :bill_address (mayvenn->spree-address states billing-address)
-     :ship_address (mayvenn->spree-address states shipping-address)}
-    :handler identity}))
 
 (defn select-stylist-account-keys [args]
   (-> args

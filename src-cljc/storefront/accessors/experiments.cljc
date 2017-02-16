@@ -58,10 +58,6 @@
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
 
-(defn address-login? [data]
-  (or (display-feature? data "address-login")
-      (= "address-login" (feature-for data "address-login"))))
-
 (defn price-strikeout? [data]
   (display-feature? data "price-strikeout"))
 

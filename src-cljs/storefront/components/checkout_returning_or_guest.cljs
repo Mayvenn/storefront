@@ -39,12 +39,9 @@
 (defn built-component [data opts]
   (om/build component (query data) opts))
 
-
 (defn requires-sign-in-or-guest [authorized-component data opts]
   (if (or (get-in data keypaths/user-id)
           (get-in data keypaths/checkout-as-guest))
     (authorized-component data nil)
-    (if (experiments/address-login? data)
-      ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
-      [:div.h1.my4 ui/spinner]
-      (checkout-sign-in/built-full-component data nil))))
+    ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
+    [:div.h1.my4 ui/spinner]))
