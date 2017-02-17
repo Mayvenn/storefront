@@ -26,7 +26,7 @@
 
 (defn variation-for [data experiment]
   (let [{:keys [enabled? variations]} (get-in data (conj keypaths/experiments-manual experiment))]
-    (when enabled?
+    (when (and enabled? (seq variations))
       (let [;; We want to randomly bucket a user into a variation. We can use
             ;; session-id for this. This algorithm turns session-id into session-n
             ;; an integer that: ranges from 0 to 1295, is randomly distributed
@@ -41,9 +41,8 @@
             ;; same side of an experiment.
             exp-offset (reduce + (map char->int experiment))
 
-            variation (when (seq variations)
-                        (nth variations (mod (+ exp-offset session-n)
-                                             (count variations))))]
+            variation (nth variations (mod (+ exp-offset session-n)
+                                           (count variations)))]
         variation))))
 
 (defn feature-for [data experiment]
