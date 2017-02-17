@@ -14,7 +14,7 @@
      [:div.p2
       [:h1.center.my2.mb3 "Sign in to your account"]
       (om/build sign-in/password-component sign-in-form-data)
-      [:div.dark-gray.center.mb2 "OR"]
+      [:div.dark-gray.center.my2 "OR"]
       [:div.col-12.col-6-on-tb-dt.mx-auto
        (facebook/sign-in-button facebook-loaded?)]]))))
 
