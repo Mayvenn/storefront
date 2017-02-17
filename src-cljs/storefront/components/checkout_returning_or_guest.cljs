@@ -14,19 +14,24 @@
   (om/component
    (html
     [:div
-     (ui/narrow-container ;; Tries to match what's going on in checkout-address/component
-      [:div.p2
-       [:div.center
-        [:h1 "Secure checkout"]
-        [:p "Sign in or checkout as a guest."]]
+     [:div.container ;; Tries to match what's going on in checkout-address/component
+      [:div.m-auto.col-8-on-tb-dt
+       [:div.p2
+        [:div.center
+         [:h1 "Secure checkout"]
+         [:p
+          "Sign in or checkout as a guest."
+          [:br]
+          "You’ll have an opportunity to create an account after placing your order."]]
 
-       [:div.clearfix.my2.mx-auto.col-12.col-6-on-tb-dt
-        [:div.col.col-6.p1
-         (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
-                                :data-test "begin-password-sign-in-button")
-                         "Sign in")]
-        [:div.col.col-6.p1
-         (facebook/narrow-sign-in-button facebook-loaded?)]]])
+        [:div.my2.mx-auto.col-12.col-6-on-tb-dt
+         [:div.clearfix.mxn1
+          [:div.col.col-6.p1
+           (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
+                                  :data-test "begin-password-sign-in-button")
+                           "Sign in")]
+          [:div.col.col-6.p1
+           (facebook/narrow-sign-in-button facebook-loaded?)]]]]]]
 
      [:h2.mt1.center "Checkout as a guest"]
      (om/build checkout-address/component address)])))

@@ -258,7 +258,7 @@
     [:div.container
      (om/build checkout-steps/component step-bar)
 
-     (ui/narrow-container
+     [:div.m-auto.col-8-on-tb-dt
       [:div.p2
        [:form.col-12.flex.flex-column.items-center
         {:on-submit (utils/send-event-callback events/control-checkout-update-addresses-submit
@@ -270,7 +270,7 @@
 
         [:div.my2.col-12.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Continue to Payment" {:spinning? saving?
-                                                  :data-test "address-form-submit"})]]])])))
+                                                  :data-test "address-form-submit"})]]]]])))
 
 (defn query [data]
   (let [places-loaded? (get-in data keypaths/loaded-places)
