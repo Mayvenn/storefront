@@ -13,15 +13,16 @@
             [clojure.string :as str]))
 
 (def section-inner :div.ml3.py2)
+(def section-top-inner :div.ml3.pb2)
 (def section-outer :div.border-bottom.border-gray.bg-white.dark-gray)
 (def section-outer-darker :div.border-bottom.border-gray)
 
 (defn row
   ([right] (row nil right))
   ([left right]
-   [:div.clearfix.pyp1
-    [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
-    [:div.col.col-10 right]]))
+   [:div.flex.items-center.pyp1
+    [:div.col-2 [:div.px1 (or left ui/nbsp)]]
+    [:div.col-10 right]]))
 
 (def menu-x
   (component/html
@@ -49,11 +50,12 @@
     content]))
 
 (defn store-credit-flag [credit]
-  [:div.right.border-bottom.border-left.border-gray.bg-white
-   {:style {:border-bottom-left-radius "8px"}
-    :class (when (zero? credit) :invisible)}
-   [:div.h5.px2.py1.line-height-1
-    [:span.dark-gray "Credit: "] [:span.navy (as-money credit)]]])
+  [:div.clearfix
+   [:div.right.border-bottom.border-left.border-gray.bg-white
+    {:style {:border-bottom-left-radius "8px"}
+     :class (when (zero? credit) :invisible)}
+    [:div.h5.px2.py1.line-height-1
+     [:span.dark-gray "Credit: "] [:span.navy (as-money credit)]]]])
 
 (defn customer-section [selectable? user-email]
   [:nav {:aria-label "Mayvenn Account"}
@@ -173,7 +175,7 @@
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
-    [section-inner (customer-section selectable? user-email)]]
+    [section-top-inner (customer-section selectable? user-email)]]
    (customer-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])
@@ -182,7 +184,7 @@
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
-    [section-inner (store-section selectable? store)]]
+    [section-top-inner (store-section selectable? store)]]
    (stylist-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])

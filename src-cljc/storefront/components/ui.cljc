@@ -97,9 +97,8 @@
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
 (def new-flag
   (component/html
-   [:div.pyp1.right
-    [:div.inline-block.border.border-navy.navy.pp2.medium
-     [:div {:style {:margin-bottom "-2px" :font-size "7px"}} "NEW"]]]))
+   [:div.right
+    [:div.border.border-navy.navy.pp2.h7.line-height-1.medium "NEW"]]))
 
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))

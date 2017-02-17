@@ -191,9 +191,9 @@
 (defn row
   ([right] (row nil right))
   ([left right]
-   [:div.clearfix.pyp1
-    [:div.col.col-2 [:div.px1 (or left ui/nbsp)]]
-    [:div.col.col-10.pyp1 right]]))
+   [:div.flex.items-center.pyp1
+    [:div.col-2 [:div.px1 (or left ui/nbsp)]]
+    [:div.col-10.pyp1 right]]))
 
 (defn products-section [current-page? title named-searches]
   [:nav {:aria-label (str "Shop " title)}

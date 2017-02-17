@@ -198,7 +198,7 @@
 
 (defn query [data]
   (let [named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))]
-    {:named-searches    named-searches
+    {:named-searches    (remove (comp #{"kinky-straight"} :slug) named-searches)
      :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
                                 named-searches)
      :store-slug        (get-in data keypaths/store-slug)
