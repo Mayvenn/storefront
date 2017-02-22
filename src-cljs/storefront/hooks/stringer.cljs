@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
             [storefront.config :as config]))
 
-(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-e63ef8c.js")
+(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-f155a87.js")
 
 (defn insert-tracking []
   (insert-tag-with-text
@@ -24,8 +24,10 @@
 
 (defn track-identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")
-    (.identify js/stringer email id)))
+    (.identify js/stringer email id)
+    (.track js/stringer "identify")))
 
 (defn track-clear []
   (when (.hasOwnProperty js/window "stringer")
-    (.clear js/stringer)))
+    (.clear js/stringer)
+    (.track js/stringer "clear_identify")))
