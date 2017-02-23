@@ -71,7 +71,7 @@
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
                               "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))
 
-(def uploadcare-public-key "5ca6737478a8e936a86f")
+(def uploadcare-public-key "a0c937dbb5a75e3c7937")
 
 (def facebook-app-id (case js/environment
                        "production" 1536288310021691
