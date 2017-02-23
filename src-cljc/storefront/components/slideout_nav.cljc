@@ -3,6 +3,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.events :as events]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
@@ -67,12 +68,14 @@
     [:li [:a.teal.block (utils/route-to events/navigate-account-referrals)
           (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
-(defn store-section [selectable? store]
-  (let [{store-photo :profile_picture_url nickname :store_nickname} store]
+(defn store-section [selectable? uploadcare? store]
+  (let [store-photo (if uploadcare?
+                      (-> store :portrait :resizable_url)
+                      (:profile_picture_url store))]
     [:nav {:aria-label "Mayvenn Account"}
      (row
       [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
-      [:div nickname])
+      [:div (:store_nickname store)])
      [:ul.list-reset
       [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
             (row (selectable? events/navigate-stylist-dashboard
@@ -180,11 +183,11 @@
    (help-section selectable?)
    sign-out-section])
 
-(defn stylist-content [selectable? {:keys [available-store-credit store named-searches]}]
+(defn stylist-content [selectable? {:keys [available-store-credit store named-searches uploadcare?]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
-    [section-top-inner (store-section selectable? store)]]
+    [section-top-inner (store-section selectable? uploadcare? store)]]
    (stylist-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])
@@ -213,7 +216,8 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :named-searches             (named-searches/current-named-searches data)})
+   :named-searches             (named-searches/current-named-searches data)
+   :uploadcare?                (experiments/uploadcare? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

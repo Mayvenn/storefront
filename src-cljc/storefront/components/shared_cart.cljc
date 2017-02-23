@@ -3,22 +3,25 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.accessors.promos :as promos]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo]} owner opts]
+(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo uploadcare?]} owner opts]
   (component/create
-   (let [{:keys [profile_picture_url store_nickname]} store]
+   (let [profile-picture (if uploadcare?
+                           (-> store :portrait :resizable_url)
+                           (:profile_picture_url store))]
      [:div.container.p4
       [:div.pb3
-       (when profile_picture_url
+       (when profile-picture
          [:div.mb2.h2
-          (ui/circle-picture {:class "mx-auto"} profile_picture_url)])
+          (ui/circle-picture {:class "mx-auto"} profile-picture)])
        [:p.center.h3.navy.medium
-        store_nickname " has created a bag for you!"]]
+        (:store_nickname store) " has created a bag for you!"]]
       [:div.flex.items-center.px1.py3.border-dark-gray.border-top.border-bottom
        svg/guarantee
        [:div.ml2.flex-auto
@@ -38,7 +41,8 @@
   {:shared-cart-id   (get-in data keypaths/shared-cart-id)
    :store            (get-in data keypaths/store)
    :advertised-promo (promos/default-advertised-promotion (get-in data keypaths/promotions))
-   :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)})
+   :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)
+   :uploadcare?      (experiments/uploadcare? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

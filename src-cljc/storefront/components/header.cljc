@@ -3,6 +3,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :refer [community-url own-store?]]
             [storefront.accessors.nav :as nav]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
@@ -110,7 +111,9 @@
                        nickname :store_nickname
                        instagram-account :instagram_account
                        styleseat-account :styleseat_account
-                       store-photo :profile_picture_url}]
+                       store-photo :profile_picture_url
+                       portrait :portrait}
+                      uploadcare?]
   [:div.center {:height "30px"}
    (ui/drop-down
     expanded?
@@ -126,7 +129,9 @@
       notch-up
       [:div.dark-gray
        [:div.p1.h6
-        [:div.m1 (ui/circle-picture {:class "mx-auto"} store-photo)]
+        [:div.m1 (ui/circle-picture
+                  {:class "mx-auto"}
+                  (if uploadcare? (:resizable_url portrait) store-photo))]
         [:h4.regular store-name]]
        (when instagram-account
          (social-link
@@ -163,16 +168,18 @@
 
 (defn stylist-account [expanded?
                        current-page?
-                       {store-photo :profile_picture_url
-                        store-nickname :store_nickname}]
-  (account-dropdown
-   expanded?
-   [:div.flex.justify-end.items-center
-    (when store-photo [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
-    [:div.truncate store-nickname]]
-   (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
-   [:a.teal.block community-url "Community"]
-   (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings")))
+                       {:keys [store uploadcare?] :as data}]
+  (let [store-photo (if uploadcare?
+                      (-> store :portrait :resizable_url)
+                      (:profile_picture_url store))]
+    (account-dropdown
+     expanded?
+     [:div.flex.justify-end.items-center
+      (when store-photo [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} store-photo)])
+      [:div.truncate (:store_nickname store)]]
+     (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
+     [:a.teal.block community-url "Community"]
+     (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings"))))
 
 (defn customer-account [expanded? current-page? user-email]
   (account-dropdown
@@ -227,14 +234,17 @@
 (def upper-left
   [:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]])
 
-(defn upper-right [{:keys [store expanded? user-email cart-quantity stylist? current-page?]}]
-  [:div.flex.justify-end.items-center
-   [:div.flex-auto.hide-on-mb.pr2
-    (cond
-      stylist?   (stylist-account expanded? current-page? store)
-      user-email (customer-account expanded? current-page? user-email)
-      :else      guest-account)]
-   (shopping-bag cart-quantity)])
+(defn upper-right [{:keys [store auth cart context]}]
+  (let [{:keys [expanded? user-email]} auth
+        {:keys [cart-quantity]} cart
+        {:keys [stylist? current-page?]} context]
+    [:div.flex.justify-end.items-center
+     [:div.flex-auto.hide-on-mb.pr2
+      (cond
+        stylist?   (stylist-account expanded? current-page? store)
+        user-email (customer-account expanded? current-page? user-email)
+        :else      guest-account)]
+     (shopping-bag cart-quantity)]))
 
 (defn lower-left [current-page?]
   [:div.right
@@ -268,28 +278,30 @@
   [upper-left
    (lower-left current-page?)])
 
-(defn middle [{:keys [store expanded?]}]
+(defn middle [{:keys [store expanded? uploadcare?]}]
   (if (sans-stylist? (:store_slug store))
     (list (logo "40px"))
     (list
      (logo "30px")
-     (store-dropdown expanded? store))))
+     (store-dropdown expanded? store uploadcare?))))
 
-(defn right [{:keys [current-page?] :as data}]
+(defn right [{{:keys [current-page?]} :context :as data}]
   [(upper-right data)
    (lower-right current-page?)])
 
-(defn flyout [{:keys [stylist? expanded? current-page? named-searches]}]
-  (shop-panel stylist? expanded? current-page? named-searches))
+(defn flyout [{:keys [shop context]}]
+  (let [{:keys [expanded? named-searches]} shop
+        {:keys [stylist? current-page?]}   context]
+    (shop-panel stylist? expanded? current-page? named-searches)))
 
-(defn component [{:keys [store auth cart shop context]} _ _]
+(defn component [data _ _]
   (component/create
-   (let [context (assoc context :current-page? (partial routes/sub-page? (:nav-message context)))]
+   (let [data (assoc-in data [:context :current-page?] (partial routes/sub-page? (-> data :context :nav-message)))]
      (header
-      (left context)
-      (middle store)
-      (right (merge store auth cart context))
-      (flyout (merge shop context))))))
+      (left (:context data))
+      (middle (:store data))
+      (right (select-keys data [:store :auth :cart :context]))
+      (flyout (select-keys data [:shop :context]))))))
 
 (defn minimal-component [store _ _]
   (component/create
@@ -300,8 +312,9 @@
     nil)))
 
 (defn store-query [data]
-  {:expanded? (get-in data keypaths/store-info-expanded)
-   :store     (get-in data keypaths/store)})
+  {:expanded?   (get-in data keypaths/store-info-expanded)
+   :uploadcare? (experiments/uploadcare? data)
+   :store       (get-in data keypaths/store)})
 
 (defn auth-query [data]
   {:expanded?  (get-in data keypaths/account-menu-expanded)
