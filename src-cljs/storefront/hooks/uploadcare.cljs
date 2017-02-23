@@ -2,7 +2,8 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-callback src-tag]]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.platform.messages :refer [handle-message]]))
+            [storefront.platform.messages :refer [handle-message]]
+            [goog.object :as object]))
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "uploadcare")
@@ -23,10 +24,10 @@
                    :file-info (js->clj file-info :keywordize-keys true)}))
 
 (defn ^:private handle-file [file]
-  (-> file
-      .promise
-      (.fail handle-error)
-      (.done receive-file-info)))
+  ;; Google Closure cannot detect externs correctly here...
+  (let [promise (.call (object/get file "promise") file)
+        fail (.call (object/get promise "fail") promise handle-error)]
+    (.call (object/get fail "done") fail receive-file-info)))
 
 (defn dialog []
   (when (.hasOwnProperty js/window "uploadcare")
