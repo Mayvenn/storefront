@@ -193,5 +193,6 @@
                                         :position (name position)})))
 
 (defmethod perform-track events/sign-out [_ _ _ _]
+  (stringer/track-event "sign_out")
   (stringer/track-clear))
 
