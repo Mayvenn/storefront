@@ -103,7 +103,8 @@
              sold-out?   "bg-gray dark-gray light"
              later-step? "bg-gray muted light"
              checked?    "bg-teal white medium"
-             true        "bg-white dark-gray light")}
+             true        "bg-white dark-gray light")
+    :style {:font-size "14px" :line-height "18px"}}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
@@ -115,8 +116,8 @@
       {:src image :alt name
        :width 30 :height 30
        :class (cond checked? "border" sold-out? "muted")}]
-     [:span.block.h4.titleize name])
-   [:span.block.h6
+     [:span.block.titleize name])
+   [:span.block
     (if sold-out?
       "Sold Out"
       [:span {:class (when-not checked? "navy")}
