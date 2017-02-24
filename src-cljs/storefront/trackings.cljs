@@ -118,7 +118,8 @@
   (stringer/track-event "reset_password" {:type flow}))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (stringer/track-identify (:user (get-in app-state keypaths/order))))
+  (stringer/track-identify (:user (get-in app-state keypaths/order)))
+  (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
 
 (defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
   (google-analytics/track-event "experiment_join" feature)
@@ -158,10 +159,6 @@
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
   (checkout-initiate app-state "paypal")
   (convert/track-conversion "paypal-checkout"))
-
-(defmethod perform-track events/control-checkout-update-addresses-submit [_ events {:keys [become-guest?]} app-state]
-  (when become-guest?
-    (stringer/track-event "checkout-continue_as_guest" {:order_number (get-in app-state keypaths/order-number)})))
 
 (defmethod perform-track events/api-success-update-order-update-address [_ events args app-state]
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
