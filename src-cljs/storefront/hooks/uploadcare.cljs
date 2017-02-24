@@ -43,9 +43,10 @@
     (-> js/uploadcare
         (.openDialog
          nil
-         ;; note: validator functions get called 3 times:
-         ;;       1. When the file is first specified, only the fileinfo's name field is available
-         ;;       2. When the size is determined, only the fileinfo's name and size are available
-         ;;       3. After the file is uploaded to uploadcare, all of the fileinfo's fields are available
-         (clj->js {:validators [image-only]}))
+         (clj->js {:imageShrink "1600x1600"
+                   ;; note: validator functions get called 3 times:
+                   ;;       1. When the file is first specified, only the fileinfo's name field is available
+                   ;;       2. When the size is determined, only the fileinfo's name and size are available
+                   ;;       3. After the file is uploaded to uploadcare, all of the fileinfo's fields are available
+                   :validators [image-only]}))
         (.done handle-file))))
