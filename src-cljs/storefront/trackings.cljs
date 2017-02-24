@@ -119,6 +119,7 @@
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
   (stringer/track-identify (:user (get-in app-state keypaths/order)))
+  (stringer/track-event "checkout-identify_guest")
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
 
 (defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
