@@ -676,7 +676,7 @@
 
 (defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} app-state]
   (let [user-token (get-in app-state keypaths/user-token)]
-    (api/update-stylist-account-portrait user-token {:portrait-url (:originalUrl file-info)})))
+    (api/update-stylist-account-portrait user-token {:portrait-url (:cdnUrl file-info)})))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)

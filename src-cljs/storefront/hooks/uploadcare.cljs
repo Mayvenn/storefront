@@ -34,5 +34,6 @@
         (.openDialog
          nil
          (clj->js {:imageShrink "1600x1600"
-                   :imagesOnly  true}))
+                   :imagesOnly  true
+                   :crop        "1:1"}))
         (.done handle-file))))
