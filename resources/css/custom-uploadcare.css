@@ -1,0 +1,45 @@
+.uploadcare-dialog-tab,
+.uploadcare-dialog-tabs,
+.uploadcare-dialog-panel {
+    background: transparent;
+    border: 0;
+}
+.uploadcare-dialog-panel {
+    padding-left: 0;
+    margin: 0 20px 20px;
+}
+
+.uploadcare-dialog-tabs {
+    float: none;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+}
+.uploadcare-dialog-tab {
+    width: 50px;
+    margin: 0 10px 10px 0;
+    float: left;
+}
+.uploadcare-dialog-tabs-panel,
+.uploadcare-dialog-source-base-wrap {
+    padding: 0;
+    margin: 0;
+    height: 400px;
+}
+.uploadcare-dialog-file-or:not(.uploadcare-if-draganddrop),
+.uploadcare-dialog-file-sources {
+    display: none;
+}
+.uploadcare-dialog-camera-holder {
+    height: 350px;
+}
+.uploadcare-dialog-camera-video {
+    max-height: 350px;
+}
+
+.uploadcare-dialog-footer {
+    display: none;
+}

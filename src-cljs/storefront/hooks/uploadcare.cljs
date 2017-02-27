@@ -28,11 +28,15 @@
         fail (.call (object/get promise "fail") promise handle-error)]
     (.call (object/get fail "done") fail receive-file-info)))
 
-(defn dialog []
+(defn dialog [embed-selector & loaded-img-urls]
   (when (.hasOwnProperty js/window "uploadcare")
     (-> js/uploadcare
-        (.openDialog
-         nil
+        (.openPanel
+         embed-selector
+         (->> loaded-img-urls
+              (remove nil?)
+              (map #(js/uploadcare.fileFrom "uploaded" %))
+              (apply array))
          (clj->js {:imageShrink "1600x1600"
                    :imagesOnly  true
                    :crop        "1:1"

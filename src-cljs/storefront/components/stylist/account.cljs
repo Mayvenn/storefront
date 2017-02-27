@@ -14,8 +14,8 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn uploadcare-photo [portrait saving?]
-  [:div.navy
-   {:on-click (utils/send-event-callback events/control-file-upload-stylist-profile-open)}
+  [:a.navy
+   (utils/route-to events/navigate-stylist-account-portrait)
    (when saving?
      [:div.absolute
       [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative

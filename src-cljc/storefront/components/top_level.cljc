@@ -14,6 +14,7 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.account :as stylist.account]
+                       [storefront.components.stylist.portrait :as stylist.portrait]
                        [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
@@ -50,6 +51,7 @@
          events/navigate-stylist-dashboard-bonus-credit stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals    stylist.dashboard/built-component
          events/navigate-stylist-account-profile        stylist.account/built-component
+         events/navigate-stylist-account-portrait       stylist.portrait/built-component
          events/navigate-stylist-account-password       stylist.account/built-component
          events/navigate-stylist-account-commission     stylist.account/built-component
          events/navigate-stylist-account-social         stylist.account/built-component

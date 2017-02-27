@@ -59,6 +59,7 @@
 
 (defpath navigate-stylist-account)
 (defpath navigate-stylist-account-profile)
+(defpath navigate-stylist-account-portrait)
 (defpath navigate-stylist-account-password)
 (defpath navigate-stylist-account-commission)
 (defpath navigate-stylist-account-social)
@@ -158,8 +159,6 @@
 (defpath control-stylist-account-social-submit)
 
 (defpath control-commission-order-expand)
-
-(defpath control-file-upload-stylist-profile-open)
 
 (defpath control-play-video)
 (defpath video-played)
@@ -292,5 +291,8 @@
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
 (defpath show-email-popup)
+
+(defpath portrait-component-mounted)
+(defpath portrait-component-will-unmount)
 
 (defpath sign-out)

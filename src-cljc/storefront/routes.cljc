@@ -58,6 +58,7 @@
               "/stylist/store_credits"                           (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
               "/stylist/referrals"                               (edn->bidi events/navigate-stylist-dashboard-referrals)
               "/stylist/account/profile"                         (edn->bidi events/navigate-stylist-account-profile)
+              "/stylist/account/portrait"                        (edn->bidi events/navigate-stylist-account-portrait)
               "/stylist/account/password"                        (edn->bidi events/navigate-stylist-account-password)
               "/stylist/account/commission"                      (edn->bidi events/navigate-stylist-account-commission)
               "/stylist/account/social"                          (edn->bidi events/navigate-stylist-account-social)

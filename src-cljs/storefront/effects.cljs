@@ -671,12 +671,13 @@
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} app-state]
   (exception-handler/report error file-info))
 
-(defmethod perform-effects events/control-file-upload-stylist-profile-open [_ _ _ app-state]
-  (uploadcare/dialog))
+(defmethod perform-effects events/portrait-component-mounted [_ _ {:keys [selector portrait]} app-state]
+  (uploadcare/dialog selector))
 
 (defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} app-state]
   (let [user-token (get-in app-state keypaths/user-token)]
-    (api/update-stylist-account-portrait user-token {:portrait-url (:cdnUrl file-info)})))
+    (api/update-stylist-account-portrait user-token {:portrait-url (:cdnUrl file-info)})
+    (history/enqueue-navigate events/navigate-stylist-account-profile)))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
@@ -941,5 +942,8 @@
   (ensure-products app-state (map :product-id (:line-items cart))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} app-state]
+  ;; TODO: when uploadcare? goes live, we won't need this.
+  (when (experiments/uploadcare? app-state)
+    (uploadcare/insert))
   ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
   (fetch-named-search-album app-state))
