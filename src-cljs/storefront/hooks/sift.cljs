@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-src remove-tags-by-class]]
             [storefront.hooks.exception-handler :as exception-handler]))
 
-(def store-domain ".mayvenn.com")
+(def store-domain "mayvenn.com")
 
 (defn insert-tracking []
   (insert-tag-with-text
