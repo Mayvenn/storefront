@@ -67,19 +67,23 @@
     user-select: none;
 }
 
+.source-instagram .big-button, .source-instagram .big-button:hover, .source-instagram .big-button:focus, .source-instagram .big-button:active {
+    background: #5185a8;
+}
+.source-facebook .big-button, .source-facebook .big-button:hover, .source-facebook .big-button:focus, .source-facebook .big-button:active {
+    background: var(--facebook-blue);
+}
+
+.uploadcare-dialog-title {
+    text-align: center;
+}
+
 .uploadcare-dialog-tab-preview.uploadcare-dialog-tab_current .uploadcare-widget-circle--canvas {
     color: var(--teal);
 }
 
 .uploadcare-dialog-footer {
     display: none;
-}
-
-.source-instagram .big-button, .source-instagram .big-button:hover, .source-instagram .big-button:focus, .source-instagram .big-button:active {
-    background: #5185a8;
-}
-.source-facebook .big-button, .source-facebook .big-button:hover, .source-facebook .big-button:focus, .source-facebook .big-button:active {
-    background: var(--facebook-blue);
 }
 
 :root {
