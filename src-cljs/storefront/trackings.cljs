@@ -31,6 +31,8 @@
 (defmethod perform-track events/navigate [_ event args app-state]
   (when (not (get-in app-state keypaths/redirecting?))
     (let [path (routes/current-path app-state)]
+      (when-let [user-id (get-in app-state keypaths/user-id)]
+        (sift/track-page user-id (get-in app-state keypaths/session-id)))
       (riskified/track-page path)
       (stringer/track-page)
       (google-analytics/track-page path)
