@@ -6,6 +6,8 @@
             [storefront.platform.messages :refer [handle-message]]
             [goog.object :as object]))
 
+#_ (set! *warn-on-infer* true)
+
 (defn insert []
   (when-not (.hasOwnProperty js/window "uploadcare")
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
@@ -16,7 +18,7 @@
      #(do
         ;; These custom styles don't work on localhost... test on diva-acceptance.com
         (when config/secure?
-          (.addUrl js/uploadcare.tabsCss (str "https:" (assets/path "/css/app.css"))));
+          (.addUrl js/uploadcare.tabsCss (str "https:" (assets/path "/css/app.css"))))
         (handle-message events/inserted-uploadcare)))))
 
 (defn ^:private receive-file-info [file-info]
@@ -28,11 +30,11 @@
                   {:error error
                    :file-info (js->clj file-info :keywordize-keys true)}))
 
-(defn ^:private handle-file [file]
-  ;; Google Closure cannot detect externs correctly here...
-  (let [promise (.call (object/get file "promise") file)
-        fail (.call (object/get promise "fail") promise handle-error)]
-    (.call (object/get fail "done") fail receive-file-info)))
+(defn ^:private handle-file [^js/uploadcare.files.BaseFile file]
+   (-> file
+       .promise
+       (.fail handle-error)
+       (.done receive-file-info)))
 
 (defn dialog [embed-selector & loaded-img-urls]
   (when (.hasOwnProperty js/window "uploadcare")
