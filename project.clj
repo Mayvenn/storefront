@@ -68,6 +68,7 @@
                           "externs/react-slick.js"
                           "externs/pixlee.js"
                           "externs/stringer.js"
+                          "externs/uploadcare.js"
                           "externs/wistia.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
@@ -98,6 +99,7 @@
                           "externs/react-slick.js"
                           "externs/stringer.js"
                           "externs/pixlee.js"
+                          "externs/uploadcare.js"
                           "externs/wistia.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
