@@ -13,19 +13,24 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
 
-(defn uploadcare-photo [portrait saving?]
+(defn uploadcare-photo [{:keys [resizable_url status]} saving?]
   [:a.navy
    (utils/route-to events/navigate-stylist-account-portrait)
    (when saving?
      [:div.absolute
       [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
        {:style {:width "130px" :height "130px"
-                :top "-12px" :left "-12px"}}]])
+                :top   "-12px" :left   "-12px"}}]])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
      :class (if saving? "border-light-gray" "border-teal")}
-    [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
-     (ui/circle-picture {:width "96px"} (:resizable_url portrait))]]
+    [:div.circle.border-light-gray.border.content-box.border-width-2.overflow-hidden {:style {:width "96px" :height "96px"}}
+     (ui/circle-picture {:width        "96px"
+                         :overlay-copy (case status
+                                         "pending" [:span.white.medium "Approval Pending"]
+                                         "rejected" [:span.red.bold.h6 "Inappropriate Image"]
+                                         nil)}
+                        resizable_url)]]
    "Change Photo"])
 
 (defn edit-photo [profile-picture-url photo-saving?]

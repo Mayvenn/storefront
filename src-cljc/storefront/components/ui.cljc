@@ -303,12 +303,15 @@
 
 (defn circle-picture
   ([src] (circle-picture {} src))
-  ([{:keys [width] :as attrs :or {width "4em"}} src]
-   [:div.circle.bg-light-gray.overflow-hidden
+  ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
+   [:div.circle.bg-light-gray.overflow-hidden.relative
     (merge {:style {:width width :height width}} attrs)
     (if src
       [:img {:style {:width width :height width :object-fit "cover"} :src src}]
-      (svg/missing-profile-picture {:width width :height width}))]))
+      (svg/missing-profile-picture {:width width :height width}))
+    (when overlay-copy
+      [:div.absolute.overlay.bg-darken-2
+       [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])]))
 
 (defn ^:private counter-button [spinning? data-test f content]
   [:a.col
