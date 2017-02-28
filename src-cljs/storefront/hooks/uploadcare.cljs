@@ -2,30 +2,9 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-callback src-tag]]
             [storefront.config :as config]
             [storefront.events :as events]
+            [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]
             [goog.object :as object]))
-
-(def uploadcare-style
-  "
-body {font-family: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',helvetica,Ubuntu,'segoe ui',arial,sans-serif;}
-
-.big-button, .big-button:hover, .big-button:focus, .big-button:active {
-    box-shadow: none;
-    border: none;
-    text-shadow: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    line-height: 24px;
-}
-.source-instagram .big-button, .source-instagram .big-button:hover, .source-instagram .big-button:focus, .source-instagram .big-button:active {
-  background: #5185a8;
-}
-.source-facebook .big-button, .source-facebook .big-button:hover, .source-facebook .big-button:focus, .source-facebook .big-button:active {
-  background: #3b5998;
-}
-"
-  )
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "uploadcare")
@@ -35,7 +14,9 @@ body {font-family: 'Roboto',-apple-system,BlinkMacSystemFont,'helvetica neue',he
      (src-tag "https://ucarecdn.com/libs/widget/2.10.3/uploadcare.full.min.js"
               "uploadcare")
      #(do
-        (.addStyle js/uploadcare.tabsCss uploadcare-style);
+        ;; These custom styles don't work on localhost... test on diva-acceptance.com
+        (when config/secure?
+          (.addUrl js/uploadcare.tabsCss (assets/path "/css/app.css")));
         (handle-message events/inserted-uploadcare)))))
 
 (defn ^:private receive-file-info [file-info]
