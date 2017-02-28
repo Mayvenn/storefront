@@ -12,7 +12,8 @@
 (def image-manifest
   (->> manifest
        (filter (fn [[filename filerev]]
-                 (re-find #"^images/" filename)))
+                 (or (= "css/app.css" filename)
+                     (re-find #"^images/" filename))))
        (into {})))
 
 (def template-manifest
