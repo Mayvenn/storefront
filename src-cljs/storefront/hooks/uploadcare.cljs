@@ -30,11 +30,11 @@
                   {:error error
                    :file-info (js->clj file-info :keywordize-keys true)}))
 
-(defn ^:private handle-file [^js/uploadcare.files.BaseFile file]
-   (-> file
-       .promise
-       (.fail handle-error)
-       (.done receive-file-info)))
+(defn ^:private handle-file [file]
+  (-> file
+      .promise
+      (.fail handle-error)
+      (.done receive-file-info)))
 
 (defn dialog [embed-selector & loaded-img-urls]
   (when (.hasOwnProperty js/window "uploadcare")
