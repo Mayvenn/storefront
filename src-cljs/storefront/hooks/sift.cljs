@@ -4,15 +4,15 @@
 
 (def store-domain ".mayvenn.com")
 
-(defn insert-beacon []
+(defn insert-tracking []
   (insert-tag-with-text
    (str "var _sift=window._sift=window._sift||[];_sift.push(['_setAccount','" config/sift-api-key "']),function(t,n){function c(){var n=t.createElement('script');n.src='https://cdn.siftscience.com/s.js',t.body.appendChild(n)}n.attachEvent?n.attachEvent('onload',c):n.addEventListener('load',c,!1)}(document,window);")
    "sift"))
 
-(defn remove-beacon []
+(defn remove-tracking []
   (remove-tags-by-class "sift"))
 
-(defn track-page [path user-id session-id]
+(defn track-page [user-id session-id]
   (when (.hasOwnProperty js/window "_sift")
     (try
       (doto js/_sift

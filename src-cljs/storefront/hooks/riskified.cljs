@@ -4,12 +4,12 @@
 
 (def store-domain "mayvenn.com")
 
-(defn insert-beacon [session-id]
+(defn insert-tracking [session-id]
   (insert-tag-with-src
    (str "//beacon.riskified.com?shop=" store-domain "&sid=" session-id)
    "riskified-beacon"))
 
-(defn remove-beacon []
+(defn remove-tracking []
   (remove-tags-by-class "riskified-beacon"))
 
 (defn track-page [path]
