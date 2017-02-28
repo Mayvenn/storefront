@@ -19,7 +19,7 @@
     om/IRender
     (render [_]
       (html
-       [:div.container
+       [:div.container.sans-serif
         [:div.p2
          [:a.dark-gray.block.mb2
           (utils/route-to events/navigate-stylist-account-profile)

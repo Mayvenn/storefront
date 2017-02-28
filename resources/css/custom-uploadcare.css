@@ -4,6 +4,11 @@
     background: transparent;
     border: 0;
 }
+
+.uploadcare-dialog-panel :focus {
+    outline: inherit;
+}
+
 .uploadcare-dialog-panel {
     padding-left: 0;
     margin: 0 20px 20px;
@@ -40,6 +45,49 @@
     max-height: 350px;
 }
 
+.uploadcare-dialog-big-button, .uploadcare-dialog-big-button:hover, .uploadcare-dialog-big-button:focus, .uploadcare-dialog-big-button:active {
+    background: #40CBAC;
+    box-shadow: none;
+    border: none;
+    text-shadow: none;
+    font-family: var(--button-font-family);
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    line-height: var(--button-line-height);
+    padding: var(--button-padding-y) var(--button-padding-x);
+    border: var(--border-width) solid transparent;
+    border-radius: var(--button-border-radius);
+    vertical-align: middle;
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    user-select: none;
+}
+
+.uploadcare-dialog-tab-preview.uploadcare-dialog-tab_current .uploadcare-widget-circle--canvas {
+    color: var(--teal);
+}
+
 .uploadcare-dialog-footer {
     display: none;
+}
+
+:root {
+    --border-width: 1px;
+    --button-border-radius: var(--border-radius);
+    --border-radius: 2px;
+    --teal: #40cbac;
+    --bold-font-weight: bold;
+    --button-font-family: inherit;
+    --button-font-size: inherit;
+    --button-font-weight: var(--bold-font-weight);
+    --button-line-height: 1.125rem;
+    --button-letter-spacing: 0;
+    --button-padding-y: 1rem;
+    --button-padding-x: 1rem;
+    --darken-1: rgba(0, 0, 0, .075);
+    --darken-3: rgba(0, 0, 0, .375);
 }
