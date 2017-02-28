@@ -672,7 +672,7 @@
   (exception-handler/report error file-info))
 
 (defmethod perform-effects events/portrait-component-mounted [_ _ {:keys [selector portrait]} app-state]
-  (uploadcare/dialog selector))
+  (uploadcare/dialog selector (:resizable_url portrait)))
 
 (defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} app-state]
   (let [user-token (get-in app-state keypaths/user-token)]
