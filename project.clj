@@ -58,18 +58,19 @@
                                 :provides ["react-slick"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
-                :externs ["externs/riskified.js"
-                          "externs/bugsnag.js"
-                          "externs/yotpo.js"
+                :externs ["externs/bugsnag.js"
                           "externs/convert.js"
-                          "externs/stripe.js"
                           "externs/facebook.js"
-                          "externs/talkable.js"
-                          "externs/react-slick.js"
                           "externs/pixlee.js"
+                          "externs/react-slick.js"
+                          "externs/riskified.js"
+                          "externs/sift.js"
                           "externs/stringer.js"
+                          "externs/stripe.js"
+                          "externs/talkable.js"
                           "externs/uploadcare.js"
-                          "externs/wistia.js"]}}
+                          "externs/wistia.js"
+                          "externs/yotpo.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
      :warning-handlers [(fn [warning-type env extra]
@@ -89,18 +90,19 @@
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
-                :externs ["externs/riskified.js"
-                          "externs/bugsnag.js"
-                          "externs/yotpo.js"
+                :externs ["externs/bugsnag.js"
                           "externs/convert.js"
-                          "externs/stripe.js"
                           "externs/facebook.js"
-                          "externs/talkable.js"
-                          "externs/react-slick.js"
-                          "externs/stringer.js"
                           "externs/pixlee.js"
+                          "externs/react-slick.js"
+                          "externs/riskified.js"
+                          "externs/sift.js"
+                          "externs/stringer.js"
+                          "externs/stripe.js"
+                          "externs/talkable.js"
                           "externs/uploadcare.js"
-                          "externs/wistia.js"]
+                          "externs/wistia.js"
+                          "externs/yotpo.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles
