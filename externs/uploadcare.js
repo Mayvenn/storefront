@@ -5,7 +5,7 @@ uploadcare.tabsCss = {};
 uploadcare.tabsCss.addUrl = function (styleString) {};
 
 /** @type {function(): !UploadcarePromise} */
-uploadcare.openDialog = function(){};
+uploadcare.openPanel = function(){};
 
 function UploadcarePromise() {};
 /** @type {function(): !UploadcarePromise} */
