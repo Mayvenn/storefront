@@ -8,6 +8,7 @@
 (defn insert []
   (when-not (.hasOwnProperty js/window "uploadcare")
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
+    (set! js/UPLOADCARE_LIVE false)
     (insert-tag-with-callback
      (src-tag "https://ucarecdn.com/libs/widget/2.10.3/uploadcare.full.min.js"
               "uploadcare")
