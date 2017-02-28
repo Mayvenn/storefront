@@ -4,8 +4,10 @@ var uploadcare = {};
 uploadcare.tabsCss = {};
 uploadcare.tabsCss.addUrl = function (styleString) {};
 
+uploadcare.fileFrom = function (type, filename) {};
+
 /** @type {function(): !UploadcarePromise} */
-uploadcare.openPanel = function(){};
+uploadcare.openPanel = function () {};
 
 function UploadcarePromise() {};
 /** @type {function(): !UploadcarePromise} */
