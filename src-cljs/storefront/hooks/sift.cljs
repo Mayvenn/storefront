@@ -1,6 +1,7 @@
 (ns storefront.hooks.sift
-  (:require [storefront.browser.tags :refer [insert-tag-with-src remove-tags-by-class]]
-            [storefront.hooks.exception-handler :as exception-handler]))
+  (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class]]
+            [storefront.hooks.exception-handler :as exception-handler]
+            [storefront.config :as config]))
 
 (def store-domain "mayvenn.com")
 
@@ -16,9 +17,9 @@
   (when (.hasOwnProperty js/window "_sift")
     (try
       (doto js/_sift
-        (.push (clj->js ["_setUserID" user-id]))
+        (.push (clj->js ["_setUserId" (str user-id)]))
         (.push (clj->js ["_setCookieDomain" store-domain]))
-        (.push (clj->js ["_setSessionId" session-id]))
+        (.push (clj->js ["_setSessionId" (str session-id)]))
         (.push (clj->js ["_trackPageview"])))
       (catch :default e
-        (exception-handler/report e))))
+        (exception-handler/report e)))))

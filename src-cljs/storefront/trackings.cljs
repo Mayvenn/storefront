@@ -7,6 +7,7 @@
             [storefront.hooks.convert :as convert]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
+            [storefront.hooks.sift :as sift]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.stylists :as stylists]

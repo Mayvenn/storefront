@@ -78,8 +78,8 @@
 
 (def sift-api-key
   (case js/environment
-    "production" "See sales rep for details!"
-    "See sales rep for details!"))
+    "production" "269464bc68"
+    "bbe6fafe11"))
 
 (def facebook-app-id (case js/environment
                        "production" 1536288310021691
