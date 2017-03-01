@@ -82,7 +82,23 @@
     color: var(--teal);
 }
 
+.uploadcare-draganddrop .uploadcare-dialog-file-drop-area {
+    /* Dotted border around drag-and-drop area. Though it's supported, we don't want to encourage drag-and-drop. Besides, the dotted border is ugly. */
+    border: none;
+}
+
+.uploadcare-draganddrop .uploadcare-if-draganddrop {
+    /* Copy that explains how to drag-and-drop. Again, hiding drag-and-drop, especially because it's not really possible on phones. */
+    display: none;
+}
+
+.uploadcare-clouds-tip {
+    /* Tries to tell users they will be able to use the native file dialog to access cloud storage and social networks. */
+    display: none;
+}
+
 .uploadcare-dialog-footer {
+    /* The uploadcare logo */
     display: none;
 }
 
