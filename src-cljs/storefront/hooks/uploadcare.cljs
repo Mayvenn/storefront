@@ -48,5 +48,5 @@
          (clj->js {:imageShrink "1600x1600"
                    :imagesOnly  true
                    :crop        "1:1"
-                   :tabs        "instagram facebook file camera"}))
+                   :tabs        "instagram facebook file"}))
         (.done handle-file))))
