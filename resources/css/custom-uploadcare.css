@@ -97,6 +97,19 @@
     display: none;
 }
 
+/* Tweaks to file upload footer */
+.uploadcare-panel-footer {
+    padding: 0 10px;
+}
+
+.uploadcare-panel-footer .uploadcare-dialog-button {
+    float: none;
+}
+
+.uploadcare-panel-footer .uploadcare-dialog-button, .uploadcare-panel-footer .uploadcare-dialog-button-success {
+    margin: 10px;
+}
+
 .uploadcare-dialog-footer {
     /* The uploadcare logo */
     display: none;
