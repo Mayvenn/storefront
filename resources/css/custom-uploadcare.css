@@ -28,6 +28,16 @@
     margin: 0 10px 10px 0;
     float: left;
 }
+.uploadcare-dialog-tab-file:before,
+.uploadcare-dialog-tab-file:hover,
+.uploadcare-dialog-tab-file:hover:before,
+.uploadcare-dialog-tab-file.uploadcare-dialog-tab_current
+{
+    background-image: url('/images/icons/filmstrip-icon.svg');
+    background-size: 35px 35px;
+    background-position: 50%;
+    background-repeat: no-repeat;
+}
 .uploadcare-dialog-tabs-panel,
 .uploadcare-dialog-source-base-wrap {
     padding: 0;
@@ -44,6 +54,7 @@
 .uploadcare-dialog-camera-video {
     max-height: 350px;
 }
+
 
 .uploadcare-dialog-big-button, .uploadcare-dialog-big-button:hover, .uploadcare-dialog-big-button:focus, .uploadcare-dialog-big-button:active, .big-button, .big-button:hover, .big-button:focus, .big-button:active {
     background: #40CBAC;
