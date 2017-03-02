@@ -305,7 +305,8 @@
   ([src] (circle-picture {} src))
   ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
    [:div.circle.bg-light-gray.overflow-hidden.relative
-    (merge {:style {:width width :height width}} attrs)
+    (merge {:style {:width width :height width}}
+           (dissoc attrs :width :overlay-copy))
     (if src
       [:img {:style {:width width :height width :object-fit "cover"} :src src}]
       (svg/missing-profile-picture {:width width :height width}))
