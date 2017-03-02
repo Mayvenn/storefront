@@ -790,24 +790,22 @@
   (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-later-show-success {:message "Account updated"}))
 
+(defmethod perform-effects events/api-success-stylist-account [_ event args app-state]
+  (save-cookie app-state))
+
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args app-state]
-  (save-cookie app-state)
   (handle-message events/flash-show-success {:message "Profile updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-password [_ event args app-state]
-  (save-cookie app-state)
   (handle-message events/flash-show-success {:message "Password updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-commission [_ event args app-state]
-  (save-cookie app-state)
   (handle-message events/flash-show-success {:message "Commission settings updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-social [_ event args app-state]
-  (save-cookie app-state)
   (handle-message events/flash-show-success {:message "Social settings updated"}))
 
 (defmethod perform-effects events/api-success-stylist-account-photo [_ event args app-state]
-  (save-cookie app-state)
   (handle-message events/flash-show-success {:message "Photo updated"}))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args app-state]
