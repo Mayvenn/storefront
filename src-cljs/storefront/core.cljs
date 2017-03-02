@@ -29,9 +29,9 @@
           app-state
           (reductions conj [] event)))
 
-(defn- effects [app-state [event args]]
+(defn- effects [app-state-before-transition app-state-after-transition [event args]]
   (doseq [event-fragment (rest (reductions conj [] event))]
-    (perform-effects event-fragment event args app-state)))
+    (perform-effects event-fragment event args app-state-before-transition app-state-after-transition)))
 
 (defn- track [app-state [event args]]
   (doseq [event-fragment (rest (reductions conj [] event))]
@@ -55,8 +55,9 @@
    (let [message [event args]]
      ;; rename transition to transition-log to log messages
      (try
-       (om/transact! (om/root-cursor app-state) #(transition % message))
-       (effects @app-state message)
+       (let [app-state-before @app-state]
+         (om/transact! (om/root-cursor app-state) #(transition % message))
+         (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
          (exception-handler/report e))))))
