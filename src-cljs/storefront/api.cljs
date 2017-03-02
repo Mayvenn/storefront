@@ -185,6 +185,17 @@
       (update :user select-user-keys)
       (select-keys [:user :order])))
 
+(defn sign-out [user-id user-token]
+  (api-req
+   POST
+   "/v2/signout"
+   request-keys/sign-out
+   {:params
+    {:user-id user-id
+     :user-token user-token}
+    :handler identity
+    :error-handler identity}))
+
 (defn sign-in [email password stylist-id order-number order-token]
   (api-req
    POST

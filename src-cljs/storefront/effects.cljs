@@ -937,7 +937,9 @@
     (handle-message events/flash-show-success {:message "Logged out successfully"})
     (do
       (history/enqueue-navigate events/navigate-home)
-      (handle-message events/flash-later-show-success {:message "Logged out successfully"}))))
+      (handle-message events/flash-later-show-success {:message "Logged out successfully"})))
+  (api/sign-out (get-in app-state-before keypaths/user-id)
+                (get-in app-state-before keypaths/user-token)))
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
