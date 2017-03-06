@@ -28,15 +28,22 @@
     margin: 0 10px 10px 0;
     float: left;
 }
+.uploadcare-dialog-tab:hover {
+    background-color: var(--white);
+}
 .uploadcare-dialog-tab-file:before,
-.uploadcare-dialog-tab-file:hover,
-.uploadcare-dialog-tab-file:hover:before,
-.uploadcare-dialog-tab-file.uploadcare-dialog-tab_current
-{
+.uploadcare-dialog-tab-file:hover:before {
     background-image: url('/images/icons/filmstrip-icon.svg');
-    background-size: 35px 35px;
+    background-size: 30px 30px;
     background-position: 50%;
     background-repeat: no-repeat;
+    opacity: 0.33;
+}
+.uploadcare-dialog-tab-file:hover:before {
+    opacity: 0.66;
+}
+.uploadcare-dialog-tab-file.uploadcare-dialog-tab_current:before {
+    opacity: 1;
 }
 .uploadcare-dialog-tabs-panel,
 .uploadcare-dialog-source-base-wrap {
@@ -132,6 +139,7 @@
     --border-radius: 2px;
 
     --teal: #40cbac;
+    --white: #ffffff;
     --facebook-blue: #3b5998;
 
     --bold-font-weight: bold;
