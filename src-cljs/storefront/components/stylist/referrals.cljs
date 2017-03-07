@@ -53,7 +53,7 @@
                        :stroke-width   5
                        :fraction-filled (/ commissioned-revenue earning-amount)})])
 
-(defn show-referral [earning-amount {:keys [referred-stylist paid-at commissioned-revenue bonus-due]} uploadcare?]
+(defn show-referral [earning-amount {:keys [referred-stylist paid-at commissioned-revenue bonus-due]}]
   (html
    (let [{:keys [name join-date profile-picture-url portrait]} referred-stylist
          state (cond
@@ -62,9 +62,8 @@
                  :else                        :in-progress)]
      [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-gray.p2
       {:key (str name join-date)}
-      [:div.mr1 (ui/circle-picture (if uploadcare?
-                                     (:resizable_url portrait)
-                                     profile-picture-url))]
+      [:div.mr1 (ui/circle-picture (or (:resizable_url portrait)
+                                       profile-picture-url))]
       [:div.flex-auto
        [:div.h3.navy name]
        [:div.h6.dark-gray
@@ -117,7 +116,6 @@
                          referrals
                          page
                          pages
-                         uploadcare?
                          fetching?]} _]
   (om/component
    (html
@@ -133,7 +131,7 @@
         (when (seq referrals)
           [:div
            (for [referral referrals]
-             (show-referral earning-amount referral uploadcare?))
+             (show-referral earning-amount referral))
            (pagination/fetch-more events/control-stylist-referrals-fetch fetching? page pages)])
         (when (zero? pages) empty-referrals)]
        [:div.col-right-on-tb-dt.col-4-on-tb-dt.clearfix
@@ -147,7 +145,6 @@
    :referrals      (get-in data keypaths/stylist-referral-program-referrals)
    :page           (get-in data keypaths/stylist-referral-program-page)
    :pages          (get-in data keypaths/stylist-referral-program-pages)
-   :uploadcare?    (experiments/uploadcare? data)
    :fetching?      (utils/requesting? data request-keys/get-stylist-referral-program)})
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])

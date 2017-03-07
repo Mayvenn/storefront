@@ -10,11 +10,10 @@
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo uploadcare?]} owner opts]
+(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo]} owner opts]
   (component/create
-   (let [profile-picture (if uploadcare?
-                           (-> store :portrait :resizable_url)
-                           (:profile_picture_url store))]
+   (let [profile-picture (or (-> store :portrait :resizable_url)
+                             (:profile_picture_url store))]
      [:div.container.p4
       [:div.pb3
        (when profile-picture
@@ -41,8 +40,7 @@
   {:shared-cart-id   (get-in data keypaths/shared-cart-id)
    :store            (get-in data keypaths/store)
    :advertised-promo (promos/default-advertised-promotion (get-in data keypaths/promotions))
-   :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)
-   :uploadcare?      (experiments/uploadcare? data)})
+   :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

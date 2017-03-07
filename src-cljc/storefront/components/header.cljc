@@ -112,8 +112,7 @@
                        instagram-account :instagram_account
                        styleseat-account :styleseat_account
                        store-photo :profile_picture_url
-                       portrait :portrait}
-                      uploadcare?]
+                       portrait :portrait}]
   [:div.center {:height "30px"}
    (ui/drop-down
     expanded?
@@ -131,7 +130,8 @@
        [:div.p1.h6
         [:div.m1 (ui/circle-picture
                   {:class "mx-auto"}
-                  (if uploadcare? (:resizable_url portrait) store-photo))]
+                  (or (:resizable_url portrait)
+                      store-photo))]
         [:h4.regular store-name]]
        (when instagram-account
          (social-link
@@ -168,10 +168,9 @@
 
 (defn stylist-account [expanded?
                        current-page?
-                       {:keys [store uploadcare?] :as data}]
-  (let [store-photo (if uploadcare?
-                      (-> store :portrait :resizable_url)
-                      (:profile_picture_url store))]
+                       {:keys [store] :as data}]
+  (let [store-photo (or (-> store :portrait :resizable_url)
+                        (:profile_picture_url store))]
     (account-dropdown
      expanded?
      [:div.flex.justify-end.items-center
@@ -278,12 +277,12 @@
   [upper-left
    (lower-left current-page?)])
 
-(defn middle [{:keys [store expanded? uploadcare?]}]
+(defn middle [{:keys [store expanded?]}]
   (if (sans-stylist? (:store_slug store))
     (list (logo "40px"))
     (list
      (logo "30px")
-     (store-dropdown expanded? store uploadcare?))))
+     (store-dropdown expanded? store))))
 
 (defn right [{{:keys [current-page?]} :context :as data}]
   [(upper-right data)
@@ -313,7 +312,6 @@
 
 (defn store-query [data]
   {:expanded?   (get-in data keypaths/store-info-expanded)
-   :uploadcare? (experiments/uploadcare? data)
    :store       (get-in data keypaths/store)})
 
 (defn auth-query [data]

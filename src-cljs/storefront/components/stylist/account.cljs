@@ -13,7 +13,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
 
-(defn uploadcare-photo [{:keys [resizable_url status]} saving?]
+(defn uploadcare-photo [{:keys [resizable_url status]} old-profile-photo-url saving?]
   [:a.navy
    (utils/route-to events/navigate-stylist-account-portrait)
    (when saving?
@@ -30,7 +30,9 @@
                                          "pending" [:span.white.medium "Approval Pending"]
                                          "rejected" [:span.red.bold.h6 "Inappropriate Image"]
                                          nil)}
-                        resizable_url)]]
+                        (if (= status "none")
+                          old-profile-photo-url
+                          resizable_url))]]
    "Change Photo"])
 
 (defn edit-photo [profile-picture-url photo-saving?]
@@ -76,7 +78,7 @@
      [:div.flex.justify-center.items-center.center
       [:div
        (if uploadcare?
-         (uploadcare-photo portrait portrait-saving?)
+         (uploadcare-photo portrait profile-picture-url portrait-saving?)
          (edit-photo profile-picture-url photo-saving?))]
 
       [:div.ml3

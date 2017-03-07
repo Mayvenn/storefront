@@ -68,10 +68,9 @@
     [:li [:a.teal.block (utils/route-to events/navigate-account-referrals)
           (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
-(defn store-section [selectable? uploadcare? store]
-  (let [store-photo (if uploadcare?
-                      (-> store :portrait :resizable_url)
-                      (:profile_picture_url store))]
+(defn store-section [selectable? store]
+  (let [store-photo (or (-> store :portrait :resizable_url)
+                        (:profile_picture_url store))]
     [:nav {:aria-label "Mayvenn Account"}
      (row
       [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
@@ -183,11 +182,11 @@
    (help-section selectable?)
    sign-out-section])
 
-(defn stylist-content [selectable? {:keys [available-store-credit store named-searches uploadcare?]}]
+(defn stylist-content [selectable? {:keys [available-store-credit store named-searches]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
-    [section-top-inner (store-section selectable? uploadcare? store)]]
+    [section-top-inner (store-section selectable? store)]]
    (stylist-shop-section selectable? named-searches)
    (help-section selectable?)
    sign-out-section])
@@ -216,8 +215,7 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :named-searches             (named-searches/current-named-searches data)
-   :uploadcare?                (experiments/uploadcare? data)})
+   :named-searches             (named-searches/current-named-searches data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
