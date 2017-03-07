@@ -103,6 +103,7 @@
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
 (defpath control-stylist-community)
+(defpath poll-stylist-portrait)
 
 (defpath control-menu-expand)
 (defpath control-menu-collapse-all)

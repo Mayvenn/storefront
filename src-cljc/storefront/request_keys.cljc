@@ -18,6 +18,7 @@
 (def update-account-profile [:update-account-profile])
 
 (def get-stylist-account [:get-stylist-account])
+(def refresh-stylist-portrait [:refresh-stylist-portrait])
 (def update-stylist-account [:update-stylist-account])
 (def update-stylist-account-photo [:update-stylist-account-photo])
 (def update-stylist-account-profile [:update-stylist-account-profile])

@@ -369,8 +369,7 @@
     {:user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-account
-                              {:updated false
-                               :stylist (select-stylist-account-keys %)})}))
+                              {:stylist (select-stylist-account-keys %)})}))
 
 (defn get-shipping-methods []
   (api-req
@@ -424,6 +423,17 @@
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
+(defn refresh-stylist-portrait [user-token]
+  (api-req
+   GET
+   "/stylist"
+   request-keys/refresh-stylist-portrait
+   {:params
+    {:user-token user-token}
+    :handler
+    #(messages/handle-message events/api-success-stylist-account-portrait
+                              {:stylist (select-keys % [:portrait])})}))
+
 (defn update-stylist-account-portrait [session-id user-token stylist-account]
   (api-req
    PUT
@@ -433,7 +443,7 @@
              :user-token user-token :stylist stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist (select-stylist-account-keys %)})}))
+                              {:stylist (select-keys % [:portrait])})}))
 
 (defn update-stylist-account-photo [session-id user-token profile-picture]
   (let [form-data (doto (js/FormData.)

@@ -810,7 +810,22 @@
   (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-later-show-success {:message "Account updated"}))
 
-(defmethod perform-effects events/api-success-stylist-account [_ event args _ app-state]
+(defmethod perform-effects events/poll-stylist-portrait [_ event args _ app-state]
+  (api/refresh-stylist-portrait (get-in app-state keypaths/user-token)))
+
+(defn changed? [previous-app-state app-state keypath]
+  (not= (get-in previous-app-state keypath)
+        (get-in app-state keypath)))
+
+(defmethod perform-effects events/api-success-stylist-account [_ event args previous-app-state app-state]
+  (when (experiments/uploadcare? app-state)
+    ;; Portrait becomes pending either when the user navigates to an account page
+    ;; or when they change their portrait.
+    ;; In either case, we start the poll loop.
+    (when-let [became-pending? (and
+                                (changed? previous-app-state app-state keypaths/stylist-portrait-status)
+                                (= "pending" (get-in app-state keypaths/stylist-portrait-status)))]
+      (handle-later events/poll-stylist-portrait {} 5000)))
   (save-cookie app-state))
 
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args _ app-state]
@@ -827,6 +842,15 @@
 
 (defmethod perform-effects events/api-success-stylist-account-photo [_ event args _ app-state]
   (handle-message events/flash-show-success {:message "Photo updated"}))
+
+(defmethod perform-effects events/api-success-stylist-account-portrait [_ event args previous-app-state app-state]
+  (when (changed? previous-app-state app-state keypaths/stylist-portrait-url)
+    (handle-message events/flash-show-success {:message "Photo updated"}))
+  (when (experiments/uploadcare? app-state)
+    (when-let [still-pending? (= "pending"
+                                 (get-in previous-app-state keypaths/stylist-portrait-status)
+                                 (get-in app-state keypaths/stylist-portrait-status))]
+      (handle-later events/poll-stylist-portrait {} 5000))))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args _ app-state]
   (handle-later events/control-popup-hide {} 2000))
