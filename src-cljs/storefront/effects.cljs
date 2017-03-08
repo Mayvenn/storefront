@@ -299,8 +299,7 @@
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
-    (when (experiments/uploadcare? app-state)
-      (uploadcare/insert))
+    (uploadcare/insert)
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account user-token)))
 
@@ -818,14 +817,13 @@
         (get-in app-state keypath)))
 
 (defmethod perform-effects events/api-success-stylist-account [_ event args previous-app-state app-state]
-  (when (experiments/uploadcare? app-state)
-    ;; Portrait becomes pending either when the user navigates to an account page
-    ;; or when they change their portrait.
-    ;; In either case, we start the poll loop.
-    (when-let [became-pending? (and
-                                (changed? previous-app-state app-state keypaths/stylist-portrait-status)
-                                (= "pending" (get-in app-state keypaths/stylist-portrait-status)))]
-      (handle-later events/poll-stylist-portrait {} 5000)))
+  ;; Portrait becomes pending either when the user navigates to an account page
+  ;; or when they change their portrait.
+  ;; In either case, we start the poll loop.
+  (when-let [became-pending? (and
+                              (changed? previous-app-state app-state keypaths/stylist-portrait-status)
+                              (= "pending" (get-in app-state keypaths/stylist-portrait-status)))]
+    (handle-later events/poll-stylist-portrait {} 5000))
   (save-cookie app-state))
 
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args _ app-state]
@@ -846,11 +844,10 @@
 (defmethod perform-effects events/api-success-stylist-account-portrait [_ event args previous-app-state app-state]
   (when (changed? previous-app-state app-state keypaths/stylist-portrait-url)
     (handle-message events/flash-show-success {:message "Photo updated"}))
-  (when (experiments/uploadcare? app-state)
-    (when-let [still-pending? (= "pending"
-                                 (get-in previous-app-state keypaths/stylist-portrait-status)
-                                 (get-in app-state keypaths/stylist-portrait-status))]
-      (handle-later events/poll-stylist-portrait {} 5000))))
+  (when-let [still-pending? (= "pending"
+                               (get-in previous-app-state keypaths/stylist-portrait-status)
+                               (get-in app-state keypaths/stylist-portrait-status))]
+    (handle-later events/poll-stylist-portrait {} 5000)))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args _ app-state]
   (handle-later events/control-popup-hide {} 2000))
@@ -991,8 +988,5 @@
   (ensure-products app-state (map :product-id (:line-items cart))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  ;; TODO: when uploadcare? goes live, we won't need this.
-  (when (experiments/uploadcare? app-state)
-    (uploadcare/insert))
   ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
   (fetch-named-search-album app-state))

@@ -71,15 +71,14 @@
                          password
                          commission
                          social
-                         uploadcare?]} owner opts]
+                         loaded-uploadcare?]} owner opts]
   (component/create
    [:div.bg-white.dark-gray
     [:div.container.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div
-       (if uploadcare?
-         (uploadcare-photo portrait profile-picture-url portrait-saving?)
-         (edit-photo profile-picture-url photo-saving?))]
+       (when loaded-uploadcare?
+         (uploadcare-photo portrait profile-picture-url portrait-saving?))]
 
       [:div.ml3
        (store-credit available-credit)]]
@@ -123,8 +122,7 @@
    :password            (account.password/query data)
    :commission          (account.commission/query data)
    :social              (account.social/query data)
-   :uploadcare?         (and (experiments/uploadcare? data)
-                             (get-in data keypaths/loaded-uploadcare))})
+   :loaded-uploadcare?  (get-in data keypaths/loaded-uploadcare)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
