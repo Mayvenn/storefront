@@ -15,7 +15,8 @@
 
 (defn uploadcare-photo [{:keys [resizable_url status]} old-profile-photo-url saving?]
   [:a.navy
-   (utils/route-to events/navigate-stylist-account-portrait)
+   (merge (utils/route-to events/navigate-stylist-account-portrait)
+          {:data-test "change-photo-link"})
    (when saving?
      [:div.absolute
       [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
