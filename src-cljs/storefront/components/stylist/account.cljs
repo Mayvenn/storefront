@@ -36,25 +36,6 @@
                           resizable_url))]]
    "Change Photo"])
 
-(defn edit-photo [profile-picture-url photo-saving?]
-  [:label.navy
-   (when photo-saving?
-     [:div.absolute
-      [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
-       {:style {:width "130px" :height "130px"
-                :top "-12px" :left "-12px"}}]])
-   [:div.mx-auto.circle.border.mb2.content-box
-    {:style {:width "100px" :height "100px" :border-width "3px"}
-     :class (if photo-saving? "border-light-gray" "border-teal")}
-    [:div.circle.border-light-gray.border.content-box.border-width-2 {:style {:width "96px" :height "96px"}}
-     (ui/circle-picture {:width "96px"} profile-picture-url)]]
-   "Change Photo"
-   [:input.hide
-    (merge (utils/change-file events/control-stylist-account-photo-pick)
-           {:name "mayvenn_stylist[profile_picture]"
-            :type "file"
-            :data-test "profile-photo"})]])
-
 (defn store-credit [available-credit]
   [:div.mb3
    [:div.medium.mb1 "Store Credit"]
