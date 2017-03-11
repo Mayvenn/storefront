@@ -42,8 +42,6 @@ Starting at [/src-cljs/storefront/][13], there are some directories.
 * Where are the tests?
   * The vast majority of Storefront's tests are in a different project.
   This was done because they are integration tests and test more than just storefront.
-* Whats up with your SCSS and CSS?
-  * They are from the previous version of the site.  Going forward we would like to make the SCSS more component oriented.
 * Can I run this?
   * Sure, but you will need to setup up some external dependencies, such as an API server. We hope this project serves as a reference project moreso than generic ecommerce solution.
 
