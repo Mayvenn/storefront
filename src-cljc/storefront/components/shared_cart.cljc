@@ -12,13 +12,12 @@
 
 (defn component [{:keys [shared-cart-id store creating-cart? advertised-promo]} owner opts]
   (component/create
-   (let [profile-picture (or (-> store :portrait :resizable_url)
-                             (:profile_picture_url store))]
+   (let [portrait-url (-> store :portrait :resizable_url)]
      [:div.container.p4
       [:div.pb3
-       (when profile-picture
+       (when portrait-url
          [:div.mb2.h2
-          (ui/circle-picture {:class "mx-auto"} profile-picture)])
+          (ui/circle-picture {:class "mx-auto"} portrait-url)])
        [:p.center.h3.navy.medium
         (:store_nickname store) " has created a bag for you!"]]
       [:div.flex.items-center.px1.py3.border-dark-gray.border-top.border-bottom

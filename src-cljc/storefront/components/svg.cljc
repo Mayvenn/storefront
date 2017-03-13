@@ -156,9 +156,9 @@
 
 ;;
 
-(defn missing-profile-picture [svg-options]
+(defn missing-portrait [svg-options]
   [:svg svg-options
-   (svg-xlink "missing-profile-picture")])
+   (svg-xlink "mayvenn-wave")])
 
 (def play-video
   (component/html

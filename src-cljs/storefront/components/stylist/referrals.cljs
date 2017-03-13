@@ -55,15 +55,14 @@
 
 (defn show-referral [earning-amount {:keys [referred-stylist paid-at commissioned-revenue bonus-due]}]
   (html
-   (let [{:keys [name join-date profile-picture-url portrait]} referred-stylist
+   (let [{:keys [name join-date portrait]} referred-stylist
          state (cond
                  paid-at                      :paid
                  (zero? commissioned-revenue) :referred
                  :else                        :in-progress)]
      [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-gray.p2
       {:key (str name join-date)}
-      [:div.mr1 (ui/circle-picture (or (:resizable_url portrait)
-                                       profile-picture-url))]
+      [:div.mr1 (ui/circle-picture (:resizable_url portrait))]
       [:div.flex-auto
        [:div.h3.navy name]
        [:div.h6.dark-gray

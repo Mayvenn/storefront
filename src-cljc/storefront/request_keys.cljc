@@ -20,7 +20,6 @@
 (def get-stylist-account [:get-stylist-account])
 (def refresh-stylist-portrait [:refresh-stylist-portrait])
 (def update-stylist-account [:update-stylist-account])
-(def update-stylist-account-photo [:update-stylist-account-photo])
 (def update-stylist-account-profile [:update-stylist-account-profile])
 (def update-stylist-account-password [:update-stylist-account-password])
 (def update-stylist-account-commission [:update-stylist-account-commission])

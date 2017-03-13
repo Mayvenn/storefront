@@ -153,7 +153,6 @@
 
 (defpath control-stylist-banner-close)
 
-(defpath control-stylist-account-photo-pick)
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)
 (defpath control-stylist-account-commission-submit)
@@ -187,7 +186,6 @@
 (defpath api-success-account)
 (defpath api-success-manage-account)
 (defpath api-success-stylist-account)
-(defpath api-success-stylist-account-photo)
 (defpath api-success-stylist-account-portrait)
 (defpath api-success-stylist-account-profile)
 (defpath api-success-stylist-account-password)
@@ -233,7 +231,6 @@
 (defpath api-failure-errors)
 (defpath api-failure-errors-invalid-promo-code)
 (defpath api-failure-pending-promo-code)
-(defpath api-failure-stylist-account-photo-too-large)
 (defpath api-failure-order-not-created-from-shared-cart)
 
 (defpath flash)

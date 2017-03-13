@@ -679,10 +679,6 @@
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-social (get-in app-state keypaths/session-id) user-token stylist-account)))
 
-(defmethod perform-effects events/control-stylist-account-photo-pick [_ _ {:keys [file]} _ app-state]
-  (let [user-token (get-in app-state keypaths/user-token)]
-    (api/update-stylist-account-photo (get-in app-state keypaths/session-id) user-token file)))
-
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} _ app-state]
   (exception-handler/report error file-info))
 
@@ -838,9 +834,6 @@
 (defmethod perform-effects events/api-success-stylist-account-social [_ event args _ app-state]
   (handle-message events/flash-show-success {:message "Social settings updated"}))
 
-(defmethod perform-effects events/api-success-stylist-account-photo [_ event args _ app-state]
-  (handle-message events/flash-show-success {:message "Photo updated"}))
-
 (defmethod perform-effects events/api-success-stylist-account-portrait [_ event args previous-app-state app-state]
   (when (changed? previous-app-state app-state keypaths/stylist-portrait-url)
     (handle-message events/flash-show-success {:message "Photo updated"}))
@@ -891,9 +884,6 @@
 
 (defmethod perform-effects events/api-failure-bad-server-response [_ event response _ app-state]
   (handle-message events/flash-show-failure {:message "Uh oh, an error occurred. Reload the page and try again."}))
-
-(defmethod perform-effects events/api-failure-stylist-account-photo-too-large [_ event response _ app-state]
-  (handle-message events/flash-show-failure {:message "Whoa, the photo you uploaded is too large"}))
 
 (defmethod perform-effects events/flash-show [_ event {:keys [scroll?] :or {scroll? true}} _ app-state]
   (when scroll?

@@ -69,11 +69,10 @@
           (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
 (defn store-section [selectable? store]
-  (let [store-photo (or (-> store :portrait :resizable_url)
-                        (:profile_picture_url store))]
+  (let [portrait-url (-> store :portrait :resizable_url)]
     [:nav {:aria-label "Mayvenn Account"}
      (row
-      [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} store-photo)]
+      [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} portrait-url)]
       [:div (:store_nickname store)])
      [:ul.list-reset
       [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)

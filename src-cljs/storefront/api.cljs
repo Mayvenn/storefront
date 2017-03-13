@@ -349,7 +349,6 @@
   (-> args
       (select-keys [:birth_date_1i :birth_date_2i :birth_date_3i
                     :birth-date
-                    :profile_picture_url
                     :portrait
                     :chosen_payout_method
                     :venmo_payout_attributes
@@ -444,25 +443,6 @@
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
-
-(defn update-stylist-account-photo [session-id user-token profile-picture]
-  (let [form-data (doto (js/FormData.)
-                    (.append "file" profile-picture (.-name profile-picture))
-                    (.append "user-token" user-token)
-                    (.append "session-id" session-id))]
-    (api-req PUT
-             "/stylist/profile-picture"
-             request-keys/update-stylist-account-photo
-             {:params          form-data
-              :format          "multipart/form-data"
-              :error-handler   (fn [response]
-                                 (if (= 413 (:status response))
-                                   (messages/handle-message events/api-failure-stylist-account-photo-too-large response)
-                                   (default-error-handler response)))
-              :timeout         20000
-              :handler         #(messages/handle-message events/api-success-stylist-account-photo
-                                                         {:session-id session-id
-                                                          :stylist (select-keys % [:profile_picture_url])})})))
 
 (defn get-stylist-stats [user-token]
   (api-req

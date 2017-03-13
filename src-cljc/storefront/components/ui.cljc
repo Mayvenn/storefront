@@ -309,7 +309,7 @@
            (dissoc attrs :width :overlay-copy))
     (if src
       [:img {:style {:width width :height width :object-fit "cover"} :src src}]
-      (svg/missing-profile-picture {:width width :height width}))
+      (svg/missing-portrait {:width width :height width}))
     (when overlay-copy
       [:div.absolute.overlay.bg-darken-2
        [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])]))

@@ -28,7 +28,6 @@
   (-> (generate-string {:store_slug "shop"
                         :store_name "Mayvenn Hair"
                         :instagram_account nil
-                        :profile_picture_url nil
                         :stylist_id 1})
       (response)
       (status 200)
@@ -38,7 +37,6 @@
   (-> (generate-string {:store_slug "bob"
                         :store_name "Bob's Hair Emporium"
                         :instagram_account nil
-                        :profile_picture_url nil
                         :stylist_id 3})
       (response)
       (status 200)

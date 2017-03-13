@@ -13,7 +13,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
 
-(defn uploadcare-photo [{:keys [resizable_url status]} old-profile-photo-url saving?]
+(defn uploadcare-photo [{:keys [resizable_url status]} saving?]
   [:a.navy
    (merge (utils/route-to events/navigate-stylist-account-portrait)
           {:data-test "change-photo-link"})
@@ -31,9 +31,7 @@
                                          "pending" [:span.white.medium "Approval Pending"]
                                          "rejected" [:span.red.bold.h6 "Inappropriate Image"]
                                          nil)}
-                        (if (= status "none")
-                          old-profile-photo-url
-                          resizable_url))]]
+                        resizable_url)]]
    "Change Photo"])
 
 (defn store-credit [available-credit]
@@ -43,10 +41,8 @@
    [:div.mb1 ui/nbsp]])
 
 (defn component [{:keys [fetching?
-                         photo-saving?
                          portrait-saving?
                          current-nav-event
-                         profile-picture-url
                          portrait
                          available-credit
                          profile
@@ -60,7 +56,7 @@
      [:div.flex.justify-center.items-center.center
       [:div
        (when loaded-uploadcare?
-         (uploadcare-photo portrait profile-picture-url portrait-saving?))]
+         (uploadcare-photo portrait portrait-saving?))]
 
       [:div.ml3
        (store-credit available-credit)]]
@@ -94,10 +90,8 @@
 
 (defn query [data]
   {:fetching?           (utils/requesting? data request-keys/get-stylist-account)
-   :photo-saving?       (utils/requesting? data request-keys/update-stylist-account-photo)
    :portrait-saving?    (utils/requesting? data request-keys/update-stylist-account-portrait)
    :current-nav-event   (get-in data keypaths/navigation-event)
-   :profile-picture-url (get-in data (conj keypaths/stylist-manage-account :profile_picture_url))
    :portrait            (get-in data (conj keypaths/stylist-manage-account :portrait))
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
    :profile             (account.profile/query data)
