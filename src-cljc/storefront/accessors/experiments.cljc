@@ -63,8 +63,5 @@
 (defn price-strikeout? [data]
   (display-feature? data "price-strikeout"))
 
-(defn homepage-grid? [data]
-  (display-feature? data "dave-homepage-grid"))
-
 (defn shop-ugcwidget? [data]
   (display-feature? data "shop-ugcwidget"))
