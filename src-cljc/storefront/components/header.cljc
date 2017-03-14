@@ -129,7 +129,7 @@
        [:div.p1.h6
         [:div.m1 (ui/circle-picture
                   {:class "mx-auto"}
-                  (ui/resize-image portrait 48))]
+                  (ui/square-image portrait 48))]
         [:h4.regular store-name]]
        (when instagram-account
          (social-link
@@ -172,7 +172,7 @@
    [:div.flex.justify-end.items-center
     (when (:resizable_url portrait)
       [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"}
-                                   (ui/resize-image portrait 48))])
+                                   (ui/square-image portrait 48))])
     [:div.truncate store_nickname]]
    (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.teal.block community-url "Community"]

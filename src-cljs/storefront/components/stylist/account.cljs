@@ -31,7 +31,7 @@
                                          "pending" [:span.white.medium "Approval Pending"]
                                          "rejected" [:span.red.bold.h6 "Inappropriate Image"]
                                          nil)}
-                        (ui/resize-image portrait 96))]]
+                        (ui/square-image portrait 96))]]
    "Change Photo"])
 
 (defn store-credit [available-credit]

@@ -301,7 +301,7 @@
    [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
-(defn resize-image [{:keys [resizable_url]} size]
+(defn square-image [{:keys [resizable_url]} size]
   (some-> resizable_url (str "-/scale_crop/" size "x" size "/center/")))
 
 (defn circle-picture

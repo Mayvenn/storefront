@@ -71,7 +71,7 @@
 (defn store-section [selectable? {:keys [portrait store_nickname]}]
   [:nav {:aria-label "Mayvenn Account"}
    (row
-    [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} (ui/resize-image portrait 48))]
+    [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} (ui/square-image portrait 48))]
     [:div store_nickname])
    [:ul.list-reset
     [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
