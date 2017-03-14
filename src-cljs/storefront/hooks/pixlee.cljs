@@ -27,11 +27,6 @@
 (defn fetch-mosaic []
   (fetch-album (-> config/pixlee :albums :mosaic) :mosaic))
 
-(defn fetch-named-search-album-ids []
-  (api-request "/products"
-               {:params  {:per_page 100}
-                :handler (partial m/handle-message events/pixlee-api-success-fetch-named-search-album-ids)}))
-
 (defn fetch-image [image-id]
   (api-request (str "/media/" image-id)
                {:handler (fn [resp]

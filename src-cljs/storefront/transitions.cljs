@@ -222,14 +222,6 @@
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id (js/parseInt look-id)))
 
-(defmethod transition-state events/pixlee-api-success-fetch-named-search-album-ids [_ event {:keys [data]} app-state]
-  (reduce (fn [app-state {:keys [sku album_id]}]
-            (if-let [named-search-slug (pixlee/sku->named-search-slug sku)]
-              (assoc-in app-state (conj keypaths/ugc-search-slug->album-id named-search-slug) album_id)
-              app-state))
-          app-state
-          data))
-
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method

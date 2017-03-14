@@ -239,20 +239,10 @@
     (api/fetch-shared-cart shared-cart-id)
     (pixlee/fetch-image look-id)))
 
-(defn fetch-named-search-album [app-state]
-  (when-let [named-search (named-searches/current-named-search app-state)] ; else already navigated away from category page
-    ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this `when`... it can be inferred by the presence or absence of album-id, below.
-    (when (accessors.pixlee/content-available? named-search) ; else don't need album for this category
-      (when-let [album-id (if (experiments/shop-ugcwidget? app-state)
-                            (get-in config/pixlee [:albums (:slug named-search)])
-                            (get-in app-state (conj keypaths/ugc-search-slug->album-id (:slug named-search))))] ; else haven't gotten album ids yet
-        (pixlee/fetch-album album-id (:slug named-search))))))
-
-(defn ensure-named-search-album [app-state named-search]
-  (when (and (accessors.pixlee/content-available? named-search)
-             (not (seq (get-in app-state keypaths/ugc-search-slug->album-id))))
-    (pixlee/fetch-named-search-album-ids))
-  (fetch-named-search-album app-state))
+(defn fetch-current-named-search-album [app-state]
+  (when-let [{:keys [slug]} (named-searches/current-named-search app-state)]
+    (when-let [album-id (get-in config/pixlee [:albums slug])]
+      (pixlee/fetch-album album-id slug))))
 
 (defn hidden-search? [app-state named-search]
   (and (:stylist_only? named-search)
@@ -265,16 +255,13 @@
       (do
         (reviews/insert-reviews)
         (refresh-named-search-products app-state named-search)
-        (ensure-named-search-album app-state named-search)))))
+        (fetch-current-named-search-album app-state)))))
 
 (defmethod perform-effects events/navigate-ugc-category [_ event args _ app-state]
   (let [named-search (named-searches/current-named-search app-state)]
     (if (hidden-search? app-state named-search)
       (page-not-found)
-      (ensure-named-search-album app-state named-search))))
-
-(defmethod perform-effects events/pixlee-api-success-fetch-named-search-album-ids [_ event _ _ app-state]
-  (fetch-named-search-album app-state))
+      (fetch-current-named-search-album app-state))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
@@ -976,7 +963,3 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
-
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  ;; TODO: if experiments/shop-ugcwidget? wins, we won't need this.
-  (fetch-named-search-album app-state))

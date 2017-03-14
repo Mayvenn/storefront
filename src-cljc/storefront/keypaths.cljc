@@ -52,8 +52,6 @@
 (def ugc [:ugc])
 (def ugc-images (conj ugc :images))
 (def ugc-albums (conj ugc :albums))
-;; TODO: if experiments/shop-ugcwidget? wins, we won't need this
-(def ugc-search-slug->album-id (conj ugc :search-slug->album-id))
 
 (def ui [:ui])
 (def ui-focus (conj ui :focus))

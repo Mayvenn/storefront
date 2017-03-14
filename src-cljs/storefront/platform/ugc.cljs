@@ -74,15 +74,15 @@
    [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
     (svg/social-icon social-service)]])
 
-(defn popup-slide [shop-ugcwidget? named-search {:keys [links] :as item}]
+(defn popup-slide [named-search {:keys [links] :as item}]
   [:div.m1.rounded-bottom
    (content-view item)
    [:div.bg-white.rounded-bottom.p2
     [:div.h5.px4 (user-attribution item)]
-    (when (and shop-ugcwidget? (-> links :view-look boolean))
+    (when (-> links :view-look boolean)
       [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase (:long-name named-search)))})])]])
 
-(defn popup-component [{:keys [ugc offset back shop-ugcwidget?]} owner opts]
+(defn popup-component [{:keys [ugc offset back]} owner opts]
   (om/component
    (html
     (let [close-attrs (util/route-back-or-to back events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
@@ -90,20 +90,19 @@
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides       (map (partial popup-slide shop-ugcwidget? (:named-search ugc)) (:album ugc))
-                   :settings     {:slidesToShow 1
-                                  :initialSlide offset}}
+                  {:slides   (map (partial popup-slide (:named-search ugc)) (:album ugc))
+                   :settings {:slidesToShow 1
+                              :initialSlide offset}}
                   {})
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}
-         (ui/modal-close {:class    "stroke-dark-gray fill-gray"
+         (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                           :close-attrs close-attrs})]])))))
 
 (defn popup-query [data]
-  {:ugc             (query data)
-   :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
-   :back            (first (get-in data keypaths/navigation-undo-stack))
-   :shop-ugcwidget? (experiments/shop-ugcwidget? data)})
+  {:ugc    (query data)
+   :offset (get-in data keypaths/ui-ugc-category-popup-offset)
+   :back   (first (get-in data keypaths/navigation-undo-stack))})
 
 (defn built-popup-component [data opts]
   (om/build popup-component (popup-query data) opts))

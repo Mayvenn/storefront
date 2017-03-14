@@ -6,24 +6,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
 
-;; TODO: if experiments/shop-ugcwidget? wins, we won't need this, or anything derived from it.
-(def named-search-slug->sku
-  {"straight"   "NSH"
-   "loose-wave" "LWH"
-   "body-wave"  "BWH"
-   "deep-wave"  "DWH"
-   "curly"      "CUR"
-   "closures"   "CLO"
-   "frontals"   "FRO"})
-
-(def sku->named-search-slug (clojure.set/map-invert named-search-slug->sku))
-
-(defn named-search->sku [{:keys [slug]}]
-  (named-search-slug->sku slug))
-
-(defn content-available? [named-search]
-  (boolean (named-search->sku named-search)))
-
 (defn normalize-user-name [user-name]
   (if (= (first user-name) \@)
     (apply str (rest user-name))
