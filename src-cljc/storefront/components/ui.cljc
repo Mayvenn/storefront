@@ -301,6 +301,9 @@
    [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
+(defn resize-image [{:keys [resizable_url]} size]
+  (some-> resizable_url (str "-/scale_crop/" size "x" size "/center/")))
+
 (defn circle-picture
   ([src] (circle-picture {} src))
   ([{:keys [width overlay-copy] :as attrs :or {width "4em"}} src]
@@ -308,7 +311,7 @@
     (merge {:style {:width width :height width}}
            (dissoc attrs :width :overlay-copy))
     (if src
-      [:img {:style {:width width :height width :object-fit "cover"} :src src}]
+      [:img {:style {:width width :height width} :src src}]
       (svg/missing-portrait {:width width :height width}))
     (when overlay-copy
       [:div.absolute.overlay.bg-darken-2

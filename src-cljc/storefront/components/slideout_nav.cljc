@@ -68,20 +68,19 @@
     [:li [:a.teal.block (utils/route-to events/navigate-account-referrals)
           (row (selectable? events/navigate-account-referrals "Refer a Friend"))]]]])
 
-(defn store-section [selectable? store]
-  (let [portrait-url (-> store :portrait :resizable_url)]
-    [:nav {:aria-label "Mayvenn Account"}
-     (row
-      [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} portrait-url)]
-      [:div (:store_nickname store)])
-     [:ul.list-reset
-      [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
-            (row (selectable? events/navigate-stylist-dashboard
-                              [:span {:data-test "dashboard"} "Dashboard"]))]]
-      [:li [:a.teal.block (utils/route-to events/navigate-stylist-account-profile)
-            (row (selectable? events/navigate-stylist-account
-                              [:span {:data-test "account-settings"} "Account Settings"]))]]
-      [:li [:a.teal.block community-url (row "Community")]]]]))
+(defn store-section [selectable? {:keys [portrait store_nickname]}]
+  [:nav {:aria-label "Mayvenn Account"}
+   (row
+    [:div.mxn1.pyp3 (ui/circle-picture {:width "32px"} (ui/resize-image portrait 48))]
+    [:div store_nickname])
+   [:ul.list-reset
+    [:li [:a.teal.block (utils/route-to events/navigate-stylist-dashboard-commissions)
+          (row (selectable? events/navigate-stylist-dashboard
+                            [:span {:data-test "dashboard"} "Dashboard"]))]]
+    [:li [:a.teal.block (utils/route-to events/navigate-stylist-account-profile)
+          (row (selectable? events/navigate-stylist-account
+                            [:span {:data-test "account-settings"} "Account Settings"]))]]
+    [:li [:a.teal.block community-url (row "Community")]]]])
 
 (defn products-section [selectable? title named-searches]
   [:nav {:aria-label (str "Shop " title)}

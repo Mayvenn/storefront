@@ -129,7 +129,7 @@
        [:div.p1.h6
         [:div.m1 (ui/circle-picture
                   {:class "mx-auto"}
-                  (:resizable_url portrait))]
+                  (ui/resize-image portrait 48))]
         [:h4.regular store-name]]
        (when instagram-account
          (social-link
@@ -166,16 +166,17 @@
 
 (defn stylist-account [expanded?
                        current-page?
-                       {:keys [store] :as data}]
-  (let [portrait-url (-> store :portrait :resizable_url)]
-    (account-dropdown
-     expanded?
-     [:div.flex.justify-end.items-center
-      (when portrait-url [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"} portrait-url)])
-      [:div.truncate (:store_nickname store)]]
-     (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
-     [:a.teal.block community-url "Community"]
-     (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings"))))
+                       {:keys [portrait store_nickname]}]
+  (account-dropdown
+   expanded?
+   [:div.flex.justify-end.items-center
+    (when (:resizable_url portrait)
+      [:div.mr1 (ui/circle-picture {:class "mx-auto" :width "20px"}
+                                   (ui/resize-image portrait 48))])
+    [:div.truncate store_nickname]]
+   (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
+   [:a.teal.block community-url "Community"]
+   (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
   (account-dropdown
@@ -231,8 +232,9 @@
   [:div {:style {:height "60px"}} [:div.hide-on-tb-dt hamburger]])
 
 (defn upper-right [{:keys [store auth cart context]}]
-  (let [{:keys [expanded? user-email]} auth
-        {:keys [cart-quantity]} cart
+  (let [{:keys [expanded? user-email]}   auth
+        {:keys [cart-quantity]}          cart
+        {:keys [store]}                  store
         {:keys [stylist? current-page?]} context]
     [:div.flex.justify-end.items-center
      [:div.flex-auto.hide-on-mb.pr2

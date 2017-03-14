@@ -13,7 +13,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]))
 
-(defn uploadcare-photo [{:keys [resizable_url status]} saving?]
+(defn uploadcare-photo [{:keys [status] :as portrait} saving?]
   [:a.navy
    (merge (utils/route-to events/navigate-stylist-account-portrait)
           {:data-test "change-photo-link"})
@@ -31,7 +31,7 @@
                                          "pending" [:span.white.medium "Approval Pending"]
                                          "rejected" [:span.red.bold.h6 "Inappropriate Image"]
                                          nil)}
-                        resizable_url)]]
+                        (ui/resize-image portrait 96))]]
    "Change Photo"])
 
 (defn store-credit [available-credit]

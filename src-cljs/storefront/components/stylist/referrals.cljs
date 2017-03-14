@@ -62,7 +62,7 @@
                  :else                        :in-progress)]
      [:div.flex.items-center.justify-between.border-bottom.border-left.border-right.border-light-gray.p2
       {:key (str name join-date)}
-      [:div.mr1 (ui/circle-picture (:resizable_url portrait))]
+      [:div.mr1 (ui/circle-picture (ui/resize-image portrait 96))]
       [:div.flex-auto
        [:div.h3.navy name]
        [:div.h6.dark-gray
