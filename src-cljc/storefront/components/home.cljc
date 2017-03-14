@@ -32,19 +32,6 @@
    [:img.hide-on-tb-dt.col-12 {:src mobile-asset
                                :alt alt-text}]])
 
-(defn link-to-search [{:keys [slug name long-name representative-images]}]
-  (let [{:keys [model-circle product]} representative-images]
-    [:a.p1.black.center.flex.flex-column.items-center
-     (merge {:data-test (str "named-search-" slug)}
-            (utils/route-to events/navigate-category {:named-search-slug slug}))
-     [:img.unselectable (merge
-                         (utils/img-attrs model-circle :small)
-                         {:style {:height "128px"}})]
-     [:img.mt3.unselectable (merge
-                             (utils/img-attrs product :small)
-                             {:style {:height "80px"}})]
-     [:div.mb3.medium name]]))
-
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
                        [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
@@ -76,45 +63,6 @@
                     [:h3.h2.hide-on-mb
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
-
-(defn pick-style [named-searches]
-  [:div.container.center.py3
-   [:div.flex.flex-column
-    [:h1.h4.order-2.medium.p1 "100% virgin human hair + free shipping"]
-    [:h2.h1.order-1.p1 "pick your style"]]
-   [:nav.my2 {:aria-label "Pick your style"}
-    (component/build carousel/component
-                     {:slides   (map link-to-search named-searches)
-                      :settings (let [slide-count (count named-searches)
-                                      swipe       (fn [n]
-                                                    {:swipe        true
-                                                     :slidesToShow n
-                                                     :autoplay     true
-                                                     :arrows       true})
-                                      show-all    {:swipe        false
-                                                   :slidesToShow slide-count
-                                                   :autoplay     false
-                                                   :arrows       false}]
-                                  ;; The breakpoints are mobile-last. That is, the
-                                  ;; default values apply to the largest screens, and
-                                  ;; 768 means 768 and below.
-                                  (merge
-                                   (if (<= slide-count 7)
-                                     show-all
-                                     (swipe 7))
-                                   {:responsive [{:breakpoint 1000
-                                                  :settings   (swipe 5)}
-                                                 {:breakpoint 750
-                                                  :settings   (swipe 3)}
-                                                 {:breakpoint 500
-                                                  :settings   (swipe 2)}]}))}
-                     nil)]
-   [:div.col-8.col-4-on-tb-dt.mx-auto
-    ;; button color should be light-gray/transparent
-    (ui/ghost-button
-     (assoc (utils/route-to events/navigate-shop-by-look)
-            :data-test "nav-shop-look")
-     "shop our looks")]])
 
 (defn banner [store-slug]
   [:h1.h2
@@ -182,13 +130,11 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches featured-searches store-slug homepage-grid?]} owner opts]
+(defn component [{:keys [named-searches featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
-    (if homepage-grid?
-      [:section (popular-grid featured-searches)]
-      [:section (pick-style named-searches)])
+    [:section (popular-grid featured-searches)]
     [:section video-popup]
     [:section (about-mayvenn)]
     [:section talkable-banner]]))
@@ -198,8 +144,7 @@
     {:named-searches    (remove (comp #{"kinky-straight"} :slug) named-searches)
      :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
                                 named-searches)
-     :store-slug        (get-in data keypaths/store-slug)
-     :homepage-grid?    (experiments/homepage-grid? data)}))
+     :store-slug        (get-in data keypaths/store-slug)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
