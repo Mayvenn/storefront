@@ -289,7 +289,7 @@
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (uploadcare/insert)
     (api/get-states (get-in app-state keypaths/api-cache))
-    (api/get-stylist-account user-token)))
+    (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
   (update-email-capture-session app-state))
