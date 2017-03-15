@@ -146,13 +146,14 @@
    {:params {:additional-promo-code promo-code}
     :handler #(messages/handle-message events/api-success-promotions %)}))
 
-(defn get-products-by-ids [product-ids user-token]
+(defn get-products-by-ids [product-ids user-id user-token]
   (let [product-ids (->> product-ids (into (sorted-set)) vec)]
     (api-req
      GET
      "/products"
      (conj request-keys/get-products product-ids)
-     {:params {:ids product-ids
+     {:params {:ids        product-ids
+               :user-id    user-id
                :user-token user-token}
       :handler
       #(messages/handle-message events/api-success-products
@@ -163,7 +164,8 @@
    GET
    "/saved-cards"
    request-keys/get-saved-cards
-   {:params {:user-token user-token :user-id user-id}
+   {:params {:user-id    user-id
+             :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-get-saved-cards (select-keys % [:cards :default-card]))}))
 
@@ -359,13 +361,13 @@
                     :address])
       (assoc :original_payout_method (:chosen_payout_method args))))
 
-(defn get-stylist-account [user-token]
+(defn get-stylist-account [user-id user-token]
   (api-req
    GET
    "/stylist"
    request-keys/get-stylist-account
-   {:params
-    {:user-token user-token}
+   {:params {:user-id    user-id
+             :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-account
                               {:stylist (select-stylist-account-keys %)})}))
@@ -378,79 +380,91 @@
    {:handler #(messages/handle-message events/api-success-shipping-methods
                                        (update-in % [:shipping-methods] reverse))}))
 
-(defn update-stylist-account-profile [session-id user-token stylist-account]
+(defn update-stylist-account-profile [session-id user-id user-token stylist-account]
   (api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-profile
    {:params {:session-id session-id
-             :user-token user-token :stylist stylist-account}
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-profile
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-password [session-id user-token stylist-account]
+(defn update-stylist-account-password [session-id user-id user-token stylist-account]
   (api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-password
    {:params {:session-id session-id
-             :user-token user-token :stylist stylist-account}
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-password
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-commission [session-id user-token stylist-account]
+(defn update-stylist-account-commission [session-id user-id user-token stylist-account]
   (api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-commission
    {:params {:session-id session-id
-             :user-token user-token :stylist stylist-account}
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-commission
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-social [session-id user-token stylist-account]
+(defn update-stylist-account-social [session-id user-id user-token stylist-account]
   (api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-social
    {:params {:session-id session-id
-             :user-token user-token :stylist stylist-account}
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn refresh-stylist-portrait [user-token]
+(defn refresh-stylist-portrait [user-id user-token]
   (api-req
    GET
    "/stylist"
    request-keys/refresh-stylist-portrait
    {:params
-    {:user-token user-token}
+    {:user-id    user-id
+     :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
 
-(defn update-stylist-account-portrait [session-id user-token stylist-account]
+(defn update-stylist-account-portrait [session-id user-id user-token stylist-account]
   (api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-portrait
    {:params {:session-id session-id
-             :user-token user-token :stylist stylist-account}
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
 
-(defn get-stylist-stats [user-token]
+(defn get-stylist-stats [user-id user-token]
   (api-req
    GET
    "/stylist/stats"
    request-keys/get-stylist-stats
    {:params
-    {:user-token user-token}
+    {:user-id    user-id
+     :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-stats
                               (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
@@ -466,14 +480,15 @@
     #(messages/handle-message events/api-success-stylist-commissions
                               (select-keys % [:rate :commissions :current-page :pages]))}))
 
-(defn get-stylist-bonus-credits [user-token {:keys [page]}]
+(defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
   (api-req
    GET
    "/stylist/bonus-credits"
    request-keys/get-stylist-bonus-credits
    {:params
-    {:user-token user-token
-     :page page}
+    {:user-id    user-id
+     :user-token user-token
+     :page       page}
     :handler
     #(messages/handle-message events/api-success-stylist-bonus-credits
                               (select-keys % [:bonus-amount
@@ -484,14 +499,15 @@
                                               :current-page
                                               :pages]))}))
 
-(defn get-stylist-referral-program [user-token {:keys [page]}]
+(defn get-stylist-referral-program [user-id user-token {:keys [page]}]
   (api-req
    GET
    "/stylist/referrals"
    request-keys/get-stylist-referral-program
    {:params
-    {:user-token user-token
-     :page page}
+    {:user-id    user-id
+     :user-token user-token
+     :page       page}
     :handler
     #(messages/handle-message events/api-success-stylist-referral-program
                               (select-keys % [:sales-rep-email

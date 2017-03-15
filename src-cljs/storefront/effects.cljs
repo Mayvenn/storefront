@@ -70,6 +70,7 @@
 (defn refresh-products [app-state product-ids]
   (when (seq product-ids)
     (api/get-products-by-ids product-ids
+                             (get-in app-state keypaths/user-id)
                              (get-in app-state keypaths/user-token))))
 
 (defn ensure-products [app-state product-ids]
@@ -321,7 +322,7 @@
 
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-stats user-token)))
+    (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args _ app-state]
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
@@ -341,10 +342,12 @@
     (handle-message events/control-stylist-bonuses-fetch)))
 
 (defmethod perform-effects events/control-stylist-bonuses-fetch [_ event args _ app-state]
-  (let [user-token (get-in app-state keypaths/user-token)
-        page (inc (get-in app-state keypaths/stylist-bonuses-page 0))]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)
+        page       (inc (get-in app-state keypaths/stylist-bonuses-page 0))]
     (when user-token
-      (api/get-stylist-bonus-credits user-token
+      (api/get-stylist-bonus-credits user-id
+                                     user-token
                                      {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args _ app-state]
@@ -352,10 +355,12 @@
     (handle-message events/control-stylist-referrals-fetch)))
 
 (defmethod perform-effects events/control-stylist-referrals-fetch [_ event args _ app-state]
-  (let [user-token (get-in app-state keypaths/user-token)
-        page (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)
+        page       (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
     (when user-token
-      (api/get-stylist-referral-program user-token
+      (api/get-stylist-referral-program user-id
+                                        user-token
                                         {:page page}))))
 
 (defmethod perform-effects events/control-stylist-referral-submit [_ event args _ app-state]
@@ -646,25 +651,33 @@
       :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
-  (let [user-token      (get-in app-state keypaths/user-token)
+  (let [session-id      (get-in app-state keypaths/session-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-profile (get-in app-state keypaths/session-id) user-token stylist-account)))
+    (api/update-stylist-account-profile session-id user-id user-token stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-password-submit [_ _ args _ app-state]
-  (let [user-token            (get-in app-state keypaths/user-token)
-        stylist-account       (get-in app-state keypaths/stylist-manage-account)]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (when (empty? (get-in app-state keypaths/errors))
-      (api/update-stylist-account-password (get-in app-state keypaths/session-id) user-token stylist-account))))
+      (api/update-stylist-account-password session-id user-id user-token stylist-account))))
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
-  (let [user-token      (get-in app-state keypaths/user-token)
+  (let [session-id      (get-in app-state keypaths/session-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-commission (get-in app-state keypaths/session-id) user-token stylist-account)))
+    (api/update-stylist-account-commission session-id user-id user-token stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
-  (let [user-token      (get-in app-state keypaths/user-token)
+  (let [session-id      (get-in app-state keypaths/session-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-social (get-in app-state keypaths/session-id) user-token stylist-account)))
+    (api/update-stylist-account-social session-id user-id user-token stylist-account)))
 
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} _ app-state]
   (exception-handler/report error file-info))
@@ -673,8 +686,10 @@
   (uploadcare/dialog selector (:resizable_url portrait)))
 
 (defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} _ app-state]
-  (let [user-token (get-in app-state keypaths/user-token)]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
     (api/update-stylist-account-portrait (get-in app-state keypaths/session-id)
+                                         user-id
                                          user-token
                                          {:portrait-url (:cdnUrl file-info)})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
@@ -793,7 +808,8 @@
   (handle-message events/flash-later-show-success {:message "Account updated"}))
 
 (defmethod perform-effects events/poll-stylist-portrait [_ event args _ app-state]
-  (api/refresh-stylist-portrait (get-in app-state keypaths/user-token)))
+  (api/refresh-stylist-portrait (get-in app-state keypaths/user-id)
+                                (get-in app-state keypaths/user-token)))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
