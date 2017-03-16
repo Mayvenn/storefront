@@ -52,7 +52,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? look shared-cart products back price-strikeout?]} owner opts]
+(defn component [{:keys [creating-order? look shared-cart products back]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -79,7 +79,7 @@
               item-count (->> line-items (map :quantity) (reduce +))]
           [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
            [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
-           (order-summary/display-line-items line-items products price-strikeout?)
+           (order-summary/display-line-items line-items products)
            [:div.mt3
             (add-to-cart-button creating-order? shared-cart)]]))]])))
 
@@ -88,8 +88,7 @@
    :look             (pixlee/selected-look data)
    :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
    :products         (get-in data keypaths/products)
-   :back             (first (get-in data keypaths/navigation-undo-stack))
-   :price-strikeout? (experiments/price-strikeout? data)})
+   :back             (first (get-in data keypaths/navigation-undo-stack))})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

@@ -42,7 +42,7 @@
       "Offer and Rebate Details" ui/nbsp "➤"]]]
    [:div.border-bottom.border-gray ui/nbsp]])
 
-(defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]} price-strikeout?]
+(defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]}]
   (let [adjustments   (orders/all-order-adjustments order)
         quantity      (orders/product-quantity order)
         shipping-item (orders/shipping-item order)
@@ -54,13 +54,10 @@
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
-        (for [{:keys [name price coupon-code] :as adj} adjustments]
+        (for [{:keys [name price coupon-code]} adjustments]
           (when-not (= price 0)
             (summary-row
-             (merge {:key name}
-                    ;; coupon-code present, but nil means this adjustment is the bundle discount
-                    (when (and price-strikeout? (= [:coupon-code nil] (find adj :coupon-code)))
-                      {:class "red"}))
+             {:key name}
              [:div
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
@@ -84,9 +81,7 @@
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
-                                   quantity-line
-                                   bundle-quantity
-                                   price-strikeout?]
+                                   quantity-line]
   [:.clearfix.mb1.border-bottom.border-gray.py3 {:key id}
    [:a.left.mr1.line-height-1
     [:img.border.border-gray.rounded
@@ -98,42 +93,31 @@
      [:.mt1.h6.line-height-1
       (when-let [length (:length variant-attrs)]
         [:div.pyp2 "Length: " length])
-      (if price-strikeout?
-        [:div.pyp2 "Price Each: " (ui/strike-price {:price            unit-price
-                                                    :bundle-quantity  bundle-quantity
-                                                    :price-strikeout? price-strikeout?
-                                                    :bundle-eligible? (products/bundle? line-item)})]
-        [:div.pyp2 "Price: " (as-money-without-cents unit-price)])
+      [:div.pyp2 "Price Each: " (as-money-without-cents unit-price)]
       quantity-line]]]])
 
-(defn display-line-items [line-items products price-strikeout?]
-  (let [bundle-quantity (orders/line-item-quantity (filter products/bundle? line-items))]
-    (for [{:keys [quantity product-id] :as line-item} line-items]
+(defn display-line-items [line-items products]
+  (for [{:keys [quantity product-id] :as line-item} line-items]
+    (display-line-item
+     line-item
+     (products/small-img products product-id)
+     [:div.pyp2 "Quantity: " quantity])))
+
+(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
+  (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
+    (let [updating? (get update-line-item-requests variant-id)
+          removing? (get delete-line-item-requests variant-id)]
       (display-line-item
        line-item
        (products/small-img products product-id)
-       [:div.pyp2 "Quantity: " quantity]
-       bundle-quantity
-       price-strikeout?))))
-
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests price-strikeout?]
-  (let [bundle-quantity (orders/line-item-quantity (filter products/bundle? line-items))]
-    (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
-      (let [updating? (get update-line-item-requests variant-id)
-            removing? (get delete-line-item-requests variant-id)]
-        (display-line-item
-         line-item
-         (products/small-img products product-id)
-         [:.mt1.flex.items-center.justify-between
-          (if removing?
-            [:.h3 {:style {:width "1.2em"}} ui/spinner]
-            [:a.gray.medium (utils/fake-href events/control-cart-remove variant-id) "Remove"])
-          [:.h3
-           (when-let [variant (query/get {:id variant-id}
-                                         (:variants (get products product-id)))]
-             (ui/counter quantity
-                         updating?
-                         (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
-                         (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]
-         bundle-quantity
-         price-strikeout?)))))
+       [:.mt1.flex.items-center.justify-between
+        (if removing?
+          [:.h3 {:style {:width "1.2em"}} ui/spinner]
+          [:a.gray.medium (utils/fake-href events/control-cart-remove variant-id) "Remove"])
+        [:.h3
+         (when-let [variant (query/get {:id variant-id}
+                                       (:variants (get products product-id)))]
+           (ui/counter quantity
+                       updating?
+                       (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
+                       (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]))))

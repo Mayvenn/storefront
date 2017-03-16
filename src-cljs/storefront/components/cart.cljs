@@ -110,7 +110,6 @@ Thanks,
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
-                              price-strikeout?
                               field-errors]} owner]
   (om/component
    (html
@@ -130,8 +129,7 @@ Thanks,
        (summary/display-adjustable-line-items (orders/product-items order)
                                               products
                                               update-line-item-requests
-                                              delete-line-item-requests
-                                              price-strikeout?)]
+                                              delete-line-item-requests)]
 
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
        [:form.clearfix.mxn1
@@ -151,8 +149,7 @@ Thanks,
 
        (summary/display-order-summary order
                                       {:read-only?        false
-                                       :use-store-credit? false}
-                                      price-strikeout?)
+                                       :use-store-credit? false})
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
@@ -243,7 +240,6 @@ Thanks,
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :price-strikeout?          (experiments/price-strikeout? data)
      :field-errors              (get-in data keypaths/field-errors)}))
 
 (defn empty-cart-query [data]

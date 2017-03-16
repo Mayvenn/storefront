@@ -60,8 +60,5 @@
 (defn kinky-straight-menu? [data]
   (display-feature? data "kinky-straight-menu"))
 
-(defn price-strikeout? [data]
-  (display-feature? data "price-strikeout"))
-
 (defn shop-ugcwidget? [data]
   (display-feature? data "shop-ugcwidget"))

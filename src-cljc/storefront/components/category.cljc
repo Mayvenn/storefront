@@ -5,7 +5,6 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.platform.ugc :as ugc]
@@ -168,31 +167,21 @@
    (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
    (quantity-and-price-structure ui/nbsp "$--.--")))
 
+(defn item-price [price]
+  [:span {:item-prop "price"} (as-money-without-cents price)])
+
 (defn variant-summary [{:keys [flow
                                variant
-                               variant-quantity
-                               proposed-bundle-count
-                               price-strikeout?]}]
+                               variant-quantity]}]
   (let [{:keys [can_supply? price]} variant]
     (summary-structure
      (variant-name variant flow)
      (quantity-and-price-structure
       (counter-or-out-of-stock can_supply? variant-quantity)
-      (ui/strike-price {:price price
-                        :bundle-quantity proposed-bundle-count
-                        :price-strikeout? price-strikeout?
-                        :bundle-eligible? (products/bundle? (normalize-variant variant))})))))
+      (item-price price)))))
 
-(def triple-bundle-upsell-static
+(def triple-bundle-upsell
   (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
-
-(defn triple-bundle-upsell [count]
-  (into [:p.center.h5.p2.red]
-        (case count
-          0 ["Get a Bundle Discount:" [:br] "Buy any 3 items & get 10% OFF your entire order!"]
-          1 ["Add just 2 more items & get 10% OFF your entire order!"]
-          2 ["Almost there!" [:br] "Add just 1 more item & get 10% OFF your entire order!"]
-          ["Bundle Discount Applied:" [:br] "You’ve received 10% OFF your entire order!"])))
 
 (def shipping-and-guarantee
   (component/html
@@ -240,16 +229,11 @@
                       :settings {:dots true}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
-(defn starting-at [variants proposed-bundle-count price-strikeout?]
+(defn starting-at [variants]
   (when-let [cheapest-price (bundle-builder/min-price variants)]
     [:div.center.dark-gray
      [:div.h6 "Starting at"]
-     [:div.h2
-      {:item-prop "price"}
-      (ui/strike-price {:price cheapest-price
-                        :bundle-quantity proposed-bundle-count
-                        :price-strikeout? price-strikeout?
-                        :bundle-eligible? true})]]))
+     [:div.h2 (item-price cheapest-price)]]))
 
 (defn reviews-summary [reviews opts]
   [:div.h6
@@ -290,9 +274,7 @@
                          adding-to-bag?
                          bagged-variants
                          ugc
-                         proposed-bundle-count
-                         selected-variant
-                         price-strikeout?]}
+                         selected-variant]}
                  owner opts]
   (let [carousel-images   (images-from-variants named-search bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
@@ -312,10 +294,7 @@
            (full-bleed-narrow (carousel carousel-images named-search))
            (when (and (not fetching-variants?)
                       needs-selections?)
-             (starting-at (:initial-variants bundle-builder) proposed-bundle-count price-strikeout?))
-           (when (and price-strikeout?
-                      (named-searches/eligible-for-triple-bundle-discount? named-search))
-             (triple-bundle-upsell proposed-bundle-count))]
+             (starting-at (:initial-variants bundle-builder)))]
           (if fetching-variants?
             [:div.h2.mb2 ui/spinner]
             [:div
@@ -328,14 +307,10 @@
                (if selected-variant
                  (variant-summary {:flow                  (:flow bundle-builder)
                                    :variant               selected-variant
-                                   :variant-quantity      variant-quantity
-                                   :proposed-bundle-count proposed-bundle-count
-                                   :price-strikeout?      price-strikeout?})
+                                   :variant-quantity      variant-quantity})
                  (no-variant-summary (bundle-builder/next-step bundle-builder)))]
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
-                (if price-strikeout?
-                  (triple-bundle-upsell proposed-bundle-count)
-                  triple-bundle-upsell-static))
+                triple-bundle-upsell)
               (when selected-variant
                 (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
               (bagged-variants-and-checkout bagged-variants)
@@ -349,21 +324,15 @@
         bundle-builder   (get-in data keypaths/bundle-builder)
         variant-quantity (get-in data keypaths/browse-variant-quantity)
         selected-variant (bundle-builder/selected-variant bundle-builder)]
-    {:named-search          named-search
-     :bundle-builder        bundle-builder
-     :variant-quantity      variant-quantity
-     :selected-variant      selected-variant
-     :fetching-variants?    (not (named-searches/products-loaded? data named-search))
-     :adding-to-bag?        (utils/requesting? data request-keys/add-to-bag)
-     :bagged-variants       (get-in data keypaths/browse-recently-added-variants)
-     :reviews               (reviews/query data)
-     :ugc                   (ugc/query data)
-     :proposed-bundle-count (+ (->> (get-in data keypaths/order)
-                                    orders/product-items
-                                    (filter products/bundle?)
-                                    orders/line-item-quantity)
-                               #_(if selected-variant variant-quantity 0))
-     :price-strikeout?      (experiments/price-strikeout? data)}))
+    {:named-search       named-search
+     :bundle-builder     bundle-builder
+     :variant-quantity   variant-quantity
+     :selected-variant   selected-variant
+     :fetching-variants? (not (named-searches/products-loaded? data named-search))
+     :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
+     :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
+     :reviews            (reviews/query data)
+     :ugc                (ugc/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
