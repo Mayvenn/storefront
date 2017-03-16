@@ -38,16 +38,18 @@
     (when (not-404 response)
       (:searches (:body response)))))
 
-(defn products-by-ids [storeback-config product-ids user-token]
+(defn products-by-ids [storeback-config product-ids user-id user-token]
   (let [response (storeback-fetch storeback-config "/products"
                                   {:query-params {:ids (sort (distinct product-ids))
+                                                  :user-id user-id
                                                   :user-token user-token}})]
     (when (not-404 response)
       (:products (:body response)))))
 
-(defn product [storeback-config product-slug user-token]
+(defn product [storeback-config product-slug user-id user-token]
   (let [response (storeback-fetch storeback-config "/products"
                                   {:query-params {:slug product-slug
+                                                  :user-id user-id
                                                   :user-token user-token}})]
     (when (not-404 response)
       (:body response))))

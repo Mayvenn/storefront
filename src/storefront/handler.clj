@@ -183,7 +183,7 @@
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
-  (some-> (api/product storeback-config product-slug (cookies/get req "user-token"))
+  (some-> (api/product storeback-config product-slug (cookies/get req "id") (cookies/get req "user-token"))
           ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
           :url-path
           redirect))
@@ -197,8 +197,9 @@
   (let [data (assoc-in data (conj keypaths/browse-named-search-query :slug) named-search-slug)]
     (when-let [named-search (named-searches/current-named-search data)]
       (let [{:keys [product-ids]} named-search
-            user-token            (cookies/get req "user-token")]
-        (if-let [products (seq (api/products-by-ids storeback-config product-ids user-token))]
+            user-token            (cookies/get req "user-token")
+            user-id               (cookies/get req "id")]
+        (if-let [products (seq (api/products-by-ids storeback-config product-ids user-id user-token))]
           (let [products-by-id (key-by :id products)]
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
