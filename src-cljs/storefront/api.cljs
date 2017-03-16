@@ -319,15 +319,14 @@
       (update-in [:billing-address] spree->mayvenn-address)
       (update-in [:shipping-address] spree->mayvenn-address)))
 
-(defn get-account [id token stylist-id]
+(defn get-account [id token]
   (api-req
    GET
    "/users"
    request-keys/get-account
    {:params
     {:id id
-     :token token
-     :stylist-id stylist-id}
+     :token token}
     :handler
     #(messages/handle-message events/api-success-account
                               (spree->mayvenn-addresses %))}))

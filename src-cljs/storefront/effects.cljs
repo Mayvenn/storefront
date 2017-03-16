@@ -52,10 +52,9 @@
 
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        stylist-id (get-in app-state keypaths/store-stylist-id)]
-    (when (and user-id user-token stylist-id)
-      (api/get-account user-id user-token stylist-id))))
+        user-token (get-in app-state keypaths/user-token)]
+    (when (and user-id user-token)
+      (api/get-account user-id user-token))))
 
 (defn refresh-current-order [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
