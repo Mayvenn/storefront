@@ -19,19 +19,18 @@
 (defn create-token [cardholder-name number cvc exp-month exp-year address & [args]]
   (when (.hasOwnProperty js/window "Stripe")
     (let [api-id {:request-key request-keys/stripe-create-token
-                  :request-id (str (random-uuid))}]
+                  :request-id  (str (random-uuid))}]
       (handle-message events/api-start api-id)
-      (js/Stripe.card.createToken (clj->js (merge
-                                            {:number number
-                                             :cvc cvc
-                                             :name cardholder-name
-                                             :exp_month (js/parseInt exp-month)
-                                             :exp_year (js/parseInt exp-year)}
-                                            (rename-keys address {:address1 :address_line1
-                                                                  :address2 :address_line2
-                                                                  :city :address_city
-                                                                  :state :address_state
-                                                                  :zipcode :address_zip})))
+      (js/Stripe.card.createToken (clj->js {:number        number
+                                            :cvc           cvc
+                                            :name          cardholder-name
+                                            :exp_month     (js/parseInt exp-month)
+                                            :exp_year      (js/parseInt exp-year)
+                                            :address_line1 (:address1 address)
+                                            :address_line2 (:address2 address)
+                                            :address_city  (:city address)
+                                            :address_state (:state address)
+                                            :address_zip   (:zipcode address)})
                                   (fn [status response]
                                     (handle-message events/api-end api-id)
                                     (if (= 200 status)
