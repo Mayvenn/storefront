@@ -196,6 +196,7 @@
    request-keys/sign-out
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :user-id user-id
      :user-token user-token}
     :handler identity
@@ -208,6 +209,7 @@
    request-keys/sign-in
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :email (.toLowerCase (str email))
      :password password
      :stylist-id stylist-id
@@ -226,6 +228,7 @@
    request-keys/facebook-sign-in
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :uid uid
      :access-token access-token
      :stylist-id stylist-id
@@ -249,6 +252,7 @@
    request-keys/sign-up
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :email email
      :password password
      :stylist-id stylist-id
@@ -267,6 +271,7 @@
    request-keys/reset-password
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :password password
      :reset_password_token reset-token
      :order-number order-number
@@ -284,6 +289,7 @@
    request-keys/reset-facebook
    {:params
     {:session-id session-id
+     :browser-id browser-id
      :uid uid
      :access-token access-token
      :reset-password-token reset-token
