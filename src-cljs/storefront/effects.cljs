@@ -12,6 +12,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.accessors.stylists :as stylists]
+            [storefront.request-keys :as request-keys]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -300,11 +301,20 @@
 (defmethod perform-effects events/app-restart [_ _ _ _]
   (.reload js/window.location))
 
-(defmethod perform-effects events/api-end [_ event args _ app-state]
-  (let [app-version (get-in app-state keypaths/app-version)
-        remote-version (:app-version args)]
-    (when (and app-version remote-version
-               (< config/allowed-version-drift (- remote-version app-version)))
+(defmethod perform-effects events/api-end [_ event args previous-app-state app-state]
+  (let [app-version    (get-in app-state keypaths/app-version)
+        remote-version (:app-version args)
+        needs-restart? (and app-version remote-version
+                            (< config/allowed-version-drift (- remote-version app-version)))]
+    (when (and (not (:success args))
+               (= (:request-key args) request-keys/get-stylist-stats))
+      (try (exception-handler/report "Dev: ignore me. Logging through bugsnag. Error in get-stylist-stats"
+                                     {:app-state          {:app-version app-version}
+                                      :previous-app-state {:app-version (get-in previous-app-state keypaths/app-version)}
+                                      :server             {:app-version remote-version}
+                                      :needs-restart      needs-restart?})
+           (catch :default e)))
+    (when needs-restart?
       (handle-later events/app-restart))))
 
 (defmethod perform-effects events/api-success-telligent-login [_ event {:keys [cookie max-age]} _ app-state]
