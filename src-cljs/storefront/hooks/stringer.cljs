@@ -22,10 +22,9 @@
 (defn track-page []
   (track-event "pageview"))
 
-(defn track-identify [{:keys [id email]}]
+(defn identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")
-    (.identify js/stringer email id)
-    (.track js/stringer "identify")))
+    (.identify js/stringer email id)))
 
 (defn track-clear []
   (when (.hasOwnProperty js/window "stringer")

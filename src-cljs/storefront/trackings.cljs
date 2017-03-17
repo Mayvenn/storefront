@@ -27,7 +27,7 @@
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
-    (stringer/track-identify (get-in app-state keypaths/user))))
+    (stringer/identify (get-in app-state keypaths/user))))
 
 (defmethod perform-track events/navigate [_ event args app-state]
   (when (not (get-in app-state keypaths/redirecting?))
@@ -109,7 +109,7 @@
   (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/track-identify (get-in app-state keypaths/user)))
+  (stringer/identify (get-in app-state keypaths/user)))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow}))
@@ -128,7 +128,7 @@
 (defmethod perform-track events/control-email-captured-submit [_ event args app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
-      (stringer/track-identify {:email captured-email})
+      (stringer/identify {:email captured-email})
       (stringer/track-event "email_capture-capture" {:email captured-email}))))
 
 (defmethod perform-track events/show-email-popup [_ events args app-state]
@@ -160,7 +160,7 @@
   (convert/track-conversion "paypal-checkout"))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (stringer/track-identify (:user (get-in app-state keypaths/order)))
+  (stringer/identify (:user (get-in app-state keypaths/order)))
   (stringer/track-event "checkout-identify_guest")
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
 
