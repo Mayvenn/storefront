@@ -2,7 +2,7 @@
   (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
             [storefront.config :as config]))
 
-(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-9d3f42a.js")
+(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-a1931bc.js")
 
 (defn insert-tracking []
   (insert-tag-with-text
@@ -31,3 +31,8 @@
   (when (.hasOwnProperty js/window "stringer")
     (.clear js/stringer)
     (.track js/stringer "clear_identify")))
+
+(defn browser-id []
+  (when (and (.hasOwnProperty js/window "stringer")
+             js/stringer.loaded)
+    (.getBrowserId js/stringer)))

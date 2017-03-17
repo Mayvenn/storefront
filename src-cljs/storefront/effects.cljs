@@ -499,6 +499,7 @@
 
 (defmethod perform-effects events/control-sign-in-submit [_ event args _ app-state]
   (api/sign-in (get-in app-state keypaths/session-id)
+               (stringer/browser-id)
                (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
                (get-in app-state keypaths/store-stylist-id)
@@ -509,6 +510,7 @@
   (let [{:keys [number token]} (or (get-in app-state keypaths/order)
                                    (get-in app-state keypaths/completed-order))]
     (api/sign-up (get-in app-state keypaths/session-id)
+                 (stringer/browser-id)
                  (get-in app-state keypaths/sign-up-email)
                  (get-in app-state keypaths/sign-up-password)
                  (get-in app-state keypaths/store-stylist-id)
@@ -525,6 +527,7 @@
   (let [{:keys [number token]} (or (get-in app-state keypaths/order)
                                    (get-in app-state keypaths/completed-order))]
     (api/facebook-sign-in (get-in app-state keypaths/session-id)
+                          (stringer/browser-id)
                           (:userID authResponse)
                           (:accessToken authResponse)
                           (get-in app-state keypaths/store-stylist-id)
@@ -563,6 +566,7 @@
   (if (empty? (get-in app-state keypaths/reset-password-password))
     (handle-message events/flash-show-failure {:message "Your password cannot be blank."})
     (api/reset-password (get-in app-state keypaths/session-id)
+                        (stringer/browser-id)
                         (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-token)
                         (get-in app-state keypaths/order-number)
@@ -570,6 +574,7 @@
 
 (defmethod perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
   (api/facebook-reset-password (get-in app-state keypaths/session-id)
+                               (stringer/browser-id)
                                (-> facebook-response :authResponse :userID)
                                (-> facebook-response :authResponse :accessToken)
                                (get-in app-state keypaths/reset-password-token)
@@ -983,6 +988,7 @@
       (history/enqueue-navigate events/navigate-home)
       (handle-message events/flash-later-show-success {:message "Logged out successfully"})))
   (api/sign-out (get-in app-state keypaths/session-id)
+                (stringer/browser-id)
                 (get-in app-state-before keypaths/user-id)
                 (get-in app-state-before keypaths/user-token)))
 

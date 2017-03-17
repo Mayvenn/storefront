@@ -189,7 +189,7 @@
       (update :user select-user-keys)
       (select-keys [:user :order])))
 
-(defn sign-out [session-id user-id user-token]
+(defn sign-out [session-id browser-id user-id user-token]
   (api-req
    POST
    "/v2/signout"
@@ -201,7 +201,7 @@
     :handler identity
     :error-handler identity}))
 
-(defn sign-in [session-id email password stylist-id order-number order-token]
+(defn sign-in [session-id browser-id email password stylist-id order-number order-token]
   (api-req
    POST
    "/v2/login"
@@ -219,7 +219,7 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn facebook-sign-in [session-id uid access-token stylist-id order-number order-token]
+(defn facebook-sign-in [session-id browser-id uid access-token stylist-id order-number order-token]
   (api-req
    POST
    "/v2/login/facebook"
@@ -242,7 +242,7 @@
             success-event (if new-user? events/api-success-auth-sign-up events/api-success-auth-sign-in)]
         (messages/handle-message success-event auth-keys)))}))
 
-(defn sign-up [session-id email password stylist-id order-number order-token]
+(defn sign-up [session-id browser-id email password stylist-id order-number order-token]
   (api-req
    POST
    "/v2/signup"
@@ -260,7 +260,7 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn reset-password [session-id password reset-token order-number order-token]
+(defn reset-password [session-id browser-id password reset-token order-number order-token]
   (api-req
    POST
    "/v2/reset_password"
@@ -277,7 +277,7 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn facebook-reset-password [session-id uid access-token reset-token order-number order-token]
+(defn facebook-reset-password [session-id browser-id uid access-token reset-token order-number order-token]
   (api-req
    POST
    "/v2/reset_facebook"
