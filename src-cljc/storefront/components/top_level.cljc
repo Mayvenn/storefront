@@ -21,21 +21,22 @@
                        [storefront.config :as config]])
 
             [storefront.accessors.experiments :as experiments]
-            [storefront.components.ui :as ui]
-            [storefront.components.header :as header]
-            [storefront.components.footer :as footer]
-            [storefront.components.flash :as flash]
-            [storefront.components.home :as home]
             [storefront.components.categories :as categories]
             [storefront.components.category :as category]
-            [storefront.components.promotion-banner :as promotion-banner]
-            [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.content :as content]
+            [storefront.components.flash :as flash]
+            [storefront.components.footer :as footer]
+            [storefront.components.forgot-password :as forgot-password]
+            [storefront.components.gallery :as gallery]
+            [storefront.components.header :as header]
+            [storefront.components.home :as home]
+            [storefront.components.promotion-banner :as promotion-banner]
+            [storefront.components.shared-cart :as shared-cart]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
-            [storefront.components.shared-cart :as shared-cart]
-            [storefront.components.forgot-password :as forgot-password]
+            [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
+            [storefront.components.ui :as ui]
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
@@ -78,6 +79,7 @@
     events/navigate-sign-in           sign-in/built-component
     events/navigate-sign-up           sign-up/built-component
     events/navigate-forgot-password   forgot-password/built-component
+    events/navigate-gallery           gallery/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]

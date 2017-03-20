@@ -62,3 +62,6 @@
 
 (defn shop-ugcwidget? [data]
   (display-feature? data "shop-ugcwidget"))
+
+(defn gallery? [data]
+  (display-feature? data "gallery"))

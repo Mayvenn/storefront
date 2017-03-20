@@ -27,6 +27,7 @@
 (defpath navigate-reset-password)
 (defpath navigate-cart)
 (defpath navigate-shared-cart)
+(defpath navigate-gallery)
 
 (defpath navigate-content)
 (defpath navigate-content-help)

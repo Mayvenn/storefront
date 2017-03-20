@@ -63,6 +63,7 @@
               "/stylist/account/commission"                      (edn->bidi events/navigate-stylist-account-commission)
               "/stylist/account/social"                          (edn->bidi events/navigate-stylist-account-social)
               "/share"                                           (edn->bidi events/navigate-friend-referrals)
+              "/gallery"                                         (edn->bidi events/navigate-gallery)
               "/checkout/returning_or_guest"                     (edn->bidi events/navigate-checkout-returning-or-guest)
               "/checkout/login"                                  (edn->bidi events/navigate-checkout-sign-in)
               "/checkout/address"                                (edn->bidi events/navigate-checkout-address)

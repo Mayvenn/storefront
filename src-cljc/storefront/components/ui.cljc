@@ -49,7 +49,8 @@
                          :color/aqua      "btn-primary bg-aqua white"
                          :color/ghost     "btn-outline border-gray dark-gray"
                          :color/facebook  "btn-primary bg-fb-blue white"
-                         :color/apple-pay "btn-primary bg-black white"})]
+                         :color/apple-pay "btn-primary bg-black white"
+                         :color/dark-gray "btn-primary bg-dark-gray white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -65,6 +66,9 @@
 
 (defn teal-button [attrs & content]
   (color-button :color/teal attrs content))
+
+(defn dark-gray-button [attrs & content]
+  (color-button :color/dark-gray attrs content))
 
 (defn navy-button [attrs & content]
   (color-button :color/navy attrs content))

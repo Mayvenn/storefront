@@ -97,16 +97,14 @@
 ;; Sharing this width ensure the popup is centered on mobile
 (def popup-width "188px")
 
-(defn social-link [img href title last?]
+(defn store-dropdown-link [link-attrs title last?]
   [:a.h5.navy.block.p1.border-top.border-gray.bg-light-gray
-   (merge {:href href}
-          (when last?
-            {:class "rounded-bottom-1"}))
-   [:div.flex.items-center
-    [:div.mr1 {:style {:width "15px"}} img]
-    [:div.pp2 title]]])
+   (merge link-attrs (when last?
+                       {:class "rounded-bottom-1"}))
+   [:div.pp2.center title]])
 
 (defn store-dropdown [expanded?
+                      gallery?
                       {store-name :store_name
                        nickname :store_nickname
                        instagram-account :instagram_account
@@ -132,16 +130,20 @@
                   (ui/square-image portrait 48))]
         [:h4.regular store-name]]
        (when instagram-account
-         (social-link
-          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/instagram]
-          (str "http://instagram.com/" instagram-account)
+         (store-dropdown-link
+          {:href (str "http://instagram.com/" instagram-account)}
           "Follow me on Instagram"
-          (not styleseat-account)))
+          (not (or styleseat-account
+                   gallery?))))
        (when styleseat-account
-         (social-link
-          [:div.mlp1.fill-gray {:style {:width "15px" :height "15px"}} svg/styleseat]
-          (str "https://www.styleseat.com/v/" styleseat-account)
+         (store-dropdown-link
+          {:href  (str "https://www.styleseat.com/v/" styleseat-account)}
           "Book me on StyleSeat"
+          (not gallery?)))
+       (when gallery?
+         (store-dropdown-link
+          (utils/route-to events/navigate-gallery)
+          "See my gallery"
           true))]]])])
 
 (defn account-dropdown [expanded? link & menu]
@@ -276,12 +278,12 @@
   [upper-left
    (lower-left current-page?)])
 
-(defn middle [{:keys [store expanded?]}]
+(defn middle [{:keys [store expanded? gallery?]}]
   (if (sans-stylist? (:store_slug store))
     (list (logo "40px"))
     (list
      (logo "30px")
-     (store-dropdown expanded? store))))
+     (store-dropdown expanded? gallery? store))))
 
 (defn right [{{:keys [current-page?]} :context :as data}]
   [(upper-right data)
@@ -310,8 +312,9 @@
     nil)))
 
 (defn store-query [data]
-  {:expanded?   (get-in data keypaths/store-info-expanded)
-   :store       (get-in data keypaths/store)})
+  {:expanded? (get-in data keypaths/store-info-expanded)
+   :gallery?  (experiments/gallery? data)
+   :store     (get-in data keypaths/store)})
 
 (defn auth-query [data]
   {:expanded?  (get-in data keypaths/account-menu-expanded)
