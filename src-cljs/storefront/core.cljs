@@ -60,7 +60,7 @@
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
-         (exception-handler/report e {:app-version (get-in @app-state keypaths/app-version "unknown")}))))))
+         (exception-handler/report e {:api-version (get-in @app-state keypaths/app-version "unknown")}))))))
 
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
@@ -109,7 +109,7 @@
   (try
     (throw (js/Error. "Pokemon"))
     (catch js/Error e
-      (exception-handler/report e))))
+      (exception-handler/report e {:api-version (get-in @app-state keypaths/app-version "unknown")}))))
 
 (defn ^:export external-message [event args]
   (let [event (js->clj event)
