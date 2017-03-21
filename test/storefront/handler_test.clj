@@ -13,11 +13,11 @@
              [handler :refer :all]
              [system :refer [create-system]]]))
 
-(def test-overrides {:environment "test"
-                     :server-opts {:port 2390}
-                     :logging (constantly nil)
-                     :storeback {:endpoint "http://localhost:4334/"
-                                 :internal-endpoint "http://localhost:4334/"}})
+(def test-overrides {:environment      "test"
+                     :server-opts      {:port 2390}
+                     :logging          (constantly nil)
+                     :storeback-config {:endpoint          "http://localhost:4334/"
+                                        :internal-endpoint "http://localhost:4334/"}})
 
 (def storeback-no-stylist-response
   (-> (response "{}")
