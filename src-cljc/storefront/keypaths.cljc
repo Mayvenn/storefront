@@ -41,6 +41,7 @@
 (def store [:store])
 (def store-slug (conj store :store_slug))
 (def store-stylist-id (conj store :stylist_id))
+(def store-gallery-images (conj store :gallery :images))
 
 (def named-searches [:named-searches])
 (def products [:products])

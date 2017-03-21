@@ -342,6 +342,10 @@
       (update-in keypaths/stylist-manage-account merge stylist)
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :styleseat_account :portrait]))))
 
+(defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
+  (-> app-state
+      (assoc-in keypaths/store-gallery-images images)))
+
 (defmethod transition-state events/api-success-stylist-stats [_ events stats app-state]
   (-> app-state
       (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))

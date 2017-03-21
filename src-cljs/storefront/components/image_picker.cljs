@@ -5,13 +5,15 @@
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]))
 
-(defn component [{:keys [selector resizable-url back-link]} owner opts]
+(defn component [{:keys [selector widget-config on-success resizable-url back-link]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_]
       (handle-message events/image-picker-component-mounted
                       {:selector      (str "#" selector)
-                       :resizable-url resizable-url}))
+                       :resizable-url resizable-url
+                       :on-success    on-success
+                       :widget-config widget-config}))
     om/IWillUnmount
     (will-unmount [_]
       (handle-message events/image-picker-component-will-unmount))

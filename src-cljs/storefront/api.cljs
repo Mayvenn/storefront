@@ -462,6 +462,17 @@
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
 
+(defn append-stylist-gallery [user-id user-token {:keys [gallery-urls]}]
+  (api-req
+   POST
+   "/gallery"
+   request-keys/append-gallery
+   {:params {:user-id    user-id
+             :user-token user-token
+             :urls       gallery-urls}
+    :handler
+    #(messages/handle-message events/api-success-gallery %)}))
+
 (defn get-stylist-stats [user-id user-token]
   (api-req
    GET

@@ -28,6 +28,7 @@
 (defpath navigate-cart)
 (defpath navigate-shared-cart)
 (defpath navigate-gallery)
+(defpath navigate-gallery-image-picker)
 
 (defpath navigate-content)
 (defpath navigate-content-help)
@@ -219,6 +220,7 @@
 (defpath api-success-update-order-remove-promotion-code)
 (defpath api-success-update-order-place-order)
 (defpath api-success-promotions)
+(defpath api-success-gallery)
 
 (defpath api-success-shipping-methods)
 
@@ -284,7 +286,10 @@
 (defpath pixlee-api-success-fetch-named-search-album-ids)
 (defpath pixlee-api-failure-fetch-album)
 
-(defpath uploadcare-api-success-upload-image)
+(defpath uploadcare-api-success-upload-portrait)
+(defpath uploadcare-api-success-upload-gallery)
+(defpath uploadcare-api-success-find-gallery-images)
+
 (defpath uploadcare-api-failure)
 
 (defpath video-component-mounted)

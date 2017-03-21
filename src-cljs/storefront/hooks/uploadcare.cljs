@@ -8,8 +8,10 @@
 
 #_ (set! *warn-on-infer* true)
 
+(defn ^:private loaded? [] (.hasOwnProperty js/window "uploadcare"))
+
 (defn insert []
-  (when-not (.hasOwnProperty js/window "uploadcare")
+  (when-not (loaded?)
     (set! js/UPLOADCARE_PUBLIC_KEY config/uploadcare-public-key)
     (set! js/UPLOADCARE_LIVE false)
     (insert-tag-with-callback
@@ -21,32 +23,43 @@
           (.addUrl js/uploadcare.tabsCss (str "https:" (assets/path "/css/app.css"))))
         (handle-message events/inserted-uploadcare)))))
 
-(defn ^:private receive-file-info [file-info]
-  (handle-message events/uploadcare-api-success-upload-image
-                  {:file-info (js->clj file-info :keywordize-keys true)}))
+(defn ^:private receive-file-or-group-info [on-success file-or-group-info]
+  (handle-message on-success
+                  (js->clj file-or-group-info :keywordize-keys true)))
 
-(defn ^:private handle-error [error file-info]
+(defn ^:private handle-error [error data]
   (handle-message events/uploadcare-api-failure
                   {:error error
-                   :file-info (js->clj file-info :keywordize-keys true)}))
+                   :error-data (js->clj data :keywordize-keys true)}))
 
-(defn ^:private handle-file [file]
+(defn ^:private handle-file [on-success file]
   (-> file
       .promise
       (.fail handle-error)
-      (.done receive-file-info)))
+      (.done (partial receive-file-or-group-info on-success))))
 
-(defn dialog [embed-selector & loaded-img-urls]
-  (when (.hasOwnProperty js/window "uploadcare")
+(defn dialog [{:keys [selector resizable-url on-success widget-config]}]
+  (when (loaded?)
     (-> js/uploadcare
         (.openPanel
-         embed-selector
-         (->> loaded-img-urls
+         selector
+         (->> [resizable-url]
               (remove nil?)
               (map #(js/uploadcare.fileFrom "uploaded" %))
               (apply array))
-         (clj->js {:imageShrink "1600x1600"
-                   :imagesOnly  true
-                   :crop        "1:1"
-                   :tabs        "instagram facebook file"}))
-        (.done handle-file))))
+         (clj->js (merge
+                   {:imageShrink "1600x1600"
+                    :imagesOnly  true
+                    :crop        "1:1"
+                    :tabs        "instagram facebook file"}
+                   widget-config)))
+        (.done (partial handle-file on-success)))))
+
+(defn find-files-in-group-then [uuid then]
+  (when (loaded?)
+    (-> uuid
+        js/uploadcare.loadFileGroup
+        (.done (fn [fileGroup]
+                 (.done (.apply js/uploadcare.jQuery.when nil (.files fileGroup))
+                        (fn [& files]
+                          (handle-message then {:files (map #(js->clj % :keywordize-keys true) files)}))))))))

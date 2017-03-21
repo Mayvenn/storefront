@@ -15,6 +15,7 @@
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.stylist.portrait :as stylist.portrait]
+                       [storefront.components.stylist.gallery-image-picker :as gallery-image-picker]
                        [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
@@ -56,6 +57,7 @@
          events/navigate-stylist-account-password       stylist.account/built-component
          events/navigate-stylist-account-commission     stylist.account/built-component
          events/navigate-stylist-account-social         stylist.account/built-component
+         events/navigate-gallery-image-picker           gallery-image-picker/built-component
          events/navigate-account-manage                 (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals              (partial sign-in/requires-sign-in friend-referrals/built-component)
          events/navigate-friend-referrals               friend-referrals/built-component

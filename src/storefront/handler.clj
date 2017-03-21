@@ -170,7 +170,8 @@
     events/navigate-content-about-us
     events/navigate-content-privacy
     events/navigate-content-tos
-    events/navigate-content-guarantee})
+    events/navigate-content-guarantee
+    events/navigate-gallery})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]

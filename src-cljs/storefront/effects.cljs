@@ -291,6 +291,9 @@
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)))
 
+(defmethod perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
+  (uploadcare/insert))
+
 (defmethod perform-effects events/control [_ _ args _ app-state]
   (update-email-capture-session app-state))
 
@@ -685,21 +688,30 @@
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (api/update-stylist-account-social session-id user-id user-token stylist-account)))
 
-(defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} _ app-state]
-  (exception-handler/report error file-info))
+(defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error error-data]} _ app-state]
+  (exception-handler/report error error-data))
 
-(defmethod perform-effects events/image-picker-component-mounted
-  [_ _ {:keys [selector resizable-url]} _ app-state]
-  (uploadcare/dialog selector resizable-url))
+(defmethod perform-effects events/image-picker-component-mounted [_ _ args _ app-state]
+  (uploadcare/dialog args))
 
-(defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} _ app-state]
+(defmethod perform-effects events/uploadcare-api-success-upload-portrait [_ _ {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/update-stylist-account-portrait (get-in app-state keypaths/session-id)
-                                         user-id
-                                         user-token
-                                         {:portrait-url (:cdnUrl file-info)})
+        user-token (get-in app-state keypaths/user-token)
+        session-id (get-in app-state keypaths/session-id)]
+    (api/update-stylist-account-portrait session-id user-id user-token {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
+
+(defmethod perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [uuid]} _ app-state]
+  (uploadcare/find-files-in-group-then uuid events/uploadcare-api-success-find-gallery-images))
+
+(defmethod perform-effects events/uploadcare-api-success-find-gallery-images [_ event {:keys [files]} _ app-state]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)
+        urls (->> files
+                  (filter :isImage)
+                  (map :cdnUrl))]
+    (api/append-stylist-gallery user-id user-token {:gallery-urls urls})
+    (history/enqueue-navigate events/navigate-gallery)))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
