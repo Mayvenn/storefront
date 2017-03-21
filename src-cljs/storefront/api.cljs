@@ -100,16 +100,14 @@
 (defn merge-req-opts [req-key req-id {:keys [handler error-handler] :as request-opts}]
   (merge default-req-opts
          request-opts
-         {:handler       (fn [response]
+         {:handler       (fn [{:keys [body app-version]}]
                            (messages/handle-message events/api-end {:request-key req-key
                                                                     :request-id  req-id
-                                                                    :success     true
-                                                                    :app-version (:app-version response)})
-                           (handler (:body response)))
+                                                                    :app-version app-version})
+                           (handler body))
           :error-handler (fn [res]
                            (messages/handle-message events/api-end {:request-id  req-id
                                                                     :request-key req-key
-                                                                    :success     false
                                                                     :app-version (-> res :response :app-version)})
                            ((or error-handler default-error-handler) res))}))
 

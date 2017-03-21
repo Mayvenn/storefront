@@ -306,14 +306,6 @@
         remote-version (:app-version args)
         needs-restart? (and app-version remote-version
                             (< config/allowed-version-drift (- remote-version app-version)))]
-    (when (and (not (:success args))
-               (= (:request-key args) request-keys/get-stylist-stats))
-      (try (exception-handler/report "Dev: ignore me. Logging through bugsnag. Error in get-stylist-stats"
-                                     {:app-state          {:app-version app-version}
-                                      :previous-app-state {:app-version (get-in previous-app-state keypaths/app-version)}
-                                      :server             {:app-version remote-version}
-                                      :needs-restart      needs-restart?})
-           (catch :default e)))
     (when needs-restart?
       (handle-later events/app-restart))))
 
