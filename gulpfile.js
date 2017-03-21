@@ -13,6 +13,7 @@ var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
 var fs = require('fs');
 var path = require('path');
+var exec = require('child_process').exec;
 
 gulp.task('css', function () {
   return gulp.src(['./resources/css/*.css'])
@@ -76,6 +77,19 @@ gulp.task('fix-source-map', function () {
     .pipe(gulp.dest('./'));
 });
 
+gulp.task('save-git-sha-version', function (cb) {
+  exec('git show --pretty=format:%H -q', function (err, stdout) {
+    if (err) {
+      cb(err);
+    } else {
+      fs.writeFile('resources/client_version.txt', stdout, function (err) {
+        if (err) return cb(err);
+        return cb();
+      });
+    }
+  });
+});
+
 var shaedAssetSources = function () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
                .pipe(gulpIgnore.exclude("*.map")),
@@ -132,5 +146,5 @@ gulp.task('cdn', function (cb) {
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', cb);
+  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', cb);
 });

@@ -54,7 +54,7 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(defn layout [{:keys [leads-config storeback-config environment]} data initial-content]
+(defn layout [{:keys [leads-config storeback-config environment client-version]} data initial-content]
   (html5
    [:head
     [:meta {:name "fragment" :content "!"}]
@@ -80,6 +80,7 @@
     [:script {:type "text/javascript"}
      (raw
       (str "var environment=\"" environment "\";"
+           "var clientVersion=\"" client-version "\";"
            "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
     ;; in production, we want to load the script tag asynchronously which has better
     ;; support when that script tag is in the <head>
