@@ -696,8 +696,9 @@
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error file-info]} _ app-state]
   (exception-handler/report error file-info))
 
-(defmethod perform-effects events/portrait-component-mounted [_ _ {:keys [selector portrait]} _ app-state]
-  (uploadcare/dialog selector (:resizable_url portrait)))
+(defmethod perform-effects events/image-picker-component-mounted
+  [_ _ {:keys [selector resizable-url]} _ app-state]
+  (uploadcare/dialog selector resizable-url))
 
 (defmethod perform-effects events/uploadcare-api-success-upload-image [_ _ {:keys [file-info]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
