@@ -22,14 +22,15 @@
   [:div.p2.center.dark-gray.bg-light-gray
    [:h1 "Manage your gallery"]
    [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
-   [:div.p1 (ui/teal-button (merge (utils/route-to events/navigate-gallery-image-picker)
-                                   {:data-test "add-to-gallery-link"
-                                    :spinning?  adding-photo?})
-                            "Choose an image to upload")]
-   ;;TODO change button depending upon state
-   [:div.p1 (if editing?
-              (ui/dark-gray-button {} "Cancel editing")
-              (ui/ghost-button {} "Edit your gallery"))]])
+   (ui/narrow-container
+    [:div.p1 (ui/teal-button (merge (utils/route-to events/navigate-gallery-image-picker)
+                                    {:data-test "add-to-gallery-link"
+                                     :spinning?  adding-photo?})
+                             "Choose an image to upload")]
+    ;;TODO change button depending upon state
+    [:div.p1 (if editing?
+               (ui/dark-gray-button {} "Cancel editing")
+               (ui/ghost-button {} "Edit your gallery"))])])
 
 (def pending-approval
   (component/html
