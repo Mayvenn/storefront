@@ -30,6 +30,7 @@
 (def get-stylist-commissions [:get-stylist-commissions])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
+(def get-gallery [:get-gallery])
 
 (def add-to-stylist-gallery [:add-to-stylist-gallery])
 

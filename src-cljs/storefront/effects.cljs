@@ -291,8 +291,16 @@
     (api/get-states (get-in app-state keypaths/api-cache))
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)))
 
+(defmethod perform-effects events/navigate-gallery [_ event args _ app-state]
+  (api/get-gallery (if (stylists/own-store? app-state)
+                     {:user-id (get-in app-state keypaths/user-id)
+                      :user-token (get-in app-state keypaths/user-token)}
+                     {:stylist-id (get-in app-state keypaths/store-stylist-id)})))
+
 (defmethod perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
-  (uploadcare/insert))
+  (if (stylist/own-store? app-state)
+    (uploadcare/insert)
+    (redirect events/navigate-gallery)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
   (update-email-capture-session app-state))

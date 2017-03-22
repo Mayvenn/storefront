@@ -473,6 +473,16 @@
     :handler
     #(messages/handle-message events/api-success-gallery %)}))
 
+(defn get-gallery [params]
+  (api-req
+   GET
+   "/gallery"
+   request-keys/get-gallery
+   {:params
+    (select-keys params [:user-id :user-token :stylist-id])
+    :handler
+    #(messages/handle-message events/api-success-gallery %)}))
+
 (defn get-stylist-stats [user-id user-token]
   (api-req
    GET
