@@ -32,8 +32,6 @@
 (def get-stylist-referral-program [:get-stylist-referral-program])
 (def get-gallery [:get-gallery])
 
-(def add-to-stylist-gallery [:add-to-stylist-gallery])
-
 (def get-sms-number [:get-sms-number])
 
 (def get-shipping-methods [:shipping-methods])

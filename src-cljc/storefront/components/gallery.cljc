@@ -60,7 +60,7 @@
   {:store         (get-in data keypaths/store)
    :editing?      false
    :own-store?    (stylists/own-store? data)
-   :adding-photo? (utils/requesting? data request-keys/add-to-stylist-gallery)})
+   :adding-photo? (utils/requesting? data request-keys/append-gallery)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
