@@ -32,18 +32,20 @@
               (ui/ghost-button {} "Edit your gallery"))]])
 
 (defn images [{:keys [gallery]}]
-  (into [:div.p1]
-        (for [{:keys [resizable_url]} (:images gallery)]
-          [:div {:key resizable_url} [:img {:src resizable_url}]])))
+  (into [:div.clearfix.mxn1]
+        (for [{:keys [status resizable_url]} (:images gallery)]
+          [:div.col.col-12.col-4-on-tb-dt.px1.pb2
+           {:key resizable_url}
+           (ui/aspect-ratio 1 1
+                            [:img.col-12 {:src resizable_url}])])))
 
 (defn component [{:keys [store editing? own-store? adding-photo?] :as data} owner opts]
   (component/create
-   (ui/narrow-container
-    [:div
-     (title store)
-     (when own-store?
-       (manage-section editing? adding-photo?))
-     (images store)])))
+   [:div.container
+    (title store)
+    (when own-store?
+      (manage-section editing? adding-photo?))
+    (images store)]))
 
 (defn query [data]
   {:store         (get-in data keypaths/store)
