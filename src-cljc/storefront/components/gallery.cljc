@@ -18,7 +18,7 @@
               store_nickname
               "'s best #MayvennMade looks and get inspiration for your next style!")]])
 
-(defn manage-section [editing? adding-photo?]
+(defn manage-section [{:keys [gallery]} editing? adding-photo?]
   [:div.p2.center.dark-gray.bg-light-gray
    [:h1 "Manage your gallery"]
    [:div.p1 "Here you can upload images, edit posts and manage your gallery settings."]
@@ -27,10 +27,11 @@
                                     {:data-test "add-to-gallery-link"
                                      :spinning?  adding-photo?})
                              "Choose an image to upload")]
-    ;;TODO change button depending upon state
-    [:div.p1 (if editing?
-               (ui/dark-gray-button {} "Cancel editing")
-               (ui/ghost-button {} "Edit your gallery"))])])
+    (when (seq (:images gallery))
+      ;;TODO change button depending upon state
+      [:div.p1 (if editing?
+                 (ui/dark-gray-button {} "Cancel editing")
+                 (ui/ghost-button {} "Edit your gallery"))]))])
 
 (def pending-approval
   (component/html
@@ -52,7 +53,7 @@
    [:div.container
     (title store)
     (when own-store?
-      (manage-section editing? adding-photo?))
+      (manage-section store editing? adding-photo?))
     (images store)]))
 
 (defn query [data]
