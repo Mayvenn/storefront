@@ -298,9 +298,13 @@
                      {:stylist-id (get-in app-state keypaths/store-stylist-id)})))
 
 (defmethod perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
-  (if (stylist/own-store? app-state)
+  (if (stylists/own-store? app-state)
     (uploadcare/insert)
     (redirect events/navigate-gallery)))
+
+(defmethod perform-effects events/api-success-gallery [_ event args _ app-state]
+  (when-not (stylists/gallery? app-state)
+    (page-not-found)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
   (update-email-capture-session app-state))

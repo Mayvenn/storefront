@@ -7,5 +7,9 @@
   (= (get-in data keypaths/user-store-slug)
      (get-in data keypaths/store-slug)))
 
+(defn gallery? [data]
+  (or (own-store? data)
+      (seq (get-in data keypaths/store-gallery-images))))
+
 (def community-url
   (utils/fake-href events/control-stylist-community))

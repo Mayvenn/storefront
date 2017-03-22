@@ -1,7 +1,7 @@
 (ns storefront.components.header
   (:require [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :refer [community-url own-store?]]
+            [storefront.accessors.stylists :as stylists]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
@@ -177,7 +177,7 @@
                                    (ui/square-image portrait 48))])
     [:div.truncate store_nickname]]
    (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
-   [:a.teal.block community-url "Community"]
+   [:a.teal.block stylists/community-url "Community"]
    (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
@@ -313,7 +313,8 @@
 
 (defn store-query [data]
   {:expanded? (get-in data keypaths/store-info-expanded)
-   :gallery?  (experiments/gallery? data)
+   :gallery?  (and (experiments/gallery? data)
+                   (stylists/gallery? data))
    :store     (get-in data keypaths/store)})
 
 (defn auth-query [data]
@@ -328,7 +329,7 @@
    :named-searches (named-searches/current-named-searches data)})
 
 (defn context-query [data]
-  {:stylist?    (own-store? data)
+  {:stylist?    (stylists/own-store? data)
    :nav-message (get-in data keypaths/navigation-message)})
 
 (defn query [data]
