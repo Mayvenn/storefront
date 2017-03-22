@@ -31,13 +31,20 @@
               (ui/dark-gray-button {} "Cancel editing")
               (ui/ghost-button {} "Edit your gallery"))]])
 
+(def pending-approval
+  (component/html
+   [:div.container-size.bg-dark-gray.white.medium.flex.items-center.center.p2
+    "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
+
 (defn images [{:keys [gallery]}]
   (into [:div.clearfix.mxn1]
         (for [{:keys [status resizable_url]} (:images gallery)]
           [:div.col.col-12.col-4-on-tb-dt.px1.pb2
            {:key resizable_url}
            (ui/aspect-ratio 1 1
-                            [:img.col-12 {:src resizable_url}])])))
+                            (if (= "approved" status)
+                              [:img.col-12 {:src resizable_url}]
+                              pending-approval))])))
 
 (defn component [{:keys [store editing? own-store? adding-photo?] :as data} owner opts]
   (component/create
