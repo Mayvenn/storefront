@@ -25,6 +25,4 @@
                         "back to gallery"]})
 
 (defn built-component [data opts]
-  (component/build component (merge {:_data data}
-                                    ;;TODO Raise query
-                                    (query data)) nil))
+  (component/build component (query data) nil))
