@@ -483,6 +483,18 @@
     :handler
     #(messages/handle-message events/api-success-gallery %)}))
 
+(defn delete-gallery-image [user-id user-token image-url]
+  (api-req
+   POST
+   "/gallery/images/delete"
+   request-keys/delete-gallery-image
+   {:params
+    {:user-id    user-id
+     :user-token user-token
+     :image-url  image-url}
+    :handler
+    #(messages/handle-message events/api-success-gallery %)}))
+
 (defn get-stylist-stats [user-id user-token]
   (api-req
    GET

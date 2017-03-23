@@ -302,6 +302,11 @@
     (uploadcare/insert)
     (redirect events/navigate-gallery)))
 
+(defmethod perform-effects events/control-delete-gallery-image [_ event {:keys [image-url]} _ app-state]
+  (api/delete-gallery-image (get-in app-state keypaths/user-id)
+                            (get-in app-state keypaths/user-token)
+                            image-url))
+
 (defmethod perform-effects events/api-success-gallery [_ event args _ app-state]
   (when-not (stylists/gallery? app-state)
     (page-not-found)))

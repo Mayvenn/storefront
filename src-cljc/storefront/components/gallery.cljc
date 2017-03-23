@@ -30,23 +30,30 @@
     (when (seq (:images gallery))
       ;;TODO change button depending upon state
       [:div.p1 (if editing?
-                 (ui/dark-gray-button {} "Cancel editing")
-                 (ui/ghost-button {} "Edit your gallery"))]))])
+                 (ui/dark-gray-button (utils/fake-href events/control-cancel-editing-gallery) "Cancel editing")
+                 (ui/ghost-button (utils/fake-href events/control-edit-gallery) "Edit your gallery"))]))])
 
 (def pending-approval
   (component/html
    [:div.container-size.bg-dark-gray.white.medium.flex.items-center.center.p2
     "Your image has been successfully submitted and is pending approval. Check back here to be updated on its status."]))
 
-(defn images [{:keys [gallery]}]
+(defn images [editing? {:keys [gallery]}]
   (into [:div.clearfix.mxn1]
         (for [{:keys [status resizable_url]} (:images gallery)]
           [:div.col.col-12.col-4-on-tb-dt.px1.pb2
            {:key resizable_url}
-           (ui/aspect-ratio 1 1
-                            (if (= "approved" status)
-                              [:img.col-12 {:src resizable_url}]
-                              pending-approval))])))
+           [:div
+            (when editing?
+              [:div.bg-black.white.p2.flex.h6.medium
+               [:span.flex-auto.right-align.mr2 "Delete this post"]
+               (ui/modal-close {:close-attrs (merge
+                                              (utils/fake-href events/control-delete-gallery-image {:image-url resizable_url})
+                                              {:class "line-height-1"})})])
+            (ui/aspect-ratio 1 1
+                             (if (= "approved" status)
+                               [:img.col-12 {:src resizable_url}]
+                               pending-approval))]])))
 
 (defn component [{:keys [store editing? own-store? adding-photo?] :as data} owner opts]
   (component/create
@@ -54,11 +61,11 @@
     (title store)
     (when own-store?
       (manage-section store editing? adding-photo?))
-    (images store)]))
+    (images editing? store)]))
 
 (defn query [data]
   {:store         (get-in data keypaths/store)
-   :editing?      false
+   :editing?      (get-in data keypaths/editing-gallery?)
    :own-store?    (stylists/own-store? data)
    :adding-photo? (utils/requesting? data request-keys/append-gallery)})
 

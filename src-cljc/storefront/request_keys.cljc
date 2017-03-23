@@ -31,6 +31,7 @@
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
 (def get-gallery [:get-gallery])
+(def delete-gallery-image [:delete-gallery-image])
 
 (def get-sms-number [:get-sms-number])
 

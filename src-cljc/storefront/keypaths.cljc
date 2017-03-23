@@ -216,6 +216,8 @@
 
 (def stylist-referrals (conj stylist :referrals))
 
+(def editing-gallery? (conj ui :editing-gallery))
+
 (def errors (conj ui :errors))
 (def field-errors (conj errors :field-errors))
 (def error-message (conj errors :error-message))

@@ -482,6 +482,13 @@
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (clear-field-errors app-state))))
 
+
+(defmethod transition-state events/control-cancel-editing-gallery [_ event args app-state]
+  (assoc-in app-state keypaths/editing-gallery? false))
+
+(defmethod transition-state events/control-edit-gallery [_ event args app-state]
+  (assoc-in app-state keypaths/editing-gallery? true))
+
 (defmethod transition-state events/control-popup-hide [_ event args app-state]
   (-> app-state
       clear-flash
