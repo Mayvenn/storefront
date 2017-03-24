@@ -30,7 +30,7 @@
     (when (seq (:images gallery))
       ;;TODO change button depending upon state
       [:div.p1 (if editing?
-                 (ui/dark-gray-button (utils/fake-href events/control-cancel-editing-gallery) "Cancel editing")
+                 (ui/dark-gray-button (utils/fake-href events/control-cancel-editing-gallery) "Finish editing")
                  (ui/ghost-button (utils/fake-href events/control-edit-gallery) "Edit your gallery"))]))])
 
 (def pending-approval
