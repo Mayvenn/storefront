@@ -9,14 +9,16 @@
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]))
 
-(defn title [{:keys [store_nickname]}]
+(defn title [own-store? {:keys [store_nickname]}]
   [:div.p2.center
    [:h2 [:img {:style {:height "50px"}
                   :src (assets/path "/images/icons/profile.png")}]]
    [:h1 (str store_nickname "'s Gallery")]
-   [:div (str "Scroll through "
+   [:p (if own-store?
+         "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."
+         (str "Scroll through "
               store_nickname
-              "'s best #MayvennMade looks and get inspiration for your next style!")]])
+              "'s best #MayvennMade looks and get inspiration for your next style!"))]])
 
 (defn manage-section [{:keys [gallery]} editing? adding-photo?]
   [:div.p2.center.dark-gray.bg-light-gray
@@ -58,7 +60,7 @@
 (defn component [{:keys [store editing? own-store? adding-photo?] :as data} owner opts]
   (component/create
    [:div.container
-    (title store)
+    (title own-store? store)
     (when own-store?
       (manage-section store editing? adding-photo?))
     (images editing? store)]))
