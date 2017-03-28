@@ -144,8 +144,7 @@
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                  (get-in app-state keypaths/products)
-                                                  (experiments/kinky-straight-menu? app-state))
+                                                  (get-in app-state keypaths/products))
         saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
     (if saved-options
       (bundle-builder/reset-options bundle-builder saved-options)

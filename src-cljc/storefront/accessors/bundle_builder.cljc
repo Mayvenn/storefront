@@ -151,12 +151,10 @@
     (reset-options bundle-builder (dissoc selected-options last-step))
     bundle-builder))
 
-(defn initialize [named-search products-by-id kinky?]
-  (let [disallowed-styles (if kinky? #{} #{"Kinky Straight"})
-        initial-variants (->> (map products-by-id (:product-ids named-search))
+(defn initialize [named-search products-by-id]
+  (let [initial-variants (->> (map products-by-id (:product-ids named-search))
                               (remove nil?)
-                              (mapcat build-variants)
-                              (remove (comp disallowed-styles :style)))
+                              (mapcat build-variants))
         initial-state    {:flow             (ordered-steps named-search)
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step named-search)}]

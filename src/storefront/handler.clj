@@ -205,7 +205,7 @@
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id (experiments/kinky-straight-menu? data))))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id)))))
           (when-not (seq user-token)
             (redirect (str "/login?path=" (:uri req)))))))))
 
@@ -240,9 +240,7 @@
                                (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
-            events/navigate-category (if (or (= "blonde" (:named-search-slug params))
-                                             (and (= "kinky-straight" (:named-search-slug params))
-                                                  (not (experiments/kinky-straight-menu? data))))
+            events/navigate-category (if (= "blonde" (:named-search-slug params))
                                        (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories")))
                                        (render-category render-ctx data req params))
             (html-response render-ctx data)))))))

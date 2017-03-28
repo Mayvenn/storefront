@@ -18,8 +18,6 @@
   (let [named-searches   (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug)
                                     (get-in app-state keypaths/named-searches))]
     (cond->> named-searches
-      (not (experiments/kinky-straight-menu? app-state))
-      (remove (comp #{"kinky-straight"} :slug))
       (experiments/swap-curly-loose-wave? app-state)
       (move-item-to-position (comp #{"curly"} :slug) 1))))
 
