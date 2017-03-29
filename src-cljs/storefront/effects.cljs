@@ -718,16 +718,10 @@
     (api/update-stylist-account-portrait session-id user-id user-token {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
 
-(defmethod perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [uuid]} _ app-state]
-  (uploadcare/find-files-in-group-then uuid events/uploadcare-api-success-find-gallery-images))
-
-(defmethod perform-effects events/uploadcare-api-success-find-gallery-images [_ event {:keys [files]} _ app-state]
+(defmethod perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        urls (->> files
-                  (filter :isImage)
-                  (map :cdnUrl))]
-    (api/append-stylist-gallery user-id user-token {:gallery-urls urls})
+        user-token (get-in app-state keypaths/user-token)]
+    (api/append-stylist-gallery user-id user-token {:gallery-urls [cdnUrl]})
     (history/enqueue-navigate events/navigate-gallery)))
 
 (defmethod perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]

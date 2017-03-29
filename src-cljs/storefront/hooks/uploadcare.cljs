@@ -54,12 +54,3 @@
                     :tabs        "instagram facebook file"}
                    widget-config)))
         (.done (partial handle-file on-success)))))
-
-(defn find-files-in-group-then [uuid then]
-  (when (loaded?)
-    (-> uuid
-        js/uploadcare.loadFileGroup
-        (.done (fn [fileGroup]
-                 (.done (.apply js/uploadcare.jQuery.when nil (.files fileGroup))
-                        (fn [& files]
-                          (handle-message then {:files (map #(js->clj % :keywordize-keys true) files)}))))))))

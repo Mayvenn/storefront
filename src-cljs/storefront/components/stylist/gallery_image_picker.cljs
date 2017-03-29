@@ -14,7 +14,7 @@
   {:loaded-uploadcare? (get-in data keypaths/loaded-uploadcare)
    :resizable-url      nil
    :on-success         events/uploadcare-api-success-upload-gallery
-   :widget-config      {:multiple true}
+   ;; :widget-config      {:multiple true}
    :selector           "gallery-photo"
    :back-link          {:navigation-event events/navigate-gallery
                         :back-copy "back to gallery"}})

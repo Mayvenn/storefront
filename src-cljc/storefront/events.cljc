@@ -291,7 +291,6 @@
 
 (defpath uploadcare-api-success-upload-portrait)
 (defpath uploadcare-api-success-upload-gallery)
-(defpath uploadcare-api-success-find-gallery-images)
 
 (defpath uploadcare-api-failure)
 
