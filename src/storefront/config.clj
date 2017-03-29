@@ -9,7 +9,7 @@
 
 (def client-version
   (try
-    (slurp (io/file (io/resource "client_version.txt")))
+    (slurp (io/resource "client_version.txt"))
     (catch java.lang.IllegalArgumentException e
       "unknown")))
 
