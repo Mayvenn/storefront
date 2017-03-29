@@ -23,7 +23,7 @@
     (render [_]
       (html
        [:div.container.sans-serif
-        [:div.p2 back-link
+        [:div.p2
          [:a.dark-gray.block.mb2
           (utils/route-to (:navigation-event back-link))
           [:img.px1.mbnp4 {:style {:height "1.25rem"}
