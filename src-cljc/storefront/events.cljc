@@ -106,6 +106,7 @@
 (defpath control-stylist-bonuses-fetch)
 (defpath control-stylist-community)
 (defpath poll-stylist-portrait)
+(defpath poll-gallery)
 (defpath control-cancel-editing-gallery)
 (defpath control-edit-gallery)
 (defpath control-delete-gallery-image)

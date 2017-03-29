@@ -42,6 +42,10 @@
             [storefront.routes :as routes]
             [storefront.utils.maps :as maps]))
 
+(defn changed? [previous-app-state app-state keypath]
+  (not= (get-in previous-app-state keypath)
+        (get-in app-state keypath)))
+
 (defn potentially-show-email-popup [app-state]
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
         not-seen-popup-yet? (not (get-in app-state keypaths/email-capture-session))
@@ -308,8 +312,13 @@
                             image-url))
 
 (defmethod perform-effects events/api-success-gallery [_ event args _ app-state]
-  (when-not (stylists/gallery? app-state)
-    (page-not-found)))
+  (cond
+    (not (stylists/gallery? app-state))
+    (page-not-found)
+
+    (and (stylists/own-store? app-state)
+         (some (comp #{"pending"} :status) (get-in app-state keypaths/store-gallery-images)))
+    (handle-later events/poll-gallery {} 5000)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
   (update-email-capture-session app-state))
@@ -841,9 +850,10 @@
   (api/refresh-stylist-portrait (get-in app-state keypaths/user-id)
                                 (get-in app-state keypaths/user-token)))
 
-(defn changed? [previous-app-state app-state keypath]
-  (not= (get-in previous-app-state keypath)
-        (get-in app-state keypath)))
+(defmethod perform-effects events/poll-gallery [_ event args _ app-state]
+  (when (stylists/own-store? app-state)
+    (api/get-gallery {:user-id    (get-in app-state keypaths/user-id)
+                      :user-token (get-in app-state keypaths/user-token)})))
 
 (defmethod perform-effects events/api-success-stylist-account [_ event args previous-app-state app-state]
   ;; Portrait becomes pending either when the user navigates to an account page
