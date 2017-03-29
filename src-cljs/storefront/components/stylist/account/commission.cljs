@@ -4,7 +4,56 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.accessors.experiments :as experiments]))
+
+(defn green-dot-component
+  [{:keys [green-dot focused field-errors]} owner opts]
+  (let [{:keys [first-name last-name card-number expiration-date]} green-dot]
+    (component/create
+     [:div
+      (ui/text-field-group {:data-test "green-dot-first-name"
+                            :errors    (get field-errors ["green_dot_attributes" "card_first_name"])
+                            :id        "green-dot-first-name"
+                            :keypath   (conj keypaths/stylist-manage-account :green_dot_payout_attributes :card_first_name)
+                            :focused   focused
+                            :label     "Card First Name"
+                            :name      "green-dot-first-name"
+                            :required  true
+                            :type      "text"
+                            :value     first-name}
+                           {:data-test "green-dot-last-name"
+                            :errors    (get field-errors ["green_dot_attributes" "card_last_name"])
+                            :id        "green-dot-last-name"
+                            :keypath   (conj keypaths/stylist-manage-account :green_dot_payout_attributes :card_last_name)
+                            :focused   focused
+                            :label     "Card Last Name"
+                            :name      "green-dot-last-name"
+                            :required  true
+                            :type      "text"
+                            :value     last-name})
+      (ui/text-field {:data-test "green-dot-card-number"
+                      :errors    (get field-errors ["green_dot_attributes" "card_last_name"])
+                      :id        "green-dot-card-number"
+                      :keypath   (conj keypaths/stylist-manage-account :green_dot_payout_attributes :card_number)
+                      :focused   focused
+                      :label     "Card Number"
+                      :name      "green-dot-card-number"
+                      :required  true
+                      :type      "text"
+                      :value     card-number})
+      (ui/text-field {:data-test "green-dot-expiration-date"
+                      :errors    (get field-errors ["green_dot_attributes" "card_last_name"])
+                      :id        "green-dot-expiration-date"
+                      :keypath   (conj keypaths/stylist-manage-account :green_dot_payout_attributes :expiration_date)
+                      :focused   focused
+                      :label     "Expiration Date (MM/YY)"
+                      :name      "green-dot-expiration-date"
+                      :required  true
+                      :type      "text"
+                      :value     expiration-date})
+      [:p.ml1.mb3
+       "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]])))
 
 (defn component [{:keys [focused
                          saving?
@@ -12,6 +61,7 @@
                          payout-methods
                          venmo-phone
                          paypal-email
+                         green-dot
                          address1
                          address2
                          zipcode
@@ -57,6 +107,12 @@
                                         :required  true
                                         :type      "email"
                                         :value     paypal-email})
+        "green-dot"   (component/build green-dot-component
+                                       {:green-dot green-dot
+                                        :focused focused
+                                        :field-errors field-errors}
+                                       opts)
+
         "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address entered here"]
         "check"         [:p.ml1.mb3 "Checks will mail to the address entered here"]
         [:p.ml1.mb3 "Checks will mail to the address entered here"])]]
@@ -143,18 +199,31 @@
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 
-(defn payout-methods [original-payout-method]
+(defn payout-methods [original-payout-method green-dot?]
   (cond-> [["Venmo" "venmo"]
            ["PayPal" "paypal"]
            ["Check" "check"]]
-    (= original-payout-method "mayvenn_debit") (conj ["Mayvenn Debit" "mayvenn_debit"])))
+
+    green-dot?
+    (conj ["Debit/Prepaid" "green-dot"])
+
+    (= original-payout-method "mayvenn_debit")
+    (conj ["Mayvenn Debit" "mayvenn_debit"])))
+
+(defn green-dot-query [data]
+  {:first-name ""
+   :last-name ""
+   :card-number ""
+   :expiration-date ""})
 
 (defn query [data]
   {:saving?        (utils/requesting? data request-keys/update-stylist-account-commission)
    :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
-   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method)))
+   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
+                                   (experiments/green-dot? data))
    :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
    :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone))
+   :green-dot      (green-dot-query data)
    :address1       (get-in data (conj keypaths/stylist-manage-account :address :address1))
    :address2       (get-in data (conj keypaths/stylist-manage-account :address :address2))
    :city           (get-in data (conj keypaths/stylist-manage-account :address :city))

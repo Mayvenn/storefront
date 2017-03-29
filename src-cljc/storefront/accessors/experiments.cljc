@@ -62,3 +62,6 @@
 
 (defn gallery? [data]
   (display-feature? data "gallery"))
+
+(defn green-dot? [data]
+  (display-feature? data "green-dot"))
