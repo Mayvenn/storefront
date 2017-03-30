@@ -64,7 +64,7 @@
                       :max-length    9
                       :type          "tel"
                       :value         (cc/format-expiration expiration-date)})
-      [:p.ml1.mb3
+      [:p.ml1.mb3.h6
        "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]])))
 
 (defn component [{:keys [focused
@@ -88,7 +88,7 @@
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.clearfix
      [:div.col.col-12.col-6-on-tb-dt
-      [:h1.h3.light.my3.center.col-12 "Update commission info"]
+      [:h1.h3.light.my3.center.col-12 "Update Commission Info"]
       [:div.col-12.col-10-on-tb-dt.mx-auto
        (ui/select-field {:data-test "payout-method"
                          :errors    (get field-errors ["chosen_payout_method"])
@@ -126,9 +126,9 @@
                                        :field-errors field-errors}
                                       opts)
 
-         "mayvenn_debit" [:p.ml1.mb3 "A prepaid Visa debit card will be mailed to the address entered here"]
-         "check"         [:p.ml1.mb3 "Checks will mail to the address entered here"]
-         [:p.ml1.mb3 "Checks will mail to the address entered here"])]]
+         "mayvenn_debit" [:p.ml1.mb3.h6 "A prepaid Visa debit card will be mailed to the address entered here"]
+         "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
+         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"])]]
 
 
      [:div.col.col-12.col-6-on-tb-dt
