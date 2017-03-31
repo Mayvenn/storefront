@@ -313,8 +313,7 @@
 
 (defn store-query [data]
   {:expanded? (get-in data keypaths/store-info-expanded)
-   :gallery?  (and (experiments/gallery? data)
-                   (stylists/gallery? data))
+   :gallery?  (stylists/gallery? data)
    :store     (get-in data keypaths/store)})
 
 (defn auth-query [data]
