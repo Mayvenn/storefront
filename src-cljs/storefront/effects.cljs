@@ -317,6 +317,7 @@
     (page-not-found)
 
     (and (stylists/own-store? app-state)
+         (routes/exact-page? (get-in app-state keypaths/navigation-message) [events/navigate-gallery])
          (some (comp #{"pending"} :status) (get-in app-state keypaths/store-gallery-images)))
     (handle-later events/poll-gallery {} 5000)))
 
