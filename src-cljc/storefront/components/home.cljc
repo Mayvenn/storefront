@@ -21,12 +21,12 @@
   gradually exposed on wider screens. All meaningful content has to fit within
   the center 640px of the desktop image.
 
-  mobile-asset can be any height but must be 480px wide
-  desktop-asset should be 600px high and 1440px wide"
+  mobile-asset can be any height but must be 640px wide
+  desktop-asset should be 408px high and at least 1024px wide"
   [mobile-asset desktop-asset alt-text]
   [:span.block
    [:span.block.hide-on-mb.bg-center.bg-no-repeat
-    {:style {:height "600px"
+    {:style {:height "408px"
              :background-image (assets/css-url desktop-asset)}
      :title alt-text}]
    [:img.hide-on-tb-dt.col-12 {:src mobile-asset
