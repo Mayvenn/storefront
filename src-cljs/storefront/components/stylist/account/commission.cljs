@@ -120,7 +120,7 @@
                                      :required  true
                                      :type      "email"
                                      :value     paypal-email})
-         "green-dot" (component/build green-dot-component
+         "green_dot" (component/build green-dot-component
                                       {:green-dot    green-dot
                                        :focused      focused
                                        :field-errors field-errors}
@@ -218,7 +218,7 @@
            ["Check" "check"]]
 
     green-dot?
-    (conj ["Debit/Prepaid" "green-dot"])
+    (conj ["Debit/Prepaid" "green_dot"])
 
     (= original-payout-method "mayvenn_debit")
     (conj ["Mayvenn Debit" "mayvenn_debit"])))

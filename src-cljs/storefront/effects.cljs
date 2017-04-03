@@ -3,7 +3,7 @@
             [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
-            [storefront.accessors.credit-cards :refer [parse-expiration]]
+            [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
@@ -701,11 +701,22 @@
     (when (empty? (get-in app-state keypaths/errors))
       (api/update-stylist-account-password session-id user-id user-token stylist-account))))
 
+(defn reformat-green-dot [{:keys [expiration_date] :as attributes}]
+  (when (seq attributes)
+    (let [[month year] (parse-expiration (str expiration_date))]
+      (-> attributes
+          (dissoc :expiration_date)
+          (assoc :expiration_month month)
+          (assoc :expiration_year year)
+          (update :card_number (comp clojure.string/join filter-cc-number-format str))))))
+
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
-        stylist-account (get-in app-state keypaths/stylist-manage-account)]
+        stylist-account (-> app-state
+                            (get-in keypaths/stylist-manage-account)
+                            (update :green_dot_payout_attributes reformat-green-dot))]
     (api/update-stylist-account-commission session-id user-id user-token stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
