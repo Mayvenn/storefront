@@ -23,7 +23,7 @@
     (component/create
      [:div
       (ui/text-field-group {:data-test "green-dot-first-name"
-                            :errors    (get field-errors ["green_dot_payout_attributes" "card_first_name"])
+                            :errors    (get field-errors ["payout_method" "card_first_name"])
                             :id        "green-dot-first-name"
                             :keypath   (green-dot-keypath :card_first_name)
                             :focused   focused
@@ -32,7 +32,7 @@
                             :required  true
                             :value     first-name}
                            {:data-test "green-dot-last-name"
-                            :errors    (get field-errors ["green_dot_payout_attributes" "card_last_name"])
+                            :errors    (get field-errors ["payout_method" "card_last_name"])
                             :id        "green-dot-last-name"
                             :keypath   (green-dot-keypath :card_last_name)
                             :focused   focused
@@ -41,7 +41,7 @@
                             :required  true
                             :value     last-name})
       (ui/text-field {:data-test     "green-dot-card-number"
-                      :errors        (get field-errors ["green_dot_payout_attributes" "card_number"])
+                      :errors        (get field-errors ["payout_method" "card_number"])
                       :id            "green-dot-card-number"
                       :keypath       (green-dot-keypath :card_number)
                       :focused       focused
@@ -53,7 +53,7 @@
                       :type          "tel"
                       :value         (cc/format-cc-number card-number)})
       (ui/text-field {:data-test     "green-dot-expiration-date"
-                      :errors        (get field-errors ["green_dot_payout_attributes" "expiration_date"])
+                      :errors        (get field-errors ["payout_method" "expiration_date"])
                       :id            "green-dot-expiration-date"
                       :keypath       (green-dot-keypath :expiration_date)
                       :focused       focused
@@ -101,7 +101,7 @@
                          :value     payout-method})
        (condp = payout-method
          "venmo"     (ui/text-field {:data-test "venmo-phone"
-                                     :errors    (get field-errors ["venmo_payout_attributes" "phone"])
+                                     :errors    (get field-errors ["payout_method" "phone"])
                                      :id        "venmo-phone"
                                      :keypath   (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
                                      :focused   focused
@@ -111,7 +111,7 @@
                                      :type      "tel"
                                      :value     venmo-phone})
          "paypal"    (ui/text-field {:data-test "paypal-email"
-                                     :errors    (get field-errors ["paypal_payout_attributes" "email"])
+                                     :errors    (get field-errors ["payout_method" "email"])
                                      :id        "paypal-email"
                                      :keypath   (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
                                      :focused   focused
