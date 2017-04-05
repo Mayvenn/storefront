@@ -481,6 +481,13 @@
       (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
       (clear-field-errors app-state))))
 
+(defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
+  (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
+        last4       (get-in app-state (conj keypaths/stylist-manage-account :green_dot_payout_attributes :last4))]
+    (cond-> app-state
+      (= selected-id last4)
+      (assoc-in (conj keypaths/stylist-manage-account :green_dot_payout_attributes) {:last4 last4}))))
+
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
         password              (-> stylist-account :user :password)
