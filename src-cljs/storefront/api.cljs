@@ -360,6 +360,7 @@
                     :chosen_payout_method
                     :venmo_payout_attributes
                     :paypal_payout_attributes
+                    :green_dot_payout_attributes
                     :instagram_account
                     :styleseat_account
                     :user

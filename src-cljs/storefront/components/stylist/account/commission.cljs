@@ -11,59 +11,75 @@
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account :green_dot_payout_attributes))
 
 (defn green-dot-query [data]
-  (let [green-dot #(get-in data (green-dot-keypath %))]
-    {:first-name      (green-dot :card_first_name)
-     :last-name       (green-dot :card_last_name)
-     :card-number     (green-dot :card_number)
-     :expiration-date (green-dot :expiration_date)}))
+  (when (experiments/green-dot? data)
+    (let [green-dot #(get-in data (green-dot-keypath %))]
+      {:first-name       (green-dot :card_first_name)
+       :last-name        (green-dot :card_last_name)
+       :card-number      (green-dot :card_number)
+       :card-last4       (green-dot :last4)
+       :expiration-date  (green-dot :expiration_date)
+       :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)})))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number expiration-date]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last4 expiration-date card-selected-id]} green-dot]
     (component/create
      [:div
-      (ui/text-field-group {:data-test "green-dot-first-name"
-                            :errors    (get field-errors ["payout_method" "card_first_name"])
-                            :id        "green-dot-first-name"
-                            :keypath   (green-dot-keypath :card_first_name)
+      (when card-last4
+        (let [card-options [[(str "xxxx-xxxx-xxxx-" card-last4) card-last4] ["Replace Card" "replace-card"]]]
+          (ui/select-field {:data-test "green-dot-saved-card"
+                            :id        "green-dot-saved-card"
+                            :keypath   keypaths/stylist-manage-account-green-dot-card-selected-id
                             :focused   focused
-                            :label     "Card First Name"
-                            :name      "green-dot-first-name"
+                            :label     "Payout Card"
+                            :options   card-options
                             :required  true
-                            :value     first-name}
-                           {:data-test "green-dot-last-name"
-                            :errors    (get field-errors ["payout_method" "card_last_name"])
-                            :id        "green-dot-last-name"
-                            :keypath   (green-dot-keypath :card_last_name)
-                            :focused   focused
-                            :label     "Card Last Name"
-                            :name      "green-dot-last-name"
-                            :required  true
-                            :value     last-name})
-      (ui/text-field {:data-test     "green-dot-card-number"
-                      :errors        (get field-errors ["payout_method" "card_number"])
-                      :id            "green-dot-card-number"
-                      :keypath       (green-dot-keypath :card_number)
-                      :focused       focused
-                      :label         "Card Number"
-                      :name          "green-dot-card-number"
-                      :required      true
-                      :max-length    19
-                      :auto-complete "off"
-                      :type          "tel"
-                      :value         (cc/format-cc-number card-number)})
-      (ui/text-field {:data-test     "green-dot-expiration-date"
-                      :errors        (get field-errors ["payout_method" "expiration_date"])
-                      :id            "green-dot-expiration-date"
-                      :keypath       (green-dot-keypath :expiration_date)
-                      :focused       focused
-                      :label         "Expiration Date (MM/YY)"
-                      :name          "green-dot-expiration-date"
-                      :required      true
-                      :auto-complete "off"
-                      :max-length    9
-                      :type          "tel"
-                      :value         (cc/format-expiration expiration-date)})
+                            :value     card-selected-id})))
+      (when (or (empty? card-last4)
+                (= card-selected-id "replace-card"))
+        [:div
+         (ui/text-field-group {:data-test "green-dot-first-name"
+                               :errors    (get field-errors ["payout_method" "card_first_name"])
+                               :id        "green-dot-first-name"
+                               :keypath   (green-dot-keypath :card_first_name)
+                               :focused   focused
+                               :label     "Card First Name"
+                               :name      "green-dot-first-name"
+                               :required  true
+                               :value     first-name}
+                              {:data-test "green-dot-last-name"
+                               :errors    (get field-errors ["payout_method" "card_last_name"])
+                               :id        "green-dot-last-name"
+                               :keypath   (green-dot-keypath :card_last_name)
+                               :focused   focused
+                               :label     "Card Last Name"
+                               :name      "green-dot-last-name"
+                               :required  true
+                               :value     last-name})
+         (ui/text-field {:data-test     "green-dot-card-number"
+                         :errors        (get field-errors ["payout_method" "card_number"])
+                         :id            "green-dot-card-number"
+                         :keypath       (green-dot-keypath :card_number)
+                         :focused       focused
+                         :label         "Card Number"
+                         :name          "green-dot-card-number"
+                         :required      true
+                         :max-length    19
+                         :auto-complete "off"
+                         :type          "tel"
+                         :value         (cc/format-cc-number card-number)})
+         (ui/text-field {:data-test     "green-dot-expiration-date"
+                         :errors        (get field-errors ["payout_method" "expiration_date"])
+                         :id            "green-dot-expiration-date"
+                         :keypath       (green-dot-keypath :expiration_date)
+                         :focused       focused
+                         :label         "Expiration Date (MM/YY)"
+                         :name          "green-dot-expiration-date"
+                         :required      true
+                         :auto-complete "off"
+                         :max-length    9
+                         :type          "tel"
+                         :value         (cc/format-expiration expiration-date)})])
       [:p.ml1.mb3.h6
        "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]])))
 
@@ -120,11 +136,12 @@
                                      :required  true
                                      :type      "email"
                                      :value     paypal-email})
-         "green_dot" (component/build green-dot-component
-                                      {:green-dot    green-dot
-                                       :focused      focused
-                                       :field-errors field-errors}
-                                      opts)
+         "green_dot" (when green-dot
+                       (component/build green-dot-component
+                                        {:green-dot    green-dot
+                                         :focused      focused
+                                         :field-errors field-errors}
+                                        opts))
 
          "mayvenn_debit" [:p.ml1.mb3.h6 "A prepaid Visa debit card will be mailed to the address entered here"]
          "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]

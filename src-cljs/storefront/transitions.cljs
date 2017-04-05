@@ -344,6 +344,13 @@
       (update-in keypaths/stylist-manage-account merge stylist)
       (update-in keypaths/store merge (select-keys stylist [:instagram_account :styleseat_account :portrait]))))
 
+(defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
+  (let [last4 (some-> stylist :green_dot_payout_attributes :last4)]
+    (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green_dot_payout_attributes)
+      (= "green_dot" (:chosen_payout_method stylist))
+      (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id last4)
+          (assoc-in (conj keypaths/stylist-manage-account :green_dot_payout_attributes) {:last4 last4})))))
+
 (defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
   (-> app-state
       (assoc-in keypaths/store-gallery-images images)))
