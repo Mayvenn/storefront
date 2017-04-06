@@ -32,6 +32,15 @@
    [:img.hide-on-tb-dt.col-12 {:src mobile-asset
                                :alt alt-text}]])
 
+(defn hero-image
+  "Changes height for image to be full width."
+  [mobile-asset desktop-asset alt-text]
+  [:span.block
+   [:img.hide-on-mb.col-12 {:src desktop-asset
+                            :alt alt-text}]
+   [:img.hide-on-tb-dt.col-12 {:src mobile-asset
+                               :alt alt-text}]])
+
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
                        [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
@@ -70,18 +79,18 @@
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
     (case store-slug
-      "peakmill" (homepage-images (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                  (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                  "Get 15% Off Hair Extensions Mayvenn")
-      "touchedbytokyo" (homepage-images (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
-                                        (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
-                                        "Get 15% Off Hair Extensions Mayvenn")
-      "msroshposh" (homepage-images (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
-                                    (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
-                                    "Get 15% Off Hair Extensions Mayvenn")
-      (homepage-images (assets/path "/images/homepage/mobile_banner.jpg")
-                       (assets/path "/images/homepage/desktop_banner.jpg")
-                       "Get 15% Off Hair Extensions Mayvenn"))]])
+      "peakmill"       (hero-image (assets/path "/images/homepage/peak/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/peak/desktop_banner.jpg")
+                                   "Get 15% Off Hair Extensions Mayvenn")
+      "touchedbytokyo" (hero-image (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
+                                   "Get 15% Off Hair Extensions Mayvenn")
+      "msroshposh"     (hero-image (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
+                                   (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
+                                   "Get 15% Off Hair Extensions Mayvenn")
+      (hero-image (assets/path "/images/homepage/mobile_banner.jpg")
+                  (assets/path "/images/homepage/desktop_banner.jpg")
+                  "Get 15% Off Hair Extensions Mayvenn"))]])
 
 (defn about-mayvenn []
   (component/html
