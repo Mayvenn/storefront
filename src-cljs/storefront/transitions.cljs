@@ -485,7 +485,7 @@
   (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
         last4       (get-in app-state (conj keypaths/stylist-manage-account :green_dot_payout_attributes :last4))]
     (cond-> app-state
-      (= selected-id last4)
+      (and (seq last4) (= selected-id last4))
       (assoc-in (conj keypaths/stylist-manage-account :green_dot_payout_attributes) {:last4 last4}))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
