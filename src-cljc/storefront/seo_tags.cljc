@@ -31,7 +31,8 @@
      [:meta {:name "description" :content description}]
      [:meta {:property "og:title" :content og-title}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:large_url image))}]
+     [:meta {:property "og:image" :content (str "http:" (or (:extra_large_url image)
+                                                            (:large_url image)))}]
      [:meta {:property "og:description" :content og-description}]]))
 
 (defn tags-for-page [data]
