@@ -15,7 +15,7 @@
    :kinky-straight {:data-product-id  525
                     :data-name        "Brazilian Kinky Straight Hair"
                     :data-description "100% virgin human hair, machine-wefted and backed by our 30 Day Quality Guarantee. Our kinky straight hair mimic the blown-out texture of your natural hair."
-                    :data-image-url   "https://d275k6vjijb2m1.cloudfront.net/cellar/kinky_straight/1/250x227.jpg"}
+                    :data-image-url   "https://d275k6vjijb2m1.cloudfront.net/cellar/kinky_straight/3/250x227_1.jpg"}
    :loose-wave     {:data-product-id  2
                     :data-name        "Brazilian Loose Wave Hair"
                     :data-description "Our Brazilian Loose Wave human hair has been steam processed so you can enjoy long-lasting beautiful waves. The waves are tighter than our body wave texture but looser than our deep wave texture. Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. Excessive flat-ironing will loosen the curls over time. These hair extensions can be colored (consult a licensed cosmetologist)."
