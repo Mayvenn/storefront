@@ -17,8 +17,9 @@
 
 (defn status-look [status]
   (case status
-    "pending" "teal"
-    "paid" "navy"))
+    "pending"   "teal"
+    "paid"      "navy"
+    "processing" "teal"))
 
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
   [:div.py2.clearfix {:key id}
@@ -106,11 +107,19 @@
 
 (defn show-payout [{:keys [amount status payout-date]}]
   [:div.border-dotted-top.border-dotted-bottom.border-dark-gray.h5
-   (if (= status "paid")
+   (case status
+     "paid"
      [:div.bg-aqua
       (payout-bar
        (mf/as-money amount) " paid on " (f/long-date payout-date))]
-     [:div.bg-teal
+
+     "processing"
+     [:div.bg-aqua
+      (payout-bar
+       (mf/as-money amount) " is in the process of being paid.")]
+
+     :else
+     [:div.bg-aqua
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
 
