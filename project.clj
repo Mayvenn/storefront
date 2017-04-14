@@ -108,7 +108,7 @@
   :profiles
   {:uberjar {:aot :all}
    :dev {:source-paths ["dev/clj"]
-         :dependencies [[pjstadig/humane-test-output "0.6.0"]
+         :dependencies [[pjstadig/humane-test-output "0.8.1"]
                         [standalone-test-server "0.7.0"]
                         [ring/ring-mock "0.3.0"]
                         [org.clojure/tools.namespace "0.2.11"]
