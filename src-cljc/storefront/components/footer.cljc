@@ -8,7 +8,7 @@
             [storefront.accessors.nav :as nav]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.accessors.stylists :refer [own-store?]]
+            [storefront.accessors.stylists :refer [own-store? shop?]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
             [storefront.platform.numbers :as numbers]
@@ -82,7 +82,8 @@
 
 (defn full-component [{:keys [named-searches
                               contacts
-                              own-store?]} owner opts]
+                              own-store?
+                              show-careers?]} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
@@ -98,10 +99,15 @@
       [:span "© " (date/full-year (date/current-date)) " "] "Mayvenn"]
      [:div.right
       [:a.white
-       (utils/route-to events/navigate-content-help) "Contact Us"]
-      " - "
-      [:a.white
        (utils/route-to events/navigate-content-about-us) "About Us"]
+      " - "
+      (when show-careers?
+        [:span
+         [:a.white {:href "https://jobs.mayvenn.com"}
+          "Careers"]
+         " - "])
+      [:a.white
+       (utils/route-to events/navigate-content-help) "Contact Us"]
       " - "
       [:a.white
        (assoc (utils/route-to events/navigate-content-privacy)
@@ -129,7 +135,8 @@
 (defn query [data]
   {:named-searches (named-searches/current-named-searches data)
    :contacts       (contacts-query data)
-   :own-store?     (own-store? data)})
+   :own-store?     (own-store? data)
+   :show-careers?  (shop? data)})
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))

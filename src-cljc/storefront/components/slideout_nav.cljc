@@ -8,7 +8,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.stylists :refer [own-store? community-url]]
+            [storefront.accessors.stylists :refer [own-store? shop? community-url]]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.routes :as routes]
             [clojure.string :as str]))
@@ -120,7 +120,7 @@
     (closures-section selectable? named-searches)
     (stylist-products-section selectable? named-searches)]])
 
-(defn help-section [selectable?]
+(defn help-section [selectable? show-careers?]
   [section-outer-darker
    [section-inner
     [:nav {:aria-label "Help"}
@@ -134,6 +134,9 @@
       [:li [:a.teal (assoc (utils/route-to events/navigate-content-about-us)
                            :data-test "content-about-us")
             (row (selectable? events/navigate-content-about-us "About Us"))]]
+      (when show-careers?
+        [:li [:a.teal {:href "https://jobs.mayvenn.com"}
+              (row "Careers")]])
       [:li [:a.teal (assoc (utils/route-to events/navigate-content-help)
                            :data-test "content-help")
             (row (selectable? events/navigate-content-help "Contact Us"))]]]]]])
@@ -165,28 +168,28 @@
             (utils/fake-href events/control-sign-out))
      "Logout"]]))
 
-(defn guest-content [selectable? {:keys [named-searches]}]
+(defn guest-content [selectable? {:keys [named-searches show-careers?]}]
   [:div
    (customer-shop-section selectable? named-searches)
-   (help-section selectable?)
+   (help-section selectable? show-careers?)
    sign-in-section])
 
-(defn customer-content [selectable? {:keys [available-store-credit user-email named-searches]}]
+(defn customer-content [selectable? {:keys [available-store-credit user-email named-searches show-careers?]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
     [section-top-inner (customer-section selectable? user-email)]]
    (customer-shop-section selectable? named-searches)
-   (help-section selectable?)
+   (help-section selectable? show-careers?)
    sign-out-section])
 
-(defn stylist-content [selectable? {:keys [available-store-credit store named-searches]}]
+(defn stylist-content [selectable? {:keys [available-store-credit store named-searches show-careers?]}]
   [:div
    [section-outer
     (store-credit-flag available-store-credit)
     [section-top-inner (store-section selectable? store)]]
    (stylist-shop-section selectable? named-searches)
-   (help-section selectable?)
+   (help-section selectable? show-careers?)
    sign-out-section])
 
 (defn component [{:keys [slid-out? stylist? user-email current-navigation-message] :as data} owner opts]
@@ -213,7 +216,8 @@
    :user-email                 (get-in data keypaths/user-email)
    :available-store-credit     (get-in data keypaths/user-total-available-store-credit)
    :current-navigation-message (get-in data keypaths/navigation-message)
-   :named-searches             (named-searches/current-named-searches data)})
+   :named-searches             (named-searches/current-named-searches data)
+   :show-careers?              (shop? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
