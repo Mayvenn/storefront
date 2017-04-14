@@ -87,7 +87,10 @@
     [:div.col.col-4.p1 (ui/navy-button {} "ui/navy-button")]
     [:div.col.col-4.p1 (ui/ghost-button {} "ui/ghost-button")]
     [:div.col.col-4.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col.col-4.p1 (ui/aqua-button {} "ui/aqua-button")]]])
+    [:div.col.col-4.p1 (ui/aqua-button {} "ui/aqua-button")]
+    [:div.col.col-4.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]]
+   [:div.clearfix.bg-teal
+    [:div.col.col-4.p1.bg-teal (ui/light-ghost-button {} "ui/light-ghost-button")]]])
 
 (def ^:private increment->size
   {1 "5px"

@@ -94,7 +94,7 @@
 
 (defn about-mayvenn []
   (component/html
-   [:div.container.py4.my4
+   [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt
     [:h1.line-length.mx-auto.center.p4 "why people love Mayvenn hair"]
 
     [:div.clearfix.h5
@@ -115,6 +115,30 @@
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
       "shop our looks")]]))
+
+(def video-autoplay
+  (component/html
+   (let [video-html "<video loop muted autoplay playsinline controls class=\"col-12\"><source src=\"https://embedwistia-a.akamaihd.net/deliveries/1d1db253c9f6aaa6a176e15d5d41f1f110f17b4b/file.mp4\"></source></video>"]
+     [:div
+      [:div.center.hide-on-tb-dt.mbn2
+       [:div.px3
+        [:h1 "We love our customers"]
+        [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
+        [:div.col-6.my4.mx-auto
+         (ui/teal-ghost-button
+          (assoc (utils/route-to events/navigate-shop-by-look)
+                 :data-test "nav-shop-look")
+          "Shop our styles now")]]
+       [:div.container.col-12.mx-auto {:dangerouslySetInnerHTML {:__html video-html}}]]
+      [:div.center.bg-teal.py4.white.hide-on-mb
+       [:h1.mt1 "We love our customers"]
+       [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
+       [:div.col-8.col-3-on-tb-dt.my4.mx-auto
+        (ui/light-ghost-button
+         (assoc (utils/route-to events/navigate-shop-by-look)
+                :data-test "nav-shop-look")
+         "Shop our styles now")]
+       [:div.container.col-12.mx-auto.mb3 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
 
 (def video-popup
   (component/html
@@ -139,12 +163,14 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches featured-searches store-slug]} owner opts]
+(defn component [{:keys [named-searches featured-searches store-slug video-autoplay?]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
     [:section (popular-grid featured-searches)]
-    [:section video-popup]
+    (if video-autoplay?
+      [:section video-autoplay]
+      [:section video-popup])
     [:section (about-mayvenn)]
     [:section talkable-banner]]))
 
@@ -153,7 +179,8 @@
     {:named-searches    (remove (comp #{"kinky-straight"} :slug) named-searches)
      :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
                                 named-searches)
-     :store-slug        (get-in data keypaths/store-slug)}))
+     :store-slug        (get-in data keypaths/store-slug)
+     :video-autoplay?   (experiments/video-autoplay? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -44,13 +44,15 @@
     [:a (merge {:href "#"} opts) content]))
 
 (defn ^:private button-colors [color-kw]
-  (let [color (color-kw {:color/teal      "btn-primary bg-teal white"
-                         :color/navy      "btn-primary bg-navy white"
-                         :color/aqua      "btn-primary bg-aqua white"
-                         :color/ghost     "btn-outline border-gray dark-gray"
-                         :color/facebook  "btn-primary bg-fb-blue white"
-                         :color/apple-pay "btn-primary bg-black white"
-                         :color/dark-gray "btn-primary bg-dark-gray white"})]
+  (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
+                         :color/navy        "btn-primary bg-navy white"
+                         :color/aqua        "btn-primary bg-aqua white"
+                         :color/ghost       "btn-outline border-gray dark-gray"
+                         :color/light-ghost "btn-outline border-white white"
+                         :color/teal-ghost  "btn-outline border-teal teal"
+                         :color/facebook    "btn-primary bg-fb-blue white"
+                         :color/apple-pay   "btn-primary bg-black white"
+                         :color/dark-gray   "btn-primary bg-dark-gray white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -84,6 +86,12 @@
 
 (defn ghost-button [attrs & content]
   (color-button :color/ghost attrs content))
+
+(defn light-ghost-button [attrs & content]
+  (color-button :color/light-ghost attrs content))
+
+(defn teal-ghost-button [attrs & content]
+  (color-button :color/teal-ghost attrs content))
 
 (defn submit-button
   ([title] (submit-button title {}))
