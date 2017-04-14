@@ -124,7 +124,7 @@
        [:div.px3
         [:h1 "We love our customers"]
         [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
-        [:div.col-6.my4.mx-auto
+        [:div.col-8.my4.mx-auto
          (ui/teal-ghost-button
           (assoc (utils/route-to events/navigate-shop-by-look)
                  :data-test "nav-shop-look")
