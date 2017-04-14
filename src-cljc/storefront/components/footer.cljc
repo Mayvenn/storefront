@@ -99,7 +99,7 @@
       [:span "© " (date/full-year (date/current-date)) " "] "Mayvenn"]
      [:div.right
       [:a.white
-       (utils/route-to events/navigate-content-about-us) "About Us"]
+       (utils/route-to events/navigate-content-about-us) "About"]
       " - "
       (when show-careers?
         [:span
@@ -107,7 +107,7 @@
           "Careers"]
          " - "])
       [:a.white
-       (utils/route-to events/navigate-content-help) "Contact Us"]
+       (utils/route-to events/navigate-content-help) "Contact"]
       " - "
       [:a.white
        (assoc (utils/route-to events/navigate-content-privacy)
