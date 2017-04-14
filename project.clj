@@ -26,7 +26,7 @@
                  [comb "0.1.0"]
                  [sablono "0.6.3"]
                  [cljs-ajax "0.3.11"]
-                 [bidi "2.0.6"]
+                 [bidi "2.0.16"]
                  [com.cemerick/url "0.1.1"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/" :no-auth true}]]
   :plugins [[s3-wagon-private "1.3.0"]
