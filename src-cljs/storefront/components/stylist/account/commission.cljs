@@ -11,14 +11,13 @@
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account :green_dot_payout_attributes))
 
 (defn green-dot-query [data]
-  (when (experiments/green-dot? data)
-    (let [green-dot #(get-in data (green-dot-keypath %))]
-      {:first-name       (green-dot :card_first_name)
-       :last-name        (green-dot :card_last_name)
-       :card-number      (green-dot :card_number)
-       :card-last4       (green-dot :last4)
-       :expiration-date  (green-dot :expiration_date)
-       :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)})))
+  (let [green-dot #(get-in data (green-dot-keypath %))]
+    {:first-name       (green-dot :card_first_name)
+     :last-name        (green-dot :card_last_name)
+     :card-number      (green-dot :card_number)
+     :card-last4       (green-dot :last4)
+     :expiration-date  (green-dot :expiration_date)
+     :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
@@ -234,7 +233,7 @@
            ["PayPal" "paypal"]
            ["Check" "check"]]
 
-    green-dot?
+    (or green-dot? (= original-payout-method "green_dot"))
     (conj ["Debit/Prepaid" "green_dot"])
 
     (= original-payout-method "mayvenn_debit")
