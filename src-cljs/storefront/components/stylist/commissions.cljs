@@ -118,7 +118,6 @@
       (payout-bar
        (mf/as-money amount) " is in the process of being paid.")]
 
-     :else
      [:div.bg-aqua
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
