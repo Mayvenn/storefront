@@ -114,7 +114,7 @@
        (mf/as-money amount) " paid on " (f/long-date payout-date))]
 
      "processing"
-     [:div.bg-aqua
+     [:div.bg-teal
       (payout-bar
        (mf/as-money amount) " is in the process of being paid.")]
 
