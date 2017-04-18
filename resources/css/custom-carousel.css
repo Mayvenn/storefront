@@ -72,6 +72,10 @@
     transform: rotate(180deg);
 }
 
+.slick-disabled {
+    visibility: hidden;
+}
+
 :root {
     --white:        #FFFFFF;
     --gray:         #666666;
