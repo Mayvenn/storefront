@@ -118,7 +118,7 @@
 
 (def video-autoplay
   (component/html
-   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/96e697b09a226d3446203aeaa94d13b41be0ba81/file.mp4"
+   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
          video-html (str "<video loop muted autoplay playsinline controls class=\"col-12\"><source src=\""
                          video-src
                          "\"></source></video>")]
