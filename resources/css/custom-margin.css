@@ -1,8 +1,32 @@
+.m6  { margin:        var(--space-6) }
+.mt6 { margin-top:    var(--space-6) }
+.mr6 { margin-right:  var(--space-6) }
+.mb6 { margin-bottom: var(--space-6) }
+.ml6 { margin-left:   var(--space-6) }
+.mx6 { margin-left:   var(--space-6); margin-right:  var(--space-6) }
+.my6 { margin-top:    var(--space-6); margin-bottom: var(--space-6) }
+
+.m8  { margin:        var(--space-8) }
+.mt8 { margin-top:    var(--space-8) }
+.mr8 { margin-right:  var(--space-8) }
+.mb8 { margin-bottom: var(--space-8) }
+.ml8 { margin-left:   var(--space-8) }
+.mx8 { margin-left:   var(--space-8); margin-right:  var(--space-8) }
+.my8 { margin-top:    var(--space-8); margin-bottom: var(--space-8) }
+
+.mxn6 { margin-left: -var(--space-6); margin-right: -var(--space-6); }
+.mxn8 { margin-left: -var(--space-8); margin-right: -var(--space-8); }
+
 .mtn1 { margin-top: -var(--space-1); }
 .mtn2 { margin-top: -var(--space-2); }
 .mtn3 { margin-top: -var(--space-3); }
 .mtn4 { margin-top: -var(--space-4); }
+.mtn6 { margin-top: -var(--space-6); }
+.mtn8 { margin-top: -var(--space-8); }
+
 .m-auto { margin: auto; }
+
+/* pixel-based margin */
 
 .mp1, .mtp1, .myp1 { margin-top: 1px; }
 .mp2, .mtp2, .myp2 { margin-top: 2px; }
@@ -46,4 +70,6 @@
   --space-2: 1rem;
   --space-3: 2rem;
   --space-4: 4rem;
+  --space-6: 16rem;
+  --space-8: 64rem;
 }

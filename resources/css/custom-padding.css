@@ -1,3 +1,21 @@
+.p6  { padding:        var(--space-6) }
+.pt6 { padding-top:    var(--space-6) }
+.pr6 { padding-right:  var(--space-6) }
+.pb6 { padding-bottom: var(--space-6) }
+.pl6 { padding-left:   var(--space-6) }
+.px6 { padding-left:   var(--space-6); padding-right:  var(--space-6) }
+.py6 { padding-top:    var(--space-6); padding-bottom: var(--space-6) }
+
+.p8  { padding:        var(--space-8) }
+.pt8 { padding-top:    var(--space-8) }
+.pr8 { padding-right:  var(--space-8) }
+.pb8 { padding-bottom: var(--space-8) }
+.pl8 { padding-left:   var(--space-8) }
+.px8 { padding-left:   var(--space-8); padding-right:  var(--space-8) }
+.py8 { padding-top:    var(--space-8); padding-bottom: var(--space-8) }
+
+/* pixel-based padding */
+
 .pp1, .pxp1 { padding-left: 1px; padding-right: 1px; }
 .pp2, .pxp2 { padding-left: 2px; padding-right: 2px; }
 .pp3, .pxp3 { padding-left: 3px; padding-right: 3px; }
@@ -11,3 +29,11 @@
 .pp5, .pyp5 { padding-top: 5px; padding-bottom: 5px; }
 .pp6, .pyp6 { padding-top: 6px; padding-bottom: 6px; }
 
+:root {
+    --space-1: .5rem;
+    --space-2: 1rem;
+    --space-3: 2rem;
+    --space-4: 4rem;
+    --space-6: 16rem;
+    --space-8: 64rem;
+}
