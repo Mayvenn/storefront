@@ -37,7 +37,7 @@
 (defn store-credit [available-credit]
   [:div.mb3
    [:div.medium.mb1 "Store Credit"]
-   [:div.teal.h1 (when available-credit (ui/big-money available-credit))]
+   [:div.teal.h0 (when available-credit (ui/big-money available-credit))]
    [:div.mb1 ui/nbsp]])
 
 (defn component [{:keys [fetching?
