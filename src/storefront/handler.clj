@@ -307,7 +307,15 @@
                       "/complete?"
                       (codec/form-encode {:paypal      true
                                           :order-token order-token})))))))
-(defn static-routes [path]
+
+(defn logo-routes [{:keys [dc-logo-config]}]
+  (wrap-cookies
+   (GET "/logo.:ext{htm|gif}" req
+        (let [s (or (cookies/get req "session-id")
+                    "missing-session-id")]
+          (redirect (str (:endpoint dc-logo-config) "&s=" s))))))
+
+(defn static-routes [_]
   (fn [{:keys [uri store] :as req}]
     (let [{nav-event :handler params :route-params} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
@@ -322,6 +330,7 @@
                                                     "text/xml"))
                (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
                (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
+               (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
                (wrap-site-routes (site-routes ctx) ctx)

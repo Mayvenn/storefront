@@ -16,6 +16,7 @@
 (def test-overrides {:environment      "test"
                      :server-opts      {:port 2390}
                      :logging          (constantly nil)
+                     :dc-logo-config   {:endpoint "https://logo.server/?m=100"}
                      :storeback-config {:endpoint          "http://localhost:4334/"
                                         :internal-endpoint "http://localhost:4334/"}})
 
@@ -232,6 +233,25 @@
       (let [resp (handler (mock/request :get "https://vistaprint.mayvenn.com"))]
         (is (= 302 (:status resp)))
         (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
+               (get-in resp [:headers "Location"])))))))
+
+(deftest redirects-to-logo-server
+  (with-handler handler
+    (testing "http"
+      (let [resp (handler (mock/request :get "http://bob.mayvenn.com/logo.htm"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://logo.server/?m=100&s=missing-session-id"
+               (get-in resp [:headers "Location"])))))
+    (testing "https"
+      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/logo.htm"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://logo.server/?m=100&s=missing-session-id"
+               (get-in resp [:headers "Location"])))))
+    (testing "with session id"
+      (let [resp (handler (-> (mock/request :get "https://bob.mayvenn.com/logo.htm")
+                              (mock/header "Cookie" ":session-id=present-id")))]
+        (is (= 302 (:status resp)))
+        (is (= "https://logo.server/?m=100&s=present-id"
                (get-in resp [:headers "Location"])))))))
 
 (deftest submits-paypal-redirect-to-waiter

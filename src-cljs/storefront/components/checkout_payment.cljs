@@ -129,6 +129,8 @@
      (ui/narrow-container
       (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
         [:div.p2
+         [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
+          [:img {:width 1 :height 1 :src "/logo.gif"}]]
          [:form
           {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)
            :data-test "payment-form"}

@@ -26,7 +26,11 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :app-handler (map->AppHandler (select-keys config [:storeback-config :leads-config :environment :client-version]))
+   :app-handler (map->AppHandler (select-keys config [:storeback-config
+                                                      :leads-config
+                                                      :dc-logo-config
+                                                      :environment
+                                                      :client-version]))
    :embedded-server (jetty-server (merge (:server-opts config)
                                          {:configurator jetty/configurator}))
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
