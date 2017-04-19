@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.accessors.credit-cards :as cc]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :refer [as-money]]
@@ -117,6 +118,7 @@
            saving?
            disabled?
            loaded-stripe?
+           dc-logo?
            store-credit
            field-errors
            credit-card]}
@@ -129,8 +131,9 @@
      (ui/narrow-container
       (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
         [:div.p2
-         [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
-          [:img {:width 1 :height 1 :src "/logo.gif"}]]
+         (when dc-logo?
+           [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
+            [:img {:width 1 :height 1 :src "/logo.gif"}]])
          [:form
           {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)
            :data-test "payment-form"}
@@ -178,6 +181,7 @@
                            (not fully-covered?))
       :loaded-stripe? (get-in data keypaths/loaded-stripe)
       :step-bar       (checkout-steps/query data)
+      :dc-logo?       (experiments/dc-logo? data)
       :field-errors   (:field-errors (get-in data keypaths/errors))}
      (credit-card-form-query data))))
 
