@@ -68,3 +68,6 @@
 
 (defn dc-logo? [data]
   (display-feature? data "dc-logo"))
+
+(defn deploy-promo? [data]
+  (display-feature? data "deploy-promo"))

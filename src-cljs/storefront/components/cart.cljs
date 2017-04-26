@@ -6,9 +6,14 @@
             [storefront.accessors.promos :as promos]
             [storefront.accessors.stylists :as stylists]
             [storefront.components.order-summary :as summary]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [goog.events]
+            [goog.dom]
+            [goog.style]
+            [goog.events.EventType :as EventType]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
@@ -97,16 +102,42 @@ Thanks,
 (defn built-share-link-component [data opts]
   (om/build share-link-component (query-share-link data) opts))
 
+(defn deploy-promotion-banner-component [data owner opts]
+  (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 150 (.-y (goog.dom/getDocumentScroll)))))]
+    (reify
+      om/IInitState
+      (init-state [this]
+        {:show? false})
+      om/IDidMount
+      (did-mount [this]
+        (om/set-state! owner :banner-height (.-height (goog.style/getSize (om/get-node owner "banner"))))
+        (goog.events/listen js/window EventType/SCROLL handle-scroll))
+      om/IWillUnmount
+      (will-unmount [this]
+        (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+      om/IRenderState
+      (render-state [this {:keys [show? banner-height]}]
+        (html
+         [:div.fixed.z1.top-0.left-0.right-0
+          (if show?
+            {:style {:margin-top "0"}
+             :class "transition-2"}
+            {:style {:margin-top (str "-" banner-height "px")}})
+          [:div {:ref "banner"}
+           (om/build promotion-banner/component data opts)]])))))
+
 (defn full-component [{:keys [focused
                               order
                               products
                               coupon-code
+                              promotion-banner
                               applying-coupon?
                               updating?
                               redirecting-to-paypal?
                               share-carts?
                               requesting-shared-cart?
                               show-apple-pay?
+                              deploy-promo?
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
@@ -114,6 +145,7 @@ Thanks,
   (om/component
    (html
     [:div.container.p2
+     (when deploy-promo? (om/build deploy-promotion-banner-component promotion-banner))
      [:div.py3.h3.center
       [:.dark-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
@@ -229,6 +261,7 @@ Thanks,
     {:order                     order
      :products                  (get-in data keypaths/products)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
+     :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
@@ -237,6 +270,7 @@ Thanks,
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
+     :deploy-promo?             (experiments/deploy-promo? data)
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
