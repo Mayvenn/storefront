@@ -14,6 +14,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.videos :as videos]
             [storefront.components.money-formatters :as mf]
+            [storefront.utils.query :as query]
             [clojure.string :as str]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
@@ -73,10 +74,30 @@
                                          :order_total      (get-in app-state keypaths/order-total)
                                          :quantity         quantity})))
 
+(defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
+  (let [{:keys [stylist-id number line-items]} cart
+        line-items    (map (fn [[k v]]
+                             {:variant-id (js/parseInt (name k))
+                              :quantity   v})
+                           line-items)
+        all-variants  (->> (get-in app-state keypaths/products)
+                           (map val)
+                           (mapcat :variants))
+        ;; not guaranteed that we've loaded the right products yet, so use this sparingly
+        cart-variants (map (fn [{:keys [variant-id]}]
+                             (query/get {:id variant-id} all-variants))
+                           line-items)]
+    (stringer/track-event "shared_cart_created" {:shared_cart_id number
+                                                 :stylist_id     stylist-id
+                                                 :skus           (->> cart-variants (map :sku) (str/join ","))
+                                                 :variant_ids    (->> line-items (map :variant-id) (str/join ","))
+                                                 :quantities     (->> line-items (map :quantity) (str/join ","))
+                                                 :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
+
 (defmethod perform-track events/api-success-update-order-from-shared-cart [_ _ {:keys [order]} app-state]
   (let [line-items (orders/product-items order)]
-    (stringer/track-event "bulk_add_to_cart" {:skus (str/join "," (map :sku line-items))
-                                              :variant_ids (str/join "," (map :id line-items))})))
+    (stringer/track-event "bulk_add_to_cart" {:skus        (->> line-items (map :sku) (str/join ","))
+                                              :variant_ids (->> line-items (map :id) (str/join ","))})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
