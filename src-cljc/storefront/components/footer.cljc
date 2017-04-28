@@ -48,17 +48,17 @@
     (ui/ghost-button {:href (phone-href call-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      svg/phone-ringing
+                      (svg/phone-ringing {})
                       [:div.ml1.left-align "Call Now"]])
     (ui/ghost-button {:href (str "sms://+1" sms-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      svg/message-bubble
+                      (svg/message-bubble {})
                       [:div.ml1.left-align "Send Message"]])
     (ui/ghost-button {:href (str "mailto:" contact-email)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
-                      svg/mail-envelope
+                      (svg/mail-envelope {})
                       [:div.ml1.left-align "Send Email"]])]])
 
 (def social-section

@@ -1,6 +1,7 @@
 (ns storefront.components.cart
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
+            [storefront.assets :as assets]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
@@ -22,17 +23,6 @@
   ([cnt singular] (pluralize cnt singular (str singular "s")))
   ([cnt singular plural]
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
-
-;; TODO: these images badly need refactoring. They are the button, the icon and
-;; the text (!) all in one. Not surprisingly, they are not adapting as we
-;; refactor buttons, colors and icons. Wait until styleguide has new button
-;; definitions, then fix this.
-;; We have SVG icons for twitter, email and text. If we also had the facebook
-;; SVG we could use it here and on sign-in.
-(defn share-icon [icon-class]
-  [:div.bg-no-repeat.bg-center.bg-full
-   {:style {:height "30px" :width "70px"}
-    :class icon-class}])
 
 (defn facebook-link [share-url]
   (str "https://www.facebook.com/sharer/sharer.php?u=" share-url "%3Futm_medium=facebook%26utm_campaign=sharebuttons"))
@@ -78,21 +68,40 @@ Thanks,
                [:.p1
                 [:.h3.navy.medium "Share your bag"]
                 [:.h5.dark-gray.light.my2 "Share this link so your customers know exactly what to buy"]
-                [:.border-top.border-bottom.border-gray.py2.flex.justify-center
-                 [:a.mx1 {:href (facebook-link share-url) :target "_blank"}
-                  (share-icon "img-fb-share")]
-                 [:a.mx1 {:href (twitter-link share-url) :target "_blank"}
-                  (share-icon "img-twitter-share")]
-                 [:a.mx1.hide-on-dt {:href (sms-link share-url)}
-                  (share-icon "img-sms-share")]
-                 [:a.mx1 {:href (email-link share-url store-nickname)}
-                  (share-icon "img-email-share")]]
+                [:.border-top.border-bottom.border-gray.py2
+                 [:div.clearfix.mxn1
+                  [:div.p1.col.col-6.col-12-on-dt
+                   [:a.h6.col-12.btn.btn-primary.bg-fb-blue
+                    {:href   (facebook-link share-url)
+                     :target "_blank"}
+                    [:img.align-middle.mr1 {:style {:height "18px"}
+                                            :src   (assets/path "/images/share/fb.png")}]
+                    "Share"]]
+                  [:div.p1.col.col-6.col-12-on-dt
+                   [:a.h6.col-12.btn.btn-primary.bg-twitter-blue
+                    {:href   (twitter-link share-url)
+                     :target "_blank"}
+                    [:img.align-middle.mr1 {:style {:height "18px"}
+                                            :src   (assets/path "/images/share/twitter.png")}]
+                    "Tweet"]]
+                  [:div.p1.col.col-6.col-12-on-dt.hide-on-dt
+                   [:a.h6.col-12.btn.btn-primary.bg-sms-green
+                    {:href (sms-link share-url)}
+                    [:img.align-middle.mr1 {:style {:height "18px"}
+                                            :src   (assets/path "/images/share/sms.png")}]
+                    "SMS"]]
+                  [:div.p1.col.col-6.col-12-on-dt
+                   [:a.h6.col-12.btn.btn-primary.bg-dark-gray
+                    {:href (email-link share-url store-nickname)}
+                    (svg/mail-envelope {:class "stroke-white align-middle mr1"
+                                        :style {:height "18px" :width "18px"}})
+                    "Email"]]]]
                 [:div.mt3.mb1
                  [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12
-                  {:type "text"
-                   :value share-url
+                  {:type      "text"
+                   :value     share-url
                    :data-test "share-url"
-                   :on-click utils/select-all-text}]]
+                   :on-click  utils/select-all-text}]]
                 [:div.navy "(select and copy link to share)"]]]))))
 
 (defn query-share-link [data]

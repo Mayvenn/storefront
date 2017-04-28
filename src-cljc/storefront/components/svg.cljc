@@ -61,20 +61,17 @@
 
 ;; Help
 
-(def phone-ringing
-  (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}}
-    (svg-xlink "phone-ringing")]))
+(defn phone-ringing [opts]
+  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   (svg-xlink "phone-ringing")])
 
-(def mail-envelope
-  (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}}
-    (svg-xlink "closed-mail-envelope")]))
+(defn mail-envelope [opts]
+  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   (svg-xlink "closed-mail-envelope")])
 
-(def message-bubble
-  (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}}
-    (svg-xlink "message-bubble")]))
+(defn message-bubble [opts]
+  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+   (svg-xlink "message-bubble")])
 
 ;;
 
