@@ -2,9 +2,3 @@
 .sticky { position: sticky; } /* only works in FF, Safari and mobile Safari */
 
 .rotate-45 { transform: rotate(45deg); }
-
-.translate-center {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}

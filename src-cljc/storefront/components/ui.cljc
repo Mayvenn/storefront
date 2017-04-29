@@ -283,29 +283,26 @@
       menu])])
 
 (defn modal [{:keys [close-attrs bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
-  ;; Inspired by https://css-tricks.com/considerations-styling-modal/
-  [:div
-   ;; The scrim, a sibling to the modal
-   [:div.z4.fixed.overlay.bg-darken-4
-    {:on-click (:on-click close-attrs)}
-    ;; Set bg-class to override or darken the scrim
-    [:div.fixed.overlay {:class bg-class}]]
-   ;; The modal itself
-   ;; - is above the scrim (z)
-   ;; - centers the contents in the viewport (fixed, translate-center)
-   ;; - stays within the bounds of the screen and scrolls when necessary (col-12, max-height, overflow)
-   [:div.z4.fixed.translate-center.col-12.overflow-auto {:style    {:max-height "100%"}
-                                                         :on-click (:on-click close-attrs)}
-    ;; The inner wrapper
-    ;; - provides a place to set width of the modal content (col-class)
-    ;;   - should be a percentage based width; will be centered with mx-auto
-    ;; Because the contents are centered with auto margin, normally clicks in
-    ;; these margins would not close the modal. This is remedied with the
-    ;; on-click handlers on the modal and on the wrapper, which collaborate to
-    ;; close the modal on click in the margin, but not on click in the contents
-    (into [:div.mx-auto {:class    col-class
-                         :on-click utils/stop-propagation}]
-          body)]])
+  ;; The scrim
+  [:div.z4.fixed.overlay.bg-darken-4
+   ;; Set bg-class to override or darken the scrim
+   [:div.absolute.overlay {:class bg-class}]
+   ;; The modal itself, centered with https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/2/#table-cell
+   ;; This method was chosen because it is widely supported and avoids bluriness.
+   ;; Flex may also work, with less markup, but we couldn't find a way to use
+   ;; it and have overflow scroll vertically
+   [:div.absolute.overlay.overflow-auto
+    [:div.table.container-size
+     [:div.table-cell.align-middle
+      {:on-click (:on-click close-attrs)}
+      ;; The inner wrapper
+      ;; - provides a place to adjust the width of the modal content (col-class)
+      ;;   - should be a percentage based width; will be centered with mx-auto
+      ;; - collaborates with its wrapper to ensure that clicks around the modal
+      ;;   close it, but clicks within it do not
+      (into [:div.mx-auto {:class col-class
+                           :on-click utils/stop-propagation}]
+            body)]]]])
 
 (defn modal-close [{:keys [class data-test close-attrs]}]
   [:div.clearfix
