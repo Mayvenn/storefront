@@ -15,7 +15,7 @@
                  [ring-jetty-component "0.3.1"]
                  [org.eclipse.jetty/jetty-server "9.3.9.v20160517"]
                  [hiccup "1.0.5"]
-                 [cheshire "5.5.0"]
+                 [cheshire "5.7.1"]
                  [cljsjs/google-maps "3.18-1"]
                  [org.clojure/clojurescript "1.8.51"]
                  [org.clojure/core.cache "0.6.3"]
