@@ -19,7 +19,7 @@
     "gulp": "^3.9.0",
     "gulp-debug": "^2.0.1",
     "gulp-gzip": "^1.1.0",
-    "gulp-ignore": "^1.2.1",
+    "gulp-ignore": "^2.0.2",
     "gulp-json-transform": "^0.2.0",
     "gulp-postcss": "6.1.0",
     "gulp-rev-all": "^0.8.21",
