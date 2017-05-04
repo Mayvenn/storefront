@@ -13,7 +13,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.utils.query :as query]))
 
 (defn status-look [status]
   (case status
@@ -22,17 +23,19 @@
     "processing" "teal"))
 
 (defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
-  [:div.py2.clearfix {:key id}
-   [:img.left.border.border-light-gray.mr3
-    (assoc (products/small-img products product-id)
-           :style {:width "5rem"})]
-   [:div.overflow-hidden
-    [:div.h4.medium.titleize (products/product-title item)]
-    [:div.h5.mt1
-     (when-let [length (:length variant-attrs)]
-       [:div "Length: " length])
-     [:div "Price: " (mf/as-money unit-price)]
-     [:div "Quantity: " quantity]]]])
+  (let [variant (query/get {:id id}
+                           (:variants (get products product-id)))]
+    [:div.py2.clearfix {:key id}
+     [:img.left.border.border-light-gray.mr3
+      (assoc (products/small-img products product-id)
+             :style {:width "5rem"})]
+     [:div.overflow-hidden
+      [:div.h4.medium.titleize (products/product-title variant)]
+      [:div.h5.mt1
+       (when-let [length (:length variant-attrs)]
+         [:div "Length: " length])
+       [:div "Price: " (mf/as-money unit-price)]
+       [:div "Quantity: " quantity]]]]))
 
 (defn short-shipping-name [shipping-item]
   (-> shipping-item

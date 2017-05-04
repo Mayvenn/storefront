@@ -77,20 +77,20 @@
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [{:keys [stylist-id number line-items]} cart
         line-items    (map (fn [[k v]]
-                             {:variant-id (js/parseInt (name k))
-                              :quantity   v})
+                             {:id       (js/parseInt (name k))
+                              :quantity v})
                            line-items)
         all-variants  (->> (get-in app-state keypaths/products)
                            (map val)
                            (mapcat :variants))
         ;; not guaranteed that we've loaded the right products yet, so use this sparingly
-        cart-variants (map (fn [{:keys [variant-id]}]
-                             (query/get {:id variant-id} all-variants))
+        cart-variants (map (fn [{:keys [id]}]
+                             (query/get {:id id} all-variants))
                            line-items)]
     (stringer/track-event "shared_cart_created" {:shared_cart_id number
                                                  :stylist_id     stylist-id
                                                  :skus           (->> cart-variants (map :sku) (str/join ","))
-                                                 :variant_ids    (->> line-items (map :variant-id) (str/join ","))
+                                                 :variant_ids    (->> line-items (map :id) (str/join ","))
                                                  :quantities     (->> line-items (map :quantity) (str/join ","))
                                                  :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
 
