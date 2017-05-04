@@ -5,8 +5,11 @@
 (defn loaded-ids [data]
   (set (keys (get-in data keypaths/products))))
 
-(defn product-title [{:keys [variant-name product-name]}]
-  (or variant-name product-name))
+(defn product-title
+  "Prefer variant-name, if available. Otherwise use product name (product-name
+  from waiter line item; name from cellar variant)"
+  [{:keys [variant-name product-name name]}]
+  (or variant-name product-name name))
 
 (defn product-img-with-size [product size]
   (when product

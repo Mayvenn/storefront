@@ -19,9 +19,6 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]))
 
-(defn normalize-variant [variant]
-  (set/rename-keys variant {:variant_attrs :variant-attrs :name :product-name}))
-
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"}
    [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
@@ -78,8 +75,7 @@
    "Added to bag: "
    (number->words quantity)
    " "
-   ;; TODO keys need to be renamed in cellar at some point
-   (products/product-title (normalize-variant variant))])
+   (products/product-title variant)])
 
 (def checkout-button
   (component/html
