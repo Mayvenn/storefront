@@ -293,6 +293,7 @@
    ;; it and have overflow scroll vertically
    [:div.absolute.overlay.overflow-auto
     [:div.table.container-size
+     {:style {:table-layout "fixed"}}
      [:div.table-cell.align-middle
       {:on-click (:on-click close-attrs)}
       ;; The inner wrapper
