@@ -146,13 +146,8 @@
          word)))
 
 (defn variant-name [variant flow]
-  (let [flow (if (some #{:style} flow)
-               (conj (vec flow) :category)
-               (conj (vec flow) :style))]
-    (->> flow
-         (map variant)
-         (string/join " ")
-         string/upper-case)))
+  (when (seq flow)
+    (string/upper-case (:variant-name variant))))
 
 (defn summary-structure [desc quantity-and-price]
   [:div
