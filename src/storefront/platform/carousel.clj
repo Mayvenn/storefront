@@ -5,4 +5,4 @@
   (component/create
    [:div.overflow-hidden.nowrap
     (for [slide slides]
-      [:div.inline-block slide])]))
+      [:div.col-12.inline-block slide])]))

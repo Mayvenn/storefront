@@ -27,7 +27,7 @@
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."
   [x y & content]
   [:div.relative.overflow-hidden
-   {:style {:padding-top (-> y (/ x) (* 100) (str "%")) }}
+   {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
    (into [:div.absolute.overlay] content)])
 
 (defn button
