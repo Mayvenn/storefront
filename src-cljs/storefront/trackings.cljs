@@ -94,10 +94,12 @@
                                                  :quantities     (->> line-items (map :quantity) (str/join ","))
                                                  :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
 
-(defmethod perform-track events/api-success-update-order-from-shared-cart [_ _ {:keys [order]} app-state]
+(defmethod perform-track events/api-success-update-order-from-shared-cart [_ _ {:keys [order shared-cart-id]} app-state]
   (let [line-items (orders/product-items order)]
-    (stringer/track-event "bulk_add_to_cart" {:skus        (->> line-items (map :sku) (str/join ","))
-                                              :variant_ids (->> line-items (map :id) (str/join ","))})))
+    (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
+                                              :order_number   (:number order)
+                                              :skus           (->> line-items (map :sku) (str/join ","))
+                                              :variant_ids    (->> line-items (map :id) (str/join ","))})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))

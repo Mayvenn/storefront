@@ -804,6 +804,7 @@
              :stylist-id     stylist-id}
     :handler #(messages/handle-message events/api-success-update-order-from-shared-cart
                                        {:order %
+                                        :shared-cart-id shared-cart-id
                                         :navigate events/navigate-cart})
     :error-handler #(do
                       ;; Order is important here, for correct display of errors
