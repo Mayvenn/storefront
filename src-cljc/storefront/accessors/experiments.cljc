@@ -57,9 +57,6 @@
 (defn swap-curly-loose-wave? [data]
   (display-feature? data "kinky-straight-2-curly-move"))
 
-(defn shop-ugcwidget? [data]
-  (display-feature? data "shop-ugcwidget"))
-
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
