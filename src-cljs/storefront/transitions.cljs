@@ -254,11 +254,6 @@
   [_ _ {:keys [menus]} app-state]
   (collapse-menus app-state menus))
 
-(defmethod transition-state events/control-play-video [_ events {:keys [video]} app-state]
-  (-> app-state
-      (assoc-in keypaths/popup :video)
-      (assoc-in keypaths/video video)))
-
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))

@@ -3,7 +3,6 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.date :as date]
-            [storefront.platform.video :as video]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.keypaths :as keypaths]
@@ -91,7 +90,7 @@
                   (assets/path "/images/homepage/desktop_banner.jpg")
                   "Get 15% Off Hair Extensions Mayvenn"))]])
 
-(defn about-mayvenn []
+(def about-mayvenn
   (component/html
    [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt
     [:h1.line-length.mx-auto.center.p4 "why people love Mayvenn hair"]
@@ -142,19 +141,6 @@
          "Shop our styles now")]
        [:div.container.col-12.mx-auto.mb3 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
 
-(def video-popup
-  (component/html
-   [:div.relative {:on-click #(handle-message events/control-play-video {:video :review-compilation})}
-    (homepage-images
-     (assets/path "/images/homepage/mobile_video.png")
-     (assets/path "/images/homepage/desktop_video.png")
-     "Hair Extension Reviews Mayvenn")
-    [:div.absolute.overlay.bg-darken-2
-     [:div.flex.flex-column.items-center.justify-center.white.medium.bg-darken-2.center.shadow.letter-spacing-1.container-height
-      [:div.mt4 svg/play-video]
-      [:h1.my2 "Mayvenn in action"]
-      [:p.h3 "see what real customers say"]]]]))
-
 (def talkable-banner
   (component/html
    [:h1.h2.container.py4
@@ -165,15 +151,13 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches featured-searches store-slug video-autoplay?]} owner opts]
+(defn component [{:keys [named-searches featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
     [:section (popular-grid featured-searches)]
-    (if video-autoplay?
-      [:section video-autoplay]
-      [:section video-popup])
-    [:section (about-mayvenn)]
+    [:section video-autoplay]
+    [:section about-mayvenn]
     [:section talkable-banner]]))
 
 (defn query [data]
@@ -181,8 +165,7 @@
     {:named-searches    (remove (comp #{"kinky-straight"} :slug) named-searches)
      :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
                                 named-searches)
-     :store-slug        (get-in data keypaths/store-slug)
-     :video-autoplay?   (experiments/video-autoplay? data)}))
+     :store-slug        (get-in data keypaths/store-slug)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

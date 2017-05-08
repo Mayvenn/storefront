@@ -63,9 +63,6 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn video-autoplay? [data]
-  (display-feature? data "video-autoplay"))
-
 (defn dc-logo? [data]
   (display-feature? data "dc-logo"))
 
