@@ -146,7 +146,6 @@ Thanks,
                               share-carts?
                               requesting-shared-cart?
                               show-apple-pay?
-                              deploy-promo?
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
@@ -154,7 +153,7 @@ Thanks,
   (om/component
    (html
     [:div.container.p2
-     (when deploy-promo? (om/build deploy-promotion-banner-component promotion-banner))
+     (om/build deploy-promotion-banner-component promotion-banner)
      [:div.py3.h3.center
       [:.dark-gray
        "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
@@ -279,7 +278,6 @@ Thanks,
      :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
-     :deploy-promo?             (experiments/deploy-promo? data)
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
