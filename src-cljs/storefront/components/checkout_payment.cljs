@@ -1,7 +1,6 @@
 (ns storefront.components.checkout-payment
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-credit-card :as cc]
