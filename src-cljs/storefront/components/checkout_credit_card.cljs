@@ -45,7 +45,19 @@
                         :name      "name"
                         :required  true
                         :value     name})
-        [:div#card-element.border-gray.border.rounded.p2]
+        (let [card-errors (mapcat (partial get field-errors) [["card-number"]
+                                                              ["card-expiration"]
+                                                              ["security-code"]
+                                                              ["card-error"]])]
+          [:div
+           [:div#card-element.border.rounded.p2
+            {:style {:height "47px"}
+             :class (if (seq card-errors)
+                      "border-red red"
+                      "border-gray")}]
+           (when (seq card-errors)
+             [:div.h6.my1.red.center.medium {:data-test "payment-form-card-error"}
+              (:long-message (first card-errors))])])
        (when (and (not guest?) (empty? saved-cards))
           [:div.mb2
            [:label.dark-gray
