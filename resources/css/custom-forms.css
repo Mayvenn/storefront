@@ -27,6 +27,7 @@
 }
 
 select:focus,
+.StripeElement--focus,
 .glow {
   /* Start with spec, mostly for Firefox */
   outline: solid auto 2px;
@@ -43,6 +44,7 @@ select:focus,
   position: relative;
 }
 
+.StripeElement--focus,
 .glow {
   outline-offset: -3px;
 }

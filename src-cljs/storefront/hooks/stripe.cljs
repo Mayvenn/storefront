@@ -34,7 +34,7 @@
               {:base {:color          "#000000"
                       :fontFamily     "roboto-300"
                       :fontSize       "14px"
-                      :lineHeight     "1"
+                      :lineHeight     "1.75"
                       "::placeholder" {:color "#ccc"}}}}))
 
 (defn card-element [selector]
