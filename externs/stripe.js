@@ -1,4 +1,4 @@
-var Stripe = {};
+var Stripe = function() {};
 Stripe.setPublishableKey = function() {};
 Stripe.card = {};
 Stripe.card.createToken = function() {};
@@ -32,3 +32,22 @@ _StripeApplePayResult.prototype.shippingMethod = {};
 _StripeApplePayResult.prototype.token = {};
 _StripeApplePayResult.prototype.token.card = null;
 _StripeApplePayResult.prototype.token.id = null;
+
+
+/* V3 */
+
+var stripe = {};
+/* @return {!_StripeElementFactory} */
+stripe.elements = function() {};
+/* @return {!_StripePromise} */
+stripe.createToken = function(element, options) {};
+
+_StripeElementFactory = {};
+/* @return {!_StripeElement} */
+_StripeElementFactory.create = function(type, config) {};
+
+_StripeElement = {};
+_StripeElement.mount = function (selector) {};
+
+_StripePromise = {};
+_StripePromise.then = function(callback) {};
