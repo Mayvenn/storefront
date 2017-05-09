@@ -37,7 +37,6 @@
 
 (def options {:hidePostalCode true})
 
-
 (defn card-element [selector]
   (doto (-> js/stripe
             (.elements (clj->js fonts))

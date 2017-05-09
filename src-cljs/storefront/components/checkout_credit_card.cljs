@@ -11,12 +11,11 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]))
 
-
 (defn saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)
       (utils/requesting? data request-keys/update-cart-payments)))
 
-(defn inner-piece
+(defn ^:private new-card-component
   [{{:keys [focused
             guest?
             name
@@ -96,7 +95,7 @@
 
         (when (or (empty? saved-cards)
                   (= selected-saved-card-id "add-new-card"))
-          (om/build inner-piece data opts))])])))
+          (om/build new-card-component data opts))])])))
 
 (defn query [data]
   (let [saved-cards (get-in data keypaths/checkout-credit-card-existing-cards)]
