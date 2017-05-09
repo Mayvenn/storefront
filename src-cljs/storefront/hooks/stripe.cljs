@@ -22,25 +22,26 @@
        (let [stripe (js/Stripe. config/stripe-publishable-key)]
          (set! (.-stripe js/window) stripe))))))
 
-(def fonts (clj->js
-            {:fonts
-             [{:family "roboto-300"
-               :src    "url('https://d6w7wdcyyr51t.cloudfront.net/cdn/fonts/Roboto-Light-webfont.2dbb9930.woff') format('woff')"
-               :style  "normal"
-               :weight "300"}]}))
+(def fonts {:fonts
+            [{:family "roboto-300"
+              :src    "url('https://d6w7wdcyyr51t.cloudfront.net/cdn/fonts/Roboto-Light-webfont.2dbb9930.woff') format('woff')"
+              :style  "normal"
+              :weight "300"}]})
 
-(def styles (clj->js
-             {:style
-              {:base {:color          "#000000"
-                      :fontFamily     "roboto-300"
-                      :fontSize       "14px"
-                      :lineHeight     "1.75"
-                      "::placeholder" {:color "#ccc"}}}}))
+(def styles {:style
+             {:base {:color          "#000000"
+                     :fontFamily     "roboto-300"
+                     :fontSize       "14px"
+                     :lineHeight     "1.75"
+                     "::placeholder" {:color "#ccc"}}}})
+
+(def options {:hidePostalCode true})
+
 
 (defn card-element [selector]
   (doto (-> js/stripe
-            (.elements fonts)
-            (.create "card" styles))
+            (.elements (clj->js fonts))
+            (.create "card" (clj->js (merge styles options))))
     (.mount selector)))
 
 (defn stripe-response-handler [place-order? api-id create-token-result]
