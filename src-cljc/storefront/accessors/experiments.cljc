@@ -61,5 +61,5 @@
   (display-feature? data "green-dot"))
 
 (defn dc-logo? [data]
-  #_(display-feature? data "dc-logo")
-  true)
+  (or (#{"development" "acceptance"} (get-in data keypaths/environment))
+      (display-feature? data "dc-logo")))
