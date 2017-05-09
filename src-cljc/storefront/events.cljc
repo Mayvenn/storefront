@@ -90,8 +90,11 @@
 (defpath apple-pay-begin)
 (defpath apple-pay-end)
 
+(defpath stripe)
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
+(defpath stripe-component-mounted)
+(defpath stripe-component-will-unmount)
 
 (defpath control)
 (defpath control-change-state)

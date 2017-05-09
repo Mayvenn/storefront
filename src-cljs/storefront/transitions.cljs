@@ -636,8 +636,8 @@
 (defmethod transition-state events/inserted-reviews [_ event args app-state]
   (assoc-in app-state keypaths/loaded-reviews true))
 
-(defmethod transition-state events/inserted-stripe [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-stripe true))
+(defmethod transition-state events/inserted-stripe [_ event {:keys [version]} app-state]
+  (assoc-in app-state (conj keypaths/loaded-stripe version) true))
 
 (defmethod transition-state events/inserted-uploadcare [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-uploadcare true))
@@ -653,6 +653,12 @@
 
 (defmethod transition-state events/reviews-component-will-unmount [_ event args app-state]
   (update-in app-state keypaths/review-components-count dec))
+
+(defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
+  (assoc-in app-state keypaths/stripe-card-element card-element))
+
+(defmethod transition-state events/stripe-component-will-unmount [_ event {:keys [card-element]} app-state]
+  (update-in app-state keypaths/stripe-card-element dissoc))
 
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
   (assoc-in app-state keypaths/facebook-email-denied nil))
@@ -700,19 +706,8 @@
       (not opted-in?)
       (assoc-in keypaths/email-capture-session "dismissed"))))
 
-(def stripe->storefront-field
-  {"number"    "card-number"
-   "exp_month" "card-expiration"
-   "exp_year"  "card-expiration"
-   "cvc"       "security-code"})
-
 (defmethod transition-state events/stripe-failure-create-token [_ event stripe-response app-state]
-  (let [{:keys [code message param]} (:error stripe-response)
-        field                        (stripe->storefront-field param)]
+  (let [{:keys [code message param]} (:error stripe-response)]
     (assoc-in app-state keypaths/errors
-              {:field-errors  (when field
-                                {[field] [{:path [field] :long-message message}]})
-               :error-code    code
-               :error-message (if field
-                                "Oops! Please fix the errors below."
-                                message)})))
+              {:error-code    code
+               :error-message message})))
