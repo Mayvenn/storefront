@@ -28,6 +28,8 @@
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
 
+(def stripe-card-element [:stripe :card-element])
+
 (def order-token (conj order :token))
 (def order-number (conj order :number))
 (def order-user (conj order :user))
@@ -152,9 +154,6 @@
 (def checkout-shipping-address-zip (conj checkout-shipping-address :zipcode))
 (def checkout-shipping-address-phone (conj checkout-shipping-address :phone))
 (def checkout-credit-card-name (conj checkout :credit-card-name))
-(def checkout-credit-card-number (conj checkout :credit-card-number))
-(def checkout-credit-card-expiration (conj checkout :credit-card-expiration))
-(def checkout-credit-card-ccv (conj checkout :credit-card-ccv))
 (def checkout-credit-card-save (conj checkout :credit-card-save))
 (def checkout-credit-card-existing-cards (conj checkout :credit-card-existing-cards))
 (def checkout-credit-card-selected-id (conj checkout :credit-card-selected-id))
@@ -232,6 +231,8 @@
 (def loaded-places (conj loaded :places))
 (def loaded-reviews (conj loaded :reviews))
 (def loaded-stripe (conj loaded :stripe))
+(def loaded-stripe-v2 (conj loaded-stripe :v2))
+(def loaded-stripe-v3 (conj loaded-stripe :v3))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))
 

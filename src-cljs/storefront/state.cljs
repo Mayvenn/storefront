@@ -27,9 +27,6 @@
    :save-my-addresses-no-op true
    :bill-to-shipping-address true
    :credit-card-name ""
-   :credit-card-number ""
-   :credit-card-expiration ""
-   :credit-card-ccv ""
    :credit-card-save true
    :credit-card-selected-id nil
    :selected-shipping-method {}
@@ -162,7 +159,8 @@
           :review-components-count 0
           :static nil
           :loaded {:reviews false
-                   :stripe false
+                   :stripe {:v2 false
+                            :v3 false}
                    :facebook false
                    :places false
                    :talkable false}}}))

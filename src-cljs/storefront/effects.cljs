@@ -767,29 +767,25 @@
                                                             app-state
                                                             keypaths/checkout-selected-shipping-method-sku)})))
 
-(defmethod perform-effects events/stripe-success-create-token [_ _ stripe-response _ app-state]
+(defmethod perform-effects events/stripe-success-create-token [_ _ {:keys [token place-order?]} _ app-state]
   (api/update-cart-payments
    (get-in app-state keypaths/session-id)
-   {:order (-> app-state
-               (get-in keypaths/order)
-               (select-keys [:token :number])
-               (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
-               (assoc-in [:cart-payments :stripe :source] (:id stripe-response))
-               (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
-                                                                       (get-in app-state keypaths/checkout-credit-card-save)))))
-    :navigate events/navigate-checkout-confirmation
-    :place-order? (:place-order? stripe-response)}))
+   {:order        (-> app-state
+                      (get-in keypaths/order)
+                      (select-keys [:token :number])
+                      (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
+                      (assoc-in [:cart-payments :stripe :source] (:id token))
+                      (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
+                                                                              (get-in app-state keypaths/checkout-credit-card-save)))))
+    :navigate     events/navigate-checkout-confirmation
+    :place-order? place-order?}))
 
 (defn create-stripe-token [app-state args]
-  ;; create stripe token (success handler commands waiter w/ payment methods (success  navigates to confirm))
-  (let [expiry (parse-expiration (get-in app-state keypaths/checkout-credit-card-expiration))]
-    (stripe/create-token (get-in app-state keypaths/checkout-credit-card-name)
-                         (get-in app-state keypaths/checkout-credit-card-number)
-                         (get-in app-state keypaths/checkout-credit-card-ccv)
-                         (first expiry)
-                         (last expiry)
-                         (get-in app-state (conj keypaths/order :billing-address))
-                         args)))
+  ;; create stripe token (success handler commands waiter w/ payment methods (success navigates to confirm))
+  (stripe/create-token (get-in app-state keypaths/stripe-card-element)
+                       (get-in app-state keypaths/checkout-credit-card-name)
+                       (get-in app-state (conj keypaths/order :billing-address))
+                       args))
 
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args _ app-state]
   (handle-message events/flash-dismiss)
@@ -1006,7 +1002,7 @@
     (talkable/show-referrals app-state)))
 
 (defmethod perform-effects events/inserted-stripe [_ event args _ app-state]
-  (apple-pay/verify-eligible))
+  (apple-pay/verify-eligible app-state))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (update-email-capture-session app-state))

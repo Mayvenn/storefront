@@ -6,11 +6,12 @@
             [storefront.accessors.products :as products]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.keypaths :as keypaths]))
 
 
-(defn verify-eligible []
-  (when (.hasOwnProperty js/window "Stripe")
+(defn verify-eligible [app-state]
+  (when (get-in app-state keypaths/loaded-stripe-v2)
     (let [api-id {:request-key request-keys/stripe-apple-pay-availability
                   :request-id (str (random-uuid))}]
       (handle-message events/api-start api-id)

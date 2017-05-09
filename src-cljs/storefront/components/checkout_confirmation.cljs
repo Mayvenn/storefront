@@ -4,7 +4,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-delivery :as checkout-delivery]
-            [storefront.components.checkout-payment :as checkout-payment]
+            [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.order-summary :as summary]
             [storefront.components.ui :as ui]
@@ -53,7 +53,7 @@
              :data-test "additional-payment-required-note"}
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-payment/credit-card-form-component payment)])
+           (om/build checkout-credit-card/component payment)])
         (summary/display-order-summary order
                                        {:read-only?             true
                                         :use-store-credit?      true
@@ -65,13 +65,13 @@
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
-   :saving-card?                 (checkout-payment/saving-card? data)
+   :saving-card?                 (checkout-credit-card/saving-card? data)
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
    :checkout-steps               (checkout-steps/query data)
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
-   :payment                      (checkout-payment/credit-card-form-query data)
+   :payment                      (checkout-credit-card/query data)
    :delivery                     (checkout-delivery/query data)
    :available-store-credit       (get-in data keypaths/user-total-available-store-credit)})
 
