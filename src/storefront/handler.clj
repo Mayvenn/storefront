@@ -35,8 +35,8 @@
             [clojure.xml :as xml]))
 
 (defn storefront-site-defaults
-  [env]
-  (if (config/development? env)
+  [environment]
+  (if (config/development? environment)
     site-defaults
     (-> secure-site-defaults
         (assoc :proxy true)

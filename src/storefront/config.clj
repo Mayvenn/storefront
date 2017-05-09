@@ -3,9 +3,9 @@
             [clojure.java.io :as io]
             [taoensso.timbre :as timbre]))
 
-(defn development? [env]
-  {:pre [(#{"development" "test" "acceptance" "production"} env)]}
-  (= env "development"))
+(defn development? [environment]
+  {:pre [(#{"development" "test" "acceptance" "production"} environment)]}
+  (= environment "development"))
 
 (def client-version
   (try
