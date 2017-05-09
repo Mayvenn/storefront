@@ -124,6 +124,8 @@
                         :zipcode ""
                         :phone ""}
 
+     :environment "development"
+
      :experiments {:bucketed #{}
                    :manual config/manual-experiments}
 

@@ -242,6 +242,8 @@
 (def experiments-manual (conj experiments :manual))
 (def experiments-bucketed (conj experiments :bucketed))
 
+(def environment [:environment])
+
 (defn ->str [keypath]
   (string/join "-" (map name keypath)))
 

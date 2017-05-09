@@ -234,6 +234,7 @@
                                (assoc-in data keypaths/welcome-url
                                          (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
                                (assoc-in data keypaths/store store)
+                               (assoc-in data keypaths/environment environment)
                                (experiments/determine-features data)
                                (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
                                (assoc-in data keypaths/static (static-page nav-event))
