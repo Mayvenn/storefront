@@ -61,4 +61,5 @@
   (display-feature? data "green-dot"))
 
 (defn dc-logo? [data]
-  (display-feature? data "dc-logo"))
+  #_(display-feature? data "dc-logo")
+  true)
