@@ -9,17 +9,9 @@
   (query/get (get-in app-state keypaths/browse-named-search-query)
              (get-in app-state keypaths/named-searches)))
 
-(defn ^:private move-item-to-position [item-fn position list]
-  (let [moved (filter item-fn list)
-        [before after] (split-at position (remove item-fn list))]
-    (concat before moved after)))
-
 (defn current-named-searches [app-state]
-  (let [named-searches   (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug)
-                                    (get-in app-state keypaths/named-searches))]
-    (cond->> named-searches
-      (experiments/swap-curly-loose-wave? app-state)
-      (move-item-to-position (comp #{"curly"} :slug) 1))))
+  (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug)
+             (get-in app-state keypaths/named-searches)))
 
 (defn products-loaded? [app-state named-search]
   (every? (products/loaded-ids app-state) (:product-ids named-search)))

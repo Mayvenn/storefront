@@ -51,12 +51,6 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn kinky-straight? [data]
-  (display-feature? data "kinky-straight-2"))
-
-(defn swap-curly-loose-wave? [data]
-  (display-feature? data "kinky-straight-2-curly-move"))
-
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
