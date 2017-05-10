@@ -69,19 +69,28 @@
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
     [:script {:type "text/javascript"}
      (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
-               "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"))]
-    [:script {:type "text/javascript"}
-     ;; need to make sure the edn which has double quotes is validly escaped as
-     ;; json as it goes into the JS file
-     (raw (str "var data = " (-> (sanitize data)
+               "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
+               ;; need to make sure the edn which has double quotes is validly escaped as
+               ;; json as it goes into the JS file
+               "var data = " (-> (sanitize data)
                                  (assoc-in keypaths/static (get-in data keypaths/static))
                                  pr-str
-                                 generate-string) ";"))]
-    [:script {:type "text/javascript"}
-     (raw
-      (str "var environment=\"" environment "\";"
-           "var clientVersion=\"" client-version "\";"
-           "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
+                                 generate-string) ";"
+               "var environment=\"" environment "\";"
+               "var clientVersion=\"" client-version "\";"
+               "var apiUrl=\"" (:endpoint storeback-config) "\";"
+               "if (window.FontFace) {
+                    robotoLight = new FontFace('Roboto',
+                                               \"" (assets/css-url (assets/path "/fonts/Roboto-Light-webfont.woff")) " format('woff')\",
+                                               {style: 'normal', weight: 300, stretch: 'normal'});
+                    robotoRegular = new FontFace('Roboto',
+                                               \"" (assets/css-url (assets/path "/fonts/Roboto-Regular-webfont.woff")) " format('woff')\",
+                                               {style: 'normal', weight: 400, stretch: 'normal'});
+                    Promise.all([robotoLight.load(), robotoRegular.load()]).then(function(){
+                        document.fonts.add(robotoLight);
+                        document.fonts.add(robotoRegular);
+                    });
+                }"))]
     ;; in production, we want to load the script tag asynchronously which has better
     ;; support when that script tag is in the <head>
     (when-not (config/development? environment)
