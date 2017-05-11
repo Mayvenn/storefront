@@ -24,23 +24,20 @@
      (as-money-or-free amount)]]))
 
 (def essence-faux-line-item
-  [:div
-   [:div.flex.border.border-orange.py2
-    [:div.flex-none.mx1 {:style {:width "7.33em"}}
-     [:div.hide-on-mb
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "110px" :height "112px"}]]
-     [:div.hide-on-tb-dt
-      [:img {:src (assets/path "/images/essence/essence@2x.png") :width "123px" :height "125px"}]]]
-    [:div.flex-auto.mr1
-     [:div.h6.mb1
-      [:div.bold.shout.mb1.h5 "bonus gift!"]
-      "A one-year subscription to " [:span.bold "ESSENCE "] "magazine is "
-      [:span.underline "included"]
-      " with your order."]
-     [:a.h6.navy
-      (utils/fake-href events/control-essence-offer-details)
-      "Offer and Rebate Details" ui/nbsp "➤"]]]
-   [:div.border-bottom.border-gray ui/nbsp]])
+  [:div.pb3.border-bottom.border-gray
+   [:div.clearfix.border.border-orange.py3
+    [:div.left.mr1
+     [:img.ml1.block {:src (assets/path "/images/essence/essence@2x.png") :style {:width "7em"}}]]
+    [:div.overflow-hidden
+     [:div.mx1
+      [:div.mb1
+       [:div.bold.shout.h5 "bonus gift!"]
+       [:div.h6.mt1
+        "A one-year subscription to " [:span.bold "ESSENCE "]
+        "magazine is " [:span.underline "included"] " with your order."]]
+      [:a.h6.navy
+       (utils/fake-href events/control-essence-offer-details)
+       "Offer and Rebate Details ➤"]]]]])
 
 (defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]}]
   (let [adjustments   (orders/all-order-adjustments order)
@@ -82,15 +79,15 @@
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
                                    thumbnail
                                    quantity-line]
-  [:.clearfix.mb1.border-bottom.border-gray.py3 {:key id}
-   [:a.left.mr1.line-height-1
-    [:img.border.border-gray.rounded
+  [:div.clearfix.border-bottom.border-gray.py3 {:key id}
+   [:a.left.mr1
+    [:img.block.border.border-gray.rounded
      (assoc thumbnail :style {:width  "7.33em"
                               :height "7.33em"})]]
-   [:.overflow-hidden.h5
+   [:div.overflow-hidden
     [:div.ml1
-     [:a.medium.titleize (products/product-title line-item)]
-     [:.mt1.h6.line-height-1
+     [:a.medium.titleize.h5 (products/product-title line-item)]
+     [:div.h6.mt1.line-height-1
       (when-let [length (:length variant-attrs)]
         [:div.pyp2 "Length: " length])
       [:div.pyp2 "Price Each: " (as-money-without-cents unit-price)]
