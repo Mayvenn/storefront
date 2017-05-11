@@ -28,7 +28,3 @@
 (defn requesting?
   ([data request-key] false)
   ([data request-search request-key] false))
-
-(defn img-attrs [img size]
-  {:src (get img (keyword (str (name size) "_url")))
-   :alt (:alt img)})

@@ -327,6 +327,10 @@
       [:div.absolute.overlay.bg-darken-2
        [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])]))
 
+(defn img-attrs [img size]
+  {:src (get img (keyword (str (name size) "_url")))
+   :alt (:alt img)})
+
 (defn ^:private counter-button [spinning? data-test f content]
   [:a.col
    {:href "#"

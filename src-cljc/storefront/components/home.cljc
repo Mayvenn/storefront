@@ -54,7 +54,7 @@
                       [:a.absolute.overlay.overflow-hidden
                        (merge {:data-test (str "named-search-" slug)}
                               (utils/route-to events/navigate-category {:named-search-slug slug}))
-                       [:img.col-12 (utils/img-attrs model-grid :large)]
+                       [:img.col-12 (ui/img-attrs model-grid :large)]
                        [:h3.h2.white.absolute.col-12.titleize
                         {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
                                  :top         "50%"}}

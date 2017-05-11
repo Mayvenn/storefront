@@ -208,7 +208,7 @@
 (defn carousel-image [image]
   (ui/aspect-ratio
    640 580
-   [:img.col-12 (utils/img-attrs image :large)]))
+   [:img.col-12 (ui/img-attrs image :large)]))
 
 (defn carousel [images {:keys [slug]}]
   (let [items (mapv (fn [image]
