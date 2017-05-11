@@ -97,7 +97,7 @@
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
-     (products/small-img products product-id)
+     (products/medium-img products product-id)
      [:div.pyp2 "Quantity: " quantity])))
 
 (defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
@@ -106,7 +106,7 @@
           removing? (get delete-line-item-requests variant-id)]
       (display-line-item
        line-item
-       (products/small-img products product-id)
+       (products/medium-img products product-id)
        [:.mt1.flex.items-center.justify-between
         (if removing?
           [:.h3 {:style {:width "1.2em"}} ui/spinner]

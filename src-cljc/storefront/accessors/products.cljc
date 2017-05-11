@@ -24,5 +24,8 @@
 (defn small-img [products product-id]
   (product-img-with-size (get products product-id) :small))
 
+(defn medium-img [products product-id]
+  (product-img-with-size (get products product-id) :product))
+
 (defn large-img [products product-id]
   (product-img-with-size (get products product-id) :large))
