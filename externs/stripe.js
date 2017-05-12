@@ -37,17 +37,17 @@ _StripeApplePayResult.prototype.token.id = null;
 /* V3 */
 
 var stripe = {};
-/* @return {!_StripeElementFactory} */
+/** @return {!_StripeElementFactory} */
 stripe.elements = function() {};
-/* @return {!_StripePromise} */
+/** @return {!_StripePromise} */
 stripe.createToken = function(element, options) {};
 
-_StripeElementFactory = {};
-/* @return {!_StripeElement} */
+var _StripeElementFactory = {};
+/** @return {!_StripeElement} */
 _StripeElementFactory.create = function(type, config) {};
 
-_StripeElement = {};
+var _StripeElement = {};
 _StripeElement.mount = function (selector) {};
 
-_StripePromise = {};
+var _StripePromise = {};
 _StripePromise.then = function(callback) {};
