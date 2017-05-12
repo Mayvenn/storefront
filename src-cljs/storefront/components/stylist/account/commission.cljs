@@ -15,13 +15,14 @@
     {:first-name       (green-dot :card_first_name)
      :last-name        (green-dot :card_last_name)
      :card-number      (green-dot :card_number)
-     :card-last4       (green-dot :last4)
      :expiration-date  (green-dot :expiration_date)
-     :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)}))
+     :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
+     :card-last4       (green-dot :last4)
+     :payout-timeframe (green-dot :payout_timeframe)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number card-last4 expiration-date card-selected-id]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last4 expiration-date card-selected-id payout-timeframe]} green-dot]
     (component/create
      [:div
       (when card-last4
@@ -79,8 +80,14 @@
                          :max-length    9
                          :type          "tel"
                          :value         (cc/format-expiration expiration-date)})])
-      [:p.ml1.mb3.h6
-       "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]])))
+      [:div.mx1
+       [:p.h6
+        "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]
+       [:p.h6.mt1.mb3.black.medium
+        (case payout-timeframe
+          "next_business_day"         "NOTE: Funds paid out to this card will become available the next business day."
+          "two_to_five_business_days" "NOTE: Funds paid out to this card will become available two to five business days later."
+          nil)]]])))
 
 (defn component [{:keys [focused
                          saving?
