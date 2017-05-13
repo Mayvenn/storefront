@@ -3,6 +3,7 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.date :as date]
+            [storefront.platform.images :as images]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.keypaths :as keypaths]
@@ -32,12 +33,10 @@
 
 (defn hero-image
   "Changes height for image to be full width."
-  [mobile-asset desktop-asset alt-text]
-  [:span.block
-   [:img.hide-on-mb.col-12 {:src desktop-asset
-                            :alt alt-text}]
-   [:img.hide-on-tb-dt.col-12 {:src mobile-asset
-                               :alt alt-text}]])
+  [mobile-image desktop-image]
+  [:div
+   [:div.hide-on-mb (ui/lqip 96 40 (assoc desktop-image :alt "Get 15% Off Hair Extensions Mayvenn"))]
+   [:div.hide-on-tb-dt (ui/lqip 100 64 (assoc mobile-image :alt "Get 15% Off Hair Extensions Mayvenn"))]])
 
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
@@ -77,18 +76,14 @@
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
     (case store-slug
-      "peakmill"       (hero-image (assets/path "/images/homepage/peak/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/peak/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-      "touchedbytokyo" (hero-image (assets/path "/images/homepage/tokyo/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/tokyo/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-      "msroshposh"     (hero-image (assets/path "/images/homepage/msrosh/mobile_banner.jpg")
-                                   (assets/path "/images/homepage/msrosh/desktop_banner.jpg")
-                                   "Get 15% Off Hair Extensions Mayvenn")
-      (hero-image (assets/path "/images/homepage/mobile_banner.jpg")
-                  (assets/path "/images/homepage/desktop_banner.jpg")
-                  "Get 15% Off Hair Extensions Mayvenn"))]])
+      "peakmill"       (hero-image {:resizable_url "//ucarecdn.com/4de6e2fa-3bf1-4003-8496-7d39d3dd7adb/" :resizable_filename "15PercentOffHairExtensionsPeakmillMOB.jpg"}
+                                   {:resizable_url "//ucarecdn.com/46fddeb4-d712-42a7-a6b5-a976c29ffd63/" :resizable_filename "15PercentOffHairExtensionsPeakmillCOM.jpg"})
+      "touchedbytokyo" (hero-image {:resizable_url "//ucarecdn.com/aacdb1c7-bcde-485a-a33e-5f7413422f4d/" :resizable_filename "15PercentOffHairExtensionsTouchedByTokyoMOB.jpg"}
+                                   {:resizable_url "//ucarecdn.com/d6f75046-4bbd-4856-95ff-c7cc53c2dcba/" :resizable_filename "15PercentOffHairExtensionsTouchedByTokyoCOM.jpg"})
+      "msroshposh"     (hero-image {:resizable_url "//ucarecdn.com/c0ede2f7-c285-4146-ab27-616455d4d5da/" :resizable_filename "15PercentOffHairExtensionsMsRoshPoshMOB.jpg"}
+                                   {:resizable_url "//ucarecdn.com/559e3bf3-5241-48e7-8407-6023a9b02b39/" :resizable_filename "15PercentOffHairExtensionsMsRoshPoshCOM.jpg"})
+      (hero-image {:resizable_url "//ucarecdn.com/671e6abf-6d5c-4c4e-80ab-b867583567df/" :resizable_filename "15PercentOffHairExtensionsMayvennMOB.jpg"}
+                  {:resizable_url "//ucarecdn.com/cf8453d3-cf85-427a-aaa4-d368f28bb7cc/" :resizable_filename "15PercentOffHairExtensionsMayvennCOM.jpg"}))]])
 
 (def about-mayvenn
   (component/html

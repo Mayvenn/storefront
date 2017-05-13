@@ -1,19 +1,14 @@
 (ns storefront.platform.images
-  (:require [storefront.components.ui :as ui]))
+  (:require [sablono.core :refer-macros [html]]))
 
-(defn lqip [image fallback-size]
-  (let [{:keys [resizable_url resizable_filename]} image]
-    (if resizable_url
-      (let [lqip-url (str resizable_url "-/resize/50x/-/quality/lighter/" resizable_filename)]
-        [:picture.bg-cover {:style {:background-image lqip-url}}
-         [:img.col-12
-          {:src   lqip-url
-           :alt   (:alt {:keys [resizable_url resizable_filename]})
-           :style {:filter     "blur(10px)"
-                   :transition "opacity .35s"
-                   :opacity    "0"}}]
-         [:img.col-12
-          (assoc (ui/img-attrs {:keys [resizable_url resizable_filename]} fallback-size)
-                 :style {:transition "opacity .35s"
-                         :opacity    "1"})]])
-      [:picture [:img.col-12 (ui/img-attrs {:keys [resizable_url resizable_filename]} fallback-size)]])))
+(defn transition-group [options & children]
+  (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
+
+(defn platform-hq-image [attrs]
+  (transition-group {:transitionName {:appear "transparent"
+                                      :appearActive "opaque"}
+                     :transitionAppear true
+                     :transitionAppearTimeout 500
+                     :transitionEnter false
+                     :transitionLeave false}
+                    [:img.col-12.absolute.overlay.transition-2.transition-ease attrs]))

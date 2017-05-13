@@ -7,8 +7,10 @@
                :cljs [storefront.component :as component])
             [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.numbers :as numbers]
+            [storefront.assets :as assets]
             [storefront.components.money-formatters :as mf]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [storefront.platform.images :as images]))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
@@ -380,3 +382,17 @@
        [:div.border.circle.border-dark-gray.h6.center.ml1
         {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
         bar-width])]))
+
+(defn lqip [x y image]
+  (let [{:keys [resizable_url resizable_filename alt]} image
+
+        lq-url (str resizable_url "-/resize/" x "x" y "/-/quality/lighter/" resizable_filename)
+        hq-url (str resizable_url resizable_filename)]
+    [:picture.overflow-hidden.bg-cover.block.relative
+     {:style {:background-image (assets/css-url lq-url)
+              :padding-top      (-> y (/ x) (* 100) float (str "%"))}}
+     [:img.col-12.absolute.overlay {:src   lq-url
+                                    :alt   alt
+                                    :style {:filter "blur(10px)"}}]
+     (images/platform-hq-image {:src hq-url :alt alt})
+     [:noscript [:img.col-12.absolute.overlay {:src hq-url :alt alt}]]]))

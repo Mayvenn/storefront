@@ -14,5 +14,8 @@
 .commission-order.commission-order-leave                               { max-height: 35rem; }
 .commission-order.commission-order-leave.commission-order-leave-active { max-height: 0px; }
 
+.transparent { opacity: 0; }
+.opaque      { opacity: 1; }
+
 .hoverable:hover .show-on-hover { display: block; }
 .hoverable .show-on-hover { display: none; }
