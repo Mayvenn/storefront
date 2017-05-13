@@ -8,7 +8,6 @@
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.platform.ugc :as ugc]
-            [storefront.platform.images :as images]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
             [clojure.set :as set]
@@ -209,7 +208,7 @@
 (defn carousel-image [image]
   (ui/aspect-ratio
    640 580
-   (images/lqip image :large)))
+   [:img.col-12 (ui/img-attrs image :large)]))
 
 (defn carousel [images {:keys [slug]}]
   (let [items (mapv (fn [image]
@@ -277,8 +276,6 @@
         (page
          [:div
           (carousel carousel-images named-search)
-          (for [image carousel-images]
-            (carousel-image image))
 
           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
          [:div
