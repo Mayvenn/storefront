@@ -64,6 +64,15 @@
          (map :price)
          (apply min))))
 
+(defn options-by-price-and-position
+  "Ensure cheapest options are first, breaking ties by preserving the order
+  specified by cellar."
+  [options]
+  (->> options
+       (map-indexed vector)
+       (sort-by (fn [[idx {:keys [price-delta]}]] [price-delta idx]))
+       (map second)))
+
 (defn options-for-step [options
                         {:keys [prior-selections
                                 selected-option
@@ -73,8 +82,7 @@
   (for [{:keys [name] :as option} options
         :let                      [option-selection {step-name name}
                                    option-variants  (filter-variants-by-selections option-selection step-variants)]
-        ;; There are no Silk Blonde closures, so hide Silk when Blonde has been
-        ;; selected, even though Silk Straight closures exist.
+        ;; There are no Silk Blonde closures, so hide Silk when Blonde has been selected.
         :when                     (seq option-variants)]
     (merge option
            {:price-delta   (- (min-price option-variants) step-min-price)
@@ -104,12 +112,13 @@
     {:step-name       step-name
      :selected-option selected-option
      :later-step?     (> (count prior-steps) (count selected-options))
-     :options         (options-for-step options
-                                        {:prior-selections prior-selections
-                                         :selected-option  selected-option
-                                         :step-name        step-name
-                                         :step-variants    step-variants
-                                         :step-min-price   (min-price step-variants)})}))
+     :options         (options-by-price-and-position
+                       (options-for-step options
+                                         {:prior-selections prior-selections
+                                          :selected-option  selected-option
+                                          :step-name        step-name
+                                          :step-variants    step-variants
+                                          :step-min-price   (min-price step-variants)}))}))
 
 (defn ^:private ordered-steps [{:keys [result-facets]}]
   (map (comp keyword :step) result-facets))
