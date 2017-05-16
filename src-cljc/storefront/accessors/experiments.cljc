@@ -57,3 +57,6 @@
 (defn dc-logo? [data]
   (or (#{"development" "acceptance"} (get-in data keypaths/environment))
       (display-feature? data "dc-logo")))
+
+(defn indian-straight? [data]
+  (display-feature? data "indian-straight"))

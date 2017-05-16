@@ -90,6 +90,13 @@
             :sold-out?     (every? :sold-out? option-variants)
             :selections    (merge prior-selections option-selection)})))
 
+(defn ^:private in-experiment? [experiments variant]
+  (or (:indian-straight? experiments)
+      (not= {:style "Straight"
+             :origin "Indian"
+             :color "Natural #1B"}
+            (select-keys (:variant_attrs variant) [:style :origin :color]))))
+
 (defn steps
   "We are going to build the steps of the bundle builder. A 'step' is a name and
   vector of options, e.g., Material: Lace or Silk. An 'option' is a single one
@@ -98,17 +105,18 @@
   The options are hardest to generate because they have to take into
   consideration the position in which the step appears in the flow, the list of
   variants in the step, and the seletions the user has chosen so far."
-  [{:keys [flow selected-options initial-variants step->options]}]
+  [{:keys [flow selected-options initial-variants step->options]} experiments]
   (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
         ;; The variants that represent a step are tricky. Even if a user has
         ;; selected Lace, the Deep Wave variants include Lace and Silk, because
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
-        :let                    [prior-selections (select-keys selected-options prior-steps)
-                                 step-variants    (filter-variants-by-selections prior-selections initial-variants)
+        :let                    [prior-selections     (select-keys selected-options prior-steps)
+                                 relevant-variants    (filter (partial in-experiment? experiments) initial-variants)
+                                 step-variants        (filter-variants-by-selections prior-selections relevant-variants)
                                  selected-option-name (get selected-options step-name nil)
-                                 options (step->options step-name)
-                                 selected-option (only (filter #(= selected-option-name (:name %)) options))]]
+                                 options              (step->options step-name)
+                                 selected-option      (only (filter #(= selected-option-name (:name %)) options))]]
     {:step-name       step-name
      :selected-option selected-option
      :later-step?     (> (count prior-steps) (count selected-options))
