@@ -146,7 +146,7 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [named-searches featured-searches store-slug]} owner opts]
+(defn component [{:keys [featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     [:section (banner store-slug)]
@@ -156,11 +156,9 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  (let [named-searches (remove named-searches/is-stylist-product? (named-searches/current-named-searches data))]
-    {:named-searches    (remove (comp #{"kinky-straight"} :slug) named-searches)
-     :featured-searches (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)
-                                named-searches)
-     :store-slug        (get-in data keypaths/store-slug)}))
+  {:featured-searches (->> (named-searches/current-named-searches data)
+                           (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
+   :store-slug        (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
