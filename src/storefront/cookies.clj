@@ -22,7 +22,7 @@
   ([resp environment name] (expire resp environment name {}))
   ([resp environment name overrides]
    (assoc-in resp [:cookies name] (merge {:value   ""
-                                          :max-age (days 0)
+                                          :max-age 0
                                           :secure  (not (config/development? environment))
                                           :path    "/"}
                                          overrides))))
