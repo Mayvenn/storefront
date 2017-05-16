@@ -34,9 +34,12 @@
 (defn hero-image
   "Changes height for image to be full width."
   [mobile-image desktop-image]
-  [:div
-   [:div.hide-on-mb (ui/lqip 96 40 (assoc desktop-image :alt "Get 15% Off Hair Extensions Mayvenn"))]
-   [:div.hide-on-tb-dt (ui/lqip 100 64 (assoc mobile-image :alt "Get 15% Off Hair Extensions Mayvenn"))]])
+  (let [alt-text "Get 15% Off Hair Extensions Mayvenn"]
+    [:div
+     [:img.hide-on-mb.block.col-12 {:src (str (:resizable_url desktop-image) (:resizable_filename desktop-image))
+                                    :alt alt-text}]
+     [:img.hide-on-tb-dt.block.col-12 {:src (str (:resizable_url mobile-image) (:resizable_filename mobile-image))
+                                       :alt alt-text}]]))
 
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
@@ -53,7 +56,7 @@
                       [:a.absolute.overlay.overflow-hidden
                        (merge {:data-test (str "named-search-" slug)}
                               (utils/route-to events/navigate-category {:named-search-slug slug}))
-                       (ui/lqip 48 36 model-grid)
+                       [:img.col-12 (ui/img-attrs model-grid :large)]
                        [:h3.h2.white.absolute.col-12.titleize
                         {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
                                  :top         "50%"}}
