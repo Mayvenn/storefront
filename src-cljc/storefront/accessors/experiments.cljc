@@ -54,8 +54,5 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn dc-logo? [data]
-  (display-feature? data "dc-logo"))
-
 (defn indian-straight? [data]
   (display-feature? data "indian-straight"))

@@ -287,7 +287,6 @@ Thanks,
   {:promotions (get-in data keypaths/promotions)})
 
 (defn component [{:keys [fetching-order?
-                         dc-logo?
                          item-count
                          empty-cart
                          full-cart]}
@@ -298,16 +297,14 @@ Thanks,
     (if fetching-order?
       [:.py3.h2 ui/spinner]
       [:div
-       (when dc-logo?
-         [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
-          [:img {:width 1 :height 1 :src "/logo.gif"}]])
+       [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
+        [:img {:width 1 :height 1 :src "/logo.gif"}]]
        (if (zero? item-count)
          (om/build empty-component empty-cart)
          (om/build full-component full-cart))]))))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
-   :dc-logo?        (experiments/dc-logo? data)
    :item-count      (orders/product-quantity (get-in data keypaths/order))
    :empty-cart      (empty-cart-query data)
    :full-cart       (full-cart-query data)
