@@ -133,6 +133,10 @@
       (assoc-in app-state keypaths/return-navigation-message [event msg])
       app-state)))
 
+(defmethod transition-state events/navigate-cart
+  [_ event _ app-state]
+  (assoc-in app-state keypaths/cart-paypal-redirect false))
+
 (defmethod transition-state events/navigate-sign-in
   [_ event {{:keys [telligent-url path]} :query-params} app-state]
   (-> app-state
