@@ -278,7 +278,8 @@ Thanks,
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :field-errors              (get-in data keypaths/field-errors)}))
+     :field-errors              (get-in data keypaths/field-errors)
+     :focused                   (get-in data keypaths/ui-focus)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
@@ -304,8 +305,7 @@ Thanks,
   {:fetching-order? (utils/requesting? data request-keys/get-order)
    :item-count      (orders/product-quantity (get-in data keypaths/order))
    :empty-cart      (empty-cart-query data)
-   :full-cart       (full-cart-query data)
-   :focused         (get-in data keypaths/ui-focus)})
+   :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
