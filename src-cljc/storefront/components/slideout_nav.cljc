@@ -80,6 +80,10 @@
     [:li [:a.teal.block (utils/route-to events/navigate-stylist-account-profile)
           (row (selectable? events/navigate-stylist-account
                             [:span {:data-test "account-settings"} "Account Settings"]))]]
+    [:li [:a.teal.block (utils/route-to events/navigate-stylist-share-your-store)
+          (row ui/new-flag
+               (selectable? events/navigate-stylist-share-your-store
+                            [:span {:data-test "share-your-store"} "Share Your Store"]))]]
     [:li [:a.teal.block community-url (row "Community")]]]])
 
 (defn products-section [selectable? title named-searches]

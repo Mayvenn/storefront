@@ -178,6 +178,7 @@
     [:div.truncate store_nickname]]
    (account-link (current-page? [events/navigate-stylist-dashboard]) events/navigate-stylist-dashboard-commissions "Dashboard")
    [:a.teal.block stylists/community-url "Community"]
+   (account-link (current-page? [events/navigate-stylist-share-your-store]) events/navigate-stylist-share-your-store "Share Your Store")
    (account-link (current-page? [events/navigate-stylist-account]) events/navigate-stylist-account-profile "Account Settings")))
 
 (defn customer-account [expanded? current-page? user-email]
