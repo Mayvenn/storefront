@@ -59,6 +59,8 @@
 (defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
 
+(defpath navigate-stylist-share-your-store)
+
 (defpath navigate-stylist-account)
 (defpath navigate-stylist-account-profile)
 (defpath navigate-stylist-account-portrait)

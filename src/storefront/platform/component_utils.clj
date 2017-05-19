@@ -28,3 +28,6 @@
 (defn requesting?
   ([data request-key] false)
   ([data request-search request-key] false))
+
+(defn select-all-text [e]
+  nil)

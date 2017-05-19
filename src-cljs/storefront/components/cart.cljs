@@ -10,6 +10,7 @@
             [storefront.components.order-summary :as summary]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.svg :as svg]
+            [storefront.components.share-links :as share-links]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [goog.events]
@@ -26,39 +27,30 @@
    (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
 
 (defn facebook-link [share-url]
-  (-> (url/url "https://www.facebook.com/sharer/sharer.php")
-      (assoc :query {:u (assoc-in share-url [:query :utm_medium] "facebook")})
-      str))
+  (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
 
 (defn sms-link [share-url]
   ;; the ?& is to get this to work on iOS8 and Android at the same time
-  (str "sms:?&body="
-       (url/url-encode (str "Shop the bundles I picked for you here: "
-                            (assoc-in share-url [:query :utm_medium] "sms")))))
+  (share-links/sms-link (str "Shop the bundles I picked for you here: "
+                             (share-links/with-utm-medium share-url "sms"))))
 
 (defn twitter-link [share-url]
-  (-> (url/url "https://twitter.com/intent/tweet")
-      (assoc :query {:url      (assoc-in share-url [:query :utm_medium] "twitter")
-                     :text     "Shop my top virgin hair bundle picks here:"
-                     :hashtags "mayvennhair"})
-      str))
+  (share-links/twitter-link (share-links/with-utm-medium share-url "twitter")
+                            "Shop my top virgin hair bundle picks here:"))
 
 (defn email-link [share-url store-nickname]
-  (str "mailto:?Subject="
-       (url/url-encode "My recommended bundles for you")
-       "&body="
-
-       (url/url-encode (str "Hey,
+  (share-links/email-link "My recommended bundles for you"
+                          (str "Hey,
 
 I've created a ready-to-shop cart with the bundles I recommend for you. Mayvenn is my pick for quality virgin human hair. They offer a totally free 30 day exchange program (if you have any issues with your hair at all). All you have to do is click the link below to check out.
 
-Shop here: " (assoc-in share-url [:query :utm_medium] "email") "
+Shop here: " (share-links/with-utm-medium share-url "email") "
 
 Let me know if you have any questions.
 
 Thanks,
 "
-                            store-nickname))))
+                               store-nickname)))
 
 (defn share-link-component [{:keys [share-url store-nickname]} owner {:keys [close-attrs]}]
   (om/component
