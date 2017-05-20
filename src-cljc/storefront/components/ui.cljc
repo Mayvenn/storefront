@@ -185,7 +185,7 @@
 
 (defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]
-    [:div.col-12.mb2
+    [:div.col-12.mb2.stacking-context
      (plain-text-field label keypath value (not (nil? error))
                        (dissoc input-attributes :label :keypath :value :errors))
      (field-error-message error data-test)]))
@@ -259,7 +259,7 @@
 
 (defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
   (let [error (first errors)]
-    [:div.col-12.mb2
+    [:div.col-12.mb2.stacking-context
      (plain-select-field label keypath value options (not (nil? error))
                          (dissoc select-attributes :label :keypath :value :options :errors))
      (field-error-message error data-test)]))

@@ -40,9 +40,10 @@
     om/IRenderState
     (render-state [_ {:keys [autoplay]}]
       (html
-       ;; Cancel autoplay on interaction
-       [:div {:on-mouse-down  #(cancel-autoplay owner)
-              :on-touch-start #(cancel-autoplay owner)}
+       [:div.stacking-context
+        ;; Cancel autoplay on interaction
+        {:on-mouse-down  #(cancel-autoplay owner)
+         :on-touch-start #(cancel-autoplay owner)}
         (om/build inner-component
                   (cond-> data
                     (= (count slides) 1)
