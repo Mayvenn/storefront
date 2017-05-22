@@ -8,9 +8,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]))
 
-(defn parse-store-link [store-link]
-  (str/split store-link #"\." 2))
-
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
 
