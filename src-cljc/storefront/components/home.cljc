@@ -73,20 +73,13 @@
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
 
-(defn banner [store-slug]
+(defn hero [store-slug]
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (case store-slug
-      "peakmill"       (hero-image {:resizable_url "//ucarecdn.com/4de6e2fa-3bf1-4003-8496-7d39d3dd7adb/" :resizable_filename "15PercentOffHairExtensionsPeakmillMOB.jpg"}
-                                   {:resizable_url "//ucarecdn.com/46fddeb4-d712-42a7-a6b5-a976c29ffd63/" :resizable_filename "15PercentOffHairExtensionsPeakmillCOM.jpg"})
-      "touchedbytokyo" (hero-image {:resizable_url "//ucarecdn.com/aacdb1c7-bcde-485a-a33e-5f7413422f4d/" :resizable_filename "15PercentOffHairExtensionsTouchedByTokyoMOB.jpg"}
-                                   {:resizable_url "//ucarecdn.com/d6f75046-4bbd-4856-95ff-c7cc53c2dcba/" :resizable_filename "15PercentOffHairExtensionsTouchedByTokyoCOM.jpg"})
-      "msroshposh"     (hero-image {:resizable_url "//ucarecdn.com/c0ede2f7-c285-4146-ab27-616455d4d5da/" :resizable_filename "15PercentOffHairExtensionsMsRoshPoshMOB.jpg"}
-                                   {:resizable_url "//ucarecdn.com/559e3bf3-5241-48e7-8407-6023a9b02b39/" :resizable_filename "15PercentOffHairExtensionsMsRoshPoshCOM.jpg"})
-      (hero-image {:resizable_url "//ucarecdn.com/671e6abf-6d5c-4c4e-80ab-b867583567df/" :resizable_filename "15PercentOffHairExtensionsMayvennMOB.jpg"}
-                  {:resizable_url "//ucarecdn.com/cf8453d3-cf85-427a-aaa4-d368f28bb7cc/" :resizable_filename "15PercentOffHairExtensionsMayvennCOM.jpg"}))]])
+    (hero-image {:resizable_url "//ucarecdn.com/96a75def-d184-431e-8957-bddc2e766b86/" :resizable_filename "PRIndianStraightMPMR301HomepageMOB.jpg"}
+                {:resizable_url "//ucarecdn.com/d31d3156-76c0-42a2-94bd-6972aac6081b/" :resizable_filename "PRIndianStraightMPMR301HomepageCOM.jpg"})]])
 
 (def about-mayvenn
   (component/html
@@ -152,7 +145,7 @@
 (defn component [{:keys [featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (banner store-slug)]
+    [:section (hero store-slug)]
     [:section (popular-grid featured-searches)]
     [:section video-autoplay]
     [:section about-mayvenn]
