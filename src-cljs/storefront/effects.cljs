@@ -885,8 +885,8 @@
 (defmethod perform-effects events/api-success-stylist-account-social [_ event args _ app-state]
   (handle-message events/flash-show-success {:message "Social settings updated"}))
 
-(defmethod perform-effects events/api-success-stylist-account-portrait [_ event args previous-app-state app-state]
-  (when (changed? previous-app-state app-state keypaths/stylist-portrait-url)
+(defmethod perform-effects events/api-success-stylist-account-portrait [_ event {:keys [updated?]} previous-app-state app-state]
+  (when updated?
     (handle-message events/flash-show-success {:message "Photo updated"}))
   (when-let [still-pending? (= "pending"
                                (get-in previous-app-state keypaths/stylist-portrait-status)
