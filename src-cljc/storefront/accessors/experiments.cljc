@@ -53,6 +53,3 @@
 
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
-
-(defn indian-straight? [data]
-  (display-feature? data "indian-straight"))

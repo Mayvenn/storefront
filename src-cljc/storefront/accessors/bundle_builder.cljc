@@ -90,13 +90,6 @@
             :sold-out?     (every? :sold-out? option-variants)
             :selections    (merge prior-selections option-selection)})))
 
-(defn ^:private in-experiment? [experiments variant]
-  (or (:indian-straight? experiments)
-      (not= {:style "Straight"
-             :origin "Indian"
-             :color "Natural #1B"}
-            (select-keys (:variant_attrs variant) [:style :origin :color]))))
-
 (defn steps
   "We are going to build the steps of the bundle builder. A 'step' is a name and
   vector of options, e.g., Material: Lace or Silk. An 'option' is a single one
@@ -112,8 +105,7 @@
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
         :let                    [prior-selections     (select-keys selected-options prior-steps)
-                                 relevant-variants    (filter (partial in-experiment? experiments) initial-variants)
-                                 step-variants        (filter-variants-by-selections prior-selections relevant-variants)
+                                 step-variants        (filter-variants-by-selections prior-selections initial-variants)
                                  selected-option-name (get selected-options step-name nil)
                                  options              (step->options step-name)
                                  selected-option      (only (filter #(= selected-option-name (:name %)) options))]]
