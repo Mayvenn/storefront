@@ -461,7 +461,8 @@
              :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist (select-keys % [:portrait])})}))
+                              {:stylist (select-keys % [:portrait])
+                               :updated? true})}))
 
 (defn append-stylist-gallery [user-id user-token {:keys [gallery-urls]}]
   (api-req
