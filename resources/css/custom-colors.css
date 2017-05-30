@@ -1,11 +1,13 @@
-.white        { color: var(--white); }
-.light-silver { color: var(--light-silver); }
-.silver       { color: var(--silver); }
-.dark-silver  { color: var(--dark-silver); }
-.light-gray   { color: var(--light-gray); }
-.gray         { color: var(--gray); }
-.dark-gray    { color: var(--dark-gray); }
-.black        { color: var(--black); }
+.white         { color: var(--white); }
+.light-silver  { color: var(--light-silver); }
+.silver        { color: var(--silver); }
+.dark-silver   { color: var(--dark-silver); }
+.light-gray    { color: var(--light-gray); }
+.gray          { color: var(--gray); }
+.dark-gray     { color: var(--dark-gray); }
+.black         { color: var(--black); }
+.inherit-color { color: inherit; }
+
 
 :root {
   --white:        #ffffff;
