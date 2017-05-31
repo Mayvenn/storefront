@@ -516,7 +516,9 @@
 ;; events/control-menu-collapse-all when the newburger? experiment wins. They
 ;; were only necessary when the slideout-nav hovered over the rest of the page.
 (defmethod perform-effects events/control-menu-expand [_ event {keypath :keypath} _ app-state]
-  (when (#{keypaths/menu-expanded} keypath)
+  (when (and
+         (not (experiments/newburger? app-state))
+         (#{keypaths/menu-expanded} keypath))
     (set! (.. js/document -body -style -overflow) "hidden")))
 
 (defmethod perform-effects events/control-menu-collapse-all [_ _ _ _]
