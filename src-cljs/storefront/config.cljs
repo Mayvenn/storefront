@@ -105,14 +105,15 @@
                             "frontals"       1104033
                             "kinky-straight" 1700440}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
-     :albums  {:mosaic      965034
-               "straight"   1327330
-               "loose-wave" 1327331
-               "body-wave"  1327332
-               "deep-wave"  1327333
-               "curly"      1331955
-               "closures"   1331956
-               "frontals"   1331957}}))
+     :albums  {:mosaic          965034
+               "straight"       1327330
+               "loose-wave"     1327331
+               "body-wave"      1327332
+               "deep-wave"      1327333
+               "curly"          1331955
+               "closures"       1331956
+               "frontals"       1331957
+               "kinky-straight" 1801984}}))
 
 (def manual-experiments
   (case js/environment
