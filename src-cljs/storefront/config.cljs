@@ -95,14 +95,15 @@
 (def pixlee
   (case js/environment
     "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
-                  :albums  {:mosaic      952508
-                            "straight"   1104027
-                            "loose-wave" 1104028
-                            "body-wave"  1104029
-                            "deep-wave"  1104030
-                            "curly"      1104031
-                            "closures"   1104032
-                            "frontals"   1104033}}
+                  :albums  {:mosaic          952508
+                            "straight"       1104027
+                            "loose-wave"     1104028
+                            "body-wave"      1104029
+                            "deep-wave"      1104030
+                            "curly"          1104031
+                            "closures"       1104032
+                            "frontals"       1104033
+                            "kinky-straight" 1700440}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic      965034
                "straight"   1327330
