@@ -31,15 +31,14 @@
    [:img.hide-on-tb-dt.col-12 {:src mobile-asset
                                :alt alt-text}]])
 
-(defn hero-image
+(defn fitting-image
   "Changes height for image to be full width."
-  [mobile-image desktop-image]
-  (let [alt-text "Get 15% Off Hair Extensions Mayvenn"]
-    [:div
-     [:img.hide-on-mb.block.col-12 {:src (str (:resizable_url desktop-image) (:resizable_filename desktop-image))
-                                    :alt alt-text}]
-     [:img.hide-on-tb-dt.block.col-12 {:src (str (:resizable_url mobile-image) (:resizable_filename mobile-image))
-                                       :alt alt-text}]]))
+  [mobile-image desktop-image alt-text]
+  [:div
+   [:img.hide-on-mb.block.col-12 {:src (str (:resizable_url desktop-image) (:resizable_filename desktop-image))
+                                  :alt alt-text}]
+   [:img.hide-on-tb-dt.block.col-12 {:src (str (:resizable_url mobile-image) (:resizable_filename mobile-image))
+                                     :alt alt-text}]])
 
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
@@ -73,13 +72,33 @@
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
 
-(defn hero [store-slug]
+(defn hero [feature-block?]
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (hero-image {:resizable_url "//ucarecdn.com/96a75def-d184-431e-8957-bddc2e766b86/" :resizable_filename "PRIndianStraightMPMR301HomepageMOB.jpg"}
-                {:resizable_url "//ucarecdn.com/d31d3156-76c0-42a2-94bd-6972aac6081b/" :resizable_filename "PRIndianStraightMPMR301HomepageCOM.jpg"})]])
+    (if feature-block?
+      (fitting-image {:resizable_url "//ucarecdn.com/671e6abf-6d5c-4c4e-80ab-b867583567df/" :resizable_filename "15PercentOffHairExtensionsMayvennMOB.jpg"}
+                     {:resizable_url "//ucarecdn.com/cf8453d3-cf85-427a-aaa4-d368f28bb7cc/" :resizable_filename "15PercentOffHairExtensionsMayvennCOM.jpg"}
+                     "Get 15% Off Hair Extensions Mayvenn")
+      (fitting-image {:resizable_url "//ucarecdn.com/96a75def-d184-431e-8957-bddc2e766b86/" :resizable_filename "PRIndianStraightMPMR301HomepageMOB.jpg"}
+                     {:resizable_url "//ucarecdn.com/d31d3156-76c0-42a2-94bd-6972aac6081b/" :resizable_filename "PRIndianStraightMPMR301HomepageCOM.jpg"}
+                     "Get 15% Off Hair Extensions Mayvenn"))]])
+
+(def feature-blocks
+  [:div.container.border-top.border-white
+   [:div.col.col-6.border.border-white
+    [:a
+     (utils/route-to events/navigate-category {:named-search-slug "straight"})
+     (fitting-image {:resizable_url "//ucarecdn.com/96a75def-d184-431e-8957-bddc2e766b86/" :resizable_filename "PRIndianStraightMPMR301HomepageMOB.jpg"}
+                    {:resizable_url "//ucarecdn.com/d31d3156-76c0-42a2-94bd-6972aac6081b/" :resizable_filename "PRIndianStraightMPMR301HomepageCOM.jpg"}
+                    "Shop Indian Straight Hair")]]
+   [:div.col.col-6.border.border-white
+    [:a
+     {:href "#"}
+     (fitting-image {:resizable_url "http://placehold.it/" :resizable_filename "374x240"}
+                    {:resizable_url "http://placehold.it/" :resizable_filename "479x200"}
+                    "TBD")]]])
 
 (def about-mayvenn
   (component/html
@@ -142,10 +161,12 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [featured-searches store-slug]} owner opts]
+(defn component [{:keys [featured-searches feature-block?]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (hero store-slug)]
+    [:section (hero feature-block?)]
+    (when feature-block?
+      [:section feature-blocks])
     [:section (popular-grid featured-searches)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -154,7 +175,7 @@
 (defn query [data]
   {:featured-searches (->> (named-searches/current-named-searches data)
                            (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
-   :store-slug        (get-in data keypaths/store-slug)})
+   :feature-block?    (experiments/feature-block? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

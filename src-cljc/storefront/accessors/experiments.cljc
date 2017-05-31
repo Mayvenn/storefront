@@ -53,3 +53,6 @@
 
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
+
+(defn feature-block? [data]
+  (display-feature? data "feature-block"))
