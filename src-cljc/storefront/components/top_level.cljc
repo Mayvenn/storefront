@@ -36,6 +36,7 @@
             [storefront.components.shared-cart :as shared-cart]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
+            [storefront.components.old-slideout-nav :as old-slideout-nav]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
             [storefront.components.ui :as ui]
@@ -99,6 +100,10 @@
                                  (count events/navigate-style-guide)))))
             [:div (style-guide/built-component data nil)]])
 
+       (and (experiments/newburger? data)
+            (get-in data keypaths/menu-expanded))
+       (slideout-nav/built-component data nil)
+
        (= nav-event events/navigate-ugc-category)
        [:div.bg-black.absolute.overlay
         (ugc/built-popup-component data nil)]
@@ -110,7 +115,8 @@
         #?(:cljs (popup/built-component data nil))
         [:header
          (header/built-component data nil)
-         (slideout-nav/built-component data nil)]
+         (when-not (experiments/newburger? data)
+           (old-slideout-nav/built-component data nil))]
         (flash/built-component data nil)
         [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
          ((main-component nav-event) data nil)]

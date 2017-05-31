@@ -56,3 +56,6 @@
 
 (defn feature-block? [data]
   (display-feature? data "feature-block"))
+
+(defn newburger? [data]
+  (display-feature? data "newburger"))
