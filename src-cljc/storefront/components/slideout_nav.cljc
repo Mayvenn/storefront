@@ -14,7 +14,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.header :as header]
             [storefront.assets :as assets]
-            [storefront.components.promotion-banner :as promotion-banner]))
+            [storefront.components.promotion-banner :as promotion-banner]
+            [storefront.components.ui :as ui]))
 
 (def menu-x
   (component/html
@@ -34,51 +35,58 @@
             :content (str "https:" (assets/path "/images/header_logo.svg"))}
            (utils/route-to events/navigate-home))]))
 
-(defn component [data owner opts]
+(def visitor-menu
+  [:div.flex.justify-between.mx-auto.col-10.py3
+   [:div.col-6.mr3
+    (ui/ghost-button
+     (utils/fake-href events/navigate-sign-in)
+     "Sign in")]
+   [:div.col-6.ml3.center.h6
+    [:div.dark-gray "No account?"]
+    [:a.dark-gray.underline
+     (utils/route-to events/navigate-sign-up)
+     "Sign up now, get offers!"]]])
+
+(defn user-menu [user-email]
+  [:div
+   [:div.mx-auto.col-10
+    [:div.h7.bold.dark-gray "Signed in with:"]
+    [:a.teal.h5
+     (utils/route-to events/navigate-account-manage)
+     user-email]]
+   [:div.flex.justify-between.mx-auto.col-10.py2
+    [:div.col-6.mr3.flex
+     (ui/ghost-button
+      (utils/fake-href events/navigate-sign-in)
+      "Manage account")]
+    [:div.col-6.ml3.flex
+     (ui/ghost-button
+      (utils/fake-href events/navigate-friend-referrals)
+      "Refer a friend")]]])
+
+(defn component [{:keys [user-id user-email store stylist] :as data} owner opts]
   (component/create
-   [:div
-    [:div.fixed.top-0.left-0.right-0.z4.bg-white
-     (promotion-banner/built-component data opts)
-     [:div.border-bottom.border-gray.mx-auto
-      {:style {:max-width "1440px"}}
-      menu-x
-      [:div.center.col-12.px3.py2 {:style {:min-width "251px"}}
-       (logo "40px")]]]
-    [:div
-     "Lorem ipsum dolor sit amet, usu eu tollit numquam, ea nibh adolescens sea. Cu quo vide mandamus forensibus, mea velit eligendi ne, pro platonem concludaturque ad. Choro gubergren ex vis. At pri minim prompta maiorum. Ei tation postulant voluptatibus qui, ornatus expetenda ad sit, id quo suscipit gubergren.
-
-Cu odio dictas omittam mel, blandit consequuntur ea eos. Qui putent epicuri quaerendum eu, in molestie appareat usu. Nibh definiebas eu sed, cum te vitae maiorum inimicus. Euismod eligendi complectitur ex has, no dicat viderer expetendis pri, vim no eirmod maiestatis.
-
-An tation efficiantur quo. Pro et quis liber, facilisi convenire vituperata ne sea, qui ei laoreet apeirian quaestio. Ei pri malis blandit, dicit causae labitur ad vix, posse recusabo vix ne. An aliquid assentior vel. Ut causae expetenda efficiendi quo, alterum meliore vivendo no per.
-
-Ne eum saepe tantas. Ut ius doming imperdiet expetendis, putant fierent incorrupte te eos. At denique omittantur sed, no vidit soluta vulputate nec. Nominavi ocurreret iracundia vix ex, est accusamus tincidunt at, his augue commune appareat in. Autem errem eos et, cum posse molestie at, adhuc dolores posidonium cu mel.
-
-Diam philosophia in nec, sed vero posse eu, cu eam fabulas corpora petentium. Appetere adipiscing ne eam, ne mea simul pertinax. Primis quodsi similique ei nec. Ad mentitum sadipscing omittantur his, clita adversarium definitiones duo no, ad eum choro praesent."]
-    [:div
-     "Lorem ipsum dolor sit amet, usu eu tollit numquam, ea nibh adolescens sea. Cu quo vide mandamus forensibus, mea velit eligendi ne, pro platonem concludaturque ad. Choro gubergren ex vis. At pri minim prompta maiorum. Ei tation postulant voluptatibus qui, ornatus expetenda ad sit, id quo suscipit gubergren.
-
-Cu odio dictas omittam mel, blandit consequuntur ea eos. Qui putent epicuri quaerendum eu, in molestie appareat usu. Nibh definiebas eu sed, cum te vitae maiorum inimicus. Euismod eligendi complectitur ex has, no dicat viderer expetendis pri, vim no eirmod maiestatis.
-
-An tation efficiantur quo. Pro et quis liber, facilisi convenire vituperata ne sea, qui ei laoreet apeirian quaestio. Ei pri malis blandit, dicit causae labitur ad vix, posse recusabo vix ne. An aliquid assentior vel. Ut causae expetenda efficiendi quo, alterum meliore vivendo no per.
-
-Ne eum saepe tantas. Ut ius doming imperdiet expetendis, putant fierent incorrupte te eos. At denique omittantur sed, no vidit soluta vulputate nec. Nominavi ocurreret iracundia vix ex, est accusamus tincidunt at, his augue commune appareat in. Autem errem eos et, cum posse molestie at, adhuc dolores posidonium cu mel.
-
-Diam philosophia in nec, sed vero posse eu, cu eam fabulas corpora petentium. Appetere adipiscing ne eam, ne mea simul pertinax. Primis quodsi similique ei nec. Ad mentitum sadipscing omittantur his, clita adversarium definitiones duo no, ad eum choro praesent."]
-    [:div
-     "Lorem ipsum dolor sit amet, usu eu tollit numquam, ea nibh adolescens sea. Cu quo vide mandamus forensibus, mea velit eligendi ne, pro platonem concludaturque ad. Choro gubergren ex vis. At pri minim prompta maiorum. Ei tation postulant voluptatibus qui, ornatus expetenda ad sit, id quo suscipit gubergren.
-
-Cu odio dictas omittam mel, blandit consequuntur ea eos. Qui putent epicuri quaerendum eu, in molestie appareat usu. Nibh definiebas eu sed, cum te vitae maiorum inimicus. Euismod eligendi complectitur ex has, no dicat viderer expetendis pri, vim no eirmod maiestatis.
-
-An tation efficiantur quo. Pro et quis liber, facilisi convenire vituperata ne sea, qui ei laoreet apeirian quaestio. Ei pri malis blandit, dicit causae labitur ad vix, posse recusabo vix ne. An aliquid assentior vel. Ut causae expetenda efficiendi quo, alterum meliore vivendo no per.
-
-Ne eum saepe tantas. Ut ius doming imperdiet expetendis, putant fierent incorrupte te eos. At denique omittantur sed, no vidit soluta vulputate nec. Nominavi ocurreret iracundia vix ex, est accusamus tincidunt at, his augue commune appareat in. Autem errem eos et, cum posse molestie at, adhuc dolores posidonium cu mel.
-
-Diam philosophia in nec, sed vero posse eu, cu eam fabulas corpora petentium. Appetere adipiscing ne eam, ne mea simul pertinax. Primis quodsi similique ei nec. Ad mentitum sadipscing omittantur his, clita adversarium definitiones duo no, ad eum choro praesent."]]))
+   (let [store-slug (:store_slug store)]
+     [:div
+      [:div.fixed.top-0.left-0.right-0.z4.bg-white
+       (promotion-banner/built-component data opts)
+       [:div.border-bottom.border-gray.mx-auto
+        {:style {:max-width "1440px"}}
+        menu-x
+        [:div.center.col-12.px3.py2 {:style {:min-width "251px"}}
+         (logo "40px")]]]
+      [:div.py3 {:style {:margin-top "60px"}}
+       (cond
+         user-id (user-menu user-email)
+         :else   visitor-menu)]])))
 
 (defn query [data]
   (merge
    (promotion-banner/query data)
-   {}))
+   {:user-email (get-in data keypaths/user-email)
+    :user-id    (get-in data keypaths/user-id)
+    :store      (get-in data keypaths/store)
+    :stylist?   (own-store? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
