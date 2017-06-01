@@ -7,7 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.stylists :refer [own-store? community-url]]
+            [storefront.accessors.stylists :as stylists]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.routes :as routes]
             [clojure.string :as str]
@@ -35,7 +35,7 @@
             :content (str "https:" (assets/path "/images/header_logo.svg"))}
            (utils/route-to events/navigate-home))]))
 
-(def visitor-menu
+(def ^:private visitor-marquee-panel
   [:div.flex.justify-between.mx-auto.col-10.py3
    [:div.col-6.mr3
     (ui/ghost-button
@@ -47,7 +47,8 @@
      (utils/route-to events/navigate-sign-up)
      "Sign up now, get offers!"]]])
 
-(defn user-menu [user-email]
+(defn ^:private user-marquee-panel [user-email]
+  ;; TODO add store credit
   [:div
    [:div.mx-auto.col-10
     [:div.h7.bold.dark-gray "Signed in with:"]
@@ -64,22 +65,62 @@
       (utils/fake-href events/navigate-friend-referrals)
       "Refer a friend")]]])
 
-(defn shop-marquee-account-info [{store-slug :store_slug}]
-  [:div.mx-auto.col-10.flex
-   [:div
-    [:div.h7.bold.dark-gray (str "Welcome to " store-slug "'s shop.")]
-    [:span
-     [:a.dark-gray.h6
-      (utils/route-to events/navigate-gallery)
-      [:span.underline "See my gallery"] " | "]]
-    [:a.dark-gray.h6
-     (utils/route-to events/navigate-stylist-account-social)
-     [:span.underline "follow me"] " | "]
-    [:a.dark-gray.h6.underline
-     (utils/route-to events/navigate-stylist-account-social)
-     "book me"]]])
+(def ^:private stylist-marquee-panel
+  [:div])
 
-(defn component [{:keys [user-id user-email store stylist] :as data} owner opts]
+(defn ^:private gallery-link [text]
+  [:span
+   [:a.dark-gray.h6.underline
+    (utils/route-to events/navigate-gallery)
+    text]])
+
+(defn ^:private instagram-link [text]
+  [:a.dark-gray.h6.underline
+   (utils/route-to events/navigate-stylist-account-social)
+   text])
+
+(defn ^:private styleseat-link [text]
+  [:a.dark-gray.h6.underline
+   (utils/route-to events/navigate-stylist-account-social)
+   text])
+
+(defn ^:private stylist-portrait [portrait size]
+  (ui/circle-picture {:class "mx-auto"
+                      :width (str size "px")}
+                     (ui/square-image portrait size)))
+
+(defn store-info-stylist-marquee-panel [{store-slug        :store_slug
+                                         instagram-account :instagram_account
+                                         styleseat-account :styleseat_account
+                                         portrait          :portrait} gallery?]
+  [:div.mx-auto.col-10.flex
+   (when portrait
+     [:div.left.self-center.pr2
+      (stylist-portrait portrait 36)])
+   [:div.dark-gray.left
+    [:div.h7.bold (str "Hi, " store-slug ". Welcome to your shop.")]
+    (interpose " | " (cond-> []
+                       gallery?          (conj (gallery-link "See your gallery"))
+                       instagram-account (conj (instagram-link "Follow me"))
+                       styleseat-account (conj (styleseat-link "Book me"))))]])
+
+(defn store-info-marquee-panel [{store-slug        :store_slug
+                                 instagram-account :instagram_account
+                                 styleseat-account :styleseat_account
+                                 portrait          :portrait}
+                                gallery?]
+  [:div.mx-auto.col-10.flex
+   (when portrait
+     [:div.left.self-center.pr2
+      (stylist-portrait portrait 36)])
+   [:div.dark-gray.left
+    [:div.h7.bold (str "Welcome to " store-slug "'s shop.")]
+    (interpose " | " (cond-> []
+                       gallery?          (conj (gallery-link "See my gallery"))
+                       instagram-account (conj (instagram-link "Follow me"))
+                       styleseat-account (conj (styleseat-link "Book me"))))]])
+
+(defn component [{:keys [user-id user-email store gallery? stylist?] :as data} owner opts]
   (component/create
    (let [store-slug (:store_slug store)]
      [:div
@@ -91,12 +132,14 @@
         [:div.center.col-12.px3.py2 {:style {:min-width "251px"}}
          (logo "40px")]]]
       [:div.py3 {:style {:margin-top "60px"}}
+       (when-not (#{"shop" "store"} store-slug)
+         (if stylist?
+           (store-info-stylist-marquee-panel store gallery?)
+           (store-info-marquee-panel store gallery?)))
        (cond
-         (= store-slug "shop") [:div]
-         :else (shop-marquee-account-info store))
-       (cond
-         user-id (user-menu user-email)
-         :else   visitor-menu)]])))
+         stylist? stylist-marquee-panel
+         user-id  (user-marquee-panel user-email)
+         :else    visitor-marquee-panel)]])))
 
 (defn query [data]
   (merge
@@ -104,7 +147,8 @@
    {:user-email (get-in data keypaths/user-email)
     :user-id    (get-in data keypaths/user-id)
     :store      (get-in data keypaths/store)
-    :stylist?   (own-store? data)}))
+    :gallery?   (stylists/gallery? data)
+    :stylist?   (stylists/own-store? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
