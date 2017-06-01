@@ -64,6 +64,21 @@
       (utils/fake-href events/navigate-friend-referrals)
       "Refer a friend")]]])
 
+(defn shop-marquee-account-info [{store-slug :store_slug}]
+  [:div.mx-auto.col-10.flex
+   [:div
+    [:div.h7.bold.dark-gray (str "Welcome to " store-slug "'s shop.")]
+    [:span
+     [:a.dark-gray.h6
+      (utils/route-to events/navigate-gallery)
+      [:span.underline "See my gallery"] " | "]]
+    [:a.dark-gray.h6
+     (utils/route-to events/navigate-stylist-account-social)
+     [:span.underline "follow me"] " | "]
+    [:a.dark-gray.h6.underline
+     (utils/route-to events/navigate-stylist-account-social)
+     "book me"]]])
+
 (defn component [{:keys [user-id user-email store stylist] :as data} owner opts]
   (component/create
    (let [store-slug (:store_slug store)]
@@ -76,6 +91,9 @@
         [:div.center.col-12.px3.py2 {:style {:min-width "251px"}}
          (logo "40px")]]]
       [:div.py3 {:style {:margin-top "60px"}}
+       (cond
+         (= store-slug "shop") [:div]
+         :else (shop-marquee-account-info store))
        (cond
          user-id (user-menu user-email)
          :else   visitor-menu)]])))
