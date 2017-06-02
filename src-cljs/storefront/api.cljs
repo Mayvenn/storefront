@@ -310,7 +310,7 @@
     :handler
     #(messages/handle-message events/api-success-forgot-password {:email email})}))
 
-(defn spree->mayvenn-address [address]
+(defn diva->mayvenn-address [address]
   (-> address
       (dissoc :country_id)
       (rename-keys {:firstname :first-name
@@ -318,12 +318,12 @@
       (update-in [:state] :abbr)
       (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])))
 
-(defn spree->mayvenn-addresses [contains-addresses]
+(defn diva->mayvenn-addresses [contains-addresses]
   (-> contains-addresses
       (rename-keys {:bill_address :billing-address
                     :ship_address :shipping-address})
-      (update-in [:billing-address] spree->mayvenn-address)
-      (update-in [:shipping-address] spree->mayvenn-address)))
+      (update-in [:billing-address] diva->mayvenn-address)
+      (update-in [:shipping-address] diva->mayvenn-address)))
 
 (defn get-account [id token]
   (api-req
@@ -335,7 +335,7 @@
      :token token}
     :handler
     #(messages/handle-message events/api-success-account
-                              (spree->mayvenn-addresses %))}))
+                              (diva->mayvenn-addresses %))}))
 
 (defn update-account [session-id id email password token]
   (api-req
