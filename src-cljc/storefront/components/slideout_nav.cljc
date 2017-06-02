@@ -127,12 +127,12 @@
       (utils/route-to events/navigate-sign-up)
       "Sign up now, get offers!"]])])
 
-(defn component [{:keys [user store] :as data} owner opts]
+(defn component [{:keys [user store promo-data] :as data} owner opts]
   (component/create
    (let [store-slug (:store-slug store)]
-     [:div
+     [:div.absolute
       [:div.fixed.top-0.left-0.right-0.z4.bg-white
-       (promotion-banner/built-component data opts)
+       (component/build promotion-banner/component promo-data opts)
        [:div.border-bottom.border-gray.mx-auto
         {:style {:max-width "1440px"}}
         menu-x
@@ -153,7 +153,6 @@
 
 (defn query [data]
   (merge
-   (promotion-banner/query data)
    (let [user  {:email           (get-in data keypaths/user-email)
                 :store-credit    (get-in data keypaths/user-total-available-store-credit)
                 :signed-in-state (signed-in-state data)}
@@ -162,11 +161,12 @@
                                      :instagram_account :instagram-account
                                      :styleseat_account :styleseat-account})
                    (assoc :gallery? (stylists/gallery? data)))]
-     {:user  user
-      :store (-> store
-                 (assoc :welcome-message (if (= ::signed-in-as-stylist (:signed-in-state user))
-                                           (str "Hi, " (:store-slug store) ". Welcome to your shop.")
-                                           (str "Welcome to " (:store-slug store) "'s shop."))))})))
+     {:promo-data (promotion-banner/query data)
+      :user       user
+      :store      (-> store
+                      (assoc :welcome-message (if (= ::signed-in-as-stylist (:signed-in-state user))
+                                                (str "Hi, " (:store-slug store) ". Welcome to your shop.")
+                                                (str "Welcome to " (:store-slug store) "'s shop."))))})))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
