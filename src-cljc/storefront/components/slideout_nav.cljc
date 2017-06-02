@@ -35,38 +35,57 @@
             :content (str "https:" (assets/path "/images/header_logo.svg"))}
            (utils/route-to events/navigate-home))]))
 
-(def ^:private visitor-marquee-panel
-  [:div.flex.justify-between.mx-auto.col-10.py3
-   [:div.col-6.mr3
-    (ui/ghost-button
-     (utils/fake-href events/navigate-sign-in)
-     "Sign in")]
-   [:div.col-6.ml3.center.h6
+(defn marquee-button [event text]
+  (ui/ghost-button
+   (utils/fake-href event)
+   text))
+
+(defn ^:private marquee-col [content]
+  [:div.flex.flex-auto
+   {:style {:flex-basis 0}}
+   content])
+
+(defn marquee-row [left-content right-content]
+  [:div.flex.justify-between.px4.mb3.mt2
+   (marquee-col left-content)
+   [:div.pr3]
+   (marquee-col right-content)])
+
+(def visitor-marquee-panel
+  (marquee-row
+   (marquee-button events/navigate-sign-in "Sign in")
+   [:div.h6.col-12.center
     [:div.dark-gray "No account?"]
     [:a.dark-gray.underline
      (utils/route-to events/navigate-sign-up)
-     "Sign up now, get offers!"]]])
+     "Sign up now, get offers!"]]))
+
 
 (defn ^:private user-marquee-panel [user-email]
   ;; TODO add store credit
   [:div
-   [:div.mx-auto.col-10
+   [:div.px4
     [:div.h7.bold.dark-gray "Signed in with:"]
     [:a.teal.h5
      (utils/route-to events/navigate-account-manage)
      user-email]]
-   [:div.flex.justify-between.mx-auto.col-10.py2
-    [:div.col-6.mr3.flex
-     (ui/ghost-button
-      (utils/fake-href events/navigate-sign-in)
-      "Manage account")]
-    [:div.col-6.ml3.flex
-     (ui/ghost-button
-      (utils/fake-href events/navigate-friend-referrals)
-      "Refer a friend")]]])
+   (marquee-row
+    (marquee-button events/navigate-sign-in "Manage account")
+    (marquee-button events/navigate-friend-referrals "Refer a friend"))])
 
-(def ^:private stylist-marquee-panel
-  [:div])
+(defn stylist-marquee-panel [user-email]
+  [:div
+   [:div.px4
+    [:div.h7.bold.dark-gray "Signed in with:"]
+    [:a.teal.h5
+     (utils/route-to events/navigate-account-manage)
+     user-email]]
+   (marquee-row
+    (marquee-button events/navigate-sign-in "Manage account")
+    (marquee-button events/navigate-friend-referrals "Refer a stylist"))
+   (marquee-row
+    (marquee-button events/navigate-sign-in "Dashboard")
+    (marquee-button events/navigate-friend-referrals "Community"))])
 
 (defn ^:private gallery-link [text]
   [:span
@@ -137,7 +156,7 @@
            (store-info-stylist-marquee-panel store gallery?)
            (store-info-marquee-panel store gallery?)))
        (cond
-         stylist? stylist-marquee-panel
+         stylist? (stylist-marquee-panel user-email)
          user-id  (user-marquee-panel user-email)
          :else    visitor-marquee-panel)]])))
 

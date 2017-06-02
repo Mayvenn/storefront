@@ -58,4 +58,5 @@
   (display-feature? data "feature-block"))
 
 (defn newburger? [data]
-  (display-feature? data "new-burger"))
+  (display-feature? data "new-burger")
+  true)
