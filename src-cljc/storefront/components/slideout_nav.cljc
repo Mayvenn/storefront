@@ -76,7 +76,6 @@
                            instagram-account (conj (instagram-link "Follow me"))
                            styleseat-account (conj (styleseat-link "Book me"))))))
 
-
 (defn store-info-marquee [store]
   [:div.mx-auto.col-10.flex
    (when (:portrait store)
@@ -130,7 +129,7 @@
 (defn component [{:keys [user store promo-data] :as data} owner opts]
   (component/create
    (let [store-slug (:store-slug store)]
-     [:div.absolute
+     [:div
       [:div.fixed.top-0.left-0.right-0.z4.bg-white
        (component/build promotion-banner/component promo-data opts)
        [:div.border-bottom.border-gray.mx-auto
