@@ -70,7 +70,7 @@
      (utils/route-to events/navigate-account-manage)
      user-email]]
    (marquee-row
-    (marquee-button events/navigate-sign-in "Manage account")
+    (marquee-button events/navigate-account-manage "Manage account")
     (marquee-button events/navigate-friend-referrals "Refer a friend"))])
 
 (defn stylist-marquee-panel [user-email]
@@ -81,11 +81,11 @@
      (utils/route-to events/navigate-account-manage)
      user-email]]
    (marquee-row
-    (marquee-button events/navigate-sign-in "Manage account")
+    (marquee-button events/navigate-stylist-account "Manage account")
     (marquee-button events/navigate-friend-referrals "Refer a stylist"))
    (marquee-row
-    (marquee-button events/navigate-sign-in "Dashboard")
-    (marquee-button events/navigate-friend-referrals "Community"))])
+    (marquee-button events/navigate-stylist-dashboard "Dashboard")
+    (marquee-button events/control-stylist-community "Community"))])
 
 (defn ^:private gallery-link [text]
   [:span
