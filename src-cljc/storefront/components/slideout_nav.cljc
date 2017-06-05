@@ -91,7 +91,7 @@
       (utils/route-to events/navigate-account-manage)
       email]
      (when (pos? store-credit)
-       [:p.teal.h5 "You have store credit: $" store-credit])]))
+       [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
 
 (defmulti actions-marquee :signed-in-state)
 (defmethod actions-marquee ::signed-in-as-stylist [_]
