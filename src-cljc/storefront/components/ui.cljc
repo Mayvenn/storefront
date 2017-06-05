@@ -49,7 +49,7 @@
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
                          :color/navy        "btn-primary bg-navy white"
                          :color/aqua        "btn-primary bg-aqua white"
-                         :color/ghost       "btn-outline border-gray dark-gray"
+                         :color/ghost       "btn-outline border-dark-gray dark-gray"
                          :color/light-ghost "btn-outline border-white white"
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/facebook    "btn-primary bg-fb-blue white"

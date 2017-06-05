@@ -42,24 +42,23 @@
    content])
 
 (defn marquee-row [left-content right-content]
-  ;; TODO Re-examine this
-  [:div.flex.justify-between.px4.mb3.mt2
+  [:div.flex.justify-between.my3
    (marquee-col left-content)
    [:div.pr3]
    (marquee-col right-content)])
 
 (defn ^:private gallery-link [text]
-  [:a.dark-gray.h6.underline
+  [:a.inherit-color.h6.underline
    (utils/route-to events/navigate-gallery)
    text])
 
 (defn ^:private instagram-link [text]
-  [:a.dark-gray.h6.underline
+  [:a.inherit-color.h6.underline
    (utils/route-to events/navigate-stylist-account-social)
    text])
 
 (defn ^:private styleseat-link [text]
-  [:a.dark-gray.h6.underline
+  [:a.inherit-color.h6.underline
    (utils/route-to events/navigate-stylist-account-social)
    text])
 
@@ -69,15 +68,16 @@
                      (ui/square-image portrait size)))
 
 (defn store-actions [{:keys [welcome-message store-slug instagram-account styleseat-account portrait gallery?]}]
-  (into [:div.dark-gray.left
-         [:div.h7.bold welcome-message]]
-        (interpose " | " (cond-> []
-                           gallery?          (conj (gallery-link "See my gallery"))
-                           instagram-account (conj (instagram-link "Follow me"))
-                           styleseat-account (conj (styleseat-link "Book me"))))))
+  [:div
+   [:div.h7.bold welcome-message]
+   [:div.dark-gray
+    (interpose " | " (cond-> []
+                       gallery?          (conj (gallery-link "See my gallery"))
+                       instagram-account (conj (instagram-link "Follow me"))
+                       styleseat-account (conj (styleseat-link "Book me"))))]])
 
 (defn store-info-marquee [store]
-  [:div.mx-auto.col-10.flex
+  [:div.my3.flex
    (when (:portrait store)
      [:div.left.self-center.pr2
       (stylist-portrait (:portrait store) 36)])
@@ -85,8 +85,8 @@
 
 (defn account-info-marquee [{:keys [email store-credit signed-in-state]}]
   (when (#{::signed-in-as-user ::signed-in-as-stylist} signed-in-state)
-    [:div.px4
-     [:div.h7.bold.dark-gray "Signed in with:"]
+    [:div.my3
+     [:div.h7.bold "Signed in with:"]
      [:a.teal.h5
       (utils/route-to events/navigate-account-manage)
       email]
@@ -108,40 +108,38 @@
                      "Community"))])
 
 (defmethod actions-marquee ::signed-in-as-user [_]
-  [:div
-   (marquee-row
-    (ui/ghost-button (utils/route-to events/navigate-account-manage)
-                     "Manage account")
-    (ui/ghost-button (utils/route-to events/navigate-friend-referrals)
-                     "Refer a friend"))])
+  (marquee-row
+   (ui/ghost-button (utils/route-to events/navigate-account-manage)
+                    "Manage account")
+   (ui/ghost-button (utils/route-to events/navigate-friend-referrals)
+                    "Refer a friend")))
 
 (defmethod actions-marquee ::signed-out [_]
-  [:div
-   (marquee-row
-    (ui/ghost-button (utils/route-to events/navigate-sign-in)
-                     "Sign in")
-    [:div.h6.col-12.center
-     [:div.dark-gray "No account?"]
-     [:a.dark-gray.underline
-      (utils/route-to events/navigate-sign-up)
-      "Sign up now, get offers!"]])])
+  (marquee-row
+   (ui/ghost-button (utils/route-to events/navigate-sign-in)
+                    "Sign in")
+   [:div.h6.col-12.center.dark-gray
+    [:div "No account?"]
+    [:a.inherit-color.underline
+     (utils/route-to events/navigate-sign-up)
+     "Sign up now, get offers!"]]))
 
 (defn component [{:keys [user store promo-data] :as data} owner opts]
   (component/create
    (let [store-slug (:store-slug store)]
      [:div
-      [:div.fixed.top-0.left-0.right-0.z4.bg-white
+      [:div.top-0.sticky.bg-white.z4
        (component/build promotion-banner/component promo-data opts)
        [:div.border-bottom.border-gray.mx-auto
-        {:style {:max-width "1440px"}}
         menu-x
-        [:div.center.col-12.px3.py2 {:style {:min-width "251px"}}
+        [:div.center.col-12.px3.py2
          (logo "40px")]]]
-      [:div.py3 {:style {:margin-top "60px"}}
+      [:div.px6
        (when-not (#{"shop" "store"} store-slug)
          (store-info-marquee store))
        (account-info-marquee user)
-       (actions-marquee user)]])))
+       [:div.my3.dark-gray
+        (actions-marquee user)]]])))
 
 (defn signed-in-state [data]
   (if (stylists/own-store? data)
