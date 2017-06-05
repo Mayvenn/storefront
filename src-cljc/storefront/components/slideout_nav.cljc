@@ -118,7 +118,7 @@
     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-commissions)
                             :data-test "dashboard")
                      "Dashboard")
-    (ui/ghost-button (utils/fake-href events/control-stylist-community)
+    (ui/ghost-button stylists/community-url
                      "Community"))])
 
 (defmethod actions-marquee ::signed-in-as-user [_]
