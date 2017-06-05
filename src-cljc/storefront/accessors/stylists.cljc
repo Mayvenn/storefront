@@ -12,4 +12,5 @@
       (seq (get-in data keypaths/store-gallery-images))))
 
 (def community-url
-  (utils/fake-href events/control-stylist-community))
+  (merge (utils/fake-href events/control-stylist-community)
+         {:data-test "community"}))
