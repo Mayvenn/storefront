@@ -37,12 +37,12 @@
            (utils/route-to events/navigate-home))]))
 
 (defn ^:private marquee-col [content]
-  [:div.flex.flex-auto
+  [:div.flex-auto
    {:style {:flex-basis 0}}
    content])
 
 (defn marquee-row [left-content right-content]
-  [:div.flex.justify-between.my3
+  [:div.flex.my3
    (marquee-col left-content)
    [:div.pr3]
    (marquee-col right-content)])
@@ -136,12 +136,18 @@
         menu-x
         [:div.center.col-12.px3.py2
          (logo "40px")]]]
-      [:div.px6
+      [:div.px6.border-bottom.border-gray
        (when-not (#{"shop" "store"} store-slug)
          (store-info-marquee store))
        (account-info-marquee user)
        [:div.my3.dark-gray
-        (actions-marquee user)]]])))
+        (actions-marquee user)]]
+      [:div.px6
+       (marquee-row
+        (ui/ghost-button (assoc (utils/fake-href events/control-sign-out)
+                                :data-test "sign-out")
+                         "Sign out")
+        [:div])]])))
 
 (defn signed-in-state [data]
   (if (stylists/own-store? data)
