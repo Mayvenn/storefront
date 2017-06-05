@@ -185,15 +185,15 @@
 (defn component [{:keys [user store promo-data shop-sections] :as data} owner opts]
   (component/create
    [:div
-    [:div.top-0.sticky.z4
+    [:div.top-0.sticky.z4.border-bottom.border-gray
      (promo-bar promo-data)
      burger-header]
-    [:div.px6.border-top.border-gray
+    [:div.px6.border-bottom.border-gray
      (store-info-marquee store)
      (account-info-marquee user)
      [:div.my3.dark-gray
       (actions-marquee user)]]
-    [:div.px6.border-top.border-gray
+    [:div.px6
      (menu-area shop-sections)]
     (when (-> user :signed-in-state signed-in?)
       [:div.px6.border-top.border-gray
