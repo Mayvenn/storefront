@@ -12,7 +12,6 @@
             [storefront.routes :as routes]
             [clojure.string :as str]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.header :as header]
             [storefront.assets :as assets]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.ui :as ui]
