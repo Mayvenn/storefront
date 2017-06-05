@@ -47,19 +47,21 @@
    [:div.pr3]
    (marquee-col right-content)])
 
+(def social-link :a.inherit-color.h6.underline)
+
 (defn ^:private gallery-link [text]
-  [:a.inherit-color.h6.underline
+  [social-link
    (utils/route-to events/navigate-gallery)
    text])
 
-(defn ^:private instagram-link [text]
-  [:a.inherit-color.h6.underline
-   (utils/route-to events/navigate-stylist-account-social)
+(defn ^:private instagram-link [text instagram-account]
+  [social-link
+   {:href (str "http://instagram.com/" instagram-account)}
    text])
 
-(defn ^:private styleseat-link [text]
-  [:a.inherit-color.h6.underline
-   (utils/route-to events/navigate-stylist-account-social)
+(defn ^:private styleseat-link [text styleseat-account]
+  [social-link
+   {:href (str "https://www.styleseat.com/v/" styleseat-account)}
    text])
 
 (defn ^:private stylist-portrait [portrait size]
@@ -73,8 +75,8 @@
    [:div.dark-gray
     (interpose " | " (cond-> []
                        gallery?          (conj (gallery-link "See my gallery"))
-                       instagram-account (conj (instagram-link "Follow me"))
-                       styleseat-account (conj (styleseat-link "Book me"))))]])
+                       instagram-account (conj (instagram-link "Follow me" instagram-account))
+                       styleseat-account (conj (styleseat-link "Book me" styleseat-account))))]])
 
 (defn store-info-marquee [store]
   [:div.my3.flex
