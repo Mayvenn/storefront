@@ -18,6 +18,11 @@
             [storefront.components.ui :as ui]
             [clojure.set :as set]))
 
+(def signed-in? #{::signed-in-as-user ::signed-in-as-stylist})
+
+(defn promo-bar [promo-data]
+  (component/build promotion-banner/component promo-data nil))
+
 (def menu-x
   (component/html
    [:div.absolute {:style {:width "70px"}}
@@ -35,6 +40,9 @@
             :data-test "header-logo"
             :content (str "https:" (assets/path "/images/header_logo.svg"))}
            (utils/route-to events/navigate-home))]))
+
+(def burger-header
+  (component/html [:div.bg-white menu-x [:div.center.col-12.p3 logo]]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
@@ -78,15 +86,16 @@
                        instagram-account (conj (instagram-link "Follow me" instagram-account))
                        styleseat-account (conj (styleseat-link "Book me" styleseat-account))))]])
 
-(defn store-info-marquee [store]
-  [:div.my3.flex
-   (when (:portrait store)
-     [:div.left.self-center.pr2
-      (stylist-portrait (:portrait store) 36)])
-   (store-actions store)])
+(defn store-info-marquee [{:keys [store-slug portrait] :as store}]
+  (when-not (#{"shop" "store"} store-slug)
+    [:div.my3.flex
+     (when portrait
+       [:div.left.self-center.pr2
+        (stylist-portrait portrait 36)])
+     (store-actions store)]))
 
 (defn account-info-marquee [{:keys [email store-credit signed-in-state]}]
-  (when (#{::signed-in-as-user ::signed-in-as-stylist} signed-in-state)
+  (when (signed-in? signed-in-state)
     [:div.my3
      [:div.h7.bold "Signed in with:"]
      [:a.teal.h5
@@ -132,27 +141,63 @@
             :data-test "sign-up")
      "Sign up now, get offers!"]]))
 
-(defn component [{:keys [user store promo-data] :as data} owner opts]
+(defn menu-row [& content]
+  [:div.border-bottom.border-gray
+   {:style {:padding "3px 0 2px"}}
+   (into [:a.block.py1.h5.inherit-color] content)])
+
+(defn menu-area [shop-sections]
+  [:ul.list-reset.mb3
+   [:li (menu-row (utils/route-to events/navigate-shop-by-look)
+                  "Shop looks")]
+   (for [{:keys [title shop-items]} shop-sections]
+     [:li {:key title}
+      (menu-row "Shop " title)
+      [:ul.list-reset.ml6
+       (for [{:keys [name slug]} shop-items]
+         [:li {:key slug}
+          (menu-row (assoc (utils/route-to events/navigate-category {:named-search-slug slug})
+                           :data-test (str "menu-" slug))
+                    (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+                    (str/capitalize name))])]])
+   [:li (menu-row (assoc (utils/route-to events/navigate-content-guarantee)
+                         :data-test "content-guarantee")
+                  "Our guarantee")]
+   [:li (menu-row {:href "https://blog.mayvenn.com"}
+                  "Real Beauty blog")]
+   [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
+                         :data-test "content-about-us")
+                  "About us")]
+   [:li (menu-row {:href "https://jobs.mayvenn.com"}
+                  "Careers")]
+   [:li (menu-row (assoc (utils/route-to events/navigate-content-help)
+                         :data-test "content-help")
+                  "Contact us")]])
+
+(def sign-out-area
+  (component/html
+   (marquee-row
+    (ui/ghost-button (assoc (utils/fake-href events/control-sign-out)
+                            :data-test "sign-out")
+                     "Sign out")
+    [:div])))
+
+(defn component [{:keys [user store promo-data shop-sections] :as data} owner opts]
   (component/create
-   (let [store-slug (:store-slug store)]
-     [:div
-      [:div.top-0.sticky.z4
-       (component/build promotion-banner/component promo-data opts)
-       [:div.border-bottom.border-gray
-        menu-x
-        [:div.center.col-12.p3 logo]]]
-      [:div.px6.border-bottom.border-gray
-       (when-not (#{"shop" "store"} store-slug)
-         (store-info-marquee store))
-       (account-info-marquee user)
-       [:div.my3.dark-gray
-        (actions-marquee user)]]
-      [:div.px6
-       (marquee-row
-        (ui/ghost-button (assoc (utils/fake-href events/control-sign-out)
-                                :data-test "sign-out")
-                         "Sign out")
-        [:div])]])))
+   [:div
+    [:div.top-0.sticky.z4
+     (promo-bar promo-data)
+     burger-header]
+    [:div.px6.border-top.border-gray
+     (store-info-marquee store)
+     (account-info-marquee user)
+     [:div.my3.dark-gray
+      (actions-marquee user)]]
+    [:div.px6.border-top.border-gray
+     (menu-area shop-sections)]
+    (when (-> user :signed-in-state signed-in?)
+      [:div.px6.border-top.border-gray
+       sign-out-area])]))
 
 (defn signed-in-state [data]
   (if (stylists/own-store? data)
@@ -163,20 +208,29 @@
 
 (defn query [data]
   (merge
-   (let [user  {:email           (get-in data keypaths/user-email)
-                :store-credit    (get-in data keypaths/user-total-available-store-credit)
-                :signed-in-state (signed-in-state data)}
-         store (-> (get-in data keypaths/store)
-                   (set/rename-keys {:store_slug        :store-slug
-                                     :instagram_account :instagram-account
-                                     :styleseat_account :styleseat-account})
-                   (assoc :gallery? (stylists/gallery? data)))]
-     {:promo-data (promotion-banner/query data)
-      :user       user
-      :store      (-> store
-                      (assoc :welcome-message (if (= ::signed-in-as-stylist (:signed-in-state user))
-                                                (str "Hi, " (:store-slug store) ". Welcome to your shop.")
-                                                (str "Welcome to " (:store-slug store) "'s shop."))))})))
+   (let [signed-in-state (signed-in-state data)
+         user            {:email           (get-in data keypaths/user-email)
+                          :store-credit    (get-in data keypaths/user-total-available-store-credit)
+                          :signed-in-state signed-in-state}
+         store           (-> (get-in data keypaths/store)
+                             (set/rename-keys {:store_slug        :store-slug
+                                               :instagram_account :instagram-account
+                                               :styleseat_account :styleseat-account})
+                             (assoc :gallery? (stylists/gallery? data)))
+         named-searches  (named-searches/current-named-searches data)]
+     {:promo-data    (promotion-banner/query data)
+      :user          user
+      :store         (-> store
+                         (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
+                                                   (str "Hi, " (:store-slug store) ". Welcome to your shop.")
+                                                   (str "Welcome to " (:store-slug store) "'s shop."))))
+      :shop-sections (cond-> [{:title "hair"
+                               :shop-items (filter named-searches/is-extension? named-searches)}
+                              {:title "closures & frontals"
+                               :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                       (= ::signed-in-as-stylist signed-in-state)
+                       (conj {:title      "stylist products"
+                              :shop-items (filter named-searches/is-stylist-product? named-searches)}))})))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
