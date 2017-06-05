@@ -20,16 +20,16 @@
 
 (def menu-x
   (component/html
-   [:div.absolute {:style {:width "60px"}}
-    [:div.relative.rotate-45.p2 {:style {:height "60px"}
+   [:div.absolute {:style {:width "70px"}}
+    [:div.relative.rotate-45.p2 {:style {:height "70px"}
                                  :on-click #(messages/handle-message events/control-menu-collapse-all)}
-     [:div.absolute.border-right.border-dark-gray {:style {:width "18px" :height "36px"}}]
-     [:div.absolute.border-bottom.border-dark-gray {:style {:width "36px" :height "18px"}}]]]))
+     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
+     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
-(defn logo [height]
+(def logo
   (component/html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.pp3
-    (merge {:style {:height height}
+   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+    (merge {:style {:height "40px"}
             :title "Mayvenn"
             :item-prop "logo"
             :data-test "header-logo"
@@ -130,12 +130,11 @@
   (component/create
    (let [store-slug (:store-slug store)]
      [:div
-      [:div.top-0.sticky.bg-white.z4
+      [:div.top-0.sticky.z4
        (component/build promotion-banner/component promo-data opts)
-       [:div.border-bottom.border-gray.mx-auto
+       [:div.border-bottom.border-gray
         menu-x
-        [:div.center.col-12.px3.py2
-         (logo "40px")]]]
+        [:div.center.col-12.p3 logo]]]
       [:div.px6.border-bottom.border-gray
        (when-not (#{"shop" "store"} store-slug)
          (store-info-marquee store))
