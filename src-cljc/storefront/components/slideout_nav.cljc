@@ -99,8 +99,8 @@
    (marquee-row
     (ui/ghost-button (utils/route-to events/navigate-stylist-account-profile)
                      "Manage account")
-    (ui/ghost-button (utils/route-to events/navigate-friend-referrals)
-                     "Refer a stylist"))
+    (ui/ghost-button (utils/route-to events/navigate-stylist-share-your-store)
+                     "Share your store"))
    (marquee-row
     (ui/ghost-button (utils/route-to events/navigate-stylist-dashboard-commissions)
                      "Dashboard")
