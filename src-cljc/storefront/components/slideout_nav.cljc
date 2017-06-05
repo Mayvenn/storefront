@@ -113,7 +113,7 @@
   (marquee-row
    (ui/ghost-button (utils/route-to events/navigate-account-manage)
                     "Manage account")
-   (ui/ghost-button (utils/route-to events/navigate-friend-referrals)
+   (ui/ghost-button (utils/route-to events/navigate-account-referrals)
                     "Refer a friend")))
 
 (defmethod actions-marquee ::signed-out [_]
