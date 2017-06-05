@@ -32,7 +32,7 @@
 
 (def telligent-community-url (case js/environment
                                "production" "https://community.mayvenn.com"
-                               "http://telligentps.mayvenn.com/"))
+                               "https://community.diva-acceptance.com"))
 
 (def talkable-script
   (case js/environment
