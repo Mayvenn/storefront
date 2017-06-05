@@ -99,31 +99,37 @@
 (defmethod actions-marquee ::signed-in-as-stylist [_]
   [:div
    (marquee-row
-    (ui/ghost-button (utils/route-to events/navigate-stylist-account-profile)
+    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
+                            :data-test "account-settings")
                      "Manage account")
-    (ui/ghost-button (utils/route-to events/navigate-stylist-share-your-store)
+    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                            :data-test "share-your-store")
                      "Share your store"))
    (marquee-row
-    (ui/ghost-button (utils/route-to events/navigate-stylist-dashboard-commissions)
+    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-commissions)
+                            :data-test "dashboard")
                      "Dashboard")
     (ui/ghost-button (utils/fake-href events/control-stylist-community)
                      "Community"))])
 
 (defmethod actions-marquee ::signed-in-as-user [_]
   (marquee-row
-   (ui/ghost-button (utils/route-to events/navigate-account-manage)
+   (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
+                           :data-test "account-settings")
                     "Manage account")
    (ui/ghost-button (utils/route-to events/navigate-account-referrals)
                     "Refer a friend")))
 
 (defmethod actions-marquee ::signed-out [_]
   (marquee-row
-   (ui/ghost-button (utils/route-to events/navigate-sign-in)
+   (ui/ghost-button (assoc (utils/route-to events/navigate-sign-in)
+                           :data-test "sign-in")
                     "Sign in")
    [:div.h6.col-12.center.dark-gray
     [:div "No account?"]
     [:a.inherit-color.underline
-     (utils/route-to events/navigate-sign-up)
+     (assoc (utils/route-to events/navigate-sign-up)
+            :data-test "sign-up")
      "Sign up now, get offers!"]]))
 
 (defn component [{:keys [user store promo-data] :as data} owner opts]
