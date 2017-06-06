@@ -212,6 +212,7 @@
                          :signed-in-state signed-in-state}
         store           (-> (get-in data keypaths/store)
                             (set/rename-keys {:store_slug        :store-slug
+                                              :store_nickname    :store-nickname
                                               :instagram_account :instagram-account
                                               :styleseat_account :styleseat-account})
                             (assoc :gallery? (stylists/gallery? data)))
@@ -221,7 +222,7 @@
      :store         (-> store
                         (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
                                                   (str "Hi, " (:store-slug store) ". Welcome to your shop.")
-                                                  (str "Welcome to " (:store-slug store) "'s shop."))))
+                                                  (str "Welcome to " (:store-nickname store) "'s shop."))))
      :shop-sections (cond-> [{:title "Shop hair"
                               :shop-items (filter named-searches/is-extension? named-searches)}
                              {:title "Shop closures & frontals"
