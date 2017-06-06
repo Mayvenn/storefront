@@ -31,6 +31,7 @@
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.gallery :as gallery]
             [storefront.components.header :as header]
+            [storefront.components.old-header :as old-header]
             [storefront.components.home :as home]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.shared-cart :as shared-cart]
@@ -113,10 +114,12 @@
         (stylist-banner/built-component data nil)
         (promotion-banner/built-component data nil)
         #?(:cljs (popup/built-component data nil))
-        [:header
-         (header/built-component data nil)
-         (when-not (experiments/newburger? data)
-           (old-slideout-nav/built-component data nil))]
+        (if (experiments/newburger? data)
+          [:header
+           (header/built-component data nil)]
+          [:header
+           (old-header/built-component data nil)
+           (old-slideout-nav/built-component data nil)])
         (flash/built-component data nil)
         [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
          ((main-component nav-event) data nil)]
