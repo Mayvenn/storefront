@@ -56,13 +56,65 @@
                       :width (str header-image-size "px")}
                      (ui/square-image portrait header-image-size)))
 
-(defn store-info [{:keys [store-slug store-nickname portrait] :as store}]
+(defn drop-down-row [opts & content]
+  (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+         (-> opts
+             (assoc-in [:style :min-width] "200px")
+             (assoc-in [:style :height] "39px"))]
+        content))
+
+(defn social-icon [path]
+  [:img.ml2 {:style {:height "20px"}
+             :src   path}] )
+
+(def ^:private gallery-link
+  (component/html
+   (drop-down-row
+    (utils/route-to events/navigate-gallery)
+    "See my gallery"
+    (social-icon (assets/path "/images/share/stylist-gallery-icon.png")))))
+
+(defn ^:private instagram-link [instagram-account]
+  (drop-down-row
+   {:href (str "http://instagram.com/" instagram-account)}
+   "Follow me on"
+   (social-icon (assets/path "/images/share/instagram-icon.png"))))
+
+(defn ^:private styleseat-link [styleseat-account]
+  (drop-down-row
+   {:href (str "https://www.styleseat.com/v/" styleseat-account)}
+   "Book me on"
+   (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
+
+(defn store-welcome [{:keys [store-nickname portrait expanded?]} expandable?]
+  [:div.h6.flex.items-center.mt2
+   (when portrait
+     [:div.left.pr2
+      (stylist-portrait portrait)])
+   [:div.dark-gray
+    "Welcome to " [:span.black.medium store-nickname "'s"] " shop"
+    (when expandable?
+      [:img.ml1 {:style {:width "8px"}
+                 :src   (if expanded?
+                          (assets/path "/images/icons/collapse.png")
+                          (assets/path "/images/icons/expand.png"))}])]])
+
+(defn store-info [{:keys [store-slug store-nickname portrait expanded? gallery? instagram-account styleseat-account] :as store}]
   (when-not (sans-stylist? store-slug)
-    [:div.h6.my2.flex.items-center
-     (when portrait
-       [:div.left.pr2
-        (stylist-portrait portrait)])
-     [:div.dark-gray "Welcome to " [:span.black.medium store-nickname "'s"] " shop."]]))
+    (let [rows (cond-> []
+                 gallery?          (conj gallery-link)
+                 styleseat-account (conj (styleseat-link styleseat-account))
+                 instagram-account (conj (instagram-link instagram-account)))]
+      (if-not (boolean (seq rows))
+        (store-welcome store false)
+        (ui/drop-down
+         expanded?
+         keypaths/store-info-expanded
+         [:a (store-welcome store true)]
+         [:div.bg-white
+          (for [[idx row] (map-indexed vector rows)]
+            [:div.border-gray {:key   idx
+                               :class (when-not (zero? idx) "border-top")} row])])))))
 
 (defmulti account-info :signed-in-state)
 
