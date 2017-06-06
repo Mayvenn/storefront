@@ -151,7 +151,7 @@
                   "Shop looks")]
    (for [{:keys [title shop-items]} shop-sections]
      [:li {:key title}
-      (menu-row "Shop " title)
+      (menu-row title)
       [:ul.list-reset.ml6
        (for [{:keys [name slug]} shop-items]
          [:li {:key slug}
@@ -222,12 +222,12 @@
                         (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
                                                   (str "Hi, " (:store-slug store) ". Welcome to your shop.")
                                                   (str "Welcome to " (:store-slug store) "'s shop."))))
-     :shop-sections (cond-> [{:title "hair"
+     :shop-sections (cond-> [{:title "Shop hair"
                               :shop-items (filter named-searches/is-extension? named-searches)}
-                             {:title "closures & frontals"
+                             {:title "Shop closures & frontals"
                               :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
                       (= ::signed-in-as-stylist signed-in-state)
-                      (conj {:title      "stylist products"
+                      (conj {:title      "Stylist exclusives"
                              :shop-items (filter named-searches/is-stylist-product? named-searches)}))}))
 
 (defn built-component [data opts]
