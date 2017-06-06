@@ -206,7 +206,7 @@
                    (:cart-quantity cart))]]))
 
 (defn minimal-component [_ _ _]
-  (component/html
+  (component/create
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
 
