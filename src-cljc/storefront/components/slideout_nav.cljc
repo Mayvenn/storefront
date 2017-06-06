@@ -33,12 +33,12 @@
 (def logo
   (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-    (merge {:style {:height "40px"}
-            :title "Mayvenn"
-            :item-prop "logo"
-            :data-test "header-logo"
-            :content (str "https:" (assets/path "/images/header_logo.svg"))}
-           (utils/route-to events/navigate-home))]))
+    (assoc (utils/route-to events/navigate-home)
+           :style {:height "40px"}
+           :title "Mayvenn"
+           :item-prop "logo"
+           :data-test "header-logo"
+           :content (str "https:" (assets/path "/images/header_logo.svg")))]))
 
 (def burger-header
   (component/html [:div.bg-white menu-x [:div.center.col-12.p3 logo]]))
@@ -206,30 +206,29 @@
       ::signed-out)))
 
 (defn query [data]
-  (merge
-   (let [signed-in-state (signed-in-state data)
-         user            {:email           (get-in data keypaths/user-email)
-                          :store-credit    (get-in data keypaths/user-total-available-store-credit)
-                          :signed-in-state signed-in-state}
-         store           (-> (get-in data keypaths/store)
-                             (set/rename-keys {:store_slug        :store-slug
-                                               :instagram_account :instagram-account
-                                               :styleseat_account :styleseat-account})
-                             (assoc :gallery? (stylists/gallery? data)))
-         named-searches  (named-searches/current-named-searches data)]
-     {:promo-data    (promotion-banner/query data)
-      :user          user
-      :store         (-> store
-                         (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
-                                                   (str "Hi, " (:store-slug store) ". Welcome to your shop.")
-                                                   (str "Welcome to " (:store-slug store) "'s shop."))))
-      :shop-sections (cond-> [{:title "hair"
-                               :shop-items (filter named-searches/is-extension? named-searches)}
-                              {:title "closures & frontals"
-                               :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                       (= ::signed-in-as-stylist signed-in-state)
-                       (conj {:title      "stylist products"
-                              :shop-items (filter named-searches/is-stylist-product? named-searches)}))})))
+  (let [signed-in-state (signed-in-state data)
+        user            {:email           (get-in data keypaths/user-email)
+                         :store-credit    (get-in data keypaths/user-total-available-store-credit)
+                         :signed-in-state signed-in-state}
+        store           (-> (get-in data keypaths/store)
+                            (set/rename-keys {:store_slug        :store-slug
+                                              :instagram_account :instagram-account
+                                              :styleseat_account :styleseat-account})
+                            (assoc :gallery? (stylists/gallery? data)))
+        named-searches  (named-searches/current-named-searches data)]
+    {:promo-data    (promotion-banner/query data)
+     :user          user
+     :store         (-> store
+                        (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
+                                                  (str "Hi, " (:store-slug store) ". Welcome to your shop.")
+                                                  (str "Welcome to " (:store-slug store) "'s shop."))))
+     :shop-sections (cond-> [{:title "hair"
+                              :shop-items (filter named-searches/is-extension? named-searches)}
+                             {:title "closures & frontals"
+                              :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                      (= ::signed-in-as-stylist signed-in-state)
+                      (conj {:title      "stylist products"
+                             :shop-items (filter named-searches/is-stylist-product? named-searches)}))}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
