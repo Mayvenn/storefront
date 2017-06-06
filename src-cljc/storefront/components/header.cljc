@@ -65,12 +65,29 @@
         (stylist-portrait portrait)])
      [:div.dark-gray "Welcome to " [:span.black.medium store-nickname "'s"] " shop."]]))
 
-(defn account-info [{:keys [email signed-in-state]}]
+(defmulti account-info :signed-in-state)
+
+(defmethod account-info ::signed-in-as-user [{:keys [email]}]
   [:div.h6
-   (when (signed-in? signed-in-state)
-     [:div
-      "Signed in with: "
-      [:a.teal (utils/route-to events/navigate-account-manage) email]])])
+   "Signed in with: "
+   [:a.teal (utils/route-to events/navigate-account-manage) email]
+   " | "
+   "Manage account"])
+
+(defmethod account-info ::signed-in-as-stylist [{:keys [email]}]
+  [:div.h6
+   "Signed in with: "
+   [:a.teal (utils/route-to events/navigate-stylist-account-profile) email]
+   " | "
+   "My dashboard"])
+
+(defmethod account-info ::signed-out [_]
+  [:div.h6
+   [:a.inherit-color (utils/route-to events/navigate-sign-in)
+    "Sign in"]
+   " | No account? "
+   [:a.inherit-color (utils/route-to events/navigate-sign-up)
+    "Sign up"]])
 
 (def menu-link :a.h5.medium.inherit-color.py2.px3)
 
