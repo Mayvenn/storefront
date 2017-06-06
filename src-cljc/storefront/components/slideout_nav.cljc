@@ -76,7 +76,7 @@
                       :width (str size "px")}
                      (ui/square-image portrait size)))
 
-(defn store-actions [{:keys [welcome-message store-slug instagram-account styleseat-account portrait gallery?]}]
+(defn store-actions [{:keys [welcome-message instagram-account styleseat-account gallery?]}]
   [:div
    [:div.h7.bold welcome-message]
    [:div.dark-gray
