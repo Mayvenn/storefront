@@ -86,6 +86,12 @@
    "Book me on"
    (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
 
+(defn expand-icon [expanded?]
+  [:img.ml1 {:style {:width "8px"}
+             :src   (if expanded?
+                      (assets/path "/images/icons/collapse.png")
+                      (assets/path "/images/icons/expand.png"))}])
+
 (defn store-welcome [{:keys [store-nickname portrait expanded?]} expandable?]
   [:div.h6.flex.items-center.mt2
    (when portrait
@@ -94,10 +100,7 @@
    [:div.dark-gray
     "Welcome to " [:span.black.medium store-nickname "'s"] " shop"
     (when expandable?
-      [:img.ml1 {:style {:width "8px"}
-                 :src   (if expanded?
-                          (assets/path "/images/icons/collapse.png")
-                          (assets/path "/images/icons/expand.png"))}])]])
+      (expand-icon expanded?))]])
 
 (defn store-info [{:keys [store-slug store-nickname portrait expanded? gallery? instagram-account styleseat-account] :as store}]
   (when-not (sans-stylist? store-slug)
@@ -111,26 +114,46 @@
          expanded?
          keypaths/store-info-expanded
          [:a (store-welcome store true)]
-         [:div.bg-white
+         [:div.bg-white.absolute.left-0
           (for [[idx row] (map-indexed vector rows)]
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
 (defmulti account-info :signed-in-state)
 
-(defmethod account-info ::signed-in-as-user [{:keys [email]}]
-  [:div.h6
-   "Signed in with: "
-   [:a.teal (utils/route-to events/navigate-account-manage) email]
-   " | "
-   "Manage account"])
+(defmethod account-info ::signed-in-as-user [{:keys [email expanded?]}]
+  (ui/drop-down
+   expanded?
+   keypaths/account-menu-expanded
+   [:a.inherit-color.h6
+    "Signed in with: " [:span.teal email] " | "
+    "Manage account" (expand-icon expanded?)]
+   [:div.bg-white.absolute.right-0
+    [:div
+     (drop-down-row (utils/route-to events/navigate-account-manage) "Manage account")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::signed-in-as-stylist [{:keys [email]}]
-  [:div.h6
-   "Signed in with: "
-   [:a.teal (utils/route-to events/navigate-stylist-account-profile) email]
-   " | "
-   "My dashboard"])
+(defmethod account-info ::signed-in-as-stylist [{:keys [email expanded?]}]
+  (ui/drop-down
+   expanded?
+   keypaths/account-menu-expanded
+   [:a.inherit-color.h6
+    "Signed in with: " [:span.teal email] " | "
+    "My dashboard" (expand-icon expanded?)]
+   [:div.bg-white.absolute.right-0
+    [:div
+     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-commissions) "My dashboard")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share your store")]
+    [:div.border-top.border-gray
+     (drop-down-row stylists/community-url "Community")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account settings")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
 (defmethod account-info ::signed-out [_]
   [:div.h6
@@ -164,17 +187,17 @@
   (component/create
    [:div.border-bottom.border-gray
     [:div.hide-on-mb.relative {:style {:height "150px"}}
-     [:div.container
-      [:div.absolute.bottom-0.left-0.right-0
-       [:div.mb4 (logo "desktop-header-logo" "60px")]
-       [:div.mb1 menu]]
+     [:div.max-960.mx-auto
       [:div.left (store-info store)]
       [:div.right
        [:div.h6.my2.flex.items-center
         (account-info user)
         [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
                                  :data-test "desktop-cart"}
-                                (:cart-quantity cart))]]]]]
+                                (:cart-quantity cart))]]]
+      [:div.absolute.bottom-0.left-0.right-0
+       [:div.mb4 (logo "desktop-header-logo" "60px")]
+       [:div.mb1 menu]]]]
     [:div.hide-on-tb-dt.flex.items-center
      hamburger
      [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
