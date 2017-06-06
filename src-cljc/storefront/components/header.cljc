@@ -89,22 +89,25 @@
    [:a.inherit-color (utils/route-to events/navigate-sign-up)
     "Sign up"]])
 
-(def menu-link :a.h5.medium.inherit-color.py2.px3)
+(defn menu-link [opts text]
+  [:a.h5.medium.inherit-color.py2
+   (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
+   text])
 
 (def menu
   (component/html
    [:div.center
-    [menu-link (utils/route-to events/navigate-shop-by-look)
-     "Shop looks"]
-    [menu-link (assoc (utils/route-to events/navigate-categories)
+    (menu-link (utils/route-to events/navigate-shop-by-look)
+     "Shop looks")
+    (menu-link (assoc (utils/route-to events/navigate-categories)
                       :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
                       :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded))
-     "Shop hair"]
-    [menu-link (utils/route-to events/navigate-content-guarantee)
-     "Our Guarantee"]
-    [menu-link {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
+     "Shop hair")
+    (menu-link (utils/route-to events/navigate-content-guarantee)
+     "Our Guarantee")
+    (menu-link {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                 :href           "https://blog.mayvenn.com"}
-     "Real Beauty"]]))
+     "Real Beauty")]))
 
 (defn component [{:keys [store user cart]} _ _]
   (component/create
