@@ -25,8 +25,9 @@
 (def menu-x
   (component/html
    [:div.absolute {:style {:width "70px"}}
-    [:div.relative.rotate-45.p2 {:style {:height "70px"}
-                                 :on-click #(messages/handle-message events/control-menu-collapse-all)}
+    [:div.relative.rotate-45.p2 {:style     {:height "70px"}
+                                 :data-test "close-slideout"
+                                 :on-click  #(messages/handle-message events/control-menu-collapse-all)}
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
