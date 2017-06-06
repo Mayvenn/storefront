@@ -57,20 +57,21 @@
 
 (def social-link :a.inherit-color.h6.underline)
 
-(defn ^:private gallery-link [text]
-  [social-link
-   (utils/route-to events/navigate-gallery)
-   text])
+(def ^:private gallery-link
+  (component/html
+   [social-link
+    (utils/route-to events/navigate-gallery)
+    "See my gallery"]))
 
-(defn ^:private instagram-link [text instagram-account]
+(defn ^:private instagram-link [instagram-account]
   [social-link
    {:href (str "http://instagram.com/" instagram-account)}
-   text])
+   "Follow me"])
 
-(defn ^:private styleseat-link [text styleseat-account]
+(defn ^:private styleseat-link [styleseat-account]
   [social-link
    {:href (str "https://www.styleseat.com/v/" styleseat-account)}
-   text])
+   "Book me"])
 
 (defn ^:private stylist-portrait [portrait size]
   (ui/circle-picture {:class "mx-auto"
@@ -82,9 +83,9 @@
    [:div.h7.bold welcome-message]
    [:div.dark-gray
     (interpose " | " (cond-> []
-                       gallery?          (conj (gallery-link "See my gallery"))
-                       instagram-account (conj (instagram-link "Follow me" instagram-account))
-                       styleseat-account (conj (styleseat-link "Book me" styleseat-account))))]])
+                       gallery?          (conj gallery-link)
+                       instagram-account (conj (instagram-link instagram-account))
+                       styleseat-account (conj (styleseat-link styleseat-account))))]])
 
 (defn store-info-marquee [{:keys [store-slug portrait] :as store}]
   (when-not (#{"shop" "store"} store-slug)
