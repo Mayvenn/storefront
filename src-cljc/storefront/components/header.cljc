@@ -30,25 +30,24 @@
     [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
     [:div.border-bottom.border-dark-gray {:style {:height "15px"}}]]))
 
-(defn logo [height]
+(defn logo [data-test-value height]
   (component/html
    [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
     (assoc (utils/route-to events/navigate-home)
            :style {:height height}
            :title "Mayvenn"
            :item-prop "logo"
-           :data-test "header-logo"
+           :data-test data-test-value
            :content (str "https:" (assets/path "/images/header_logo.svg")))]))
 
 (defn shopping-bag [opts cart-quantity]
   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                    {:data-test "cart"}
                                     opts)
    (svg/bag {:class (str "absolute overlay m-auto "
                          (if (pos? cart-quantity) "fill-navy" "fill-black"))})
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-      [:div.center.navy.h6.line-height-1 {:data-test "populated-cart"} cart-quantity]])])
+      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} cart-quantity]])])
 
 (def header-image-size 36)
 
@@ -115,24 +114,26 @@
     [:div.hide-on-mb.relative {:style {:height "150px"}}
      [:div.container
       [:div.absolute.bottom-0.left-0.right-0
-       [:div.mb4 (logo "60px")]
+       [:div.mb4 (logo "desktop-header-logo" "60px")]
        [:div.mb1 menu]]
       [:div.left (store-info store)]
       [:div.right
        [:div.h6.my2.flex.items-center
         (account-info user)
-        [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}}
+        [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
+                                 :data-test "desktop-cart"}
                                 (:cart-quantity cart))]]]]]
     [:div.hide-on-tb-dt.flex.items-center
      hamburger
-     [:div.flex-auto.py3 (logo "40px")]
-     (shopping-bag {:style {:height "70px" :width "70px"}}
+     [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
+     (shopping-bag {:style     {:height "70px" :width "70px"}
+                    :data-test "mobile-cart"}
                    (:cart-quantity cart))]]))
 
 (defn minimal-component [_ _ _]
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (logo "40px")]]))
+    [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
 
 (defn signed-in-state [data]
   (if (stylists/own-store? data)
