@@ -61,26 +61,26 @@
   (component/html
    [social-link
     (utils/route-to events/navigate-gallery)
-    "See my gallery"]))
+    "View gallery"]))
 
 (defn ^:private instagram-link [instagram-account]
   [social-link
    {:href (str "http://instagram.com/" instagram-account)}
-   "Follow me"])
+   "Follow"])
 
 (defn ^:private styleseat-link [styleseat-account]
   [social-link
    {:href (str "https://www.styleseat.com/v/" styleseat-account)}
-   "Book me"])
+   "Book"])
 
 (defn ^:private stylist-portrait [portrait size]
   (ui/circle-picture {:class "mx-auto"
                       :width (str size "px")}
                      (ui/square-image portrait size)))
 
-(defn store-actions [{:keys [welcome-message instagram-account styleseat-account gallery?]}]
+(defn store-actions [{:keys [store-nickname instagram-account styleseat-account gallery?]}]
   [:div
-   [:div.h7.bold welcome-message]
+   [:div.h7.medium "Welcome to " store-nickname "'s store"]
    [:div.dark-gray
     (interpose " | " (cond-> []
                        gallery?          (conj gallery-link)
@@ -98,7 +98,7 @@
 (defn account-info-marquee [{:keys [email store-credit signed-in-state]}]
   (when (signed-in? signed-in-state)
     [:div.my3
-     [:div.h7.bold "Signed in with:"]
+     [:div.h7.medium "Signed in with:"]
      [:a.teal.h5
       (utils/route-to events/navigate-account-manage)
       email]
@@ -221,10 +221,7 @@
         named-searches  (named-searches/current-named-searches data)]
     {:promo-data    (promotion-banner/query data)
      :user          user
-     :store         (-> store
-                        (assoc :welcome-message (if (= ::signed-in-as-stylist signed-in-state)
-                                                  (str "Hi, " (:store-slug store) ". Welcome to your shop.")
-                                                  (str "Welcome to " (:store-nickname store) "'s shop."))))
+     :store         store
      :shop-sections (cond-> [{:title "Shop hair"
                               :shop-items (filter named-searches/is-extension? named-searches)}
                              {:title "Shop closures & frontals"

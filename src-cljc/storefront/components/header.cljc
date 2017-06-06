@@ -71,19 +71,19 @@
   (component/html
    (drop-down-row
     (utils/route-to events/navigate-gallery)
-    "See my gallery"
+    "View gallery"
     (social-icon (assets/path "/images/share/stylist-gallery-icon.png")))))
 
 (defn ^:private instagram-link [instagram-account]
   (drop-down-row
    {:href (str "http://instagram.com/" instagram-account)}
-   "Follow me on"
+   "Follow on"
    (social-icon (assets/path "/images/share/instagram-icon.png"))))
 
 (defn ^:private styleseat-link [styleseat-account]
   (drop-down-row
    {:href (str "https://www.styleseat.com/v/" styleseat-account)}
-   "Book me on"
+   "Book on"
    (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
 
 (defn expand-icon [expanded?]
