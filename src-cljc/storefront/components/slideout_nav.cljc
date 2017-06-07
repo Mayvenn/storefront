@@ -9,7 +9,6 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :as stylists]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.routes :as routes]
             [clojure.string :as str]
             [storefront.platform.component-utils :as utils]
             [storefront.assets :as assets]

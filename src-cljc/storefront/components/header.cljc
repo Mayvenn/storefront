@@ -3,7 +3,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.nav :as nav]
-            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
@@ -13,8 +12,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]
-            [clojure.set :as set]
             [clojure.string :as str]))
 
 (def hamburger

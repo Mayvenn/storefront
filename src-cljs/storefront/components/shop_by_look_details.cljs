@@ -6,7 +6,6 @@
             [storefront.platform.ugc :as ugc]
             [storefront.assets :as assets]
             [storefront.events :as events]
-            [storefront.routes :as routes]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
