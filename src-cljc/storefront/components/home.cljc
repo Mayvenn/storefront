@@ -72,7 +72,7 @@
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
 
-(defn hero [feature-block? store-slug]
+(defn hero [store-slug]
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
@@ -93,7 +93,6 @@
                                       {:resizable_url      "//ucarecdn.com/a9162d49-4f58-495b-adad-ccb15bae9541/"
                                        :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
                                       "Get 15% Off Hair Extensions Mayvenn")
-
       (fitting-image {:resizable_url      "//ucarecdn.com/a52a9db4-0e83-4a4a-a802-6805ce127337/"
                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
                      {:resizable_url      "//ucarecdn.com/bd739712-db44-405c-8469-f9aed3768ee2/"
@@ -180,12 +179,11 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [featured-searches feature-block? store-slug]} owner opts]
+(defn component [{:keys [featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (hero feature-block? store-slug)]
-    (when feature-block?
-      [:section feature-blocks])
+    [:section (hero store-slug)]
+    [:section feature-blocks]
     [:section (popular-grid featured-searches)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -194,7 +192,6 @@
 (defn query [data]
   {:featured-searches (->> (named-searches/current-named-searches data)
                            (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
-   :feature-block?    (experiments/feature-block? data)
    :store-slug        (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
