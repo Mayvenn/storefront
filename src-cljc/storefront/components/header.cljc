@@ -196,7 +196,7 @@
      (shopping-flyout shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
-     [:div.flex-auto.py3 (slideout-nav/logo "mobile-header-logo" "40px")]
+     [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]
      (shopping-bag {:style     {:height "70px" :width "70px"}
                     :data-test "mobile-cart"}
                    cart)]]))
@@ -204,7 +204,7 @@
 (def minimal-component
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (slideout-nav/logo "minimal-header-logo" "40px")]]))
+    [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]]))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
