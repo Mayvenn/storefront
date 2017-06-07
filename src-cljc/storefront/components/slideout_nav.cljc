@@ -17,6 +17,14 @@
             [storefront.components.ui :as ui]
             [clojure.set :as set]))
 
+(def blog-url "https://blog.mayvenn.com")
+
+(defn instagram-url [instagram-account]
+  (str "http://instagram.com/" instagram-account))
+
+(defn styleseat-url [styleseat-account]
+  (str "https://www.styleseat.com/v/" styleseat-account))
+
 (defn promo-bar [promo-data]
   (component/build promotion-banner/component promo-data nil))
 
@@ -62,12 +70,12 @@
 
 (defn ^:private instagram-link [instagram-account]
   [social-link
-   {:href (str "http://instagram.com/" instagram-account)}
+   {:href (instagram-url instagram-account)}
    "Follow"])
 
 (defn ^:private styleseat-link [styleseat-account]
   [social-link
-   {:href (str "https://www.styleseat.com/v/" styleseat-account)}
+   {:href (styleseat-url styleseat-account)}
    "Book"])
 
 (def header-image-size 36)
@@ -185,7 +193,7 @@
    [:li (menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                          :data-test "content-guarantee")
                   "Our guarantee")]
-   [:li (menu-row {:href "https://blog.mayvenn.com"}
+   [:li (menu-row {:href blog-url}
                   "Real Beauty blog")]
    [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
                          :data-test "content-about-us")

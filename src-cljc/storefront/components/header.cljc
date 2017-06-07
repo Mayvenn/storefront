@@ -54,13 +54,13 @@
 
 (defn ^:private instagram-link [instagram-account]
   (drop-down-row
-   {:href (str "http://instagram.com/" instagram-account)}
+   {:href (slideout-nav/instagram-url instagram-account)}
    "Follow on"
    (social-icon (assets/path "/images/share/instagram-icon.png"))))
 
 (defn ^:private styleseat-link [styleseat-account]
   (drop-down-row
-   {:href (str "https://www.styleseat.com/v/" styleseat-account)}
+   {:href (slideout-nav/styleseat-url styleseat-account)}
    "Book on"
    (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
 
