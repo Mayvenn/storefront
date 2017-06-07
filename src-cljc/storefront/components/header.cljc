@@ -134,8 +134,8 @@
 (defmethod account-info ::slideout-nav/guest [_ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
-   " | No account? "
-   [:a.inherit-color (utils/route-to events/navigate-sign-up) "Sign up"]])
+   " | "
+   [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
 
 (def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
 (def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
