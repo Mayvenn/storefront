@@ -9,6 +9,7 @@
                :cljs [storefront.component :as component])
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.components.slideout-nav :as slideout-nav]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -42,19 +43,6 @@
    (when (pos? cart-quantity)
      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
       [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} cart-quantity]])])
-
-(def header-image-size 36)
-
-(defn ^:private stylist-portrait [portrait]
-  (ui/circle-picture {:class "mx-auto"
-                      :width (str header-image-size "px")}
-                     (ui/square-image portrait header-image-size)))
-
-(def ^:private add-portrait-cta
-  (component/html
-   [:a (utils/route-to events/navigate-stylist-account-profile)
-    [:img {:width (str header-image-size "px")
-           :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -94,22 +82,17 @@
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
   [:div.h6.flex.items-center.mt2
-   (let [stylist?        (-> signed-in ::as (= ::stylist))
-         portrait-status (:status portrait)]
-     (if (or (= "approved" portrait-status)
-             (and (= "pending" portrait-status)
-                  stylist?))
-       [:div.left.pr2 (stylist-portrait portrait)]
-       (if stylist?
-         [:div.left.pr2 add-portrait-cta]
-         [:div {:style {:height (str header-image-size "px")}}])))
+   (case (slideout-nav/portrait-status signed-in portrait)
+     ::slideout-nav/show-what-we-have [:div.left.pr2 (slideout-nav/stylist-portrait portrait)]
+     ::slideout-nav/ask-for-portrait  [:div.left.pr2 slideout-nav/add-portrait-cta]
+     ::slideout-nav/show-nothing      [:div.left {:style {:height (str slideout-nav/header-image-size "px")}}])
    [:div.dark-gray
     "Welcome to " [:span.black.medium store-nickname "'s"] " shop"
     (when expandable?
       (expand-icon expanded?))]])
 
 (defn store-info [signed-in {:keys [expanded? gallery? instagram-account styleseat-account] :as store}]
-  (when (-> signed-in ::to (= ::marketplace))
+  (when (-> signed-in ::slideout-nav/to (= ::slideout-nav/marketplace))
     (let [rows (cond-> []
                  gallery?          (conj gallery-link)
                  styleseat-account (conj (styleseat-link styleseat-account))
@@ -125,9 +108,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _] (::as signed-in)))
+(defmulti account-info (fn [signed-in _] (::slideout-nav/as signed-in)))
 
-(defmethod account-info ::user [_ {:keys [email expanded?]}]
+(defmethod account-info ::slideout-nav/user [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -142,7 +125,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::stylist [_ {:keys [email expanded?]}]
+(defmethod account-info ::slideout-nav/stylist [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -161,7 +144,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::guest [_ _]
+(defmethod account-info ::slideout-nav/guest [_ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | No account? "
@@ -214,7 +197,7 @@
        [:div.right
         [:div.h6.my2.flex.items-center
          (account-info signed-in user)
-         [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
+         [:div.pl2 (shopping-bag {:style {:height (str slideout-nav/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  (:cart-quantity cart))]]]
        [:div.absolute.bottom-0.left-0.right-0
@@ -233,42 +216,12 @@
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
 
-(defn signed-in [data]
-  (let [as-stylist? (stylists/own-store? data)
-        as-user?    (get-in data keypaths/user-email)
-        store-slug  (get-in data (conj keypaths/store :store_slug))]
-    {::at-all (or as-stylist? as-user?)
-     ::as     (cond
-                as-stylist? ::stylist
-                as-user?    ::user
-                :else       ::guest)
-     ::to     (if (contains? #{"store" "shop"} store-slug)
-                ::dtc
-                ::marketplace)}))
-
 (defn query [data]
-  ;; TODO: these are very similar to slideout nav queries... unify them somehow?
-  (let [named-searches (named-searches/current-named-searches data)
-        signed-in      (signed-in data)]
-    {:signed-in signed-in
-     :store     (-> (get-in data keypaths/store)
-                    (set/rename-keys {:store_slug        :store-slug
-                                      :store_nickname    :store-nickname
-                                      :instagram_account :instagram-account
-                                      :styleseat_account :styleseat-account})
-                    (assoc :gallery? (stylists/gallery? data)
-                           :expanded? (get-in data keypaths/store-info-expanded)))
-     :user      {:expanded? (get-in data keypaths/account-menu-expanded)
-                 :email     (get-in data keypaths/user-email)}
-     :cart      {:cart-quantity (orders/product-quantity (get-in data keypaths/order))}
-     :shopping  {:expanded? (get-in data keypaths/shop-menu-expanded)
-                 :sections  (cond-> [{:title "Shop hair"
-                                      :items (filter named-searches/is-extension? named-searches)}
-                                     {:title "Shop closures & frontals"
-                                      :items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                              (-> signed-in ::as (= ::stylist))
-                              (conj {:title "Stylist exclusives"
-                                     :items (filter named-searches/is-stylist-product? named-searches)}))}}))
+  (-> (slideout-nav/query data)
+      (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
+      (assoc-in [:store :expanded?] (get-in data keypaths/store-info-expanded))
+      (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
+      (assoc-in [:cart :cart-quantity] (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))

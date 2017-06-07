@@ -73,12 +73,12 @@
 
 (def header-image-size 36)
 
-(defn ^:private stylist-portrait [portrait]
+(defn stylist-portrait [portrait]
   (ui/circle-picture {:class "mx-auto"
                       :width (str header-image-size "px")}
                      (ui/square-image portrait header-image-size)))
 
-(def ^:private add-portrait-cta
+(def add-portrait-cta
   (component/html
    [:a (utils/route-to events/navigate-stylist-account-profile)
     [:img {:width (str header-image-size "px")
@@ -93,17 +93,28 @@
                        instagram-account (conj (instagram-link instagram-account))
                        styleseat-account (conj (styleseat-link styleseat-account))))]])
 
+(defn portrait-status [signed-in portrait]
+  (let [stylist? (-> signed-in ::as (= ::stylist))
+        status   (:status portrait)]
+    (cond
+      (or (= "approved" status)
+          (and (= "pending" status)
+               stylist?))
+      ::show-what-we-have
+
+      stylist?
+      ::ask-for-portrait
+
+      :else
+      ::show-nothing)))
+
 (defn store-info-marquee [signed-in {:keys [store-slug portrait] :as store}]
   (when (-> signed-in ::to (= ::marketplace))
     [:div.my3.flex
-     (let [stylist?        (-> signed-in ::as (= ::stylist))
-           portrait-status (:status portrait)]
-       (if (or (= "approved" portrait-status)
-               (and (= "pending" portrait-status)
-                    stylist?))
-         [:div.left.self-center.pr2 (stylist-portrait portrait)]
-         (when stylist?
-           [:div.left.self-center.pr2 add-portrait-cta])))
+     (case (portrait-status signed-in portrait)
+       ::show-what-we-have [:div.left.self-center.pr2 (stylist-portrait portrait)]
+       ::ask-for-portrait  [:div.left.self-center.pr2 add-portrait-cta]
+       ::show-nothing      nil)
      (store-actions store)]))
 
 (defn account-info-marquee [signed-in {:keys [email store-credit]}]
