@@ -114,7 +114,7 @@
       :else
       ::show-nothing)))
 
-(defn store-info-marquee [signed-in {:keys [store-slug portrait] :as store}]
+(defn store-info-marquee [signed-in {:keys [portrait] :as store}]
   (when (-> signed-in ::to (= ::marketplace))
     [:div.my3.flex
      (case (portrait-status signed-in portrait)
@@ -133,42 +133,50 @@
      (when (pos? store-credit)
        [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
 
-(defmulti actions-marquee ::as)
-(defmethod actions-marquee ::stylist [_]
-  [:div
+(def stylist-actions
+  (component/html
+   [:div
+    (marquee-row
+     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
+                             :data-test "account-settings")
+                      "Manage account")
+     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                             :data-test "share-your-store")
+                      "Share your store"))
+    (marquee-row
+     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-commissions)
+                             :data-test "dashboard")
+                      "Dashboard")
+     (ui/ghost-button stylists/community-url
+                      "Community"))]))
+
+(def user-actions
+  (component/html
    (marquee-row
-    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
+    (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
                             :data-test "account-settings")
                      "Manage account")
-    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                            :data-test "share-your-store")
-                     "Share your store"))
+    (ui/ghost-button (utils/route-to events/navigate-account-referrals)
+                     "Refer a friend"))))
+
+(def guest-actions
+  (component/html
    (marquee-row
-    (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-commissions)
-                            :data-test "dashboard")
-                     "Dashboard")
-    (ui/ghost-button stylists/community-url
-                     "Community"))])
+    (ui/ghost-button (assoc (utils/route-to events/navigate-sign-in)
+                            :data-test "sign-in")
+                     "Sign in")
+    [:div.h6.col-12.center.dark-gray
+     [:div "No account?"]
+     [:a.inherit-color.underline
+      (assoc (utils/route-to events/navigate-sign-up)
+             :data-test "sign-up")
+      "Sign up now, get offers!"]])))
 
-(defmethod actions-marquee ::user [_]
-  (marquee-row
-   (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
-                           :data-test "account-settings")
-                    "Manage account")
-   (ui/ghost-button (utils/route-to events/navigate-account-referrals)
-                    "Refer a friend")))
-
-(defmethod actions-marquee ::guest [_]
-  (marquee-row
-   (ui/ghost-button (assoc (utils/route-to events/navigate-sign-in)
-                           :data-test "sign-in")
-                    "Sign in")
-   [:div.h6.col-12.center.dark-gray
-    [:div "No account?"]
-    [:a.inherit-color.underline
-     (assoc (utils/route-to events/navigate-sign-up)
-            :data-test "sign-up")
-     "Sign up now, get offers!"]]))
+(defn actions-marquee [signed-in]
+  (case (-> signed-in ::as)
+    ::stylist stylist-actions
+    ::user    user-actions
+    ::guest   guest-actions))
 
 (defn menu-row [& content]
   [:div.border-bottom.border-gray
