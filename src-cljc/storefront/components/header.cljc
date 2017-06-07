@@ -35,14 +35,14 @@
            :data-test data-test-value
            :content (str "https:" (assets/path "/images/header_logo.svg")))]))
 
-(defn shopping-bag [opts cart-quantity]
+(defn shopping-bag [opts {:keys [quantity]}]
   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
                                     opts)
    (svg/bag {:class (str "absolute overlay m-auto "
-                         (if (pos? cart-quantity) "fill-navy" "fill-black"))})
-   (when (pos? cart-quantity)
+                         (if (pos? quantity) "fill-navy" "fill-black"))})
+   (when (pos? quantity)
      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} cart-quantity]])])
+      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -199,7 +199,7 @@
          (account-info signed-in user)
          [:div.pl2 (shopping-bag {:style {:height (str slideout-nav/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
-                                 (:cart-quantity cart))]]]
+                                 cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (logo "desktop-header-logo" "60px")]
         [:div.mb1 menu]]]]
@@ -209,7 +209,7 @@
      [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
      (shopping-bag {:style     {:height "70px" :width "70px"}
                     :data-test "mobile-cart"}
-                   (:cart-quantity cart))]]))
+                   cart)]]))
 
 (defn minimal-component [_ _ _]
   (component/create
@@ -221,7 +221,7 @@
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (assoc-in [:store :expanded?] (get-in data keypaths/store-info-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:cart :cart-quantity] (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
