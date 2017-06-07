@@ -198,7 +198,7 @@
   (let [col-size (str "col col-" (/ 12 (count fields)))
         some-errors? (some (comp seq :errors) fields)]
     [:div.mb2
-     (into [:div.clearfix]
+     (into [:div.clearfix.stacking-context]
            (concat
             (for [[idx {:keys [label keypath value errors] :as field}]
                   (map-indexed vector fields)
