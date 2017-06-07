@@ -29,18 +29,17 @@
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
-(def logo
-  (component/html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-    (assoc (utils/route-to events/navigate-home)
-           :style {:height "40px"}
-           :title "Mayvenn"
-           :item-prop "logo"
-           :data-test "header-logo"
-           :content (str "https:" (assets/path "/images/header_logo.svg")))]))
+(defn logo [data-test-value height]
+  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+   (assoc (utils/route-to events/navigate-home)
+          :style {:height height}
+          :title "Mayvenn"
+          :item-prop "logo"
+          :data-test data-test-value
+          :content (str "https:" (assets/path "/images/header_logo.svg")))])
 
 (def burger-header
-  (component/html [:div.bg-white menu-x [:div.center.col-12.p3 logo]]))
+  (component/html [:div.bg-white menu-x [:div.center.col-12.p3 (logo "header-logo" "40px")]]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto

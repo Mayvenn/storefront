@@ -25,16 +25,6 @@
     [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
     [:div.border-bottom.border-dark-gray {:style {:height "15px"}}]]))
 
-(defn logo [data-test-value height]
-  (component/html
-   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-    (assoc (utils/route-to events/navigate-home)
-           :style {:height height}
-           :title "Mayvenn"
-           :item-prop "logo"
-           :data-test data-test-value
-           :content (str "https:" (assets/path "/images/header_logo.svg")))]))
-
 (defn shopping-bag [opts {:keys [quantity]}]
   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
                                     opts)
@@ -201,12 +191,12 @@
                                   :data-test "desktop-cart"}
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (logo "desktop-header-logo" "60px")]
+        [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
         [:div.mb1 menu]]]]
      (shop-section shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
-     [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
+     [:div.flex-auto.py3 (slideout-nav/logo "mobile-header-logo" "40px")]
      (shopping-bag {:style     {:height "70px" :width "70px"}
                     :data-test "mobile-cart"}
                    cart)]]))
@@ -214,7 +204,7 @@
 (defn minimal-component [_ _ _]
   (component/create
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
+    [:div.flex-auto.py3 (slideout-nav/logo "minimal-header-logo" "40px")]]))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
