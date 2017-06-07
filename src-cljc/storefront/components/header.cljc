@@ -140,6 +140,9 @@
    " | No account? "
    [:a.inherit-color (utils/route-to events/navigate-sign-up) "Sign up"]])
 
+(def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
+(def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
+
 (defn menu-link [opts text]
   [:a.h5.medium.inherit-color.py2
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
@@ -149,17 +152,17 @@
   (component/html
    [:div.center
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
-                      :on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus))
+                      :on-mouse-enter close-shopping)
      "Shop looks")
     (menu-link (assoc (utils/route-to events/navigate-categories)
-                      :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
-                      :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded))
+                      :on-mouse-enter open-shopping
+                      :on-click       open-shopping)
      "Shop hair")
     (menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                      :on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus))
+                      :on-mouse-enter close-shopping)
      "Our Guarantee")
-    (menu-link {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
-                :href           "https://blog.mayvenn.com"}
+    (menu-link {:href           slideout-nav/blog-url
+                :on-mouse-enter close-shopping}
      "Real Beauty")]))
 
 (defn shop-section [{:keys [expanded? sections]}]
@@ -180,7 +183,7 @@
   (component/create
    [:div
     [:div.hide-on-mb.relative
-     {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+     {:on-mouse-leave close-shopping}
      [:div.relative.border-bottom.border-gray {:style {:height "150px"}}
       [:div.max-960.mx-auto
        [:div.left (store-info signed-in store)]
