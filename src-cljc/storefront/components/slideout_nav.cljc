@@ -128,7 +128,9 @@
     [:div.my3
      [:div.h7.medium "Signed in with:"]
      [:a.teal.h5
-      (utils/route-to events/navigate-account-manage)
+      (utils/route-to (if (-> signed-in ::as (= ::stylist))
+                        events/navigate-stylist-account-profile
+                        events/navigate-account-manage))
       email]
      (when (pos? store-credit)
        [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
