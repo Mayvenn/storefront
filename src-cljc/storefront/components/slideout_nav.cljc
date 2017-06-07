@@ -17,8 +17,6 @@
             [storefront.components.ui :as ui]
             [clojure.set :as set]))
 
-(def signed-in? #{::signed-in-as-user ::signed-in-as-stylist})
-
 (defn promo-bar [promo-data]
   (component/build promotion-banner/component promo-data nil))
 
@@ -73,10 +71,18 @@
    {:href (str "https://www.styleseat.com/v/" styleseat-account)}
    "Book"])
 
-(defn ^:private stylist-portrait [portrait size]
+(def header-image-size 36)
+
+(defn ^:private stylist-portrait [portrait]
   (ui/circle-picture {:class "mx-auto"
-                      :width (str size "px")}
-                     (ui/square-image portrait size)))
+                      :width (str header-image-size "px")}
+                     (ui/square-image portrait header-image-size)))
+
+(def ^:private add-portrait-cta
+  (component/html
+   [:a (utils/route-to events/navigate-stylist-account-profile)
+    [:img {:width (str header-image-size "px")
+           :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]]))
 
 (defn store-actions [{:keys [store-nickname instagram-account styleseat-account gallery?]}]
   [:div
@@ -87,16 +93,21 @@
                        instagram-account (conj (instagram-link instagram-account))
                        styleseat-account (conj (styleseat-link styleseat-account))))]])
 
-(defn store-info-marquee [{:keys [store-slug portrait] :as store}]
-  (when-not (#{"shop" "store"} store-slug)
+(defn store-info-marquee [signed-in {:keys [store-slug portrait] :as store}]
+  (when (-> signed-in ::to (= ::marketplace))
     [:div.my3.flex
-     (when portrait
-       [:div.left.self-center.pr2
-        (stylist-portrait portrait 36)])
+     (let [stylist?        (-> signed-in ::as (= ::stylist))
+           portrait-status (:status portrait)]
+       (if (or (= "approved" portrait-status)
+               (and (= "pending" portrait-status)
+                    stylist?))
+         [:div.left.self-center.pr2 (stylist-portrait portrait)]
+         (when stylist?
+           [:div.left.self-center.pr2 add-portrait-cta])))
      (store-actions store)]))
 
-(defn account-info-marquee [{:keys [email store-credit signed-in-state]}]
-  (when (signed-in? signed-in-state)
+(defn account-info-marquee [signed-in {:keys [email store-credit]}]
+  (when (-> signed-in ::at-all)
     [:div.my3
      [:div.h7.medium "Signed in with:"]
      [:a.teal.h5
@@ -105,8 +116,8 @@
      (when (pos? store-credit)
        [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
 
-(defmulti actions-marquee :signed-in-state)
-(defmethod actions-marquee ::signed-in-as-stylist [_]
+(defmulti actions-marquee ::as)
+(defmethod actions-marquee ::stylist [_]
   [:div
    (marquee-row
     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
@@ -122,7 +133,7 @@
     (ui/ghost-button stylists/community-url
                      "Community"))])
 
-(defmethod actions-marquee ::signed-in-as-user [_]
+(defmethod actions-marquee ::user [_]
   (marquee-row
    (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
                            :data-test "account-settings")
@@ -130,7 +141,7 @@
    (ui/ghost-button (utils/route-to events/navigate-account-referrals)
                     "Refer a friend")))
 
-(defmethod actions-marquee ::signed-out [_]
+(defmethod actions-marquee ::guest [_]
   (marquee-row
    (ui/ghost-button (assoc (utils/route-to events/navigate-sign-in)
                            :data-test "sign-in")
@@ -147,15 +158,15 @@
    {:style {:padding "3px 0 2px"}}
    (into [:a.block.py1.h5.inherit-color] content)])
 
-(defn menu-area [shop-sections]
+(defn menu-area [shopping]
   [:ul.list-reset.mb3
    [:li (menu-row (utils/route-to events/navigate-shop-by-look)
                   "Shop looks")]
-   (for [{:keys [title shop-items]} shop-sections]
+   (for [{:keys [title items]} (:sections shopping)]
      [:li {:key title}
       (menu-row title)
       [:ul.list-reset.ml6
-       (for [{:keys [name slug]} shop-items]
+       (for [{:keys [name slug]} items]
          [:li {:key slug}
           (menu-row (assoc (utils/route-to events/navigate-category {:named-search-slug slug})
                            :data-test (str "menu-" slug))
@@ -183,52 +194,56 @@
                      "Sign out")
     [:div])))
 
-(defn component [{:keys [user store promo-data shop-sections] :as data} owner opts]
+(defn component [{:keys [user store promo-data shopping signed-in] :as data} owner opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4.border-bottom.border-gray
      (promo-bar promo-data)
      burger-header]
     [:div.px6.border-bottom.border-gray
-     (store-info-marquee store)
-     (account-info-marquee user)
+     (store-info-marquee signed-in store)
+     (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee user)]]
+      (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area shop-sections)]
-    (when (-> user :signed-in-state signed-in?)
+     (menu-area shopping)]
+    (when (-> signed-in ::at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
-(defn signed-in-state [data]
-  (if (stylists/own-store? data)
-    ::signed-in-as-stylist
-    (if (get-in data keypaths/user-email)
-      ::signed-in-as-user
-      ::signed-out)))
+(defn signed-in [data]
+  (let [as-stylist? (stylists/own-store? data)
+        as-user?    (get-in data keypaths/user-email)
+        store-slug  (get-in data (conj keypaths/store :store_slug))]
+    {::at-all (or as-stylist? as-user?)
+     ::as     (cond
+                as-stylist? ::stylist
+                as-user?    ::user
+                :else       ::guest)
+     ::to     (if (contains? #{"store" "shop"} store-slug)
+                ::dtc
+                ::marketplace)}))
 
 (defn query [data]
-  (let [signed-in-state (signed-in-state data)
-        user            {:email           (get-in data keypaths/user-email)
-                         :store-credit    (get-in data keypaths/user-total-available-store-credit)
-                         :signed-in-state signed-in-state}
-        store           (-> (get-in data keypaths/store)
-                            (set/rename-keys {:store_slug        :store-slug
-                                              :store_nickname    :store-nickname
-                                              :instagram_account :instagram-account
-                                              :styleseat_account :styleseat-account})
-                            (assoc :gallery? (stylists/gallery? data)))
-        named-searches  (named-searches/current-named-searches data)]
-    {:promo-data    (promotion-banner/query data)
-     :user          user
-     :store         store
-     :shop-sections (cond-> [{:title "Shop hair"
-                              :shop-items (filter named-searches/is-extension? named-searches)}
-                             {:title "Shop closures & frontals"
-                              :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                      (= ::signed-in-as-stylist signed-in-state)
-                      (conj {:title      "Stylist exclusives"
-                             :shop-items (filter named-searches/is-stylist-product? named-searches)}))}))
+  (let [named-searches (named-searches/current-named-searches data)
+        signed-in      (signed-in data)]
+    {:signed-in  signed-in
+     :promo-data (promotion-banner/query data)
+     :user       {:email        (get-in data keypaths/user-email)
+                  :store-credit (get-in data keypaths/user-total-available-store-credit)}
+     :store      (-> (get-in data keypaths/store)
+                     (set/rename-keys {:store_slug        :store-slug
+                                       :store_nickname    :store-nickname
+                                       :instagram_account :instagram-account
+                                       :styleseat_account :styleseat-account})
+                     (assoc :gallery? (stylists/gallery? data)))
+     :shopping   {:sections (cond-> [{:title "Shop hair"
+                                      :items (filter named-searches/is-extension? named-searches)}
+                                     {:title "Shop closures & frontals"
+                                      :items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                              (-> signed-in ::as (= ::stylist))
+                              (conj {:title "Stylist exclusives"
+                                     :items (filter named-searches/is-stylist-product? named-searches)}))}}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

@@ -16,16 +16,9 @@
             [clojure.set :as set]
             [clojure.string :as str]))
 
-(def sans-stylist? #{"store" "shop"})
-
-(def signed-in? #{::signed-in-as-user ::signed-in-as-stylist})
-
-(defn fake-href-menu-expand [keypath]
-  (utils/fake-href events/control-menu-expand {:keypath keypath}))
-
 (def hamburger
   (component/html
-   [:a.block.px3.py4 (assoc (fake-href-menu-expand keypaths/menu-expanded)
+   [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand {:keypath keypaths/menu-expanded})
                             :style {:width "70px"}
                             :data-test "hamburger")
     [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
@@ -56,6 +49,12 @@
   (ui/circle-picture {:class "mx-auto"
                       :width (str header-image-size "px")}
                      (ui/square-image portrait header-image-size)))
+
+(def ^:private add-portrait-cta
+  (component/html
+   [:a (utils/route-to events/navigate-stylist-account-profile)
+    [:img {:width (str header-image-size "px")
+           :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -93,42 +92,48 @@
                       (assets/path "/images/icons/collapse.png")
                       (assets/path "/images/icons/expand.png"))}])
 
-(defn store-welcome [{:keys [store-nickname portrait expanded?]} expandable?]
+(defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
   [:div.h6.flex.items-center.mt2
-   (when portrait
-     [:div.left.pr2
-      (stylist-portrait portrait)])
+   (let [stylist?        (-> signed-in ::as (= ::stylist))
+         portrait-status (:status portrait)]
+     (if (or (= "approved" portrait-status)
+             (and (= "pending" portrait-status)
+                  stylist?))
+       [:div.left.pr2 (stylist-portrait portrait)]
+       (if stylist?
+         [:div.left.pr2 add-portrait-cta]
+         [:div {:style {:height (str header-image-size "px")}}])))
    [:div.dark-gray
     "Welcome to " [:span.black.medium store-nickname "'s"] " shop"
     (when expandable?
       (expand-icon expanded?))]])
 
-(defn store-info [{:keys [store-slug store-nickname portrait expanded? gallery? instagram-account styleseat-account] :as store}]
-  (when-not (sans-stylist? store-slug)
+(defn store-info [signed-in {:keys [expanded? gallery? instagram-account styleseat-account] :as store}]
+  (when (-> signed-in ::to (= ::marketplace))
     (let [rows (cond-> []
                  gallery?          (conj gallery-link)
                  styleseat-account (conj (styleseat-link styleseat-account))
                  instagram-account (conj (instagram-link instagram-account)))]
       (if-not (boolean (seq rows))
-        (store-welcome store false)
+        (store-welcome signed-in store false)
         (ui/drop-down
          expanded?
          keypaths/store-info-expanded
-         [:a (store-welcome store true)]
+         [:a (store-welcome signed-in store true)]
          [:div.bg-white.absolute.left-0
           (for [[idx row] (map-indexed vector rows)]
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info :signed-in-state)
+(defmulti account-info (fn [signed-in _] (::as signed-in)))
 
-(defmethod account-info ::signed-in-as-user [{:keys [email expanded?]}]
+(defmethod account-info ::user [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email] " | "
-    "Manage account" (expand-icon expanded?)]
+    "Signed in with: " [:span.teal email]
+    " | Manage account" (expand-icon expanded?)]
    [:div.bg-white.absolute.right-0
     [:div
      (drop-down-row (utils/route-to events/navigate-account-manage) "Manage account")]
@@ -137,13 +142,13 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::signed-in-as-stylist [{:keys [email expanded?]}]
+(defmethod account-info ::stylist [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
-    "Signed in with: " [:span.teal email] " | "
-    "My dashboard" (expand-icon expanded?)]
+    "Signed in with: " [:span.teal email]
+    " | My dashboard" (expand-icon expanded?)]
    [:div.bg-white.absolute.right-0
     [:div
      (drop-down-row (utils/route-to events/navigate-stylist-dashboard-commissions) "My dashboard")]
@@ -156,13 +161,11 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::signed-out [_]
+(defmethod account-info ::guest [_ _]
   [:div.h6
-   [:a.inherit-color (utils/route-to events/navigate-sign-in)
-    "Sign in"]
+   [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | No account? "
-   [:a.inherit-color (utils/route-to events/navigate-sign-up)
-    "Sign up"]])
+   [:a.inherit-color (utils/route-to events/navigate-sign-up) "Sign up"]])
 
 (defn menu-link [opts text]
   [:a.h5.medium.inherit-color.py2
@@ -186,38 +189,38 @@
                 :href           "https://blog.mayvenn.com"}
      "Real Beauty")]))
 
-(defn shop-section [{:keys [expanded? sections] :as shop}]
+(defn shop-section [{:keys [expanded? sections]}]
   (when expanded?
     [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
      [:ul.list-reset.clearfix.max-960.center.mx-auto.my6
-      (for [{:keys [title shop-items]} sections]
+      (for [{:keys [title items]} sections]
         [:li.align-top.left-align.inline-block.col-4.px2 {:key title}
          [:div.mb6.medium title]
          [:ul.list-reset
-          (for [{:keys [slug name]} shop-items]
+          (for [{:keys [slug name]} items]
             [:li {:key slug}
              [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
               (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
               (str/capitalize name)]])]])]]))
 
-(defn component [{:keys [store user cart shop]} _ _]
+(defn component [{:keys [store user cart shopping signed-in]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
      {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
      [:div.relative.border-bottom.border-gray {:style {:height "150px"}}
       [:div.max-960.mx-auto
-       [:div.left (store-info store)]
+       [:div.left (store-info signed-in store)]
        [:div.right
         [:div.h6.my2.flex.items-center
-         (account-info user)
+         (account-info signed-in user)
          [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  (:cart-quantity cart))]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (logo "desktop-header-logo" "60px")]
         [:div.mb1 menu]]]]
-     (shop-section shop)]
+     (shop-section shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
@@ -230,36 +233,42 @@
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
 
-(defn signed-in-state [data]
-  (if (stylists/own-store? data)
-    ::signed-in-as-stylist
-    (if (get-in data keypaths/user-email)
-      ::signed-in-as-user
-      ::signed-out)))
+(defn signed-in [data]
+  (let [as-stylist? (stylists/own-store? data)
+        as-user?    (get-in data keypaths/user-email)
+        store-slug  (get-in data (conj keypaths/store :store_slug))]
+    {::at-all (or as-stylist? as-user?)
+     ::as     (cond
+                as-stylist? ::stylist
+                as-user?    ::user
+                :else       ::guest)
+     ::to     (if (contains? #{"store" "shop"} store-slug)
+                ::dtc
+                ::marketplace)}))
 
 (defn query [data]
   ;; TODO: these are very similar to slideout nav queries... unify them somehow?
-  (let [named-searches  (named-searches/current-named-searches data)
-        signed-in-state (signed-in-state data)]
-    {:store (-> (get-in data keypaths/store)
-                (set/rename-keys {:store_slug        :store-slug
-                                  :store_nickname    :store-nickname
-                                  :instagram_account :instagram-account
-                                  :styleseat_account :styleseat-account})
-                (assoc :gallery? (stylists/gallery? data)
-                       :expanded? (get-in data keypaths/store-info-expanded)))
-     :user  {:expanded?       (get-in data keypaths/account-menu-expanded)
-             :email           (get-in data keypaths/user-email)
-             :signed-in-state signed-in-state}
-     :cart  {:cart-quantity (orders/product-quantity (get-in data keypaths/order))}
-     :shop  {:expanded? (get-in data keypaths/shop-menu-expanded)
-             :sections  (cond-> [{:title "Shop hair"
-                                  :shop-items (filter named-searches/is-extension? named-searches)}
-                                 {:title "Shop closures & frontals"
-                                  :shop-items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                          (= ::signed-in-as-stylist signed-in-state)
-                          (conj {:title      "Stylist exclusives"
-                                 :shop-items (filter named-searches/is-stylist-product? named-searches)}))}}))
+  (let [named-searches (named-searches/current-named-searches data)
+        signed-in      (signed-in data)]
+    {:signed-in signed-in
+     :store     (-> (get-in data keypaths/store)
+                    (set/rename-keys {:store_slug        :store-slug
+                                      :store_nickname    :store-nickname
+                                      :instagram_account :instagram-account
+                                      :styleseat_account :styleseat-account})
+                    (assoc :gallery? (stylists/gallery? data)
+                           :expanded? (get-in data keypaths/store-info-expanded)))
+     :user      {:expanded? (get-in data keypaths/account-menu-expanded)
+                 :email     (get-in data keypaths/user-email)}
+     :cart      {:cart-quantity (orders/product-quantity (get-in data keypaths/order))}
+     :shopping  {:expanded? (get-in data keypaths/shop-menu-expanded)
+                 :sections  (cond-> [{:title "Shop hair"
+                                      :items (filter named-searches/is-extension? named-searches)}
+                                     {:title "Shop closures & frontals"
+                                      :items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                              (-> signed-in ::as (= ::stylist))
+                              (conj {:title "Stylist exclusives"
+                                     :items (filter named-searches/is-stylist-product? named-searches)}))}}))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
