@@ -204,8 +204,8 @@
                     :data-test "mobile-cart"}
                    cart)]]))
 
-(defn minimal-component [_ _ _]
-  (component/create
+(def minimal-component
+  (component/html
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3 (slideout-nav/logo "minimal-header-logo" "40px")]]))
 
@@ -218,5 +218,5 @@
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
-    (component/build minimal-component {} nil)
+    minimal-component
     (component/build component (query data) nil)))
