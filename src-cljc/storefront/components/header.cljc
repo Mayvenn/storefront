@@ -13,7 +13,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as str]))
 
 (def sans-stylist? #{"store" "shop"})
 
@@ -171,34 +172,53 @@
 (def menu
   (component/html
    [:div.center
-    (menu-link (utils/route-to events/navigate-shop-by-look)
+    (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
+                      :on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus))
      "Shop looks")
     (menu-link (assoc (utils/route-to events/navigate-categories)
                       :on-mouse-enter (utils/expand-menu-callback keypaths/shop-menu-expanded)
                       :on-click       (utils/expand-menu-callback keypaths/shop-menu-expanded))
      "Shop hair")
-    (menu-link (utils/route-to events/navigate-content-guarantee)
+    (menu-link (assoc (utils/route-to events/navigate-content-guarantee)
+                      :on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus))
      "Our Guarantee")
     (menu-link {:on-mouse-enter (utils/collapse-menus-callback keypaths/header-menus)
                 :href           "https://blog.mayvenn.com"}
      "Real Beauty")]))
 
-(defn component [{:keys [store user cart]} _ _]
+(defn shop-section [{:keys [expanded? sections] :as shop}]
+  (when expanded?
+    [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
+     [:ul.list-reset.clearfix.max-960.center.mx-auto.my6
+      (for [{:keys [title shop-items]} sections]
+        [:li.align-top.left-align.inline-block.col-4.px2 {:key title}
+         [:div.mb6.medium title]
+         [:ul.list-reset
+          (for [{:keys [slug name]} shop-items]
+            [:li {:key slug}
+             [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
+              (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+              (str/capitalize name)]])]])]]))
+
+(defn component [{:keys [store user cart shop]} _ _]
   (component/create
-   [:div.border-bottom.border-gray
-    [:div.hide-on-mb.relative {:style {:height "150px"}}
-     [:div.max-960.mx-auto
-      [:div.left (store-info store)]
-      [:div.right
-       [:div.h6.my2.flex.items-center
-        (account-info user)
-        [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
-                                 :data-test "desktop-cart"}
-                                (:cart-quantity cart))]]]
-      [:div.absolute.bottom-0.left-0.right-0
-       [:div.mb4 (logo "desktop-header-logo" "60px")]
-       [:div.mb1 menu]]]]
-    [:div.hide-on-tb-dt.flex.items-center
+   [:div
+    [:div.hide-on-mb.relative
+     {:on-mouse-leave (utils/collapse-menus-callback keypaths/header-menus)}
+     [:div.relative.border-bottom.border-gray {:style {:height "150px"}}
+      [:div.max-960.mx-auto
+       [:div.left (store-info store)]
+       [:div.right
+        [:div.h6.my2.flex.items-center
+         (account-info user)
+         [:div.pl2 (shopping-bag {:style {:height (str header-image-size "px") :width "28px"}
+                                  :data-test "desktop-cart"}
+                                 (:cart-quantity cart))]]]
+       [:div.absolute.bottom-0.left-0.right-0
+        [:div.mb4 (logo "desktop-header-logo" "60px")]
+        [:div.mb1 menu]]]]
+     (shop-section shop)]
+    [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (logo "mobile-header-logo" "40px")]
      (shopping-bag {:style     {:height "70px" :width "70px"}
