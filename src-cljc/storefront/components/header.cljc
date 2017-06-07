@@ -165,7 +165,7 @@
                 :on-mouse-enter close-shopping}
      "Real Beauty")]))
 
-(defn shop-section [{:keys [expanded? sections]}]
+(defn shopping-flyout [{:keys [expanded? sections]}]
   (when expanded?
     [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
      [:ul.list-reset.clearfix.max-960.center.mx-auto.my6
@@ -196,7 +196,7 @@
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
         [:div.mb1 menu]]]]
-     (shop-section shopping)]
+     (shopping-flyout shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (slideout-nav/logo "mobile-header-logo" "40px")]
