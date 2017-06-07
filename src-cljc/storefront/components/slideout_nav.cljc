@@ -235,26 +235,29 @@
                 ::dtc
                 ::marketplace)}))
 
-(defn query [data]
+(defn basic-query [data]
   (let [named-searches (named-searches/current-named-searches data)
         signed-in      (signed-in data)]
-    {:signed-in  signed-in
-     :promo-data (promotion-banner/query data)
-     :user       {:email        (get-in data keypaths/user-email)
-                  :store-credit (get-in data keypaths/user-total-available-store-credit)}
-     :store      (-> (get-in data keypaths/store)
-                     (set/rename-keys {:store_slug        :store-slug
-                                       :store_nickname    :store-nickname
-                                       :instagram_account :instagram-account
-                                       :styleseat_account :styleseat-account})
-                     (assoc :gallery? (stylists/gallery? data)))
-     :shopping   {:sections (cond-> [{:title "Shop hair"
-                                      :items (filter named-searches/is-extension? named-searches)}
-                                     {:title "Shop closures & frontals"
-                                      :items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                              (-> signed-in ::as (= ::stylist))
-                              (conj {:title "Stylist exclusives"
-                                     :items (filter named-searches/is-stylist-product? named-searches)}))}}))
+    {:signed-in signed-in
+     :user      {:email (get-in data keypaths/user-email)}
+     :store     (-> (get-in data keypaths/store)
+                    (set/rename-keys {:store_slug        :store-slug
+                                      :store_nickname    :store-nickname
+                                      :instagram_account :instagram-account
+                                      :styleseat_account :styleseat-account})
+                    (assoc :gallery? (stylists/gallery? data)))
+     :shopping  {:sections (cond-> [{:title "Shop hair"
+                                     :items (filter named-searches/is-extension? named-searches)}
+                                    {:title "Shop closures & frontals"
+                                     :items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                             (-> signed-in ::as (= ::stylist))
+                             (conj {:title "Stylist exclusives"
+                                    :items (filter named-searches/is-stylist-product? named-searches)}))}}))
+
+(defn query [data]
+  (-> (basic-query data)
+      (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
+      (assoc-in [:promo-data] (promotion-banner/query data))))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

@@ -217,7 +217,7 @@
     [:div.flex-auto.py3 (logo "minimal-header-logo" "40px")]]))
 
 (defn query [data]
-  (-> (slideout-nav/query data)
+  (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (assoc-in [:store :expanded?] (get-in data keypaths/store-info-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
