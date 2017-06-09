@@ -12,7 +12,7 @@
 (defn title [own-store? {:keys [store_nickname]}]
   [:div.p2.center
    [:h2 [:img {:style {:height "50px"}
-                  :src (assets/path "/images/icons/profile.png")}]]
+                  :src (assets/path "/images/icons/gallery-profile.png")}]]
    [:h1 (str store_nickname "'s Gallery")]
    [:p (if own-store?
          "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."
