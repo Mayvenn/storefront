@@ -41,6 +41,7 @@
     (-> secure-site-defaults
         (assoc :proxy true)
         (assoc-in [:security :hsts] false)
+        (assoc-in [:params :multipart] false)
         (assoc-in [:static :resources] false))))
 
 (defn parse-root-domain [server-name]
