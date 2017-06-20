@@ -23,7 +23,6 @@
                        [storefront.config :as config]])
 
             [storefront.accessors.experiments :as experiments]
-            [storefront.components.categories :as categories]
             [storefront.components.category :as category]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -72,7 +71,6 @@
          events/navigate-order-complete                 checkout-complete/built-component])
 
     events/navigate-home              home/built-component
-    events/navigate-categories        categories/built-component
     events/navigate-category          category/built-component
     events/navigate-shared-cart       shared-cart/built-component
     events/navigate-content-guarantee content/built-component

@@ -40,9 +40,6 @@
       (google-analytics/track-page path)
       (facebook-analytics/track-page path))))
 
-(defmethod perform-track events/navigate-categories [_ event args app-state]
-  (convert/track-conversion "view-categories"))
-
 (defmethod perform-track events/navigate-category [_ event args app-state]
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))

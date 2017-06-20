@@ -39,7 +39,6 @@
   ["" (merge static-page-routes
              style-guide-routes
              {"/"                                                (edn->bidi events/navigate-home)
-              "/categories"                                      (edn->bidi events/navigate-categories)
               ["/categories/hair/" :named-search-slug]           (edn->bidi events/navigate-category)
               ["/categories/hair/" :named-search-slug "/social"] (edn->bidi events/navigate-ugc-category)
               ["/products/" :product-slug]                       (edn->bidi events/navigate-product)

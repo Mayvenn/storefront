@@ -179,12 +179,20 @@
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-blonde-category-to-categories
+(deftest redirects-blonde-category-to-home
   (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/blonde")
                   storeback-shop-response
                   (fn [resp]
                     (is (= 302 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/categories"
+                    (is (= "https://shop.mayvenn.com/"
+                           (get-in resp [:headers "Location"]))))))
+
+(deftest redirects-categories-to-home
+  (assert-request (mock/request :get "https://shop.mayvenn.com/categories?utm_source=cats")
+                  storeback-shop-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)) (pr-str resp))
+                    (is (= "https://shop.mayvenn.com?utm_source=cats"
                            (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings

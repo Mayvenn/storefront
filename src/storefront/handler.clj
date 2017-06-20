@@ -165,7 +165,6 @@
 
 (def server-render-pages
   #{events/navigate-home
-    events/navigate-categories
     events/navigate-category
     events/navigate-content-help
     events/navigate-content-about-us
@@ -243,7 +242,7 @@
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
             events/navigate-category (if (= "blonde" (:named-search-slug params))
-                                       (redirect (store-url (:store_slug store) environment (assoc req :uri "/categories")))
+                                       (redirect (store-url (:store_slug store) environment (assoc req :uri "/")))
                                        (render-category render-ctx data req params))
             (html-response render-ctx data)))))))
 
@@ -332,6 +331,8 @@
                                                     "text/xml"))
                (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
                (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
+               (GET "/categories" {:keys [scheme server-name query-string]}
+                    (redirect (str (name scheme) "://" server-name (when (seq query-string) "?") query-string)))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)

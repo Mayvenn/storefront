@@ -38,16 +38,6 @@
 (defn tags-for-page [data]
   (->
    (condp = (get-in data keypaths/navigation-event)
-     events/navigate-categories [[:title {} "Weave hairstyles & sew-in styles | Mayvenn"]
-                                 [:meta {:property "og:title"
-                                         :content "100% Virgin Hair Extensions available in Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, Frontals."}]
-                                 [:meta {:name "description"
-                                         :content "100% Virgin Hair Extensions available in Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, Frontals."}]
-                                 [:meta {:property "og:type"
-                                         :content "website"}]
-                                 [:meta {:property "og:description"
-                                         :content "Mayvenn has your favorite hair styles. Choose from Straight Hair, Loose Wave Hair, Body Wave Hair, Deep Wave Hair, Curly Hair, Closures, & Frontals. FREE shipping & 30 Day Quality Guarantee included!"}]]
-
      events/navigate-sign-in    [[:title {} "Sign In | Mayvenn"]
                                  [:meta {:property "og:title"
                                          :content "100% human hair backed by our 30 Day Quality Guarantee. Sign In to your Mayvenn account."}]

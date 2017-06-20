@@ -151,7 +151,7 @@
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
-    (menu-link (assoc (utils/route-to events/navigate-categories)
+    (menu-link (assoc (utils/route-to events/navigate-home)
                       :on-mouse-enter open-shopping
                       :on-click       open-shopping)
      "Shop hair")
