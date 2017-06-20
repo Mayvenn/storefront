@@ -54,8 +54,5 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn newburger? [data]
-  (display-feature? data "new-burger"))
-
 (defn yaki-and-waterwave? [data]
   (display-feature? data "yaki-and-waterwave"))

@@ -512,18 +512,6 @@
   (handle-message events/flash-show-failure
                   {:message "The page you were looking for could not be found."}))
 
-;; TODO: remove the effects for events/control-menu-expand and
-;; events/control-menu-collapse-all when the newburger? experiment wins. They
-;; were only necessary when the slideout-nav hovered over the rest of the page.
-(defmethod perform-effects events/control-menu-expand [_ event {keypath :keypath} _ app-state]
-  (when (and
-         (not (experiments/newburger? app-state))
-         (#{keypaths/menu-expanded} keypath))
-    (set! (.. js/document -body -style -overflow) "hidden")))
-
-(defmethod perform-effects events/control-menu-collapse-all [_ _ _ _]
-  (set! (.. js/document -body -style -overflow) "auto"))
-
 (defmethod perform-effects events/control-sign-in-submit [_ event args _ app-state]
   (api/sign-in (get-in app-state keypaths/session-id)
                (stringer/browser-id)
