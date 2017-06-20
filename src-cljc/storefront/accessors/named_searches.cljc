@@ -28,7 +28,9 @@
        (filter #(-> % :product-ids set (contains? product-id)))
        first))
 
-(def new-named-search? #{"kinky-straight"})
+(def new-named-search? #{"kinky-straight"
+                         "yaki-straight"
+                         "water-wave"})
 
 (defn is-closure? [named-search] (some-> named-search :search :category set (contains? "closures")))
 (defn is-frontal? [named-search] (some-> named-search :search :category set (contains? "frontals")))
