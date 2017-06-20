@@ -266,7 +266,8 @@
                          adding-to-bag?
                          bagged-variants
                          ugc
-                         selected-variant]}
+                         selected-variant
+                         yaki-and-waterwave?]}
                  owner opts]
   (let [carousel-images   (images-from-variants named-search bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
@@ -293,7 +294,7 @@
             [:div
              (when needs-selections?
                [:div.border-bottom.border-light-gray.border-width-2
-                (for [step (bundle-builder/steps bundle-builder {})]
+                (for [step (bundle-builder/steps bundle-builder yaki-and-waterwave?)]
                   (step-html step))])
              [:div schema-org-offer-props
               [:div.my2
@@ -317,15 +318,16 @@
         bundle-builder   (get-in data keypaths/bundle-builder)
         variant-quantity (get-in data keypaths/browse-variant-quantity)
         selected-variant (bundle-builder/selected-variant bundle-builder)]
-    {:named-search       named-search
-     :bundle-builder     bundle-builder
-     :variant-quantity   variant-quantity
-     :selected-variant   selected-variant
-     :fetching-variants? (not (named-searches/products-loaded? data named-search))
-     :adding-to-bag?     (utils/requesting? data request-keys/add-to-bag)
-     :bagged-variants    (get-in data keypaths/browse-recently-added-variants)
-     :reviews            (reviews/query data)
-     :ugc                (ugc/query data)}))
+    {:named-search        named-search
+     :bundle-builder      bundle-builder
+     :variant-quantity    variant-quantity
+     :selected-variant    selected-variant
+     :fetching-variants?  (not (named-searches/products-loaded? data named-search))
+     :adding-to-bag?      (utils/requesting? data request-keys/add-to-bag)
+     :bagged-variants     (get-in data keypaths/browse-recently-added-variants)
+     :reviews             (reviews/query data)
+     :ugc                 (ugc/query data)
+     :yaki-and-waterwave? (experiments/yaki-and-waterwave? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

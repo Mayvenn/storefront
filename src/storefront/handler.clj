@@ -206,7 +206,7 @@
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id)))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id false)))))
           (when-not (seq user-token)
             (redirect (str "/login?path=" (:uri req)))))))))
 

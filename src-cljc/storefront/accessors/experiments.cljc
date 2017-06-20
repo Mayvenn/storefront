@@ -56,3 +56,6 @@
 
 (defn newburger? [data]
   (display-feature? data "new-burger"))
+
+(defn yaki-and-waterwave? [data]
+  (display-feature? data "yaki-and-waterwave"))

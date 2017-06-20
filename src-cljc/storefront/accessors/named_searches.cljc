@@ -10,8 +10,15 @@
              (get-in app-state keypaths/named-searches)))
 
 (defn current-named-searches [app-state]
-  (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug)
-             (get-in app-state keypaths/named-searches)))
+  (cond->> (get-in app-state keypaths/named-searches)
+    true
+    (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug))
+
+    (not (experiments/yaki-and-waterwave? app-state))
+    (remove (fn [named-search]
+              (when-let [style (some-> named-search :search :style set)]
+                (or (contains? style "yaki-straight")
+                    (contains? style "water-wave")))))))
 
 (defn products-loaded? [app-state named-search]
   (every? (products/loaded-ids app-state) (:product-ids named-search)))
