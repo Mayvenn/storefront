@@ -185,11 +185,17 @@
    {:style {:padding "3px 0 2px"}}
    (into [:a.block.py1.h5.inherit-color] content)])
 
-(defn menu-area [shopping]
+(defn menu-area [signed-in {:keys [named-searches]}]
   [:ul.list-reset.mb3
    [:li (menu-row (utils/route-to events/navigate-shop-by-look)
                   "Shop looks")]
-   (for [{:keys [title items]} (:sections shopping)]
+   (for [{:keys [title items]} (cond-> [{:title "Shop hair"
+                                         :items (filter named-searches/is-extension? named-searches)}
+                                        {:title "Shop closures & frontals"
+                                         :items (filter named-searches/is-closure-or-frontal? named-searches)}]
+                                 (-> signed-in ::as (= ::stylist))
+                                 (conj {:title "Stylist exclusives"
+                                        :items (filter named-searches/is-stylist-product? named-searches)}))]
      [:li {:key title}
       (menu-row title)
       [:ul.list-reset.ml6
@@ -233,7 +239,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area shopping)]
+     (menu-area signed-in shopping)]
     (when (-> signed-in ::at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -262,13 +268,7 @@
                                       :instagram_account :instagram-account
                                       :styleseat_account :styleseat-account})
                     (assoc :gallery? (stylists/gallery? data)))
-     :shopping  {:sections (cond-> [{:title "Shop hair"
-                                     :items (filter named-searches/is-extension? named-searches)}
-                                    {:title "Shop closures & frontals"
-                                     :items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                             (-> signed-in ::as (= ::stylist))
-                             (conj {:title "Stylist exclusives"
-                                    :items (filter named-searches/is-stylist-product? named-searches)}))}}))
+     :shopping  {:named-searches named-searches}}))
 
 (defn query [data]
   (-> (basic-query data)

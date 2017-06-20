@@ -162,19 +162,29 @@
                 :on-mouse-enter close-shopping}
      "Real Beauty")]))
 
-(defn shopping-flyout [{:keys [expanded? sections]}]
+(defn shopping-column [items]
+  [:ul.list-reset.col.col-4.px2
+   (for [{:keys [slug name]} items]
+     [:li {:key slug}
+      [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
+       (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+       (str/capitalize name)]])])
+
+(defn shopping-flyout [signed-in {:keys [expanded? named-searches]}]
   (when expanded?
-    [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
-     [:ul.list-reset.clearfix.max-960.center.mx-auto.my6
-      (for [{:keys [title items]} sections]
-        [:li.align-top.left-align.inline-block.col-4.px2 {:key title}
-         [:div.mb6.medium title]
-         [:ul.list-reset
-          (for [{:keys [slug name]} items]
-            [:li {:key slug}
-             [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
-              (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
-              (str/capitalize name)]])]])]]))
+    (let [partition-searches (comp (filter (fn [named-search]
+                                          (or (-> signed-in ::slideout-nav/as (= ::slideout-nav/stylist))
+                                              (not (named-searches/is-stylist-product? named-search))))) 
+                                (partition-all 6))]
+      [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
+       [:div.mx-auto.clearfix.my6
+        {:style {:width "580px"}}
+        (for [items (->> (filter named-searches/is-extension? named-searches)
+                         (sequence partition-searches))]
+          (shopping-column items))
+        (for [items (->> (remove named-searches/is-extension? named-searches)
+                         (sequence partition-searches))]
+          (shopping-column items))]])))
 
 (defn component [{:keys [store user cart shopping signed-in]} _ _]
   (component/create
@@ -193,7 +203,7 @@
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
         [:div.mb1 menu]]]]
-     (shopping-flyout shopping)]
+     (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]
