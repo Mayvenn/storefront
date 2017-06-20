@@ -162,8 +162,10 @@
                 :on-mouse-enter close-shopping}
      "Real Beauty")]))
 
-(defn shopping-column [items]
-  [:ul.list-reset.col.col-4.px2
+(defn shopping-column [items col-count]
+  {:pre [(zero? (mod 12 col-count))]}
+  [:ul.list-reset.col.px2
+   {:class (str "col-" (/ 12 col-count))}
    (for [{:keys [slug name]} items]
      [:li {:key slug}
       [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
@@ -175,16 +177,16 @@
     (let [partition-searches (comp (filter (fn [named-search]
                                           (or (-> signed-in ::slideout-nav/as (= ::slideout-nav/stylist))
                                               (not (named-searches/is-stylist-product? named-search))))) 
-                                (partition-all 6))]
+                                (partition-all 6))
+          columns (concat (->> (filter named-searches/is-extension? named-searches)
+                               (sequence partition-searches))
+                          (->> (remove named-searches/is-extension? named-searches)
+                               (sequence partition-searches)))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6
         {:style {:width "580px"}}
-        (for [items (->> (filter named-searches/is-extension? named-searches)
-                         (sequence partition-searches))]
-          (shopping-column items))
-        (for [items (->> (remove named-searches/is-extension? named-searches)
-                         (sequence partition-searches))]
-          (shopping-column items))]])))
+        (for [items columns]
+          (shopping-column items (count columns)))]])))
 
 (defn component [{:keys [store user cart shopping signed-in]} _ _]
   (component/create
