@@ -209,7 +209,7 @@
                          :data-test "content-guarantee")
                   "Our guarantee")]
    [:li (menu-row {:href blog-url}
-                  "Real Beauty blog")]
+                  "Real Beautiful blog")]
    [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
                          :data-test "content-about-us")
                   "About us")]
