@@ -256,7 +256,9 @@
                           "Disallow: /c/"
                           "Disallow: /admin"
                           "Disallow: /content"
-                          "Disallow: /categories/hair/kinky-straight"])
+                          ;; remove when yaki-and-waterwave? experiment goes 100%
+                          "Disallow: /categories/hair/yaki-straight"
+                          "Disallow: /categories/hair/water-wave"])
 
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
@@ -273,19 +275,24 @@
     (with-out-str (xml/emit {:tag     :urlset
                              :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
                              :content (mapv url [["https://mayvenn.com"]
-                                                 ["https://welcome.mayvenn.com"                         "0.60"]
-                                                 ["https://shop.mayvenn.com"                            "1.00"]
-                                                 ["https://shop.mayvenn.com/guarantee"                  "0.60"]
-                                                 ["https://shop.mayvenn.com/help"                       "0.60"]
-                                                 ["https://shop.mayvenn.com/about-us"                   "0.60"]
-                                                 ["https://shop.mayvenn.com/categories/hair/straight"   "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/loose-wave" "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/body-wave"  "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/deep-wave"  "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/curly"      "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/closures"   "0.80"]
-                                                 ["https://shop.mayvenn.com/categories/hair/frontals"   "0.80"]
-                                                 ["https://shop.mayvenn.com/shop/look"                  "0.80"]])}))))
+                                                 ["https://welcome.mayvenn.com"                             "0.60"]
+                                                 ["https://shop.mayvenn.com"                                "1.00"]
+                                                 ["https://shop.mayvenn.com/guarantee"                      "0.60"]
+                                                 ["https://shop.mayvenn.com/help"                           "0.60"]
+                                                 ["https://shop.mayvenn.com/about-us"                       "0.60"]
+                                                 ["https://shop.mayvenn.com/categories/hair/straight"       "0.80"]
+                                                 ;; enable when yaki-and-waterwave? experiment goes 100%
+                                                 ;; ["https://shop.mayvenn.com/categories/hair/yaki-straight"  "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/kinky-straight" "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/body-wave"      "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/loose-wave"     "0.80"]
+                                                 ;; enable when yaki-and-waterwave? experiment goes 100%
+                                                 ;; ["https://shop.mayvenn.com/categories/hair/water-wave"     "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/deep-wave"      "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/curly"          "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/closures"       "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/frontals"       "0.80"]
+                                                 ["https://shop.mayvenn.com/shop/look"                      "0.80"]])}))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
