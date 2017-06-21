@@ -74,7 +74,7 @@
      ::slideout-nav/ask-for-portrait  [:div.left.pr2 slideout-nav/add-portrait-cta]
      ::slideout-nav/show-nothing      [:div.left {:style {:height (str slideout-nav/header-image-size "px")}}])
    [:div.dark-gray
-    "Welcome to " [:span.black.medium [:span {:data-text "nickname"} store-nickname] "'s"] " shop"
+    "Welcome to " [:span.black.medium {:data-text "nickname"} store-nickname "'s"] " shop"
     (when expandable?
       (expand-icon expanded?))]])
 
