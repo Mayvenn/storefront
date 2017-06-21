@@ -160,7 +160,7 @@
      "Our Guarantee")
     (menu-link {:href           slideout-nav/blog-url
                 :on-mouse-enter close-shopping}
-     "Real Beauty")]))
+     "Real Beautiful")]))
 
 (defn shopping-column [items col-count]
   {:pre [(zero? (mod 12 col-count))]}
