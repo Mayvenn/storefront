@@ -164,8 +164,8 @@
 (def video-autoplay
   (component/html
    (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
-         image-src  "https://embedwistia-a.akamaihd.net/deliveries/37e89814a7eeccae085f005819480e07b13f2394.jpg"
-         video-html (str "<video loop muted poster=\""
+         image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/testimonialpostervideoplay.jpg"
+         video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
                          image-src
                          "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""
                          video-src
