@@ -114,7 +114,7 @@
       (= "vistaprint" (first subdomains))
       (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
-      (#{[] ["www"]} subdomains)
+      (#{[] ["www"] ["internal"]} subdomains)
       (redirect (str (store-scheme-and-authority "shop" environment req) "/" (query-string req)))
 
       :else
@@ -133,8 +133,8 @@
 (defn wrap-preferred-store-redirect [handler environment]
   (fn [{:keys [subdomains] :as req}]
     (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
-      (if (and (#{"store" "shop"} (last subdomains))
-               (not (#{nil "" "store" "shop"} preferred-store-slug)))
+      (if (and (#{"store" "shop" "internal"} (last subdomains))
+               (not (#{nil "" "store" "shop" "internal"} preferred-store-slug)))
         (redirect (store-url preferred-store-slug environment req))
         (handler req))
       (handler req))))
