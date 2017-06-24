@@ -15,7 +15,7 @@
              [resource :refer [wrap-resource]]]
             [ring.util
              [codec :as codec]
-             [response :refer [content-type redirect response]]]
+             [response :as util.response]]
             [storefront
              [api :as api]
              [routes :as routes]
@@ -62,7 +62,7 @@
        (drop-last 2)))
 
 (defn ->html-resp [h]
-  (content-type (response h) "text/html"))
+  (util.response/content-type (util.response/response h) "text/html"))
 
 (defn store-scheme-and-authority [store-slug environment {:keys [scheme server-name server-port] :as req}]
   (let [dev? (config/development? environment)]
@@ -75,6 +75,9 @@
        uri
        (query-string req)))
 
+(defn store-homepage [store-slug environment req]
+  (store-url store-slug environment (assoc req :uri "/")))
+
 (defn wrap-add-domains [h]
   (fn [req]
     (h (merge req {:subdomains (parse-subdomains (:server-name req))}))))
@@ -84,7 +87,7 @@
         {store-slug :store_slug} :store
         :as req}]
     (if (= "www" (first subdomains))
-      (redirect (store-url store-slug environment req))
+      (util.response/redirect (store-url store-slug environment req))
       (h req))))
 
 (defn wrap-stylist-not-found-redirect [h environment]
@@ -99,7 +102,7 @@
       (h req)
 
       :else
-      (-> (redirect (store-url "store" environment req))
+      (-> (util.response/redirect (store-url "store" environment req))
           (cookies/expire environment
                           "preferred-store-slug"
                           {:http-only true
@@ -109,13 +112,13 @@
   (fn [{:keys [subdomains server-name server-port] :as req}]
     (cond
       (= "classes" (first subdomains))
-      (redirect "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform")
+      (util.response/redirect "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform")
 
       (= "vistaprint" (first subdomains))
-      (redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
+      (util.response/redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
       (#{[] ["www"] ["internal"]} subdomains)
-      (redirect (str (store-scheme-and-authority "shop" environment req) "/" (query-string req)))
+      (util.response/redirect (store-homepage "shop" environment req))
 
       :else
       (h req))))
@@ -135,7 +138,7 @@
     (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
       (if (and (#{"store" "shop" "internal"} (last subdomains))
                (not (#{nil "" "store" "shop" "internal"} preferred-store-slug)))
-        (redirect (store-url preferred-store-slug environment req))
+        (util.response/redirect (store-url preferred-store-slug environment req))
         (handler req))
       (handler req))))
 
@@ -179,15 +182,17 @@
         ->html-resp)))
 
 (defn redirect-to-cart [query-params]
-  (redirect (str "/cart?" (codec/form-encode query-params))))
+  (util.response/redirect (str "/cart?" (codec/form-encode query-params))))
 
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
   (some-> (api/product storeback-config product-slug (cookies/get req "id") (cookies/get req "user-token"))
-          ;; currently, always the category url... better logic would be to redirect if we're not on the canonical url, though that would require that the cljs code handle event/navigate-product
+          ;; currently, always the category url... better logic would be to
+          ;; util.response/redirect if we're not on the canonical url, though
+          ;; that would require that the cljs code handle event/navigate-product
           :url-path
-          redirect))
+          (util.response/redirect :moved-permanently)))
 
 (defn render-category
   "Checks that the category exists, and that customer has access to its products"
@@ -207,7 +212,7 @@
                                           (assoc-in keypaths/products products-by-id)
                                           (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id false)))))
           (when-not (seq user-token)
-            (redirect (str "/login?path=" (:uri req)))))))))
+            (util.response/redirect (str "/login?path=" (:uri req)))))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
@@ -242,7 +247,8 @@
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
             events/navigate-category (if (= "blonde" (:named-search-slug params))
-                                       (redirect (store-url (:store_slug store) environment (assoc req :uri "/")))
+                                       (util.response/redirect (store-homepage (:store_slug store) environment req)
+                                                               :moved-permanently)
                                        (render-category render-ctx data req params))
             (html-response render-ctx data)))))))
 
@@ -309,8 +315,8 @@
                                                             "utm-term"     (cookies/get request "utm-term")
                                                             "utm-content"  (cookies/get request "utm-content")
                                                             "utm-medium"   (cookies/get request "utm-medium")}))]
-       (redirect (str "/cart?error=" error-code))
-       (redirect (str "/orders/"
+       (util.response/redirect (str "/cart?error=" error-code))
+       (util.response/redirect (str "/orders/"
                       number
                       "/complete?"
                       (codec/form-encode {:paypal      true
@@ -321,7 +327,7 @@
    (GET "/logo.:ext{htm|gif}" req
         (let [s (or (cookies/get req "session-id")
                     "missing-session-id")]
-          (redirect (str (:endpoint dc-logo-config) "&s=" s))))))
+          (util.response/redirect (str (:endpoint dc-logo-config) "&s=" s))))))
 
 (defn static-routes [_]
   (fn [{:keys [uri store] :as req}]
@@ -332,14 +338,13 @@
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
-               (GET "/robots.txt" req (content-type (response (robots req))
-                                                    "text/plain"))
-               (GET "/sitemap.xml" req (content-type (response (sitemap ctx))
-                                                    "text/xml"))
-               (GET "/stylist/edit" [] (redirect "/stylist/account/profile"))
-               (GET "/stylist/account" [] (redirect "/stylist/account/profile"))
-               (GET "/categories" {:keys [scheme server-name query-string]}
-                    (redirect (str (name scheme) "://" server-name (when (seq query-string) "?") query-string)))
+               (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
+               (GET "/sitemap.xml" req (-> (sitemap ctx) util.response/response (util.response/content-type "text/xml")))
+               (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
+               (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
+               (GET "/categories" {:keys [subdomains] :as req}
+                    (util.response/redirect (store-homepage (first subdomains) environment req)
+                                            :moved-permanently))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
