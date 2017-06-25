@@ -317,17 +317,17 @@
                                                             "utm-medium"   (cookies/get request "utm-medium")}))]
        (util.response/redirect (str "/cart?error=" error-code))
        (util.response/redirect (str "/orders/"
-                      number
-                      "/complete?"
-                      (codec/form-encode {:paypal      true
-                                          :order-token order-token})))))))
+                                    number
+                                    "/complete?"
+                                    (codec/form-encode {:paypal      true
+                                                        :order-token order-token})))))))
 
 (defn logo-routes [{:keys [dc-logo-config]}]
   (wrap-cookies
    (GET "/logo.:ext{htm|gif}" req
-        (let [s (or (cookies/get req "session-id")
-                    "missing-session-id")]
-          (util.response/redirect (str (:endpoint dc-logo-config) "&s=" s))))))
+     (let [s (or (cookies/get req "session-id")
+                 "missing-session-id")]
+       (util.response/redirect (str (:endpoint dc-logo-config) "&s=" s))))))
 
 (defn static-routes [_]
   (fn [{:keys [uri store] :as req}]
@@ -343,8 +343,8 @@
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/categories" {:keys [subdomains] :as req}
-                    (util.response/redirect (store-homepage (first subdomains) environment req)
-                                            :moved-permanently))
+                 (util.response/redirect (store-homepage (first subdomains) environment req)
+                                         :moved-permanently))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
