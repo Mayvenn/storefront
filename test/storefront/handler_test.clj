@@ -113,6 +113,16 @@
        component/stop
        ~@body)))
 
+(defn parse-json-body [req]
+  (update req :body #(parse-string % true)))
+
+(defn first-json-request
+  ([requests] (first-json-request requests conj))
+  ([requests xf]
+   (txfm-request requests
+                 (comp (map parse-json-body) xf)
+                 {:timeout 1000})))
+
 (def default-req-params {:server-name "welcome.mayvenn.com"
                          :server-port 8080
                          :uri "/"
@@ -264,10 +274,10 @@
 
 (deftest submits-paypal-redirect-to-waiter
   (testing "when waiter returns a 200 response"
-    (let [[waiter-requests waiter-handler] (recording-endpoint
-                                            {:handler (constantly {:status  200
-                                                                   :headers {"Content-Type" "application/json"}
-                                                                   :body    "{}"})})]
+    (let [[waiter-requests waiter-handler] (with-requests-chan
+                                             (constantly {:status  200
+                                                          :headers {"Content-Type" "application/json"}
+                                                          :body    "{}"}))]
       (with-standalone-server [waiter (standalone-server waiter-handler)]
         (with-handler handler
           (let [set-cookies (fn [req cookies]
@@ -286,13 +296,12 @@
                      (get-in resp [:headers "Location"]))))
 
             (testing "it records the utm params associated with the request"
-              (is (requests-count? waiter-requests 1))
               (is (= {:utm-source   "source"
                       :utm-campaign "campaign"
                       :utm-term     "term"
                       :utm-content  "content"
                       :utm-medium   "medium"}
-                     (-> @waiter-requests first :body (parse-string true) :utm-params)))))))))
+                     (-> waiter-requests first-json-request :body :utm-params)))))))))
 
   (testing "when waiter returns a non-200 response without an error-code"
     (with-standalone-server [waiter (standalone-server (constantly {:status  500
