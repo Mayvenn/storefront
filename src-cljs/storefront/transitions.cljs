@@ -2,6 +2,7 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
@@ -146,6 +147,23 @@
 (defmethod transition-state events/navigate-sign-out [_ event {{:keys [telligent-url]} :query-params} app-state]
   (assoc-valid-telligent-url app-state telligent-url))
 
+(defn initialize-old-bundle-builder [app-state]
+  (let [bundle-builder (old-bundle-builder/initialize (named-searches/current-named-search app-state)
+                                                  (get-in app-state keypaths/products)
+                                                  (experiments/yaki-and-waterwave? app-state))
+        saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
+    (if saved-options
+      (old-bundle-builder/reset-options bundle-builder saved-options (experiments/yaki-and-waterwave? app-state))
+      bundle-builder)))
+
+(defn ensure-old-bundle-builder [app-state]
+  (if (and (nil? (get-in app-state keypaths/old-bundle-builder))
+           (named-searches/products-loaded? app-state (named-searches/current-named-search app-state)))
+    (-> app-state
+        (assoc-in keypaths/old-bundle-builder (initialize-old-bundle-builder app-state))
+        (update-in keypaths/ui dissoc :saved-bundle-builder-options))
+    app-state))
+
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
                                                   (get-in app-state keypaths/products)
@@ -164,15 +182,17 @@
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [named-search-slug]} app-state]
-  (let [bundle-builder-options (-> (get-in app-state keypaths/bundle-builder)
-                                   bundle-builder/constrained-options
+  (let [bundle-builder-options (-> (get-in app-state keypaths/old-bundle-builder)
+                                   old-bundle-builder/constrained-options
                                    (dissoc :length))]
     (-> app-state
         (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
         (assoc-in keypaths/browse-variant-quantity 1)
+        (assoc-in keypaths/old-bundle-builder nil)
         (assoc-in keypaths/bundle-builder nil)
         (assoc-in keypaths/saved-bundle-builder-options bundle-builder-options)
+        ensure-old-bundle-builder
         ensure-bundle-builder)))
 
 (defmethod transition-state events/navigate-ugc-category [_ event {:keys [named-search-slug query-params]} app-state]
@@ -279,8 +299,9 @@
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
-  (update-in app-state
-             keypaths/bundle-builder bundle-builder/reset-options selected-options (experiments/yaki-and-waterwave? app-state)))
+  (-> app-state
+      (update-in keypaths/old-bundle-builder old-bundle-builder/reset-options selected-options (experiments/yaki-and-waterwave? app-state))
+      (update-in keypaths/bundle-builder bundle-builder/reset-options selected-options (experiments/yaki-and-waterwave? app-state))))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -333,6 +354,7 @@
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
     (update-in keypaths/products merge (key-by :id products))
+    ensure-old-bundle-builder
     ensure-bundle-builder))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
@@ -439,7 +461,7 @@
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
-      (update-in keypaths/bundle-builder bundle-builder/rollback (experiments/yaki-and-waterwave? app-state))))
+      (update-in keypaths/old-bundle-builder old-bundle-builder/rollback (experiments/yaki-and-waterwave? app-state))))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state

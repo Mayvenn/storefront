@@ -90,6 +90,7 @@
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def bundle-builder (conj ui :bundle-builder))
+(def old-bundle-builder (conj ui :old-bundle-builder))
 
 (def captured-email (conj ui :captured-email))
 

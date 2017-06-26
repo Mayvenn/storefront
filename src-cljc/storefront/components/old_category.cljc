@@ -1,11 +1,12 @@
-(ns storefront.components.category
+(ns storefront.components.old-category
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.named-searches :as named-searches] [storefront.accessors.products :as products]
+            [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.old-bundle-builder :as bundle-builder]
             [storefront.platform.reviews :as reviews]
             [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
@@ -314,7 +315,7 @@
 
 (defn query [data]
   (let [named-search     (named-searches/current-named-search data)
-        bundle-builder   (get-in data keypaths/bundle-builder)
+        bundle-builder   (get-in data keypaths/old-bundle-builder)
         variant-quantity (get-in data keypaths/browse-variant-quantity)
         selected-variant (bundle-builder/selected-variant bundle-builder)]
     {:named-search        named-search
