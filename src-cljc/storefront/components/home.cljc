@@ -33,12 +33,12 @@
 
 (defn fitting-image
   "Changes height for image to be full width."
-  [mobile-image desktop-image alt-text]
+  [{:keys [desktop-url mobile-url file-name alt]}]
   [:div
-   [:img.hide-on-mb.block.col-12 {:src (str (:resizable_url desktop-image) (:resizable_filename desktop-image))
-                                  :alt alt-text}]
-   [:img.hide-on-tb-dt.block.col-12 {:src (str (:resizable_url mobile-image) (:resizable_filename mobile-image))
-                                     :alt alt-text}]])
+   [:img.hide-on-mb.block.col-12 {:src (str desktop-url file-name)
+                                  :alt alt}]
+   [:img.hide-on-tb-dt.block.col-12 {:src (str mobile-url file-name)
+                                     :alt alt}]])
 
 (defn popular-grid [featured-searches]
   (let [grid-block   (fn [key content]
@@ -77,46 +77,27 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (case store-slug
-      "peakmill"       (fitting-image {:resizable_url      "//ucarecdn.com/52b9b84d-5ccc-44b8-abbe-4b37f94a1ca0/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      {:resizable_url      "//ucarecdn.com/13458c52-7f21-4a09-b21e-429cac284d01/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      "Get 15% Off Hair Extensions Mayvenn")
-      "touchedbytokyo" (fitting-image {:resizable_url      "//ucarecdn.com/52ecc4f7-06c3-4c47-9760-d73b5a79ed39/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      {:resizable_url      "//ucarecdn.com/d4278fbd-dd34-4177-b10e-e7ed4eb5e14e/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      "Get 15% Off Hair Extensions Mayvenn")
-      "msroshposh"     (fitting-image {:resizable_url      "//ucarecdn.com/153c5870-c650-4af0-9f8c-04f514bfdff1/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      {:resizable_url      "//ucarecdn.com/a9162d49-4f58-495b-adad-ccb15bae9541/"
-                                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                                      "Get 15% Off Hair Extensions Mayvenn")
-      (fitting-image {:resizable_url      "//ucarecdn.com/a52a9db4-0e83-4a4a-a802-6805ce127337/"
-                      :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                     {:resizable_url      "//ucarecdn.com/bd739712-db44-405c-8469-f9aed3768ee2/"
-                      :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
-                     "Get 15% Off Hair Extensions Mayvenn"))]])
+    (fitting-image {:mobile-url "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
+                    :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
+                    :file-name "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
+                    :alt "New Water Wave and Yaki Straight are here"})]])
 
 (def feature-blocks
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 177858410})
-     (fitting-image {:resizable_url      "//ucarecdn.com/d64294f0-e6d0-4b6d-94f1-7da819119c01/"
-                     :resizable_filename "Shop-Indian-Straight-Hair.jpg"}
-                    {:resizable_url      "//ucarecdn.com/04e2b2fc-e40a-4b52-8cb3-ba7bdfa84963/"
-                     :resizable_filename "Shop-Indian-Straight-Hair.jpg"}
-                    "Shop Indian Straight Hair")]]
+     (fitting-image {:mobile-url  "//ucarecdn.com/d64294f0-e6d0-4b6d-94f1-7da819119c01/"
+                     :desktop-url "//ucarecdn.com/04e2b2fc-e40a-4b52-8cb3-ba7bdfa84963/"
+                     :file-name   "Shop-Indian-Straight-Hair.jpg"
+                     :alt         "Shop Indian Straight Hair"})]]
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 178528561})
-     (fitting-image {:resizable_url      "//ucarecdn.com/97994826-a043-499e-95a5-549b06ac35b8/"
-                     :resizable_filename "Shop-Virgin-Hair-Bundle-Deals.jpg"}
-                    {:resizable_url      "//ucarecdn.com/811aa020-2d64-4765-ae82-9980117cd6d8/"
-                     :resizable_filename "Shop-Virgin-Hair-Bundle-Deals.jpg"}
-                    "Shop Virgin Hair Bundle Deals")]]])
+     (fitting-image {:mobile-url  "//ucarecdn.com/97994826-a043-499e-95a5-549b06ac35b8/"
+                     :desktop-url "//ucarecdn.com/811aa020-2d64-4765-ae82-9980117cd6d8/"
+                     :file-name   "Shop-Virgin-Hair-Bundle-Deals.jpg"
+                     :alt         "Shop Virgin Hair Bundle Deals"})]]])
 
 (def about-mayvenn
   (component/html
