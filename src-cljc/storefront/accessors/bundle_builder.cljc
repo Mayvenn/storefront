@@ -9,13 +9,6 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn ^:private filter-variants-by-selections [selections variants]
-  (->> variants
-       (filter (fn [variant]
-                 (every? (fn [[step-name option-name]]
-                           (= (step-name variant) option-name))
-                         selections)))))
-
 (defn ^:private min-price [variants]
   (when (seq variants)
     (->> variants
@@ -32,6 +25,14 @@
 ;;          :long-name "Natural Black (#1B)"
 ;;          :image     "//:..."}
 
+;; flow: [:color :origin :length]
+
+(defn ^:private options-with-selection [selected-option options]
+  (map #(assoc % :checked? (= selected-option %)) options))
+
+(defn ^:private option-by-name [options option-name]
+  (some #(when (= option-name (:name %)) %) options))
+
 (defn ^:private by-price-and-position
   "Ensure cheapest options are first, breaking ties by preserving the order
   specified by cellar."
@@ -41,89 +42,44 @@
        (sort-by (fn [[idx {:keys [min-price]}]] [min-price idx]))
        (map second)))
 
-(defn ^:private options-for-step [options
-                                  {:keys [selected-option
-                                          step-name
-                                          step-variants]}]
-  (for [{:keys [name] :as option} options
-        :let                      [option-selection {step-name name}
-                                   option-variants  (filter-variants-by-selections option-selection step-variants)]
-        ;; There are no Silk Blonde closures, so hide Silk when Blonde has been selected.
-        :when                     (seq option-variants)]
-    (merge option
-           {:min-price   (min-price option-variants)
-            :checked?    (= selected-option option)
-            :sold-out?   (every? :sold-out? option-variants)
-            :selection   option-selection})))
-
-(defn steps
-  "We are going to build the steps of the bundle builder.
-
-  The options are hardest to generate because they have to take into
-  consideration the position in which the step appears in the flow, the list of
-  variants in the step, and the selections from prior steps."
-  [{:keys [flow selections initial-variants step->options]}]
-  (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
-        ;; The variants that represent a step are tricky. Even if a user has
-        ;; selected Lace, the Deep Wave variants include Lace and Silk, because
-        ;; the Style step comes before the Material step. To manage this, this
-        ;; code keeps track of which steps precede every other step.
-        :let                    [prior-selections     (select-keys selections prior-steps)
-                                 step-variants        (filter-variants-by-selections prior-selections initial-variants)
-                                 options              (step->options step-name)
-                                 selected-option      (->> options
-                                                           (filter #(= (get selections step-name)
-                                                                       (:name %)))
-                                                           only)]]
-    {:step-name       step-name
-     :selected-option selected-option
-     :options         (by-price-and-position
-                       (options-for-step options
-                                         {:selected-option selected-option
-                                          :step-name       step-name
-                                          :step-variants   step-variants}))}))
-
-(defn ^:private any-variant-has-selection? [step option variants]
-  (some (fn [variant]
-          (= option (get variant step)))
-        variants))
-
-(defn ^:private first-option-for-step [step step-options variants]
-  (let [option->variants (group-by step variants)]
+(defn ^:private options-for-step [step step-options step-variants]
+  (let [option->variants (group-by step step-variants)]
     (->> step-options
          (keep (fn [{:keys [name] :as option}]
-                 ;; TODO: at this moment, we've done the job of
-                 ;; filter-variants-by-selections all the way down to the level
-                 ;; of options. If we assoc on the variants, we could remove a
-                 ;; lot of code from `steps` and `options-for-steps`
+                 ;; The :material step has "silk" and "lace". But, the variants
+                 ;; may not include any "silk" variants (e.g., when {:color
+                 ;; "blonde"} has been chosen). In that case, we don't show the
+                 ;; "silk" option.
                  (when-let [variants (seq (option->variants name))]
-                   (assoc option :min-price (min-price variants)))))
-         by-price-and-position
-         first
-         :name)))
+                   (assoc option
+                          :min-price (min-price variants)
+                          :sold-out? (every? :sold-out? variants)
+                          :selection {step name}
+                          :variants variants))))
+         by-price-and-position)))
 
 (defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections]
   (let [proposed-selections (merge selections new-selections)
 
         ;; Walk through every step, confirming that the selection for that step
-        ;; makes sense, taking into account changes in prior steps.
-        [confirmed-selections selected-variants]
-        (reduce (fn [[confirmed-selections selected-variants] step]
-                  (let [proposed-option          (get proposed-selections step)
-                        in-stock-variants        (remove :sold-out? selected-variants)
-                        confirmed-option         (if (and proposed-option
-                                                          (any-variant-has-selection? step proposed-option in-stock-variants))
-                                                   proposed-option
-                                                   (first-option-for-step step (step->options step) in-stock-variants))
-                        new-confirmed-selections (assoc confirmed-selections step confirmed-option)
-                        new-selected-variants    (filter-variants-by-selections new-confirmed-selections selected-variants)]
-                    [new-confirmed-selections new-selected-variants]))
-                ;; Allow filter-variants-by-selections to remove any of the
-                ;; initial variants. Usually won't do anything, but can if there
-                ;; is an experiment in play.
-                [{} (filter-variants-by-selections {} initial-variants)]
+        ;; makes sense, taking into account prior steps.
+        [confirmed-selections selected-variants steps]
+        (reduce (fn [[confirmed-selections selected-variants steps] step]
+                  (let [options                  (options-for-step step (step->options step) selected-variants)
+                        in-stock-options         (remove :sold-out? options)
+                        confirmed-option         (or (option-by-name in-stock-options (get proposed-selections step))
+                                                     (first in-stock-options))
+                        new-confirmed-selections (assoc confirmed-selections step (:name confirmed-option))
+                        new-selected-variants    (:variants confirmed-option)]
+                    [new-confirmed-selections
+                     new-selected-variants
+                     (conj steps {:step-name       step
+                                  :selected-option confirmed-option
+                                  :options         (options-with-selection confirmed-option options)})]))
+                [{} initial-variants []]
                 flow)]
     (assoc bundle-builder
+           :steps steps
            :selections confirmed-selections
            :selected-variant (only selected-variants))))
 
