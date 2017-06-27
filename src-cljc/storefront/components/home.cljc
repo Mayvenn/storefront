@@ -99,7 +99,7 @@
                       :resizable_filename "June-Homepage-Hero-Catch-The-Wave.jpg"}
                      "Get 15% Off Hair Extensions Mayvenn"))]])
 
-(def old-feature-blocks
+(def feature-blocks
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
@@ -117,25 +117,6 @@
                     {:resizable_url      "//ucarecdn.com/811aa020-2d64-4765-ae82-9980117cd6d8/"
                      :resizable_filename "Shop-Virgin-Hair-Bundle-Deals.jpg"}
                     "Shop Virgin Hair Bundle Deals")]]])
-
-(def feature-blocks
-  [:div.container.border-top.border-white
-   [:div.col.col-6.border.border-white
-    [:a
-     (utils/route-to events/navigate-category {:named-search-slug "water-wave"})
-     (fitting-image {:resizable_url      "//ucarecdn.com/56a57fae-0b14-48c4-b1f6-08a373818bc4/"
-                     :resizable_filename "Shop-Water-Wave-Hair.jpg"}
-                    {:resizable_url      "//ucarecdn.com/7abb659e-54c8-4eb1-9d23-75fe624d4ac0/"
-                     :resizable_filename "Shop-Water-Wave-Hair.jpg"}
-                    "Shop Water Wave Hair")]]
-   [:div.col.col-6.border.border-white
-    [:a
-     (utils/route-to events/navigate-category {:named-search-slug "yaki-straight"})
-     (fitting-image {:resizable_url      "//ucarecdn.com/1b67afa7-8bc3-4123-8ab4-a00163c4cd98/"
-                     :resizable_filename "Shop-Yaki-Straight-Hair.jpg"}
-                    {:resizable_url      "//ucarecdn.com/6d51ae41-f8d5-478f-998a-7ae46749f907/"
-                     :resizable_filename "Shop-Yaki-Straight-Hair.jpg"}
-                    "Shop Yaki Straight Hair")]]])
 
 (def about-mayvenn
   (component/html
@@ -201,13 +182,11 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [featured-searches store-slug yaki-and-waterwave?]} owner opts]
+(defn component [{:keys [featured-searches store-slug]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero store-slug)]
-    [:section (if yaki-and-waterwave?
-                feature-blocks
-                old-feature-blocks)]
+    [:section feature-blocks]
     [:section (popular-grid featured-searches)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -216,8 +195,7 @@
 (defn query [data]
   {:featured-searches   (->> (named-searches/current-named-searches data)
                              (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
-   :store-slug          (get-in data keypaths/store-slug)
-   :yaki-and-waterwave? (experiments/yaki-and-waterwave? data)})
+   :store-slug          (get-in data keypaths/store-slug)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -54,8 +54,5 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn yaki-and-waterwave? [data]
-  (display-feature? data "yaki-and-waterwave"))
-
 (defn product-detail-page? [data]
   (display-feature? data "product-detail-page"))

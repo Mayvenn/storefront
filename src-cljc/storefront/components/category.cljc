@@ -238,8 +238,7 @@
                          reviews
                          adding-to-bag?
                          bagged-variants
-                         ugc
-                         yaki-and-waterwave?]}
+                         ugc]}
                  owner opts]
   (let [carousel-images   (images-from-variants named-search bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
@@ -259,7 +258,7 @@
             [:div
              (when needs-selections?
                [:div.border-bottom.border-light-gray.border-width-2
-                (for [step (bundle-builder/steps bundle-builder yaki-and-waterwave?)]
+                (for [step (bundle-builder/steps bundle-builder)]
                   (step-html step))])
              [:div schema-org-offer-props
               [:div.my2
@@ -286,8 +285,7 @@
      :adding-to-bag?      (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants     (get-in data keypaths/browse-recently-added-variants)
      :reviews             (reviews/query data)
-     :ugc                 (ugc/query data)
-     :yaki-and-waterwave? (experiments/yaki-and-waterwave? data)}))
+     :ugc                 (ugc/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

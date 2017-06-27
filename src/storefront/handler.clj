@@ -263,10 +263,7 @@
                           "Disallow: /m/"
                           "Disallow: /c/"
                           "Disallow: /admin"
-                          "Disallow: /content"
-                          ;; remove when yaki-and-waterwave? experiment goes 100%
-                          "Disallow: /categories/hair/yaki-straight"
-                          "Disallow: /categories/hair/water-wave"])
+                          "Disallow: /content"])
 
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
@@ -289,13 +286,11 @@
                                                  ["https://shop.mayvenn.com/help"                           "0.60"]
                                                  ["https://shop.mayvenn.com/about-us"                       "0.60"]
                                                  ["https://shop.mayvenn.com/categories/hair/straight"       "0.80"]
-                                                 ;; enable when yaki-and-waterwave? experiment goes 100%
-                                                 ;; ["https://shop.mayvenn.com/categories/hair/yaki-straight"  "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/yaki-straight"  "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/kinky-straight" "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/body-wave"      "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/loose-wave"     "0.80"]
-                                                 ;; enable when yaki-and-waterwave? experiment goes 100%
-                                                 ;; ["https://shop.mayvenn.com/categories/hair/water-wave"     "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/water-wave"     "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/deep-wave"      "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/curly"          "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/closures"       "0.80"]

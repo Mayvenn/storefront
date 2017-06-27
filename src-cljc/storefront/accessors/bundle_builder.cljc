@@ -9,16 +9,12 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn ^:private filter-variants-by-selections [selections variants yaki-and-waterwave?]
+(defn ^:private filter-variants-by-selections [selections variants]
   (->> variants
        (filter (fn [variant]
                  (every? (fn [[step-name option-name]]
                            (= (step-name variant) option-name))
-                         selections)))
-       (filter (fn [{:keys [style]}]
-                 (or yaki-and-waterwave?
-                     (and (not= style "Yaki Straight")
-                          (not= style "Water Wave")))))))
+                         selections)))))
 
 (defn ^:private min-price [variants]
   (when (seq variants)
@@ -48,11 +44,10 @@
 (defn ^:private options-for-step [options
                                   {:keys [selected-option
                                           step-name
-                                          step-variants]}
-                                  yaki-and-waterwave?]
+                                          step-variants]}]
   (for [{:keys [name] :as option} options
         :let                      [option-selection {step-name name}
-                                   option-variants  (filter-variants-by-selections option-selection step-variants yaki-and-waterwave?)]
+                                   option-variants  (filter-variants-by-selections option-selection step-variants)]
         ;; There are no Silk Blonde closures, so hide Silk when Blonde has been selected.
         :when                     (seq option-variants)]
     (merge option
@@ -67,14 +62,14 @@
   The options are hardest to generate because they have to take into
   consideration the position in which the step appears in the flow, the list of
   variants in the step, and the selections from prior steps."
-  [{:keys [flow selections initial-variants step->options]} yaki-and-waterwave?]
+  [{:keys [flow selections initial-variants step->options]}]
   (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
         ;; The variants that represent a step are tricky. Even if a user has
         ;; selected Lace, the Deep Wave variants include Lace and Silk, because
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
         :let                    [prior-selections     (select-keys selections prior-steps)
-                                 step-variants        (filter-variants-by-selections prior-selections initial-variants yaki-and-waterwave?)
+                                 step-variants        (filter-variants-by-selections prior-selections initial-variants)
                                  options              (step->options step-name)
                                  selected-option      (->> options
                                                            (filter #(= (get selections step-name)
@@ -86,8 +81,7 @@
                        (options-for-step options
                                          {:selected-option selected-option
                                           :step-name       step-name
-                                          :step-variants   step-variants}
-                                         yaki-and-waterwave?))}))
+                                          :step-variants   step-variants}))}))
 
 (defn ^:private any-variant-has-selection? [step option variants]
   (some (fn [variant]
@@ -108,7 +102,7 @@
          first
          :name)))
 
-(defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections yaki-and-waterwave?]
+(defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections]
   (let [proposed-selections (merge selections new-selections)
 
         ;; Walk through every step, confirming that the selection for that step
@@ -122,12 +116,12 @@
                                                    proposed-option
                                                    (first-option-for-step step (step->options step) in-stock-variants))
                         new-confirmed-selections (assoc confirmed-selections step confirmed-option)
-                        new-selected-variants    (filter-variants-by-selections new-confirmed-selections selected-variants yaki-and-waterwave?)]
+                        new-selected-variants    (filter-variants-by-selections new-confirmed-selections selected-variants)]
                     [new-confirmed-selections new-selected-variants]))
                 ;; Allow filter-variants-by-selections to remove any of the
                 ;; initial variants. Usually won't do anything, but can if there
                 ;; is an experiment in play.
-                [{} (filter-variants-by-selections {} initial-variants yaki-and-waterwave?)]
+                [{} (filter-variants-by-selections {} initial-variants)]
                 flow)]
     (assoc bundle-builder
            :selections confirmed-selections
@@ -149,11 +143,11 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(defn initialize [named-search products-by-id yaki-and-waterwave?]
+(defn initialize [named-search products-by-id]
   (let [initial-variants (->> (map products-by-id (:product-ids named-search))
                               (remove nil?)
                               (mapcat build-variants))
         initial-state    {:flow             (ordered-steps named-search)
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step named-search)}]
-    (make-selections initial-state {} yaki-and-waterwave?)))
+    (make-selections initial-state {})))

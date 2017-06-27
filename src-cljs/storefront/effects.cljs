@@ -250,10 +250,8 @@
       (pixlee/fetch-album album-id slug))))
 
 (defn hidden-search? [app-state named-search]
-  (or (and (:stylist_only? named-search)
-           (not (stylists/own-store? app-state)))
-      (and (#{"yaki-straight" "water-wave"} (:slug named-search))
-           (not (experiments/yaki-and-waterwave? app-state)))))
+  (and (:stylist_only? named-search)
+       (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-category [_ event args _ app-state]
   (let [named-search (named-searches/current-named-search app-state)]

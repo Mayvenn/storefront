@@ -149,11 +149,10 @@
 
 (defn initialize-old-bundle-builder [app-state]
   (let [bundle-builder (old-bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                  (get-in app-state keypaths/products)
-                                                  (experiments/yaki-and-waterwave? app-state))
+                                                      (get-in app-state keypaths/products))
         saved-options  (get-in app-state keypaths/old-saved-bundle-builder-options)]
     (if saved-options
-      (old-bundle-builder/reset-options bundle-builder saved-options (experiments/yaki-and-waterwave? app-state))
+      (old-bundle-builder/reset-options bundle-builder saved-options)
       bundle-builder)))
 
 (defn ensure-old-bundle-builder [app-state]
@@ -166,11 +165,10 @@
 
 (defn initialize-bundle-builder [app-state]
   (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                  (get-in app-state keypaths/products)
-                                                  (experiments/yaki-and-waterwave? app-state))
+                                                  (get-in app-state keypaths/products))
         saved-selections  (get-in app-state keypaths/saved-bundle-builder-selections)]
     (if saved-selections
-      (bundle-builder/make-selections bundle-builder saved-selections (experiments/yaki-and-waterwave? app-state))
+      (bundle-builder/make-selections bundle-builder saved-selections)
       bundle-builder)))
 
 (defn ensure-bundle-builder [app-state]
@@ -303,11 +301,11 @@
 
 (defmethod transition-state events/control-old-bundle-option-select
   [_ event {:keys [selected-options]} app-state]
-  (update-in app-state keypaths/old-bundle-builder old-bundle-builder/reset-options selected-options (experiments/yaki-and-waterwave? app-state)))
+  (update-in app-state keypaths/old-bundle-builder old-bundle-builder/reset-options selected-options))
 
 (defmethod transition-state events/control-bundle-option-select
   [_ event {:keys [selection]} app-state]
-  (update-in app-state keypaths/bundle-builder bundle-builder/make-selections selection (experiments/yaki-and-waterwave? app-state)))
+  (update-in app-state keypaths/bundle-builder bundle-builder/make-selections selection))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -467,7 +465,7 @@
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
-      (update-in keypaths/old-bundle-builder old-bundle-builder/rollback (experiments/yaki-and-waterwave? app-state))))
+      (update-in keypaths/old-bundle-builder old-bundle-builder/rollback)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state
