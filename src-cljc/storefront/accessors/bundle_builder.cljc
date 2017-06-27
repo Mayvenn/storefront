@@ -108,6 +108,8 @@
 (defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections yaki-and-waterwave?]
   (let [proposed-selections (merge selections new-selections)
 
+        ;; Walk through every step, confirming that the selection for that step
+        ;; makes sense, taking into account changes in prior steps.
         [confirmed-selections selected-variants]
         (reduce (fn [[confirmed-selections selected-variants] step]
                   (let [proposed-option          (get proposed-selections step)
@@ -119,8 +121,10 @@
                         new-confirmed-selections (assoc confirmed-selections step confirmed-option)
                         new-selected-variants    (filter-variants-by-selections new-confirmed-selections selected-variants yaki-and-waterwave?)]
                     [new-confirmed-selections new-selected-variants]))
-                ;; Start with no confirmed-selections and all the variants
-                [{} initial-variants]
+                ;; Allow filter-variants-by-selections to remove any of the
+                ;; initial variants. Usually won't do anything, but can if there
+                ;; is an experiment in play.
+                [{} (filter-variants-by-selections {} initial-variants yaki-and-waterwave?)]
                 flow)]
     (assoc bundle-builder
            :selections confirmed-selections
