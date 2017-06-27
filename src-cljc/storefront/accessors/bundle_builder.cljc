@@ -95,12 +95,15 @@
         variants))
 
 (defn ^:private first-option-for-step [step step-options variants]
-  (let [option->min-price (update-vals (group-by step variants) min-price)]
+  (let [option->variants (group-by step variants)]
     (->> step-options
-         (keep (fn [{:keys [name]}]
-                 (when-let [min-price (option->min-price name)]
-                   {:name      name
-                    :min-price min-price})))
+         (keep (fn [{:keys [name] :as option}]
+                 ;; TODO: at this moment, we've done the job of
+                 ;; filter-variants-by-selections all the way down to the level
+                 ;; of options. If we assoc on the variants, we could remove a
+                 ;; lot of code from `steps` and `options-for-steps`
+                 (when-let [variants (seq (option->variants name))]
+                   (assoc option :min-price (min-price variants)))))
          by-price-and-position
          first
          :name)))
