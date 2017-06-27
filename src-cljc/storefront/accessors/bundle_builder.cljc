@@ -33,15 +33,6 @@
 (defn ^:private option-by-name [options option-name]
   (some #(when (= option-name (:name %)) %) options))
 
-(defn ^:private by-price-and-position
-  "Ensure cheapest options are first, breaking ties by preserving the order
-  specified by cellar."
-  [options]
-  (->> options
-       (map-indexed vector)
-       (sort-by (fn [[idx {:keys [min-price]}]] [min-price idx]))
-       (map second)))
-
 (defn ^:private options-for-step [step step-options step-variants]
   (let [option->variants (group-by step step-variants)]
     (->> step-options
@@ -55,8 +46,7 @@
                           :min-price (min-price variants)
                           :sold-out? (every? :sold-out? variants)
                           :selection {step name}
-                          :variants variants))))
-         by-price-and-position)))
+                          :variants variants)))))))
 
 (defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections]
   (let [proposed-selections (merge selections new-selections)
