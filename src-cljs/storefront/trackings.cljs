@@ -52,6 +52,11 @@
                                       "/choose_"
                                       (clj->js last-step)))))
 
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selection]} app-state]
+  (let [[step option] (first selection)]
+    (stringer/track-event "select_bundle_option" {:option_name  step
+                                                  :option_value option})))
+
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
