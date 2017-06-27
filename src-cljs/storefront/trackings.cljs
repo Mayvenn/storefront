@@ -9,7 +9,7 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.sift :as sift]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.videos :as videos]
@@ -44,10 +44,10 @@
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
 
-(defmethod perform-track events/control-bundle-option-select [_ event {:keys [step-name selected-options]} app-state]
+(defmethod perform-track events/control-old-bundle-option-select [_ event {:keys [step-name selected-options]} app-state]
   (stringer/track-event "select_bundle_option" {:option_name  step-name
                                                 :option_value (step-name selected-options)})
-  (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
+  (when-let [last-step (old-bundle-builder/last-step (get-in app-state keypaths/old-bundle-builder))]
     (google-analytics/track-page (str (routes/current-path app-state)
                                       "/choose_"
                                       (clj->js last-step)))))

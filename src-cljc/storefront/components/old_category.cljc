@@ -104,7 +104,7 @@
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
-                 :on-change (utils/send-event-callback events/control-bundle-option-select
+                 :on-change (utils/send-event-callback events/control-old-bundle-option-select
                                                        {:selected-options selections
                                                         :step-name step-name})}]
    (if image

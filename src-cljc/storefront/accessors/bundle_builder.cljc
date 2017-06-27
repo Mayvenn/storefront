@@ -9,40 +9,6 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn selected-variant [bundle-builder]
-  (only (:selected-variants bundle-builder)))
-
-(defn constrained-options
-  "Calculate bundle builder options where the available variants all share a
-  common value. This lets us copy :style -> 'straight' to the closures page,
-  even though it was not a selected-option on the straight page"
-  [{:keys [selected-variants]}]
-  (->> selected-variants
-       (map :variant_attrs)
-       (map #(update-vals % (comp set vector)))
-       (reduce (partial merge-with set/union))
-       (map (juxt first (comp only second)))
-       (filter second)
-       (into {})))
-
-;; This function:
-;; Checks that the selected steps are part of the current flow
-;;        (:color is one of the steps in the flow)
-;; Checks that the options are part of the steps
-;;        (:color "dark-blonde" is a valid color)
-;; DOES NOT but should also check that some of the selected variants are in stock
-;;        (at least one dark blonde variant is in stock)
-;; Checks that no steps are skipped
-;;        (does not allow length to be selected without origin)
-(defn ^:private clean-selections [{:keys [flow step->options]} unverified-selections]
-  (->> flow
-       (map (fn [step]
-              (let [unverified-option (get unverified-selections step)
-                    possible? (some #{unverified-option} (map :name (step step->options)))]
-                [step (when possible? unverified-option)])))
-       (take-while second) ;; prevent skipped steps
-       (into {})))
-
 (defn ^:private filter-variants-by-selections [selections variants yaki-and-waterwave?]
   (->> variants
        (filter (fn [variant]
@@ -54,35 +20,35 @@
                      (and (not= style "Yaki Straight")
                           (not= style "Water Wave")))))))
 
-(defn last-step [{:keys [flow selected-options]}]
-  (let [finished-step? (set (keys selected-options))]
-    (last (take-while finished-step? flow))))
-
-(defn next-step [{:keys [flow selected-options]}]
-  (let [finished-step? (set (keys selected-options))]
-    (first (drop-while finished-step? flow))))
-
-(defn min-price [variants]
+(defn ^:private min-price [variants]
   (when (seq variants)
     (->> variants
          (map :price)
          (apply min))))
 
-(defn options-by-price-and-position
+;; TERMINOLOGY
+;; step: :color
+;; option: "Natural #1B"
+;; selection: {:color "Natural #1B"}
+
+;; Be careful though. Sometimes
+;; option: {:name      "Natural #1B"
+;;          :long-name "Natural Black (#1B)"
+;;          :image     "//:..."}
+
+(defn ^:private by-price-and-position
   "Ensure cheapest options are first, breaking ties by preserving the order
   specified by cellar."
   [options]
   (->> options
        (map-indexed vector)
-       (sort-by (fn [[idx {:keys [price-delta]}]] [price-delta idx]))
+       (sort-by (fn [[idx {:keys [min-price]}]] [min-price idx]))
        (map second)))
 
 (defn ^:private options-for-step [options
-                                  {:keys [prior-selections
-                                          selected-option
+                                  {:keys [selected-option
                                           step-name
-                                          step-variants
-                                          step-min-price]}
+                                          step-variants]}
                                   yaki-and-waterwave?]
   (for [{:keys [name] :as option} options
         :let                      [option-selection {step-name name}
@@ -90,41 +56,75 @@
         ;; There are no Silk Blonde closures, so hide Silk when Blonde has been selected.
         :when                     (seq option-variants)]
     (merge option
-           {:price-delta   (- (min-price option-variants) step-min-price)
-            :checked?      (= selected-option option)
-            :sold-out?     (every? :sold-out? option-variants)
-            :selections    (merge prior-selections option-selection)})))
+           {:min-price   (min-price option-variants)
+            :checked?    (= selected-option option)
+            :sold-out?   (every? :sold-out? option-variants)
+            :selection   option-selection})))
 
 (defn steps
-  "We are going to build the steps of the bundle builder. A 'step' is a name and
-  vector of options, e.g., Material: Lace or Silk. An 'option' is a single one
-  of these, Silk. The pair Material: Silk is a 'selection'.
+  "We are going to build the steps of the bundle builder.
 
   The options are hardest to generate because they have to take into
   consideration the position in which the step appears in the flow, the list of
-  variants in the step, and the seletions the user has chosen so far."
-  [{:keys [flow selected-options initial-variants step->options]} yaki-and-waterwave?]
+  variants in the step, and the selections from prior steps."
+  [{:keys [flow selections initial-variants step->options]} yaki-and-waterwave?]
   (for [[step-name prior-steps] (map vector flow (reductions conj [] flow))
         ;; The variants that represent a step are tricky. Even if a user has
         ;; selected Lace, the Deep Wave variants include Lace and Silk, because
         ;; the Style step comes before the Material step. To manage this, this
         ;; code keeps track of which steps precede every other step.
-        :let                    [prior-selections     (select-keys selected-options prior-steps)
+        :let                    [prior-selections     (select-keys selections prior-steps)
                                  step-variants        (filter-variants-by-selections prior-selections initial-variants yaki-and-waterwave?)
-                                 selected-option-name (get selected-options step-name nil)
                                  options              (step->options step-name)
-                                 selected-option      (only (filter #(= selected-option-name (:name %)) options))]]
+                                 selected-option      (->> options
+                                                           (filter #(= (get selections step-name)
+                                                                       (:name %)))
+                                                           only)]]
     {:step-name       step-name
      :selected-option selected-option
-     :later-step?     (> (count prior-steps) (count selected-options))
-     :options         (options-by-price-and-position
+     :options         (by-price-and-position
                        (options-for-step options
-                                         {:prior-selections prior-selections
-                                          :selected-option  selected-option
-                                          :step-name        step-name
-                                          :step-variants    step-variants
-                                          :step-min-price   (min-price step-variants)}
+                                         {:selected-option selected-option
+                                          :step-name       step-name
+                                          :step-variants   step-variants}
                                          yaki-and-waterwave?))}))
+
+(defn ^:private any-variant-has-selection? [step option variants]
+  (some (fn [variant]
+          (= option (get variant step)))
+        variants))
+
+(defn ^:private first-option-for-step [step step-options variants]
+  (let [option->min-price (update-vals (group-by step variants) min-price)]
+    (->> step-options
+         (keep (fn [{:keys [name]}]
+                 (when-let [min-price (option->min-price name)]
+                   {:name      name
+                    :min-price min-price})))
+         by-price-and-position
+         first
+         :name)))
+
+(defn make-selections [{:keys [flow step->options selections initial-variants] :as bundle-builder} new-selections yaki-and-waterwave?]
+  (let [proposed-selections (merge selections new-selections)
+
+        [confirmed-selections selected-variants]
+        (reduce (fn [[confirmed-selections selected-variants] step]
+                  (let [proposed-option          (get proposed-selections step)
+                        in-stock-variants        (remove :sold-out? selected-variants)
+                        confirmed-option         (if (and proposed-option
+                                                          (any-variant-has-selection? step proposed-option in-stock-variants))
+                                                   proposed-option
+                                                   (first-option-for-step step (step->options step) in-stock-variants))
+                        new-confirmed-selections (assoc confirmed-selections step confirmed-option)
+                        new-selected-variants    (filter-variants-by-selections new-confirmed-selections selected-variants yaki-and-waterwave?)]
+                    [new-confirmed-selections new-selected-variants]))
+                ;; Start with no confirmed-selections and all the variants
+                [{} initial-variants]
+                flow)]
+    (assoc bundle-builder
+           :selections confirmed-selections
+           :selected-variant (only selected-variants))))
 
 (defn ^:private ordered-steps [{:keys [result-facets]}]
   (map (comp keyword :step) result-facets))
@@ -142,30 +142,6 @@
                     :sold-out? (not (:can_supply? variant)))))
        (:variants product)))
 
-(declare reset-options)
-(defn ^:private auto-advance [{:keys [flow selected-options selected-variants] :as bundle-builder} yaki-and-waterwave?]
-  (or (when-let [next-step (next-step bundle-builder)]
-        (when-let [next-option (->> selected-variants
-                                    (remove :sold-out?)
-                                    (map next-step)
-                                    set
-                                    only)]
-          (reset-options bundle-builder (assoc selected-options next-step next-option) yaki-and-waterwave?)))
-      bundle-builder))
-
-(defn reset-options [{:keys [initial-variants] :as bundle-builder} selected-options yaki-and-waterwave?]
-  (let [selected-options (clean-selections bundle-builder selected-options)
-        selected-variants (filter-variants-by-selections selected-options initial-variants yaki-and-waterwave?)
-        revised-state (assoc bundle-builder
-                             :selected-options selected-options
-                             :selected-variants selected-variants)]
-    (auto-advance revised-state yaki-and-waterwave?)))
-
-(defn rollback [{:keys [selected-options] :as bundle-builder} yaki-and-waterwave?]
-  (if-let [last-step (last-step bundle-builder)]
-    (reset-options bundle-builder (dissoc selected-options last-step) yaki-and-waterwave?)
-    bundle-builder))
-
 (defn initialize [named-search products-by-id yaki-and-waterwave?]
   (let [initial-variants (->> (map products-by-id (:product-ids named-search))
                               (remove nil?)
@@ -173,4 +149,4 @@
         initial-state    {:flow             (ordered-steps named-search)
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step named-search)}]
-    (reset-options initial-state {} yaki-and-waterwave?)))
+    (make-selections initial-state {} yaki-and-waterwave?)))
