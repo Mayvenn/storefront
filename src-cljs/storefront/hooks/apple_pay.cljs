@@ -110,7 +110,7 @@
                                 js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
                                 js/ApplePaySession.STATUS_FAILURE))))))
 
-(defn ^:private apple-pay-update-estimates [order-atom states complete event]
+(defn ^:private apple-pay-update-estimates [order-atom completion-method states complete event]
   (let [{:keys [number token shipping-address] :as order} @order-atom
         shipping-contact (js->clj (.-shippingContact event) :keywordize-keys true)
         shipping-method  (js->clj (.-shippingMethod event) :keywordize-keys true)
@@ -132,7 +132,7 @@
         failed-to-estimate  (fn [error]
                               (let [details               (or (some-> error :response :body :details) {})
                                     bad-shipping-address? (some details [:shipping-address.city :shipping-address.state :shipping-address.zipcode])
-                                    status                (if bad-shipping-address?
+                                    status                (if (and bad-shipping-address? (= completion-method :complete-shipping-contact))
                                                             js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
                                                             js/ApplePaySession.STATUS_FAILURE)]
                                 (complete status
@@ -154,14 +154,14 @@
                           :total                         (order->apple-total order)}
         session          (js/Stripe.applePay.buildSession (clj->js payment-request) (partial charge-apple-pay order session-id utm-params (partial find-state-abbr states)))]
     (set! (.-oncancel session) (fn [_] (handle-message events/apple-pay-end)))
-    (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order states
+    (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order :complete-shipping-contact states
                                                    (fn [status total line-items]
                                                      (.completeShippingContactSelection session
                                                                                         status
                                                                                         (clj->js []) ;; no new shipping methods
                                                                                         (clj->js total)
                                                                                         (clj->js line-items)))))
-    (set! (.-onshippingmethodselected session) (partial apple-pay-update-estimates modified-order states
+    (set! (.-onshippingmethodselected session) (partial apple-pay-update-estimates modified-order :complete-shipping-method states
                                                   (fn [status total line-items]
                                                     (.completeShippingMethodSelection session
                                                                                       status
