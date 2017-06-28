@@ -58,11 +58,9 @@
                   (let [options                  (options-for-step step (step->options step) selected-variants)
                         in-stock-options         (remove :sold-out? options)
                         confirmed-option         (or (option-by-name in-stock-options (get proposed-selections step))
-                                                     (first in-stock-options))
-                        new-confirmed-selections (assoc confirmed-selections step (:name confirmed-option))
-                        new-selected-variants    (:variants confirmed-option)]
-                    [new-confirmed-selections
-                     new-selected-variants
+                                                     (first in-stock-options))]
+                    [(merge confirmed-selections (:selection confirmed-option))
+                     (:variants confirmed-option)
                      (conj steps {:step-name       step
                                   :selected-option confirmed-option
                                   :options         (options-with-selection confirmed-option options)})]))
