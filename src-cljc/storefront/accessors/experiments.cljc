@@ -54,5 +54,3 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn product-detail-page? [data]
-  (display-feature? data "product-detail-page"))

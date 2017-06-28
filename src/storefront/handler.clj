@@ -27,7 +27,6 @@
              [views :as views]]
             [storefront.accessors
              [bundle-builder :as bundle-builder]
-             [old-bundle-builder :as old-bundle-builder]
              [experiments :as experiments]
              [named-searches :as named-searches]]
             [comb.template :as template]
@@ -211,8 +210,7 @@
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
-                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id))
-                                          (assoc-in keypaths/old-bundle-builder (old-bundle-builder/initialize named-search products-by-id)))))
+                                          (assoc-in keypaths/bundle-builder (bundle-builder/initialize named-search products-by-id)))))
           (when-not (seq user-token)
             (util.response/redirect (str "/login?path=" (:uri req)))))))))
 

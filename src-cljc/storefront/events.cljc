@@ -128,7 +128,6 @@
 (defpath control-facebook-sign-in)
 (defpath control-facebook-reset)
 
-(defpath control-old-bundle-option-select)
 (defpath control-bundle-option-select)
 
 (defpath control-browse-variant)

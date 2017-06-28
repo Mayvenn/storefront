@@ -24,7 +24,6 @@
 
             [storefront.accessors.experiments :as experiments]
             [storefront.components.category :as category]
-            [storefront.components.old-category :as old-category]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
@@ -44,7 +43,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn main-component [nav-event product-detail-page?]
+(defn main-component [nav-event]
   (condp = nav-event
     #?@(:cljs
         [events/navigate-reset-password                 reset-password/built-component
@@ -72,9 +71,7 @@
          events/navigate-order-complete                 checkout-complete/built-component])
 
     events/navigate-home              home/built-component
-    events/navigate-category          (if product-detail-page?
-                                        category/built-component
-                                        old-category/built-component)
+    events/navigate-category          category/built-component
     events/navigate-shared-cart       shared-cart/built-component
     events/navigate-content-guarantee content/built-component
     events/navigate-content-help      content/built-component
@@ -115,6 +112,6 @@
         [:header (header/built-component data nil)]
         (flash/built-component data nil)
         [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         ((main-component nav-event (experiments/product-detail-page? data)) data nil)]
+         ((main-component nav-event) data nil)]
         [:footer
          (footer/built-component data nil)]]))))

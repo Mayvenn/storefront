@@ -22,7 +22,7 @@
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"}
-   [:div.col-on-tb-dt.col-7-on-tb-dt.px2 wide-left]
+   [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
@@ -31,7 +31,7 @@
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.mxn2.my2 body])
+  [:div.hide-on-tb-dt.mxn2.my2 body])
 
 (def schema-org-offer-props
   {:item-prop "offers"
@@ -91,55 +91,51 @@
      (map-indexed display-bagged-variant bagged-variants)
      checkout-button]))
 
-(defn option-html [{:keys [name image checked? sold-out? selection]}]
-  [:label.btn.h5.light.p0.border-width-2.container-size
+(defn option-html [step-name later-step?
+                   {:keys [name image price-delta checked? sold-out? selections]}]
+  [:label.btn.border-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
-    :class     (cond
-                 sold-out?   "lighten-4"
-                 checked?    "border-teal"
-                 (not image) "border-gray")}
-   ;; For layout, this must be .display-none, and not .hide. If that breaks
-   ;; HEAT, we should try rendering the inputs separately from the labels, and
-   ;; connecting them with {:for "some-id"}. To check if you've broken the
-   ;; layout, choose straight, black, brazilian. Then scroll the page
-   ;; horizontally (not the lengths, the whole page). The page should not
-   ;; scroll, though it will if you've broken things.
-   [:input.display-none
-    {:type      "radio"
-     :disabled  sold-out?
-     :checked   checked?
-     :on-change (utils/send-event-callback events/control-bundle-option-select
-                                           {:selection selection})}]
+    :class (cond
+             sold-out?   "bg-gray dark-gray light"
+             later-step? "bg-gray muted light"
+             checked?    "bg-teal white medium"
+             true        "bg-white dark-gray light")
+    :style {:font-size "14px" :line-height "18px"}}
+   [:input.hide {:type      "radio"
+                 :disabled  (or later-step? sold-out?)
+                 :checked   checked?
+                 :on-change (utils/send-event-callback events/control-bundle-option-select
+                                                       {:selected-options selections
+                                                        :step-name step-name})}]
    (if image
-     [:img.block
-      {:style  {:border-radius "3px"}
-       :src    image
-       :width  "43px"
-       :height "43px"
-       :alt    name}]
-     [:span.block.titleize.p2
-      (if (> (count name) 3)
-        (subs name 0 1)
-        name)])
-   [:span.block (when sold-out? "Sold Out")]])
+     [:img.mbp4.content-box.circle.border-light-gray
+      {:src image :alt name
+       :width 30 :height 30
+       :class (cond checked? "border" sold-out? "muted")}]
+     [:span.block.titleize name])
+   [:span.block
+    (if sold-out?
+      "Sold Out"
+      [:span {:class (when-not checked? "navy")}
+       "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name selected-option options]}]
-  [:div.my3 {:key step-name}
-   [:h2.flex.h7.items-baseline
-    [:div.titleize.pr1
-     (name step-name) ":"]
-    [:div.h5
-     (or (:long-name selected-option)
-         (:name selected-option))]
-    (when (> (count options) 5)
-      [:div.flex-auto.right-align.dark-gray
-       "◀ Swipe for more"]) ]
-   [:div.nowrap.overflow-auto
+(defn step-html [{:keys [step-name selected-option later-step? options]}]
+  [:div.my2 {:key step-name}
+   [:h2.h3.clearfix.h5
+    [:span.block.left.navy.medium.shout
+     (name step-name)
+     (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
+    (when selected-option
+      [:span.block.overflow-hidden.dark-gray.h5.regular
+       (or (:long-name selected-option)
+           [:span.titleize (:name selected-option)])])]
+   [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{:keys [name] :as option} options]
-      [:div.inline-block.content-box.pr2
-       {:key   (string/replace (str step-name name) #"\W+" "-")
-        :style {:height "47px" :width "47px"}}
-       (option-html option)])]])
+      [:div.flex.flex-column.justify-center.pp3
+       {:key   (string/replace (str name step-name) #"\W+" "-")
+        :style {:height "72px"}
+        :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
+       (option-html step-name later-step? option)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
@@ -150,6 +146,19 @@
   (when (seq flow)
     (string/upper-case (:variant-name variant))))
 
+(defn summary-structure [desc quantity-and-price]
+  [:div
+   (when (seq desc)
+     [:div
+      [:h2.h3.light "Summary"]
+      [:div.navy desc]])
+   quantity-and-price])
+
+(defn no-variant-summary [next-step]
+  (summary-structure
+   (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
+   (quantity-and-price-structure ui/nbsp "$--.--")))
+
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
@@ -157,9 +166,11 @@
                                variant
                                variant-quantity]}]
   (let [{:keys [can_supply? price]} variant]
-    (quantity-and-price-structure
-     (counter-or-out-of-stock can_supply? variant-quantity)
-     (item-price price))))
+    (summary-structure
+     (variant-name variant flow)
+     (quantity-and-price-structure
+      (counter-or-out-of-stock can_supply? variant-quantity)
+      (item-price price)))))
 
 (def triple-bundle-upsell
   (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
@@ -210,6 +221,12 @@
                       :settings {:dots true}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
+(defn starting-at [variants]
+  (when-let [cheapest-price (bundle-builder/min-price variants)]
+    [:div.center.dark-gray
+     [:div.h6 "Starting at"]
+     [:div.h2 (item-price cheapest-price)]]))
+
 (defn reviews-summary [reviews opts]
   [:div.h6
    (component/build reviews/reviews-summary-component reviews opts)])
@@ -225,12 +242,21 @@
         :when (and (= type image-type) large_url)]
     image))
 
+(defn distinct-variant-images [selected-variants]
+  (->> (sort-by #(-> % :variant_attrs :style) selected-variants)
+       reverse ;;List straight styles first
+       (map :images)
+       (mapcat sort-images)
+       distinct
+       vec))
+
 (defn ^:private images-from-variants
   "For some named-searches, when a selection has been made, show detailed product images"
-  [named-search {:keys [selections selected-variant]}]
-  (sort-images (if (named-search-uses-product-images (:slug named-search))
-                 (:images selected-variant)
-                 (:carousel-images named-search))))
+  [named-search {:keys [selected-options selected-variants]}]
+  (if (and (named-search-uses-product-images (:slug named-search))
+           (seq selected-options))
+    (distinct-variant-images selected-variants)
+    (sort-images (:carousel-images named-search))))
 
 (defn component [{:keys [named-search
                          bundle-builder
@@ -239,7 +265,8 @@
                          reviews
                          adding-to-bag?
                          bagged-variants
-                         ugc]}
+                         ugc
+                         selected-variant]}
                  owner opts]
   (let [carousel-images   (images-from-variants named-search bundle-builder)
         needs-selections? (< 1 (count (:initial-variants bundle-builder)))
@@ -248,39 +275,52 @@
      (when named-search
        [:div.container.p2
         (page
-         (full-bleed-narrow (carousel carousel-images named-search))
+         [:div
+          (carousel carousel-images named-search)
+
+          [:div.hide-on-mb (component/build ugc/component ugc opts)]]
          [:div
           [:div.center
            (title (:long-name named-search))
            (when review? (reviews-summary reviews opts))
-           [:meta {:item-prop "image" :content (first carousel-images)}]]
+           [:meta {:item-prop "image" :content (first carousel-images)}]
+           (full-bleed-narrow (carousel carousel-images named-search))
+           (when (and (not fetching-variants?)
+                      needs-selections?)
+             (starting-at (:initial-variants bundle-builder)))]
           (if fetching-variants?
             [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
-               (for [step (:steps bundle-builder)]
-                 (step-html step)))
+               [:div.border-bottom.border-light-gray.border-width-2
+                (for [step (bundle-builder/steps bundle-builder)]
+                  (step-html step))])
              [:div schema-org-offer-props
               [:div.my2
-               (variant-summary {:flow                  (:flow bundle-builder)
-                                 :variant               (:selected-variant bundle-builder)
-                                 :variant-quantity      variant-quantity})]
-              (add-to-bag-button adding-to-bag? (:selected-variant bundle-builder) variant-quantity)
+               (if selected-variant
+                 (variant-summary {:flow                  (:flow bundle-builder)
+                                   :variant               selected-variant
+                                   :variant-quantity      variant-quantity})
+                 (no-variant-summary (bundle-builder/next-step bundle-builder)))]
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 triple-bundle-upsell)
+              (when selected-variant
+                (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
               (bagged-variants-and-checkout bagged-variants)
-              (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])])
-        (named-search-description (:description named-search))
-        [:div.mxn2.mb3 (component/build ugc/component ugc opts)]
+              (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
+          (named-search-description (:description named-search))
+          [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
         (when review? (component/build reviews/reviews-component reviews opts))]))))
 
 (defn query [data]
   (let [named-search     (named-searches/current-named-search data)
         bundle-builder   (get-in data keypaths/bundle-builder)
-        variant-quantity (get-in data keypaths/browse-variant-quantity)]
+        variant-quantity (get-in data keypaths/browse-variant-quantity)
+        selected-variant (bundle-builder/selected-variant bundle-builder)]
     {:named-search        named-search
      :bundle-builder      bundle-builder
      :variant-quantity    variant-quantity
+     :selected-variant    selected-variant
      :fetching-variants?  (not (named-searches/products-loaded? data named-search))
      :adding-to-bag?      (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants     (get-in data keypaths/browse-recently-added-variants)
