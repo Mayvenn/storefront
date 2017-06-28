@@ -92,42 +92,49 @@
      checkout-button]))
 
 (defn option-html [{:keys [name image checked? sold-out? selection]}]
-  [:label.btn.border-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
+  [:label.btn.h5.light.p0.border-width-2.container-size
    {:data-test (str "option-" (string/replace name #"\W+" ""))
-    :class (cond
-             sold-out?   "bg-gray dark-gray light"
-             checked?    "bg-teal white medium"
-             true        "bg-white dark-gray light")
-    :style {:font-size "14px" :line-height "18px"}}
-   [:input.hide {:type      "radio"
-                 :disabled  sold-out?
-                 :checked   checked?
-                 :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selection selection})}]
+    :class     (cond
+                 sold-out?   "lighten-4"
+                 checked?    "border-teal"
+                 (not image) "border-gray")}
+   ;; For layout, this must be .display-none, and not .hide. If that breaks
+   ;; HEAT, we should try rendering the inputs separately from the labels, and
+   ;; connecting them with {:for "some-id"}. To check if you've broken the
+   ;; layout, choose straight, black, brazilian. Then scroll the page
+   ;; horizontally (not the lengths, the whole page). The page should not
+   ;; scroll, though it will if you've broken things.
+   [:input.display-none
+    {:type                  "radio"
+     :disabled  sold-out?
+     :checked   checked?
+     :on-change (utils/send-event-callback events/control-bundle-option-select
+                                           {:selection selection})}]
    (if image
-     [:img.mbp4.content-box.circle.border-light-gray
-      {:src image :alt name
-       :width 30 :height 30
-       :class (cond checked? "border" sold-out? "muted")}]
-     [:span.block.titleize name])
+     [:img.block
+      {:src    image
+       :width  "43px"
+       :height "43px"
+       :alt    name}]
+     [:span.block.titleize.p2
+      (if (> (count name) 3)
+        (subs name 0 1)
+        name)])
    [:span.block (when sold-out? "Sold Out")]])
 
 (defn step-html [{:keys [step-name selected-option options]}]
-  [:div.my2 {:key step-name}
-   [:h2.h3.clearfix.h5
-    [:span.block.left.navy.medium.shout
-     (name step-name)
-     (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
-    (when selected-option
-      [:span.block.overflow-hidden.dark-gray.h5.regular
-       (or (:long-name selected-option)
-           [:span.titleize (:name selected-option)])])]
-   [:div.flex.flex-wrap.content-stretch.mxnp3
+  [:div.my3 {:key step-name}
+   [:h2.mb2.line-height-1
+    [:span.titleize.h7.line-height-1
+     (name step-name) ": "]
+    [:span.h5.line-height-1
+     (or (:long-name selected-option)
+         (:name selected-option))]]
+   [:div.nowrap.overflow-auto
     (for [{:keys [name] :as option} options]
-      [:div.flex.flex-column.justify-center.pp3
+      [:div.inline-block.content-box.pr2
        {:key   (string/replace (str step-name name) #"\W+" "-")
-        :style {:height "72px"}
-        :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
+        :style {:height "47px" :width "47px"}}
        (option-html option)])]])
 
 (defn indefinite-articalize [word]
