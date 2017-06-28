@@ -27,8 +27,8 @@
 
 ;; flow: [:color :origin :length]
 
-(defn ^:private options-with-selection [selected-option options]
-  (map #(assoc % :checked? (= selected-option %)) options))
+(defn ^:private option-with-selection [selected-option option]
+  (assoc option :checked? (= selected-option option)))
 
 (defn ^:private option-by-name [options option-name]
   (some #(when (= option-name (:name %)) %) options))
@@ -63,7 +63,7 @@
                      (:variants confirmed-option)
                      (conj steps {:step-name       step
                                   :selected-option confirmed-option
-                                  :options         (options-with-selection confirmed-option options)})]))
+                                  :options         (map (partial option-with-selection confirmed-option) options)})]))
                 [{} initial-variants []]
                 flow)]
     (assoc bundle-builder

@@ -146,14 +146,6 @@
   (when (seq flow)
     (string/upper-case (:variant-name variant))))
 
-(defn summary-structure [desc quantity-and-price]
-  [:div
-   (when (seq desc)
-     [:div
-      [:h2.h3.light "Summary"]
-      [:div.navy desc]])
-   quantity-and-price])
-
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
@@ -161,11 +153,9 @@
                                variant
                                variant-quantity]}]
   (let [{:keys [can_supply? price]} variant]
-    (summary-structure
-     (variant-name variant flow)
-     (quantity-and-price-structure
-      (counter-or-out-of-stock can_supply? variant-quantity)
-      (item-price price)))))
+    (quantity-and-price-structure
+     (counter-or-out-of-stock can_supply? variant-quantity)
+     (item-price price))))
 
 (def triple-bundle-upsell
   (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
@@ -264,17 +254,16 @@
             [:div.h2.mb2 ui/spinner]
             [:div
              (when needs-selections?
-               [:div.border-bottom.border-light-gray.border-width-2
-                (for [step (:steps bundle-builder)]
-                  (step-html step))])
+               (for [step (:steps bundle-builder)]
+                 (step-html step)))
              [:div schema-org-offer-props
               [:div.my2
                (variant-summary {:flow                  (:flow bundle-builder)
                                  :variant               (:selected-variant bundle-builder)
                                  :variant-quantity      variant-quantity})]
+              (add-to-bag-button adding-to-bag? (:selected-variant bundle-builder) variant-quantity)
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 triple-bundle-upsell)
-              (add-to-bag-button adding-to-bag? (:selected-variant bundle-builder) variant-quantity)
               (bagged-variants-and-checkout bagged-variants)
               (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])])
         (named-search-description (:description named-search))
