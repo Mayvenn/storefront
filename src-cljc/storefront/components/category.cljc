@@ -105,14 +105,15 @@
    ;; horizontally (not the lengths, the whole page). The page should not
    ;; scroll, though it will if you've broken things.
    [:input.display-none
-    {:type                  "radio"
+    {:type      "radio"
      :disabled  sold-out?
      :checked   checked?
      :on-change (utils/send-event-callback events/control-bundle-option-select
                                            {:selection selection})}]
    (if image
      [:img.block
-      {:src    image
+      {:style  {:border-radius "3px"}
+       :src    image
        :width  "43px"
        :height "43px"
        :alt    name}]
