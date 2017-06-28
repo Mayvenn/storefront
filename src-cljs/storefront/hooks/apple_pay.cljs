@@ -110,39 +110,57 @@
                                 js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
                                 js/ApplePaySession.STATUS_FAILURE))))))
 
-(defn ^:private apple-pay-update-estimates [order-atom completion-method states complete event]
-  (let [{:keys [number token shipping-address] :as order} @order-atom
-        shipping-contact (js->clj (.-shippingContact event) :keywordize-keys true)
-        shipping-method  (js->clj (.-shippingMethod event) :keywordize-keys true)
+(defn error->shipping-contact-status [error]
+  (let [bad-shipping? (and error
+                           (some (or (some-> error :response :body :details) {})
+                                 [:shipping-address.city :shipping-address.state :shipping-address.zipcode]))]
+    (cond
+      bad-shipping? js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
+      error         js/ApplePaySession.STATUS_FAILURE
+      :else         js/ApplePaySession.STATUS_SUCCESS)))
 
-        params {:number              number
-                :token               token
-                :shipping-address    (if shipping-contact
-                                       ;; At this stage apple pay only provides us with these
-                                       ;; keys: administrativeArea country locality and postalCode
-                                       (apple->waiter-shipping shipping-contact (partial find-state-abbr states))
-                                       shipping-address)
-                :shipping-method-sku (:identifier shipping-method (:sku (orders/shipping-item order)))}
+(defn error->shipping-method-status [error]
+  (cond
+    error js/ApplePaySession.STATUS_FAILURE
+    :else js/ApplePaySession.STATUS_SUCCESS))
 
-        successful-estimate (fn [updated-order]
+(defn complete-shipping-contact-selection [session order error]
+  (.completeShippingContactSelection session
+                                     (error->shipping-contact-status error)
+                                     (clj->js []) ;; no new shipping methods
+                                     (-> order order->apple-total clj->js)
+                                     (-> order order->apple-line-items clj->js)))
+
+(defn complete-shipping-method-selection [session order error]
+  (.completeShippingMethodSelection session
+                                    (error->shipping-method-status error)
+                                    (-> order order->apple-total clj->js)
+                                    (-> order order->apple-line-items clj->js)))
+
+(defn estimate-params [order states event]
+  (let [shipping-contact (js->clj (.-shippingContact event) :keywordize-keys true)
+        shipping-method  (js->clj (.-shippingMethod event) :keywordize-keys true)]
+    {:number              (:number order)
+     :token               (:token order)
+     :shipping-address    (if shipping-contact
+                            ;; At this stage apple pay only provides us with these
+                            ;; keys: administrativeArea country locality and postalCode
+                            (apple->waiter-shipping shipping-contact (partial find-state-abbr states))
+                            (:shipping-address order))
+     :shipping-method-sku (:identifier shipping-method (:sku (orders/shipping-item order)))}))
+
+(defn on-apple-pay-updated [session order-atom states completion-fn event]
+  (let [order  @order-atom
+        params (estimate-params order states event)]
+    (api/apple-pay-estimate params
+                            (fn [updated-order]
                               (reset! order-atom updated-order)
-                              (complete js/ApplePaySession.STATUS_SUCCESS
-                                        (order->apple-total updated-order)
-                                        (order->apple-line-items updated-order)))
-        failed-to-estimate  (fn [error]
-                              (let [details               (or (some-> error :response :body :details) {})
-                                    bad-shipping-address? (some details [:shipping-address.city :shipping-address.state :shipping-address.zipcode])
-                                    status                (if (and bad-shipping-address? (= completion-method :complete-shipping-contact))
-                                                            js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
-                                                            js/ApplePaySession.STATUS_FAILURE)]
-                                (complete status
-                                          (order->apple-total order)
-                                          (order->apple-line-items order))))]
-    (api/apple-pay-estimate params successful-estimate failed-to-estimate)))
+                              (completion-fn session updated-order nil))
+                            (fn [error]
+                              (completion-fn session order error)))))
 
 (defn begin [order session-id utm-params shipping-methods states]
-  (let [modified-order   (atom order)
-        shipping-methods (waiter->apple-shipping-methods shipping-methods)
+  (let [modified-order   (atom order) shipping-methods (waiter->apple-shipping-methods shipping-methods)
         payment-request  {:countryCode                   "US"
                           :currencyCode                  "USD"
                           :requiredBillingContactFields  ["name" "postalAddress"]
@@ -152,20 +170,10 @@
                           :shippingMethods               shipping-methods
                           :lineItems                     (order->apple-line-items order)
                           :total                         (order->apple-total order)}
-        session          (js/Stripe.applePay.buildSession (clj->js payment-request) (partial charge-apple-pay order session-id utm-params (partial find-state-abbr states)))]
+        session          (js/Stripe.applePay.buildSession (clj->js payment-request)
+                                                          (partial charge-apple-pay order session-id utm-params (partial find-state-abbr states)))]
     (set! (.-oncancel session) (fn [_] (handle-message events/apple-pay-end)))
-    (set! (.-onshippingcontactselected session) (partial apple-pay-update-estimates modified-order :complete-shipping-contact states
-                                                   (fn [status total line-items]
-                                                     (.completeShippingContactSelection session
-                                                                                        status
-                                                                                        (clj->js []) ;; no new shipping methods
-                                                                                        (clj->js total)
-                                                                                        (clj->js line-items)))))
-    (set! (.-onshippingmethodselected session) (partial apple-pay-update-estimates modified-order :complete-shipping-method states
-                                                  (fn [status total line-items]
-                                                    (.completeShippingMethodSelection session
-                                                                                      status
-                                                                                      (clj->js total)
-                                                                                      (clj->js line-items)))))
+    (set! (.-onshippingcontactselected session) (partial on-apple-pay-updated session modified-order states complete-shipping-contact-selection))
+    (set! (.-onshippingmethodselected session) (partial on-apple-pay-updated session modified-order states complete-shipping-method-selection))
     (.begin session)))
 
