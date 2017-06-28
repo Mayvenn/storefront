@@ -132,11 +132,9 @@
         failed-to-estimate  (fn [error]
                               (let [details               (or (some-> error :response :body :details) {})
                                     bad-shipping-address? (some details [:shipping-address.city :shipping-address.state :shipping-address.zipcode])
-                                    bad-contact?          (:email details)
-                                    status                (cond
-                                                            bad-contact?          js/ApplePaySession.STATUS_INVALID_SHIPPING_CONTACT
-                                                            bad-shipping-address? js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
-                                                            :else                 js/ApplePaySession.STATUS_FAILURE)]
+                                    status                (if bad-shipping-address?
+                                                            js/ApplePaySession.STATUS_INVALID_SHIPPING_POSTAL_ADDRESS
+                                                            js/ApplePaySession.STATUS_FAILURE)]
                                 (complete status
                                           (order->apple-total order)
                                           (order->apple-line-items order))))]
