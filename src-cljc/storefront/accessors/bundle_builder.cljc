@@ -55,10 +55,10 @@
         ;; makes sense, taking into account prior steps.
         [confirmed-selections selected-variants steps]
         (reduce (fn [[confirmed-selections selected-variants steps] step]
-                  (let [options                  (options-for-step step (step->options step) selected-variants)
-                        in-stock-options         (remove :sold-out? options)
-                        confirmed-option         (or (option-by-name in-stock-options (get proposed-selections step))
-                                                     (first in-stock-options))]
+                  (let [options          (options-for-step step (step->options step) selected-variants)
+                        in-stock-options (remove :sold-out? options)
+                        confirmed-option (or (option-by-name in-stock-options (get proposed-selections step))
+                                             (first in-stock-options))]
                     [(merge confirmed-selections (:selection confirmed-option))
                      (:variants confirmed-option)
                      (conj steps {:step-name       step
