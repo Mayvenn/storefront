@@ -124,12 +124,15 @@
 
 (defn step-html [{:keys [step-name selected-option options]}]
   [:div.my3 {:key step-name}
-   [:h2.mb2.line-height-1
-    [:span.titleize.h7.line-height-1
-     (name step-name) ": "]
-    [:span.h5.line-height-1
+   [:h2.flex.h7.items-baseline
+    [:div.titleize.pr1
+     (name step-name) ":"]
+    [:div.h5
      (or (:long-name selected-option)
-         (:name selected-option))]]
+         (:name selected-option))]
+    (when (> (count options) 5)
+      [:div.flex-auto.right-align.dark-gray
+       "◀ Swipe for more"]) ]
    [:div.nowrap.overflow-auto
     (for [{:keys [name] :as option} options]
       [:div.inline-block.content-box.pr2
