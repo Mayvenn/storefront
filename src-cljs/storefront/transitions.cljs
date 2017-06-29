@@ -147,11 +147,11 @@
   (assoc-valid-telligent-url app-state telligent-url))
 
 (defn initialize-bundle-builder [app-state]
-  (let [bundle-builder (bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                      (get-in app-state keypaths/products))
-        saved-options  (get-in app-state keypaths/saved-bundle-builder-options)]
-    (if saved-options
-      (bundle-builder/reset-options bundle-builder saved-options)
+  (let [bundle-builder   (bundle-builder/initialize (named-searches/current-named-search app-state)
+                                                    (get-in app-state keypaths/products))
+        saved-selections (get-in app-state keypaths/saved-bundle-builder-options)]
+    (if saved-selections
+      (bundle-builder/reset-selections bundle-builder saved-selections)
       bundle-builder)))
 
 (defn ensure-bundle-builder [app-state]
@@ -163,15 +163,15 @@
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event {:keys [named-search-slug]} app-state]
-  (let [bundle-builder-options (-> (get-in app-state keypaths/bundle-builder)
-                                       bundle-builder/constrained-options
-                                       (dissoc :length))]
+  (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
+                                      bundle-builder/expanded-selections
+                                      (dissoc :length))]
     (-> app-state
         (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
         (assoc-in keypaths/browse-variant-quantity 1)
         (assoc-in keypaths/bundle-builder nil)
-        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-options)
+        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
         ensure-bundle-builder)))
 
 (defmethod transition-state events/navigate-ugc-category [_ event {:keys [named-search-slug query-params]} app-state]
@@ -277,8 +277,8 @@
   (update-in app-state (:path args) (comp (partial max 1) dec)))
 
 (defmethod transition-state events/control-bundle-option-select
-  [_ event {:keys [selected-options]} app-state]
-  (update-in app-state keypaths/bundle-builder bundle-builder/reset-options selected-options))
+  [_ event {:keys [selections]} app-state]
+  (update-in app-state keypaths/bundle-builder bundle-builder/reset-selections selections))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))

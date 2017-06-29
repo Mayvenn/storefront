@@ -105,7 +105,7 @@
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selected-options selections
+                                                       {:selections selections
                                                         :step-name step-name})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
@@ -252,9 +252,9 @@
 
 (defn ^:private images-from-variants
   "For some named-searches, when a selection has been made, show detailed product images"
-  [named-search {:keys [selected-options selected-variants]}]
+  [named-search {:keys [selections selected-variants]}]
   (if (and (named-search-uses-product-images (:slug named-search))
-           (seq selected-options))
+           (seq selections))
     (distinct-variant-images selected-variants)
     (sort-images (:carousel-images named-search))))
 

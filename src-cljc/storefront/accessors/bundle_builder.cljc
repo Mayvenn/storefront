@@ -2,6 +2,18 @@
   (:require [storefront.platform.numbers :as numbers]
             [clojure.set :as set]))
 
+;; TERMINOLOGY
+;; step: :color
+;; option: "Natural #1B"
+;; selection: {:color "Natural #1B"}
+
+;; Be careful though. Sometimes
+;; option: {:name      "Natural #1B"
+;;          :long-name "Natural Black (#1B)"
+;;          :image     "//:..."}
+
+;; flow: [:color :origin :length]
+
 (defn ^:private only [coll]
   (when (= 1 (count coll))
     (first coll)))
@@ -12,10 +24,10 @@
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
-(defn constrained-options
-  "Calculate bundle builder options where the available variants all share a
-  common value. This lets us copy :style -> 'straight' to the closures page,
-  even though it was not a selected-option on the straight page"
+(defn expanded-selections
+  "Calculate the selections where all available variants share a
+  common value. This lets us copy {:style \"straight\"} to the closures page,
+  even though it was not a selection on the straight page"
   [{:keys [selected-variants]}]
   (->> selected-variants
        (map :variant_attrs)
@@ -25,12 +37,12 @@
        (filter second)
        (into {})))
 
-(defn last-step [{:keys [flow selected-options]}]
-  (let [finished-step? (set (keys selected-options))]
+(defn last-step [{:keys [flow selections]}]
+  (let [finished-step? (set (keys selections))]
     (last (take-while finished-step? flow))))
 
-(defn next-step [{:keys [flow selected-options]}]
-  (let [finished-step? (set (keys selected-options))]
+(defn next-step [{:keys [flow selections]}]
+  (let [finished-step? (set (keys selections))]
     (first (drop-while finished-step? flow))))
 
 (defn min-price [variants]
@@ -47,18 +59,6 @@
        (map-indexed vector)
        (sort-by (fn [[idx {:keys [price-delta]}]] [price-delta idx]))
        (map second)))
-
-;; TERMINOLOGY
-;; step: :color
-;; option: "Natural #1B"
-;; selection: {:color "Natural #1B"}
-
-;; Be careful though. Sometimes
-;; option: {:name      "Natural #1B"
-;;          :long-name "Natural Black (#1B)"
-;;          :image     "//:..."}
-
-;; flow: [:color :origin :length]
 
 (defn ^:private option-with-selection [selected-option option]
   (assoc option :checked? (= selected-option option)))
@@ -83,23 +83,7 @@
                           :variants variants))))
          options-by-price-and-position)))
 
-(defn ^:private ordered-steps [{:keys [result-facets]}]
-  (map (comp keyword :step) result-facets))
-
-(defn ^:private ordered-options-by-step [{:keys [result-facets]}]
-  (->> result-facets
-       (map (juxt (comp keyword :step) :options))
-       (into {})))
-
-(defn ^:private build-variants [product]
-  (map (fn [variant]
-         (-> variant
-             (merge (:variant_attrs variant))
-             (assoc :price (numbers/parse-float (:price variant))
-                    :sold-out? (not (:can_supply? variant)))))
-       (:variants product)))
-
-(defn reset-options [{:keys [flow initial-variants step->options] :as bundle-builder} proposed-selections]
+(defn reset-selections [{:keys [flow initial-variants step->options] :as bundle-builder} proposed-selections]
   (let [[confirmed-selections selected-variants steps]
         (reduce (fn [[confirmed-selections selected-variants steps] step]
                   (let [options          (options-for-step step (step->options step) selected-variants confirmed-selections)
@@ -121,13 +105,29 @@
                 flow)]
     (assoc bundle-builder
            :steps steps
-           :selected-options confirmed-selections
+           :selections confirmed-selections
            :selected-variants selected-variants)))
 
-(defn rollback [{:keys [selected-options] :as bundle-builder}]
+(defn rollback [{:keys [selections] :as bundle-builder}]
   (if-let [last-step (last-step bundle-builder)]
-    (reset-options bundle-builder (dissoc selected-options last-step))
+    (reset-selections bundle-builder (dissoc selections last-step))
     bundle-builder))
+
+(defn ^:private ordered-steps [{:keys [result-facets]}]
+  (map (comp keyword :step) result-facets))
+
+(defn ^:private ordered-options-by-step [{:keys [result-facets]}]
+  (->> result-facets
+       (map (juxt (comp keyword :step) :options))
+       (into {})))
+
+(defn ^:private build-variants [product]
+  (map (fn [variant]
+         (-> variant
+             (merge (:variant_attrs variant))
+             (assoc :price (numbers/parse-float (:price variant))
+                    :sold-out? (not (:can_supply? variant)))))
+       (:variants product)))
 
 (defn initialize [named-search products-by-id]
   (let [initial-variants (->> (map products-by-id (:product-ids named-search))
@@ -136,4 +136,4 @@
         initial-state    {:flow             (ordered-steps named-search)
                           :initial-variants initial-variants
                           :step->options    (ordered-options-by-step named-search)}]
-    (reset-options initial-state {})))
+    (reset-selections initial-state {})))

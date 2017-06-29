@@ -44,9 +44,9 @@
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
 
-(defmethod perform-track events/control-bundle-option-select [_ event {:keys [step-name selected-options]} app-state]
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [step-name selections]} app-state]
   (stringer/track-event "select_bundle_option" {:option_name  step-name
-                                                :option_value (step-name selected-options)})
+                                                :option_value (step-name selections)})
   (when-let [last-step (bundle-builder/last-step (get-in app-state keypaths/bundle-builder))]
     (google-analytics/track-page (str (routes/current-path app-state)
                                       "/choose_"
