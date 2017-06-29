@@ -89,7 +89,7 @@
         (ui/drop-down
          expanded?
          keypaths/store-info-expanded
-         [:a (store-welcome signed-in store true)]
+         [:div (store-welcome signed-in store true)]
          [:div.bg-white.absolute.left-0
           (for [[idx row] (map-indexed vector rows)]
             [:div.border-gray {:key   idx
