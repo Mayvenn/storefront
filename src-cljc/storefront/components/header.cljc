@@ -3,6 +3,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.nav :as nav]
+            [storefront.accessors.auth :as auth]
             [storefront.assets :as assets]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
@@ -79,7 +80,7 @@
       (expand-icon expanded?))]])
 
 (defn store-info [signed-in {:keys [expanded? gallery? instagram-account styleseat-account] :as store}]
-  (when (-> signed-in ::slideout-nav/to (= ::slideout-nav/marketplace))
+  (when (-> signed-in ::auth/to (= :marketplace))
     (let [rows (cond-> []
                  gallery?          (conj gallery-link)
                  styleseat-account (conj (styleseat-link styleseat-account))
@@ -95,9 +96,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _] (::slideout-nav/as signed-in)))
+(defmulti account-info (fn [signed-in _] (::auth/as signed-in)))
 
-(defmethod account-info ::slideout-nav/user [_ {:keys [email expanded?]}]
+(defmethod account-info :user [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -112,7 +113,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::slideout-nav/stylist [_ {:keys [email expanded?]}]
+(defmethod account-info :stylist [_ {:keys [email expanded?]}]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -131,7 +132,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info ::slideout-nav/guest [_ _]
+(defmethod account-info :guest [_ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
@@ -175,8 +176,8 @@
 (defn shopping-flyout [signed-in {:keys [expanded? named-searches]}]
   (when expanded?
     (let [partition-searches (comp (filter (fn [named-search]
-                                          (or (-> signed-in ::slideout-nav/as (= ::slideout-nav/stylist))
-                                              (not (named-searches/is-stylist-product? named-search))))) 
+                                          (or (-> signed-in ::auth/as (= :stylist))
+                                              (not (named-searches/is-stylist-product? named-search)))))
                                 (partition-all 6))
           columns (concat (->> (filter named-searches/is-extension? named-searches)
                                (sequence partition-searches))
@@ -220,6 +221,7 @@
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
+      (assoc-in [:signed-in] (auth/signed-in data))
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (assoc-in [:store :expanded?] (get-in data keypaths/store-info-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))

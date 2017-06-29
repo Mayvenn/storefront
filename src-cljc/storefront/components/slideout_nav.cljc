@@ -8,6 +8,7 @@
             [storefront.platform.messages :as messages]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.auth :as auth]
             [storefront.components.money-formatters :refer [as-money]]
             [clojure.string :as str]
             [storefront.platform.component-utils :as utils]
@@ -100,7 +101,7 @@
                        styleseat-account (conj (styleseat-link styleseat-account))))]])
 
 (defn portrait-status [signed-in portrait]
-  (let [stylist? (-> signed-in ::as (= ::stylist))
+  (let [stylist? (-> signed-in ::auth/as (= :stylist))
         status   (:status portrait)]
     (cond
       (or (= "approved" status)
@@ -115,7 +116,7 @@
       ::show-nothing)))
 
 (defn store-info-marquee [signed-in {:keys [portrait] :as store}]
-  (when (-> signed-in ::to (= ::marketplace))
+  (when (-> signed-in ::auth/to (= :marketplace))
     [:div.my3.flex
      (case (portrait-status signed-in portrait)
        ::show-what-we-have [:div.left.self-center.pr2 (stylist-portrait portrait)]
@@ -124,11 +125,11 @@
      (store-actions store)]))
 
 (defn account-info-marquee [signed-in {:keys [email store-credit]}]
-  (when (-> signed-in ::at-all)
+  (when (-> signed-in ::auth/at-all)
     [:div.my3
      [:div.h7.medium "Signed in with:"]
      [:a.teal.h5
-      (utils/route-to (if (-> signed-in ::as (= ::stylist))
+      (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
                         events/navigate-stylist-account-profile
                         events/navigate-account-manage))
       email]
@@ -175,10 +176,10 @@
       "Sign up now, get offers!"]])))
 
 (defn actions-marquee [signed-in]
-  (case (-> signed-in ::as)
-    ::stylist stylist-actions
-    ::user    user-actions
-    ::guest   guest-actions))
+  (case (-> signed-in ::auth/as)
+    :stylist stylist-actions
+    :user    user-actions
+    :guest   guest-actions))
 
 (defn menu-row [& content]
   [:div.border-bottom.border-gray
@@ -193,7 +194,7 @@
                                          :items (filter named-searches/is-extension? named-searches)}
                                         {:title "Shop closures & frontals"
                                          :items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                                 (-> signed-in ::as (= ::stylist))
+                                 (-> signed-in ::auth/as (= :stylist))
                                  (conj {:title "Stylist exclusives"
                                         :items (filter named-searches/is-stylist-product? named-searches)}))]
      [:li {:key title}
@@ -240,28 +241,13 @@
       (actions-marquee signed-in)]]
     [:div.px6
      (menu-area signed-in shopping)]
-    (when (-> signed-in ::at-all)
+    (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
-(defn signed-in [data]
-  (let [as-stylist? (stylists/own-store? data)
-        as-user?    (get-in data keypaths/user-email)
-        store-slug  (get-in data (conj keypaths/store :store_slug))]
-    {::at-all (or as-stylist? as-user?)
-     ::as     (cond
-                as-stylist? ::stylist
-                as-user?    ::user
-                :else       ::guest)
-     ::to     (if (contains? #{"store" "shop"} store-slug)
-                ::dtc
-                ::marketplace)}))
-
 (defn basic-query [data]
-  (let [named-searches (named-searches/current-named-searches data)
-        signed-in      (signed-in data)]
-    {:signed-in signed-in
-     :user      {:email (get-in data keypaths/user-email)}
+  (let [named-searches (named-searches/current-named-searches data)]
+    {:user      {:email (get-in data keypaths/user-email)}
      :store     (-> (get-in data keypaths/store)
                     (set/rename-keys {:store_slug        :store-slug
                                       :store_nickname    :store-nickname
@@ -272,6 +258,7 @@
 
 (defn query [data]
   (-> (basic-query data)
+      (assoc-in [:signed-in] (auth/signed-in data))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))))
 
