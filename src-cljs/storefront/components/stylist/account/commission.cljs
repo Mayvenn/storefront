@@ -241,7 +241,7 @@
            ["Check" "check"]]
 
     (or green-dot? (= original-payout-method "green_dot"))
-    (conj ["Debit/Prepaid" "green_dot"])
+    (conj ["Reloadable Prepaid/Debit Card" "green_dot"])
 
     (= original-payout-method "mayvenn_debit")
     (conj ["Mayvenn Debit" "mayvenn_debit"])))
