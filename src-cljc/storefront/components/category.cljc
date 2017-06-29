@@ -293,7 +293,7 @@
             [:div
              (when needs-selections?
                [:div.border-bottom.border-light-gray.border-width-2
-                (for [step (bundle-builder/steps bundle-builder)]
+                (for [step (:steps bundle-builder)]
                   (step-html step))])
              [:div schema-org-offer-props
               [:div.my2
