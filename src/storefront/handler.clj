@@ -174,6 +174,7 @@
     events/navigate-content-privacy
     events/navigate-content-tos
     events/navigate-content-guarantee
+    events/navigate-content-ugc-usage-terms
     events/navigate-gallery})
 
 (defn html-response [render-ctx data]

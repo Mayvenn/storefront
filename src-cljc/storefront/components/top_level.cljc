@@ -70,18 +70,19 @@
          events/navigate-checkout-confirmation          (partial checkout-returning-or-guest/requires-sign-in-or-guest checkout-confirmation/built-component)
          events/navigate-order-complete                 checkout-complete/built-component])
 
-    events/navigate-home              home/built-component
-    events/navigate-category          category/built-component
-    events/navigate-shared-cart       shared-cart/built-component
-    events/navigate-content-guarantee content/built-component
-    events/navigate-content-help      content/built-component
-    events/navigate-content-privacy   content/built-component
-    events/navigate-content-tos       content/built-component
-    events/navigate-content-about-us  content/built-component
-    events/navigate-sign-in           sign-in/built-component
-    events/navigate-sign-up           sign-up/built-component
-    events/navigate-forgot-password   forgot-password/built-component
-    events/navigate-gallery           gallery/built-component
+    events/navigate-home                    home/built-component
+    events/navigate-category                category/built-component
+    events/navigate-shared-cart             shared-cart/built-component
+    events/navigate-content-guarantee       content/built-component
+    events/navigate-content-help            content/built-component
+    events/navigate-content-privacy         content/built-component
+    events/navigate-content-tos             content/built-component
+    events/navigate-content-about-us        content/built-component
+    events/navigate-content-ugc-usage-terms content/built-component
+    events/navigate-sign-in                 sign-in/built-component
+    events/navigate-sign-up                 sign-up/built-component
+    events/navigate-forgot-password         forgot-password/built-component
+    events/navigate-gallery                 gallery/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]
