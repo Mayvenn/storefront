@@ -229,6 +229,7 @@
 
 (defn reviews-summary [reviews opts]
   [:div.h6
+   {:style {:min-height "18px"}}
    (component/build reviews/reviews-summary-component reviews opts)])
 
 (defn named-search-uses-product-images [named-search-slug]
