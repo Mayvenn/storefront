@@ -100,7 +100,6 @@
        (:variants product)))
 
 (defn reset-options [{:keys [flow initial-variants step->options] :as bundle-builder} proposed-selections]
-
   (let [[confirmed-selections selected-variants steps]
         (reduce (fn [[confirmed-selections selected-variants steps] step]
                   (let [options          (options-for-step step (step->options step) selected-variants confirmed-selections)
