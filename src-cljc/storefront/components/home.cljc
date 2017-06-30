@@ -6,10 +6,12 @@
             [storefront.platform.images :as images]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.auth :as auth]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]))
 
@@ -99,6 +101,61 @@
                      :file-name   "Shop-Virgin-Hair-Bundle-Deals.jpg"
                      :alt         "Shop Virgin Hair Bundle Deals"})]]])
 
+(defn drop-down-row [opts & content]
+  (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
+         (-> opts
+             (assoc-in [:style :min-width] "200px")
+             (assoc-in [:style :height] "39px"))]
+        content))
+
+(defn social-icon [path]
+  [:img.ml2 {:style {:height "20px"}
+             :src   path}] )
+
+(def ^:private gallery-link
+  (component/html
+   (drop-down-row
+    (utils/route-to events/navigate-gallery)
+    "View gallery"
+    (social-icon (assets/path "/images/share/stylist-gallery-icon.png")))))
+
+(defn ^:private instagram-link [instagram-account]
+  (drop-down-row
+   {:href (marquee/instagram-url instagram-account)}
+   "Follow on"
+   (social-icon (assets/path "/images/share/instagram-icon.png"))))
+
+(defn ^:private styleseat-link [styleseat-account]
+  (drop-down-row
+   {:href (marquee/styleseat-url styleseat-account)}
+   "Book on"
+   (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
+
+(defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
+  [:div.flex.justify-center.items-center.border-bottom.border-gray.h5
+   {:style {:height "50px"}}
+   (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
+     ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
+     ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
+     ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
+   [:div.dark-gray
+    [:span.black store-nickname "'s"] " shop"
+    (when expandable?
+      [:span.ml1 (ui/expand-icon expanded?)])]])
+
+(defn store-info [signed-in {:keys [expanded?] :as store}]
+  (when (-> signed-in ::auth/to (= :marketplace))
+    (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
+      (if-not (boolean (seq rows))
+        (store-welcome signed-in store false)
+        (ui/drop-down
+         expanded?
+         keypaths/store-info-expanded
+         [:div (store-welcome signed-in store true)]
+         [:div.bg-white.absolute.left-0.right-0
+          (for [row rows]
+            [:div.border-gray.border-bottom row])] )))))
+
 (def about-mayvenn
   (component/html
    [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt
@@ -163,20 +220,24 @@
       (assets/path "/images/homepage/desktop_talkable_banner.png")
       "refer friends, earn rewards, get 20% off")]]))
 
-(defn component [{:keys [featured-searches store-slug]} owner opts]
+(defn component [{:keys [featured-searches signed-in store my-shop-bar?]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (hero store-slug)]
+    [:section (hero (:store-slug store))]
     [:section feature-blocks]
+    (when my-shop-bar?
+      [:section.hide-on-tb-dt (store-info signed-in store)])
     [:section (popular-grid featured-searches)]
     [:section video-autoplay]
     [:section about-mayvenn]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:featured-searches   (->> (named-searches/current-named-searches data)
-                             (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
-   :store-slug          (get-in data keypaths/store-slug)})
+  {:featured-searches (->> (named-searches/current-named-searches data)
+                           (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
+   :store             (marquee/query data)
+   :signed-in         (auth/signed-in data)
+   :my-shop-bar?      (experiments/my-shop-bar? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
