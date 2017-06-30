@@ -422,3 +422,11 @@
                                     :style {:filter "blur(10px)"}}]
      (images/platform-hq-image {:src hq-url :alt alt})
      [:noscript [:img.col-12.absolute.overlay {:src hq-url :alt alt}]]]))
+
+(def header-image-size 36)
+
+(defn expand-icon [expanded?]
+  [:img {:style {:width "8px"}
+         :src   (if expanded?
+                  (assets/path "/images/icons/collapse.png")
+                  (assets/path "/images/icons/expand.png"))}])

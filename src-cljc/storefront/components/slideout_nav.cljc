@@ -10,6 +10,7 @@
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.auth :as auth]
             [storefront.components.money-formatters :refer [as-money]]
+            [storefront.components.marquee :as marquee]
             [clojure.string :as str]
             [storefront.platform.component-utils :as utils]
             [storefront.assets :as assets]
@@ -18,12 +19,6 @@
             [clojure.set :as set]))
 
 (def blog-url "https://blog.mayvenn.com")
-
-(defn instagram-url [instagram-account]
-  (str "http://instagram.com/" instagram-account))
-
-(defn styleseat-url [styleseat-account]
-  (str "https://www.styleseat.com/v/" styleseat-account))
 
 (defn promo-bar [promo-data]
   (component/build promotion-banner/component promo-data nil))
@@ -70,58 +65,31 @@
 
 (defn ^:private instagram-link [instagram-account]
   [social-link
-   {:href (instagram-url instagram-account)}
+   {:href (marquee/instagram-url instagram-account)}
    "Follow"])
 
 (defn ^:private styleseat-link [styleseat-account]
   [social-link
-   {:href (styleseat-url styleseat-account)}
+   {:href (marquee/styleseat-url styleseat-account)}
    "Book"])
 
-(def header-image-size 36)
-
-(defn stylist-portrait [portrait]
-  (ui/circle-picture {:class "mx-auto"
-                      :width (str header-image-size "px")}
-                     (ui/square-image portrait header-image-size)))
-
-(def add-portrait-cta
-  (component/html
-   [:a (utils/route-to events/navigate-stylist-account-profile)
-    [:img {:width (str header-image-size "px")
-           :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]]))
-
-(defn store-actions [{:keys [store-nickname instagram-account styleseat-account gallery?]}]
+(defn store-actions [{:keys [store-nickname] :as store}]
   [:div
    [:div.h7.medium "Welcome to " store-nickname "'s store"]
    [:div.dark-gray
-    (interpose " | " (cond-> []
-                       gallery?          (conj gallery-link)
-                       instagram-account (conj (instagram-link instagram-account))
-                       styleseat-account (conj (styleseat-link styleseat-account))))]])
+    (interpose " | "
+               (marquee/actions store gallery-link instagram-link styleseat-link))]])
 
-(defn portrait-status [signed-in portrait]
-  (let [stylist? (-> signed-in ::auth/as (= :stylist))
-        status   (:status portrait)]
-    (cond
-      (or (= "approved" status)
-          (and (= "pending" status)
-               stylist?))
-      ::show-what-we-have
+(defn portrait [signed-in {:keys [portrait]}]
+  (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
+    ::marquee/show-what-we-have [:div.left.self-center.pr2 (marquee/stylist-portrait portrait)]
+    ::marquee/ask-for-portrait  [:div.left.self-center.pr2 marquee/add-portrait-cta]
+    ::marquee/show-nothing      nil))
 
-      stylist?
-      ::ask-for-portrait
-
-      :else
-      ::show-nothing)))
-
-(defn store-info-marquee [signed-in {:keys [portrait] :as store}]
+(defn store-info-marquee [signed-in store]
   (when (-> signed-in ::auth/to (= :marketplace))
     [:div.my3.flex
-     (case (portrait-status signed-in portrait)
-       ::show-what-we-have [:div.left.self-center.pr2 (stylist-portrait portrait)]
-       ::ask-for-portrait  [:div.left.self-center.pr2 add-portrait-cta]
-       ::show-nothing      nil)
+     (portrait signed-in store)
      (store-actions store)]))
 
 (defn account-info-marquee [signed-in {:keys [email store-credit]}]
@@ -246,19 +214,13 @@
        sign-out-area])]))
 
 (defn basic-query [data]
-  (let [named-searches (named-searches/current-named-searches data)]
-    {:user      {:email (get-in data keypaths/user-email)}
-     :store     (-> (get-in data keypaths/store)
-                    (set/rename-keys {:store_slug        :store-slug
-                                      :store_nickname    :store-nickname
-                                      :instagram_account :instagram-account
-                                      :styleseat_account :styleseat-account})
-                    (assoc :gallery? (stylists/gallery? data)))
-     :shopping  {:named-searches named-searches}}))
+  {:signed-in (auth/signed-in data)
+   :user      {:email (get-in data keypaths/user-email)}
+   :store     (marquee/query data)
+   :shopping  {:named-searches (named-searches/current-named-searches data)}})
 
 (defn query [data]
   (-> (basic-query data)
-      (assoc-in [:signed-in] (auth/signed-in data))
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))))
 
