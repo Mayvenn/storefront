@@ -16,7 +16,7 @@
 (defpath redirect)
 (defpath navigate)
 (defpath navigate-home)
-(defpath navigate-old-category)
+(defpath navigate-category)
 (defpath navigate-ugc-category)
 (defpath navigate-product)
 (defpath navigate-sign-in)

@@ -162,7 +162,7 @@
         (update-in keypaths/ui dissoc :saved-bundle-builder-options))
     app-state))
 
-(defmethod transition-state events/navigate-old-category [_ event {:keys [named-search-slug]} app-state]
+(defmethod transition-state events/navigate-category [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
                                       bundle-builder/expanded-selections
                                       (dissoc :length))]

@@ -1,4 +1,4 @@
-(ns storefront.components.old-category
+(ns storefront.components.category
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.promos :as promos]

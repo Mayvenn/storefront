@@ -85,7 +85,7 @@
 (defn popup-component [{:keys [ugc offset back]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-back-or-to back events/navigate-old-category {:named-search-slug (-> ugc :named-search :slug)})]
+    (let [close-attrs (util/route-back-or-to back events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative

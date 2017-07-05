@@ -168,7 +168,7 @@
 
 (def server-render-pages
   #{events/navigate-home
-    events/navigate-old-category
+    events/navigate-category
     events/navigate-content-help
     events/navigate-content-about-us
     events/navigate-content-privacy
@@ -195,7 +195,7 @@
           :url-path
           (util.response/redirect :moved-permanently)))
 
-(defn render-old-category
+(defn render-category
   "Checks that the category exists, and that customer has access to its products"
   [{:keys [storeback-config] :as render-ctx}
    data
@@ -237,20 +237,20 @@
                           :environment      environment
                           :client-version   client-version}
               data       (as-> {} data
-                           (assoc-in data keypaths/welcome-url
-                                     (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-                           (assoc-in data keypaths/store store)
-                           (assoc-in data keypaths/environment environment)
-                           (experiments/determine-features data)
-                           (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
-                           (assoc-in data keypaths/static (static-page nav-event))
-                           (assoc-in data keypaths/navigation-message [nav-event params]))]
+                               (assoc-in data keypaths/welcome-url
+                                         (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+                               (assoc-in data keypaths/store store)
+                               (assoc-in data keypaths/environment environment)
+                               (experiments/determine-features data)
+                               (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
+                               (assoc-in data keypaths/static (static-page nav-event))
+                               (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
-            events/navigate-product      (redirect-product->canonical-url ctx req params)
-            events/navigate-old-category (if (= "blonde" (:named-search-slug params))
-                                           (util.response/redirect (store-homepage (:store_slug store) environment req)
-                                                                   :moved-permanently)
-                                           (render-old-category render-ctx data req params))
+            events/navigate-product  (redirect-product->canonical-url ctx req params)
+            events/navigate-category (if (= "blonde" (:named-search-slug params))
+                                       (util.response/redirect (store-homepage (:store_slug store) environment req)
+                                                               :moved-permanently)
+                                       (render-category render-ctx data req params))
             (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"

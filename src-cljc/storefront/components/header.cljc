@@ -161,7 +161,7 @@
    {:class (str "col-" (/ 12 col-count))}
    (for [{:keys [slug name]} items]
      [:li {:key slug}
-      [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-old-category {:named-search-slug slug})
+      [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:named-search-slug slug})
        (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
        (str/capitalize name)]])])
 
