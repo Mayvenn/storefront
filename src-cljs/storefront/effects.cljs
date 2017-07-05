@@ -253,7 +253,7 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-(defmethod perform-effects events/navigate-category [_ event args _ app-state]
+(defmethod perform-effects events/navigate-old-category [_ event args _ app-state]
   (let [named-search (named-searches/current-named-search app-state)]
     (if (hidden-search? app-state named-search)
       (page-not-found)
