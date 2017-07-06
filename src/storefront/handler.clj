@@ -168,7 +168,7 @@
 
 (def server-render-pages
   #{events/navigate-home
-    events/navigate-category
+    events/navigate-named-search
     events/navigate-content-help
     events/navigate-content-about-us
     events/navigate-content-privacy
@@ -247,7 +247,7 @@
                                (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
             events/navigate-product  (redirect-product->canonical-url ctx req params)
-            events/navigate-category (if (= "blonde" (:named-search-slug params))
+            events/navigate-named-search (if (= "blonde" (:named-search-slug params))
                                        (util.response/redirect (store-homepage (:store_slug store) environment req)
                                                                :moved-permanently)
                                        (render-category render-ctx data req params))

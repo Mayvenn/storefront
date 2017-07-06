@@ -162,7 +162,10 @@
         (update-in keypaths/ui dissoc :saved-bundle-builder-options))
     app-state))
 
-(defmethod transition-state events/navigate-category [_ event {:keys [named-search-slug]} app-state]
+(defmethod transition-state events/navigate-category [_ event args app-state]
+  (prn "transistions" event args))
+
+(defmethod transition-state events/navigate-named-search [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
                                       bundle-builder/expanded-selections
                                       (dissoc :length))]
@@ -174,7 +177,7 @@
         (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
         ensure-bundle-builder)))
 
-(defmethod transition-state events/navigate-ugc-category [_ event {:keys [named-search-slug query-params]} app-state]
+(defmethod transition-state events/navigate-ugc-named-search [_ event {:keys [named-search-slug query-params]} app-state]
   (-> app-state
       (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
       (assoc-in keypaths/ui-ugc-category-popup-offset (js/parseInt (:offset query-params 0) 10))))

@@ -20,7 +20,7 @@
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
     [:a.block.py1.dark-gray.light.titleize (merge {:key slug}
-                                             (utils/route-to events/navigate-category {:named-search-slug slug}))
+                                             (utils/route-to events/navigate-named-search {:named-search-slug slug}))
      name]))
 
 (defn shop-section [named-searches own-store?]

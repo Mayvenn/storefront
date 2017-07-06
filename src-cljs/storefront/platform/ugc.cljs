@@ -14,7 +14,7 @@
 
 (defn carousel-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
-   [:a (util/route-to events/navigate-ugc-category {:named-search-slug slug :query-params {:offset idx}})
+   [:a (util/route-to events/navigate-ugc-named-search {:named-search-slug slug :query-params {:offset idx}})
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
@@ -85,7 +85,7 @@
 (defn popup-component [{:keys [ugc offset back]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-back-or-to back events/navigate-category {:named-search-slug (-> ugc :named-search :slug)})]
+    (let [close-attrs (util/route-back-or-to back events/navigate-named-search {:named-search-slug (-> ugc :named-search :slug)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative

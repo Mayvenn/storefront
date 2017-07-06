@@ -170,7 +170,7 @@
       [:ul.list-reset.ml6
        (for [{:keys [name slug]} items]
          [:li {:key slug}
-          (menu-row (assoc (utils/route-to events/navigate-category {:named-search-slug slug})
+          (menu-row (assoc (utils/route-to events/navigate-named-search {:named-search-slug slug})
                            :data-test (str "menu-" slug))
                     (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
                     (str/capitalize name))])]])

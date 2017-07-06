@@ -16,7 +16,7 @@ This allows a clean separation of concerns.
 Events are collections of keywords that transitions and effects operate on [reductions][10] of these collections.
 This allows for some common tasks to be abstracted cleanly.
 
-For example, lets say the [navigate-category][3] event, equivalent to ```[:navigate :category]``` is triggered:
+For example, lets say the [navigate-named-search][3] event, equivalent to ```[:navigate :category]``` is triggered:
  1. The event will propagate to [transitions][11] and the ```:navigate``` transition will run.
  2. Still in [transitions][5], the transition for ```[:navigate :category]``` will run, and some page nav information will be moved into the app state.
  3. The event will propagate to [effects][12] and the ```:navigate``` effect will run.  It will start API calls for various information that needs to be loaded on every page change.

@@ -20,10 +20,11 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]))
 
-(defn component [data owner opts]
-  [:div "Closures"])
+(defn ^:private component [data owner opts]
+  (component/create
+   [:div "Closures"]))
 
-(defn query [data]
+(defn ^:private query [data]
   {})
 
 (defn built-component [data opts]

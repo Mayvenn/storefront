@@ -6,6 +6,7 @@
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.categories :as categories]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
@@ -254,15 +255,20 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-category [_ event args _ app-state]
-  (let [named-search (named-searches/current-named-search app-state)]
-    (if (hidden-search? app-state named-search)
-      (page-not-found)
-      (do
-        (reviews/insert-reviews)
-        (refresh-named-search-products app-state named-search)
-        (fetch-current-named-search-album app-state)))))
+  (prn "effects" event args))
 
-(defmethod perform-effects events/navigate-ugc-category [_ event args _ app-state]
+(defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
+  (if (experiments/new-taxonomy? app-state)
+    (redirect events/navigate-category (categories/named-search->category (:named-search-slug args)))
+    (let [named-search (named-searches/current-named-search app-state)]
+      (if (hidden-search? app-state named-search)
+        (page-not-found)
+        (do
+          (reviews/insert-reviews)
+          (refresh-named-search-products app-state named-search)
+          (fetch-current-named-search-album app-state))))))
+
+(defmethod perform-effects events/navigate-ugc-named-search [_ event args _ app-state]
   (let [named-search (named-searches/current-named-search app-state)]
     (if (hidden-search? app-state named-search)
       (page-not-found)

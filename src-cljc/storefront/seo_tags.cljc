@@ -98,7 +98,7 @@
                                    [:meta {:property "og:description"
                                            :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
 
-     events/navigate-category    (category-tags data)
+     events/navigate-named-search    (category-tags data)
 
      default-tags)
    (concat constant-tags)
