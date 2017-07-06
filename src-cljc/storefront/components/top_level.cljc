@@ -44,7 +44,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn main-component [nav-event new-taxonomy?]
+(defn main-component [nav-event]
   (condp = nav-event
     #?@(:cljs
         [events/navigate-reset-password                 reset-password/built-component
@@ -115,6 +115,6 @@
         [:header (header/built-component data nil)]
         (flash/built-component data nil)
         [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         ((main-component nav-event (experiments/new-taxonomy? data)) data nil)]
+         ((main-component nav-event) data nil)]
         [:footer
          (footer/built-component data nil)]]))))

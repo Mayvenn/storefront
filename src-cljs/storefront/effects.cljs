@@ -99,6 +99,12 @@
   ([event] (redirect event nil))
   ([event args] (handle-message events/redirect {:nav-message [event args]})))
 
+(defn redirect-named-search [named-search-slug]
+  ;; TODO: ensure we have a redirect for all named-searches. Most should go to
+  ;; a category page. Kits should redirect straight to product page.
+  (when-let [category (categories/named-search->category named-search-slug)]
+    (redirect events/navigate-category category)))
+
 (defn page-not-found []
   (redirect events/navigate-home)
   (handle-message events/flash-later-show-failure {:message "Page not found"}))
@@ -130,6 +136,14 @@
   (stringer/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))
+
+(defmethod perform-effects events/enable-feature [_ event args _ app-state]
+  (when (and (experiments/new-taxon-launch? app-state)
+             ;;TODO get literal from experiments
+             (= (:feature args) "new-taxon-launch")
+             (= (get-in app-state keypaths/navigation-event)
+                events/navigate-named-search))
+    (redirect-named-search (get-in app-state (conj keypaths/navigation-args :named-search-slug)))))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -254,12 +268,15 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-(defmethod perform-effects events/navigate-category [_ event args _ app-state]
-  (prn "effects" event args))
+(defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
+  (do
+    ;;TODO Pull most recent info from cellar
+    #_(refresh-category-details category-id)
+    #_(refresh-category-products category-id)))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
-  (if (experiments/new-taxonomy? app-state)
-    (redirect events/navigate-category (categories/named-search->category (:named-search-slug args)))
+  (if (experiments/new-taxon-launch? app-state)
+    (redirect-named-search (:named-search-slug args))
     (let [named-search (named-searches/current-named-search app-state)]
       (if (hidden-search? app-state named-search)
         (page-not-found)

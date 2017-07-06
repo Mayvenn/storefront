@@ -4,6 +4,7 @@
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.categories :as categories]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -163,7 +164,7 @@
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event args app-state]
-  (prn "transistions" event args))
+  (assoc-in app-state keypaths/current-category (categories/id->category (:id args))))
 
 (defmethod transition-state events/navigate-named-search [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)

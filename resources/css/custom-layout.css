@@ -14,5 +14,7 @@
   .max-960, .container { max-width: 960px; }
 }
 
+.max-580 { max-width: 580px; }
+
 @custom-media --on-tablet  (min-width: 750px) and (max-width: 999px);
 @custom-media --on-desktop (min-width: 1000px);

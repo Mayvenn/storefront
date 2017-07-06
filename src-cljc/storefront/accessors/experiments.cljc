@@ -57,5 +57,5 @@
 (defn my-shop-bar? [data]
   (display-feature? data "my-shop-bar"))
 
-(defn new-taxonomy? [data]
+(defn new-taxon-launch? [data]
   (display-feature? data "new-taxon-launch"))

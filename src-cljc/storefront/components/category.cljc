@@ -3,6 +3,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.categories :as categories]
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
@@ -20,12 +21,19 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]))
 
-(defn ^:private component [data owner opts]
+(defn ^:private component [{:keys [category]} owner opts]
   (component/create
-   [:div "Closures"]))
+   [:div
+    (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
+      [:picture
+       [:source {:media "(min-width: 750px)"
+                 :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
+       [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                           :alt alt}]])
+    [:p.h3.my4.max-580.mx-auto.center (-> category :copy :description)]]))
 
 (defn ^:private query [data]
-  {})
+  {:category (get-in data keypaths/current-category)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

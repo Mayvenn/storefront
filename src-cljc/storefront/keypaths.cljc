@@ -69,6 +69,7 @@
 (def return-navigation-message (conj ui :return-navigation-message))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
+(def navigation-args (conj navigation-message 1))
 (def navigation-stashed-stack-item (conj ui :navigation-stashed-stack-item))
 (def navigation-undo-stack (conj ui :navigation-undo-stack))
 (def navigation-redo-stack (conj ui :navigation-redo-stack))
@@ -212,6 +213,8 @@
 (def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
 (def stylist-referral-program-page (conj stylist-referral-program :page))
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
+
+(def current-category (conj ui :current-category))
 
 (def stylist-referrals (conj stylist :referrals))
 
