@@ -10,6 +10,7 @@ pom.xml.asc
 .hgignore
 .hg/
 .repl
+.cljs_rhino_repl
 .DS_Store
 
 *.log
