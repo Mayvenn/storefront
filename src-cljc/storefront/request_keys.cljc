@@ -5,6 +5,7 @@
 (def get-states [:get-states])
 (def get-saved-cards [:get-saved-cards])
 (def get-static-content [:get-static-content])
+(def search-sku-sets [:search-sku-sets])
 
 (def sign-out [:sign-out])
 (def sign-in [:sign-in])

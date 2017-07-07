@@ -87,6 +87,13 @@
   [app-state named-search]
   (refresh-products app-state (:product-ids named-search)))
 
+(defn search-sku-sets [criteria]
+  (api/search-sku-sets criteria))
+
+(defn refresh-category-sku-sets [category]
+  ;; TODO: we could cache sku-set-ids on the category, and if present, avoid re-fetching sku-sets
+  (search-sku-sets (:criteria category)))
+
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
@@ -269,10 +276,8 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
-  (do
-    ;;TODO Pull most recent info from cellar
-    #_(refresh-category-details category-id)
-    #_(refresh-category-products category-id)))
+  #_(ensure-facets)
+  (refresh-category-sku-sets (get-in app-state keypaths/current-category)))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
   (if (experiments/new-taxon-launch? app-state)

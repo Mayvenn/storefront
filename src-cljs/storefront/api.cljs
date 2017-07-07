@@ -159,6 +159,14 @@
       #(messages/handle-message events/api-success-products
                                 (select-keys % [:products]))})))
 
+(defn search-sku-sets [criteria]
+  (api-req
+   GET
+   "/sku-sets"
+   request-keys/search-sku-sets
+   {:params criteria
+    :handler #(messages/handle-message events/api-success-sku-sets %)}))
+
 (defn get-saved-cards [user-id user-token]
   (api-req
    GET
