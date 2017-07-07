@@ -16,9 +16,10 @@
 
 (defn normalize-attrs [attrs]
   (-> attrs
-      (set/rename-keys {:item-prop :itemprop
+      (set/rename-keys {:item-prop  :itemprop
                         :item-scope :itemscope
-                        :item-type :itemtype})
+                        :item-type  :itemtype
+                        :src-set    :srcset})
       (dissoc :dangerouslySetInnerHTML :key :data-test)
       remove-handlers
       normalize-style))
