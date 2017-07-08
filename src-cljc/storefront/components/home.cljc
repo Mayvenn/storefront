@@ -15,53 +15,47 @@
             [storefront.assets :as assets]
             [storefront.platform.messages :refer [handle-message]]))
 
-(defn homepage-images
-  "Adds image effect where images are always full width. On mobile, the image
-  height grows as the screen grows. On desktop, the image height is fixed. The
-  image is centered and the edges are clipped at narrower screens, then are
-  gradually exposed on wider screens. All meaningful content has to fit within
-  the center 640px of the desktop image.
-
-  mobile-asset can be any height but must be 640px wide
-  desktop-asset should be 408px high and at least 1024px wide"
-  [mobile-asset desktop-asset alt-text]
-  [:span.block
-   [:span.block.hide-on-mb.bg-center.bg-no-repeat
-    {:style {:height "408px"
-             :background-image (assets/css-url desktop-asset)}
-     :title alt-text}]
-   [:img.hide-on-tb-dt.col-12 {:src mobile-asset
-                               :alt alt-text}]])
-
-(defn fitting-image
-  "Changes height for image to be full width."
-  [{:keys [desktop-url mobile-url file-name alt]}]
-  [:div
-   [:img.hide-on-mb.block.col-12 {:src (str desktop-url file-name)
-                                  :alt alt}]
-   [:img.hide-on-tb-dt.block.col-12 {:src (str mobile-url file-name)
-                                     :alt alt}]])
+(defn product-image
+  [{:keys [resizable_url resizable_filename alt]}]
+  ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
+  ;;          Large End
+  ;; Desktop  320px
+  ;; Tablet   240px
+  ;; Mobile   375px
+  [:picture
+   ;; Desktop
+   [:source {:media   "(min-width: 1000px)"
+             :src-set (str resizable_url "-/format/auto/-/resize/320x/" resizable_filename " 1x,"
+                           resizable_url "-/format/auto/-/resize/640x/-/quality/lightest/" resizable_filename " 2x")}]
+   ;; Tablet
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str resizable_url "-/format/auto/-/resize/240x/" resizable_filename " 1x,"
+                           resizable_url "-/format/auto/-/resize/480x/-/quality/lightest/" resizable_filename " 2x")}]
+   ;; Mobile (and default for ancient browsers)
+   [:img.block.col-12 {:src     (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename)
+                       ;; These images are 640px wide, so they are scaled up slightly for 2x on the largest mobile screens.
+                       :src-set (str resizable_url "-/format/auto/-/resize/750x/-/quality/lightest/" resizable_filename " 2x")
+                       :alt     alt}]])
 
 (defn popular-grid [featured-searches]
-  (let [grid-block   (fn [key content]
-                       [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
-                        (ui/aspect-ratio 4 3 content)])]
+  (let [grid-block (fn [key content]
+                     [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
+                      (ui/aspect-ratio 4 3 content)])]
     [:div.container.center.mb4.pb4
      [:div.flex.flex-column.my4
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
       (for [{:keys [representative-images name slug]} featured-searches]
-        (let [{:keys [model-grid]} representative-images]
-          (grid-block slug
-                      [:a.absolute.overlay.overflow-hidden
-                       (merge {:data-test (str "named-search-" slug)}
-                              (utils/route-to events/navigate-named-search {:named-search-slug slug}))
-                       [:img.col-12 (ui/img-attrs model-grid :large)]
-                       [:h3.h2.white.absolute.col-12.titleize
-                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                                 :top         "50%"}}
-                        name]])))
+        (grid-block slug
+                    [:a.absolute.overlay.overflow-hidden
+                     (merge {:data-test (str "named-search-" slug)}
+                            (utils/route-to events/navigate-named-search {:named-search-slug slug}))
+                     (product-image (:model-grid representative-images))
+                     [:h3.h2.white.absolute.col-12.titleize
+                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                               :top         "50%"}}
+                      name]]))
       (grid-block "spare-block"
                   [:a.bg-light-teal.white.absolute.overlay
                    (assoc (utils/route-to events/navigate-shop-by-look)
@@ -74,29 +68,58 @@
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
 
+(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
+  [:picture
+   ;; Tablet/Desktop
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                       :alt alt}]])
+
 (defn hero [store-slug]
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (fitting-image {:mobile-url "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
-                    :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
-                    :file-name "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
-                    :alt "New Water Wave and Yaki Straight are here"})]])
+    (hero-image {:mobile-url "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
+                 :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
+                 :file-name "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
+                 :alt "New Water Wave and Yaki Straight are here"})]])
+
+(defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
+  ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
+  ;;          Large End
+  ;; Desktop  480px
+  ;; Tablet   360px
+  ;; Mobile   375px
+  [:picture
+   ;; Desktop
+   [:source {:media   "(min-width: 1000px)"
+             :src-set (str desktop-url "-/format/auto/-/resize/480x/" file-name " 1x,"
+                           desktop-url "-/format/auto/-/resize/960x/-/quality/lightest/" file-name " 2x")}]
+   ;; Tablet
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url "-/format/auto/-/resize/360x/" file-name " 1x,"
+                           desktop-url "-/format/auto/-/resize/720x/-/quality/lightest/" file-name " 2x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/375x/" file-name)
+                       :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
+                       :alt     alt}]])
 
 (def feature-blocks
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 177858410})
-     (fitting-image {:mobile-url  "//ucarecdn.com/d64294f0-e6d0-4b6d-94f1-7da819119c01/"
+     (feature-image {:mobile-url  "//ucarecdn.com/d64294f0-e6d0-4b6d-94f1-7da819119c01/"
                      :desktop-url "//ucarecdn.com/04e2b2fc-e40a-4b52-8cb3-ba7bdfa84963/"
                      :file-name   "Shop-Indian-Straight-Hair.jpg"
                      :alt         "Shop Indian Straight Hair"})]]
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 178528561})
-     (fitting-image {:mobile-url  "//ucarecdn.com/97994826-a043-499e-95a5-549b06ac35b8/"
+     (feature-image {:mobile-url  "//ucarecdn.com/97994826-a043-499e-95a5-549b06ac35b8/"
                      :desktop-url "//ucarecdn.com/811aa020-2d64-4765-ae82-9980117cd6d8/"
                      :file-name   "Shop-Virgin-Hair-Bundle-Deals.jpg"
                      :alt         "Shop Virgin Hair Bundle Deals"})]]])
@@ -183,7 +206,7 @@
 (def video-autoplay
   (component/html
    (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
-         image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/testimonialpostervideoplay.jpg"
+         image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay.jpg"
          video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
                          image-src
                          "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""
@@ -210,15 +233,34 @@
          "Shop our styles now")]
        [:div.container.col-12.mx-auto.mb3 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
 
+(defn talkable-image [{:keys [desktop-url mobile-url file-name alt]}]
+  ;; Assumptions: within a .container. Does not account for 1px border.
+  ;;          Large End
+  ;; Desktop  960px
+  ;; Tablet   720px
+  ;; Mobile   750px
+  [:picture
+   ;; Desktop
+   [:source {:media   "(min-width: 1000px)"
+             :src-set (str desktop-url "-/format/auto/-/resize/960x/" file-name " 1x,"
+                           desktop-url "-/format/auto/-/resize/1920x/-/quality/lightest/" file-name " 2x")}]
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url "-/format/auto/-/resize/720x/" file-name " 1x,"
+                           desktop-url "-/format/auto/-/resize/1440x/-/quality/lightest/" file-name " 2x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/750x/" file-name)
+                       :src-set (str mobile-url "-/format/auto/-/resize/1500x/-/quality/lightest/" file-name " 2x")
+                       :alt     alt}]])
+
 (def talkable-banner
   (component/html
    [:h1.h2.container.py4
     [:a
      (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
-     (homepage-images
-      (assets/path "/images/homepage/mobile_talkable_banner.png")
-      (assets/path "/images/homepage/desktop_talkable_banner.png")
-      "refer friends, earn rewards, get 20% off")]]))
+     (talkable-image {:mobile-url  "//ucarecdn.com/42c042cd-2f2d-4acb-bdab-2e7cbea128b2/"
+                      :desktop-url "//ucarecdn.com/88b24eee-5389-4caa-93d6-5cd557e56103/"
+                      :file-name   "talkable_banner.jpg"
+                      :alt         "refer friends, earn rewards, get 20% off"})]]))
 
 (defn component [{:keys [featured-searches signed-in store my-shop-bar?]} owner opts]
   (component/create

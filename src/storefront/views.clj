@@ -67,6 +67,7 @@
       [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
     [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
+    [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
     [:script {:type "text/javascript"}
      (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
                "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
