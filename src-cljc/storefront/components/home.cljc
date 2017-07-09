@@ -87,11 +87,11 @@
   [:picture
    ;; Desktop
    [:source {:media   "(min-width: 1000px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/480x/" file-name " 1x,"
+             :src-set (str desktop-url "-/format/auto/-/resize/480x/" file-name " 1x, "
                            desktop-url "-/format/auto/-/resize/960x/-/quality/lightest/" file-name " 2x")}]
    ;; Tablet
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/360x/" file-name " 1x,"
+             :src-set (str desktop-url "-/format/auto/-/resize/360x/" file-name " 1x, "
                            desktop-url "-/format/auto/-/resize/720x/-/quality/lightest/" file-name " 2x")}]
    ;; Mobile
    [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/375x/" file-name)
@@ -233,11 +233,11 @@
   [:picture
    ;; Desktop
    [:source {:media   "(min-width: 1000px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/960x/" file-name " 1x,"
+             :src-set (str desktop-url "-/format/auto/-/resize/960x/" file-name " 1x, "
                            desktop-url "-/format/auto/-/resize/1920x/-/quality/lightest/" file-name " 2x")}]
    ;; Tablet
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/resize/720x/" file-name " 1x,"
+             :src-set (str desktop-url "-/format/auto/-/resize/720x/" file-name " 1x, "
                            desktop-url "-/format/auto/-/resize/1440x/-/quality/lightest/" file-name " 2x")}]
    ;; Mobile
    [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/750x/" file-name)
