@@ -73,10 +73,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (hero-image {:mobile-url "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
+    (hero-image {:mobile-url  "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
                  :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
-                 :file-name "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
-                 :alt "New Water Wave and Yaki Straight are here"})]])
+                 :file-name   "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
+                 :alt         "New Water Wave and Yaki Straight are here"})]])
 
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
