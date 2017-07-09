@@ -18,24 +18,15 @@
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
   ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
-  ;;          Large End
-  ;; Desktop  320px
-  ;; Tablet   240px
-  ;; Mobile   375px
-  [:picture
-   ;; Desktop
-   [:source {:media   "(min-width: 1000px)"
-             :src-set (str resizable_url "-/format/auto/-/resize/320x/" resizable_filename " 1x,"
-                           resizable_url "-/format/auto/-/resize/640x/-/quality/lightest/" resizable_filename " 2x")}]
-   ;; Tablet
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str resizable_url "-/format/auto/-/resize/240x/" resizable_filename " 1x,"
-                           resizable_url "-/format/auto/-/resize/480x/-/quality/lightest/" resizable_filename " 2x")}]
-   ;; Mobile (and default for ancient browsers)
-   [:img.block.col-12 {:src     (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename)
-                       ;; These images are 640px wide, so they are scaled up slightly for 2x on the largest mobile screens.
-                       :src-set (str resizable_url "-/format/auto/-/resize/750x/-/quality/lightest/" resizable_filename " 2x")
-                       :alt     alt}]])
+  [:img.block.col-12 {:src     (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename)
+                      :src-set (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename " 375w, "
+                                    resizable_url "-/format/auto/-/resize/750x/-/quality/lightest/" resizable_filename " 750w, "
+                                    resizable_url "-/format/auto/-/resize/320x/" resizable_filename " 320w, "
+                                    resizable_url "-/format/auto/-/resize/640x/-/quality/lightest/" resizable_filename " 640w")
+                      :sizes   (str "(min-width: 1000px) 320px, "
+                                    "(min-width: 750px) 240px, "
+                                    "50vw")
+                      :alt     alt}])
 
 (defn popular-grid [featured-searches]
   (let [grid-block (fn [key content]
@@ -244,6 +235,7 @@
    [:source {:media   "(min-width: 1000px)"
              :src-set (str desktop-url "-/format/auto/-/resize/960x/" file-name " 1x,"
                            desktop-url "-/format/auto/-/resize/1920x/-/quality/lightest/" file-name " 2x")}]
+   ;; Tablet
    [:source {:media   "(min-width: 750px)"
              :src-set (str desktop-url "-/format/auto/-/resize/720x/" file-name " 1x,"
                            desktop-url "-/format/auto/-/resize/1440x/-/quality/lightest/" file-name " 2x")}]
