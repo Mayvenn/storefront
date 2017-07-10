@@ -18,10 +18,8 @@
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
   ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
-  [:img.block.col-12 {:src     (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename)
-                      :src-set (str resizable_url "-/format/auto/-/resize/375x/" resizable_filename " 375w, "
-                                    resizable_url "-/format/auto/-/resize/750x/-/quality/lightest/" resizable_filename " 750w, "
-                                    resizable_url "-/format/auto/-/resize/320x/" resizable_filename " 320w, "
+  [:img.block.col-12 {:src     (str resizable_url "-/format/auto/-/resize/750x/" resizable_filename)
+                      :src-set (str resizable_url "-/format/auto/-/resize/750x/-/quality/lightest/" resizable_filename " 750w, "
                                     resizable_url "-/format/auto/-/resize/640x/-/quality/lightest/" resizable_filename " 640w")
                       :sizes   (str "(min-width: 1000px) 320px, "
                                     "(min-width: 750px) 240px, "
