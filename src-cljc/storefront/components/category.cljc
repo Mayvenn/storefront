@@ -32,7 +32,11 @@
                       sort)
         shortest (first lengths)
         longest  (last lengths)]
-    [:p.h6.dark-gray (:name (facet-definition facets :length shortest)) " - " (:name (facet-definition facets :length longest))]))
+    [:p.h6.dark-gray
+     (:name (facet-definition facets :length shortest))
+     " - "
+     (:name (facet-definition facets :length longest))
+     " lengths available"]))
 
 (defmethod unconstrained-facet :color [skus facets facet]
   (let [colors (->> skus
@@ -52,12 +56,12 @@
         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                             :alt alt}]])]
     [:div.container
-     [:div.m3
+     [:div.p2
       [:p.h3.my4.max-580.mx-auto.center (-> category :copy :description)]
-      [:div.flex.flex-wrap
+      [:div.flex.flex-wrap.mxn1
        (for [{:keys [representative-sku name skus] :as sku-set} (take 9 (cycle sku-sets))]
          (let [image   (-> representative-sku :images :catalog)]
-           [:div.col.col-6.col-3-on-tb-dt.p1
+           [:div.col.col-6.col-3-on-tb-dt.p1.center
             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
             [:img.block.col-12 {:src (str (:url image) (:filename image))
                                 :alt (:alt image)}]
@@ -168,16 +172,16 @@
                                 "peruvian"  {:name "Peruvian"},
                                 "indian"    {:name "Indian"}},
                      :material {"lace" {:name "Lace"}, "silk" {:name "Silk"}},
-                     :length   {"22" {:name "22\""},
-                                "26" {:name "26\""},
-                                "28" {:name "28\""},
-                                "14" {:name "14\""},
-                                "20" {:name "20\""},
-                                "18" {:name "18\""},
-                                "12" {:name "12\""},
-                                "24" {:name "24\""},
-                                "16" {:name "16\""},
-                                "10" {:name "10\""}}}]
+                     :length   {"22" {:name "22″"},
+                                "26" {:name "26″"},
+                                "28" {:name "28″"},
+                                "14" {:name "14″"},
+                                "20" {:name "20″"},
+                                "18" {:name "18″"},
+                                "12" {:name "12″"},
+                                "24" {:name "24″"},
+                                "16" {:name "16″"},
+                                "10" {:name "10″"}}}]
     {:category (get-in data keypaths/current-category)
      :sku-sets (->> sku-sets
                     (map (fn [sku-set]
