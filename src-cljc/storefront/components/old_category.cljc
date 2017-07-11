@@ -206,15 +206,25 @@
      (for [[idx item] (map-indexed vector commentary)]
        [:p.mt2 {:key idx} item])]]])
 
-(defn carousel-image [image]
+(defn old-carousel-image [image]
   (ui/aspect-ratio
    640 580
    [:img.col-12 (ui/img-attrs image :large)]))
 
+(defn carousel-image [{:keys [resizable_filename resizable_url alt]}]
+  (ui/aspect-ratio
+   640 580
+   [:img.col-12
+    {:src (str resizable_url "-/format/auto/-/resize/640x/" resizable_filename)
+     :alt alt}]))
+
 (defn carousel [images {:keys [slug]}]
-  (let [items (mapv (fn [image]
+  (let [image-body (if (= slug "yaki-straight")
+                     carousel-image
+                     old-carousel-image)
+        items (mapv (fn [image]
                       {:id   (subs (:large_url image) (max 0 (- (count image) 50)))
-                       :body (carousel-image image)})
+                       :body (image-body image)})
                     images)]
     (component/build carousel/component
                      {:slides (map :body items)
