@@ -1,9 +1,4 @@
-(ns storefront.accessors.categories
-  (:require [storefront.utils.query :as query]
-            [storefront.accessors.products :as products]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as keypaths]))
+(ns storefront.accessors.categories)
 
 (def named-search->category-id
   {"closures" "0"})

@@ -87,12 +87,9 @@
   [app-state named-search]
   (refresh-products app-state (:product-ids named-search)))
 
-(defn search-sku-sets [criteria]
-  (api/search-sku-sets criteria))
-
 (defn refresh-category-sku-sets [category]
   ;; TODO: we could cache sku-set-ids on the category, and if present, avoid re-fetching sku-sets
-  (search-sku-sets (:criteria category)))
+  (api/search-sku-sets (:criteria category)))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
