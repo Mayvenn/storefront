@@ -337,6 +337,10 @@
     (update-in keypaths/products merge (key-by :id products))
     ensure-bundle-builder))
 
+(defmethod transition-state events/api-success-sku-sets
+  [_ event {:keys [sku-sets]} app-state]
+  (update-in app-state keypaths/sku-sets merge (key-by :id sku-sets)))
+
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 

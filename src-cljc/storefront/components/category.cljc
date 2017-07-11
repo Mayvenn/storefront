@@ -73,17 +73,7 @@
             [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]]))]]]]))
 
 (defn ^:private query [data]
-  (let [sku-sets    [{:id       "0"
-                      :slug     "peruvian-curly-lace-closure"
-                      :name     "Peruvian Curly Lace Closure"
-                      :criteria {:family #{"closures"} :origin #{"peruvian"} :style #{"curly"} :material #{"lace"} :grade #{"6a"}}
-                      :skus     #{"PCLC14" "PCLC18"}}
-                     {:id       "1"
-                      :slug     "indian-deep-wave-lace-closure"
-                      :name     "Indian Deep Wave Lace Closure"
-                      :criteria {:family #{"closures"} :origin #{"indian"} :style #{"deep-wave"} :material #{"lace"} :grade #{"6a"}}
-                      :skus     #{"IDWDBLC14" "IDWDBLC18" "IDWDBRLC14" "IDWDBRLC18"}}]
-        sku-id->sku {"PCLC14"     {:sku           "PCLC14"
+  (let [sku-id->sku {"PCLC14"     {:sku           "PCLC14"
                                    :stylist-only? false
                                    :attributes    {:color  "black"
                                                    :length "14"}
@@ -183,13 +173,14 @@
                                 "16" {:name "16″"},
                                 "10" {:name "10″"}}}]
     {:category (get-in data keypaths/current-category)
-     :sku-sets (->> sku-sets
+     :sku-sets (->> (get-in data keypaths/sku-sets)
+                    vals
                     (map (fn [sku-set]
                            (update sku-set :skus (fn [sku-ids]
                                                    (map sku-id->sku sku-ids)))))
                     (map (fn [sku-set]
                            (assoc sku-set :representative-sku
-                                  (apply min-key :price (:skus sku-set))))))
+                                  (apply min-key :price (remove nil? (:skus sku-set)))))))
      :facets   facets}))
 
 (defn built-component [data opts]

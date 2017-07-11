@@ -97,6 +97,7 @@
      :store {}
      :named-searches []
      :products {}
+     :sku-sets {}
      :states []
      :shipping-methods []
      :sms-number nil
