@@ -37,7 +37,10 @@
                          :keypath [:style-guide :compression :format]
                          :focused focused?
                          :label   "format"
-                         :options [["as uploaded" ""] ["jpeg" "jpeg"] ["webp" "webp"] ["auto" "auto"]]
+                         :options [["as uploaded" ""]
+                                   ["auto" "auto"]
+                                   ["jpeg" "jpeg"]
+                                   ["webp" "webp"]]
                          :value   format})
        (ui/select-field {:id      "quality"
                          :keypath [:style-guide :compression :quality]
