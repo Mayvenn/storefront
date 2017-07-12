@@ -59,11 +59,12 @@
      [:div.p2
       [:p.h3.my4.max-580.mx-auto.center (-> category :copy :description)]
       [:div.flex.flex-wrap.mxn1
-       (for [{:keys [representative-sku name skus] :as sku-set} (take 9 (cycle sku-sets))]
-         (let [image   (-> representative-sku :images :catalog)]
-           [:div.col.col-6.col-3-on-tb-dt.p1.center
+       (for [{:keys [slug representative-sku name skus] :as sku-set} sku-sets]
+         (let [image (-> representative-sku :images :catalog)]
+           [:div.col.col-6.col-3-on-tb-dt.p1.center {:key slug}
             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-            [:img.block.col-12 {:src (str (:url image) (:filename image))
+            [:img.block.col-12 {:src (str (:url image)
+                                          (:filename image))
                                 :alt (:alt image)}]
             [:h2.h4.medium name]
             ;; This is pretty specific to hair. Might be better to have a
@@ -73,61 +74,7 @@
             [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]]))]]]]))
 
 (defn ^:private query [data]
-  (let [sku-id->sku {"PCLC14"     {:sku           "PCLC14"
-                                   :stylist-only? false
-                                   :attributes    {:color  "black"
-                                                   :length "14"}
-                                   :in-stock?     true
-                                   :price         94.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/e6d1e089-909d-40ff-a315-0e1c725a031a/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}
-                     "PCLC18"     {:sku           "PCLC18"
-                                   :stylist-only? false
-                                   :attributes    {:color  "black"
-                                                   :length "18"}
-                                   :in-stock?     true
-                                   :price         104.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/2f825b85-cd44-4410-9ccf-e62d0372f0b4/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}
-                     "IDWDBLC14"  {:sku           "IDWDBLC14"
-                                   :stylist-only? false
-                                   :attributes    {:color  "blonde"
-                                                   :length "14"}
-                                   :in-stock?     true
-                                   :price         104.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/2f825b85-cd44-4410-9ccf-e62d0372f0b4/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}
-                     "IDWDBLC18"  {:sku           "IDWDBLC18"
-                                   :stylist-only? false
-                                   :attributes    {:color  "blonde"
-                                                   :length "18"}
-                                   :in-stock?     true
-                                   :price         114.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/2f825b85-cd44-4410-9ccf-e62d0372f0b4/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}
-                     "IDWDBRLC14" {:sku           "IDWDBRLC14"
-                                   :stylist-only? false
-                                   :attributes    {:color  "dark-blonde"
-                                                   :length "14"}
-                                   :in-stock?     true
-                                   :price         114.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/2f825b85-cd44-4410-9ccf-e62d0372f0b4/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}
-                     "IDWDBRLC18" {:sku           "IDWDBRLC18"
-                                   :stylist-only? false
-                                   :attributes    {:color  "dark-blonde"
-                                                   :length "18"}
-                                   :in-stock?     true
-                                   :price         114.0
-                                   :images        {:catalog {:url      "//ucarecdn.com/2f825b85-cd44-4410-9ccf-e62d0372f0b4/"
-                                                             :filename "Something.jpg"
-                                                             :alt      "Something"}}}}
-        facets      {:type     {"kits" {:name "kits"}},
+  (let [facets      {:type     {"kits" {:name "kits"}},
                      :grade    {"6a" {:name "6a premier collection"},
                                 "7a" {:name "7a deluxe collection"},
                                 "8a" {:name "8a ultra collection"}},
@@ -173,14 +120,7 @@
                                 "16" {:name "16″"},
                                 "10" {:name "10″"}}}]
     {:category (get-in data keypaths/current-category)
-     :sku-sets (->> (get-in data keypaths/sku-sets)
-                    vals
-                    (map (fn [sku-set]
-                           (update sku-set :skus (fn [sku-ids]
-                                                   (map sku-id->sku sku-ids)))))
-                    (map (fn [sku-set]
-                           (assoc sku-set :representative-sku
-                                  (apply min-key :price (remove nil? (:skus sku-set)))))))
+     :sku-sets (vals (get-in data keypaths/sku-sets))
      :facets   facets}))
 
 (defn built-component [data opts]
