@@ -17,6 +17,53 @@
 (defn- section-link [name navigation-event]
   [:a.h5 (utils/route-to navigation-event) name])
 
+(defn compression [data]
+  (let [{:keys [viewport-width file-width format quality]} (get-in data [:style-guide :compression])
+        focused? (get-in data keypaths/ui-focus)]
+    [:div
+     (header "Compression")
+     [:div.clearfix.mxn2
+      [:div.col.p2
+       [:div.mb2 (subheader "Viewport")]
+       (ui/text-field
+        {:type    "number"
+         :label   "Width"
+         :keypath [:style-guide :compression :viewport-width]
+         :focused focused?
+         :value   viewport-width})]
+      [:div.col.p2
+       [:div.mb2 (subheader "File")]
+       (ui/select-field {:id      "format"
+                         :keypath [:style-guide :compression :format]
+                         :focused focused?
+                         :label   "format"
+                         :options [["as uploaded" ""] ["jpeg" "jpeg"] ["webp" "webp"] ["auto" "auto"]]
+                         :value   format})
+       (ui/select-field {:id      "quality"
+                         :keypath [:style-guide :compression :quality]
+                         :focused focused?
+                         :label   "quality"
+                         :options [["no setting" ""]
+                                   ["best" "best"]
+                                   ["better" "better"]
+                                   ["normal" "normal"]
+                                   ["lighter" "lighter"]
+                                   ["lightest" "lightest"]]
+                         :value   quality})
+       (ui/text-field
+        {:type    "number"
+         :label   "Resize width"
+         :keypath [:style-guide :compression :file-width]
+         :focused focused?
+         :value   file-width})]]
+     (for [file ["//ucarecdn.com/927f7594-e766-4985-98fa-3bc80e340947/"
+                 "//ucarecdn.com/b307f889-6402-4ff2-801a-7cba0f43e8cf/"]]
+       [:div.col {:style (when (seq viewport-width) {:width (str viewport-width "px")})}
+        [:img.block.col-12 {:src (str file
+                                      (when (seq format) (str "-/format/" format "/"))
+                                      (when (seq quality) (str "-/quality/" quality "/"))
+                                      (when (seq file-width) (str "-/resize/" file-width "x/")))}]])]))
+
 (def ^:private styles-menu
   [:nav.col.col-2
    [:div.border-bottom.border-gray.p1
@@ -361,6 +408,7 @@
 (defn component [data owner opts]
   (component/create
    [:div.mx3
+    (compression data)
     [:div.container
      [:div {:style {:margin "50px 0"}}
       [:h1.mb4 "Mayvenn Style Guide"]
