@@ -407,33 +407,34 @@
 
 (defn component [data owner opts]
   (component/create
-   [:div.mx3
+   [:div
     (compression data)
-    [:div.container
-     [:div {:style {:margin "50px 0"}}
-      [:h1.mb4 "Mayvenn Style Guide"]
-      (subheader
-       [:span.hide-on-tb-dt "mobile"]
-       [:span.hide-on-mb.hide-on-dt "tablet"]
-       [:span.hide-on-mb-tb "desktop"]
-       " breakpoint")]
+    [:div.mx3
+     [:div.container
+      [:div {:style {:margin "50px 0"}}
+       [:h1.mb4 "Mayvenn Style Guide"]
+       (subheader
+        [:span.hide-on-tb-dt "mobile"]
+        [:span.hide-on-mb.hide-on-dt "tablet"]
+        [:span.hide-on-mb-tb "desktop"]
+        " breakpoint")]
 
-     colors
-     typography
-     (form-fields data)
-     buttons
+      colors
+      typography
+      (form-fields data)
+      buttons
 
-     #_(condp = (get-in data keypaths/navigation-event)
-       events/navigate-style-guide typography
-       events/navigate-style-guide-color colors
-       events/navigate-style-guide-buttons buttons
-       events/navigate-style-guide-spacing spacing
-       events/navigate-style-guide-form-fields (form-fields data)
-       events/navigate-style-guide-navigation (component/build navigation data opts)
-       events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
-       events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
-       events/navigate-style-guide-progress (component/build progress data opts)
-       events/navigate-style-guide-carousel (component/build carousel data opts))]]))
+      #_(condp = (get-in data keypaths/navigation-event)
+          events/navigate-style-guide typography
+          events/navigate-style-guide-color colors
+          events/navigate-style-guide-buttons buttons
+          events/navigate-style-guide-spacing spacing
+          events/navigate-style-guide-form-fields (form-fields data)
+          events/navigate-style-guide-navigation (component/build navigation data opts)
+          events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
+          events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
+          events/navigate-style-guide-progress (component/build progress data opts)
+          events/navigate-style-guide-carousel (component/build carousel data opts))]]]))
 
 (defn built-component [data opts]
   (component/build component data opts))
