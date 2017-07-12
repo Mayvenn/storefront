@@ -98,6 +98,7 @@
      :named-searches []
      :products {}
      :sku-sets {}
+     :skus {}
      :states []
      :shipping-methods []
      :sms-number nil

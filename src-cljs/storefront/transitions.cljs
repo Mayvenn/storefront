@@ -338,8 +338,10 @@
     ensure-bundle-builder))
 
 (defmethod transition-state events/api-success-sku-sets
-  [_ event {:keys [sku-sets]} app-state]
-  (update-in app-state keypaths/sku-sets merge (key-by :id sku-sets)))
+  [_ event {:keys [sku-sets skus]} app-state]
+  (-> app-state
+      (update-in keypaths/sku-sets merge (key-by :id sku-sets))
+      (update-in keypaths/skus merge (key-by :sku skus))))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))

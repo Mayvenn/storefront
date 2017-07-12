@@ -73,6 +73,13 @@
             (unconstrained-facet skus facets :color)
             [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]]))]]]]))
 
+(defn hydrate-sku-set-with-skus [id->skus sku-set]
+  (letfn [(sku-by-id [sku-id]
+            (get id->skus sku-id))]
+    (-> sku-set
+        (update :skus #(map sku-by-id %))
+        (update :representative-sku sku-by-id))))
+
 (defn ^:private query [data]
   (let [facets      {:type     {"kits" {:name "kits"}},
                      :grade    {"6a" {:name "6a premier collection"},
@@ -120,7 +127,10 @@
                                 "16" {:name "16″"},
                                 "10" {:name "10″"}}}]
     {:category (get-in data keypaths/current-category)
-     :sku-sets (vals (get-in data keypaths/sku-sets))
+     :sku-sets (->> (get-in data keypaths/sku-sets)
+                    vals
+                    (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus))))
+
      :facets   facets}))
 
 (defn built-component [data opts]
