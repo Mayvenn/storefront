@@ -343,6 +343,10 @@
       (update-in keypaths/sku-sets merge (key-by :id sku-sets))
       (update-in keypaths/skus merge (key-by :sku skus))))
 
+(defmethod transition-state events/api-success-facets
+  [_ event {:keys [facets]} app-state]
+  (assoc-in app-state keypaths/facets (map #(update % :step keyword) facets)))
+
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 

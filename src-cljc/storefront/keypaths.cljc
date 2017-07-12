@@ -49,6 +49,7 @@
 (def products [:products])
 (def sku-sets [:sku-sets])
 (def skus [:skus])
+(def facets [:facets])
 (def states [:states])
 (def shipping-methods [:shipping-methods])
 (def sms-number [:sms-number])

@@ -273,7 +273,7 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
-  #_(ensure-facets)
+  (api/fetch-facets (get-in app-state keypaths/api-cache))
   (refresh-category-sku-sets (get-in app-state keypaths/current-category)))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]

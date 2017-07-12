@@ -163,9 +163,18 @@
   (api-req
    GET
    "/sku-sets"
-   request-keys/search-sku-sets
+   (conj request-keys/search-sku-sets criteria)
    {:params criteria
     :handler #(messages/handle-message events/api-success-sku-sets %)}))
+
+(defn fetch-facets [cache]
+  (cache-req
+   cache
+   GET
+   "/facets"
+   request-keys/fetch-facets
+   {:params {}
+    :handler #(messages/handle-message events/api-success-facets %)}))
 
 (defn get-saved-cards [user-id user-token]
   (api-req

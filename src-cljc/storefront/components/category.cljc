@@ -23,7 +23,12 @@
             [storefront.components.money-formatters :as mf]))
 
 (defn facet-definition [facets facet option]
-  (get-in facets [facet option]))
+  (->> facets
+       (filter (fn [{:keys [step]}] (= step facet)))
+       first
+       :options
+       (filter (fn [{:keys [:option/slug]}] (= slug option)))
+       first))
 
 (defmulti unconstrained-facet (fn [skus facets facet] facet))
 (defmethod unconstrained-facet :length [skus facets facet]
@@ -81,57 +86,11 @@
         (update :representative-sku sku-by-id))))
 
 (defn ^:private query [data]
-  (let [facets      {:type     {"kits" {:name "kits"}},
-                     :grade    {"6a" {:name "6a premier collection"},
-                                "7a" {:name "7a deluxe collection"},
-                                "8a" {:name "8a ultra collection"}},
-                     :category {"hair"     {:name "hair"},
-                                "closures" {:name "closures"},
-                                "frontals" {:name "frontals"}},
-                     :color    {"black"                  {:name      "Natural #1B",
-                                                          :long-name "Natural Black (#1B)",
-                                                          :image     "//d275k6vjijb2m1.cloudfront.net/cellar/colors/black_v1.png"},
-                                "dark-blonde"            {:name      "Dark Blonde #27",
-                                                          :long-name "Dark Blonde (#27)",
-                                                          :image     "//d275k6vjijb2m1.cloudfront.net/cellar/colors/dark_blonde.png"},
-                                "blonde"                 {:name      "Blonde #613",
-                                                          :long-name "Blonde (#613)",
-                                                          :image     "//d275k6vjijb2m1.cloudfront.net/cellar/colors/blonde.png"},
-                                "dark-blonde-dark-roots" {:name      "Dark Blonde #27 with Dark Roots #1B",
-                                                          :long-name "Dark Blonde (#27) with Dark Roots (#1B)",
-                                                          :image     "//d275k6vjijb2m1.cloudfront.net/cellar/colors/dark_blonde_dark_roots.png"},
-                                "blonde-dark-roots"      {:name      "Blonde #613 with Dark Roots #1B",
-                                                          :long-name "Blonde (#613) with Dark Roots (#1B)",
-                                                          :image     "//d275k6vjijb2m1.cloudfront.net/cellar/colors/blonde_dark_roots.png"}},
-                     :style    {"straight"       {:name "Straight"},
-                                "yaki-straight"  {:name "Yaki Straight"},
-                                "kinky-straight" {:name "Kinky Straight"},
-                                "body-wave"      {:name "Body Wave"},
-                                "loose-wave"     {:name "Loose Wave"},
-                                "water-wave"     {:name "Water Wave"},
-                                "deep-wave"      {:name "Deep Wave"},
-                                "curly"          {:name "Curly"}},
-                     :origin   {"brazilian" {:name "Brazilian"},
-                                "malaysian" {:name "Malaysian"},
-                                "peruvian"  {:name "Peruvian"},
-                                "indian"    {:name "Indian"}},
-                     :material {"lace" {:name "Lace"}, "silk" {:name "Silk"}},
-                     :length   {"22" {:name "22″"},
-                                "26" {:name "26″"},
-                                "28" {:name "28″"},
-                                "14" {:name "14″"},
-                                "20" {:name "20″"},
-                                "18" {:name "18″"},
-                                "12" {:name "12″"},
-                                "24" {:name "24″"},
-                                "16" {:name "16″"},
-                                "10" {:name "10″"}}}]
-    {:category (get-in data keypaths/current-category)
-     :sku-sets (->> (get-in data keypaths/sku-sets)
-                    vals
-                    (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus))))
-
-     :facets   facets}))
+  {:category (get-in data keypaths/current-category)
+   :sku-sets (->> (get-in data keypaths/sku-sets)
+                  vals
+                  (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus))))
+   :facets   (get-in data keypaths/facets)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
