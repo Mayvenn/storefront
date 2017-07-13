@@ -65,7 +65,7 @@
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       [:div.flex.flex-wrap.mxn1
        (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
-         (let [image (-> representative-sku :images :catalog)]
+         (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
            [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
             [:div.mb10.center
              ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
