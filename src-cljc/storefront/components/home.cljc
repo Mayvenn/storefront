@@ -71,10 +71,25 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (hero-image {:mobile-url  "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
-                 :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
-                 :file-name   "Water-Wave-Yaki-Straight-Homepage-Hero.jpg"
-                 :alt         "New Water Wave and Yaki Straight are here"})]])
+    (let [file-name "Shine-Bright-Homepage-Hero.jpg"
+          alt       "Shine Bright. All Eyes on You. Let your hair take center stage this summer with beautifully textured bundles. Shop our looks."]
+      (case store-slug
+        "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/5f518fdb-93ee-43dd-98de-6b85691b4a1c/"
+                                      :desktop-url "//ucarecdn.com/41bbae81-5d0d-442d-a657-2c0a5abafe9a/"
+                                      :file-name   file-name
+                                      :alt         alt})
+        "touchedbytokyo" (hero-image {:mobile-url  "//ucarecdn.com/6e8675c5-7534-4257-b516-8a0243403521/"
+                                      :desktop-url "//ucarecdn.com/06134a91-316e-417f-bdef-62efd8f9f1d8/"
+                                      :file-name   file-name
+                                      :alt         alt})
+        "peakmill"       (hero-image {:mobile-url  "//ucarecdn.com/9b471a01-4e24-4159-94b1-0d07b768920e/"
+                                      :desktop-url "//ucarecdn.com/cd12d826-4ae0-48a5-97e2-f06c547ea92d/"
+                                      :file-name   file-name
+                                      :alt         alt})
+        (hero-image {:mobile-url  "//ucarecdn.com/80c41456-0e01-4044-aa30-0939943b2745/"
+                     :desktop-url "//ucarecdn.com/cff8b20a-4812-4449-b589-59a228859799/"
+                     :file-name   file-name
+                     :alt         alt})))]])
 
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
@@ -100,18 +115,18 @@
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 177858410})
-     (feature-image {:mobile-url  "//ucarecdn.com/d64294f0-e6d0-4b6d-94f1-7da819119c01/"
-                     :desktop-url "//ucarecdn.com/04e2b2fc-e40a-4b52-8cb3-ba7bdfa84963/"
-                     :file-name   "Shop-Indian-Straight-Hair.jpg"
-                     :alt         "Shop Indian Straight Hair"})]]
+     (utils/route-to events/navigate-named-search {:named-search-slug "water-wave"})
+     (feature-image {:mobile-url  "//ucarecdn.com/bd26f85b-9782-4f2b-a0f1-3fd192d9091a/"
+                     :desktop-url "//ucarecdn.com/bed5eabc-18b8-4027-a9e6-b79f07d51771/"
+                     :file-name   "Shop-Water-Wave-Hair"
+                     :alt         "Shop Water Wave Hair"})]]
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 178528561})
-     (feature-image {:mobile-url  "//ucarecdn.com/97994826-a043-499e-95a5-549b06ac35b8/"
-                     :desktop-url "//ucarecdn.com/811aa020-2d64-4765-ae82-9980117cd6d8/"
-                     :file-name   "Shop-Virgin-Hair-Bundle-Deals.jpg"
-                     :alt         "Shop Virgin Hair Bundle Deals"})]]])
+     (utils/route-to events/navigate-named-search {:named-search-slug "yaki-straight"})
+     (feature-image {:mobile-url  "//ucarecdn.com/c0d54c3f-4394-4a3e-bea1-512798c22416/"
+                     :desktop-url "//ucarecdn.com/b1c120f5-3bdf-403f-91f0-48d686deec29/"
+                     :file-name   "Shop-Yaki-Straight-Hair"
+                     :alt         "Shop Yaki Straight Hair"})]]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
