@@ -38,10 +38,10 @@
         shortest (first lengths)
         longest  (last lengths)]
     [:p.h6.dark-gray
+     "in "
      (:name (facet-definition facets :length shortest))
      " - "
-     (:name (facet-definition facets :length longest))
-     " lengths available"]))
+     (:name (facet-definition facets :length longest))]))
 
 (defmethod unconstrained-facet :color [skus facets facet]
   (let [colors (->> skus
@@ -61,22 +61,26 @@
         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                             :alt alt}]])]
     [:div.container
-     [:div.p2
-      [:p.h3.my4.max-580.mx-auto.center (-> category :copy :description)]
+     [:div.px2
+      [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       [:div.flex.flex-wrap.mxn1
-       (for [{:keys [slug representative-sku name skus] :as sku-set} sku-sets]
+       (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
          (let [image (-> representative-sku :images :catalog)]
-           [:div.col.col-6.col-3-on-tb-dt.p1.center {:key slug}
-            ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-            [:img.block.col-12 {:src (str (:url image)
-                                          (:filename image))
-                                :alt (:alt image)}]
-            [:h2.h4.medium name]
-            ;; This is pretty specific to hair. Might be better to have a
-            ;; sku-set know its "constrained" and "unconstrained" facets.
-            (unconstrained-facet skus facets :length)
-            (unconstrained-facet skus facets :color)
-            [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]]))]]]]))
+           [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
+            [:div.mb10.center
+             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
+             [:img.block.col-12 {:src (str (:url image)
+                                           (:filename image))
+                                 :alt (:alt image)}]
+             [:h2.h4.mt3.mb1 name]
+             (if sold-out?
+               [:p.h6.dark-gray "Out of stock"]
+               [:div
+                ;; This is pretty specific to hair. Might be better to have a
+                ;; sku-set know its "constrained" and "unconstrained" facets.
+                (unconstrained-facet skus facets :length)
+                (unconstrained-facet skus facets :color)
+                [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))]]]]))
 
 (defn hydrate-sku-set-with-skus [id->skus sku-set]
   (letfn [(sku-by-id [sku-id]

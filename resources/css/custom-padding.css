@@ -14,6 +14,14 @@
 .px8 { padding-left:   var(--space-8); padding-right:  var(--space-8) }
 .py8 { padding-top:    var(--space-8); padding-bottom: var(--space-8) }
 
+.p10  { padding:        var(--space-10) }
+.pt10 { padding-top:    var(--space-10) }
+.pr10 { padding-right:  var(--space-10) }
+.pb10 { padding-bottom: var(--space-10) }
+.pl10 { padding-left:   var(--space-10) }
+.px10 { padding-left:   var(--space-10); padding-right:  var(--space-10) }
+.py10 { padding-top:    var(--space-10); padding-bottom: var(--space-10) }
+
 /* pixel-based padding */
 
 .pp1, .pxp1 { padding-left: 1px; padding-right: 1px; }
@@ -36,4 +44,5 @@
     --space-4: 4rem;
     --space-6: 16rem;
     --space-8: 64rem;
+    --space-10: 256rem;
 }
