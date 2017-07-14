@@ -61,7 +61,7 @@
         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                             :alt alt}]])]
     [:div.container
-     [:div.px2
+     [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       [:div.flex.flex-wrap.mxn1
        (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
