@@ -1,7 +1,16 @@
 (ns storefront.accessors.categories)
 
 (def named-search->category-id
-  {"closures" "0"})
+  {"closures"       "0"
+   "frontals"       "1"
+   "straight"       "2"
+   "yaki-straight"  "3"
+   "kinky-straight" "4"
+   "body-wave"      "5"
+   "loose-wave"     "6"
+   "water-wave"     "7"
+   "deep-wave"      "8"
+   "curly"          "9"})
 
 (def categories
   (let [fake-copy "In augue sem, tincidunt egestas rutrum a, vehicula in dolor. Donec id erat eu turpis semper maximus tempor ac erat. Aenean sit amet neque vitae neque finibus tristique id vitae odio. Maecenas aliquet ipsum est, in eleifend erat consequat ac. Integer dapibus nisl ac est interdum faucibus."
@@ -14,10 +23,74 @@
       :criteria {:family #{"closures"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "1"
+      :slug     "frontals"
+      :criteria {:family #{"frontals"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "2"
+      :slug     "straight"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"straight"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "3"
+      :slug     "yaki-straight"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"yaki-straight"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "4"
+      :slug     "kinky-straight"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"kinky-straight"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "5"
+      :slug     "body-wave"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"body-wave"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "6"
+      :slug     "loose-wave"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"loose-wave"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "7"
+      :slug     "water-wave"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"water-wave"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "8"
+      :slug     "deep-wave"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"deep-wave"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "9"
+      :slug     "curly"
+      :criteria {:family #{"hair" "frontals" "closures"}
+                 :style #{"curly"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
       :images   {:hero fake-hero}}]))
 
 (defn id->category [id]
-  (first (filter (comp #{id} :id) categories)))
+  (->> categories
+       (filter (comp #{(str id)} :id))
+       first))
 
 (defn named-search->category [named-search-slug]
   (some-> named-search-slug
