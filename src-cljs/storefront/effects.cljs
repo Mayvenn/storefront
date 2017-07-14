@@ -89,7 +89,7 @@
 
 (defn refresh-category-sku-sets [category]
   ;; TODO: cache these calls?
-  (api/search-sku-sets (:slug category) (:criteria category)))
+  (api/search-sku-sets (:id category) (:criteria category)))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
