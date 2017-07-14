@@ -342,10 +342,10 @@
   (-> app-state
       (update-in keypaths/categories (fn [categories]
                                        (mapv (fn [category]
-                                              (if (= category-id (:id category))
-                                                (assoc category :sku-set-ids (map :id sku-sets))
-                                                category))
-                                            categories)))
+                                               (if (= category-id (:id category))
+                                                 (assoc category :sku-set-ids (map :id sku-sets))
+                                                 category))
+                                             categories)))
       (update-in keypaths/sku-sets merge (key-by :id sku-sets))
       (update-in keypaths/skus merge (key-by :sku skus))))
 
