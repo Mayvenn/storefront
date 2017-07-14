@@ -164,7 +164,7 @@
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event args app-state]
-  (assoc-in app-state keypaths/current-category (categories/id->category (:id args))))
+  (assoc-in app-state keypaths/current-category-id (:id args)))
 
 (defmethod transition-state events/navigate-named-search [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
@@ -338,8 +338,14 @@
     ensure-bundle-builder))
 
 (defmethod transition-state events/api-success-sku-sets
-  [_ event {:keys [sku-sets skus]} app-state]
+  [_ event {:keys [sku-sets skus category-id]} app-state]
   (-> app-state
+      (update-in keypaths/categories (fn [categories]
+                                       (mapv (fn [category]
+                                              (if (= category-id (:id category))
+                                                (assoc category :sku-set-ids (map :id sku-sets))
+                                                category))
+                                            categories)))
       (update-in keypaths/sku-sets merge (key-by :id sku-sets))
       (update-in keypaths/skus merge (key-by :sku skus))))
 

@@ -90,11 +90,15 @@
         (update :representative-sku sku-by-id))))
 
 (defn ^:private query [data]
-  {:category (get-in data keypaths/current-category)
-   :sku-sets (->> (get-in data keypaths/sku-sets)
-                  vals
-                  (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus))))
-   :facets   (get-in data keypaths/facets)})
+  (let [category    (categories/id->category (get-in data keypaths/current-category-id)
+                                             (get-in data keypaths/categories))
+        sku-sets    (->> category
+                         :sku-set-ids
+                         (keep #(get-in data (conj keypaths/sku-sets %)))
+                         (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus))))]
+    {:category category
+     :sku-sets sku-sets
+     :facets   (get-in data keypaths/facets)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

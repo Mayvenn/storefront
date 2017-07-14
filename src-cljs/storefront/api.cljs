@@ -159,13 +159,13 @@
       #(messages/handle-message events/api-success-products
                                 (select-keys % [:products]))})))
 
-(defn search-sku-sets [criteria]
+(defn search-sku-sets [category-id criteria]
   (api-req
    GET
    "/sku-sets"
    (conj request-keys/search-sku-sets criteria)
-   {:params criteria
-    :handler #(messages/handle-message events/api-success-sku-sets %)}))
+   {:params  criteria
+    :handler #(messages/handle-message events/api-success-sku-sets (assoc % :category-id category-id))}))
 
 (defn fetch-facets [cache]
   (cache-req

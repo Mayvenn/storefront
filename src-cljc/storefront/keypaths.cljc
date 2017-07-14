@@ -47,6 +47,7 @@
 
 (def named-searches [:named-searches])
 (def products [:products])
+(def categories [:categories])
 (def sku-sets [:sku-sets])
 (def skus [:skus])
 (def facets [:facets])
@@ -217,7 +218,7 @@
 (def stylist-referral-program-page (conj stylist-referral-program :page))
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
-(def current-category (conj ui :current-category))
+(def current-category-id (conj ui :current-category-id))
 
 (def stylist-referrals (conj stylist :referrals))
 

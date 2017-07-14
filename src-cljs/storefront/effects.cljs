@@ -88,8 +88,8 @@
   (refresh-products app-state (:product-ids named-search)))
 
 (defn refresh-category-sku-sets [category]
-  ;; TODO: we could cache sku-set-ids on the category, and if present, avoid re-fetching sku-sets
-  (api/search-sku-sets (:criteria category)))
+  ;; TODO: cache these calls?
+  (api/search-sku-sets (:slug category) (:criteria category)))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
@@ -103,10 +103,10 @@
   ([event] (redirect event nil))
   ([event args] (handle-message events/redirect {:nav-message [event args]})))
 
-(defn redirect-named-search [named-search-slug]
+(defn redirect-named-search [named-search-slug categories]
   ;; TODO: ensure we have a redirect for all named-searches. Most should go to
   ;; a category page. Kits should redirect straight to product page.
-  (when-let [category (categories/named-search->category named-search-slug)]
+  (when-let [category (categories/named-search->category named-search-slug categories)]
     (redirect events/navigate-category category)))
 
 (defn page-not-found []
@@ -147,7 +147,8 @@
              (= (:feature args) "new-taxon-launch")
              (= (get-in app-state keypaths/navigation-event)
                 events/navigate-named-search))
-    (redirect-named-search (get-in app-state (conj keypaths/navigation-args :named-search-slug)))))
+    (redirect-named-search (get-in app-state (conj keypaths/navigation-args :named-search-slug))
+                           (get-in app-state keypaths/categories))))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -274,11 +275,12 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
   (api/fetch-facets (get-in app-state keypaths/api-cache))
-  (refresh-category-sku-sets (get-in app-state keypaths/current-category)))
+  (refresh-category-sku-sets (categories/id->category (get-in app-state keypaths/current-category-id)
+                                                      (get-in app-state keypaths/categories))))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
   (if (experiments/new-taxon-launch? app-state)
-    (redirect-named-search (:named-search-slug args))
+    (redirect-named-search (:named-search-slug args) (get-in app-state keypaths/categories))
     (let [named-search (named-searches/current-named-search app-state)]
       (if (hidden-search? app-state named-search)
         (page-not-found)

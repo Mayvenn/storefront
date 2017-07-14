@@ -221,10 +221,10 @@
                        data
                        req
                        {:keys [id slug] :as params}]
-  (when-let [category (categories/id->category id)]
+  (when-let [category (categories/id->category id (get-in data keypaths/categories))]
     (if (= slug (:slug category))
       (html-response render-ctx (-> data
-                                    (assoc-in keypaths/current-category category)))
+                                    (assoc-in keypaths/current-category-id (:id category))))
       (util.response/redirect (routes/path-for events/navigate-category (select-keys category [:id :slug]))))))
 
 (defn render-static-page [template]
@@ -255,6 +255,7 @@
                            (assoc-in data keypaths/environment environment)
                            (experiments/determine-features data)
                            (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
+                           (assoc-in data keypaths/categories categories/initial-categories)
                            (assoc-in data keypaths/static (static-page nav-event))
                            (assoc-in data keypaths/navigation-message [nav-event params]))]
           (condp = nav-event
