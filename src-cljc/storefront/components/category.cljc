@@ -95,8 +95,7 @@
            [(:launched-at x) #_(:price (:representative-sku y)) (:name y)]))
 
 (defn ^:private query [data]
-  (let [category    (categories/id->category (get-in data keypaths/current-category-id)
-                                             (get-in data keypaths/categories))
+  (let [category    (categories/current-category data)
         sku-sets    (->> category
                          :sku-set-ids
                          (keep #(get-in data (conj keypaths/sku-sets %)))

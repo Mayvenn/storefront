@@ -275,8 +275,7 @@
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
   (api/fetch-facets (get-in app-state keypaths/api-cache))
-  (refresh-category-sku-sets (categories/id->category (get-in app-state keypaths/current-category-id)
-                                                      (get-in app-state keypaths/categories))))
+  (refresh-category-sku-sets (categories/current-category app-state)))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
   (if (experiments/new-taxon-launch? app-state)

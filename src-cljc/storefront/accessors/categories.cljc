@@ -1,4 +1,5 @@
-(ns storefront.accessors.categories)
+(ns storefront.accessors.categories
+  (:require [storefront.keypaths :as keypaths]))
 
 (def named-search->category-id
   {"closures"       "0"
@@ -96,3 +97,7 @@
   (some-> named-search-slug
           named-search->category-id
           (id->category categories)))
+
+(defn current-category [data]
+  (id->category (get-in data keypaths/current-category-id)
+                (get-in data keypaths/categories)))
