@@ -89,10 +89,10 @@
         (update :skus #(map sku-by-id %))
         (update :representative-sku sku-by-id))))
 
-(defn by-launched-at-name [x y]
+(defn by-launched-at-price-name [x y]
   ;; launched-at is desc
-  (compare [(:launched-at y) #_(:price (:representative-sku x)) (:name x)]
-           [(:launched-at x) #_(:price (:representative-sku y)) (:name y)]))
+  (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
+           [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
 
 (defn ^:private query [data]
   (let [category    (categories/current-category data)
@@ -100,7 +100,7 @@
                          :sku-set-ids
                          (keep #(get-in data (conj keypaths/sku-sets %)))
                          (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus)))
-                         (sort by-launched-at-name))]
+                         (sort by-launched-at-price-name))]
     {:category category
      :sku-sets sku-sets
      :facets   (get-in data keypaths/facets)}))
