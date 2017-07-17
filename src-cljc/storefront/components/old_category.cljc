@@ -243,7 +243,7 @@
    (component/build reviews/reviews-summary-component reviews opts)])
 
 (defn named-search-uses-product-images [named-search-slug]
-  (#{"closures" "frontals" "straight" "loose-wave" "deep-wave"} named-search-slug))
+  (#{"closures" "frontals" "360-frontals" "straight" "loose-wave" "deep-wave"} named-search-slug))
 
 (def image-types ["model" "product" "social"])
 

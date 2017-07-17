@@ -49,9 +49,9 @@ Excessive flat-ironing will loosen the texture over time.
 
 Lengths: 12\" to 28\""
                     :data-image-url "http://s3.amazonaws.com/yotpo-images-production/Product/6414702/6154338/thumb.jpg"}
-   :curly    {:data-product-id  54
-              :data-name        "Brazilian Curly Hair"
-              :data-description "Premier Brazilian Curly
+   :curly        {:data-product-id  54
+                  :data-name        "Brazilian Curly Hair"
+                  :data-description "Premier Brazilian Curly
 Material:High Quality 100% Virgin Human Hair
 Color: 1B
 Bleach-able up to level:7 or 8 (#27)
@@ -62,15 +62,19 @@ When purchasing the curly hair extensions, keep in mind that each bundled is mea
 Holds a natural tight curl beautifully.
 Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. These hair extensions can be colored (consult a licensed cosmetologist). Excessive flat-ironing will loosen the curls over time.
 Lengths: 12\" to 28\""
-              :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414708/6154343/thumb.jpg"}
-   :closures {:data-product-id  90
-              :data-name        "Brazilian Natural Straight Lace Closure"
-              :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
-              :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
-   :frontals {:data-product-id  90
-              :data-name        "Brazilian Natural Straight Lace Closure"
-              :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
-              :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}})
+                  :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414708/6154343/thumb.jpg"}
+   :closures     {:data-product-id  90
+                  :data-name        "Brazilian Natural Straight Lace Closure"
+                  :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
+                  :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
+   :frontals     {:data-product-id  90
+                  :data-name        "Brazilian Natural Straight Lace Closure"
+                  :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
+                  :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
+   :360-frontals {:data-product-id  141
+                  :data-name        "Brazilian Natural Straight 360 Frontal Lace Closure"
+                  :data-description "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal. This one-of-a-kind frontal piece features freestyle parting, baby hairs, and low-density edges for a naturally flawless look. Measuring 4” in both the front and sides, and 2.5” in the back, our 360 Lace Frontal allows plenty of space for all your customization needs. Throw it in a high bun, rock a pair of french braids, or don a ponytail - the 360 Lace Frontal provides the flexibility for all-around hairstyles that look great from all sides."
+                  :data-image-url   "https://ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/-/scale_crop/250x227/Straight-360-Frontal-From-Three-Quarters-Back.jpg"}})
 
 (defn product-options-for [{:keys [slug]}]
   (get product-options-by-named-search (keyword slug)))
