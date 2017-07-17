@@ -308,6 +308,7 @@
                                                  ["https://shop.mayvenn.com/categories/hair/curly"          "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/closures"       "0.80"]
                                                  ["https://shop.mayvenn.com/categories/hair/frontals"       "0.80"]
+                                                 ["https://shop.mayvenn.com/categories/hair/360-frontals"   "0.80"]
                                                  ["https://shop.mayvenn.com/shop/look"                      "0.80"]])}))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
