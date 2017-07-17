@@ -27,8 +27,11 @@
 
 (defn is-closure? [named-search] (some-> named-search :search :category set (contains? "closures")))
 (defn is-frontal? [named-search] (some-> named-search :search :category set (contains? "frontals")))
+(defn is-360-frontal? [named-search] (some-> named-search :search :category set (contains? "360-frontals")))
 (defn is-extension? [named-search] (some-> named-search :search :category set (contains? "hair")))
-(defn is-closure-or-frontal? [named-search] (or (is-closure? named-search) (is-frontal? named-search)))
+(defn is-closure-or-frontal? [named-search] (or (is-closure? named-search)
+                                                (is-frontal? named-search)
+                                                (is-360-frontal? named-search)))
 (defn is-hair? [named-search] (or (is-extension? named-search) (is-closure-or-frontal? named-search)))
 
 (def is-stylist-product? :stylist_only?)
