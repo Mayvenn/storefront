@@ -115,18 +115,18 @@
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-named-search {:named-search-slug "water-wave"})
-     (feature-image {:mobile-url  "//ucarecdn.com/bd26f85b-9782-4f2b-a0f1-3fd192d9091a/"
-                     :desktop-url "//ucarecdn.com/bed5eabc-18b8-4027-a9e6-b79f07d51771/"
-                     :file-name   "Shop-Water-Wave-Hair"
-                     :alt         "Shop Water Wave Hair"})]]
+     (utils/route-to events/navigate-shop-by-look-details {:look-id 182412842})
+     (feature-image {:mobile-url  "//ucarecdn.com/70e9bb0f-808a-463a-8930-2a28cd40f18e/"
+                     :desktop-url "//ucarecdn.com/74267ba1-eafb-4e9f-9863-b16d167ac6b7/"
+                     :file-name   "Shop-Water-Wave-Hair-3-Bundle-Deal"
+                     :alt         "Shop Water Wave Hair 3 Bundle Deal"})]]
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-named-search {:named-search-slug "yaki-straight"})
-     (feature-image {:mobile-url  "//ucarecdn.com/c0d54c3f-4394-4a3e-bea1-512798c22416/"
-                     :desktop-url "//ucarecdn.com/b1c120f5-3bdf-403f-91f0-48d686deec29/"
-                     :file-name   "Shop-Yaki-Straight-Hair"
-                     :alt         "Shop Yaki Straight Hair"})]]])
+     (utils/route-to events/navigate-shop-by-look-details {:look-id 182412844})
+     (feature-image {:mobile-url  "//ucarecdn.com/dfb79c42-6983-45a3-8907-439f56cf6320/"
+                     :desktop-url "//ucarecdn.com/9b3e2c44-d6d6-4074-a714-026a0252b32a/"
+                     :file-name   "Shop-Yaki-Straight-Hair-3-Bundle-Deal"
+                     :alt         "Shop Yaki Straight Hair 3 Bundle Deal"})]]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
