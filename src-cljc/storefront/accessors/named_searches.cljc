@@ -21,7 +21,7 @@
        (filter #(-> % :product-ids set (contains? product-id)))
        first))
 
-(def new-named-search? #{"kinky-straight"
+(def new-named-search? #{"360-frontals"
                          "yaki-straight"
                          "water-wave"})
 
