@@ -117,14 +117,14 @@
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 182412842})
      (feature-image {:mobile-url  "//ucarecdn.com/70e9bb0f-808a-463a-8930-2a28cd40f18e/"
-                     :desktop-url "//ucarecdn.com/74267ba1-eafb-4e9f-9863-b16d167ac6b7/"
+                     :desktop-url "//ucarecdn.com/36623eae-4286-40f8-9f2f-e6dbbd4d6d4a/"
                      :file-name   "Shop-Water-Wave-Hair-3-Bundle-Deal"
                      :alt         "Shop Water Wave Hair 3 Bundle Deal"})]]
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 182412844})
      (feature-image {:mobile-url  "//ucarecdn.com/dfb79c42-6983-45a3-8907-439f56cf6320/"
-                     :desktop-url "//ucarecdn.com/9b3e2c44-d6d6-4074-a714-026a0252b32a/"
+                     :desktop-url "//ucarecdn.com/656499f9-86e3-4693-8e55-62f778487f39/"
                      :file-name   "Shop-Yaki-Straight-Hair-3-Bundle-Deal"
                      :alt         "Shop Yaki Straight Hair 3 Bundle Deal"})]]])
 
