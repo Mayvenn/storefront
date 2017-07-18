@@ -11,7 +11,8 @@
    "loose-wave"     "6"
    "water-wave"     "7"
    "deep-wave"      "8"
-   "curly"          "9"})
+   "curly"          "9"
+   "360-frontals"   "10"})
 
 (def initial-categories
   (let [fake-copy "In augue sem, tincidunt egestas rutrum a, vehicula in dolor. Donec id erat eu turpis semper maximus tempor ac erat. Aenean sit amet neque vitae neque finibus tristique id vitae odio. Maecenas aliquet ipsum est, in eleifend erat consequat ac. Integer dapibus nisl ac est interdum faucibus."
@@ -84,6 +85,12 @@
       :slug     "curly"
       :criteria {:family #{"hair" "frontals" "closures"}
                  :style  #{"curly"}
+                 :grade  #{"6a"}}
+      :copy     {:description fake-copy}
+      :images   {:hero fake-hero}}
+     {:id       "10"
+      :slug     "360-frontals"
+      :criteria {:family #{"360-frontals"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}]))
