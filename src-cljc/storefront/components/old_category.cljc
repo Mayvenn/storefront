@@ -93,13 +93,13 @@
 
 (defn option-html [step-name later-step?
                    {:keys [name image price-delta checked? sold-out? selections]}]
-  [:label.btn.border-gray.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
+  [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
-             sold-out?   "bg-gray dark-gray light"
-             later-step? "bg-gray muted light"
-             checked?    "bg-teal white medium"
-             true        "bg-white dark-gray light")
+             sold-out?   "border-gray       bg-gray       dark-gray light"
+             later-step? "border-light-gray bg-light-gray dark-gray light"
+             checked?    "border-gray       bg-teal       white     medium"
+             true        "border-gray       bg-white      dark-gray light")
     :style {:font-size "14px" :line-height "18px"}}
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
@@ -116,7 +116,7 @@
    [:span.block
     (if sold-out?
       "Sold Out"
-      [:span {:class (when-not checked? "navy")}
+      [:span {:class (str (when-not checked? "navy") (when later-step? " muted"))}
        "+" (as-money-without-cents price-delta)])]])
 
 (defn step-html [{:keys [step-name selected-option later-step? options]}]
