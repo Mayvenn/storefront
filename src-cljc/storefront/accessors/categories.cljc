@@ -34,56 +34,56 @@
       :images   {:hero fake-hero}}
      {:id       "2"
       :slug     "straight"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"straight"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "3"
       :slug     "yaki-straight"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"yaki-straight"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "4"
       :slug     "kinky-straight"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"kinky-straight"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "5"
       :slug     "body-wave"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"body-wave"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "6"
       :slug     "loose-wave"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"loose-wave"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "7"
       :slug     "water-wave"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"water-wave"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "8"
       :slug     "deep-wave"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"deep-wave"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "9"
       :slug     "curly"
-      :criteria {:family #{"hair" "frontals" "closures"}
+      :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"curly"}
                  :grade  #{"6a"}}
       :copy     {:description fake-copy}
