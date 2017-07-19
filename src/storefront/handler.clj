@@ -348,30 +348,37 @@
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [nav-message] :as req}]
-    (when (routes/sub-page? nav-message [events/navigate-leads])
-      (let [render-ctx {:storeback-config storeback-config
-                        :environment      environment
-                        :client-version   client-version}
-            data       (as-> {} data
-                         (assoc-in data keypaths/environment environment)
-                         (assoc-in data keypaths/navigation-message nav-message))]
-        (html-response render-ctx data)))))
+  (fn [{:keys [nav-message]}]
+    (let [render-ctx {:storeback-config storeback-config
+                      :environment      environment
+                      :client-version   client-version}
+          data       (as-> {} data
+                       (assoc-in data keypaths/environment environment)
+                       (assoc-in data keypaths/navigation-message nav-message))]
+      (html-response render-ctx data))))
 
 (defn wrap-welcome-is-for-leads [h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
-    (when (= "welcome" (first subdomains))
-      (if (= events/navigate-home (get nav-message 0))
-        (util.response/redirect (routes/path-for events/navigate-leads-home {:query-params query-params})
-                                :moved-permanently)
-        (h req)))))
+    (let [on-leads-page?        (routes/sub-page? nav-message [events/navigate-leads])
+          on-home-page?         (= events/navigate-home (get nav-message 0))
+          on-welcome-subdomain? (= "welcome" (first subdomains))
+          not-found             #(-> views/not-found
+                                     ->html-resp
+                                     (util.response/status 404))]
+      (if on-welcome-subdomain?
+        (cond
+          on-leads-page? (h req)
+          on-home-page?  (util.response/redirect (routes/path-for events/navigate-leads-home {:query-params query-params})
+                                                 :moved-permanently)
+          :else          (not-found))
+        (when on-leads-page? (not-found))))))
 
 (defn wrap-leads-routes [h {:keys [environment] :as ctx}]
   (-> h
       (wrap-defaults (storefront-site-defaults environment))
+      (wrap-welcome-is-for-leads)
       (wrap-resource "public")
-      (wrap-content-type)
-      (wrap-welcome-is-for-leads)))
+      (wrap-content-type)))
 
 (defn wrap-add-nav-message [h]
   (fn [{:keys [uri query-params] :as req}]
