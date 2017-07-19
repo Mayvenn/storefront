@@ -349,13 +349,14 @@
 
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message]}]
-    (let [render-ctx {:storeback-config storeback-config
-                      :environment      environment
-                      :client-version   client-version}
-          data       (as-> {} data
-                       (assoc-in data keypaths/environment environment)
-                       (assoc-in data keypaths/navigation-message nav-message))]
-      (html-response render-ctx data))))
+    (when (not= (get nav-message 0) events/navigate-not-found)
+      (let [render-ctx {:storeback-config storeback-config
+                        :environment      environment
+                        :client-version   client-version}
+            data       (as-> {} data
+                         (assoc-in data keypaths/environment environment)
+                         (assoc-in data keypaths/navigation-message nav-message))]
+        (html-response render-ctx data)))))
 
 (defn wrap-welcome-is-for-leads [h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
