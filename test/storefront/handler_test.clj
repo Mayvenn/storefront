@@ -123,8 +123,7 @@
                  (comp (map parse-json-body) xf)
                  {:timeout 1000})))
 
-(def default-req-params {:server-name "welcome.mayvenn.com"
-                         :server-port 8080
+(def default-req-params {:server-port 8080
                          :uri "/"
                          :scheme :http
                          :request-method :get})
@@ -271,6 +270,30 @@
         (is (= 302 (:status resp)))
         (is (= "https://logo.server/?m=100&s=present-id"
                (get-in resp [:headers "Location"])))))))
+
+(deftest handles-welcome-subdomain
+  (with-handler handler
+    (testing "will not render leads pages on stylist site"
+      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/stylists/welcome"))]
+        (is (= 404 (:status resp)))))
+    (testing "welcome.mayvenn.com/ redirects to welcome.mayvenn.com/stylists/welcome, preserving query params"
+      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com?a=b"))]
+        (is (= 301 (:status resp)))
+        (is (= "/stylists/welcome?a=b"
+               (get-in resp [:headers "Location"])))))
+    (testing "preserves leads-tracking-id cookie"
+      (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                              (mock/header "Cookie" "leads-tracking-id=present-id")))
+            cookies (get-in resp [:headers "Set-Cookie"])]
+        (is (= 200 (:status resp)))
+        (is (some #{"leads-tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
+    (testing "migrates tracking_id cookie from old leads site"
+      (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                              (mock/header "Cookie" "tracking_id=old-id")))
+            cookies (get-in resp [:headers "Set-Cookie"])]
+        (is (= 200 (:status resp)))
+        (is (some #{"leads-tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))))
 
 (deftest submits-paypal-redirect-to-waiter
   (testing "when waiter returns a 200 response"
