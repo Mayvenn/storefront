@@ -242,8 +242,8 @@
                    render-static-page)}))
 
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [uri store] :as req}]
-    (let [[nav-event params] (routes/navigation-message-for uri (:query-params req))]
+  (fn [{:keys [store nav-message] :as req}]
+    (let [[nav-event params] nav-message]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
@@ -257,7 +257,7 @@
                            (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
                            (assoc-in data keypaths/categories categories/initial-categories)
                            (assoc-in data keypaths/static (static-page nav-event))
-                           (assoc-in data keypaths/navigation-message [nav-event params]))]
+                           (assoc-in data keypaths/navigation-message nav-message))]
           (condp = nav-event
             events/navigate-product      (redirect-product->canonical-url ctx req params)
             events/navigate-named-search (if (= "blonde" (:named-search-slug params))
@@ -341,9 +341,39 @@
        (util.response/redirect (str (:endpoint dc-logo-config) "&s=" s))))))
 
 (defn static-routes [_]
-  (fn [{:keys [uri store] :as req}]
-    (let [{nav-event :handler params :route-params} (bidi/match-route routes/static-api-routes uri)]
+  (fn [{:keys [uri] :as req}]
+    (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
+
+(defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
+  (fn [{:keys [nav-message] :as req}]
+    (when (routes/sub-page? nav-message [events/navigate-leads])
+      (let [render-ctx {:storeback-config storeback-config
+                        :environment      environment
+                        :client-version   client-version}
+            data       (as-> {} data
+                         (assoc-in data keypaths/environment environment)
+                         (assoc-in data keypaths/navigation-message nav-message))]
+        (html-response render-ctx data)))))
+
+(defn wrap-welcome-is-for-leads [h]
+  (fn [{:keys [subdomains nav-message query-params] :as req}]
+    (when (= "welcome" (first subdomains))
+      (if (= events/navigate-home (get nav-message 0))
+        (util.response/redirect (routes/path-for events/navigate-leads-home {:query-params query-params})
+                                :moved-permanently)
+        (h req)))))
+
+(defn wrap-leads-routes [h {:keys [environment] :as ctx}]
+  (-> h
+      (wrap-defaults (storefront-site-defaults environment))
+      (wrap-resource "public")
+      (wrap-content-type)
+      (wrap-welcome-is-for-leads)))
+
+(defn wrap-add-nav-message [h]
+  (fn [{:keys [uri query-params] :as req}]
+    (h (assoc req :nav-message (routes/navigation-message-for uri query-params)))))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -359,8 +389,10 @@
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
+               (wrap-leads-routes (leads-routes ctx) ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
+       (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)
        (wrap-params)

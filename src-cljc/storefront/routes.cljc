@@ -36,9 +36,13 @@
    "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
+(def leads-routes
+  {"/stylists/welcome" (edn->bidi events/navigate-leads-home)})
+
 (def app-routes
   ["" (merge static-page-routes
              style-guide-routes
+             leads-routes
              {"/"                                                (edn->bidi events/navigate-home)
               ["/categories/" [#"\d+" :id] "-" :slug]            (edn->bidi events/navigate-category)
               ["/categories/hair/" :named-search-slug]           (edn->bidi events/navigate-named-search)

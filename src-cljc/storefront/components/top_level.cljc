@@ -42,7 +42,8 @@
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.routes :as routes]))
 
 (defn main-component [nav-event]
   (condp = nav-event
@@ -91,7 +92,6 @@
   (let [nav-event (get-in data keypaths/navigation-event)]
     (component/create
      (cond
-
        #?@(:cljs
            [(and config/enable-style-guide?
                  (= events/navigate-style-guide
@@ -102,6 +102,9 @@
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)
+
+       (routes/sub-page? [nav-event] [events/navigate-leads])
+       [:div "ima leads page"]
 
        (= nav-event events/navigate-ugc-named-search)
        [:div.bg-black.absolute.overlay

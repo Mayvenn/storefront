@@ -82,6 +82,9 @@
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
 
+(defpath navigate-leads)
+(defpath navigate-leads-home)
+
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)
