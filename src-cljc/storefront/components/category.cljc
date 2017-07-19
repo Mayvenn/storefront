@@ -83,8 +83,8 @@
                 [(pill (last items) selected-id)])))
 
 (defn filter-component [{:keys [filters count selected-filter]}]
-  [:div.m2
-   [:div.flex.justify-between
+  [:div.py4.bg-white.sticky.top-0
+   [:div.pb1.flex.justify-between
     [:p.h6.dark-gray "Filter By:"]
     [:p.h6.dark-gray (str count " Items")]]
    (pill-box (map (fn [id] {:text    (clojure.string/capitalize (name id))
@@ -107,7 +107,7 @@
                   :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                             :alt alt}]])]
-    [:div.container
+    [:div.max-960.col-12.mx-auto
      [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       (filter-component {:filters         (:filters category)
