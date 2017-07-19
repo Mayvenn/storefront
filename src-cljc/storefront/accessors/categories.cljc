@@ -24,12 +24,14 @@
       :slug     "closures"
       :criteria {:family #{"closures"}
                  :grade  #{"6a"}}
+      :filters  [:origin :texture :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "1"
       :slug     "frontals"
       :criteria {:family #{"frontals"}
                  :grade  #{"6a"}}
+      :filters  [:origin :texture :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "2"
@@ -37,6 +39,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"straight"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "3"
@@ -44,6 +47,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"yaki-straight"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "4"
@@ -51,6 +55,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"kinky-straight"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "5"
@@ -58,6 +63,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"body-wave"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "6"
@@ -65,6 +71,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"loose-wave"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "7"
@@ -72,6 +79,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"water-wave"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "8"
@@ -79,6 +87,7 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"deep-wave"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "9"
@@ -86,12 +95,14 @@
       :criteria {:family #{"hair" "frontals" "closures" "360-frontals"}
                  :style  #{"curly"}
                  :grade  #{"6a"}}
+      :filters  [:category :origin :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "10"
       :slug     "360-frontals"
       :criteria {:family #{"360-frontals"}
                  :grade  #{"6a"}}
+      :filters  [:origin :texture :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}]))
 

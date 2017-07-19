@@ -50,7 +50,54 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(defn ^:private component [{:keys [category sku-sets facets]} owner opts]
+(defn selected []
+  [])
+
+(defn pill [{:keys [text event keypath id] :as item} selected-id]
+  [:a.center
+   (merge
+    (utils/fake-href events/control-pillbox-select
+                     {:keypath  keypath
+                      :selected id})
+    {:style {:flex-grow 1}
+     :key   (str "item-" id)}
+    {:class (if (= id selected-id)
+              "bg-teal border-right border-teal white"
+              "dark-gray")})
+   text])
+
+(defn pill-divider [{left-id :id} {right-id :id} selected-id]
+  [:div.my1.border-left.border-teal
+   (merge
+    {:key (str "divider-" left-id)}
+    (when (#{left-id right-id} selected-id)
+      {:class "hide"}))])
+
+(defn pill-box [items selected-id]
+  (into [:div.flex.justify-around.border.rounded.border-teal.teal]
+        (concat (->> (partition 2 1 items)
+                     (map (fn [[left-item right-item]]
+                            [(pill left-item selected-id)
+
+                             (pill-divider left-item right-item selected-id)])))
+                [(pill (last items) selected-id)])))
+
+(defn filter-component [{:keys [filters count selected-filter]}]
+  [:div.m2
+   [:div.flex.justify-between
+    [:p.h6.dark-gray "Filter By:"]
+    [:p.h6.dark-gray (str count " Items")]]
+   (pill-box (map (fn [id] {:text    (clojure.string/capitalize (name id))
+                            :keypath keypaths/category-selected-filter
+                            :id      id})
+                  filters)
+             selected-filter)])
+
+(defn ^:private component [{:keys [category sku-sets facets selected-filter] :as product-input} owner opts]
+  (let [facet-filters {:category []
+                       :origin   []
+                       :material []
+                       :color    []}])
   (component/create
    [:div
     [:h1
@@ -63,6 +110,9 @@
     [:div.container
      [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
+      (filter-component {:filters         (:filters category)
+                         :selected-filter selected-filter
+                         :count           (count sku-sets)})
       [:div.flex.flex-wrap.mxn1
        (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
          (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
@@ -70,8 +120,7 @@
             [:div.mb10.center
              ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
              [:img.block.col-12 {:src (str (:url image)
-                                           (:filename image))
-                                 :alt (:alt image)}]
+                                           (:filename image)) :alt (:alt image)}]
              [:h2.h4.mt3.mb1 name]
              (if sold-out?
                [:p.h6.dark-gray "Out of stock"]
@@ -103,7 +152,8 @@
                          (sort by-launched-at-price-name))]
     {:category category
      :sku-sets sku-sets
-     :facets   (get-in data keypaths/facets)}))
+     :facets   (get-in data keypaths/facets)
+     :selected-filter (get-in data keypaths/category-selected-filter)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

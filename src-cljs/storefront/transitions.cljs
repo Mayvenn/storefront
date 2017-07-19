@@ -262,6 +262,10 @@
   [_ _ {:keys [menus]} app-state]
   (collapse-menus app-state menus))
 
+(defmethod transition-state events/control-pillbox-select
+  [_ _ {:keys [keypath selected]} app-state]
+  (assoc-in app-state keypath selected))
+
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))

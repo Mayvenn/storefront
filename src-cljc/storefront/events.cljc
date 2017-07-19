@@ -175,6 +175,8 @@
 
 (defpath control-commission-order-expand)
 
+(defpath control-pillbox-select)
+
 (defpath video-played)
 
 (defpath snap)

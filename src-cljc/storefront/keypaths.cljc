@@ -96,6 +96,8 @@
 
 (def bundle-builder (conj ui :bundle-builder))
 
+(def category-selected-filter (conj ui :category :selected-filter))
+
 (def captured-email (conj ui :captured-email))
 
 (def account (conj ui :account))

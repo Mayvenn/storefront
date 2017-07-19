@@ -62,9 +62,11 @@
   (.stopPropagation e)
   false)
 
-(defn fake-href [event & [args]]
-  {:href "#"
-   :on-click (send-event-callback event args)})
+(defn fake-href
+  ([event] (fake-href event nil))
+  ([event args]
+   {:href "#"
+    :on-click (send-event-callback event args)}))
 
 (defn toggle-checkbox [keypath value]
   (let [checked-val (if value "checked" "")]
