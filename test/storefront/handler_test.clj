@@ -281,18 +281,18 @@
         (is (= 301 (:status resp)))
         (is (= "/stylists/welcome?a=b"
                (get-in resp [:headers "Location"])))))
-    (testing "preserves leads-tracking-id cookie"
+    (testing "preserves lead-tracking-id cookie"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                              (mock/header "Cookie" "leads-tracking-id=present-id")))
+                              (mock/header "Cookie" "lead-tracking-id=present-id")))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (some #{"leads-tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
+        (is (some #{"lead-tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
     (testing "migrates tracking_id cookie from old leads site"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
                               (mock/header "Cookie" "tracking_id=old-id")))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (some #{"leads-tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"lead-tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
         (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))))
 
 (deftest submits-paypal-redirect-to-waiter

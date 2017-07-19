@@ -375,21 +375,21 @@
           :else          (not-found))
         (when on-leads-page? (not-found))))))
 
-(defn wrap-migrate-leads-tracking-id-cookie [h {:keys [environment]}]
+(defn wrap-migrate-lead-tracking-id-cookie [h {:keys [environment]}]
   (fn [{:keys [server-name] :as req}]
-    (let [tracking-id     (or (cookies/get req "leads-tracking-id")
+    (let [tracking-id     (or (cookies/get req "lead-tracking-id")
                               (cookies/get req "tracking_id") ;; from old leads site
                               (java.util.UUID/randomUUID))
           set-tracking-id (fn [req-or-resp]
                             (cookies/set req-or-resp
                                          environment
-                                         "leads-tracking-id"
+                                         "lead-tracking-id"
                                          tracking-id
                                          {:http-only false
                                           :max-age   (cookies/days 365)
                                           :domain    (cookie-root-domain server-name)}))]
       (-> req
-          set-tracking-id ; set it on the request, so it's available to leads-routes as (cookies/get req "leads-tracking-id")
+          set-tracking-id ; set it on the request, so it's available to leads-routes as (cookies/get req "lead-tracking-id")
           h
           set-tracking-id ; set it on the response, so it's saved in the client
           (cookies/expire environment "tracking_id")))))
@@ -399,7 +399,7 @@
       ;; TODO: leads' version of utm param cookies stick around for 1 year, and are server-side only.
       ;; It would be nice to use storefront's server- and client-side copy of the UTM cookies, but they only stick for 1 month.
       ;; If we need to keep both, the leads' version must be converted to :http-only false
-      (wrap-migrate-leads-tracking-id-cookie ctx)
+      (wrap-migrate-lead-tracking-id-cookie ctx)
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-welcome-is-for-leads)
       (wrap-resource "public")
