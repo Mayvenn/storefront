@@ -354,6 +354,7 @@
                         :environment      environment
                         :client-version   client-version}
             data       (as-> {} data
+                         (assoc-in data keypaths/store-slug "welcome")
                          (assoc-in data keypaths/environment environment)
                          (assoc-in data keypaths/navigation-message nav-message))]
         (html-response render-ctx data)))))

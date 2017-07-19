@@ -245,6 +245,8 @@
     (update-email-capture-session app-state)))
 
 (defmethod perform-effects events/navigate-home [_ _ _ _ app-state]
+  (when (= "welcome" (get-in app-state keypaths/store-slug))
+    (redirect events/navigate-leads-home))
   (potentially-show-email-popup app-state))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
