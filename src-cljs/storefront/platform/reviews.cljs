@@ -71,7 +71,7 @@ Lengths: 12\" to 28\""
                   :data-name        "Brazilian Natural Straight Lace Closure"
                   :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
                   :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
-   :360-frontals {:data-product-id  141
+   :360-frontals {:data-product-id  668
                   :data-name        "Brazilian Natural Straight 360 Frontal Lace Closure"
                   :data-description "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal. This one-of-a-kind frontal piece features freestyle parting, baby hairs, and low-density edges for a naturally flawless look. Measuring 4” in both the front and sides, and 2.5” in the back, our 360 Lace Frontal allows plenty of space for all your customization needs. Throw it in a high bun, rock a pair of french braids, or don a ponytail - the 360 Lace Frontal provides the flexibility for all-around hairstyles that look great from all sides."
                   :data-image-url   "https://ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/-/scale_crop/250x227/Straight-360-Frontal-From-Three-Quarters-Back.jpg"}})
