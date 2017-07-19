@@ -342,6 +342,8 @@
 
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
+    ;; can't use (:nav-message req) because routes/static-api-routes are not
+    ;; included in routes/app-routes
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
