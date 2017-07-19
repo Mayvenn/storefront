@@ -76,6 +76,10 @@
 @import 'custom-carousel.css';
 @import 'custom-uploadcare.css';
 
+/* Pillbox */
+
+@import 'pill-box.css';
+
 /* Custom media queries */
 
 /* WARNING: We try not to use these, but basscss needs them.

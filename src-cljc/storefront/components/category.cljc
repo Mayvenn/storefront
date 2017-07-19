@@ -50,31 +50,28 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(defn selected []
-  [])
-
 (defn pill [{:keys [text event keypath id] :as item} selected-id]
-  [:a.center
+  [:a.pill.center.flex-auto
    (merge
     (utils/fake-href events/control-pillbox-select
                      {:keypath  keypath
                       :selected id})
-    {:style {:flex-grow 1}
-     :key   (str "item-" id)}
+    {:key   (str "item-" id)}
     {:class (if (= id selected-id)
-              "bg-teal border-right border-teal white"
+              "bg-teal white"
               "dark-gray")})
    text])
 
 (defn pill-divider [{left-id :id} {right-id :id} selected-id]
-  [:div.my1.border-left.border-teal
+  [:div.border-left.flex-none
    (merge
     {:key (str "divider-" left-id)}
-    (when (#{left-id right-id} selected-id)
-      {:class "hide"}))])
+    (if (#{left-id right-id} selected-id)
+      {:class "border-white"}
+      {:class "my1 border-teal"}))])
 
 (defn pill-box [items selected-id]
-  (into [:div.flex.justify-around.border.rounded.border-teal.teal]
+  (into [:div.flex.border.rounded.border-teal.teal]
         (concat (->> (partition 2 1 items)
                      (map (fn [[left-item right-item]]
                             [(pill left-item selected-id)
