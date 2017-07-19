@@ -395,6 +395,9 @@
 
 (defn wrap-leads-routes [h {:keys [environment] :as ctx}]
   (-> h
+      ;; TODO: leads' version of utm param cookies stick around for 1 year, and are server-side only.
+      ;; It would be nice to use storefront's server- and client-side copy of the UTM cookies, but they only stick for 1 month.
+      ;; If we need to keep both, the leads' version must be converted to :http-only false
       (wrap-migrate-leads-tracking-id-cookie ctx)
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-welcome-is-for-leads)
