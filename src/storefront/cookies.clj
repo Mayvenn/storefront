@@ -17,21 +17,21 @@
 (defn days [n]
   (* 60 60 24 n))
 
-(defn get [req name] (get-in req [:cookies name :value]))
+(defn get [req-or-resp name] (get-in req-or-resp [:cookies name :value]))
 (defn expire
-  ([resp environment name] (expire resp environment name {}))
-  ([resp environment name overrides]
-   (assoc-in resp [:cookies name] (merge {:value   ""
-                                          :max-age 0
-                                          :secure  (not (config/development? environment))
-                                          :path    "/"}
-                                         overrides))))
+  ([req-or-resp environment name] (expire req-or-resp environment name {}))
+  ([req-or-resp environment name overrides]
+   (assoc-in req-or-resp [:cookies name] (merge {:value   ""
+                                                 :max-age 0
+                                                 :secure  (not (config/development? environment))
+                                                 :path    "/"}
+                                                overrides))))
 
 (defn set
-  ([resp environment name value] (set resp environment name value {}))
-  ([resp environment name value overrides]
-   (assoc-in resp [:cookies name] (merge {:value   value
-                                          :max-age (days 28)
-                                          :secure  (not (config/development? environment))
-                                          :path    "/"}
-                                         overrides))))
+  ([req-or-resp environment name value] (set req-or-resp environment name value {}))
+  ([req-or-resp environment name value overrides]
+   (assoc-in req-or-resp [:cookies name] (merge {:value   value
+                                                 :max-age (days 28)
+                                                 :secure  (not (config/development? environment))
+                                                 :path    "/"}
+                                                overrides))))
