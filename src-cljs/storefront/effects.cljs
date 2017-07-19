@@ -257,6 +257,10 @@
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
+(defmethod perform-effects events/navigate-leads [_ _ _ _ app-state]
+  (when (not= "welcome" (get-in app-state keypaths/store-slug))
+    (page-not-found)))
+
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
     (pixlee/fetch-mosaic)))
