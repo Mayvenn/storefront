@@ -19,7 +19,7 @@
               (every? (fn [[facet allowed-vals]]
                         (let [item-vals (get item-criteria facet)]
                           (or (nil? item-vals) ; e.g., this sku doesn't have material
-                              (set/superset? item-vals allowed-vals))))
+                              (some allowed-vals item-vals))))
                       search-criteria)))
           coll))
 
