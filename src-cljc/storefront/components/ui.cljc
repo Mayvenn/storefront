@@ -275,8 +275,7 @@
        [:div.teal.medium.flex.items-center.justify-center
         {:style {:height "100%"}}
         [:div {:style {:font-size "1.25em"}
-               :dangerouslySetInnerHTML {:__html " &times;"}}]
-        ])]
+               :dangerouslySetInnerHTML {:__html " &times;"}}]])]
     [:input.mr1.hide
      (merge (utils/toggle-checkbox keypath value)
             (dissoc attributes :label :keypath :value :label-classes)

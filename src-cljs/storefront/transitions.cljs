@@ -262,9 +262,21 @@
   [_ _ {:keys [menus]} app-state]
   (collapse-menus app-state menus))
 
-(defmethod transition-state events/control-pillbox-select
-  [_ _ {:keys [keypath selected]} app-state]
-  (assoc-in app-state keypath selected))
+(defmethod transition-state events/control-category-filter-select
+  [_ _ {:keys [selected]} app-state]
+  (update-in app-state keypaths/category-filters assoc :selected selected))
+
+(defmethod transition-state events/control-category-filters-close
+  [_ _ _ app-state]
+  (update-in app-state keypaths/category-filters dissoc :selected))
+
+(defmethod transition-state events/control-category-criteria-selected
+  [_ _ {:keys [filter option]} app-state]
+  (update-in app-state (conj keypaths/category-filters :criteria filter) (fnil conj #{}) option))
+
+(defmethod transition-state events/control-category-criteria-deselected
+  [_ _ {:keys [filter option]} app-state]
+  (update-in app-state (conj keypaths/category-filters :criteria filter) disj option))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]

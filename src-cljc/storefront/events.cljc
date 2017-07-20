@@ -175,7 +175,11 @@
 
 (defpath control-commission-order-expand)
 
-(defpath control-pillbox-select)
+(defpath control-category-filter-select)
+(defpath control-category-filters-close)
+
+(defpath control-category-criteria-selected)
+(defpath control-category-criteria-deselected)
 
 (defpath video-played)
 

@@ -20,7 +20,8 @@
             [storefront.assets :as assets]
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]
-            [storefront.components.money-formatters :as mf]))
+            [storefront.components.money-formatters :as mf]
+            [storefront.platform.messages :as messages]))
 
 (defn facet-definition [facets facet option]
   (->> facets
@@ -50,19 +51,25 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(defn pill [{:keys [text event keypath id] :as item} selected-id]
-  [:a.pill.center.flex-auto.py1
+(def filter-names
+  {:family   "Category"
+   :style    "Texture"
+   :origin   "Origin"
+   :material "Material"
+   :color    "Color"})
+
+(defn segment [id selected-id]
+  [:a.segmented-control-item.center.flex-auto.py1
    (merge
-    (utils/fake-href events/control-pillbox-select
-                     {:keypath  keypath
-                      :selected id})
+    (utils/fake-href events/control-category-filter-select
+                     {:selected id})
     {:key   (str "item-" id)}
     {:class (if (= id selected-id)
               "bg-teal white"
               "dark-gray")})
-   text])
+   (get filter-names id)])
 
-(defn pill-divider [{left-id :id} {right-id :id} selected-id]
+(defn segment-divider [left-id right-id selected-id]
   [:div.border-left.flex-none
    (merge
     {:key (str "divider-" left-id)}
@@ -70,17 +77,17 @@
       {:class "border-white"}
       {:class "my1 border-teal"}))])
 
-(defn pill-box [items selected-id]
+(defn filter-box [items selected-id]
   (into [:div.flex.border.rounded.border-teal.teal.h6]
         (concat (->> (partition 2 1 items)
                      (map (fn [[left-item right-item]]
-                            [(pill left-item selected-id)
+                            [(segment left-item selected-id)
 
-                             (pill-divider left-item right-item selected-id)])))
-                [(pill (last items) selected-id)])))
+                             (segment-divider left-item right-item selected-id)])))
+                [(segment (last items) selected-id)])))
 
-(defn filter-component [{:keys [filters count selected-filter filter->options]}]
-  (let [keypath keypaths/category-selected-filter]
+(defn filter-component [{:keys [unconstrained-facets filters count filter->options]}]
+  (let [selected-filter (:selected filters)]
     [:div.bg-white
      {:class (if selected-filter
                "z4 fixed overlay"
@@ -90,24 +97,24 @@
        [:div.pb1.flex.justify-between
         [:p.h6.dark-gray "Filter By:"]
         [:p.h6.dark-gray (str count " Items")]]
-       (pill-box (map (fn [id] {:text    (clojure.string/capitalize (name id))
-                                :keypath keypath
-                                :id      id})
-                      filters)
-                 selected-filter)]
+       (filter-box unconstrained-facets selected-filter)]
       (when selected-filter
-        (let [options (sort (filter->options selected-filter))]
+        (let [options (filter->options selected-filter)]
           [:div
            [:ul.list-reset
             (map-indexed
-             (fn [i option]
+             (fn [i {:keys [:option/slug long-name name]}]
                [:li.py1
-
                 {:key (str "filter-option-" i)}
-                (ui/check-box {:label   (-> (clojure.string/capitalize option)
-                                            (clojure.string/replace #"-" " "))
-                               :keypath [:ui :category :filters :add]
-                               :value   true})])
+                (ui/check-box {:label     (or long-name name)
+                               :value     (contains? (get (:criteria filters) selected-filter) slug)
+                               :on-change (fn [e]
+                                            (let [event-handler (if (.. e -target -checked)
+                                                                  events/control-category-criteria-selected
+                                                                  events/control-category-criteria-deselected)]
+                                              (messages/handle-message event-handler
+                                                                       {:filter selected-filter
+                                                                        :option slug})))})])
              options)]
            [:div
             (ui/teal-ghost-button
@@ -115,13 +122,12 @@
              #_(utils/fake-href events/control-pillbox-select
                                 {:keypath  keypath
                                  :selected id})
-             "Clear")
+             "Clear all")
             (ui/teal-button
-             (utils/fake-href events/control-pillbox-select
-                              {:keypath keypath})
-             "Apply")]]))]]))
+             (utils/fake-href events/control-category-filters-close)
+             "Done")]]))]]))
 
-(defn ^:private component [{:keys [category sku-sets facets selected-filter filter->options] :as product-input} owner opts]
+(defn ^:private component [{:keys [category sku-sets facets filters filter->options] :as product-input} owner opts]
   (component/create
    [:div
     [:h1
@@ -134,10 +140,10 @@
     [:div.max-960.col-12.mx-auto
      [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
-      (filter-component {:filters         (:filters category)
-                         :filter->options filter->options
-                         :selected-filter selected-filter
-                         :count           (count sku-sets)})
+      (filter-component {:unconstrained-facets (:unconstrained-facets category)
+                         :filters              filters
+                         :filter->options      filter->options
+                         :count                (count sku-sets)})
       [:div.flex.flex-wrap.mxn1
        (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
          (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
@@ -170,11 +176,9 @@
            [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
 
 (defn facet-options [facets]
-  (->> (group-by :step facets)
-       (map (fn [[k v]] [k (->> v
-                                first
-                                :options
-                                (mapv #(:option/slug %)))]))
+  (->> facets
+       (map (fn [{:keys [step options]}]
+              [step options]))
        (into {})))
 
 (defn ^:private query [data]
@@ -189,7 +193,7 @@
      :sku-sets        sku-sets
      :facets          facets
      :filter->options (facet-options facets)
-     :selected-filter (get-in data keypaths/category-selected-filter)}))
+     :filters         (get-in data keypaths/category-filters)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
