@@ -39,6 +39,9 @@
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
             [storefront.components.ui :as ui]
+            ;; TODO Maybe we should change leads namespaces to be somehting like
+            ;; leads.components.home
+            [storefront.components.leads.home :as leads.home]
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
@@ -86,6 +89,13 @@
     events/navigate-sign-up                 sign-up/built-component
     events/navigate-forgot-password         forgot-password/built-component
     events/navigate-gallery                 gallery/built-component
+    events/navigate-leads-home              leads.home/built-component
+    home/built-component))
+
+(defn leads-component [nav-event]
+  (condp = nav-event
+    #?@(:cljs [])
+    events/navigate-leads-home              leads.home/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]
@@ -104,7 +114,7 @@
        (slideout-nav/built-component data nil)
 
        (routes/sub-page? [nav-event] [events/navigate-leads])
-       [:div "ima leads page"]
+       ((leads-component nav-event) data nil)
 
        (= nav-event events/navigate-ugc-named-search)
        [:div.bg-black.absolute.overlay
