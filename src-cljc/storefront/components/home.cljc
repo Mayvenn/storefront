@@ -115,9 +115,9 @@
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 182412842})
-     (feature-image {:mobile-url  "//ucarecdn.com/70e9bb0f-808a-463a-8930-2a28cd40f18e/"
-                     :desktop-url "//ucarecdn.com/36623eae-4286-40f8-9f2f-e6dbbd4d6d4a/"
+     (utils/route-to events/navigate-shop-by-look-details {:look-id 182646718})
+     (feature-image {:mobile-url  "//ucarecdn.com/7d82c10a-6842-4a5c-85da-3f48767bc7f6/"
+                     :desktop-url "//ucarecdn.com/9a15f816-5946-44ea-ba27-822c124db114/"
                      :file-name   "Shop-Water-Wave-Hair-3-Bundle-Deal"
                      :alt         "Shop Water Wave Hair 3 Bundle Deal"})]]
    [:div.col.col-6.border.border-white
