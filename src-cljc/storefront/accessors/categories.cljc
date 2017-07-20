@@ -24,14 +24,14 @@
       :slug     "closures"
       :criteria {:family #{"closures"}
                  :grade  #{"6a"}}
-      :filters  [:origin :texture :color :material]
+      :filters  [:origin :style :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "1"
       :slug     "frontals"
       :criteria {:family #{"frontals"}
                  :grade  #{"6a"}}
-      :filters  [:origin :texture :color :material]
+      :filters  [:origin :style :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}
      {:id       "2"
@@ -102,7 +102,7 @@
       :slug     "360-frontals"
       :criteria {:family #{"360-frontals"}
                  :grade  #{"6a"}}
-      :filters  [:origin :texture :color :material]
+      :filters  [:origin :style :color :material]
       :copy     {:description fake-copy}
       :images   {:hero fake-hero}}]))
 

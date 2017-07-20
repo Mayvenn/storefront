@@ -109,6 +109,7 @@
 
 (def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
 (def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
+(def times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
 (def new-flag
   (component/html
    [:div.right
@@ -266,8 +267,17 @@
 
 (defn check-box [{:keys [label keypath value label-classes] :as attributes}]
   [:div.col-12.mb2
-   [:label {:class label-classes}
-    [:input.mr1
+   [:label.flex.items-center {:class label-classes}
+    [:div.border.left.mr3
+     {:style {:width  "1em"
+              :height "1em"}}
+     (when value
+       [:div.teal.medium.flex.items-center.justify-center
+        {:style {:height "100%"}}
+        [:div {:style {:font-size "1.25em"}
+               :dangerouslySetInnerHTML {:__html " &times;"}}]
+        ])]
+    [:input.mr1.hide
      (merge (utils/toggle-checkbox keypath value)
             (dissoc attributes :label :keypath :value :label-classes)
             {:type "checkbox"})]
@@ -296,7 +306,7 @@
    [:div.absolute.overlay.overflow-auto
     [:div.table.container-size
      {:style {:table-layout "fixed"}}
-     [:div.table-cell.align-middle
+     [:div.table-cell.alui/teal-button-middle
       {:on-click (:on-click close-attrs)}
       ;; The inner wrapper
       ;; - provides a place to adjust the width of the modal content (col-class)

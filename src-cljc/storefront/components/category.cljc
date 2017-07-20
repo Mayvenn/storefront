@@ -51,7 +51,7 @@
       [:p.h6.dark-gray "+ more colors available"])))
 
 (defn pill [{:keys [text event keypath id] :as item} selected-id]
-  [:a.pill.center.flex-auto
+  [:a.pill.center.flex-auto.py1
    (merge
     (utils/fake-href events/control-pillbox-select
                      {:keypath  keypath
@@ -71,7 +71,7 @@
       {:class "my1 border-teal"}))])
 
 (defn pill-box [items selected-id]
-  (into [:div.flex.border.rounded.border-teal.teal]
+  (into [:div.flex.border.rounded.border-teal.teal.h6]
         (concat (->> (partition 2 1 items)
                      (map (fn [[left-item right-item]]
                             [(pill left-item selected-id)
@@ -79,22 +79,49 @@
                              (pill-divider left-item right-item selected-id)])))
                 [(pill (last items) selected-id)])))
 
-(defn filter-component [{:keys [filters count selected-filter]}]
-  [:div.py4.bg-white.sticky.top-0
-   [:div.pb1.flex.justify-between
-    [:p.h6.dark-gray "Filter By:"]
-    [:p.h6.dark-gray (str count " Items")]]
-   (pill-box (map (fn [id] {:text    (clojure.string/capitalize (name id))
-                            :keypath keypaths/category-selected-filter
-                            :id      id})
-                  filters)
-             selected-filter)])
+(defn filter-component [{:keys [filters count selected-filter filter->options]}]
+  (let [keypath keypaths/category-selected-filter]
+    [:div.bg-white
+     {:class (if selected-filter
+               "z4 fixed overlay"
+               "sticky top-0")}
+     [:div.px2
+      [:div.py4
+       [:div.pb1.flex.justify-between
+        [:p.h6.dark-gray "Filter By:"]
+        [:p.h6.dark-gray (str count " Items")]]
+       (pill-box (map (fn [id] {:text    (clojure.string/capitalize (name id))
+                                :keypath keypath
+                                :id      id})
+                      filters)
+                 selected-filter)]
+      (when selected-filter
+        (let [options (sort (filter->options selected-filter))]
+          [:div
+           [:ul.list-reset
+            (map-indexed
+             (fn [i option]
+               [:li.py1
 
-(defn ^:private component [{:keys [category sku-sets facets selected-filter] :as product-input} owner opts]
-  (let [facet-filters {:category []
-                       :origin   []
-                       :material []
-                       :color    []}])
+                {:key (str "filter-option-" i)}
+                (ui/check-box {:label   (-> (clojure.string/capitalize option)
+                                            (clojure.string/replace #"-" " "))
+                               :keypath [:ui :category :filters :add]
+                               :value   true})])
+             options)]
+           [:div
+            (ui/teal-ghost-button
+             {}
+             #_(utils/fake-href events/control-pillbox-select
+                                {:keypath  keypath
+                                 :selected id})
+             "Clear")
+            (ui/teal-button
+             (utils/fake-href events/control-pillbox-select
+                              {:keypath keypath})
+             "Apply")]]))]]))
+
+(defn ^:private component [{:keys [category sku-sets facets selected-filter filter->options] :as product-input} owner opts]
   (component/create
    [:div
     [:h1
@@ -108,6 +135,7 @@
      [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       (filter-component {:filters         (:filters category)
+                         :filter->options filter->options
                          :selected-filter selected-filter
                          :count           (count sku-sets)})
       [:div.flex.flex-wrap.mxn1
@@ -117,7 +145,8 @@
             [:div.mb10.center
              ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
              [:img.block.col-12 {:src (str (:url image)
-                                           (:filename image)) :alt (:alt image)}]
+                                           (:filename image))
+                                 :alt (:alt image)}]
              [:h2.h4.mt3.mb1 name]
              (if sold-out?
                [:p.h6.dark-gray "Out of stock"]
@@ -140,16 +169,26 @@
   (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
            [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
 
+(defn facet-options [facets]
+  (->> (group-by :step facets)
+       (map (fn [[k v]] [k (->> v
+                                first
+                                :options
+                                (mapv #(:option/slug %)))]))
+       (into {})))
+
 (defn ^:private query [data]
-  (let [category    (categories/current-category data)
-        sku-sets    (->> category
-                         :sku-set-ids
-                         (keep #(get-in data (conj keypaths/sku-sets %)))
-                         (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus)))
-                         (sort by-launched-at-price-name))]
-    {:category category
-     :sku-sets sku-sets
-     :facets   (get-in data keypaths/facets)
+  (let [category (categories/current-category data)
+        sku-sets (->> category
+                      :sku-set-ids
+                      (keep #(get-in data (conj keypaths/sku-sets %)))
+                      (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus)))
+                      (sort by-launched-at-price-name))
+        facets   (get-in data keypaths/facets)]
+    {:category        category
+     :sku-sets        sku-sets
+     :facets          facets
+     :filter->options (facet-options facets)
      :selected-filter (get-in data keypaths/category-selected-filter)}))
 
 (defn built-component [data opts]
