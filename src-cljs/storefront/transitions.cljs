@@ -2,6 +2,7 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.category-filters :as category-filters]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.categories :as categories]
@@ -14,7 +15,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.utils.maps :refer [key-by]]))
+            [storefront.utils.maps :as maps]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -264,19 +265,19 @@
 
 (defmethod transition-state events/control-category-filter-select
   [_ _ {:keys [selected]} app-state]
-  (update-in app-state keypaths/category-filters assoc :selected selected))
+  (update-in app-state keypaths/category-filters category-filters/open selected))
 
 (defmethod transition-state events/control-category-filters-close
   [_ _ _ app-state]
-  (update-in app-state keypaths/category-filters dissoc :selected))
+  (update-in app-state keypaths/category-filters category-filters/close))
 
 (defmethod transition-state events/control-category-criteria-selected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state (conj keypaths/category-filters :criteria filter) (fnil conj #{}) option))
+  (update-in app-state keypaths/category-filters category-filters/select-criteria filter option))
 
 (defmethod transition-state events/control-category-criteria-deselected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state (conj keypaths/category-filters :criteria filter) disj option))
+  (update-in app-state keypaths/category-filters category-filters/deselect-criteria filter option))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -350,20 +351,34 @@
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
-    (update-in keypaths/products merge (key-by :id products))
+    (update-in keypaths/products merge (maps/key-by :id products))
     ensure-bundle-builder))
+
+(defn by-launched-at-price-name [x y]
+  ;; launched-at is desc
+  (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
+           [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
+
+
+(defn hydrate-sku-set-with-skus [id->skus sku-set]
+  (letfn [(sku-by-id [sku-id]
+            (get id->skus sku-id))]
+    (let [skus (map sku-by-id (:skus sku-set))]
+      (-> sku-set
+          (assoc :derived-criteria (maps/into-multimap (map :attributes skus)))
+          (assoc :skus skus)
+          (update :representative-sku sku-by-id)))))
 
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus category-id]} app-state]
   (-> app-state
-      (update-in keypaths/categories (fn [categories]
-                                       (mapv (fn [category]
-                                               (if (= category-id (:id category))
-                                                 (assoc category :sku-set-ids (map :id sku-sets))
-                                                 category))
-                                             categories)))
-      (update-in keypaths/sku-sets merge (key-by :id sku-sets))
-      (update-in keypaths/skus merge (key-by :sku skus))))
+      (assoc-in keypaths/category-filters
+                (category-filters/init
+                 (categories/id->category category-id (get-in app-state keypaths/categories))
+                 (->> sku-sets
+                      (map (partial hydrate-sku-set-with-skus (maps/key-by :sku skus)))
+                      (sort by-launched-at-price-name))
+                 (get-in app-state keypaths/facets)))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]

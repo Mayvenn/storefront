@@ -58,78 +58,79 @@
    :material "Material"
    :color    "Color"})
 
-(defn segment [id selected-id]
+(defn segment [{:keys [title slug selected?]}]
   [:a.segmented-control-item.center.flex-auto.py1
    (merge
     (utils/fake-href events/control-category-filter-select
-                     {:selected id})
-    {:key   (str "item-" id)}
-    {:class (if (= id selected-id)
+                     {:selected slug})
+    {:key   slug}
+    {:class (if selected?
               "bg-teal white"
               "dark-gray")})
-   (get filter-names id)])
+   title])
 
-(defn segment-divider [left-id right-id selected-id]
+(defn segment-divider [left-item right-item selected-item]
   [:div.border-left.flex-none
    (merge
-    {:key (str "divider-" left-id)}
-    (if (#{left-id right-id} selected-id)
+    {:key (str "divider-" (:slug left-item))}
+    (if (#{left-item right-item} selected-item)
       {:class "border-white"}
       {:class "my1 border-teal"}))])
 
-(defn filter-box [items selected-id]
+(defn filter-box [items selected-item]
   (into [:div.flex.border.rounded.border-teal.teal.h6]
         (concat (->> (partition 2 1 items)
                      (map (fn [[left-item right-item]]
-                            [(segment left-item selected-id)
+                            [(segment left-item)
 
-                             (segment-divider left-item right-item selected-id)])))
-                [(segment (last items) selected-id)])))
+                             (segment-divider left-item right-item selected-item)])))
+                [(segment (last items))])))
 
-(defn filter-component [{:keys [unconstrained-facets filters count filter->options]}]
-  (let [selected-filter (:selected filters)]
+(defn filter-component [{:keys [facets filtered-sku-sets]}]
+  (let [selected-facet     (->> facets
+                                (filter :selected?)
+                                first)
+        number-of-sku-sets (count filtered-sku-sets)]
     [:div.bg-white
-     {:class (if selected-filter
+     {:class (if selected-facet
                "z4 fixed overlay"
                "sticky top-0")}
      [:div.px2
       [:div.py4
        [:div.pb1.flex.justify-between
         [:p.h6.dark-gray "Filter By:"]
-        [:p.h6.dark-gray (str count " Items")]]
-       (filter-box unconstrained-facets selected-filter)]
-      (when selected-filter
-        (let [options (filter->options selected-filter)]
-          [:div
-           [:ul.list-reset
-            (map-indexed
-             (fn [i {:keys [:option/slug long-name name]}]
-               [:li.py1
-                {:key (str "filter-option-" i)}
-                (ui/check-box {:label     (or long-name name)
-                               :value     (contains? (get (:criteria filters) selected-filter) slug)
-                               :on-change (fn [e]
-                                            (let [event-handler (if (.. e -target -checked)
-                                                                  events/control-category-criteria-selected
-                                                                  events/control-category-criteria-deselected)]
-                                              (messages/handle-message event-handler
-                                                                       {:filter selected-filter
-                                                                        :option slug})))})])
-             options)]
-           [:div
-            (ui/teal-ghost-button
-             {}
-             #_(utils/fake-href events/control-pillbox-select
-                                {:keypath  keypath
-                                 :selected id})
-             "Clear all")
-            (ui/teal-button
-             (utils/fake-href events/control-category-filters-close)
-             "Done")]]))]]))
+        [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
+       (filter-box facets selected-facet)]
+      (when selected-facet
+        [:div
+         [:ul.list-reset
+          (for [{:keys [slug label selected?]} (:options selected-facet)]
+            [:li.py1
+             {:key (str "filter-option-" slug)}
+             (ui/check-box {:label     label
+                            :value     selected?
+                            :on-change #(let [event-handler (if selected?
+                                                              events/control-category-criteria-deselected
+                                                              events/control-category-criteria-selected)]
+                                          (messages/handle-message event-handler
+                                                                   {:filter (:slug selected-facet)
+                                                                    :option slug}))})])]
+         [:div
+          (ui/teal-ghost-button
+           {}
+           #_(utils/fake-href events/control-pillbox-select
+                              {:keypath  keypath
+                               :selected id})
+           "Clear all")
+          (ui/teal-button
+           (utils/fake-href events/control-category-filters-close)
+           "Done")]])]]))
 
-(defn ^:private component [{:keys [category sku-sets facets filters filter->options] :as product-input} owner opts]
+(defn ^:private component [{:keys [category filters facets]} owner opts]
   (component/create
    [:div
+    (prn (:criteria filters)
+         (map :derived-criteria (:filtered-sku-sets filters)))
     [:h1
      (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
        [:picture
@@ -140,12 +141,9 @@
     [:div.max-960.col-12.mx-auto
      [:div.px2-on-mb
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
-      (filter-component {:unconstrained-facets (:unconstrained-facets category)
-                         :filters              filters
-                         :filter->options      filter->options
-                         :count                (count sku-sets)})
+      (filter-component filters)
       [:div.flex.flex-wrap.mxn1
-       (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} sku-sets]
+       (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} (:filtered-sku-sets filters)]
          (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
            [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
             [:div.mb10.center
@@ -163,37 +161,10 @@
                 (unconstrained-facet skus facets :color)
                 [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))]]]]))
 
-(defn hydrate-sku-set-with-skus [id->skus sku-set]
-  (letfn [(sku-by-id [sku-id]
-            (get id->skus sku-id))]
-    (-> sku-set
-        (update :skus #(map sku-by-id %))
-        (update :representative-sku sku-by-id))))
-
-(defn by-launched-at-price-name [x y]
-  ;; launched-at is desc
-  (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
-           [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
-
-(defn facet-options [facets]
-  (->> facets
-       (map (fn [{:keys [step options]}]
-              [step options]))
-       (into {})))
-
 (defn ^:private query [data]
-  (let [category (categories/current-category data)
-        sku-sets (->> category
-                      :sku-set-ids
-                      (keep #(get-in data (conj keypaths/sku-sets %)))
-                      (map (partial hydrate-sku-set-with-skus (get-in data keypaths/skus)))
-                      (sort by-launched-at-price-name))
-        facets   (get-in data keypaths/facets)]
-    {:category        category
-     :sku-sets        sku-sets
-     :facets          facets
-     :filter->options (facet-options facets)
-     :filters         (get-in data keypaths/category-filters)}))
+  {:category (categories/current-category data)
+   :filters  (get-in data keypaths/category-filters)
+   :facets   (get-in data keypaths/facets)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

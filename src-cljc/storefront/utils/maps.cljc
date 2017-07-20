@@ -19,3 +19,13 @@
   (if (map? m)
     (into {} (filter (comp not nil? val) m))
     m))
+
+(defn multimap-assoc
+  "A multimap is a map where keys can have more than one value. Returns a new multimap with the key updated to include the value"
+  [mm k v]
+  (update mm k (fnil conj #{}) v))
+
+(defn into-multimap
+  "A multimap is a map where keys can have more than one value. Converts a sequence of maps into a multimap"
+  [ms]
+  (reduce (fn [mm m] (reduce-kv multimap-assoc mm m)) {} ms))

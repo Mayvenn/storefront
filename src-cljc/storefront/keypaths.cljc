@@ -48,8 +48,6 @@
 (def named-searches [:named-searches])
 (def products [:products])
 (def categories [:categories])
-(def sku-sets [:sku-sets])
-(def skus [:skus])
 (def facets [:facets])
 (def states [:states])
 (def shipping-methods [:shipping-methods])
