@@ -76,10 +76,6 @@
 @import 'custom-carousel.css';
 @import 'custom-uploadcare.css';
 
-/* Segmented Control */
-
-@import 'segmented-control.css';
-
 /* Custom media queries */
 
 /* WARNING: We try not to use these, but basscss needs them.

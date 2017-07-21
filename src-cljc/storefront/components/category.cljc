@@ -21,7 +21,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.carousel :as carousel]
             [storefront.components.money-formatters :as mf]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [clojure.string :as str]))
 
 (defn facet-definition [facets facet option]
   (->> facets
@@ -51,40 +52,21 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(def filter-names
-  {:family   "Category"
-   :style    "Texture"
-   :origin   "Origin"
-   :material "Material"
-   :color    "Color"})
-
-(defn segment [{:keys [title slug selected?]}]
-  [:a.segmented-control-item.center.flex-auto.py1
-   (merge
-    (utils/fake-href events/control-category-filter-select
-                     {:selected slug})
-    {:key   slug}
-    {:class (if selected?
-              "bg-teal white"
-              "dark-gray")})
-   title])
-
-(defn segment-divider [left-item right-item selected-item]
-  [:div.border-left.flex-none
-   (merge
-    {:key (str "divider-" (:slug left-item))}
-    (if (#{left-item right-item} selected-item)
-      {:class "border-white"}
-      {:class "my1 border-teal"}))])
-
-(defn filter-box [items selected-item]
-  (into [:div.flex.border.rounded.border-teal.teal.h6]
-        (concat (->> (partition 2 1 items)
-                     (map (fn [[left-item right-item]]
-                            [(segment left-item)
-
-                             (segment-divider left-item right-item selected-item)])))
-                [(segment (last items))])))
+(defn filter-box [facets]
+  (let [number-of-facets (count facets)]
+    (into [:div.border.h6.border-teal.rounded.flex.center]
+          (map-indexed
+           (fn [idx {:keys [slug title selected?]}]
+             (let [last? (= (inc idx) number-of-facets)]
+               [:a.flex-auto.x-group-item.rounded-item
+                (merge
+                 (utils/fake-href events/control-category-filter-select {:selected slug})
+                 {:key slug}
+                 {:class (if selected? "bg-teal white" "dark-gray")})
+                [:div.border-teal.my1
+                 {:class (when-not last? "border-right")}
+                 title]]))
+           facets))))
 
 (defn filter-component [{:keys [facets filtered-sku-sets criteria]}]
   (let [selected-facet            (->> facets
@@ -105,7 +87,7 @@
                           1 "1 filter applied:"
                           (str number-of-applied-filters " filters applied:"))]
        [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
-      (filter-box facets selected-facet)]
+      (filter-box facets)]
      (when selected-facet
        [:div.px1
         [:ul.list-reset

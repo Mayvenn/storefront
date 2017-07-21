@@ -36,7 +36,7 @@
                                                                               skus))))
                                    (filterv (comp seq :matching-skus)))
         new-facets            (mapv (fn [{:keys [slug options] :as facet}]
-                                      (let [[facet-in-criteria criteria-options] (find new-criteria slug)
+                                      (let [criteria-options (get new-criteria slug)
                                             new-options (mapv (fn [option]
                                                                 (assoc option :selected? (contains? criteria-options (:slug option))))
                                                               options)]

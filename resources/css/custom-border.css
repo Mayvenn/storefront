@@ -52,6 +52,13 @@
   border-width: 2px;
 }
 
+.rounded-item:first-child {
+    border-radius: calc(var(--border-radius) - 1px) 0 0 calc(var(--border-radius) - 1px);
+}
+.rounded-item:last-child {
+    border-radius: 0 calc(var(--border-radius) - 1px) calc(var(--border-radius) - 1px) 0;
+}
+
 .capped { border-radius: 1000px; }
 .rounded-top-left     { border-top-left-radius:     var(--border-radius); }
 .rounded-top-right    { border-top-right-radius:    var(--border-radius); }
