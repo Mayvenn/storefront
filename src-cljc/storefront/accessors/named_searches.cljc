@@ -21,9 +21,11 @@
        (filter #(-> % :product-ids set (contains? product-id)))
        first))
 
-(def new-named-search? #{"360-frontals"
-                         "yaki-straight"
-                         "water-wave"})
+(def new-named-search?
+  "NB: changes here should be reflected in accessors.categories until experiments/new-taxon-launch? is 100%"
+  #{"360-frontals"
+    "yaki-straight"
+    "water-wave"})
 
 (defn is-closure? [named-search] (some-> named-search :search :category set (contains? "closures")))
 (defn is-frontal? [named-search] (some-> named-search :search :category set (contains? "frontals")))

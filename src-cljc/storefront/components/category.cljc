@@ -85,7 +85,9 @@
     (for [{:keys [slug label selected?]} (:options selected-facet)]
       [:li.py1
        {:key (str "filter-option-" slug)}
-       (ui/check-box {:label     label
+       (ui/check-box {:label     [:span
+                                  (when (categories/new-facet? [(:slug selected-facet) slug]) [:span.mr1.teal "NEW"])
+                                  label]
                       :value     selected?
                       :on-change #(let [event-handler (if selected?
                                                         events/control-category-criterion-deselected

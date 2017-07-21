@@ -1,6 +1,13 @@
 (ns storefront.accessors.categories
   (:require [storefront.keypaths :as keypaths]))
 
+(def new-facet?
+  "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
+  ;; [<facet-slug> <option-slug>]
+  #{[:family "360-frontals"]
+    [:style "yaki-straight"]
+    [:style "water-wave"]})
+
 (def named-search->category-id
   {"closures"       "0"
    "frontals"       "1"
