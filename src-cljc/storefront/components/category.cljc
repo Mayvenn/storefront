@@ -86,18 +86,24 @@
                              (segment-divider left-item right-item selected-item)])))
                 [(segment (last items))])))
 
-(defn filter-component [{:keys [facets filtered-sku-sets]}]
-  (let [selected-facet     (->> facets
-                                (filter :selected?)
-                                first)
-        number-of-sku-sets (count filtered-sku-sets)]
+(defn filter-component [{:keys [facets filtered-sku-sets criteria]}]
+  (let [selected-facet            (->> facets
+                                       (filter :selected?)
+                                       first)
+        number-of-sku-sets        (count filtered-sku-sets)
+        number-of-applied-filters (->> criteria
+                                       (map (comp count val))
+                                       (apply +))]
     [:div.bg-white.px2
      {:class (if selected-facet
                "z4 fixed overlay"
                "sticky top-0")}
      [:div.mb4
       [:div.pb1.flex.justify-between
-       [:p.h6.dark-gray "Filter By:"]
+       [:p.h6.dark-gray (case number-of-applied-filters
+                          0 "Filter By:"
+                          1 "1 filter applied:"
+                          (str number-of-applied-filters " filters applied:"))]
        [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
       (filter-box facets selected-facet)]
      (when selected-facet
