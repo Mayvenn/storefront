@@ -123,10 +123,7 @@
         [:div.clearfix.mxn3.px1.mt4
          [:div.col.col-6.px3
           (ui/teal-ghost-button
-           {}
-           #_(utils/fake-href events/control-pillbox-select
-                              {:keypath  keypath
-                               :selected id})
+           (utils/fake-href events/control-category-criteria-cleared)
            "Clear all")]
          [:div.col.col-6.px3
           (ui/teal-button

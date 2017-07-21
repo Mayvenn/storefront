@@ -279,6 +279,10 @@
   [_ _ {:keys [filter option]} app-state]
   (update-in app-state keypaths/category-filters category-filters/deselect-criteria filter option))
 
+(defmethod transition-state events/control-category-criteria-cleared
+  [_ _ _ app-state]
+  (update-in app-state keypaths/category-filters category-filters/clear-criteria))
+
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))

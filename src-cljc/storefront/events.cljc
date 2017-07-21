@@ -180,6 +180,7 @@
 
 (defpath control-category-criteria-selected)
 (defpath control-category-criteria-deselected)
+(defpath control-category-criteria-cleared)
 
 (defpath video-played)
 

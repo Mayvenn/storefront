@@ -58,6 +58,9 @@
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 
+(defn clear-criteria [filters]
+  (apply-criteria filters {}))
+
 (defn close [filters]
   (update filters :facets (fn [filters]
                             (map #(assoc % :selected? false)
@@ -88,5 +91,5 @@
                                                          {:slug  slug
                                                           :label (or long-name name)})))})
                                (:unconstrained-facets category))}
-      (apply-criteria {})
+      clear-criteria
       close))
