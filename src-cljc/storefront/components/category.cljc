@@ -52,97 +52,104 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(defn filter-box [facets]
-  (into [:div.border.h6.border-teal.rounded.flex.center]
-        (map-indexed
-         (fn [idx {:keys [slug title selected?]}]
-           [:a.flex-auto.x-group-item.rounded-item
-            (assoc
-             (utils/fake-href events/control-category-filter-select {:selected slug})
-             :key slug
-             :class (if selected? "bg-teal white" "dark-gray"))
-            [:div.border-teal.my1
-             {:class (when-not (zero? idx) "border-left")}
-             title]])
-         facets)))
+(defn filter-tabs [{:keys [facets filtered-sku-sets criteria]}]
+  (let [sku-set-count        (count filtered-sku-sets)
+        applied-filter-count (->> criteria
+                                  (map (comp count val))
+                                  (apply +))]
+    [:div.py4
+     [:div.pb1.flex.justify-between
+      [:p.h6.dark-gray (case applied-filter-count
+                         0 "Filter By:"
+                         1 "1 filter applied:"
+                         (str applied-filter-count " filters applied:"))]
+      [:p.h6.dark-gray (str sku-set-count " Item" (when (not= 1 sku-set-count) "s"))]]
+     (into [:div.border.h6.border-teal.rounded.flex.center]
+           (map-indexed
+            (fn [idx {:keys [slug title selected?]}]
+              [:a.flex-auto.x-group-item.rounded-item
+               (assoc
+                (utils/fake-href events/control-category-filter-select {:selected slug})
+                :key slug
+                :class (if selected? "bg-teal white" "dark-gray"))
+               [:div.border-teal.my1
+                {:class (when-not (zero? idx) "border-left")}
+                title]])
+            facets))]))
 
-(defn filter-component [{:keys [facets filtered-sku-sets criteria]}]
-  (let [selected-facet            (->> facets
-                                       (filter :selected?)
-                                       first)
-        number-of-sku-sets        (count filtered-sku-sets)
-        number-of-applied-filters (->> criteria
-                                       (map (comp count val))
-                                       (apply +))]
-    [:div.bg-white.px2
-     {:class (if selected-facet
-               "z4 fixed overlay"
-               "sticky top-0")}
-     [:div.mb4
-      [:div.pb1.flex.justify-between
-       [:p.h6.dark-gray (case number-of-applied-filters
-                          0 "Filter By:"
-                          1 "1 filter applied:"
-                          (str number-of-applied-filters " filters applied:"))]
-       [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
-      (filter-box facets)]
-     (when selected-facet
-       [:div.px1
-        [:ul.list-reset
-         (for [{:keys [slug label selected?]} (:options selected-facet)]
-           [:li.py1
-            {:key (str "filter-option-" slug)}
-            (ui/check-box {:label     label
-                           :value     selected?
-                           :on-change #(let [event-handler (if selected?
-                                                             events/control-category-criterion-deselected
-                                                             events/control-category-criterion-selected)]
-                                         (messages/handle-message event-handler
-                                                                  {:filter (:slug selected-facet)
-                                                                   :option slug}))})])]
-        [:div.clearfix.mxn3.px1.mt4
-         [:div.col.col-6.px3
-          (ui/teal-ghost-button
-           (utils/fake-href events/control-category-criteria-cleared)
-           "Clear all")]
-         [:div.col.col-6.px3
-          (ui/teal-button
-           (utils/fake-href events/control-category-filters-close)
-           "Done")]]])]))
+(defn filter-panel [selected-facet]
+  [:div.px1
+   [:ul.list-reset
+    (for [{:keys [slug label selected?]} (:options selected-facet)]
+      [:li.py1
+       {:key (str "filter-option-" slug)}
+       (ui/check-box {:label     label
+                      :value     selected?
+                      :on-change #(let [event-handler (if selected?
+                                                        events/control-category-criterion-deselected
+                                                        events/control-category-criterion-selected)]
+                                    (messages/handle-message event-handler
+                                                             {:filter (:slug selected-facet)
+                                                              :option slug}))})])]
+   [:div.clearfix.mxn3.px1.mt4
+    [:div.col.col-6.px3
+     (ui/teal-ghost-button
+      (utils/fake-href events/control-category-criteria-cleared)
+      "Clear all")]
+    [:div.col.col-6.px3
+     (ui/teal-button
+      (utils/fake-href events/control-category-filters-close)
+      "Done")]]])
+
+(defn hero-section [category]
+  [:h1
+   (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
+     [:picture
+      [:source {:media   "(min-width: 750px)"
+                :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
+      [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                          :alt alt}]])])
+
+(defn copy-section [category]
+  [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (-> category :copy :description)]])
+
+(defn product-cards [sku-sets facets]
+  [:div.flex.flex-wrap.mxn1
+   (for [{:keys [slug matching-skus name sold-out?] :as sku-set} sku-sets]
+     (let [representative-sku (apply min-key :price matching-skus)
+           image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
+       [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
+        [:div.mb10.center
+         ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
+         [:img.block.col-12 {:src (str (:url image)
+                                       (:filename image))
+                             :alt (:alt image)}]
+         [:h2.h4.mt3.mb1 name]
+         (if sold-out?
+           [:p.h6.dark-gray "Out of stock"]
+           [:div
+            ;; This is pretty specific to hair. Might be better to have a
+            ;; sku-set know its "constrained" and "unconstrained" facets.
+            (unconstrained-facet matching-skus facets :length)
+            (unconstrained-facet matching-skus facets :color)
+            [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))])
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
   (component/create
-   [:div
-    [:h1
-     (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
-       [:picture
-        [:source {:media   "(min-width: 750px)"
-                  :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-        [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                            :alt alt}]])]
-    [:div.max-960.col-12.mx-auto
-     [:div.px2-on-mb
-      [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
-      (filter-component filters)
-      [:div.flex.flex-wrap.mxn1
-       (for [{:keys [slug matching-skus name sold-out?] :as sku-set} (:filtered-sku-sets filters)]
-         (let [representative-sku (apply min-key :price matching-skus)
-               image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
-           [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
-            [:div.mb10.center
-             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-             [:img.block.col-12 {:src (str (:url image)
-                                           (:filename image))
-                                 :alt (:alt image)}]
-             [:h2.h4.mt3.mb1 name]
-             (if sold-out?
-               [:p.h6.dark-gray "Out of stock"]
-               [:div
-                ;; This is pretty specific to hair. Might be better to have a
-                ;; sku-set know its "constrained" and "unconstrained" facets.
-                (unconstrained-facet matching-skus facets :length)
-                (unconstrained-facet matching-skus facets :color)
-                [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))]]]]))
+   (if-let [selected-facet (->> filters
+                                :facets
+                                (filter :selected?)
+                                first)]
+     [:div.bg-white.px2.z4.fixed.overlay.overflow-auto
+      (filter-tabs filters)
+      (filter-panel selected-facet)]
+     [:div
+      (hero-section category)
+      [:div.max-960.col-12.mx-auto.px2-on-mb
+       (copy-section category)
+       [:div.bg-white.sticky.top-0
+        (filter-tabs filters)]
+       (product-cards (:filtered-sku-sets filters) facets)]])))
 
 (defn ^:private query [data]
   {:category (categories/current-category data)
