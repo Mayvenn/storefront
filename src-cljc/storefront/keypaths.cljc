@@ -257,3 +257,14 @@
 
 (defn ->component-str [keypath]
   (string/replace (->str keypath) #"^navigate-" "page-"))
+
+(def leads [:leads])
+(def leads-ui (conj leads :ui))
+(def leads-ui-sign-up (conj leads-ui :sign-up))
+(def leads-ui-sign-up-first-name (conj leads-ui-sign-up :first-name))
+(def leads-ui-sign-up-last-name (conj leads-ui-sign-up :last-name))
+(def leads-ui-sign-up-phone (conj leads-ui-sign-up :phone))
+(def leads-ui-sign-up-email (conj leads-ui-sign-up :email))
+
+(def leads-lead (conj leads :lead))
+(def leads-lead-current-flow (conj leads-lead :current-flow))
