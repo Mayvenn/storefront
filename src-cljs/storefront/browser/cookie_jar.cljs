@@ -43,6 +43,12 @@
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
+(def leads-utm-params
+  {:domain        (root-domain)
+   :max-age       four-weeks
+   :optional-keys ["leads.utm-source" "leads.utm-medium" "leads.utm-campaign" "leads.utm-content" "leads.utm-term"]
+   :required-keys []})
+
 (def email-capture-session
   {:domain        nil
    :max-age       1800
@@ -131,6 +137,7 @@
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
 (def save-utm-params (partial save-cookie utm-params))
+(def save-leads-utm-params (partial save-cookie leads-utm-params))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

@@ -224,18 +224,32 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
-    (let [utm-params (some-> query-params
-                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                             (set/rename-keys {:utm_source   :storefront/utm-source
-                                               :utm_medium   :storefront/utm-medium
-                                               :utm_campaign :storefront/utm-campaign
-                                               :utm_content  :storefront/utm-content
-                                               :utm_term     :storefront/utm-term})
-                             (maps/filter-nil))]
-      (when (seq utm-params)
-        (cookie-jar/save-utm-params
-         (get-in app-state keypaths/cookie)
-         utm-params)))
+    (if (routes/sub-page? [event args] [events/navigate-leads])
+      (let [utm-params (some-> query-params
+                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                               (set/rename-keys {:utm_source   "leads.utm-source"
+                                                 :utm_medium   "leads.utm-medium"
+                                                 :utm_campaign "leads.utm-campaign"
+                                                 :utm_content  "leads.utm-content"
+                                                 :utm_term     "leads.utm-term"})
+                               (maps/filter-nil))]
+        (when (seq utm-params)
+          (cookie-jar/save-leads-utm-params
+           (get-in app-state keypaths/cookie)
+           utm-params)))
+
+      (let [utm-params (some-> query-params
+                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                               (set/rename-keys {:utm_source   :storefront/utm-source
+                                                 :utm_medium   :storefront/utm-medium
+                                                 :utm_campaign :storefront/utm-campaign
+                                                 :utm_content  :storefront/utm-content
+                                                 :utm_term     :storefront/utm-term})
+                               (maps/filter-nil))]
+        (when (seq utm-params)
+          (cookie-jar/save-utm-params
+           (get-in app-state keypaths/cookie)
+           utm-params))))
 
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))

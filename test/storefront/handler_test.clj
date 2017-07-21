@@ -275,25 +275,45 @@
   (with-handler handler
     (testing "will not render leads pages on stylist site"
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/stylists/welcome"))]
-        (is (= 404 (:status resp)))))
+       (is (= 404 (:status resp)))))
     (testing "welcome.mayvenn.com/ redirects to welcome.mayvenn.com/stylists/welcome, preserving query params"
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com?a=b"))]
         (is (= 301 (:status resp)))
         (is (= "/stylists/welcome?a=b"
                (get-in resp [:headers "Location"])))))
-    (testing "preserves lead-tracking-id cookie"
+    (testing "preserves leads.tracking-id cookie"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                              (mock/header "Cookie" "lead-tracking-id=present-id")))
+                              (mock/header "Cookie" "leads.tracking-id=present-id")))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (some #{"lead-tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
+        (is (some #{"leads.tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
     (testing "migrates tracking_id cookie from old leads site"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
                               (mock/header "Cookie" "tracking_id=old-id")))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (some #{"lead-tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-        (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))))
+        (is (some #{"leads.tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))
+    (testing "migrates utm cookies from old leads site"
+      (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                              (mock/header "Cookie" (string/join "; "
+                                                                 ["utm_source=utm_source"
+                                                                  "utm_medium=utm_medium"
+                                                                  "utm_campaign=utm_campaign"
+                                                                  "utm_content=utm_content"
+                                                                  "utm_term=utm_term"]))))
+            cookies (get-in resp [:headers "Set-Cookie"])]
+        (is (= 200 (:status resp)))
+        (is (some #{"leads.utm-source=utm_source;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"leads.utm-medium=utm_medium;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"leads.utm-campaign=utm_campaign;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"leads.utm-content=utm_content;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"leads.utm-term=utm_term;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
+        (is (some #{"utm_source=;Max-Age=0;Secure;Path=/"} cookies))
+        (is (some #{"utm_medium=;Max-Age=0;Secure;Path=/"} cookies))
+        (is (some #{"utm_campaign=;Max-Age=0;Secure;Path=/"} cookies))
+        (is (some #{"utm_content=;Max-Age=0;Secure;Path=/"} cookies))
+        (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))))
 
 (deftest submits-paypal-redirect-to-waiter
   (testing "when waiter returns a 200 response"

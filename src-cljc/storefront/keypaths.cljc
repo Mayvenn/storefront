@@ -266,5 +266,13 @@
 (def leads-ui-sign-up-phone (conj leads-ui-sign-up :phone))
 (def leads-ui-sign-up-email (conj leads-ui-sign-up :email))
 
+(def leads-utm (conj leads :utm))
+(def leads-utm-source (conj leads-utm :source))
+(def leads-utm-content (conj leads-utm :content))
+(def leads-utm-campaign (conj leads-utm :campaign))
+(def leads-utm-medium (conj leads-utm :medium))
+(def leads-utm-term (conj leads-utm :term))
+
 (def leads-lead (conj leads :lead))
+(def leads-lead-tracking-id (conj leads-lead :tracking-id))
 (def leads-lead-current-flow (conj leads-lead :current-flow))

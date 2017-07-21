@@ -177,7 +177,8 @@
     events/navigate-content-tos
     events/navigate-content-guarantee
     events/navigate-content-ugc-usage-terms
-    events/navigate-gallery})
+    events/navigate-gallery
+    events/navigate-leads-home})
 
 (defn html-response [render-ctx data]
   (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
@@ -348,12 +349,18 @@
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [nav-message]}]
+  (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
       (let [render-ctx {:storeback-config storeback-config
                         :environment      environment
                         :client-version   client-version}
             data       (as-> {} data
+                         (assoc-in data keypaths/leads-lead-tracking-id (cookies/get request "leads.tracking-id"))
+                         (assoc-in data keypaths/leads-utm-source (cookies/get request "leads.utm-source"))
+                         (assoc-in data keypaths/leads-utm-content (cookies/get request "leads.utm-content"))
+                         (assoc-in data keypaths/leads-utm-campaign (cookies/get request "leads.utm-campaign"))
+                         (assoc-in data keypaths/leads-utm-medium (cookies/get request "leads.utm-medium"))
+                         (assoc-in data keypaths/leads-utm-term (cookies/get request "leads.utm-term"))
                          (assoc-in data keypaths/store-slug "welcome")
                          (assoc-in data keypaths/environment environment)
                          (assoc-in data keypaths/navigation-message nav-message))]
@@ -377,28 +384,57 @@
 
 (defn wrap-migrate-lead-tracking-id-cookie [h {:keys [environment]}]
   (fn [{:keys [server-name] :as req}]
-    (let [tracking-id     (or (cookies/get req "lead-tracking-id")
+    (let [tracking-id     (or (cookies/get req "leads.tracking-id")
                               (cookies/get req "tracking_id") ;; from old leads site
                               (java.util.UUID/randomUUID))
           set-tracking-id (fn [req-or-resp]
                             (cookies/set req-or-resp
                                          environment
-                                         "lead-tracking-id"
+                                         "leads.tracking-id"
                                          tracking-id
                                          {:http-only false
                                           :max-age   (cookies/days 365)
                                           :domain    (cookie-root-domain server-name)}))]
       (-> req
-          set-tracking-id ; set it on the request, so it's available to leads-routes as (cookies/get req "lead-tracking-id")
+          set-tracking-id ; set it on the request, so it's available to leads-routes as (cookies/get req "leads.tracking-id")
           h
           set-tracking-id ; set it on the response, so it's saved in the client
           (cookies/expire environment "tracking_id")))))
+
+(defn wrap-migrate-lead-utm-params-cookies [h {:keys [environment]}]
+  (fn [{:keys [server-name] :as req}]
+    (let [leads-utm-params        {"utm_source"   "leads.utm-source"
+                                   "utm_medium"   "leads.utm-medium"
+                                   "utm_campaign" "leads.utm-campaign"
+                                   "utm_content"  "leads.utm-content"
+                                   "utm_term"     "leads.utm-term"}
+          value-from-original-req (fn [old-leads-key new-leads-key]
+                                    (or (cookies/get req new-leads-key)
+                                        (cookies/get req old-leads-key)))
+          migrate-utm             (fn [req-or-resp [old-leads-key new-leads-key]]
+                                    (let [utm-value (value-from-original-req old-leads-key new-leads-key)]
+                                      (cond-> req-or-resp
+                                        utm-value             (cookies/set environment
+                                                                           new-leads-key
+                                                                           utm-value
+                                                                           {:http-only false
+                                                                            :max-age   (cookies/days 30)
+                                                                            :domain    (cookie-root-domain server-name)})
+                                        utm-value
+                                        (cookies/expire environment old-leads-key))))
+          migrate-utms            (fn [req]
+                                    (reduce migrate-utm req leads-utm-params))]
+      (-> req
+          migrate-utms
+          h
+          migrate-utms))))
 
 (defn wrap-leads-routes [h {:keys [environment] :as ctx}]
   (-> h
       ;; TODO: leads' version of utm param cookies stick around for 1 year, and are server-side only.
       ;; It would be nice to use storefront's server- and client-side copy of the UTM cookies, but they only stick for 1 month.
       ;; If we need to keep both, the leads' version must be converted to :http-only false
+      (wrap-migrate-lead-utm-params-cookies ctx)
       (wrap-migrate-lead-tracking-id-cookie ctx)
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-welcome-is-for-leads)
