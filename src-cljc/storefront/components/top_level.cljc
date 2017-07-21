@@ -105,9 +105,9 @@
        #?@(:cljs
            [(and config/enable-style-guide?
                  (= events/navigate-style-guide
-                    (subvec nav-event 0
-                            (min (count nav-event)
-                                 (count events/navigate-style-guide)))))
+                    (->> nav-event
+                         (take (count events/navigate-style-guide))
+                         vec)))
             [:div (style-guide/built-component data nil)]])
 
        (get-in data keypaths/menu-expanded)

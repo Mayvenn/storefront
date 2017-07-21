@@ -17,7 +17,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.8.51"]
+                 [org.clojure/clojurescript "1.9.671"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [org.omcljs/om "1.0.0-alpha41" :exclusions [cljsjs/react]]
@@ -32,7 +32,7 @@
   :plugins [[s3-wagon-private "1.3.0"]
             [lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.5.0-6"]]
+            [lein-figwheel "0.5.11"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
   :main storefront.core
@@ -112,7 +112,7 @@
                         [standalone-test-server "0.7.2"]
                         [ring/ring-mock "0.3.0"]
                         [org.clojure/tools.namespace "0.2.11"]
-                        [figwheel-sidecar "0.3.1"]]
+                     #_   [figwheel-sidecar "0.3.1"]]
          :injections [(require 'pjstadig.humane-test-output)
                       (pjstadig.humane-test-output/activate!)]
          :cljsbuild
