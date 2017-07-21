@@ -268,15 +268,12 @@
 (defn check-box [{:keys [label keypath value label-classes] :as attributes}]
   [:div.col-12.mb2
    [:label.flex.items-center {:class label-classes}
-    [:div.border.left.mr3
-     {:style {:width  "1em"
-              :height "1em"}}
+    [:div.border.left.mr3.flex.items-center.justify-center
+     {:style {:width  "21px"
+              :height "21px"}}
      (when value
-       [:div.teal.medium.flex.items-center.justify-center
-        {:style {:height "100%"}}
-        [:div {:style {:font-size "1.25em"}
-               :dangerouslySetInnerHTML {:__html " &times;"}}]])]
-    [:input.mr1.hide
+       (svg/simple-x {:class "stroke-teal" :width "15px" :height "15px"}))]
+    [:input.hide
      (merge (utils/toggle-checkbox keypath value)
             (dissoc attributes :label :keypath :value :label-classes)
             {:type "checkbox"})]

@@ -92,6 +92,9 @@
    [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
+(defn simple-x [opts]
+  [:svg opts (svg-xlink "simple-x")])
+
 (def counter-dec
   (component/html
    [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
