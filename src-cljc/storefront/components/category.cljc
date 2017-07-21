@@ -58,24 +58,26 @@
                                   (map (comp count val))
                                   (apply +))]
     [:div.py4
-     [:div.pb1.flex.justify-between
-      [:p.h6.dark-gray (case applied-filter-count
-                         0 "Filter By:"
-                         1 "1 filter applied:"
-                         (str applied-filter-count " filters applied:"))]
-      [:p.h6.dark-gray (str sku-set-count " Item" (when (not= 1 sku-set-count) "s"))]]
-     (into [:div.border.h6.border-teal.rounded.flex.center]
-           (map-indexed
-            (fn [idx {:keys [slug title selected?]}]
-              [:a.flex-auto.x-group-item.rounded-item
-               (assoc
-                (utils/fake-href events/control-category-filter-select {:selected slug})
-                :key slug
-                :class (if selected? "bg-teal white" "dark-gray"))
-               [:div.border-teal.my1
-                {:class (when-not (zero? idx) "border-left")}
-                title]])
-            facets))]))
+     (when (seq facets)
+       [:div
+        [:div.pb1.flex.justify-between
+         [:p.h6.dark-gray (case applied-filter-count
+                            0 "Filter By:"
+                            1 "1 filter applied:"
+                            (str applied-filter-count " filters applied:"))]
+         [:p.h6.dark-gray (str sku-set-count " Item" (when (not= 1 sku-set-count) "s"))]]
+        (into [:div.border.h6.border-teal.rounded.flex.center]
+              (map-indexed
+               (fn [idx {:keys [slug title selected?]}]
+                 [:a.flex-auto.x-group-item.rounded-item
+                  (assoc
+                   (utils/fake-href events/control-category-filter-select {:selected slug})
+                   :key slug
+                   :class (if selected? "bg-teal white" "dark-gray"))
+                  [:div.border-teal.my1
+                   {:class (when-not (zero? idx) "border-left")}
+                   title]])
+               facets))])]))
 
 (defn filter-panel [selected-facet]
   [:div.px1
