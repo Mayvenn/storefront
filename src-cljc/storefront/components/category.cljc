@@ -53,20 +53,18 @@
       [:p.h6.dark-gray "+ more colors available"])))
 
 (defn filter-box [facets]
-  (let [number-of-facets (count facets)]
-    (into [:div.border.h6.border-teal.rounded.flex.center]
-          (map-indexed
-           (fn [idx {:keys [slug title selected?]}]
-             (let [last? (= (inc idx) number-of-facets)]
-               [:a.flex-auto.x-group-item.rounded-item
-                (merge
-                 (utils/fake-href events/control-category-filter-select {:selected slug})
-                 {:key slug}
-                 {:class (if selected? "bg-teal white" "dark-gray")})
-                [:div.border-teal.my1
-                 {:class (when-not last? "border-right")}
-                 title]]))
-           facets))))
+  (into [:div.border.h6.border-teal.rounded.flex.center]
+        (map-indexed
+         (fn [idx {:keys [slug title selected?]}]
+           [:a.flex-auto.x-group-item.rounded-item
+            (assoc
+             (utils/fake-href events/control-category-filter-select {:selected slug})
+             :key slug
+             :class (if selected? "bg-teal white" "dark-gray"))
+            [:div.border-teal.my1
+             {:class (when-not (zero? idx) "border-left")}
+             title]])
+         facets)))
 
 (defn filter-component [{:keys [facets filtered-sku-sets criteria]}]
   (let [selected-facet            (->> facets
