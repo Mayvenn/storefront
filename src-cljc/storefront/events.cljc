@@ -178,8 +178,8 @@
 (defpath control-category-filter-select)
 (defpath control-category-filters-close)
 
-(defpath control-category-criteria-selected)
-(defpath control-category-criteria-deselected)
+(defpath control-category-criterion-selected)
+(defpath control-category-criterion-deselected)
 (defpath control-category-criteria-cleared)
 
 (defpath video-played)

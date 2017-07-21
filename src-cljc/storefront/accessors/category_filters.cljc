@@ -47,14 +47,14 @@
            :filtered-sku-sets new-filtered-sku-sets
            :facets new-facets)))
 
-(defn deselect-criteria [{:keys [criteria] :as filters} facet-slug option-slug]
+(defn deselect-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
   (let [selected-criteria (disj (facet-slug criteria) option-slug)
         new-criteria      (if (seq selected-criteria)
                             (assoc criteria facet-slug selected-criteria)
                             (dissoc criteria facet-slug))]
     (apply-criteria filters new-criteria)))
 
-(defn select-criteria [{:keys [criteria] :as filters} facet-slug option-slug]
+(defn select-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 

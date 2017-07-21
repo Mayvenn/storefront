@@ -115,8 +115,8 @@
             (ui/check-box {:label     label
                            :value     selected?
                            :on-change #(let [event-handler (if selected?
-                                                             events/control-category-criteria-deselected
-                                                             events/control-category-criteria-selected)]
+                                                             events/control-category-criterion-deselected
+                                                             events/control-category-criterion-selected)]
                                          (messages/handle-message event-handler
                                                                   {:filter (:slug selected-facet)
                                                                    :option slug}))})])]

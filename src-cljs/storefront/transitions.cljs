@@ -271,13 +271,13 @@
   [_ _ _ app-state]
   (update-in app-state keypaths/category-filters category-filters/close))
 
-(defmethod transition-state events/control-category-criteria-selected
+(defmethod transition-state events/control-category-criterion-selected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters category-filters/select-criteria filter option))
+  (update-in app-state keypaths/category-filters category-filters/select-criterion filter option))
 
-(defmethod transition-state events/control-category-criteria-deselected
+(defmethod transition-state events/control-category-criterion-deselected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters category-filters/deselect-criteria filter option))
+  (update-in app-state keypaths/category-filters category-filters/deselect-criterion filter option))
 
 (defmethod transition-state events/control-category-criteria-cleared
   [_ _ _ app-state]
