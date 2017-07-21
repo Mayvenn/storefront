@@ -91,46 +91,45 @@
                                 (filter :selected?)
                                 first)
         number-of-sku-sets (count filtered-sku-sets)]
-    [:div.bg-white
+    [:div.bg-white.px2
      {:class (if selected-facet
                "z4 fixed overlay"
                "sticky top-0")}
-     [:div.px2
-      [:div.py4
-       [:div.pb1.flex.justify-between
-        [:p.h6.dark-gray "Filter By:"]
-        [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
-       (filter-box facets selected-facet)]
-      (when selected-facet
-        [:div
-         [:ul.list-reset
-          (for [{:keys [slug label selected?]} (:options selected-facet)]
-            [:li.py1
-             {:key (str "filter-option-" slug)}
-             (ui/check-box {:label     label
-                            :value     selected?
-                            :on-change #(let [event-handler (if selected?
-                                                              events/control-category-criteria-deselected
-                                                              events/control-category-criteria-selected)]
-                                          (messages/handle-message event-handler
-                                                                   {:filter (:slug selected-facet)
-                                                                    :option slug}))})])]
-         [:div
+     [:div.mb4
+      [:div.pb1.flex.justify-between
+       [:p.h6.dark-gray "Filter By:"]
+       [:p.h6.dark-gray (str number-of-sku-sets " Item" (when (not= 1 number-of-sku-sets) "s"))]]
+      (filter-box facets selected-facet)]
+     (when selected-facet
+       [:div.px1
+        [:ul.list-reset
+         (for [{:keys [slug label selected?]} (:options selected-facet)]
+           [:li.py1
+            {:key (str "filter-option-" slug)}
+            (ui/check-box {:label     label
+                           :value     selected?
+                           :on-change #(let [event-handler (if selected?
+                                                             events/control-category-criteria-deselected
+                                                             events/control-category-criteria-selected)]
+                                         (messages/handle-message event-handler
+                                                                  {:filter (:slug selected-facet)
+                                                                   :option slug}))})])]
+        [:div.clearfix.mxn3.px1.mt4
+         [:div.col.col-6.px3
           (ui/teal-ghost-button
            {}
            #_(utils/fake-href events/control-pillbox-select
                               {:keypath  keypath
                                :selected id})
-           "Clear all")
+           "Clear all")]
+         [:div.col.col-6.px3
           (ui/teal-button
            (utils/fake-href events/control-category-filters-close)
-           "Done")]])]]))
+           "Done")]]])]))
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
   (component/create
    [:div
-    (prn (:criteria filters)
-         (map :derived-criteria (:filtered-sku-sets filters)))
     [:h1
      (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
        [:picture
