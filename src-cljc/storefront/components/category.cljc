@@ -143,8 +143,9 @@
       [:div.py6 [:p.my6.max-580.mx-auto.center (-> category :copy :description)]]
       (filter-component filters)
       [:div.flex.flex-wrap.mxn1
-       (for [{:keys [slug representative-sku name skus sold-out?] :as sku-set} (:filtered-sku-sets filters)]
-         (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
+       (for [{:keys [slug matching-skus name sold-out?] :as sku-set} (:filtered-sku-sets filters)]
+         (let [representative-sku (apply min-key :price matching-skus)
+               image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
            [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
             [:div.mb10.center
              ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
@@ -157,8 +158,8 @@
                [:div
                 ;; This is pretty specific to hair. Might be better to have a
                 ;; sku-set know its "constrained" and "unconstrained" facets.
-                (unconstrained-facet skus facets :length)
-                (unconstrained-facet skus facets :color)
+                (unconstrained-facet matching-skus facets :length)
+                (unconstrained-facet matching-skus facets :color)
                 [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))]]]]))
 
 (defn ^:private query [data]

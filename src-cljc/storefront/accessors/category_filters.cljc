@@ -1,5 +1,6 @@
 (ns storefront.accessors.category-filters
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [storefront.utils.maps :as maps]))
 
 (comment
   "schema of category-filters"
@@ -13,6 +14,9 @@
                                      :selected? false
                                      :slug      ""}]}]})
 
+(defn attributes->criteria [attributes]
+  (maps/into-multimap [attributes]))
+
 (defn matches-any? [search-criteria item-criteria-fn coll]
   (filter (fn [item]
             (let [item-criteria (item-criteria-fn item)]
@@ -24,7 +28,13 @@
           coll))
 
 (defn ^:private apply-criteria [{:keys [initial-sku-sets facets] :as filters} new-criteria]
-  (let [new-filtered-sku-sets (matches-any? new-criteria :derived-criteria initial-sku-sets)
+  (let [new-filtered-sku-sets (->> initial-sku-sets
+                                   (map (fn [{:keys [skus] :as sku-set}]
+                                          (assoc sku-set
+                                                 :matching-skus (matches-any? new-criteria
+                                                                              (comp attributes->criteria :attributes)
+                                                                              skus))))
+                                   (filterv (comp seq :matching-skus)))
         new-facets            (mapv (fn [{:keys [slug options] :as facet}]
                                       (let [[facet-in-criteria criteria-options] (find new-criteria slug)
                                             new-options (mapv (fn [option]
@@ -66,20 +76,17 @@
    :color    "Color"})
 
 (defn init [category sku-sets facets]
-  {:initial-sku-sets  sku-sets
-   :filtered-sku-sets sku-sets
-   :criteria          {}
-   :facets            (map (fn [facet-slug]
-                             {:slug      facet-slug
-                              :selected? false
-                              :title     (facet-slug->name facet-slug)
-                              :options   (->> facets
-                                              (filter (fn [{:keys [step options]}]
-                                                        (= step facet-slug)))
-                                              first
-                                              :options
-                                              (map (fn [{:keys [long-name name :option/slug] :as option}]
-                                                     {:slug      slug
-                                                      :label     (or long-name name)
-                                                      :selected? false})))})
-                           (:unconstrained-facets category))})
+  (-> {:initial-sku-sets  sku-sets
+       :facets            (map (fn [facet-slug]
+                                 {:slug      facet-slug
+                                  :title     (facet-slug->name facet-slug)
+                                  :options   (->> facets
+                                                  (filter #(= (:step %) facet-slug))
+                                                  first
+                                                  :options
+                                                  (map (fn [{:keys [long-name name :option/slug]}]
+                                                         {:slug  slug
+                                                          :label (or long-name name)})))})
+                               (:unconstrained-facets category))}
+      (apply-criteria {})
+      close))
