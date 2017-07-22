@@ -268,13 +268,13 @@
 (defn check-box [{:keys [label keypath value label-classes disabled] :as attributes}]
   [:div.col-12.mb2
    [:label.flex.items-center {:class label-classes}
-    [:div.border.left.mr3.flex.items-center.justify-center
-     (merge {:style {:width  "21px"
-                     :height "21px"}}
-            (when disabled
-              {:class "border-gray"}))
-     (when value
-       (svg/simple-x {:class "stroke-teal" :width "15px" :height "15px"}))]
+    ;; 15px svg + 2*2px padding + 2*1px border = 21px
+    [:div.border.left.mr3.pp2
+     (when disabled
+       {:class "border-gray"})
+     (if value
+       (svg/simple-x {:class "block stroke-teal" :width "15px" :height "15px"})
+       [:div {:style {:width "15px" :height "15px"}}])]
     [:input.hide
      (merge (utils/toggle-checkbox keypath value)
             (dissoc attributes :label :keypath :value :label-classes)

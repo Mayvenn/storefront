@@ -106,7 +106,7 @@
                                     (messages/handle-message event-handler
                                                              {:filter (:slug selected-facet)
                                                               :option slug}))})])]
-   [:div.clearfix.mxn3.px1.mt4
+   [:div.clearfix.mxn3.px1.py4
     [:div.col.col-6.px3
      (ui/teal-ghost-button
       (utils/fake-href events/control-category-criteria-cleared)
