@@ -4,7 +4,7 @@
 (def new-facet?
   "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
   ;; [<facet-slug> <option-slug>]
-  #{[:product/family "360-frontals"]
+  #{[:hair/family "360-frontals"]
     [:hair/texture "yaki-straight"]
     [:hair/texture "water-wave"]})
 
@@ -29,67 +29,67 @@
                    :alt         "New Water Wave and Yaki Straight are here"}]
     [{:id                   "0"
       :slug                 "closures"
-      :criteria             {:product/department #{"hair"} :product/family #{"closures"}}
+      :criteria             {:product/department #{"hair"} :hair/family #{"closures"}}
       :unconstrained-facets #{:hair/origin :hair/texture :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "1"
       :slug                 "frontals"
-      :criteria             {:product/department #{"hair"} :product/family #{"frontals"}}
+      :criteria             {:product/department #{"hair"} :hair/family #{"frontals"}}
       :unconstrained-facets #{:hair/origin :hair/texture :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "2"
       :slug                 "straight"
       :criteria             {:product/department #{"hair"} :hair/texture #{"straight"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "3"
       :slug                 "yaki-straight"
       :criteria             {:product/department #{"hair"} :hair/texture #{"yaki-straight"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "4"
       :slug                 "kinky-straight"
       :criteria             {:product/department #{"hair"} :hair/texture #{"kinky-straight"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "5"
       :slug                 "body-wave"
       :criteria             {:product/department #{"hair"} :hair/texture #{"body-wave"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "6"
       :slug                 "loose-wave"
       :criteria             {:product/department #{"hair"} :hair/texture #{"loose-wave"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "7"
       :slug                 "water-wave"
       :criteria             {:product/department #{"hair"} :hair/texture #{"water-wave"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "8"
       :slug                 "deep-wave"
       :criteria             {:product/department #{"hair"} :hair/texture #{"deep-wave"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "9"
       :slug                 "curly"
       :criteria             {:product/department #{"hair"} :hair/texture #{"curly"}}
-      :unconstrained-facets #{:product/family :hair/origin :hair/base-material :hair/color}
+      :unconstrained-facets #{:hair/family :hair/origin :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}
      {:id                   "10"
       :slug                 "360-frontals"
-      :criteria             {:product/department #{"hair"} :product/family #{"360-frontals"}}
+      :criteria             {:product/department #{"hair"} :hair/family #{"360-frontals"}}
       :unconstrained-facets #{:hair/origin :hair/texture :hair/base-material :hair/color}
       :copy                 {:description fake-copy}
       :images               {:hero fake-hero}}]))
