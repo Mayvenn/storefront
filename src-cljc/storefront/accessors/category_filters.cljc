@@ -27,19 +27,26 @@
                       search-criteria)))
           coll))
 
+(defn by-launched-at-price-name [x y]
+  ;; launched-at is desc
+  (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
+           [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
+
 (defn ^:private apply-criteria [{:keys [initial-sku-sets facets] :as filters} new-criteria]
   (let [new-filtered-sku-sets (->> initial-sku-sets
-                                   (map (fn [{:keys [skus] :as sku-set}]
-                                          (assoc sku-set
-                                                 :matching-skus (matches-any? new-criteria
-                                                                              (comp attributes->criteria :attributes)
-                                                                              skus))))
-                                   (filterv (comp seq :matching-skus)))
+                                   (keep (fn [{:keys [skus] :as sku-set}]
+                                           (when-let [matching-skus (seq (matches-any? new-criteria
+                                                                                       (comp attributes->criteria :attributes)
+                                                                                       skus))]
+                                             (assoc sku-set
+                                                    :matching-skus matching-skus
+                                                    :representative-sku (apply min-key :price matching-skus)))))
+                                   (sort by-launched-at-price-name))
         new-facets            (mapv (fn [{:keys [slug options] :as facet}]
                                       (let [criteria-options (get new-criteria slug)
-                                            new-options (mapv (fn [option]
-                                                                (assoc option :selected? (contains? criteria-options (:slug option))))
-                                                              options)]
+                                            new-options      (mapv (fn [option]
+                                                                     (assoc option :selected? (contains? criteria-options (:slug option))))
+                                                                   options)]
                                         (assoc facet :options new-options)))
                                     facets)]
     (assoc filters
