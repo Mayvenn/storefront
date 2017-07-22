@@ -14,10 +14,10 @@
                                      :selected? false
                                      :slug      ""}]}]})
 
-(defn attributes->criteria [attributes]
+(defn ^:private attributes->criteria [attributes]
   (maps/into-multimap [attributes]))
 
-(defn matches-any? [search-criteria item-criteria-fn coll]
+(defn ^:private matches-any? [search-criteria item-criteria-fn coll]
   (filter (fn [item]
             (let [item-criteria (item-criteria-fn item)]
               (every? (fn [[facet allowed-vals]]
@@ -27,7 +27,7 @@
                       search-criteria)))
           coll))
 
-(defn by-launched-at-price-name [x y]
+(defn ^:private by-launched-at-price-name [x y]
   ;; launched-at is desc
   (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
            [(:launched-at x) (:price (:representative-sku y)) (:name y)]))

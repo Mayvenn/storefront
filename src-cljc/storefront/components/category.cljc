@@ -24,11 +24,13 @@
             [storefront.platform.messages :as messages]
             [clojure.string :as str]))
 
-(defn facet-definition [facets facet option]
+(defn slug->facet [facet facets]
   (->> facets
        (filter (fn [{:keys [:facet/slug]}] (= slug facet)))
-       first
-       :facet/options
+       first))
+
+(defn slug->option [option options]
+  (->> options
        (filter (fn [{:keys [:option/slug]}] (= slug option)))
        first))
 
@@ -41,9 +43,17 @@
         longest  (last lengths)]
     [:p.h6.dark-gray
      "in "
-     (:option/name (facet-definition facets :hair/length shortest))
+     (->> facets
+          (slug->facet :hair/length)
+          :facet/options
+          (slug->option shortest)
+          :option/name)
      " - "
-     (:option/name (facet-definition facets :hair/length longest))]))
+     (->> facets
+          (slug->facet :hair/length)
+          :facet/options
+          (slug->option longest)
+          :option/name)]))
 
 (defmethod unconstrained-facet :hair/color [skus facets facet]
   (let [colors (->> skus
@@ -119,9 +129,8 @@
 
 (defn product-cards [sku-sets facets]
   [:div.flex.flex-wrap.mxn1
-   (for [{:keys [slug matching-skus name sold-out?] :as sku-set} sku-sets]
-     (let [representative-sku (apply min-key :price matching-skus)
-           image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
+   (for [{:keys [slug matching-skus representative-sku name sold-out?] :as sku-set} sku-sets]
+     (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
        [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
         [:div.mb10.center
          ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
