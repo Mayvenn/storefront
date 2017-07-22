@@ -79,17 +79,23 @@
                                  filters))))
 
 (defn init [category sku-sets facets]
-  (-> {:initial-sku-sets  sku-sets
-       :facets            (->> facets
-                               (filter (comp (:unconstrained-facets category) :facet/slug))
-                               (sort-by :filter/order)
-                               (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
-                                      {:slug      slug
-                                       :title     name
-                                       :options   (->> options
-                                                       (sort-by :filter/order)
-                                                       (map (fn [{:keys [:option/name :option/slug]}]
-                                                              {:slug  slug
-                                                               :label name})))})))}
-      clear-criteria
-      close))
+  (let [represented-criteria (->> sku-sets
+                                  (mapcat :skus)
+                                  (map :attributes)
+                                  (maps/into-multimap))]
+    (-> {:initial-sku-sets sku-sets
+         :facets           (->> facets
+                                (filter (comp (:filter-tabs category) :facet/slug))
+                                (sort-by :filter/order)
+                                (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
+                                       (let [represented-options (get represented-criteria slug)]
+                                         {:slug         slug
+                                          :title        name
+                                          :options      (->> options
+                                                             (sort-by :filter/order)
+                                                             (map (fn [{:keys [:option/name :option/slug]}]
+                                                                    {:slug         slug
+                                                                     :represented? (contains? represented-options slug)
+                                                                     :label        name})))}))))}
+        clear-criteria
+        close)))

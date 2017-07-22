@@ -92,13 +92,14 @@
 (defn filter-panel [selected-facet]
   [:div.px1
    [:ul.list-reset
-    (for [{:keys [slug label selected?]} (:options selected-facet)]
+    (for [{:keys [slug label represented? selected?]} (:options selected-facet)]
       [:li.py1
        {:key (str "filter-option-" slug)}
        (ui/check-box {:label     [:span
                                   (when (categories/new-facet? [(:slug selected-facet) slug]) [:span.mr1.teal "NEW"])
                                   label]
                       :value     selected?
+                      :disabled  (not represented?)
                       :on-change #(let [event-handler (if selected?
                                                         events/control-category-criterion-deselected
                                                         events/control-category-criterion-selected)]
