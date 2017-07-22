@@ -265,19 +265,23 @@
                          (dissoc select-attributes :label :keypath :value :options :errors))
      (field-error-message error data-test)]))
 
-(defn check-box [{:keys [label keypath value label-classes] :as attributes}]
+(defn check-box [{:keys [label keypath value label-classes disabled] :as attributes}]
   [:div.col-12.mb2
    [:label.flex.items-center {:class label-classes}
     [:div.border.left.mr3.flex.items-center.justify-center
-     {:style {:width  "21px"
-              :height "21px"}}
+     (merge {:style {:width  "21px"
+                     :height "21px"}}
+            (when disabled
+              {:class "border-gray"}))
      (when value
        (svg/simple-x {:class "stroke-teal" :width "15px" :height "15px"}))]
     [:input.hide
      (merge (utils/toggle-checkbox keypath value)
             (dissoc attributes :label :keypath :value :label-classes)
             {:type "checkbox"})]
-    label]])
+    [:span
+     (when disabled {:class "gray"})
+     label]]])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
