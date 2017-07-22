@@ -358,20 +358,8 @@
     (update-in keypaths/products merge (maps/key-by :id products))
     ensure-bundle-builder))
 
-(defn by-launched-at-price-name [x y]
-  ;; launched-at is desc
-  (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
-           [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
-
-
 (defn hydrate-sku-set-with-skus [id->skus sku-set]
-  (letfn [(sku-by-id [sku-id]
-            (get id->skus sku-id))]
-    (let [skus (map sku-by-id (:skus sku-set))]
-      (-> sku-set
-          (assoc :derived-criteria (maps/into-multimap (map :attributes skus)))
-          (assoc :skus skus)
-          (update :representative-sku sku-by-id)))))
+  (assoc sku-set :skus (map #(get id->skus %) (:skus sku-set))))
 
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus category-id]} app-state]
@@ -379,14 +367,12 @@
       (assoc-in keypaths/category-filters
                 (category-filters/init
                  (categories/id->category category-id (get-in app-state keypaths/categories))
-                 (->> sku-sets
-                      (map (partial hydrate-sku-set-with-skus (maps/key-by :sku skus)))
-                      (sort by-launched-at-price-name))
+                 (map (partial hydrate-sku-set-with-skus (maps/key-by :sku skus)) sku-sets)
                  (get-in app-state keypaths/facets)))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]
-  (assoc-in app-state keypaths/facets (map #(update % :step keyword) facets)))
+  (assoc-in app-state keypaths/facets (map #(update % :facet/slug keyword) facets)))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))

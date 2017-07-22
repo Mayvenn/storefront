@@ -164,7 +164,13 @@
    GET
    "/sku-sets"
    (conj request-keys/search-sku-sets criteria)
-   {:params  criteria
+   {:params  (->> criteria
+                  (map (fn [[k v]]
+                         [(if-let [ns (namespace k)]
+                            (str ns "/" (name k))
+                            (name k))
+                          v]))
+                  (into {}))
     :handler #(messages/handle-message events/api-success-sku-sets (assoc % :category-id category-id))}))
 
 (defn fetch-facets [cache]

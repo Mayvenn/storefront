@@ -6,7 +6,7 @@
   "schema of category-filters"
   {:initial-sku-sets  []
    :filtered-sku-sets []
-   :criteria          {:color #{"black"}}
+   :criteria          {:hair/color #{"black"}}
    :facets            [{:slug      ""
                         :selected? false
                         :title     ""
@@ -78,25 +78,18 @@
                             (map #(assoc % :selected? (= (:slug %) facet-slug))
                                  filters))))
 
-(def facet-slug->name
-  {:family   "Category"
-   :style    "Texture"
-   :origin   "Origin"
-   :material "Material"
-   :color    "Color"})
-
 (defn init [category sku-sets facets]
   (-> {:initial-sku-sets  sku-sets
-       :facets            (map (fn [facet-slug]
-                                 {:slug      facet-slug
-                                  :title     (facet-slug->name facet-slug)
-                                  :options   (->> facets
-                                                  (filter #(= (:step %) facet-slug))
-                                                  first
-                                                  :options
-                                                  (map (fn [{:keys [long-name name :option/slug]}]
-                                                         {:slug  slug
-                                                          :label (or long-name name)})))})
-                               (:unconstrained-facets category))}
+       :facets            (->> facets
+                               (filter (comp (:unconstrained-facets category) :facet/slug))
+                               (sort-by :filter/order)
+                               (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
+                                      {:slug      slug
+                                       :title     name
+                                       :options   (->> options
+                                                       (sort-by :filter/order)
+                                                       (map (fn [{:keys [:option/name :option/slug]}]
+                                                              {:slug  slug
+                                                               :label name})))})))}
       clear-criteria
       close))

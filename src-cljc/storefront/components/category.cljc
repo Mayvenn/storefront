@@ -26,28 +26,28 @@
 
 (defn facet-definition [facets facet option]
   (->> facets
-       (filter (fn [{:keys [step]}] (= step facet)))
+       (filter (fn [{:keys [:facet/slug]}] (= slug facet)))
        first
-       :options
+       :facet/options
        (filter (fn [{:keys [:option/slug]}] (= slug option)))
        first))
 
 (defmulti unconstrained-facet (fn [skus facets facet] facet))
-(defmethod unconstrained-facet :length [skus facets facet]
+(defmethod unconstrained-facet :hair/length [skus facets facet]
   (let [lengths  (->> skus
-                      (map #(get-in % [:attributes :length]))
+                      (map #(get-in % [:attributes :hair/length]))
                       sort)
         shortest (first lengths)
         longest  (last lengths)]
     [:p.h6.dark-gray
      "in "
-     (:name (facet-definition facets :length shortest))
+     (:option/name (facet-definition facets :hair/length shortest))
      " - "
-     (:name (facet-definition facets :length longest))]))
+     (:option/name (facet-definition facets :hair/length longest))]))
 
-(defmethod unconstrained-facet :color [skus facets facet]
+(defmethod unconstrained-facet :hair/color [skus facets facet]
   (let [colors (->> skus
-                    (map #(get-in % [:attributes :color]))
+                    (map #(get-in % [:attributes :hair/color]))
                     distinct)]
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
@@ -134,8 +134,8 @@
            [:div
             ;; This is pretty specific to hair. Might be better to have a
             ;; sku-set know its "constrained" and "unconstrained" facets.
-            (unconstrained-facet matching-skus facets :length)
-            (unconstrained-facet matching-skus facets :color)
+            (unconstrained-facet matching-skus facets :hair/length)
+            (unconstrained-facet matching-skus facets :hair/color)
             [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))])
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
