@@ -81,7 +81,9 @@
                (fn [idx {:keys [slug title selected?]}]
                  [:a.flex-auto.x-group-item.rounded-item
                   (assoc
-                   (utils/fake-href events/control-category-filter-select {:selected slug})
+                   (if selected?
+                     (utils/fake-href events/control-category-filters-close)
+                     (utils/fake-href events/control-category-filter-select {:selected slug}))
                    :key slug
                    :class (if selected? "bg-teal white" "dark-gray"))
                   [:div.border-teal.my1
@@ -91,22 +93,23 @@
 
 (defn filter-panel [selected-facet]
   [:div.px1
-   [:ul.list-reset
-    (for [{:keys [slug label represented? selected?]} (:options selected-facet)]
-      [:li.py1
-       {:key (str "filter-option-" slug)}
-       (ui/check-box {:label     [:span
-                                  (when (categories/new-facet? [(:slug selected-facet) slug]) [:span.mr1.teal "NEW"])
-                                  label]
-                      :value     selected?
-                      :disabled  (not represented?)
-                      :on-change #(let [event-handler (if selected?
-                                                        events/control-category-criterion-deselected
-                                                        events/control-category-criterion-selected)]
-                                    (messages/handle-message event-handler
-                                                             {:filter (:slug selected-facet)
-                                                              :option slug}))})])]
-   [:div.clearfix.mxn3.px1.py4
+   (for [options (partition-all 4 (:options selected-facet))]
+     [:div.flex-on-tb-dt.justify-around
+      (for [{:keys [slug label represented? selected?]} options]
+        [:div.py1.mr4
+         {:key (str "filter-option-" slug)}
+         (ui/check-box {:label     [:span
+                                    (when (categories/new-facet? [(:slug selected-facet) slug]) [:span.mr1.teal "NEW"])
+                                    label]
+                        :value     selected?
+                        :disabled  (not represented?)
+                        :on-change #(let [event-handler (if selected?
+                                                          events/control-category-criterion-deselected
+                                                          events/control-category-criterion-selected)]
+                                      (messages/handle-message event-handler
+                                                               {:filter (:slug selected-facet)
+                                                                :option slug}))})])])
+   [:div.clearfix.mxn3.px1.py4.hide-on-tb-dt
     [:div.col.col-6.px3
      (ui/teal-ghost-button
       (utils/fake-href events/control-category-criteria-cleared)
@@ -157,20 +160,25 @@
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
   (component/create
-   (if-let [selected-facet (->> filters
-                                :facets
-                                (filter :selected?)
-                                first)]
-     [:div.bg-white.px2.z4.fixed.overlay.overflow-auto
-      (filter-tabs filters)
-      (filter-panel selected-facet)]
-     [:div
-      (hero-section category)
-      [:div.max-960.col-12.mx-auto.px2-on-mb
-       (copy-section category)
-       [:div.bg-white.sticky.top-0
-        (filter-tabs filters)]
-       (product-cards (:filtered-sku-sets filters) facets)]])))
+   [:div
+    (hero-section category)
+    [:div.max-960.col-12.mx-auto.px2-on-mb
+     (copy-section category)
+     [:div.bg-white.sticky.top-0
+      (if-let [selected-facet (->> filters
+                                   :facets
+                                   (filter :selected?)
+                                   first)]
+        [:div
+         [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+          (filter-tabs filters)
+          (filter-panel selected-facet)]
+         [:div.hide-on-mb
+          (filter-tabs filters)
+          (filter-panel selected-facet)]]
+        [:div
+         (filter-tabs filters)])]
+     (product-cards (:filtered-sku-sets filters) facets)]]))
 
 (defn ^:private query [data]
   {:category (categories/current-category data)
