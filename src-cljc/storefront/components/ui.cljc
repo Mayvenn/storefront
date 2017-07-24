@@ -306,7 +306,7 @@
    [:div.absolute.overlay.overflow-auto
     [:div.table.container-size
      {:style {:table-layout "fixed"}}
-     [:div.table-cell.alui/teal-button-middle
+     [:div.table-cell.align-middle
       {:on-click (:on-click close-attrs)}
       ;; The inner wrapper
       ;; - provides a place to adjust the width of the modal content (col-class)
