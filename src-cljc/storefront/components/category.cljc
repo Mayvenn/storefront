@@ -164,7 +164,7 @@
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb
      (copy-section category)
-     [:div.bg-white.sticky.top-0.mtn1.pt1
+     [:div.bg-white.sticky.top-0
       (if-let [selected-facet (->> filters
                                    :facets
                                    (filter :selected?)
