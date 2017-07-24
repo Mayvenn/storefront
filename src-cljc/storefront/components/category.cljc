@@ -130,23 +130,30 @@
 
 (defn product-cards [sku-sets facets]
   [:div.flex.flex-wrap.mxn1
-   (for [{:keys [slug matching-skus representative-sku name sold-out?] :as sku-set} sku-sets]
-     (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
-       [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
-        [:div.mb10.center
-         ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-         [:img.block.col-12 {:src (str (:url image)
-                                       (:filename image))
-                             :alt (:alt image)}]
-         [:h2.h4.mt3.mb1 name]
-         (if sold-out?
-           [:p.h6.dark-gray "Out of stock"]
-           [:div
-            ;; This is pretty specific to hair. Might be better to have a
-            ;; sku-set know its "constrained" and "unconstrained" facets.
-            (unconstrained-facet matching-skus facets :hair/length)
-            (unconstrained-facet matching-skus facets :hair/color)
-            [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]))])
+   (if (empty? sku-sets)
+     [:div.col-12.my8.py4.center
+      [:p.py4 "😞"]
+      [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
+      [:p.h4.dark-gray.mb10.pb10
+       [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
+       " to see more hair."]]
+     (for [{:keys [slug matching-skus representative-sku name sold-out?] :as sku-set} sku-sets]
+       (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
+         [:div.col.col-6.col-4-on-tb-dt.px1 {:key slug}
+          [:div.mb10.center
+           ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
+           [:img.block.col-12 {:src (str (:url image)
+                                         (:filename image))
+                               :alt (:alt image)}]
+           [:h2.h4.mt3.mb1 name]
+           (if sold-out?
+             [:p.h6.dark-gray "Out of stock"]
+             [:div
+              ;; This is pretty specific to hair. Might be better to have a
+              ;; sku-set know its "constrained" and "unconstrained" facets.
+              (unconstrained-facet matching-skus facets :hair/length)
+              (unconstrained-facet matching-skus facets :hair/color)
+              [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]])))])
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
   (component/create
