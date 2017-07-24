@@ -69,6 +69,9 @@
                                          :variant_material (-> variant :variant_attrs :material)
                                          :order_number     (get-in app-state keypaths/order-number)
                                          :order_total      (get-in app-state keypaths/order-total)
+                                         :order_quantity   (-> (get-in app-state keypaths/order)
+                                                               orders/line-items
+                                                               orders/line-item-quantity)
                                          :quantity         quantity})))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
