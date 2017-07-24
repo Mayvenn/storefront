@@ -132,7 +132,7 @@
   [:div.flex.flex-wrap.mxn1
    (if (empty? sku-sets)
      [:div.col-12.my8.py4.center
-      [:p.py4 "😞"]
+      [:p.h1.py4 "😞"]
       [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
       [:p.h4.dark-gray.mb10.pb10
        [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
