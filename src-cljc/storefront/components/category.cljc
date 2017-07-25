@@ -72,7 +72,7 @@
        [:div
         [:div.pb1.flex.justify-between
          [:p.h6.dark-gray (case applied-filter-count
-                            0 "Filter By:"
+                            0 "Filter by:"
                             1 "1 filter applied:"
                             (str applied-filter-count " filters applied:"))]
          [:p.h6.dark-gray (str sku-set-count " Item" (when (not= 1 sku-set-count) "s"))]]
