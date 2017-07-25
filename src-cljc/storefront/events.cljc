@@ -182,6 +182,9 @@
 (defpath control-category-criterion-deselected)
 (defpath control-category-criteria-cleared)
 
+(defpath control-hamburger-shop-bundles)
+(defpath control-hamburger-shop-closures-and-frontals)
+
 (defpath video-played)
 
 (defpath snap)

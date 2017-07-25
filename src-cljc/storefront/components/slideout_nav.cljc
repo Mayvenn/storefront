@@ -10,6 +10,7 @@
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.auth :as auth]
             [storefront.components.money-formatters :refer [as-money]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.marquee :as marquee]
             [clojure.string :as str]
             [storefront.platform.component-utils :as utils]
@@ -149,15 +150,18 @@
     :user    user-actions
     :guest   guest-actions))
 
-(defn menu-row [& content]
+(defn minor-menu-row [& content]
   [:div.border-bottom.border-gray
    {:style {:padding "3px 0 2px"}}
    (into [:a.block.py1.h5.inherit-color] content)])
 
-(defn menu-area [signed-in {:keys [named-searches]}]
-  [:ul.list-reset.mb3
-   [:li (menu-row (utils/route-to events/navigate-shop-by-look)
-                  "Shop looks")]
+(defn major-menu-row [& content]
+  [:div.h4.medium.border-bottom.border-gray.flex.items-center.py3
+   (into [:a.block.inherit-color.flex-auto] content)])
+
+(defn old-shopping-area [signed-in named-searches]
+  [[:li (minor-menu-row (utils/route-to events/navigate-shop-by-look)
+                        "Shop looks")]
    (for [{:keys [title items]} (cond-> [{:title "Shop hair"
                                          :items (filter named-searches/is-extension? named-searches)}
                                         {:title "Shop closures & frontals"
@@ -166,27 +170,47 @@
                                  (conj {:title "Stylist exclusives"
                                         :items (filter named-searches/is-stylist-product? named-searches)}))]
      [:li {:key title}
-      (menu-row title)
+      (minor-menu-row title)
       [:ul.list-reset.ml6
        (for [{:keys [name slug]} items]
          [:li {:key slug}
-          (menu-row (assoc (utils/route-to events/navigate-named-search {:named-search-slug slug})
-                           :data-test (str "menu-" slug))
-                    (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
-                    (str/capitalize name))])]])
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-guarantee)
-                         :data-test "content-guarantee")
-                  "Our guarantee")]
-   [:li (menu-row {:href blog-url}
-                  "Real Beautiful blog")]
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
-                         :data-test "content-about-us")
-                  "About us")]
-   [:li (menu-row {:href "https://jobs.mayvenn.com"}
-                  "Careers")]
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-help)
-                         :data-test "content-help")
-                  "Contact us")]])
+          (minor-menu-row (assoc (utils/route-to events/navigate-named-search {:named-search-slug slug})
+                                 :data-test (str "menu-" slug))
+                          (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+                          (str/capitalize name))])]])])
+(def right-carat
+  #_[:img.right {:style {:height "1rem"}
+               :src (assets/path "/images/icons/carat-left.png")}]
+  [:div.right ">"]
+  )
+
+(defn shopping-area [signed-in]
+  [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) "Shop Looks")]
+   [:li (major-menu-row (utils/route-to events/control-hamburger-shop-bundles)
+                        "Shop Bundles"
+                        right-carat)]
+   [:li (major-menu-row (utils/route-to events/control-hamburger-shop-closures-and-frontals)
+                        "Shop Closures & Frontals"
+                        right-carat)]])
+
+(defn menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
+  [:ul.list-reset.mb3
+   (if new-taxon-launch?
+     (shopping-area signed-in)
+     (old-shopping-area signed-in named-searches))
+   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
+                               :data-test "content-guarantee")
+                        "Our guarantee")]
+   [:li (minor-menu-row {:href blog-url}
+                        "Real Beautiful blog")]
+   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-about-us)
+                               :data-test "content-about-us")
+                        "About us")]
+   [:li (minor-menu-row {:href "https://jobs.mayvenn.com"}
+                        "Careers")]
+   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-help)
+                               :data-test "content-help")
+                        "Contact us")]])
 
 (def sign-out-area
   (component/html
@@ -196,7 +220,7 @@
                      "Sign out")
     [:div])))
 
-(defn component [{:keys [user store promo-data shopping signed-in] :as data} owner opts]
+(defn component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4.border-bottom.border-gray
@@ -208,16 +232,17 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in shopping)]
+     (menu-area signed-in new-taxon-launch? shopping)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
 (defn basic-query [data]
-  {:signed-in (auth/signed-in data)
-   :user      {:email (get-in data keypaths/user-email)}
-   :store     (marquee/query data)
-   :shopping  {:named-searches (named-searches/current-named-searches data)}})
+  {:signed-in         (auth/signed-in data)
+   :new-taxon-launch? (experiments/new-taxon-launch? data)
+   :user              {:email (get-in data keypaths/user-email)}
+   :store             (marquee/query data)
+   :shopping          {:named-searches (named-searches/current-named-searches data)}})
 
 (defn query [data]
   (-> (basic-query data)

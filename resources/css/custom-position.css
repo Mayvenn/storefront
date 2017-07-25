@@ -2,5 +2,6 @@
 .sticky { position: sticky; } /* only works in FF, Safari, mobile Safari and chrome >= 58 */
 
 .rotate-45 { transform: rotate(45deg); }
+.flip { transform: rotate(180deg); }
 
 .stacking-context { transform: translateX(0); }
