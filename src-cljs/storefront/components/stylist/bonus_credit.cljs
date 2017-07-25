@@ -39,12 +39,18 @@
 (defn show-lifetime-total [lifetime-total]
   (let [message (goog.string/format "You have earned %s in bonus credits since you joined Mayvenn."
                                     (mf/as-money-without-cents lifetime-total))]
-    [:div.h6.gray
+    [:div.h6.dark-gray
      [:div.p3.hide-on-mb
       [:div.mb1.center svg/micro-dollar-sign]
       [:div message]]
      [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
+
+(def show-program-terms
+  [:.col-right-on-tb-dt.col-4-on-tb-dt
+   [:.border-top.border-gray.mx-auto.my2 {:style {:width "100px"}}]
+   [:.center.my2.h6
+    [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
 (defn component [{:keys [available-credit
                          award-amount
@@ -102,7 +108,8 @@
 
        [:.col-right-on-tb-dt.col-4-on-tb-dt
         (when (pos? lifetime-total)
-          (show-lifetime-total lifetime-total))]]))))
+          (show-lifetime-total lifetime-total))]
+       show-program-terms]))))
 
 (defn query [data]
   {:available-credit (get-in data keypaths/user-total-available-store-credit)

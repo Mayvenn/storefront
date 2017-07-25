@@ -191,6 +191,12 @@
      [:div.my3.hide-on-tb-dt
       [:div.center message]]]))
 
+(def show-program-terms
+  [:div.col-on-tb-dt.col-3-on-tb-dt
+   [:div.border-top.border-gray.mx-auto.my2 {:style {:width "100px"}}]
+   [:div.center.my2.h6
+    [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
+
 (defn component [{:keys [commissions expanded? products fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
@@ -208,7 +214,8 @@
           (when (zero? pages) empty-commissions)]
 
          [:div.col-on-tb-dt.col-3-on-tb-dt
-          (when rate (show-commission-rate rate))]])))))
+          (when rate (show-commission-rate rate))]
+         show-program-terms])))))
 
 (defn query [data]
   {:commissions      (get-in data keypaths/stylist-commissions)
