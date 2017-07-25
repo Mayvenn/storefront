@@ -109,6 +109,12 @@
     [:div.m2.img-no-chat-icon.bg-no-repeat.bg-contain.bg-center {:style {:height "4em"}}]
     [:p.h3.dark-gray "Looks like you haven't" [:br] "referred anyone yet."]]))
 
+(def show-program-terms
+  [:div.col-right-on-tb-dt.col-4-on-tb-dt.clearfix
+   [:div.border-top.border-gray.mx-auto.my2 {:style {:width "100px"}}]
+   [:div.center.my2.h6
+    [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
+
 (defn component [{:keys [earning-amount
                          bonus-amount
                          lifetime-total
@@ -135,7 +141,8 @@
         (when (zero? pages) empty-referrals)]
        [:div.col-right-on-tb-dt.col-4-on-tb-dt.clearfix
         (when (and (seq referrals) (pos? lifetime-total))
-          (show-lifetime-total lifetime-total))]]))))
+          (show-lifetime-total lifetime-total))]
+       show-program-terms]))))
 
 (defn query [data]
   {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)

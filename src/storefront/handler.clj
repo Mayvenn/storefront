@@ -177,6 +177,7 @@
     events/navigate-content-tos
     events/navigate-content-guarantee
     events/navigate-content-ugc-usage-terms
+    events/navigate-content-program-terms
     events/navigate-gallery
     events/navigate-leads-home})
 
