@@ -23,7 +23,7 @@
                                              (utils/route-to events/navigate-named-search {:named-search-slug slug}))
      name]))
 
-(defn shop-section [named-searches own-store?]
+(defn old-shop-section [named-searches own-store?]
   [:div.col-12
    [:div.medium.border-bottom.border-gray.mb1 "Shop"]
    [:nav.clearfix {:aria-label "Shop Products"}
@@ -33,6 +33,28 @@
      (products-section (filter #(or (named-searches/is-closure-or-frontal? %)
                                     (and own-store? (named-searches/is-stylist-product? %)))
                                named-searches))]]])
+
+(defn shop-section [own-store? categories]
+  (let [category-links (->> categories
+                            (sort-by :footer/order)
+                            (mapv (fn [{:keys [name slug id]}]
+                                    {:title       name
+                                     :slug        slug
+                                     :nav-message [events/navigate-category {:id id :slug slug}]})))
+        links          (if own-store?
+                         (conj category-links {:title       "Stylist Exclusives"
+                                               :slug        "stylist-products"
+                                               :nav-message [events/navigate-named-search {:named-search-slug "stylist-products"}]})
+                         category-links)]
+    [:div.col-12
+     [:div.medium.border-bottom.border-gray.mb1 "Shop"]
+     [:nav.clearfix {:aria-label "Shop Products"}
+      (for [link-column (partition-all 8 links)]
+        [:div.col.col-6
+         (for [{:keys [title nav-message slug]} link-column]
+           [:a.block.py1.dark-gray.light.titleize (merge {:key slug}
+                                                         (apply utils/route-to nav-message))
+            title])])]]))
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
   [:div
@@ -82,12 +104,17 @@
 
 (defn full-component [{:keys [named-searches
                               contacts
-                              own-store?]} owner opts]
+                              own-store?
+                              new-taxon-launch?
+                              categories]} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
      [:div.col-12.clearfix
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (shop-section named-searches own-store?)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+       (if new-taxon-launch?
+         (shop-section own-store? categories)
+         (old-shop-section named-searches own-store?))]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 social-section]]]
 
@@ -131,9 +158,11 @@
    :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  {:named-searches (named-searches/current-named-searches data)
-   :contacts       (contacts-query data)
-   :own-store?     (own-store? data)})
+  {:named-searches    (named-searches/current-named-searches data)
+   :contacts          (contacts-query data)
+   :own-store?        (own-store? data)
+   :categories        (get-in data keypaths/categories)
+   :new-taxon-launch? (experiments/new-taxon-launch? data)})
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
