@@ -19,7 +19,8 @@
    "/about-us"        (edn->bidi events/navigate-content-about-us)
    "/policy/privacy"  (edn->bidi events/navigate-content-privacy)
    "/policy/tos"      (edn->bidi events/navigate-content-tos)
-   "/ugc-usage-terms" (edn->bidi events/navigate-content-ugc-usage-terms)})
+   "/ugc-usage-terms" (edn->bidi events/navigate-content-ugc-usage-terms)
+   "/program-terms"   (edn->bidi events/navigate-content-program-terms)})
 
 (def static-api-routes
   ["/static" static-page-routes])
