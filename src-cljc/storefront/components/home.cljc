@@ -26,7 +26,18 @@
                                     "50vw")
                       :alt     alt}])
 
-(defn popular-grid [featured-searches]
+(defn category-image
+  [{:keys [url filename alt]}]
+  ;; Assumptions: 2 up on mobile, 3 up on tablet/desktop, within a .container. Does not account for 1px border.
+  [:img.block.col-12 {:src     (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename)
+                      :src-set (str url "-/format/auto/-/resize/750x/-/quality/lightest/" filename " 750w, "
+                                    url "-/format/auto/-/resize/640x/-/quality/lightest/" filename " 640w")
+                      :sizes   (str "(min-width: 1000px) 320px, "
+                                    "(min-width: 750px) 240px, "
+                                    "50vw")
+                      :alt     alt}])
+
+(defn popular-grid [featured-searches new-taxon-launch? categories]
   (let [grid-block (fn [key content]
                      [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
                       (ui/aspect-ratio 4 3 content)])]
@@ -35,16 +46,31 @@
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
-      (for [{:keys [representative-images name slug]} featured-searches]
-        (grid-block slug
-                    [:a.absolute.overlay.overflow-hidden
-                     (merge {:data-test (str "named-search-" slug)}
-                            (utils/route-to events/navigate-named-search {:named-search-slug slug}))
-                     (product-image (:model-grid representative-images))
-                     [:h3.h2.white.absolute.col-12.titleize
-                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                               :top         "50%"}}
-                      name]]))
+      (if new-taxon-launch?
+        (for [{:keys [slug id images name]} (->> categories
+                                                 (filter :home/order)
+                                                 (sort-by :home/order))]
+          (grid-block slug
+                      [:a.absolute.overlay.overflow-hidden
+                       (merge {:data-test (str "named-search-" slug)}
+                              (utils/route-to events/navigate-category {:slug slug
+                                                                        :id   id}))
+                       (category-image (:home images))
+                       [:h3.h2.white.absolute.col-12.titleize
+                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                                 :top         "50%"}}
+                        name]]))
+
+        (for [{:keys [representative-images name slug]} featured-searches]
+          (grid-block slug
+                      [:a.absolute.overlay.overflow-hidden
+                       (merge {:data-test (str "named-search-" slug)}
+                              (utils/route-to events/navigate-named-search {:named-search-slug slug}))
+                       (product-image (:model-grid representative-images))
+                       [:h3.h2.white.absolute.col-12.titleize
+                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                                 :top         "50%"}}
+                        name]])))
       (grid-block "spare-block"
                   [:a.bg-light-teal.white.absolute.overlay
                    (assoc (utils/route-to events/navigate-shop-by-look)
@@ -267,14 +293,14 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [featured-searches signed-in store my-shop-bar?]} owner opts]
+(defn component [{:keys [featured-searches signed-in store my-shop-bar? new-taxon-launch? categories]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero (:store-slug store))]
     [:section feature-blocks]
     (when my-shop-bar?
       [:section.hide-on-tb-dt (store-info signed-in store)])
-    [:section (popular-grid featured-searches)]
+    [:section (popular-grid featured-searches new-taxon-launch? categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
     [:section talkable-banner]]))
@@ -284,6 +310,8 @@
                            (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
    :store             (marquee/query data)
    :signed-in         (auth/signed-in data)
+   :new-taxon-launch? (experiments/new-taxon-launch? data)
+   :categories        (get-in data keypaths/categories)
    :my-shop-bar?      (experiments/my-shop-bar? data)})
 
 (defn built-component [data opts]
