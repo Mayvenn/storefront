@@ -61,7 +61,7 @@
         (utils/route-back-or-to back events/navigate-shop-by-look)
         [:span
          [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                          :src   (assets/path "/images/icons/carat-left.png")}]
+                          :src   (assets/path "/images/icons/caret-left.png")}]
          (or (:back-copy back) "back")]]
 
        [:h1.h3.medium.center.dark-gray.mb2 "Get this look"]]]

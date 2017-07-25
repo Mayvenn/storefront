@@ -178,20 +178,20 @@
                                  :data-test (str "menu-" slug))
                           (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
                           (str/capitalize name))])]])])
-(def right-carat
-  #_[:img.right {:style {:height "1rem"}
-               :src (assets/path "/images/icons/carat-left.png")}]
-  [:div.right ">"]
+(def right-caret
+  [:img.right.flip
+   {:style {:height "26px"} ; matches line-height of text in row (.h4)
+    :src (assets/path "/images/icons/caret-left.png")}]
   )
 
 (defn shopping-area [signed-in]
   [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) "Shop Looks")]
    [:li (major-menu-row (utils/route-to events/control-hamburger-shop-bundles)
                         "Shop Bundles"
-                        right-carat)]
+                        right-caret)]
    [:li (major-menu-row (utils/route-to events/control-hamburger-shop-closures-and-frontals)
                         "Shop Closures & Frontals"
-                        right-carat)]])
+                        right-caret)]])
 
 (defn menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
   [:ul.list-reset.mb3

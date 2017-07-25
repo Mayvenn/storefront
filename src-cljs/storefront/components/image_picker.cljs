@@ -27,7 +27,7 @@
          [:a.dark-gray.block.mb2
           (utils/route-to (:navigation-event back-link))
           [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                           :src   (assets/path "/images/icons/carat-left.png")}]
+                           :src   (assets/path "/images/icons/caret-left.png")}]
           (:back-copy back-link)]
          [:h1.center "Select a source below"]]
         [:div {:id selector} ui/nbsp]]))))
