@@ -8,6 +8,7 @@
             [storefront.accessors.nav :as nav]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.routes :as routes]
             [storefront.accessors.stylists :refer [own-store?]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
@@ -119,11 +120,7 @@
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
-     [:div.left
-      {:item-prop "name"
-       :content "Mayvenn Hair"}
-      [:span "© " (date/full-year (date/current-date)) " "] "Mayvenn"]
-     [:div.right
+     [:div.center
       [:a.white
        (utils/route-to events/navigate-content-about-us) "About"]
       " - "
@@ -138,8 +135,23 @@
        (assoc (utils/route-to events/navigate-content-privacy)
               :data-test "content-privacy") "Privacy"]
       " - "
+      [:a.white
+       ;; use traditional page load so anchors work
+       {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+        "CA Privacy Rights"]
+      " - "
       [:a.white (assoc (utils/route-to events/navigate-content-tos)
-                       :data-test "content-tos") "Terms"]]]]))
+                       :data-test "content-tos") "Terms"]
+      " - "
+      [:a.white
+       ;; use traditional page load so anchors work
+       {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")}
+       "Our Ads"]
+      " - "
+      [:span
+       {:item-prop "name"
+        :content "Mayvenn Hair"}
+       "©" (date/full-year (date/current-date)) " " "Mayvenn"]]]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
