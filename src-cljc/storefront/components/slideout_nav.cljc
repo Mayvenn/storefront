@@ -17,7 +17,8 @@
             [storefront.assets :as assets]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.ui :as ui]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.components.svg :as svg]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -156,8 +157,8 @@
    (into [:a.block.py1.h5.inherit-color] content)])
 
 (defn major-menu-row [& content]
-  [:div.h4.medium.border-bottom.border-gray.flex.items-center.py3
-   (into [:a.block.inherit-color.flex-auto] content)])
+  [:div.h4.medium.border-bottom.border-gray.py3
+   (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn old-shopping-area [signed-in named-searches]
   [[:li (minor-menu-row (utils/route-to events/navigate-shop-by-look)
@@ -179,19 +180,23 @@
                           (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
                           (str/capitalize name))])]])])
 (def right-caret
-  [:img.right.flip
-   {:style {:height "26px"} ; matches line-height of text in row (.h4)
-    :src (assets/path "/images/icons/caret-left.png")}]
-  )
+  (component/html
+   (svg/dropdown-arrow {:class  "stroke-black"
+                        :width  "23px"
+                        :height "20px"
+                        :style  {:transform "rotate(-90deg)"}})))
 
 (defn shopping-area [signed-in]
   [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) "Shop Looks")]
    [:li (major-menu-row (utils/route-to events/control-hamburger-shop-bundles)
-                        "Shop Bundles"
+                        [:span.flex-auto "Shop Bundles"]
                         right-caret)]
    [:li (major-menu-row (utils/route-to events/control-hamburger-shop-closures-and-frontals)
-                        "Shop Closures & Frontals"
-                        right-caret)]])
+                        [:span.flex-auto "Shop Closures & Frontals"]
+                        right-caret)]
+   (when (-> signed-in ::auth/as (= :stylist))
+     [:li (major-menu-row (utils/route-to events/navigate-named-search {:named-search-slug "stylist-products"})
+                          [:span.flex-auto "Shop Stylist Exclusives"])])])
 
 (defn menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
   [:ul.list-reset.mb3
