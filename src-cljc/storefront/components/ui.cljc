@@ -258,11 +258,12 @@
          (option-text option)])]
      custom-select-dropdown]))
 
-(defn select-field [{:keys [label keypath value options errors data-test] :as select-attributes}]
+(defn select-field [{:keys [label keypath value options errors data-test div-attrs] :as select-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb2.stacking-context
+     div-attrs
      (plain-select-field label keypath value options (not (nil? error))
-                         (dissoc select-attributes :label :keypath :value :options :errors))
+                         (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
      (field-error-message error data-test)]))
 
 (defn check-box [{:keys [label keypath value label-classes disabled] :as attributes}]
