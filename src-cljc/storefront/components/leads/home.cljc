@@ -8,9 +8,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.footer :as footer]))
+            [storefront.components.footer :as footer]
+            [clojure.string :as string]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg?] :as attrs}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options] :as attrs}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 60,000 stylists"]
@@ -23,7 +24,7 @@
                     :id        "sign-up-first-name"
                     :keypath   keypaths/leads-ui-sign-up-first-name
                     :focused   focused
-                    :label     "First name"
+                    :label     "First name*"
                     :name      "first-name"
                     :required  true
                     :value     first-name})
@@ -32,7 +33,7 @@
                     :id        "sign-up-last-name"
                     :keypath   keypaths/leads-ui-sign-up-last-name
                     :focused   focused
-                    :label     "Last name"
+                    :label     "Last name*"
                     :name      "last-name"
                     :required  true
                     :value     last-name})
@@ -41,7 +42,7 @@
                     :id        "sign-up-phone"
                     :keypath   keypaths/leads-ui-sign-up-phone
                     :focused   focused
-                    :label     "Mobile Phone"
+                    :label     "Mobile phone*"
                     :name      "phone"
                     :required  true
                     :type      "tel"
@@ -51,23 +52,22 @@
                     :id        "sign-up-email"
                     :keypath   keypaths/leads-ui-sign-up-email
                     :focused   focused
-                    :label     "Email"
+                    :label     "Email*"
                     :name      "email"
                     :required  true
                     :type      "email"
                     :value     email})
     (when-not self-reg?
-      (ui/select-field {:data-test "sign-up-call-slot"
-                        :errors    (get field-errors ["call-slot"])
-                        :id        "sign-up-call-slot"
-                        :label     "Best time to call"
-                        :keypath   keypaths/leads-ui-sign-up-call-slot
-                        :value     call-slot
-                        :options   [["Early Morning"   "8"]
-                                    ["Late Morning"    "10"]
-                                    ["Early Afternoon" "12"]
-                                    ["Late Afternoon"  "2"]]
-                        :div-attrs {:class "bg-white border border-gray rounded"}}))
+      (ui/select-field {:data-test   "sign-up-call-slot"
+                        :errors      (get field-errors ["call-slot"])
+                        :id          "sign-up-call-slot"
+                        :label       "Best time to call*"
+                        :keypath     keypaths/leads-ui-sign-up-call-slot
+                        :placeholder "Best time to call*"
+                        :value       call-slot
+                        :required    true
+                        :options     call-slot-options
+                        :div-attrs   {:class "bg-white border border-gray rounded"}}))
     (ui/teal-button {:type "submit"} "Become a Mayvenn Stylist")]])
 
 (defn resume-self-reg-panel [{:keys [lead]}]
@@ -299,10 +299,12 @@
     [:div.max-580.mx-auto.center
      [:h2 "Frequently asked questions"]
      [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
-     (for [{:keys [q a]} q-and-as]
-       [:div.mb4
-        [:h3 "Q: " q]
-        [:p.h5 "A: " a]])
+     (map-indexed (fn [idx {:keys [q a]}]
+                    [:div.mb4
+                     {:key (str "q-" idx "-a")}
+                     [:h3 "Q: " q]
+                     [:p.h5 "A: " a]])
+                  q-and-as)
      [:div.mt6
       [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
       [:ul.list-reset
@@ -328,19 +330,28 @@
      (faq-section q-and-as (:faq data))]
     (component/build footer/minimal-component (:footer data) nil)]))
 
+(defn ->hr [hour]
+  (let [tod    (if (< hour 12) "AM" "PM")
+        result (mod hour 12)
+        result (if (zero? result)
+                 12
+                 result)]
+    (str result " " tod)))
+
 (defn ^:private query [data]
-  (let [call-number "1-866-424-7201"
-        text-number "1-510-447-1504"]
+  (let [call-number         "1-866-424-7201"
+        text-number         "1-510-447-1504"]
     {:hero   {:current-flow    (get-in data keypaths/leads-lead-current-flow)
               :resume-self-reg {:lead (get-in data keypaths/leads-lead)}
-              :sign-up         {:field-errors []
-                                :first-name   (get-in data keypaths/leads-ui-sign-up-first-name)
-                                :last-name    (get-in data keypaths/leads-ui-sign-up-last-name)
-                                :phone        (get-in data keypaths/leads-ui-sign-up-phone)
-                                :email        (get-in data keypaths/leads-ui-sign-up-email)
-                                :call-slot    (get-in data keypaths/leads-ui-sign-up-call-slot)
-                                :self-reg?    (= "StylistsFB"
-                                                 (get-in data keypaths/leads-utm-content))}}
+              :sign-up         {:field-errors      []
+                                :first-name        (get-in data keypaths/leads-ui-sign-up-first-name)
+                                :last-name         (get-in data keypaths/leads-ui-sign-up-last-name)
+                                :phone             (get-in data keypaths/leads-ui-sign-up-phone)
+                                :email             (get-in data keypaths/leads-ui-sign-up-email)
+                                :call-slot         (get-in data keypaths/leads-ui-sign-up-call-slot)
+                                :self-reg?         (= "StylistsFB"
+                                                      (get-in data keypaths/leads-utm-content))
+                                :call-slot-options (get-in data keypaths/leads-ui-sign-up-call-slot-options)}}
      :footer {:call-number call-number}
      :faq    {:text-number text-number
               :call-number call-number}}))

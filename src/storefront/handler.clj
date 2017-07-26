@@ -33,7 +33,8 @@
             [storefront.utils.maps :refer [key-by]]
             [clojure.string :as str]
             [clojure.xml :as xml]
-            [storefront.accessors.categories :as categories]))
+            [storefront.accessors.categories :as categories]
+            [clj-time.core :as clj-time.core]))
 
 (defn storefront-site-defaults
   [environment]
@@ -349,22 +350,30 @@
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
+(defn eastern-offset []
+  (- (-> (clj-time.core/time-zone-for-id "America/New_York")
+         (.getOffset (clj-time.core/now))
+         (/ 3600000))))
+
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
       (let [render-ctx {:storeback-config storeback-config
                         :environment      environment
                         :client-version   client-version}
-            data       (as-> {} data
-                         (assoc-in data keypaths/leads-lead-tracking-id (cookies/get request "leads.tracking-id"))
-                         (assoc-in data keypaths/leads-utm-source (cookies/get request "leads.utm-source"))
-                         (assoc-in data keypaths/leads-utm-content (cookies/get request "leads.utm-content"))
-                         (assoc-in data keypaths/leads-utm-campaign (cookies/get request "leads.utm-campaign"))
-                         (assoc-in data keypaths/leads-utm-medium (cookies/get request "leads.utm-medium"))
-                         (assoc-in data keypaths/leads-utm-term (cookies/get request "leads.utm-term"))
-                         (assoc-in data keypaths/store-slug "welcome")
-                         (assoc-in data keypaths/environment environment)
-                         (assoc-in data keypaths/navigation-message nav-message))]
+            data       (-> {}
+                           (assoc-in keypaths/leads-lead-tracking-id (cookies/get request "leads.tracking-id"))
+                           (assoc-in keypaths/leads-utm-source (cookies/get request "leads.utm-source"))
+                           (assoc-in keypaths/leads-utm-content (cookies/get request "leads.utm-content"))
+                           (assoc-in keypaths/leads-utm-campaign (cookies/get request "leads.utm-campaign"))
+                           (assoc-in keypaths/leads-utm-medium (cookies/get request "leads.utm-medium"))
+                           (assoc-in keypaths/leads-utm-term (cookies/get request "leads.utm-term"))
+                           (assoc-in keypaths/store-slug "welcome")
+                           (assoc-in keypaths/environment environment)
+                           (assoc-in keypaths/navigation-message nav-message)
+                           (assoc-in keypaths/leads-ui-best-time-to-call {:eastern-offset        (eastern-offset)
+                                                                          :timezone-abbreviation "EST"})
+                           (assoc-in keypaths/leads-ui-sign-up-call-slot-options [["Best time to call*" ""]]))]
         (html-response render-ctx data)))))
 
 (defn wrap-welcome-is-for-leads [h]

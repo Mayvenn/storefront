@@ -260,12 +260,17 @@
 
 (def leads [:leads])
 (def leads-ui (conj leads :ui))
+(def leads-ui-best-time-to-call (conj leads-ui :best-time-to-call))
+(def leads-ui-best-time-to-call-eastern-offset (conj leads-ui-best-time-to-call :eastern-offset))
+(def leads-ui-best-time-to-call-offset (conj leads-ui-best-time-to-call :offset))
+(def leads-ui-best-time-to-call-timezone-abbreviation (conj leads-ui-best-time-to-call :timezone-abbreviation))
 (def leads-ui-sign-up (conj leads-ui :sign-up))
 (def leads-ui-sign-up-first-name (conj leads-ui-sign-up :first-name))
 (def leads-ui-sign-up-last-name (conj leads-ui-sign-up :last-name))
 (def leads-ui-sign-up-phone (conj leads-ui-sign-up :phone))
 (def leads-ui-sign-up-email (conj leads-ui-sign-up :email))
 (def leads-ui-sign-up-call-slot (conj leads-ui-sign-up :call-slot))
+(def leads-ui-sign-up-call-slot-options (conj leads-ui-sign-up :call-slot-options))
 
 (def leads-utm (conj leads :utm))
 (def leads-utm-source (conj leads-utm :source))
