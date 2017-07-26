@@ -70,7 +70,7 @@
                         :div-attrs {:class "bg-white border border-gray rounded"}}))
     (ui/teal-button {:type "submit"} "Become a Mayvenn Stylist")]])
 
-(defn resume-self-reg-panel [{:keys []}lead]
+(defn resume-self-reg-panel [{:keys [lead]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Become a Mayvenn"]
