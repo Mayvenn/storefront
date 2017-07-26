@@ -41,7 +41,7 @@
       :name         "Closures"
       :slug         "closures"
       :criteria     {:product/department #{"hair"} :hair/family #{"closures"}}
-      :filter-tabs  #{:hair/origin :hair/texture :hair/base-material :hair/color}
+      :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 8
@@ -50,7 +50,7 @@
       :name         "Frontals"
       :slug         "frontals"
       :criteria     {:product/department #{"hair"} :hair/family #{"frontals"}}
-      :filter-tabs  #{:hair/origin :hair/texture :hair/base-material :hair/color}
+      :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 9
@@ -59,7 +59,7 @@
       :name         "Straight"
       :slug         "straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"straight"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero
                      :home {:filename "StraightExtensionsMayvenn.jpg",
@@ -72,7 +72,7 @@
       :name         "Yaki Straight"
       :slug         "yaki-straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"yaki-straight"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 1
@@ -81,7 +81,7 @@
       :name         "Kinky Straight"
       :slug         "kinky-straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"kinky-straight"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 2
@@ -90,7 +90,7 @@
       :name         "Body Wave"
       :slug         "body-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"body-wave"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero
                      :home {:filename "BodyWaveExtensionsMayvenn.jpg",
@@ -103,7 +103,7 @@
       :name         "Loose Wave"
       :slug         "loose-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"loose-wave"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero
                      :home {:filename "LooseWaveExtensionsMayvenn.jpg",
@@ -116,7 +116,7 @@
       :name         "Water Wave"
       :slug         "water-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"water-wave"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 5
@@ -125,7 +125,7 @@
       :name         "Deep Wave"
       :slug         "deep-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"deep-wave"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero
                      :home {:filename "DeepWaveExtensionsMayvenn.jpg",
@@ -138,7 +138,7 @@
       :name         "Curly"
       :slug         "curly"
       :criteria     {:product/department #{"hair"} :hair/texture #{"curly"}}
-      :filter-tabs  #{:hair/family :hair/origin :hair/base-material :hair/color}
+      :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero
                      :home {:filename "CurlyExtensionsMayvenn.jpg",
@@ -151,11 +151,23 @@
       :name         "360 Frontals"
       :slug         "360-frontals"
       :criteria     {:product/department #{"hair"} :hair/family #{"360-frontals"}}
-      :filter-tabs  #{:hair/origin :hair/texture :hair/base-material :hair/color}
+      :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
       :copy         {:description fake-copy}
       :images       {:hero fake-hero}
       :footer/order 10
-      :seo          (category->seo "360 Frontals" "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}]))
+      :seo          (category->seo "360 Frontals" "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}
+     {:id              "11"
+      :name            "Bundles"
+      :slug            "bundles"
+      :criteria        {:product/department #{"hair"} :hair/family #{"bundles"}}
+      :filter-tabs     [:hair/texture :hair/origin]
+      :hamburger/order 0}
+     {:id              "12"
+      :name            "Closures & Frontals"
+      :slug            "closures-and-frontals"
+      :criteria        {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
+      :filter-tabs     [:hair/family :hair/origin :hair/texture :hair/base-material]
+      :hamburger/order 1}]))
 
 (defn id->category [id categories]
   (->> categories
@@ -166,6 +178,10 @@
   (some-> named-search-slug
           named-search->category-id
           (id->category categories)))
+
+(defn current-traverse-nav [data]
+  (id->category (get-in data keypaths/current-traverse-nav-id)
+                (get-in data keypaths/categories)))
 
 (defn current-category [data]
   (id->category (get-in data keypaths/current-category-id)

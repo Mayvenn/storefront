@@ -159,19 +159,22 @@
       #(messages/handle-message events/api-success-products
                                 (select-keys % [:products]))})))
 
-(defn search-sku-sets [category-id criteria]
+(defn criteria->query-params [criteria]
+  (->> criteria
+       (map (fn [[k v]]
+              [(if-let [ns (namespace k)]
+                 (str ns "/" (name k))
+                 (name k))
+               v]))
+       (into {})))
+
+(defn search-sku-sets [criteria handler]
   (api-req
    GET
    "/sku-sets"
    (conj request-keys/search-sku-sets criteria)
-   {:params  (->> criteria
-                  (map (fn [[k v]]
-                         [(if-let [ns (namespace k)]
-                            (str ns "/" (name k))
-                            (name k))
-                          v]))
-                  (into {}))
-    :handler #(messages/handle-message events/api-success-sku-sets (assoc % :category-id category-id))}))
+   {:params (criteria->query-params criteria)
+    :handler handler}))
 
 (defn fetch-facets [cache]
   (cache-req

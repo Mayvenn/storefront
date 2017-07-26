@@ -9,6 +9,8 @@
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.auth :as auth]
+            [storefront.utils.query :as query]
+            [storefront.accessors.categories :as categories]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.marquee :as marquee]
@@ -154,10 +156,10 @@
 (defn minor-menu-row [& content]
   [:div.border-bottom.border-gray
    {:style {:padding "3px 0 2px"}}
-   (into [:a.block.py1.h5.inherit-color] content)])
+   (into [:a.block.py1.h5.inherit-color.flex.items-center] content)])
 
 (defn major-menu-row [& content]
-  [:div.h4.medium.border-bottom.border-gray.py3
+  [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn old-shopping-area [signed-in named-searches]
@@ -187,16 +189,16 @@
                         :style  {:transform "rotate(-90deg)"}})))
 
 (defn shopping-area [signed-in]
-  [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) "Shop Looks")]
-   [:li (major-menu-row (utils/route-to events/control-hamburger-shop-bundles)
-                        [:span.flex-auto "Shop Bundles"]
+  [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
+   [:li (major-menu-row (utils/fake-href events/traverse-nav {:slug "bundles" :id "11"})
+                        [:span.medium.flex-auto "Shop Bundles"]
                         right-caret)]
-   [:li (major-menu-row (utils/route-to events/control-hamburger-shop-closures-and-frontals)
-                        [:span.flex-auto "Shop Closures & Frontals"]
+   [:li (major-menu-row (utils/fake-href events/traverse-nav {:slug "closures-and-frontals" :id "12"})
+                        [:span.medium.flex-auto "Shop Closures & Frontals"]
                         right-caret)]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (utils/route-to events/navigate-named-search {:named-search-slug "stylist-products"})
-                          [:span.flex-auto "Shop Stylist Exclusives"])])])
+                          [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
 (defn menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
   [:ul.list-reset.mb3
@@ -225,7 +227,31 @@
                      "Sign out")
     [:div])))
 
-(defn component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
+(defn taxonomy-component [{:keys [category filters facets]} owner opts]
+  (let [prior-facets  (take-while (complement :selected?) (:facets filters))
+        current-facet (query/get {:selected? true} (:facets filters))]
+    (component/create
+     [:div
+      [:div.top-0.sticky.z4.border-bottom.border-gray
+       burger-header]
+      [:div.px6
+       (major-menu-row
+        [:div.h2.flex-auto.center
+         "Shop "
+         (->> prior-facets
+              (mapcat :options)
+              (filter :selected?)
+              (map :label))
+         (:name category)])
+       [:ul.list-reset
+        (for [option (:options current-facet)]
+          [:li (major-menu-row
+                (utils/fake-href events/traverse-nav {:id (:id category)
+                                                      :slug (:slug category)
+                                                      :query-params {(:slug current-facet) (:slug option)}})
+                [:span.flex-auto (:label option)] right-caret)])]]])))
+
+(defn slideout-component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4.border-bottom.border-gray
@@ -242,9 +268,17 @@
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
+(defn component [{:keys [on-taxon? new-taxon-launch?] :as data} owner opts]
+  (component/create
+   [:div
+    (if (and on-taxon? new-taxon-launch?)
+      (component/build taxonomy-component (:nav-traversal data) opts)
+      (component/build slideout-component data opts))]))
+
 (defn basic-query [data]
   {:signed-in         (auth/signed-in data)
    :new-taxon-launch? (experiments/new-taxon-launch? data)
+   :on-taxon?         (get-in data keypaths/current-traverse-nav-id)
    :user              {:email (get-in data keypaths/user-email)}
    :store             (marquee/query data)
    :shopping          {:named-searches (named-searches/current-named-searches data)}})
@@ -252,7 +286,9 @@
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
-      (assoc-in [:promo-data] (promotion-banner/query data))))
+      (assoc-in [:promo-data] (promotion-banner/query data))
+      (assoc-in [:nav-traversal] {:category (categories/current-traverse-nav data)
+                                 :filters  (get-in data keypaths/category-filters-for-nav)})))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

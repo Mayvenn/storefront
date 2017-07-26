@@ -1,5 +1,6 @@
 (ns storefront.accessors.category-filters
   (:require [clojure.set :as set]
+            [storefront.utils.query :as query]
             [storefront.utils.maps :as maps]))
 
 (comment
@@ -83,9 +84,8 @@
                                   (map :attributes)
                                   (maps/into-multimap))]
     (-> {:initial-sku-sets sku-sets
-         :facets           (->> facets
-                                (filter (comp (:filter-tabs category) :facet/slug))
-                                (sort-by :filter/order)
+         :facets           (->> (:filter-tabs category)
+                                (map (fn [tab] (query/get {:facet/slug tab} facets)))
                                 (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
                                        (let [represented-options (get represented-criteria slug)]
                                          {:slug         slug

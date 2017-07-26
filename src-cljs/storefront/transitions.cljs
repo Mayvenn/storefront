@@ -105,6 +105,9 @@
     (nav/auth-events (get-in app-state keypaths/navigation-event))
     (assoc-in keypaths/completed-order nil)))
 
+(defmethod transition-state events/traverse-nav [_ event args app-state]
+  (assoc-in app-state keypaths/current-traverse-nav-id (:id args)))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)]
     (-> app-state
@@ -237,7 +240,6 @@
             (call-slot/options (get-in app-state keypaths/leads-ui-best-time-to-call-eastern-offset)
                                (js/Date.))))
 
-
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
       (assoc-in keypaths/checkout-selected-shipping-method
@@ -273,23 +275,23 @@
 
 (defmethod transition-state events/control-category-filter-select
   [_ _ {:keys [selected]} app-state]
-  (update-in app-state keypaths/category-filters category-filters/open selected))
+  (update-in app-state keypaths/category-filters-for-browse category-filters/open selected))
 
 (defmethod transition-state events/control-category-filters-close
   [_ _ _ app-state]
-  (update-in app-state keypaths/category-filters category-filters/close))
+  (update-in app-state keypaths/category-filters-for-browse category-filters/close))
 
 (defmethod transition-state events/control-category-criterion-selected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters category-filters/select-criterion filter option))
+  (update-in app-state keypaths/category-filters-for-browse category-filters/select-criterion filter option))
 
 (defmethod transition-state events/control-category-criterion-deselected
   [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters category-filters/deselect-criterion filter option))
+  (update-in app-state keypaths/category-filters-for-browse category-filters/deselect-criterion filter option))
 
 (defmethod transition-state events/control-category-criteria-cleared
   [_ _ _ app-state]
-  (update-in app-state keypaths/category-filters category-filters/clear-criteria))
+  (update-in app-state keypaths/category-filters-for-browse category-filters/clear-criteria))
 
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
@@ -371,14 +373,27 @@
       (update :criteria #(maps/map-values set %))
       (assoc :skus (map #(get id->skus %) (:skus sku-set)))))
 
-(defmethod transition-state events/api-success-sku-sets
-  [_ event {:keys [sku-sets skus category-id]} app-state]
+(defn make-category-filters [app-state {:keys [sku-sets skus category-id]}]
+  (category-filters/init
+   (categories/id->category category-id (get-in app-state keypaths/categories))
+   (map (partial hydrate-sku-set (maps/key-by :sku skus)) sku-sets)
+   (get-in app-state keypaths/facets)))
+
+(defmethod transition-state events/api-success-sku-sets-for-nav
+  [_ event response app-state]
+  (let [filters (make-category-filters app-state response)]
+    (assoc-in app-state keypaths/category-filters-for-nav
+              (-> filters
+                  (category-filters/open (-> filters
+                                             :facets
+                                             first
+                                             :slug))))))
+
+(defmethod transition-state events/api-success-sku-sets-for-browse
+  [_ event response app-state]
   (-> app-state
-      (assoc-in keypaths/category-filters
-                (category-filters/init
-                 (categories/id->category category-id (get-in app-state keypaths/categories))
-                 (map (partial hydrate-sku-set (maps/key-by :sku skus)) sku-sets)
-                 (get-in app-state keypaths/facets)))))
+      (assoc-in keypaths/category-filters-for-browse
+                (make-category-filters app-state response))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]

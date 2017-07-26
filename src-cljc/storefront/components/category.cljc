@@ -185,7 +185,7 @@
 
 (defn ^:private query [data]
   {:category (categories/current-category data)
-   :filters  (get-in data keypaths/category-filters)
+   :filters  (get-in data keypaths/category-filters-for-browse)
    :facets   (get-in data keypaths/facets)})
 
 (defn built-component [data opts]

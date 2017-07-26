@@ -94,7 +94,8 @@
 
 (def bundle-builder (conj ui :bundle-builder))
 
-(def category-filters (conj ui :category-filters))
+(def category-filters-for-nav (conj ui :category-filters :nav))
+(def category-filters-for-browse (conj ui :category-filters :browse))
 
 (def captured-email (conj ui :captured-email))
 
@@ -219,6 +220,8 @@
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
 (def current-category-id (conj ui :current-category-id))
+(def current-traverse-nav (conj ui :current-traverse-nav))
+(def current-traverse-nav-id (conj current-traverse-nav :id))
 
 (def stylist-referrals (conj stylist :referrals))
 

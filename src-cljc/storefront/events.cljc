@@ -86,6 +86,8 @@
 (defpath navigate-leads)
 (defpath navigate-leads-home)
 
+(defpath traverse-nav)
+
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)
@@ -200,7 +202,8 @@
 
 (defpath api-success-products)
 (defpath api-success-states)
-(defpath api-success-sku-sets)
+(defpath api-success-sku-sets-for-nav)
+(defpath api-success-sku-sets-for-browse)
 (defpath api-success-facets)
 
 (defpath api-success-auth)
