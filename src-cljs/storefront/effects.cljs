@@ -17,6 +17,7 @@
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
+            [storefront.browser.tags :as tags]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.history :as history]
@@ -262,6 +263,9 @@
   (when (= "welcome" (get-in app-state keypaths/store-slug))
     (redirect events/navigate-leads-home))
   (potentially-show-email-popup app-state))
+
+(defmethod perform-effects events/navigate-leads-home [_ _ _ _ app-state]
+  (tags/insert-tag-with-src "//platform.twitter.com/widgets.js" "twitter-script"))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
