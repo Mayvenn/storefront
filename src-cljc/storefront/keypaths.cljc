@@ -265,6 +265,7 @@
 (def leads-ui-sign-up-last-name (conj leads-ui-sign-up :last-name))
 (def leads-ui-sign-up-phone (conj leads-ui-sign-up :phone))
 (def leads-ui-sign-up-email (conj leads-ui-sign-up :email))
+(def leads-ui-sign-up-call-slot (conj leads-ui-sign-up :call-slot))
 
 (def leads-utm (conj leads :utm))
 (def leads-utm-source (conj leads-utm :source))
@@ -274,5 +275,6 @@
 (def leads-utm-term (conj leads-utm :term))
 
 (def leads-lead (conj leads :lead))
+(def leads-lead-id (conj leads-lead :id))
 (def leads-lead-tracking-id (conj leads-lead :tracking-id))
 (def leads-lead-current-flow (conj leads-lead :current-flow))
