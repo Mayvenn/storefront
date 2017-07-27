@@ -288,7 +288,7 @@
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
       (assoc-in [:nav-traversal] {:category (categories/current-traverse-nav data)
-                                 :filters  (get-in data keypaths/category-filters-for-nav)})))
+                                  :filters  (get-in data keypaths/category-filters-for-nav)})))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

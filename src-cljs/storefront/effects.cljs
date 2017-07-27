@@ -293,11 +293,9 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-(defmethod perform-effects events/traverse-nav [_ event {:keys [id slug query-params]} _ app-state]
+(defmethod perform-effects events/traverse-nav [_ event {:keys [id slug]} _ app-state]
   (let [category (categories/current-traverse-nav app-state)
         criteria {}]
-    (prn query-params
-         (:criteria category))
     (api/fetch-facets (get-in app-state keypaths/api-cache))
     (api/search-sku-sets (:criteria category)
                          #(handle-message events/api-success-sku-sets-for-nav
