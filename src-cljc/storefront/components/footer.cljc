@@ -103,6 +103,42 @@
                 :href "http://www.pinterest.com/mayvennhair/"}
       [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
 
+(defn footer-links [minimal?]
+  [:div.center
+   (when-not minimal?
+     [:a.inherit-color
+      (utils/route-to events/navigate-content-about-us) "About"]
+     " - "
+     [:span
+      [:a.inherit-color {:href "https://jobs.mayvenn.com"}
+       "Careers"]
+      " - "]
+     [:a.inherit-color
+      (utils/route-to events/navigate-content-help) "Contact"]
+     " - ")
+   [:a.inherit-color
+    (assoc (utils/route-to events/navigate-content-privacy)
+           :data-test "content-privacy") "Privacy"]
+   " - "
+   [:a.inherit-color
+    ;; use traditional page load so anchors work
+    {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+    "CA Privacy Rights"]
+   " - "
+   [:a.inherit-color (assoc (utils/route-to events/navigate-content-tos)
+                    :data-test "content-tos") "Terms"]
+   " - "
+   [:a.inherit-color
+    ;; use traditional page load so anchors work
+    {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")}
+    "Our Ads"]
+   (when-not minimal?
+     " - "
+     [:span
+      {:item-prop "name"
+       :content "Mayvenn Hair"}
+      "©" (date/full-year (date/current-date)) " " "Mayvenn"])] )
+
 (defn full-component [{:keys [named-searches
                               contacts
                               own-store?
@@ -120,38 +156,7 @@
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
-     [:div.center
-      [:a.white
-       (utils/route-to events/navigate-content-about-us) "About"]
-      " - "
-      [:span
-       [:a.white {:href "https://jobs.mayvenn.com"}
-        "Careers"]
-       " - "]
-      [:a.white
-       (utils/route-to events/navigate-content-help) "Contact"]
-      " - "
-      [:a.white
-       (assoc (utils/route-to events/navigate-content-privacy)
-              :data-test "content-privacy") "Privacy"]
-      " - "
-      [:a.white
-       ;; use traditional page load so anchors work
-       {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-        "CA Privacy Rights"]
-      " - "
-      [:a.white (assoc (utils/route-to events/navigate-content-tos)
-                       :data-test "content-tos") "Terms"]
-      " - "
-      [:a.white
-       ;; use traditional page load so anchors work
-       {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")}
-       "Our Ads"]
-      " - "
-      [:span
-       {:item-prop "name"
-        :content "Mayvenn Hair"}
-       "©" (date/full-year (date/current-date)) " " "Mayvenn"]]]
+     (footer-links false)]
     [:div.p2.center.bg-teal.h6.white
      "We have updated our "
      [:a.white.underline (utils/route-to events/navigate-content-privacy) "Privacy Policy"]
@@ -168,7 +173,9 @@
       [:div.dark-gray.light.h5
        [:span.hide-on-tb-dt [:a.dark-gray {:href (phone-uri call-number)} call-number]]
        [:span.hide-on-mb call-number]
-       " | 9am-5pm PST M-F"]]]]))
+       " | 9am-5pm PST M-F"]
+      [:div.my1.dark-silver.h6
+       (footer-links true)]]]]))
 
 (defn contacts-query [data]
   {:sms-number    (get-in data keypaths/sms-number)
