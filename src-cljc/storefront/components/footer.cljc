@@ -106,16 +106,16 @@
 (defn footer-links [minimal?]
   [:div.center
    (when-not minimal?
-     [:a.inherit-color
-      (utils/route-to events/navigate-content-about-us) "About"]
-     " - "
-     [:span
-      [:a.inherit-color {:href "https://jobs.mayvenn.com"}
-       "Careers"]
-      " - "]
-     [:a.inherit-color
-      (utils/route-to events/navigate-content-help) "Contact"]
-     " - ")
+     [[:a.inherit-color
+       (utils/route-to events/navigate-content-about-us) "About"]
+      " - "
+      [:span
+       [:a.inherit-color {:href "https://jobs.mayvenn.com"}
+        "Careers"]
+       " - "]
+      [:a.inherit-color
+       (utils/route-to events/navigate-content-help) "Contact"]
+      " - "])
    [:a.inherit-color
     (assoc (utils/route-to events/navigate-content-privacy)
            :data-test "content-privacy") "Privacy"]
