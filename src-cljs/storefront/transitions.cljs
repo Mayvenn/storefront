@@ -21,6 +21,12 @@
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
 
+(defn clear-nav-traversal
+  [app-state]
+  (assoc-in app-state
+            keypaths/current-traverse-nav
+            nil))
+
 (defn collapse-menus
   ([app-state] (collapse-menus app-state nil))
   ([app-state menus]
@@ -112,6 +118,7 @@
   (let [args (dissoc args :nav-stack-item)]
     (-> app-state
         collapse-menus
+        clear-nav-traversal
         add-return-event
         (add-pending-promo-code args)
         clear-flash
@@ -271,7 +278,9 @@
 
 (defmethod transition-state events/control-menu-collapse-all
   [_ _ {:keys [menus]} app-state]
-  (collapse-menus app-state menus))
+  (-> app-state
+      clear-nav-traversal
+      (collapse-menus menus)))
 
 (defmethod transition-state events/control-category-filter-select
   [_ _ {:keys [selected]} app-state]
