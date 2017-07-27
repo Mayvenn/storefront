@@ -137,7 +137,7 @@
      [:span
       {:item-prop "name"
        :content "Mayvenn Hair"}
-      "©" (date/full-year (date/current-date)) " " "Mayvenn"])] )
+      " ©" (date/full-year (date/current-date)) " " "Mayvenn"])] )
 
 (defn full-component [{:keys [named-searches
                               contacts
