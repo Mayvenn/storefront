@@ -111,8 +111,13 @@
     (nav/auth-events (get-in app-state keypaths/navigation-event))
     (assoc-in keypaths/completed-order nil)))
 
-(defmethod transition-state events/traverse-nav [_ event args app-state]
-  (assoc-in app-state keypaths/current-traverse-nav-id (:id args)))
+(defmethod transition-state events/traverse-nav [_ event {:keys [id query-params]} app-state]
+  (let [filters (get-in app-state keypaths/category-filters-for-nav)
+        [facet-slug option-slug] (first query-params)]
+    (-> app-state
+        (assoc-in keypaths/current-traverse-nav-id id)
+        (assoc-in keypaths/category-filters-for-nav
+                  (category-filters/select-criterion filters facet-slug option-slug)))))
 
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)]
