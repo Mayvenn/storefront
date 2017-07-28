@@ -1,7 +1,4 @@
-(ns storefront.effects
-  #?(:cljs
-     (:require
-      [storefront.frontend-effects])))
+(ns storefront.effects)
 
 (defmulti perform-effects identity)
 

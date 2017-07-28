@@ -1,7 +1,4 @@
-(ns storefront.transitions
-  #?(:cljs
-     (:require
-      [storefront.frontend-transitions])))
+(ns storefront.transitions)
 
 (defmulti transition-state identity)
 
