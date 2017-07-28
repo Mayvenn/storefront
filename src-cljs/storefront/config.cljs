@@ -67,6 +67,10 @@
                                  "production" "UA-36226630-1"
                                  "UA-36226630-2"))
 
+(def facebook-pixel-id (case js/environment
+                         "production" "721931104522825"
+                         "139664856621138"))
+
 (def stripe-publishable-key (case js/environment
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
                               "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))
