@@ -294,14 +294,19 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/traverse-nav [_ event {:keys [id slug]} _ app-state]
-  (let [category (categories/current-traverse-nav app-state)
-        criteria {}]
-    (api/fetch-facets (get-in app-state keypaths/api-cache))
-    (api/search-sku-sets (:criteria category)
-                         #(handle-message events/api-success-sku-sets-for-nav
-                                          (assoc %
-                                                 :category-id (:id category)
-                                                 :criteria criteria)))))
+  (let [sku-sets (:filtered-sku-sets
+                  (get-in app-state keypaths/category-filters-for-nav))]
+    (cond
+      id (let [category (categories/current-traverse-nav app-state)]
+           (api/fetch-facets (get-in app-state keypaths/api-cache))
+           (api/search-sku-sets (:criteria category)
+                                #(handle-message events/api-success-sku-sets-for-nav
+                                                 (assoc %
+                                                        :category-id (:id category)
+                                                        :criteria {}))))
+
+      (= 1 (count sku-sets))
+      (handle-message events/navigate-category (select-keys (first sku-sets) [:slug])))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
   (let [category (categories/current-category app-state)]

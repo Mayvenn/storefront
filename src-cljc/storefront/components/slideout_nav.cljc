@@ -36,6 +36,20 @@
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
+(def left-caret
+  (component/html
+   (svg/dropdown-arrow {:class  "stroke-gray"
+                        :width  "23px"
+                        :height "20px"
+                        :style  {:transform "rotate(90deg)"}})))
+
+(def right-caret
+  (component/html
+   (svg/dropdown-arrow {:class  "stroke-black"
+                        :width  "23px"
+                        :height "20px"
+                        :style  {:transform "rotate(-90deg)"}})))
+
 (defn logo [data-test-value height]
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
    (assoc (utils/route-to events/navigate-home)
@@ -181,13 +195,6 @@
                                  :data-test (str "menu-" slug))
                           (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
                           (str/capitalize name))])]])])
-(def right-caret
-  (component/html
-   (svg/dropdown-arrow {:class  "stroke-black"
-                        :width  "23px"
-                        :height "20px"
-                        :style  {:transform "rotate(-90deg)"}})))
-
 (defn shopping-area [signed-in]
   [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (utils/fake-href events/traverse-nav {:slug "bundles" :id "11"})
@@ -227,27 +234,37 @@
                      "Sign out")
     [:div])))
 
-(defn taxonomy-component [{:keys [category filters facets]} owner opts]
-  (let [prior-facets  (take-while (complement :selected?) (:facets filters))
-        current-facet (query/get {:selected? true} (:facets filters))]
+(defn taxonomy-component [{:keys [category filters]} owner opts]
+  (let [prior-facets   (take-while (complement :selected?) (:facets filters))
+        current-facet  (query/get {:selected? true} (:facets filters))
+        previous-facet {(:slug (last prior-facets))
+                        (first (get (:criteria filters) (:slug (last prior-facets))))}
+        next-facet     (second (drop-while #(not= % (:slug current-facet)) (:filter-tabs category)))]
     (component/create
      [:div
       [:div.top-0.sticky.z4.border-bottom.border-gray
        burger-header]
+      [:div
+       [:a
+        (if (seq prior-facets)
+          (utils/fake-href events/traverse-nav {:prior previous-facet})
+          (utils/fake-href events/control-menu-collapse-all))
+        left-caret "Back"]]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center
          "Shop "
-         (->> prior-facets
-              (mapcat :options)
-              (filter :selected?)
-              (map :label))
-         (:name category)])
+         (str/join " "
+                      (->> prior-facets
+                           (mapcat :options)
+                           (filter :selected?)
+                           reverse
+                           (map :label)))
+         " " (:name category)])
        [:ul.list-reset
         (for [option (:options current-facet)]
           [:li (major-menu-row
-                (utils/fake-href events/traverse-nav {:id (:id category)
-                                                      :slug (:slug category)
+                (utils/fake-href events/traverse-nav {:next-facet   next-facet
                                                       :query-params {(:slug current-facet) (:slug option)}})
                 [:span.flex-auto (:label option)] right-caret)])]]])))
 
