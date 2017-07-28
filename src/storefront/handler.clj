@@ -17,7 +17,7 @@
              [codec :as codec]
              [response :as util.response]]
             [storefront
-             [api :as api]
+             [backend-api :as api]
              [routes :as routes]
              [config :as config]
              [cookies :as cookies]

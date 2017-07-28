@@ -3,6 +3,9 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.events :as events]
+            [storefront.transitions :as transitions]
+            [storefront.effects :as effects]
+            [storefront.api :as api]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
@@ -11,6 +14,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.utils.query :as query]
             [storefront.accessors.categories :as categories]
+            [storefront.accessors.category-filters :as category-filters]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.marquee :as marquee]
@@ -309,3 +313,38 @@
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
+
+(defmethod effects/perform-effects events/traverse-nav [_ event {:keys [id slug]} _ app-state]
+  (let [sku-sets (:filtered-sku-sets
+                  (get-in app-state keypaths/category-filters-for-nav))]
+    (cond
+      id (let [category (categories/current-traverse-nav app-state)]
+           (api/fetch-facets (get-in app-state keypaths/api-cache))
+           (api/search-sku-sets (:criteria category)
+                                #(messages/handle-message events/api-success-sku-sets-for-nav
+                                                          (assoc %
+                                                                 :category-id (:id category)
+                                                                 :criteria {}))))
+
+      (= 1 (count sku-sets))
+      (messages/handle-message events/navigate-category (select-keys (first sku-sets) [:slug])))))
+
+(defmethod transitions/transition-state events/traverse-nav
+  [_ event {:keys [id query-params next-facet prior]} app-state]
+  (if id
+    (assoc-in app-state keypaths/current-traverse-nav-id id)
+
+    (let [filters (get-in app-state keypaths/category-filters-for-nav)
+          [selected-facet selected-option] (first query-params)
+          [prior-facet prior-option] (first prior)]
+      (assoc-in app-state
+                keypaths/category-filters-for-nav
+                (cond-> filters
+                  selected-facet
+                  (category-filters/select-criterion selected-facet selected-option)
+
+                  prior-facet
+                  (category-filters/deselect-criterion prior-facet prior-option)
+
+                  (or next-facet prior-facet)
+                  (category-filters/open (or next-facet prior-facet)))))))

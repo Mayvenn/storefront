@@ -1,6 +1,7 @@
-(ns storefront.transitions
+(ns storefront.frontend-transitions
   (:require [cemerick.url :as url]
             [clojure.string :as string]
+            [storefront.transitions :refer [transition-state]]
             [storefront.accessors.bundle-builder :as bundle-builder]
             [storefront.accessors.category-filters :as category-filters]
             [storefront.accessors.experiments :as experiments]
@@ -42,12 +43,6 @@
       clear-field-errors
       (assoc-in keypaths/flash-now-success nil)
       (assoc-in keypaths/flash-now-failure nil)))
-
-(defmulti transition-state identity)
-
-(defmethod transition-state :default [dispatch event args app-state]
-  ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
-  app-state)
 
 (defn add-return-event [app-state]
   (let [[return-event return-args] (get-in app-state keypaths/navigation-message)]
@@ -110,26 +105,6 @@
   (cond-> app-state
     (nav/auth-events (get-in app-state keypaths/navigation-event))
     (assoc-in keypaths/completed-order nil)))
-
-(defmethod transition-state events/traverse-nav
-  [_ event {:keys [id query-params next-facet prior]} app-state]
-  (if id
-    (assoc-in app-state keypaths/current-traverse-nav-id id)
-
-    (let [filters (get-in app-state keypaths/category-filters-for-nav)
-          [selected-facet selected-option] (first query-params)
-          [prior-facet prior-option] (first prior)]
-      (assoc-in app-state
-                keypaths/category-filters-for-nav
-                (cond-> filters
-                  selected-facet
-                  (category-filters/select-criterion selected-facet selected-option)
-
-                  prior-facet
-                  (category-filters/deselect-criterion prior-facet prior-option)
-
-                  (or next-facet prior-facet)
-                  (category-filters/open (or next-facet prior-facet)))))))
 
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)]

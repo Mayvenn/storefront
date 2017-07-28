@@ -1,4 +1,4 @@
-(ns storefront.api
+(ns storefront.backend-api
   (:require [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]

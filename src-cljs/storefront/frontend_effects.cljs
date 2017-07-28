@@ -1,8 +1,9 @@
-(ns storefront.effects
+(ns storefront.frontend-effects
   (:require [ajax.core :refer [-abort]]
             [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
+            [storefront.effects :refer [perform-effects]]
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
@@ -109,10 +110,6 @@
 (defn page-not-found []
   (redirect events/navigate-home)
   (handle-message events/flash-later-show-failure {:message "Page not found"}))
-
-(defmulti perform-effects identity)
-
-(defmethod perform-effects :default [dispatch event args old-app-state app-state])
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
   (svg/insert-sprite)
@@ -293,20 +290,7 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-(defmethod perform-effects events/traverse-nav [_ event {:keys [id slug]} _ app-state]
-  (let [sku-sets (:filtered-sku-sets
-                  (get-in app-state keypaths/category-filters-for-nav))]
-    (cond
-      id (let [category (categories/current-traverse-nav app-state)]
-           (api/fetch-facets (get-in app-state keypaths/api-cache))
-           (api/search-sku-sets (:criteria category)
-                                #(handle-message events/api-success-sku-sets-for-nav
-                                                 (assoc %
-                                                        :category-id (:id category)
-                                                        :criteria {}))))
 
-      (= 1 (count sku-sets))
-      (handle-message events/navigate-category (select-keys (first sku-sets) [:slug])))))
 
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
   (let [category (categories/current-category app-state)]
