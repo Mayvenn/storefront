@@ -389,6 +389,7 @@
                     :green_dot_payout_attributes
                     :instagram_account
                     :styleseat_account
+                    :green_dot_available
                     :user
                     :address])
       (assoc :original_payout_method (:chosen_payout_method args))))

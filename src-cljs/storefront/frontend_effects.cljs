@@ -904,7 +904,10 @@
     (api/get-gallery {:user-id    (get-in app-state keypaths/user-id)
                       :user-token (get-in app-state keypaths/user-token)})))
 
-(defmethod perform-effects events/api-success-stylist-account [_ event args previous-app-state app-state]
+(defmethod perform-effects events/api-success-stylist-account
+  [_ event {:keys [stylist]} previous-app-state app-state]
+  (when (:green_dot_available stylist)
+    (handle-message events/enable-feature {:feature "green-dot"}))
   ;; Portrait becomes pending either when the user navigates to an account page
   ;; or when they change their portrait.
   ;; In either case, we start the poll loop.
