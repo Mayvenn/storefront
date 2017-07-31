@@ -293,13 +293,12 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [featured-searches signed-in store my-shop-bar? new-taxon-launch? categories]} owner opts]
+(defn component [{:keys [featured-searches signed-in store new-taxon-launch? categories]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero (:store-slug store))]
     [:section feature-blocks]
-    (when my-shop-bar?
-      [:section.hide-on-tb-dt (store-info signed-in store)])
+    [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid featured-searches new-taxon-launch? categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -311,8 +310,7 @@
    :store             (marquee/query data)
    :signed-in         (auth/signed-in data)
    :new-taxon-launch? (experiments/new-taxon-launch? data)
-   :categories        (get-in data keypaths/categories)
-   :my-shop-bar?      (experiments/my-shop-bar? data)})
+   :categories        (get-in data keypaths/categories)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

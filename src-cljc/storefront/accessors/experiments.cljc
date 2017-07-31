@@ -54,8 +54,5 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn my-shop-bar? [data]
-  (display-feature? data "my-shop-bar"))
-
 (defn new-taxon-launch? [data]
   (display-feature? data "new-taxon-launch"))
