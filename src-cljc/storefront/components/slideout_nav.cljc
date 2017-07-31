@@ -40,14 +40,14 @@
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
-(def left-caret
+(def back-caret
   (component/html
    (svg/dropdown-arrow {:class  "stroke-gray"
-                        :width  "23px"
-                        :height "20px"
+                        :width  "12px"
+                        :height "10px"
                         :style  {:transform "rotate(90deg)"}})))
 
-(def right-caret
+(def forward-caret
   (component/html
    (svg/dropdown-arrow {:class  "stroke-black"
                         :width  "23px"
@@ -201,12 +201,12 @@
                           (str/capitalize name))])]])])
 (defn shopping-area [signed-in]
   [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
-   [:li (major-menu-row (utils/fake-href events/traverse-nav {:slug "bundles" :id "11"})
+   [:li (major-menu-row (utils/fake-href events/menu-traverse-descend {:slug "bundles" :id "11"})
                         [:span.medium.flex-auto "Shop Bundles"]
-                        right-caret)]
-   [:li (major-menu-row (utils/fake-href events/traverse-nav {:slug "closures-and-frontals" :id "12"})
+                        forward-caret)]
+   [:li (major-menu-row (utils/fake-href events/menu-traverse-descend {:slug "closures-and-frontals" :id "12"})
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
-                        right-caret)]
+                        forward-caret)]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (utils/route-to events/navigate-named-search {:named-search-slug "stylist-products"})
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
@@ -248,12 +248,12 @@
      [:div
       [:div.top-0.sticky.z4.border-bottom.border-gray
        burger-header]
-      [:div
-       [:a
+      [:div.px3.h6
+       [:a.gray
         (if (seq prior-facets)
-          (utils/fake-href events/traverse-nav {:prior previous-facet})
-          (utils/fake-href events/control-menu-collapse-all))
-        left-caret "Back"]]
+          (utils/fake-href events/menu-traverse-ascend {:prior previous-facet})
+          (utils/fake-href events/menu-traverse-root))
+        [:span.mr1 back-caret] "Back"]]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center
@@ -268,9 +268,10 @@
        [:ul.list-reset
         (for [option (:options current-facet)]
           [:li (major-menu-row
-                (utils/fake-href events/traverse-nav {:next-facet   next-facet
-                                                      :query-params {(:slug current-facet) (:slug option)}})
-                [:span.flex-auto (:label option)] right-caret)])]]])))
+                (utils/fake-href events/menu-traverse-descend {:next-facet   next-facet
+                                                               :query-params {(:slug current-facet)
+                                                                              (:slug option)}})
+                [:span.flex-auto (:label option)] forward-caret)])]]])))
 
 (defn slideout-component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
   (component/create
@@ -314,7 +315,34 @@
 (defn built-component [data opts]
   (component/build component (query data) nil))
 
-(defmethod effects/perform-effects events/traverse-nav [_ event {:keys [id slug]} _ app-state]
+(defmethod transitions/transition-state events/menu-traverse-root
+  [_ event {:keys [id]} app-state]
+  ;; TODO possibly reinit category-filters
+  (update-in app-state keypaths/current-traverse-nav dissoc :id))
+
+(defmethod effects/perform-effects events/menu-traverse-root
+  [_ event _ _ app-state]
+  (let [category (categories/current-traverse-nav app-state)]
+    (api/fetch-facets (get-in app-state keypaths/api-cache))
+    (api/search-sku-sets (:criteria category)
+                         #(messages/handle-message events/api-success-sku-sets-for-nav
+                                                   (assoc %
+                                                          :category-id (:id category)
+                                                          :criteria {})))))
+
+(defmethod transitions/transition-state events/menu-traverse-descend
+  [_ event {:keys [id query-params next-facet]} app-state]
+  (if id
+    (assoc-in app-state keypaths/current-traverse-nav-id id)
+    (let [[selected-facet selected-option] (first query-params)]
+      (assoc-in app-state
+                keypaths/category-filters-for-nav
+                (-> (get-in app-state keypaths/category-filters-for-nav)
+                  (category-filters/select-criterion selected-facet selected-option)
+                  (category-filters/open next-facet))))))
+
+(defmethod effects/perform-effects events/menu-traverse-descend
+  [_ event {:keys [id slug]} _ app-state]
   (let [sku-sets (:filtered-sku-sets
                   (get-in app-state keypaths/category-filters-for-nav))]
     (cond
@@ -329,22 +357,15 @@
       (= 1 (count sku-sets))
       (messages/handle-message events/navigate-category (select-keys (first sku-sets) [:slug])))))
 
-(defmethod transitions/transition-state events/traverse-nav
-  [_ event {:keys [id query-params next-facet prior]} app-state]
-  (if id
-    (assoc-in app-state keypaths/current-traverse-nav-id id)
+(defmethod transitions/transition-state events/menu-traverse-ascend
+  [_ event {[prior-facet prior-option] :prior} app-state]
+  (assoc-in app-state
+            keypaths/category-filters-for-nav
+            (-> (get-in app-state keypaths/category-filters-for-nav)
+                (category-filters/deselect-criterion prior-facet prior-option)
+                (category-filters/open prior-facet))))
 
-    (let [filters (get-in app-state keypaths/category-filters-for-nav)
-          [selected-facet selected-option] (first query-params)
-          [prior-facet prior-option] (first prior)]
-      (assoc-in app-state
-                keypaths/category-filters-for-nav
-                (cond-> filters
-                  selected-facet
-                  (category-filters/select-criterion selected-facet selected-option)
+(defmethod effects/perform-effects events/menu-traverse-ascend
+  [_ event {:keys [id slug]} _ app-state])
 
-                  prior-facet
-                  (category-filters/deselect-criterion prior-facet prior-option)
-
-                  (or next-facet prior-facet)
-                  (category-filters/open (or next-facet prior-facet)))))))
+;; TODO add events/menu-traverse-select

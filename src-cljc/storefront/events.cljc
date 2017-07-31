@@ -86,7 +86,9 @@
 (defpath navigate-leads)
 (defpath navigate-leads-home)
 
-(defpath traverse-nav)
+(defpath menu-traverse-root)
+(defpath menu-traverse-ascend)
+(defpath menu-traverse-descend)
 
 (defpath navigation-save)
 (defpath navigation-undo)
