@@ -106,7 +106,8 @@
 (defn footer-links [minimal?]
   [:div.center
    (when-not minimal?
-     [[:a.inherit-color
+     [:div
+      [:a.inherit-color
        (utils/route-to events/navigate-content-about-us) "About"]
       " - "
       [:span
