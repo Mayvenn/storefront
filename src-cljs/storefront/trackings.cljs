@@ -53,7 +53,9 @@
                                       (clj->js last-step)))))
 
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
-  (facebook-analytics/track-event "AddToCart")
+  (facebook-analytics/track-event "AddToCart" {:name (:name variant)
+                                               :content_ids [(:sku variant)]
+                                               :num_items quantity})
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 
 (defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
