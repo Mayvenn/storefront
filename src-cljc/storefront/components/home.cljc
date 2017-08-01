@@ -95,7 +95,8 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc
+     (utils/route-to events/navigate-named-search {:named-search-slug "360-frontals"})
            :data-test "home-banner")
     (let [file-name "ShopNowPR360FrontalsBodyWaveMPMR103HomepageCOM.jpg"
           alt       "Shine Bright. All Eyes on You. Let your hair take center stage this summer with beautifully textured bundles. Shop our looks."]
