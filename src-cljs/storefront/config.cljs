@@ -107,7 +107,9 @@
                             "curly"          1104031
                             "closures"       1104032
                             "frontals"       1104033
-                            "kinky-straight" 1700440}}
+                            "kinky-straight" 1700440
+                            "water-wave"     1814288
+                            "yaki-straight"  1814286}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic          965034
                "straight"       1327330
@@ -117,7 +119,9 @@
                "curly"          1331955
                "closures"       1331956
                "frontals"       1331957
-               "kinky-straight" 1801984}}))
+               "kinky-straight" 1801984
+               "water-wave"     1912641
+               "yaki-straight"  1912642}}))
 
 (def manual-experiments
   (case js/environment
