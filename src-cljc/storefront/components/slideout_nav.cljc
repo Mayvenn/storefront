@@ -238,7 +238,7 @@
                      "Sign out")
     [:div])))
 
-(defn taxonomy-component [{:keys [category filters]} owner opts]
+(defn taxonomy-component [{:keys [category filters promo-data]} owner opts]
   (let [prior-facets   (take-while (complement :selected?) (:facets filters))
         current-facet  (query/get {:selected? true} (:facets filters))
         previous-facet {(:slug (last prior-facets))
@@ -246,7 +246,8 @@
         next-facet     (second (drop-while #(not= % (:slug current-facet)) (:filter-tabs category)))]
     (component/create
      [:div
-      [:div.top-0.sticky.z4.border-bottom.border-gray
+      [:div.top-0.sticky.z4
+       (promo-bar promo-data)
        burger-header]
       [:div.px3.h6
        [:a.gray
@@ -276,10 +277,10 @@
 (defn slideout-component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
   (component/create
    [:div
-    [:div.top-0.sticky.z4.border-bottom.border-gray
+    [:div.top-0.sticky.z4.border-gray
      (promo-bar promo-data)
      burger-header]
-    [:div.px6.border-bottom.border-gray
+    [:div.px6.border-bottom.border-top.border-gray
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
@@ -294,7 +295,10 @@
   (component/create
    [:div
     (if (and on-taxon? new-taxon-launch?)
-      (component/build taxonomy-component (:nav-traversal data) opts)
+      (component/build taxonomy-component (merge
+                                           (:nav-traversal data)
+                                           (select-keys data [:promo-data]))
+                       opts)
       (component/build slideout-component data opts))]))
 
 (defn basic-query [data]
