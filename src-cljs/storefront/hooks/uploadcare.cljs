@@ -6,8 +6,6 @@
             [storefront.platform.messages :refer [handle-message]]
             [goog.object :as object]))
 
-(set! *warn-on-infer* true)
-
 (defn ^:private loaded? [] (.hasOwnProperty js/window "uploadcare"))
 
 (defn insert []
