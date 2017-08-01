@@ -54,9 +54,9 @@
                 :output-to "resources/public/js/out/main.js"
                 :output-dir "resources/public/js/out"
                 :pretty-print true
-                :foreign-libs [{:file "storefront/react-slick.js"
+                :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :provides ["react-slick"]}
-                               {:file "storefront/bugsnag-2.5.0.js"
+                               {:file "src-cljs/storefront/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}]
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
@@ -112,7 +112,7 @@
                         [standalone-test-server "0.7.2"]
                         [ring/ring-mock "0.3.0"]
                         [org.clojure/tools.namespace "0.2.11"]
-                     #_   [figwheel-sidecar "0.3.1"]]
+                        [figwheel-sidecar "0.5.11"]]
          :injections [(require 'pjstadig.humane-test-output)
                       (pjstadig.humane-test-output/activate!)]
          :cljsbuild
