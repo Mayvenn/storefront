@@ -64,7 +64,10 @@
           :content (str "https:" (assets/path "/images/header_logo.svg")))])
 
 (def burger-header
-  (component/html [:div.bg-white menu-x [:div.center.col-12.p3 (logo "header-logo" "40px")]]))
+  (component/html
+   [:div.bg-white
+    menu-x
+    [:div.center.col-12.p3 (logo "header-logo" "40px")]]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
@@ -200,7 +203,8 @@
                           (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
                           (str/capitalize name))])]])])
 (defn shopping-area [signed-in]
-  [[:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
+  [:div
+   [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (utils/fake-href events/menu-traverse-descend {:slug "bundles" :id "11"})
                         [:span.medium.flex-auto "Shop Bundles"]
                         forward-caret)]
@@ -269,12 +273,16 @@
        [:ul.list-reset
         (for [option (:options current-facet)]
           [:li (major-menu-row
-                (utils/fake-href events/menu-traverse-descend {:next-facet   next-facet
-                                                               :query-params {(:slug current-facet)
-                                                                              (:slug option)}})
+                (utils/fake-href events/menu-traverse-descend
+                                 {:next-facet   next-facet
+                                  :query-params {(:slug current-facet)
+                                                 (:slug option)}})
                 [:span.flex-auto (:label option)] forward-caret)])]]])))
 
-(defn slideout-component [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data} owner opts]
+(defn slideout-component
+  [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
+   owner
+   opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4.border-gray
