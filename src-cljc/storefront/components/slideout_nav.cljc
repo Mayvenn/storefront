@@ -253,12 +253,11 @@
       [:div.top-0.sticky.z4
        (promo-bar promo-data)
        burger-header]
-      [:div.px3.h6
-       [:a.gray
-        (if (seq prior-facets)
-          (utils/fake-href events/menu-traverse-ascend {:prior previous-facet})
-          (utils/fake-href events/menu-traverse-root))
-        [:span.mr1 back-caret] "Back"]]
+      [:a.gray.block.py1.px3.h6
+       (if (seq prior-facets)
+         (utils/fake-href events/menu-traverse-ascend {:prior previous-facet})
+         (utils/fake-href events/menu-traverse-root))
+       [:span.mr1 back-caret] "Back"]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center
