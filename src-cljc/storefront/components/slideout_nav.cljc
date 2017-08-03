@@ -242,41 +242,41 @@
                      "Sign out")
     [:div])))
 
-(defn taxonomy-component [{:keys [category filters promo-data]} owner opts]
-  (let [prior-facets   (take-while (complement :selected?) (:facets filters))
-        current-facet  (query/get {:selected? true} (:facets filters))
-        previous-facet {(:slug (last prior-facets))
-                        (first (get (:criteria filters) (:slug (last prior-facets))))}
-        next-facet     (second (drop-while #(not= % (:slug current-facet)) (:filter-tabs category)))]
+(defn taxonomy-component
+  [{:keys [root-name facets criteria promo-data]} owner opts]
+  (let [[selected-steps unselected-steps] (split-with :selected? facets)
+        current-step                      (last selected-steps)
+        up-step                           (last (drop-last selected-steps))
+        down-step                         (first unselected-steps)]
     (component/create
      [:div
       [:div.top-0.sticky.z4
        (promo-bar promo-data)
        burger-header]
       [:a.gray.block.py1.px3.h6
-       (if (seq prior-facets)
-         (utils/fake-href events/menu-traverse-ascend {:prior previous-facet})
+       (if up-step
+         (utils/fake-href events/menu-traverse-ascend {:up-step up-step})
          (utils/fake-href events/menu-traverse-root))
        [:span.mr1 back-caret] "Back"]
       [:div.px6
        (major-menu-row
-        [:div.h2.flex-auto.center
-         "Shop "
-         (str/join " "
-                      (->> prior-facets
-                           (mapcat :options)
-                           (filter :selected?)
-                           reverse
-                           (map :label)))
-         " " (:name category)])
+        (let [criteria-labels (str/join " " (map :label (vals criteria)))]
+          [:div.h2.flex-auto.center
+           "Shop " criteria-labels " " root-name]))
        [:ul.list-reset
-        (for [option (:options current-facet)]
-          [:li (major-menu-row
-                (utils/fake-href events/menu-traverse-descend
-                                 {:next-facet   next-facet
-                                  :query-params {(:slug current-facet)
-                                                 (:slug option)}})
-                [:span.flex-auto (:label option)] forward-caret)])]]])))
+        (for [option (:options current-step)]
+          (if down-step
+            [:li {:key (:slug option)}
+             (major-menu-row
+              (utils/fake-href events/menu-traverse-descend
+                               {:down-step       down-step
+                                :current-step    current-step
+                                :selected-option option})
+              [:span.flex-auto (:label option)] forward-caret)]
+            [:li {:key (:slug option)}
+             (major-menu-row
+              (utils/fake-href events/navigate-category {:id 1})
+              [:span.flex-auto (:label option)])]))]]])))
 
 (defn slideout-component
   [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
@@ -298,13 +298,15 @@
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
-(defn component [{:keys [on-taxon? new-taxon-launch?] :as data} owner opts]
+(defn component
+  [{:keys [on-taxon? new-taxon-launch? category-menu] :as data} owner opts]
   (component/create
    [:div
     (if (and on-taxon? new-taxon-launch?)
-      (component/build taxonomy-component (merge
-                                           (:nav-traversal data)
-                                           (select-keys data [:promo-data]))
+      (component/build taxonomy-component
+                       (merge
+                        category-menu
+                        (select-keys data [:promo-data]))
                        opts)
       (component/build slideout-component data opts))]))
 
@@ -316,68 +318,67 @@
    :store             (marquee/query data)
    :shopping          {:named-searches (named-searches/current-named-searches data)}})
 
+(defn menu-traverse-query [data]
+  (let [{root-name :name}         (categories/current-traverse-nav data)
+        {:keys [facets criteria] :as filters} (get-in data keypaths/category-filters-for-nav)]
+    {:root-name root-name
+     :facets    facets
+     :criteria  criteria}))
+
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
-      (assoc-in [:nav-traversal] {:category (categories/current-traverse-nav data)
-                                  :filters  (get-in data keypaths/category-filters-for-nav)})))
+      (assoc-in [:category-menu] (menu-traverse-query data))))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
 
 (defmethod transitions/transition-state events/menu-traverse-root
-  [_ event {:keys [id]} app-state]
-  ;; TODO possibly reinit category-filters
-  (update-in app-state keypaths/current-traverse-nav dissoc :id))
+  [_ _ {:keys [id]} app-state]
+  (-> app-state
+      (assoc-in  keypaths/category-filters-for-nav {})
+      (update-in keypaths/current-traverse-nav dissoc :id)))
 
 (defmethod effects/perform-effects events/menu-traverse-root
-  [_ event _ _ app-state]
-  (let [category (categories/current-traverse-nav app-state)]
-    (api/fetch-facets (get-in app-state keypaths/api-cache))
-    (api/search-sku-sets (:criteria category)
-                         #(messages/handle-message events/api-success-sku-sets-for-nav
-                                                   (assoc %
-                                                          :category-id (:id category)
-                                                          :criteria {})))))
+  [_ _ _ _ app-state]
+  (api/fetch-facets (get-in app-state keypaths/api-cache)))
+
+(defn ascend [filters {facet-slug :slug :as up-step}]
+  (let [option-slug (-> (:criteria filters) (get facet-slug) :slug)]
+    (-> filters
+        (category-filters/deselect-criterion facet-slug
+                                             option-slug)
+        (category-filters/step up-step))))
+
+(defn descend [filters current-step selected-option down-step]
+  (-> filters
+      (category-filters/select-criterion (:slug current-step)
+                                         (:slug selected-option))
+      (category-filters/step down-step)))
 
 (defmethod transitions/transition-state events/menu-traverse-descend
-  [_ event {:keys [id query-params next-facet]} app-state]
+  [_ _ {:keys [id current-step selected-option down-step]} app-state]
   (if id
     (assoc-in app-state keypaths/current-traverse-nav-id id)
-    (let [[selected-facet selected-option] (first query-params)]
-      (assoc-in app-state
-                keypaths/category-filters-for-nav
-                (-> (get-in app-state keypaths/category-filters-for-nav)
-                  (category-filters/select-criterion selected-facet selected-option)
-                  (category-filters/open next-facet))))))
+    (update-in app-state keypaths/category-filters-for-nav
+               descend current-step selected-option down-step)))
 
 (defmethod effects/perform-effects events/menu-traverse-descend
-  [_ event {:keys [id slug]} _ app-state]
-  (let [sku-sets (:filtered-sku-sets
-                  (get-in app-state keypaths/category-filters-for-nav))]
-    (cond
-      id (let [category (categories/current-traverse-nav app-state)]
-           (api/fetch-facets (get-in app-state keypaths/api-cache))
-           (api/search-sku-sets (:criteria category)
-                                #(messages/handle-message events/api-success-sku-sets-for-nav
-                                                          (assoc %
-                                                                 :category-id (:id category)
-                                                                 :criteria {}))))
-
-      (= 1 (count sku-sets))
-      (messages/handle-message events/navigate-category (select-keys (first sku-sets) [:slug])))))
+  [_ _ {:keys [id slug] :as args} _ app-state]
+  (when id
+    (let [category (categories/current-traverse-nav app-state)]
+      (api/search-sku-sets (:criteria category)
+                           #(messages/handle-message events/api-success-sku-sets-for-nav
+                                                     (assoc %
+                                                            :category-id (:id category)
+                                                            :criteria {}))))))
 
 (defmethod transitions/transition-state events/menu-traverse-ascend
-  [_ event {[prior-facet prior-option] :prior} app-state]
-  (assoc-in app-state
-            keypaths/category-filters-for-nav
-            (-> (get-in app-state keypaths/category-filters-for-nav)
-                (category-filters/deselect-criterion prior-facet prior-option)
-                (category-filters/open prior-facet))))
-
-(defmethod effects/perform-effects events/menu-traverse-ascend
-  [_ event {:keys [id slug]} _ app-state])
+  [_ _ {:keys [up-step criteria]} app-state]
+  (update-in app-state
+             keypaths/category-filters-for-nav
+             ascend up-step))
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
