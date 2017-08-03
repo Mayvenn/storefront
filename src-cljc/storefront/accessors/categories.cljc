@@ -1,5 +1,6 @@
 (ns storefront.accessors.categories
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [clojure.string :as string]))
 
 (def new-facet?
   "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
@@ -21,6 +22,9 @@
    "curly"          "9"
    "360-frontals"   "10"})
 
+(defn copy [& sentences]
+  (apply string/join " " sentences))
+
 (defn category->seo [category-name image-url]
   (let [description (str "Machine-wefted and backed by our 30 Day Quality Guarantee, our "
                          category-name
@@ -32,8 +36,7 @@
      :image-url      image-url}))
 
 (def initial-categories
-  (let [fake-copy "In augue sem, tincidunt egestas rutrum a, vehicula in dolor. Donec id erat eu turpis semper maximus tempor ac erat. Aenean sit amet neque vitae neque finibus tristique id vitae odio. Maecenas aliquet ipsum est, in eleifend erat consequat ac. Integer dapibus nisl ac est interdum faucibus."
-        fake-hero {:mobile-url  "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
+  (let [fake-hero {:mobile-url  "//ucarecdn.com/2aaff96b-3b51-4eb2-9c90-2e7806e13b15/"
                    :desktop-url "//ucarecdn.com/c3299c7f-3c17-443d-9d5a-2b60d7ea7a72/"
                    :file-name   "Closure-Category-Hero.jpg"
                    :alt         "New Water Wave and Yaki Straight are here"}]
@@ -42,7 +45,9 @@
       :slug         "closures"
       :criteria     {:product/department #{"hair"} :hair/family #{"closures"}}
       :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                        "Our collection of closures and frontals blend seamlessly with our bundles"
+                                        "and can be customized to fit your unique look.")}
       :images       {:hero fake-hero}
       :footer/order 8
       :seo          (category->seo "Closures" "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
@@ -51,7 +56,8 @@
       :slug         "frontals"
       :criteria     {:product/department #{"hair"} :hair/family #{"frontals"}}
       :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                        "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
       :images       {:hero fake-hero}
       :footer/order 9
       :seo          (category->seo "Frontals" "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
@@ -60,7 +66,10 @@
       :slug         "straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"straight"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "For those who want it given to them"
+                                        "straight, our collection of 100% virgin straight hair"
+                                        "is your go-to for a sleek look with"
+                                        "minimal effort.")}
       :images       {:hero fake-hero
                      :home {:filename "StraightExtensionsMayvenn.jpg",
                             :url      "//ucarecdn.com/3a7983df-318e-41d7-a247-bb1d12c623d2/",
@@ -73,7 +82,13 @@
       :slug         "yaki-straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"yaki-straight"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Tired of having to break out the hot"
+                                        "tools for a textured straight look? Our Yaki"
+                                        "Straight hair collection is here to save your"
+                                        "strands! Yaki Straight hair matches the rhythm of"
+                                        "your natural hair that's been pressed straight or"
+                                        "freshly relaxed. Your flat iron has been officially"
+                                        "cancelled.")}
       :images       {:hero fake-hero}
       :footer/order 1
       :seo          (category->seo "Yaki Straight Bundles" "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
@@ -82,7 +97,11 @@
       :slug         "kinky-straight"
       :criteria     {:product/department #{"hair"} :hair/texture #{"kinky-straight"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Blending is a breeze with our Kinky Straight"
+                                        "hair collection! Like a fresh blow out, the"
+                                        "Kinky Straight hair texture moves freely and gives"
+                                        "a naturally flawless look that mimics your own"
+                                        "locks.")}
       :images       {:hero fake-hero}
       :footer/order 2
       :seo          (category->seo "Kinky Straight Bundles" "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
@@ -91,7 +110,8 @@
       :slug         "body-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"body-wave"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Step into the spotlight with our collection of luscious Body Wave hair."
+                                        "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")}
       :images       {:hero fake-hero
                      :home {:filename "BodyWaveExtensionsMayvenn.jpg",
                             :url      "//ucarecdn.com/7affd325-8cc8-4d25-be50-78ad6fcf8598/",
@@ -104,7 +124,10 @@
       :slug         "loose-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"loose-wave"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "For hair that holds a curl beautifully, a"
+                                        "our collection of 100% virgin Loose Wave hair"
+                                        "is the perfect foundation for all your carefree,"
+                                        "flirty, wavy looks.")}
       :images       {:hero fake-hero
                      :home {:filename "LooseWaveExtensionsMayvenn.jpg",
                             :url      "//ucarecdn.com/6dd2b51a-3af5-4925-a8de-010a6cf53717/",
@@ -117,7 +140,11 @@
       :slug         "water-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"water-wave"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (:copy "Ride the lush, carefree waves of the bundles,"
+                                         "closures, and frontals in our Water Wave hair"
+                                         "collection. For curls you can rock everywhere from"
+                                         "the office to your tropical vacation, make a"
+                                         "statement with Water Wave hair.")}
       :images       {:hero fake-hero}
       :footer/order 5
       :seo          (category->seo "Water Wave Bundles" "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")}
@@ -126,7 +153,9 @@
       :slug         "deep-wave"
       :criteria     {:product/department #{"hair"} :hair/texture #{"deep-wave"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
+                                        "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
+                                        "for those who want big waves that make an even bigger splash. ")}
       :images       {:hero fake-hero
                      :home {:filename "DeepWaveExtensionsMayvenn.jpg",
                             :url      "//ucarecdn.com/1fda417f-4714-4c04-965a-9a136014343a/",
@@ -139,7 +168,8 @@
       :slug         "curly"
       :criteria     {:product/department #{"hair"} :hair/texture #{"curly"}}
       :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
+                                        "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")}
       :images       {:hero fake-hero
                      :home {:filename "CurlyExtensionsMayvenn.jpg",
                             :url      "//ucarecdn.com/9a6aee31-4990-4a14-b3ea-54065a0a985a/",
@@ -152,7 +182,9 @@
       :slug         "360-frontals"
       :criteria     {:product/department #{"hair"} :hair/family #{"360-frontals"}}
       :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
-      :copy         {:description fake-copy}
+      :copy         {:description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
+                                        "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
+                                        "and low-density edges for a naturally flawless look.")}
       :images       {:hero fake-hero}
       :footer/order 10
       :seo          (category->seo "360 Frontals" "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}
@@ -167,6 +199,11 @@
       :slug            "closures-and-frontals"
       :criteria        {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
       :filter-tabs     [:hair/family :hair/origin :hair/texture :hair/base-material]
+      :copy {:description (copy "Save your precious strands and top your look"
+                                "off with the ultimate tool in protective weave"
+                                "styling. Our collection of closures and frontals blend"
+                                "seamlessly with our bundles and can be customized"
+                                "to fit your unique look.")}
       :hamburger/order 1}]))
 
 (defn id->category [id categories]
