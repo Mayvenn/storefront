@@ -185,8 +185,9 @@
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn old-shopping-area [signed-in named-searches]
-  [[:li (minor-menu-row (utils/route-to events/navigate-shop-by-look)
-                        "Shop looks")]
+  [[:li {:key "old-shopping-area"}
+    (minor-menu-row (utils/route-to events/navigate-shop-by-look)
+                    "Shop looks")]
    (for [{:keys [title items]} (cond-> [{:title "Shop hair"
                                          :items (filter named-searches/is-extension? named-searches)}
                                         {:title "Shop closures & frontals"
