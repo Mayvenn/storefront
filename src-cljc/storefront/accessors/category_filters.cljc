@@ -32,7 +32,8 @@
   (compare [(:launched-at y) (:price (:representative-sku x)) (:name x)]
            [(:launched-at x) (:price (:representative-sku y)) (:name y)]))
 
-(defn ^:private apply-criteria [{:keys [initial-sku-sets facets] :as filters} new-criteria]
+(defn ^:private apply-criteria
+  [{:keys [initial-sku-sets facets] :as filters} new-criteria]
   (let [new-filtered-sku-sets (->> initial-sku-sets
                                    (keep (fn [{:keys [skus] :as sku-set}]
                                            (when-let [matching-skus (seq (matches-any? new-criteria
@@ -69,14 +70,27 @@
   (apply-criteria filters {}))
 
 (defn close [filters]
-  (update filters :facets (fn [filters]
+  (update filters :facets (fn [facets]
                             (map #(assoc % :selected? false)
-                                 filters))))
+                                 facets))))
+
+;;TODO Could possibly be cleaner
+(defn step [filters {facet-slug :slug}]
+  (update filters :facets
+          (fn [facets]
+            (let [[before [target & after]]
+                  (split-with #(not (= (:slug %) facet-slug))
+                              facets)]
+              (if target
+                (concat (map #(assoc % :selected? true) before)
+                        [(assoc target :selected? true)]
+                        (map #(assoc % :selected? false) after))
+                facets)))))
 
 (defn open [filters facet-slug]
-  (update filters :facets (fn [filters]
+  (update filters :facets (fn [facets]
                             (map #(assoc % :selected? (= (:slug %) facet-slug))
-                                 filters))))
+                                 facets))))
 
 (defn init [category sku-sets facets]
   (let [represented-criteria (->> sku-sets
