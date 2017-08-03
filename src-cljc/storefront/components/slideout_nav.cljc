@@ -5,7 +5,8 @@
             [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            [storefront.api :as api]
+            #?(:clj [storefront.backend-api :as api]
+               :cljs [storefront.api :as api])
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]

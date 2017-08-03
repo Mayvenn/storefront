@@ -63,3 +63,9 @@
                                                :headers {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
+
+(defn fetch-facets [cache]
+  {})
+
+(defn search-sku-sets [criteria success-handler]
+  {})
