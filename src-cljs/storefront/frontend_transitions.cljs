@@ -382,9 +382,12 @@
 
 (defmethod transition-state events/api-success-sku-sets-for-nav
   [_ event response app-state]
-  (let [filters (make-category-filters app-state response)]
+  (let [filters     (make-category-filters app-state response)
+        remove-skus (partial map #(dissoc % :skus))]
     (assoc-in app-state keypaths/category-filters-for-nav
               (-> filters
+                  (update :initial-sku-sets remove-skus)
+                  (update :filtered-sku-sets remove-skus)
                   (category-filters/open (-> filters
                                              :facets
                                              first
