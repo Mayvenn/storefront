@@ -74,17 +74,15 @@
                             (map #(assoc % :selected? false)
                                  facets))))
 
-;;TODO Could possibly be cleaner
 (defn step [filters {facet-slug :slug}]
   (update filters :facets
           (fn [facets]
-            (let [[before [target & after]]
-                  (split-with #(not (= (:slug %) facet-slug))
-                              facets)]
-              (if target
-                (concat (map #(assoc % :selected? true) before)
-                        [(assoc target :selected? true)]
-                        (map #(assoc % :selected? false) after))
+            (let [selected-idx (count (take-while (comp not #{facet-slug} :slug) facets))
+                  found (< selected-idx (count facets))]
+              (if found
+                (map-indexed (fn [idx facet]
+                               (assoc facet :selected? (<= idx selected-idx)))
+                             facets)
                 facets)))))
 
 (defn open [filters facet-slug]
