@@ -379,4 +379,6 @@
 (defmethod effects/perform-effects events/menu-traverse-ascend
   [_ event {:keys [id slug]} _ app-state])
 
-;; TODO add events/menu-traverse-select
+(defmethod effects/perform-effects events/control-menu-expand-hamburger
+  [_ _ _ _ _]
+  (messages/handle-message events/menu-traverse-root))

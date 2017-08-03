@@ -110,7 +110,6 @@
   (let [args (dissoc args :nav-stack-item)]
     (-> app-state
         collapse-menus
-        clear-nav-traversal
         add-return-event
         (add-pending-promo-code args)
         clear-flash

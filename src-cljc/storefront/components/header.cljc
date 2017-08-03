@@ -18,7 +18,8 @@
 
 (def hamburger
   (component/html
-   [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand {:keypath keypaths/menu-expanded})
+   [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
+                                             {:keypath keypaths/menu-expanded})
                             :style {:width "70px"}
                             :data-test "hamburger")
     [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
