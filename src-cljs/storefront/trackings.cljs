@@ -15,7 +15,8 @@
             [storefront.accessors.videos :as videos]
             [storefront.components.money-formatters :as mf]
             [storefront.utils.query :as query]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [storefront.accessors.products :as products]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -56,22 +57,48 @@
   (facebook-analytics/track-event "AddToCart")
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 
-(defmethod perform-track events/api-success-add-to-bag [_ _ {:keys [variant quantity] :as args} app-state]
+(defn- ->cart-item
+  "Makes a flattened key version of variants"
+  [{:keys [variant_attrs] :as variant}]
+  {:variant_id       (:id variant)
+   :variant_sku      (:sku variant)
+   :variant_price    (:price variant)
+   :variant_name     (:variant-name variant)
+   :variant_origin   (-> variant_attrs :origin)
+   :variant_style    (-> variant_attrs :style)
+   :variant_color    (-> variant_attrs :color)
+   :variant_length   (-> variant_attrs :length)
+   :variant_material (-> variant_attrs :material)
+   :variant_quantity (-> variant :quantity)
+   :variant_image    (products/product-img-with-size variant :product)})
+
+(defn- ->cart-items
+  [products-db product-items]
+  (->> product-items
+       (mapv
+        (fn [{:keys [id product-id quantity]}]
+          (assoc
+           (query/get {:id id}
+                      (:variants (get products-db product-id)))
+           :quantity quantity)))
+       (mapv ->cart-item)))
+
+(def log
+  (comp js/console.log clj->js))
+
+(defmethod perform-track events/api-success-add-to-bag
+  [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
-    (stringer/track-event "add_to_cart" {:variant_id       (:id variant)
-                                         :variant_sku      (:sku variant)
-                                         :variant_price    (:price variant)
-                                         :variant_name     (:variant-name variant)
-                                         :variant_origin   (-> variant :variant_attrs :origin)
-                                         :variant_style    (-> variant :variant_attrs :style)
-                                         :variant_color    (-> variant :variant_attrs :color)
-                                         :variant_length   (-> variant :variant_attrs :length)
-                                         :variant_material (-> variant :variant_attrs :material)
-                                         :order_number     (get-in app-state keypaths/order-number)
-                                         :order_total      (get-in app-state keypaths/order-total)
-                                         :order_quantity   (-> (get-in app-state keypaths/order)
-                                                               orders/product-quantity)
-                                         :quantity         quantity})))
+    (let [order         (get-in app-state keypaths/order)
+          product-items (orders/product-items order)
+          products-db   (get-in app-state keypaths/products)
+          cart-items    (->cart-items products-db product-items)]
+      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
+                                                 {:order_number   (get-in app-state keypaths/order-number)
+                                                  :order_total    (get-in app-state keypaths/order-total)
+                                                  :order_quantity (orders/product-quantity order)
+                                                  :quantity       quantity
+                                                  :context        {:cart-items cart-items}})))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [{:keys [stylist-id number line-items]} cart
@@ -93,12 +120,18 @@
                                                  :quantities     (->> line-items (map :quantity) (str/join ","))
                                                  :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
 
-(defmethod perform-track events/api-success-update-order-from-shared-cart [_ _ {:keys [order shared-cart-id]} app-state]
-  (let [line-items (orders/product-items order)]
+(defmethod perform-track events/api-success-update-order-from-shared-cart
+  [_ _ {:keys [order shared-cart-id]} app-state]
+  (let [product-items (orders/product-items order)
+        products-db   (get-in app-state keypaths/products)
+        cart-items    (->cart-items products-db product-items)]
     (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
                                               :order_number   (:number order)
-                                              :skus           (->> line-items (map :sku) (str/join ","))
-                                              :variant_ids    (->> line-items (map :id) (str/join ","))})))
+                                              :order_total    (get-in app-state keypaths/order-total)
+                                              :order_quantity (orders/product-quantity order)
+                                              :skus           (->> product-items (map :sku) (str/join ","))
+                                              :variant_ids    (->> product-items (map :id) (str/join ","))
+                                              :context        {:cart-items cart-items}})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
