@@ -8,7 +8,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
-            [storefront.platform.reviews :as reviews]
             [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
