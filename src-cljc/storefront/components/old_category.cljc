@@ -7,7 +7,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.bundle-builder :as bundle-builder]
-            [storefront.platform.reviews :as reviews]
+            [storefront.platform.old-reviews :as old-reviews]
             [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
             [clojure.string :as string]
@@ -240,7 +240,7 @@
 (defn reviews-summary [reviews opts]
   [:div.h6
    {:style {:min-height "18px"}}
-   (component/build reviews/reviews-summary-component reviews opts)])
+   (component/build old-reviews/reviews-summary-component reviews opts)])
 
 (defn named-search-uses-product-images [named-search-slug]
   (#{"closures" "frontals" "360-frontals" "straight" "loose-wave" "deep-wave"} named-search-slug))
@@ -321,7 +321,7 @@
               (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
           (named-search-description (:description named-search))
           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-        (when review? (component/build reviews/reviews-component reviews opts))]))))
+        (when review? (component/build old-reviews/reviews-component reviews opts))]))))
 
 (defn query [data]
   (let [named-search     (named-searches/current-named-search data)
@@ -335,7 +335,7 @@
      :fetching-variants?  (not (named-searches/products-loaded? data named-search))
      :adding-to-bag?      (utils/requesting? data request-keys/add-to-bag)
      :bagged-variants     (get-in data keypaths/browse-recently-added-variants)
-     :reviews             (reviews/query data)
+     :reviews             (old-reviews/query data)
      :ugc                 (ugc/query data)}))
 
 (defn built-component [data opts]

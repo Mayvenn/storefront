@@ -196,7 +196,7 @@
   (some-> (api/product storeback-config product-slug (cookies/get req "id") (cookies/get req "user-token"))
           ;; currently, always the category url... better logic would be to
           ;; util.response/redirect if we're not on the canonical url, though
-          ;; that would require that the cljs code handle event/navigate-product
+          ;; that would require that the cljs code handle event/navigate-old-product
           :url-path
           (util.response/redirect :moved-permanently)))
 
@@ -262,7 +262,7 @@
                            (assoc-in data keypaths/static (static-page nav-event))
                            (assoc-in data keypaths/navigation-message nav-message))]
           (condp = nav-event
-            events/navigate-product      (redirect-product->canonical-url ctx req params)
+            events/navigate-old-product  (redirect-product->canonical-url ctx req params)
             events/navigate-named-search (if (= "blonde" (:named-search-slug params))
                                            (util.response/redirect (store-homepage (:store_slug store) environment req)
                                                                    :moved-permanently)
