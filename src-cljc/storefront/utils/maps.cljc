@@ -7,9 +7,11 @@
   (into {} (map (fn [[k v]] [k (f v)])) m))
 
 (defn key-by
-  "Creates a map where the key is the result of a function over each
-  element in a collection with the value being the original
-  collection. The key function should be injective/one-to-one."
+  "Returns a map containing the elements (e) of coll indexed by the result of (f e)
+
+  (key-by :a [{:a 2 :b 5} {:a 3 :b 6}]) ->
+  {2 {:a 2 :b 5}
+   3 {:a 3 :b 6}} "
   [f coll]
   (map-values first (group-by f coll)))
 
