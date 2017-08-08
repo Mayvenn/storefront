@@ -1,6 +1,8 @@
 (ns storefront.accessors.categories
   (:require [storefront.keypaths :as keypaths]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.utils.maps :as maps]
+            [storefront.accessors.category-filters :as category-filters]))
 
 (def new-facet?
   "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
@@ -252,3 +254,14 @@
 (defn current-category [data]
   (id->category (get-in data keypaths/current-category-id)
                 (get-in data keypaths/categories)))
+
+(defn- hydrate-sku-set [id->skus sku-set]
+  (-> sku-set
+      (update :criteria #(maps/map-values set %))
+      (assoc :skus (map #(get id->skus %) (:skus sku-set)))))
+
+(defn make-category-filters [app-state {:keys [sku-sets skus category-id]}]
+  (category-filters/init
+   (id->category category-id (get-in app-state keypaths/categories))
+   (map (partial hydrate-sku-set (maps/key-by :sku skus)) sku-sets)
+   (get-in app-state keypaths/facets)))

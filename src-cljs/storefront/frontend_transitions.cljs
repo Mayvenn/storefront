@@ -368,35 +368,17 @@
     (update-in keypaths/products merge (maps/key-by :id products))
     ensure-bundle-builder))
 
-(defn hydrate-sku-set [id->skus sku-set]
-  (-> sku-set
-      (update :criteria #(maps/map-values set %))
-      (assoc :skus (map #(get id->skus %) (:skus sku-set)))))
-
-(defn make-category-filters [app-state {:keys [sku-sets skus category-id]}]
-  (category-filters/init
-   (categories/id->category category-id (get-in app-state keypaths/categories))
-   (map (partial hydrate-sku-set (maps/key-by :sku skus)) sku-sets)
-   (get-in app-state keypaths/facets)))
-
-(defmethod transition-state events/api-success-sku-sets-for-nav
-  [_ event response app-state]
-  (let [filters     (make-category-filters app-state response)
-        remove-skus (partial map #(dissoc % :skus))]
-    (assoc-in app-state keypaths/category-filters-for-nav
-              (-> filters
-                  (update :initial-sku-sets remove-skus)
-                  (update :filtered-sku-sets remove-skus)
-                  (category-filters/open (-> filters
-                                             :facets
-                                             first
-                                             :slug))))))
+(defmethod transition-state events/api-success-sku-sets
+  [_ event {:keys [sku-sets skus] :as response} app-state]
+  (-> app-state
+      (update-in keypaths/sku-sets merge (maps/key-by :id sku-sets))
+      (update-in keypaths/skus merge (maps/key-by :sku skus))))
 
 (defmethod transition-state events/api-success-sku-sets-for-browse
-  [_ event response app-state]
+  [_ event {:keys [sku-sets] :as response} app-state]
   (-> app-state
       (assoc-in keypaths/category-filters-for-browse
-                (make-category-filters app-state response))))
+                (categories/make-category-filters app-state response))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]

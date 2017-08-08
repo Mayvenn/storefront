@@ -25,6 +25,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.components.old-category :as old-category]
             [storefront.components.category :as category]
+            [storefront.components.product-details :as product-details]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
@@ -78,6 +79,7 @@
     events/navigate-home                    home/built-component
     events/navigate-named-search            old-category/built-component
     events/navigate-category                category/built-component
+    events/navigate-product-details         product-details/built-component
     events/navigate-shared-cart             shared-cart/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component

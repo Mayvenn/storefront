@@ -47,6 +47,9 @@
 
 (def named-searches [:named-searches])
 (def products [:products])
+;;TODO use this instead of initial-sku-sets
+(def sku-sets [:sku-sets])
+(def skus [:skus])
 (def categories [:categories])
 (def facets [:facets])
 (def states [:states])
@@ -93,6 +96,8 @@
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def bundle-builder (conj ui :bundle-builder))
+(def product-details (conj ui :product-details))
+(def product-details-sku-set-id (conj product-details :sku-set-id))
 
 (def category-filters-for-nav (conj ui :category-filters :nav))
 (def category-filters-for-browse (conj ui :category-filters :browse))

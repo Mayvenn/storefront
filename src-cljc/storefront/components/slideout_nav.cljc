@@ -382,6 +382,20 @@
              keypaths/category-filters-for-nav
              ascend up-step))
 
+(defmethod transitions/transition-state events/api-success-sku-sets-for-nav
+  [_ event response app-state]
+  (let [filters     (categories/make-category-filters app-state response)
+        remove-skus (partial map #(dissoc % :skus))]
+    (assoc-in app-state keypaths/category-filters-for-nav
+              (-> filters
+                  (update :initial-sku-sets remove-skus)
+                  (update :filtered-sku-sets remove-skus)
+                  (category-filters/open (-> filters
+                                             :facets
+                                             first
+                                             :slug))))))
+
+
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
   (messages/handle-message events/menu-traverse-root))

@@ -69,3 +69,5 @@
 
 (defn search-sku-sets [criteria success-handler]
   {})
+
+(defn get-sku-set [sku-set-id] {})

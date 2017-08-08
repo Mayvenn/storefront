@@ -168,12 +168,14 @@
                v]))
        (into {})))
 
-(defn search-sku-sets [criteria handler]
+(defn search-sku-sets [criteria-or-id handler]
   (api-req
    GET
    "/sku-sets"
-   (conj request-keys/search-sku-sets criteria)
-   {:params (criteria->query-params criteria)
+   (conj request-keys/search-sku-sets criteria-or-id)
+   {:params (if (map? criteria-or-id)
+              (criteria->query-params criteria-or-id)
+              {:id criteria-or-id})
     :handler handler}))
 
 (defn fetch-facets [cache]

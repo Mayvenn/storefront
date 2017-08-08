@@ -19,7 +19,8 @@
 (defpath navigate-category)
 (defpath navigate-named-search)
 (defpath navigate-ugc-named-search)
-(defpath navigate-product)
+(defpath navigate-old-product)
+(defpath navigate-product-details)
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)
 (defpath navigate-sign-up)
@@ -206,8 +207,10 @@
 
 (defpath api-success-products)
 (defpath api-success-states)
+(defpath api-success-sku-sets)
 (defpath api-success-sku-sets-for-nav)
 (defpath api-success-sku-sets-for-browse)
+(defpath api-success-sku-sets-for-details)
 (defpath api-success-facets)
 
 (defpath api-success-auth)

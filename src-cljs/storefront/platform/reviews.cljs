@@ -5,7 +5,8 @@
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.sku-sets :as sku-sets]))
 
 (def product-options-by-named-search
   {:straight       {:data-product-id  80
@@ -76,10 +77,10 @@ Lengths: 12\" to 28\""
                   :data-description "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal. This one-of-a-kind frontal piece features freestyle parting, baby hairs, and low-density edges for a naturally flawless look. Measuring 4” in both the front and sides, and 2.5” in the back, our 360 Lace Frontal allows plenty of space for all your customization needs. Throw it in a high bun, rock a pair of french braids, or don a ponytail - the 360 Lace Frontal provides the flexibility for all-around hairstyles that look great from all sides."
                   :data-image-url   "https://ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/-/scale_crop/250x227/Straight-360-Frontal-From-Three-Quarters-Back.jpg"}})
 
-(defn product-options-for [{:keys [slug]}]
+(defn product-options-for [slug]
   (get product-options-by-named-search (keyword slug)))
 
-(defn reviews-component-inner [{:keys [loaded? named-search url]} owner opts]
+(defn reviews-component-inner [{:keys [loaded? named-search-slug url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -93,16 +94,16 @@ Lengths: 12\" to 28\""
           [:.mx-auto.mb3
            [:.yotpo.yotpo-main-widget
             (merge
-             (product-options-for named-search)
+             (product-options-for named-search-slug)
              {:data-url url})]])]))))
 
-(defn reviews-component [{:keys [named-search] :as args} owner opts]
+(defn reviews-component [{:keys [named-search-slug] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (str "reviews-" (:slug named-search))}
+    [:div {:key (str "reviews-" named-search-slug)}
      (om/build reviews-component-inner args opts)])))
 
-(defn reviews-summary-component-inner [{:keys [loaded? named-search url]} owner opts]
+(defn reviews-summary-component-inner [{:keys [loaded? named-search-slug url]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (handle-message events/reviews-component-mounted))
@@ -116,18 +117,19 @@ Lengths: 12\" to 28\""
           [:.clearfix.flex.justify-center.flex-wrap.my1
            [:.yotpo.bottomLine.mr2
             (merge
-             (product-options-for named-search)
+             (product-options-for named-search-slug)
              {:data-url url})]
            [:.yotpo.QABottomLine
-            (product-options-for named-search)]])]))))
+            (product-options-for named-search-slug)]])]))))
 
-(defn reviews-summary-component [{:keys [named-search] :as args} owner opts]
+(defn reviews-summary-component [{:keys [named-search-slug] :as args} owner opts]
   (om/component
    (html
-    [:div {:key (str "reviews-summary-" (:slug named-search))}
+    [:div {:key (str "reviews-summary-" named-search-slug)}
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
-  {:url          (routes/current-path data)
-   :named-search (named-searches/current-named-search data)
-   :loaded?      (get-in data keypaths/loaded-reviews)})
+  (let [sku-set (sku-sets/current-sku-set data)]
+    {:named-search-slug (sku-sets/id->named-search (:id sku-set))
+     :url               (routes/current-path data)
+     :loaded?           (get-in data keypaths/loaded-reviews)}))

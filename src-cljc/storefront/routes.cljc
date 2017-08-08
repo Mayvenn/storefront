@@ -46,9 +46,10 @@
              leads-routes
              {"/"                                                (edn->bidi events/navigate-home)
               ["/categories/" [#"\d+" :id] "-" :slug]            (edn->bidi events/navigate-category)
+              ["/products/" [#"\d+" :id] "-" :slug]              (edn->bidi events/navigate-product-details)
               ["/categories/hair/" :named-search-slug]           (edn->bidi events/navigate-named-search)
               ["/categories/hair/" :named-search-slug "/social"] (edn->bidi events/navigate-ugc-named-search)
-              ["/products/" :product-slug]                       (edn->bidi events/navigate-product)
+              ["/products/" [#"[a-zA-Z]+.*" :product-slug]]      (edn->bidi events/navigate-old-product)
               "/login"                                           (edn->bidi events/navigate-sign-in)
               "/logout"                                          (edn->bidi events/navigate-sign-out)
               "/signup"                                          (edn->bidi events/navigate-sign-up)
