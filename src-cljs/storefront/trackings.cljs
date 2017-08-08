@@ -59,18 +59,30 @@
 
 (defn- ->cart-item
   "Makes a flattened key version of variants"
-  [{:keys [variant_attrs] :as variant}]
-  {:variant_id       (:id variant)
-   :variant_sku      (:sku variant)
-   :variant_price    (:price variant)
-   :variant_name     (:variant-name variant)
-   :variant_origin   (-> variant_attrs :origin)
-   :variant_style    (-> variant_attrs :style)
-   :variant_color    (-> variant_attrs :color)
-   :variant_length   (-> variant_attrs :length)
-   :variant_material (-> variant_attrs :material)
-   :variant_quantity (-> variant :quantity)
-   :variant_image    (products/product-img-with-size variant :product)})
+  [variant]
+  (let [attrs (or (:variant-attrs variant)
+                  (:variant_attrs variant))]
+    {:variant_id       (or (:variant_id variant)
+                           (:id variant))
+     :variant_sku      (or (:variant_sku variant)
+                           (:sku variant))
+     :variant_price    (or (:unit-price variant)
+                           (:price variant))
+     :variant_quantity (or (:variant_quantity variant)
+                           (:quantity variant))
+     :variant_name     (or (:variant_name variant)
+                           (:variant-name variant))
+     :variant_origin   (or (:variant_origin variant)
+                           (:origin attrs))
+     :variant_style    (or (:variant_style variant)
+                           (:style attrs))
+     :variant_color    (or (:variant_color variant)
+                           (:color attrs))
+     :variant_length   (or (:variant_length variant)
+                           (:length attrs))
+     :variant_material (or (:variant_material variant)
+                           (:material attrs))
+     :variant_image    (products/product-img-with-size variant :product)}))
 
 (defn- ->cart-items
   [products-db product-items]
@@ -123,8 +135,7 @@
 (defmethod perform-track events/api-success-update-order-from-shared-cart
   [_ _ {:keys [order shared-cart-id]} app-state]
   (let [product-items (orders/product-items order)
-        products-db   (get-in app-state keypaths/products)
-        cart-items    (->cart-items products-db product-items)]
+        cart-items    (mapv ->cart-item product-items)]
     (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
                                               :order_number   (:number order)
                                               :order_total    (get-in app-state keypaths/order-total)
