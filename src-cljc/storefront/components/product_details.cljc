@@ -79,14 +79,14 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-variant [idx {:keys [quantity variant]}]
+(defn display-bagged-sku [idx {:keys [quantity sku]}]
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key idx
     :data-test "items-added"}
    "Added to bag: "
    (number->words quantity)
    " "
-   (products/product-title variant)])
+   (products/product-title sku)])
 
 (def checkout-button
   (component/html
@@ -95,10 +95,10 @@
      :data-ref "cart-button"}
     (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
-(defn bagged-variants-and-checkout [bagged-variants]
-  (when (seq bagged-variants)
+(defn skus-variants-and-checkout [bagged-skus]
+  (when (seq bagged-skus)
     [:div
-     (map-indexed display-bagged-variant bagged-variants)
+     (map-indexed display-bagged-sku bagged-skus)
      checkout-button]))
 
 (defn option-html [step-name later-step?
@@ -240,7 +240,7 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn component [{:keys [sku-set fetching-sku-set? carousel-images reviews ugc]}
+(defn component [{:keys [sku-set fetching-sku-set? carousel-images reviews ugc selected-sku sku-quantity]}
                  owner opts]
   (let [review? (:review? reviews)]
     (component/create
@@ -254,31 +254,27 @@
          (title (:name sku-set))
          (when review? (reviews-summary reviews opts))
          [:meta {:item-prop "image" :content (first carousel-images)}]
-         #_
-         (full-bleed-narrow (carousel carousel-images named-search))
-         #_
-         (when (and (not fetching-sku-sets?)
+         (full-bleed-narrow (carousel carousel-images sku-set))
+         #_(when (and (not fetching-sku-sets?)
                     needs-selections?)
            (starting-at (:initial-variants bundle-builder)))]
         (if fetching-sku-set?
           [:div.h2.mb2 ui/spinner]
           [:div
-           #_
            [:div schema-org-offer-props
             [:div.my2
-             (if selected-variant
+             #_(if selected-sku
                (variant-summary {:flow                  (:flow bundle-builder)
                                  :variant               selected-variant
                                  :variant-quantity      variant-quantity})
                (no-variant-summary (bundle-builder/next-step bundle-builder)))]
-            (when (named-searches/eligible-for-triple-bundle-discount? named-search)
+            (when (sku-sets/eligible-for-triple-bundle-discount? sku-set)
               triple-bundle-upsell)
-            (when selected-variant
-              (add-to-bag-button adding-to-bag? selected-variant variant-quantity))
-            (bagged-variants-and-checkout bagged-variants)
-            (when (named-searches/is-stylist-product? named-search) shipping-and-guarantee)]])
+            #_(when selected-sku
+              (add-to-bag-button adding-to-bag? selected-sku sku-quantity))
+            #_(bagged-variants-and-checkout bagged-variants)
+            (when (sku-sets/stylist-only? sku-set) shipping-and-guarantee)]])
         (sku-set-description sku-set)
-        #_
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
@@ -299,7 +295,7 @@
                              (sku-sets/eligible-for-reviews? sku-set))]
     {:sku-set           sku-set
      :skus              skus
-     :carousel-images   (filter (comp #{"carousel"} :use-case) images)
+     :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
      :fetching-sku-set? false
      :reviews           reviews
      :ugc               (ugc-query sku-set data)}))
