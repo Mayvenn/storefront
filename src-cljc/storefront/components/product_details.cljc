@@ -217,12 +217,7 @@
      (for [[idx item] (map-indexed vector description)]
        [:p.mt2 {:key idx} item])]]])
 
-(defn old-carousel-image [image]
-  (ui/aspect-ratio
-   640 580
-   [:img.col-12 (ui/img-attrs image :large)]))
-
-(defn carousel-image [{:keys [filename url alt]}]
+(defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
    640 580
    [:img.col-12
@@ -230,10 +225,7 @@
      :alt alt}]))
 
 (defn carousel [images {:keys [slug]}]
-  (let [image-body (if (= slug "yaki-straight")
-                     carousel-image
-                     old-carousel-image)
-        items (mapv (fn [image]
+  (let [items (mapv (fn [image]
                       {:id   (str (hash (or (:large_url image)
                                             (:url image))))
                        :body (image-body image)})
@@ -300,13 +292,14 @@
 (defn query [data]
   (let [sku-code->sku (get-in data keypaths/skus)
         sku-set       (sku-sets/current-sku-set data)
-        skus          (map (comp sku-code->sku :sku) (:skus sku-set))
+        skus          (map sku-code->sku (:skus sku-set))
+        images        (mapcat :images skus)
         reviews       (assoc (review-component/query data)
                              :review?
                              (sku-sets/eligible-for-reviews? sku-set))]
     {:sku-set           sku-set
      :skus              skus
-     :carousel-images   (filter (comp #{"carousel"} :use-case) (map :images skus))
+     :carousel-images   (filter (comp #{"carousel"} :use-case) images)
      :fetching-sku-set? false
      :reviews           reviews
      :ugc               (ugc-query sku-set data)}))
