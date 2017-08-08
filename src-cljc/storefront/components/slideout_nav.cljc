@@ -202,7 +202,7 @@
          [:li {:key slug}
           (minor-menu-row (assoc (utils/route-to events/navigate-named-search {:named-search-slug slug})
                                  :data-test (str "menu-" slug))
-                          (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+                          (when (named-searches/new-named-search? slug) [:span.teal.mr1 "NEW"])
                           (str/capitalize name))])]])])
 (defn shopping-area [signed-in]
   [:div
