@@ -87,7 +87,7 @@
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "/" file-name " 1x")}]
+             :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
    ;; Mobile
    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                        :alt alt}]])
@@ -98,7 +98,7 @@
     (assoc
      (utils/route-to events/navigate-named-search {:named-search-slug "360-frontals"})
            :data-test "home-banner")
-    (let [file-name "ShopNowPR360FrontalsLooseWaveMPMR103HomepageCOM.jpg"
+    (let [file-name "Shop-Now-360-Frontals-Loose-Wave-Homepage"
           alt       "Shine Bright. All Eyes on You. Let your hair take center stage this summer with beautifully textured bundles. Shop our looks."]
       (case store-slug
         "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/4e2e71c0-e8b5-4bf1-875f-fd737e5c66fa/"
