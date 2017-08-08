@@ -1,8 +1,8 @@
-(ns storefront.components.leads.home
+(ns leads.home
   (:require #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            [storefront.components.leads.header :as header]
-            [storefront.components.leads.choose-call-slot :as leads.choose-call-slot]
+            [leads.header :as header]
+            [leads.choose-call-slot :as leads.choose-call-slot]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]

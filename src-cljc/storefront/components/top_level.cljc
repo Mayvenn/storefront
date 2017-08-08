@@ -42,7 +42,7 @@
             [storefront.components.ui :as ui]
             ;; TODO Maybe we should change leads namespaces to be somehting like
             ;; leads.components.home
-            [storefront.components.leads.home :as leads.home]
+            [leads.home :as leads.home]
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]

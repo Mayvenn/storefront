@@ -1,4 +1,4 @@
-(ns storefront.components.leads.header
+(ns leads.header
   (:require #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.components.slideout-nav :as slideout-nav]))
