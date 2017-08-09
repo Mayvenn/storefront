@@ -255,7 +255,7 @@
          (when review? (reviews-summary reviews opts))
          [:meta {:item-prop "image" :content (first carousel-images)}]
          (full-bleed-narrow (carousel carousel-images sku-set))
-         #_(when (and (not fetching-sku-sets?)
+         #_(when (and (not fetching-sku-set?)
                     needs-selections?)
            (starting-at (:initial-variants bundle-builder)))]
         (if fetching-sku-set?
