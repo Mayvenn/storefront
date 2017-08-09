@@ -1,7 +1,7 @@
-(ns storefront.components.product-details
+(ns catalog.product-details
   (:require [clojure.set :as set]
             [clojure.string :as string]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [catalog.bundle-builder :as bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]

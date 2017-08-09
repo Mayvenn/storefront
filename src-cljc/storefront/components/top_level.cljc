@@ -25,7 +25,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.components.old-category :as old-category]
             [storefront.components.category :as category]
-            [storefront.components.product-details :as product-details]
+            [catalog.product-details :as product-details]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]

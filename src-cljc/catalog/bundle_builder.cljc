@@ -1,4 +1,4 @@
-(ns storefront.accessors.bundle-builder
+(ns catalog.bundle-builder
   (:require [clojure.set :as set]
             [storefront.platform.numbers :as numbers]))
 
