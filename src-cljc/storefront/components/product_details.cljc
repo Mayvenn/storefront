@@ -240,7 +240,7 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn component [{:keys [sku-set fetching-sku-set? carousel-images reviews ugc selected-sku sku-quantity]}
+(defn component [{:keys [sku-set fetching-sku-set? carousel-images reviews ugc selected-sku sku-quantity bundle-builder]}
                  owner opts]
   (let [review? (:review? reviews)]
     (component/create
@@ -298,7 +298,8 @@
      :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
      :fetching-sku-set? false
      :reviews           reviews
-     :ugc               (ugc-query sku-set data)}))
+     :ugc               (ugc-query sku-set data)
+     :bundle-builder    (get-in data keypaths/bundle-builder)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -313,6 +314,22 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
+(defn initialize-bundle-builder [app-state]
+  (let [bundle-builder   (bundle-builder/initialize (named-searches/current-named-search app-state)
+                                                    (get-in app-state keypaths/products))
+        saved-selections (get-in app-state keypaths/saved-bundle-builder-options)]
+    (if saved-selections
+      (bundle-builder/reset-selections bundle-builder saved-selections)
+      bundle-builder)))
+
+(defn ensure-bundle-builder [app-state]
+  (if (and (nil? (get-in app-state keypaths/bundle-builder))
+           (named-searches/products-loaded? app-state (named-searches/current-named-search app-state)))
+    (-> app-state
+        (assoc-in keypaths/bundle-builder (initialize-bundle-builder app-state))
+        (update-in keypaths/ui dissoc :saved-bundle-builder-options))
+    app-state))
+
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id slug]} _ app-state]
   (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
@@ -325,4 +342,18 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [id slug]} app-state]
-  (assoc-in app-state keypaths/product-details-sku-set-id id))
+  (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
+                                      bundle-builder/expanded-selections
+                                      (dissoc :length))]
+    (-> app-state
+        (assoc-in keypaths/product-details-sku-set-id id)
+        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
+        (assoc-in keypaths/browse-recently-added-skus [])
+        (assoc-in keypaths/browse-sku-quantity 1)
+        (assoc-in keypaths/bundle-builder nil)
+        ensure-bundle-builder)))
+
+(defmethod transitions/transition-state events/control-bundle-option-select
+  [_ event {:keys [selections]} app-state]
+  (update-in app-state keypaths/bundle-builder bundle-builder/reset-selections selections))
+

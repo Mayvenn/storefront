@@ -6,7 +6,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.platform.old-reviews :as old-reviews]
             [storefront.platform.ugc :as ugc]
             [storefront.components.ui :as ui]
@@ -104,7 +104,7 @@
    [:input.hide {:type      "radio"
                  :disabled  (or later-step? sold-out?)
                  :checked   checked?
-                 :on-change (utils/send-event-callback events/control-bundle-option-select
+                 :on-change (utils/send-event-callback events/old-control-bundle-option-select
                                                        {:selections selections
                                                         :step-name step-name})}]
    (if image
@@ -232,7 +232,7 @@
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
 (defn starting-at [variants]
-  (when-let [cheapest-price (bundle-builder/min-price variants)]
+  (when-let [cheapest-price (old-bundle-builder/min-price variants)]
     [:div.center.dark-gray
      [:div.h6 "Starting at"]
      [:div.h2 (item-price cheapest-price)]]))
@@ -312,7 +312,7 @@
                  (variant-summary {:flow                  (:flow bundle-builder)
                                    :variant               selected-variant
                                    :variant-quantity      variant-quantity})
-                 (no-variant-summary (bundle-builder/next-step bundle-builder)))]
+                 (no-variant-summary (old-bundle-builder/next-step bundle-builder)))]
               (when (named-searches/eligible-for-triple-bundle-discount? named-search)
                 triple-bundle-upsell)
               (when selected-variant
@@ -325,9 +325,9 @@
 
 (defn query [data]
   (let [named-search     (named-searches/current-named-search data)
-        bundle-builder   (get-in data keypaths/bundle-builder)
+        bundle-builder   (get-in data keypaths/old-bundle-builder)
         variant-quantity (get-in data keypaths/browse-variant-quantity)
-        selected-variant (bundle-builder/selected-variant bundle-builder)]
+        selected-variant (old-bundle-builder/selected-variant bundle-builder)]
     {:named-search        named-search
      :bundle-builder      bundle-builder
      :variant-quantity    variant-quantity

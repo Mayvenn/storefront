@@ -80,8 +80,11 @@
 (def navigation-redo-stack (conj ui :navigation-redo-stack))
 (def browse-named-search-query (conj ui :browse-named-search-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
+(def browse-sku-quantity (conj ui :browse-sku-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))
-(def saved-bundle-builder-options (conj ui :old-saved-bundle-builder-options))
+(def browse-recently-added-skus (conj ui :browse-recently-added-skus))
+(def saved-bundle-builder-options (conj ui :saved-bundle-builder-options))
+(def old-saved-bundle-builder-options (conj ui :old-saved-bundle-builder-options))
 (def menu-expanded (conj ui :menu-expanded))
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))
@@ -96,6 +99,7 @@
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def bundle-builder (conj ui :bundle-builder))
+(def old-bundle-builder (conj ui :old-bundle-builder))
 (def product-details (conj ui :product-details))
 (def product-details-sku-set-id (conj product-details :sku-set-id))
 

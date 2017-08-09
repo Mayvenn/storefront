@@ -2,7 +2,7 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.transitions :refer [transition-state]]
-            [storefront.accessors.bundle-builder :as bundle-builder]
+            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.category-filters :as category-filters]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
@@ -151,34 +151,34 @@
   (assoc-valid-telligent-url app-state telligent-url))
 
 (defn initialize-bundle-builder [app-state]
-  (let [bundle-builder   (bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                    (get-in app-state keypaths/products))
-        saved-selections (get-in app-state keypaths/saved-bundle-builder-options)]
+  (let [bundle-builder   (old-bundle-builder/initialize (named-searches/current-named-search app-state)
+                                                        (get-in app-state keypaths/products))
+        saved-selections (get-in app-state keypaths/old-saved-bundle-builder-options)]
     (if saved-selections
-      (bundle-builder/reset-selections bundle-builder saved-selections)
+      (old-bundle-builder/reset-selections bundle-builder saved-selections)
       bundle-builder)))
 
 (defn ensure-bundle-builder [app-state]
-  (if (and (nil? (get-in app-state keypaths/bundle-builder))
+  (if (and (nil? (get-in app-state keypaths/old-bundle-builder))
            (named-searches/products-loaded? app-state (named-searches/current-named-search app-state)))
     (-> app-state
-        (assoc-in keypaths/bundle-builder (initialize-bundle-builder app-state))
-        (update-in keypaths/ui dissoc :saved-bundle-builder-options))
+        (assoc-in keypaths/old-bundle-builder (initialize-bundle-builder app-state))
+        (update-in keypaths/ui dissoc :old-saved-bundle-builder-options))
     app-state))
 
 (defmethod transition-state events/navigate-category [_ event args app-state]
   (assoc-in app-state keypaths/current-category-id (:id args)))
 
 (defmethod transition-state events/navigate-named-search [_ event {:keys [named-search-slug]} app-state]
-  (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
-                                      bundle-builder/expanded-selections
+  (let [bundle-builder-selections (-> (get-in app-state keypaths/old-bundle-builder)
+                                      old-bundle-builder/expanded-selections
                                       (dissoc :length))]
     (-> app-state
         (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
         (assoc-in keypaths/browse-recently-added-variants [])
         (assoc-in keypaths/browse-variant-quantity 1)
-        (assoc-in keypaths/bundle-builder nil)
-        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
+        (assoc-in keypaths/old-bundle-builder nil)
+        (assoc-in keypaths/old-saved-bundle-builder-options bundle-builder-selections)
         ensure-bundle-builder)))
 
 (defmethod transition-state events/navigate-ugc-named-search [_ event {:keys [named-search-slug query-params]} app-state]
@@ -311,9 +311,9 @@
 (defmethod transition-state events/control-counter-dec [_ event args app-state]
   (update-in app-state (:path args) (comp (partial max 1) dec)))
 
-(defmethod transition-state events/control-bundle-option-select
+(defmethod transition-state events/old-control-bundle-option-select
   [_ event {:keys [selections]} app-state]
-  (update-in app-state keypaths/bundle-builder bundle-builder/reset-selections selections))
+  (update-in app-state keypaths/old-bundle-builder old-bundle-builder/reset-selections selections))
 
 (defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
@@ -488,7 +488,7 @@
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
       (assoc-in keypaths/browse-variant-quantity 1)
       (update-in keypaths/order merge order)
-      (update-in keypaths/bundle-builder bundle-builder/rollback)))
+      (update-in keypaths/old-bundle-builder old-bundle-builder/rollback)))
 
 (defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
   (-> app-state

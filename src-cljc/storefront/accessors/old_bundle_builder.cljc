@@ -1,6 +1,6 @@
-(ns storefront.accessors.bundle-builder
-  (:require [clojure.set :as set]
-            [storefront.platform.numbers :as numbers]))
+(ns storefront.accessors.old-bundle-builder
+  (:require [storefront.platform.numbers :as numbers]
+            [clojure.set :as set]))
 
 ;; TERMINOLOGY
 ;; step: :color
@@ -13,6 +13,7 @@
 ;;          :image     "//:..."}
 
 ;; flow: [:color :origin :length]
+
 (defn ^:private only [coll]
   (when (= 1 (count coll))
     (first coll)))

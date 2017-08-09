@@ -142,6 +142,7 @@
 (defpath control-facebook-reset)
 
 (defpath control-bundle-option-select)
+(defpath old-control-bundle-option-select)
 
 (defpath control-browse-variant)
 (defpath control-add-to-bag)
