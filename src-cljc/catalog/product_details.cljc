@@ -16,6 +16,7 @@
                :cljs [storefront.component :as component])
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
+            [datascript.core :as d]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -31,8 +32,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn page [wide-left wide-right-and-narrow]
-  [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"}
-   [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
+  [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"} [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [name]
@@ -101,22 +101,21 @@
      (map-indexed display-bagged-sku bagged-skus)
      checkout-button]))
 
-(defn option-html [step-name later-step?
+(defn option-html [step-name
                    {:keys [name image price-delta checked? sold-out? selections]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class (cond
              sold-out?   "border-gray       bg-gray       dark-gray light"
-             later-step? "border-light-gray bg-light-gray dark-gray light"
              checked?    "border-gray       bg-teal       white     medium"
              true        "border-gray       bg-white      dark-gray light")
     :style {:font-size "14px" :line-height "18px"}}
    [:input.hide {:type      "radio"
-                 :disabled  (or later-step? sold-out?)
+                 :disabled  sold-out?
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selections selections
-                                                        :step-name step-name})}]
+                                                       {:selection step-name
+                                                        :value name})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
       {:src image :alt name
@@ -126,10 +125,10 @@
    [:span.block
     (if sold-out?
       "Sold Out"
-      [:span {:class (str (when-not checked? "navy") (when later-step? " muted"))}
+      [:span (when-not checked? {:class "navy"})
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name selected-option later-step? options]}]
+(defn step-html [{:keys [step-name selected-option options]}]
   [:div.my2 {:key step-name}
    [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
@@ -145,7 +144,7 @@
        {:key   (string/replace (str name step-name) #"\W+" "-")
         :style {:height "72px"}
         :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
-       (option-html step-name later-step? option)])]])
+       (option-html step-name option)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
@@ -240,8 +239,15 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn component [{:keys [sku-set fetching-sku-set? carousel-images reviews ugc selected-sku sku-quantity bundle-builder]}
-                 owner opts]
+(defn component
+  [{:keys [initial-skus selected-skus
+           skus selections selectors
+           sku-set fetching-sku-set?
+           carousel-images reviews
+           ugc selected-sku
+           sku-quantity bundle-builder]}
+   owner
+   opts]
   (let [review? (:review? reviews)]
     (component/create
      [:div.container.p2
@@ -263,10 +269,43 @@
           [:div
            [:div schema-org-offer-props
             [:div.my2
+             [:div
+              [:div.h3 "Criteria: "]
+              [:div (prn-str (:criteria sku-set))]]
+             [:div
+              [:div.h3 "Selections"]
+              [:div (prn-str selections)]
+              [:div (count selected-skus)]]
+             [:div
+              [:div.h3 "Initial SKUs: "]
+              (count initial-skus)]
+             [:div
+              [:div.h3 "Selectors: "]
+              (when (get (set (-> sku-set :criteria :product/department)) "hair")
+                (for [{step-name :name} [{:name      :hair/color
+                                          :long-name :hair/color
+                                          :checked?  false
+                                          :sold-out? false}
+                                         {:name      :hair/length
+                                          :long-name :hair/length
+                                          :checked?  false
+                                          :sold-out? false}]]
+                  (step-html {:step-name       step-name
+                              :selected-option (step-name selections)
+                              :selected-skus   selected-skus
+                              :options         (->> initial-skus
+                                                    (map (fn [sku] {:name      (step-name sku)
+                                                                    :long-name (step-name sku)
+                                                                    ;; sold-out
+                                                                    :price-delta
+                                                                    (- (:price sku)
+                                                                       (:price (first selected-skus)))}))
+                                                    set)})))]
+
              #_(if selected-sku
-               (variant-summary {:flow                  (:flow bundle-builder)
-                                 :variant               selected-variant
-                                 :variant-quantity      variant-quantity})
+                 (variant-summary {:flow             (:flow bundle-builder)
+                                   :variant          selected-variant
+                                   :variant-quantity variant-quantity})
                (no-variant-summary (bundle-builder/next-step bundle-builder)))]
             (when (sku-sets/eligible-for-triple-bundle-discount? sku-set)
               triple-bundle-upsell)
@@ -286,16 +325,52 @@
      :album        images}))
 
 (defn query [data]
-  (let [sku-code->sku (get-in data keypaths/skus)
-        sku-set       (sku-sets/current-sku-set data)
-        skus          (map sku-code->sku (:skus sku-set))
-        images        (mapcat :images skus)
-        reviews       (assoc (review-component/query data)
-                             :review?
-                             (sku-sets/eligible-for-reviews? sku-set))]
+  (let [sku-code->sku  (get-in data keypaths/skus)
+        sku-set        (sku-sets/current-sku-set data)
+        skus           (map sku-code->sku (:skus sku-set)) ;; TODO this is a mess. probably unneeded
+        images         (mapcat :images skus)
+        reviews        (assoc (review-component/query data)
+                              :review?
+                              (sku-sets/eligible-for-reviews? sku-set))
+        skus-db        (-> (d/empty-db)
+                           (d/db-with (->> skus
+                                           (map #(merge (:attributes %) %))
+                                           (mapv #(dissoc % :attributes)))))
+        selections     (mapv
+                        (fn [[k v]] ['?s k v])
+                        (get-in data keypaths/bundle-builder-selections))
+        criteria       (mapv
+                        (fn [[k v]] ['?s k (first v)])
+                        (:criteria sku-set))
+        initial-query  (when (seq criteria)
+                         (concat [:find '(pull ?s [*])
+                                  :where]
+                                 criteria))
+        selected-query (when (seq criteria)
+                         (concat [:find '(pull ?s [*])
+                                  :where]
+                                 criteria
+                                 selections))
+        initial-skus   (when (seq initial-query)
+                         (->> skus-db
+                              (d/q initial-query)
+                              (map first)
+                              (sort-by :price)))
+        selected-skus   (when (seq initial-query)
+                         (->> skus-db
+                              (d/q selected-query)
+                              (map first)
+                              (sort-by :price)))
+        #_             (set (map :hair/color initial-skus))
+        #_             (set (map :hair/length initial-skus))
+        ]
     {:sku-set           sku-set
      :skus              skus
-     :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
+     :selections        selections
+     :initial-skus      initial-skus
+     :selected-skus     selected-skus
+     :carousel-images   (set (filter (comp #{"carousel"} :use-case)
+                                     images))
      :fetching-sku-set? false
      :reviews           reviews
      :ugc               (ugc-query sku-set data)
@@ -354,6 +429,10 @@
         ensure-bundle-builder)))
 
 (defmethod transitions/transition-state events/control-bundle-option-select
-  [_ event {:keys [selections]} app-state]
-  (update-in app-state keypaths/bundle-builder bundle-builder/reset-selections selections))
-
+  [_ event {:keys [selection value]} app-state]
+  (update-in app-state
+             keypaths/bundle-builder-selections
+             (fn [selections]
+               (if (= (get selections selection) value)
+                 (dissoc selections selection)
+                 (assoc selections selection value)))))

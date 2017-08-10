@@ -99,6 +99,7 @@
 (def expanded-commission-order-id (conj ui :expanded-commission-order-id))
 
 (def bundle-builder (conj ui :bundle-builder))
+(def bundle-builder-selections (conj bundle-builder :selections))
 (def old-bundle-builder (conj ui :old-bundle-builder))
 (def product-details (conj ui :product-details))
 (def product-details-sku-set-id (conj product-details :sku-set-id))
