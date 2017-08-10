@@ -67,7 +67,8 @@
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
-  (history/set-current-page true))
+  (history/set-current-page true)
+  (some-> js/window .-root_owner .forceUpdate))
 
 (defn dom-ready [f]
   (if (not= (.-readyState js/document)
@@ -78,10 +79,10 @@
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
   (history/start-history)
-  (om/root
-   top-level-component
-   app-state
-   {:target (.getElementById js/document "content")})
+  (set! (.-root_owner js/window) 
+        (om/root top-level-component
+                 app-state
+                 {:target (.getElementById js/document "content")}))
   (reload-app app-state))
 
 (defn deep-merge
