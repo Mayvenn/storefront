@@ -38,7 +38,8 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def leads-routes
-  {"/stylists/welcome" (edn->bidi events/navigate-leads-home)})
+  {"/stylists/welcome"   (edn->bidi events/navigate-leads-home)
+   "/stylists/thank-you" (edn->bidi events/navigate-leads-resolve)})
 
 (def app-routes
   ["" (merge static-page-routes

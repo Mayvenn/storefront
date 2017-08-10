@@ -43,6 +43,7 @@
             ;; TODO Maybe we should change leads namespaces to be somehting like
             ;; leads.components.home
             [leads.home :as leads.home]
+            [leads.resolve :as leads.resolve]
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
@@ -92,13 +93,13 @@
     events/navigate-sign-up                 sign-up/built-component
     events/navigate-forgot-password         forgot-password/built-component
     events/navigate-gallery                 gallery/built-component
-    events/navigate-leads-home              leads.home/built-component
     home/built-component))
 
 (defn leads-component [nav-event]
   (condp = nav-event
     #?@(:cljs [])
     events/navigate-leads-home              leads.home/built-component
+    events/navigate-leads-resolve           leads.resolve/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]
