@@ -18,7 +18,8 @@
     [:p.mb2 "Enter your info below to get started."]]
    [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
-     :data-test "leads-sign-up-form"}
+     :data-test "leads-sign-up-form"
+     :method "POST"}
     (ui/text-field {:data-test "sign-up-first-name"
                     :errors    (get field-errors ["first-name"])
                     :id        "sign-up-first-name"
@@ -68,7 +69,7 @@
                         :required    true
                         :options     call-slot-options
                         :div-attrs   {:class "bg-white border border-gray rounded"}}))
-    (ui/teal-button {:type "submit"} "Become a Mayvenn Stylist")]])
+    (ui/submit-button "Become a Mayvenn Stylist")]])
 
 (defn resume-self-reg-panel [{:keys [lead]}]
   [:div.rounded.bg-lighten-4.p3

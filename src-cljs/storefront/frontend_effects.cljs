@@ -1072,3 +1072,16 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
+
+(defmethod perform-effects events/leads-control-sign-up-submit [_ event args _ app-state]
+  (api/create-lead {:tracking-id  (get-in app-state keypaths/leads-lead-tracking-id)
+                    :first-name   (get-in app-state keypaths/leads-ui-sign-up-first-name)
+                    :last-name    (get-in app-state keypaths/leads-ui-sign-up-last-name)
+                    :phone        (get-in app-state keypaths/leads-ui-sign-up-phone)
+                    :call-slot    (get-in app-state keypaths/leads-ui-sign-up-call-slot)
+                    :email        (get-in app-state keypaths/leads-ui-sign-up-email)
+                    :utm-source   (get-in app-state keypaths/leads-utm-source)
+                    :utm-medium   (get-in app-state keypaths/leads-utm-medium)
+                    :utm-campaign (get-in app-state keypaths/leads-utm-campaign)
+                    :utm-content  (get-in app-state keypaths/leads-utm-content)
+                    :utm-term     (get-in app-state keypaths/leads-utm-term)}))

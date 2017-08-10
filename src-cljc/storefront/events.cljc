@@ -264,6 +264,8 @@
 
 (defpath api-success-telligent-login)
 
+(defpath api-success-lead-created)
+
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)

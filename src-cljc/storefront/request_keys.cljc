@@ -64,3 +64,5 @@
 (def stripe-apple-pay-availability [:stripe-apple-pay-availability])
 
 (def login-telligent [:login-telligent])
+
+(def create-lead [:create-lead])
