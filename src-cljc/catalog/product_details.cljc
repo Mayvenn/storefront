@@ -68,10 +68,10 @@
                                             {:path keypaths/browse-variant-quantity}))]
     [:span.h4 "Currently out of stock"]))
 
-(defn add-to-bag-button [adding-to-bag? variant quantity]
-  (ui/navy-button {:on-click  (utils/send-event-callback events/control-add-to-bag
-                                                         {:variant  variant
-                                                          :quantity quantity})
+(defn add-to-bag-button [adding-to-bag? sku quantity]
+  (ui/navy-button {:on-click
+                   (utils/send-event-callback events/control-add-to-bag
+                                              {:sku sku :quantity quantity})
                    :data-test "add-to-bag"
                    :spinning? adding-to-bag?}
                   "Add to bag"))
@@ -270,18 +270,14 @@
           [:div
            [:div schema-org-offer-props
             [:div.my2
+             [:small
+              [:div
+               [:div.h4.bold "Skus Initial: " (count initial-skus)]
+               [:code (prn-str (:criteria sku-set))]]
+              [:div
+               [:div.h4.bold "Skus Selected: " (count selected-skus)]
+               [:code (prn-str selections)]]]
              [:div
-              [:div.h3 "Criteria: "]
-              [:div (prn-str (:criteria sku-set))]]
-             [:div
-              [:div.h3 "Selections"]
-              [:div (prn-str selections)]
-              [:div (count selected-skus)]]
-             [:div
-              [:div.h3 "Initial SKUs: "]
-              (count initial-skus)]
-             [:div
-              [:div.h3 "Selectors: "]
               (when (get (set (-> sku-set :criteria :product/department)) "hair")
                 (for [step-name [:hair/color :hair/length]]
                   (step-html {:step-name       step-name
@@ -309,8 +305,8 @@
                (no-variant-summary (bundle-builder/next-step bundle-builder)))]
             (when (sku-sets/eligible-for-triple-bundle-discount? sku-set)
               triple-bundle-upsell)
-            #_(when selected-sku
-              (add-to-bag-button adding-to-bag? selected-sku sku-quantity))
+            (when (= 1 (count selected-skus))
+              (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity))
             #_(bagged-variants-and-checkout bagged-variants)
             (when (sku-sets/stylist-only? sku-set) shipping-and-guarantee)]])
         (sku-set-description sku-set)
