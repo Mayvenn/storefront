@@ -17,6 +17,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [datascript.core :as d]
+            [storefront.utils.maps :as maps]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -81,7 +82,7 @@
 
 (defn display-bagged-sku [idx {:keys [quantity sku]}]
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
-   {:key idx
+   {:key (str "bagged-sku-" idx)
     :data-test "items-added"}
    "Added to bag: "
    (number->words quantity)
@@ -123,13 +124,13 @@
        :class (cond checked? "border" sold-out? "muted")}]
      [:span.block.titleize name])
    [:span.block
-    (if sold-out?
+    (when sold-out?
       "Sold Out"
-      [:span (when-not checked? {:class "navy"})
+     #_ [:span (when-not checked? {:class "navy"})
        "+" (as-money-without-cents price-delta)])]])
 
 (defn step-html [{:keys [step-name selected-option options]}]
-  [:div.my2 {:key step-name}
+  [:div.my2 {:key (str "step-" step-name)}
    [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
      (name step-name)
@@ -139,9 +140,9 @@
        (or (:long-name selected-option)
            [:span.titleize (:name selected-option)])])]
    [:div.flex.flex-wrap.content-stretch.mxnp3
-    (for [{:keys [name] :as option} options]
+    (for [{option-name :name :as option} options]
       [:div.flex.flex-column.justify-center.pp3
-       {:key   (string/replace (str name step-name) #"\W+" "-")
+       {:key   (string/replace (str "option-" (hash option)) #"\W+" "-")
         :style {:height "72px"}
         :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
        (option-html step-name option)])]])
@@ -211,10 +212,10 @@
        [:h3.mbp3.h5 "Includes:"]
        [:ul.list-reset.navy.h5.medium
         (for [[idx item] (map-indexed vector included-items)]
-          [:li.mbp3 {:key idx} item])]])
+          [:li.mbp3 {:key (str "item-" idx)} item])]])
     [:div.h5.dark-gray
      (for [[idx item] (map-indexed vector description)]
-       [:p.mt2 {:key idx} item])]]])
+       [:p.mt2 {:key (str "sku-set-description-" idx)} item])]]])
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
@@ -293,14 +294,23 @@
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
                               :selected-skus   selected-skus
-                              :options         (->> initial-skus
-                                                    (map (fn [sku] {:name      (step-name sku)
-                                                                    :long-name (step-name sku)
-                                                                    ;; sold-out
-                                                                    :price-delta
-                                                                    (- (:price sku)
-                                                                       (:price (first selected-skus)))}))
-                                                    set)})))]
+                              :options
+
+                              (->> initial-skus
+                                   (reduce (fn [options sku]
+                                             (let [option-name (step-name sku)]
+                                               (update options option-name
+                                                       (fn [existing]
+                                                         {:name      option-name
+                                                          :long-name option-name
+                                                          :sold-out? (and (:sold-out? sku)
+                                                                          (:sold-out? existing true))
+                                                          #_         :price-delta
+                                                          #_         (- (:price sku)
+                                                                        (:price (first selected-skus)))}
+                                                         ))))
+                                           {})
+                                   vals)})))]
 
              #_(if selected-sku
                  (variant-summary {:flow             (:flow bundle-builder)
