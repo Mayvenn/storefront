@@ -283,19 +283,11 @@
              [:div
               [:div.h3 "Selectors: "]
               (when (get (set (-> sku-set :criteria :product/department)) "hair")
-                (for [{step-name :name} [{:name      :hair/color
-                                          :long-name :hair/color
-                                          :checked?  false
-                                          :sold-out? false}
-                                         {:name      :hair/length
-                                          :long-name :hair/length
-                                          :checked?  false
-                                          :sold-out? false}]]
+                (for [step-name [:hair/color :hair/length]]
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
                               :selected-skus   selected-skus
                               :options
-
                               (->> initial-skus
                                    (reduce (fn [options sku]
                                              (let [option-name (step-name sku)]
@@ -303,12 +295,10 @@
                                                        (fn [existing]
                                                          {:name      option-name
                                                           :long-name option-name
+                                                          :checked?  (= option-name
+                                                                        (step-name selections))
                                                           :sold-out? (and (:sold-out? sku)
-                                                                          (:sold-out? existing true))
-                                                          #_         :price-delta
-                                                          #_         (- (:price sku)
-                                                                        (:price (first selected-skus)))}
-                                                         ))))
+                                                                          (:sold-out? existing true))}))))
                                            {})
                                    vals)})))]
 
@@ -335,45 +325,44 @@
      :album        images}))
 
 (defn query [data]
-  (let [sku-code->sku  (get-in data keypaths/skus)
-        sku-set        (sku-sets/current-sku-set data)
-        skus           (map sku-code->sku (:skus sku-set)) ;; TODO this is a mess. probably unneeded
-        images         (mapcat :images skus)
-        reviews        (assoc (review-component/query data)
-                              :review?
-                              (sku-sets/eligible-for-reviews? sku-set))
-        skus-db        (-> (d/empty-db)
-                           (d/db-with (->> skus
-                                           (map #(merge (:attributes %) %))
-                                           (mapv #(dissoc % :attributes)))))
-        selections     (mapv
-                        (fn [[k v]] ['?s k v])
-                        (get-in data keypaths/bundle-builder-selections))
-        criteria       (mapv
-                        (fn [[k v]] ['?s k (first v)])
-                        (:criteria sku-set))
-        initial-query  (when (seq criteria)
-                         (concat [:find '(pull ?s [*])
-                                  :where]
-                                 criteria))
-        selected-query (when (seq criteria)
-                         (concat [:find '(pull ?s [*])
-                                  :where]
-                                 criteria
-                                 selections))
-        initial-skus   (when (seq initial-query)
-                         (->> skus-db
-                              (d/q initial-query)
-                              (map first)
-                              (sort-by :price)))
-        selected-skus   (when (seq initial-query)
-                         (->> skus-db
-                              (d/q selected-query)
-                              (map first)
-                              (sort-by :price)))
-        #_             (set (map :hair/color initial-skus))
-        #_             (set (map :hair/length initial-skus))
-        ]
+  (let [sku-code->sku      (get-in data keypaths/skus)
+        sku-set            (sku-sets/current-sku-set data)
+        skus               (map sku-code->sku
+                                (:skus sku-set)) ;; TODO this is a mess. probably unneeded
+        images             (mapcat :images skus)
+        reviews            (assoc (review-component/query data)
+                                  :review?
+                                  (sku-sets/eligible-for-reviews? sku-set))
+        skus-db            (-> (d/empty-db)
+                               (d/db-with (->> skus
+                                               (map #(merge (:attributes %) %))
+                                               (mapv #(dissoc % :attributes)))))
+        selections         (get-in data keypaths/bundle-builder-selections)
+        selections-clauses (mapv
+                            (fn [[k v]] ['?s k v])
+                            selections)
+        criteria           (mapv
+                            (fn [[k v]] ['?s k (first v)])
+                            (:criteria sku-set))
+        initial-query      (when (seq criteria)
+                             (concat [:find '(pull ?s [*])
+                                      :where]
+                                     criteria))
+        selected-query     (when (seq criteria)
+                             (concat [:find '(pull ?s [*])
+                                      :where]
+                                     criteria
+                                     selections-clauses))
+        initial-skus       (when (seq initial-query)
+                             (->> skus-db
+                                  (d/q initial-query)
+                                  (map first)
+                                  (sort-by :price)))
+        selected-skus      (when (seq initial-query)
+                             (->> skus-db
+                                  (d/q selected-query)
+                                  (map first)
+                                  (sort-by :price)))]
     {:sku-set           sku-set
      :skus              skus
      :selections        selections
