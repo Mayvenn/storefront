@@ -164,22 +164,20 @@
       [:div.navy desc]])
    quantity-and-price])
 
-(defn no-variant-summary [next-step]
-  (summary-structure
+(defn no-sku-summary [next-step]
+#_  (summary-structure
    (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
    (quantity-and-price-structure ui/nbsp "$--.--")))
 
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
-(defn variant-summary [{:keys [flow
-                               variant
-                               variant-quantity]}]
-  (let [{:keys [can_supply? price]} variant]
+(defn sku-summary [{:keys [flow sku quantity]}]
+  (let [{:keys [can_supply? price]} sku]
     (summary-structure
-     (variant-name variant flow)
+     (variant-name sku flow)
      (quantity-and-price-structure
-      (counter-or-out-of-stock can_supply? variant-quantity)
+      (counter-or-out-of-stock can_supply? quantity)
       (item-price price)))))
 
 (def triple-bundle-upsell
@@ -242,14 +240,20 @@
 
 (defn component
   [{:keys [initial-skus selected-skus
-           skus selections selectors
+           steps
+           skus
+           selections
+           options
+           selectors
            sku-set fetching-sku-set?
            carousel-images reviews
            ugc selected-sku
            sku-quantity bundle-builder]}
    owner
    opts]
-  (let [review? (:review? reviews)]
+  (let [review? (:review? reviews)
+        selected-sku
+        (when (= 1 (count selected-skus)) (first selected-skus))]
     (component/create
      [:div.container.p2
       (page
@@ -278,34 +282,19 @@
                [:div.h4.bold "Skus Selected: " (count selected-skus)]
                [:code (prn-str selections)]]]
              [:div
-              (when (get (set (-> sku-set :criteria :product/department)) "hair")
-                (for [step-name [:hair/color :hair/length]]
+              (when (get (-> sku-set :criteria :product/department set) "hair")
+                (for [step-name steps]
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
-                              :selected-skus   selected-skus
-                              :options
-                              (->> initial-skus
-                                   (reduce (fn [options sku]
-                                             (let [option-name (step-name sku)]
-                                               (update options option-name
-                                                       (fn [existing]
-                                                         {:name      option-name
-                                                          :long-name option-name
-                                                          :checked?  (= option-name
-                                                                        (step-name selections))
-                                                          :sold-out? (and (:sold-out? sku)
-                                                                          (:sold-out? existing true))}))))
-                                           {})
-                                   vals)})))]
-
-             #_(if selected-sku
-                 (variant-summary {:flow             (:flow bundle-builder)
-                                   :variant          selected-variant
-                                   :variant-quantity variant-quantity})
-               (no-variant-summary (bundle-builder/next-step bundle-builder)))]
+                              :options         (options step-name)})))]
+             (if selected-sku
+               (sku-summary {:sku      selected-sku
+                             :quantity 1 #_ quantity})
+               [:div "todo"] ;; (no-variant-summary (bundle-builder/next-step bundle-builder))
+               )]
             (when (sku-sets/eligible-for-triple-bundle-discount? sku-set)
               triple-bundle-upsell)
-            (when (= 1 (count selected-skus))
+            (when selected-sku
               (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity))
             #_(bagged-variants-and-checkout bagged-variants)
             (when (sku-sets/stylist-only? sku-set) shipping-and-guarantee)]])
@@ -320,48 +309,78 @@
     {:named-search sku-set
      :album        images}))
 
+(defn options
+  "Reduces product skus down to options for selection
+   for a certain selector. e.g. options for :hair/color."
+  [skus selections selector]
+  (let [sku->option
+        (fn [options sku]
+          (let [option-name   (selector sku)
+                selected-name (selector selections)]
+            (update options option-name
+                    (fn [existing]
+                      {:name        option-name
+                       :long-name   option-name
+                       :can-supply? 10
+                       :checked?    (if-not (seq existing)
+                                      (seq selected-name)
+                                      (= option-name selected-name))
+                       :sold-out?   (and (:sold-out? sku)
+                                         (:sold-out? existing true))}))))]
+    (->> skus
+         (reduce sku->option {})
+         vals)))
+
 (defn query [data]
-  (let [sku-code->sku      (get-in data keypaths/skus)
-        sku-set            (sku-sets/current-sku-set data)
-        skus               (map sku-code->sku
-                                (:skus sku-set)) ;; TODO this is a mess. probably unneeded
-        images             (mapcat :images skus)
-        reviews            (assoc (review-component/query data)
-                                  :review?
-                                  (sku-sets/eligible-for-reviews? sku-set))
-        skus-db            (-> (d/empty-db)
-                               (d/db-with (->> skus
-                                               (map #(merge (:attributes %) %))
-                                               (mapv #(dissoc % :attributes)))))
-        selections         (get-in data keypaths/bundle-builder-selections)
-        selections-clauses (mapv
-                            (fn [[k v]] ['?s k v])
-                            selections)
-        criteria           (mapv
-                            (fn [[k v]] ['?s k (first v)])
-                            (:criteria sku-set))
-        initial-query      (when (seq criteria)
-                             (concat [:find '(pull ?s [*])
-                                      :where]
-                                     criteria))
-        selected-query     (when (seq criteria)
-                             (concat [:find '(pull ?s [*])
-                                      :where]
-                                     criteria
-                                     selections-clauses))
-        initial-skus       (when (seq initial-query)
-                             (->> skus-db
-                                  (d/q initial-query)
-                                  (map first)
-                                  (sort-by :price)))
-        selected-skus      (when (seq initial-query)
-                             (->> skus-db
-                                  (d/q selected-query)
-                                  (map first)
-                                  (sort-by :price)))]
+  (let [sku-code->sku           (get-in data keypaths/skus)
+        sku-set                 (sku-sets/current-sku-set data)
+        skus                    (map sku-code->sku
+                                     (:skus sku-set)) ; TODO this is a mess. probably unneeded
+        images                  (mapcat :images skus)
+        reviews                 (assoc (review-component/query data)
+                                       :review?
+                                       (sku-sets/eligible-for-reviews? sku-set))
+        skus-db                 (-> (d/empty-db)
+                                    (d/db-with (->> skus
+                                                    (map #(merge (:attributes %) %))
+                                                    (mapv #(dissoc % :attributes)))))
+        selections              (get-in data keypaths/bundle-builder-selections)
+        selections-clauses      (mapv
+                                 (fn [[k v]] ['?s k v])
+                                 selections)
+        criteria                (mapv
+                                 (fn [[k v]] ['?s k (first v)])
+                                 (:criteria sku-set))
+        initial-query           (when (seq criteria)
+                                  (concat [:find '(pull ?s [*])
+                                           :where]
+                                          criteria))
+        selected-query          (when (seq criteria)
+                                  (concat [:find '(pull ?s [*])
+                                           :where]
+                                          criteria
+                                          selections-clauses))
+        initial-skus            (when (seq initial-query)
+                                  (->> skus-db
+                                       (d/q initial-query)
+                                       (map first)
+                                       (sort-by :price)))
+        selected-skus           (when (seq initial-query)
+                                  (->> skus-db
+                                       (d/q selected-query)
+                                       (map first)
+                                       (sort-by :price)))
+        steps                   [:hair/color :hair/length]
+        options                 (->> steps
+                                     (map (partial options
+                                                   initial-skus
+                                                   selections))
+                                     first)]
     {:sku-set           sku-set
      :skus              skus
      :selections        selections
+     :steps             steps
+     :options           options
      :initial-skus      initial-skus
      :selected-skus     selected-skus
      :carousel-images   (set (filter (comp #{"carousel"} :use-case)
@@ -373,7 +392,6 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
-
 
 (defn fetch-current-sku-set-album [app-state sku-set-id]
   (when-let [slug (->> sku-set-id
