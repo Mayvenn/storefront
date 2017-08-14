@@ -166,20 +166,22 @@
                     [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
         slugs     ((apply juxt slug-keys) sku)]
     (->> (map (partial facet->option-name facets) slug-keys slugs)
-         (clojure.string/join " "))))
+         (clojure.string/join " ")
+         string/upper-case)))
 
 (defn summary-structure [desc quantity-and-price]
   [:div
    (when (seq desc)
      [:div
       [:h2.h3.light "Summary"]
-      [:div.navy.shout desc]])
+      [:div.navy desc]])
    quantity-and-price])
 
-(defn no-sku-summary [next-step]
-#_  (summary-structure
-   (str "Select " (-> next-step name string/capitalize indefinite-articalize) "!")
-   (quantity-and-price-structure ui/nbsp "$--.--")))
+(defn no-sku-summary [facets selections steps]
+  (let [next-step (some (fn [step] (when-not (contains? selections step) step)) steps)]
+    (summary-structure
+     (str "Select " (-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
+     (quantity-and-price-structure ui/nbsp "$--.--"))))
 
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
@@ -335,8 +337,7 @@
                (sku-summary {:sku      selected-sku
                              :quantity 1 #_ quantity
                              :facets   facets})
-               [:div "todo"] ;; (no-variant-summary (bundle-builder/next-step bundle-builder))
-               )]
+               (no-sku-summary facets selections steps))]
             (when (sku-sets/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
             (when selected-sku
