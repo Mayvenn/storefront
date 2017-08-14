@@ -10,10 +10,6 @@
             [storefront.accessors.promos :as promos]
             [storefront.accessors.sku-sets :as sku-sets]
             [storefront.assets :as assets]
-            #?(:clj [storefront.backend-api :as api]
-               :cljs [storefront.api :as api])
-            #?(:clj  [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [datascript.core :as d]
@@ -26,11 +22,17 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
-            #?(:cljs [storefront.hooks.reviews :as review-hooks])
             [storefront.platform.ugc :as ugc]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            #?@(:clj [[storefront.backend-api :as api]
+                      [storefront.component-shim :as component]]
+                :cljs [[storefront.hooks.pixlee :as pixlee-hooks]
+                       [storefront.component :as component]
+                       [storefront.hooks.reviews :as review-hooks]
+                       [storefront.api :as api]])))
+
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"} [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
@@ -152,16 +154,27 @@
     (str (if (vowel? (first word)) "an " "a ")
          word)))
 
-(defn variant-name [variant flow]
-  (when (seq flow)
-    (string/upper-case (:variant-name variant))))
+(defn facet->option-name [facets facet-slug option-slug]
+  (-> facets
+      facet-slug
+      :facet/options
+      (get option-slug)
+      :option/name))
+
+(defn sku-name [facets {:keys [hair/family] :as sku}]
+  (let [slug-keys (if (= family "bundles")
+                    [:hair/color :hair/origin :hair/length :hair/texture]
+                    [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
+        slugs     ((apply juxt slug-keys) sku)]
+    (->> (map (partial facet->option-name facets) slug-keys slugs)
+         (clojure.string/join " "))))
 
 (defn summary-structure [desc quantity-and-price]
   [:div
    (when (seq desc)
      [:div
       [:h2.h3.light "Summary"]
-      [:div.navy desc]])
+      [:div.navy.shout desc]])
    quantity-and-price])
 
 (defn no-sku-summary [next-step]
@@ -172,12 +185,12 @@
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
-(defn sku-summary [{:keys [flow sku quantity]}]
-  (let [{:keys [can_supply? price]} sku]
+(defn sku-summary [{:keys [facets sku quantity]}]
+  (let [{:keys [in-stock? price]} sku]
     (summary-structure
-     (variant-name sku flow)
+     (sku-name facets sku)
      (quantity-and-price-structure
-      (counter-or-out-of-stock can_supply? quantity)
+      (counter-or-out-of-stock in-stock? quantity)
       (item-price price)))))
 
 (def triple-bundle-upsell
@@ -312,7 +325,8 @@
                               :options         (step-name options)})))]
              (if selected-sku
                (sku-summary {:sku      selected-sku
-                             :quantity 1 #_ quantity})
+                             :quantity 1 #_ quantity
+                             :facets   facets})
                [:div "todo"] ;; (no-variant-summary (bundle-builder/next-step bundle-builder))
                )]
             (when (sku-sets/eligible-for-triple-bundle-discount? product)
@@ -391,7 +405,10 @@
      :fetching-sku-set? false
      :reviews           reviews
      :ugc               (ugc-query product data)
-     :bundle-builder    (get-in data keypaths/bundle-builder)}))
+     :bundle-builder    (get-in data keypaths/bundle-builder)
+     :facets            (->> (get-in data keypaths/facets)
+                             (map #(update % :facet/options (partial maps/key-by :option/slug)))
+                             (maps/key-by :facet/slug))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -408,6 +425,7 @@
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id slug]} _ app-state]
   (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
+  (api/fetch-facets (get-in app-state keypaths/api-cache))
   #?(:cljs (review-hooks/insert-reviews))
   (fetch-current-sku-set-album app-state id))
 
