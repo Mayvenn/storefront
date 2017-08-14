@@ -104,7 +104,7 @@
      checkout-button]))
 
 (defn option-html [step-name
-                   {:keys [name image price-delta checked? sold-out? selections]}]
+                   {:keys [option/name option/slug image price-delta checked? sold-out? selections]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class     (cond
@@ -117,7 +117,7 @@
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selection step-name
-                                                        :value     name})}]
+                                                        :value     slug})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
       {:src   image :alt    name
@@ -253,21 +253,25 @@
 (defn product->options
   "Reduces product skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [skus selections selector]
+  [facets skus selections selector]
   (let [sku->option
         (fn [options sku]
           (let [option-name   (selector sku)
-                selected-name (selector selections)]
+                selected-name (selector selections)
+                facet-option  (get-in facets [selector :facet/options option-name])
+                image         (:option/image facet-option)]
             (update options option-name
                     (fn [existing]
-                      {:name        option-name
-                       :long-name   option-name
+                      {:option/name        (:option/name facet-option)
+                       :option/slug        (:option/slug facet-option)
                        :can-supply? 10
-                       :checked?    (if-not (seq existing)
-                                      (seq selected-name)
-                                      (= option-name selected-name))
+                       :image       image
+                       :checked?    (if (seq existing)
+                                      (= option-name selected-name)
+                                      (seq selected-name))
                        :sold-out?   (not (or (:in-stock? sku)
                                              (:in-stock? existing)))}))))]
+
     {selector (->> skus
                    (reduce sku->option {})
                    vals)}))
@@ -393,8 +397,12 @@
                                   (map first)
                                   (sort-by :price)))
         steps              [:hair/color :hair/length]
+        facets             (->> (get-in data keypaths/facets)
+                                (map #(update % :facet/options (partial maps/key-by :option/slug)))
+                                (maps/key-by :facet/slug))
         options            (->> steps
                                 (map (partial product->options
+                                        facets
                                         initial-skus
                                         selections))
                                 (apply merge))]
@@ -411,9 +419,7 @@
      :reviews           reviews
      :ugc               (ugc-query product data)
      :bundle-builder    (get-in data keypaths/bundle-builder)
-     :facets            (->> (get-in data keypaths/facets)
-                             (map #(update % :facet/options (partial maps/key-by :option/slug)))
-                             (maps/key-by :facet/slug))}))
+     :facets            facets}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
