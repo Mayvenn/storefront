@@ -350,8 +350,10 @@
                                 :phone             (get-in data keypaths/leads-ui-sign-up-phone)
                                 :email             (get-in data keypaths/leads-ui-sign-up-email)
                                 :call-slot         (get-in data keypaths/leads-ui-sign-up-call-slot)
-                                :self-reg?         (= "StylistsFB"
-                                                      (get-in data keypaths/leads-utm-content))
+                                :self-reg?         (= "stylistsfb"
+                                                    (string/lower-case
+                                                     (or (get-in data keypaths/leads-utm-content)
+                                                         "")))
                                 :call-slot-options (get-in data keypaths/leads-ui-sign-up-call-slot-options)}}
      :footer {:call-number call-number}
      :faq    {:text-number text-number

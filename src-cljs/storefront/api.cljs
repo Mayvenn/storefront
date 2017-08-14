@@ -885,4 +885,4 @@
    "/leads"
    request-keys/create-lead
    {:params params
-    :handler #(messages/handle-message events/api-success-lead-created identity)}))
+    :handler #(messages/handle-message events/api-success-lead-created %)}))
