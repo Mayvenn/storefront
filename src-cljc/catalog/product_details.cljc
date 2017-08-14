@@ -17,7 +17,6 @@
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            #?(:cljs [storefront.hooks.pixlee :as pixlee-hooks])
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
@@ -108,27 +107,27 @@
                    {:keys [name image price-delta checked? sold-out? selections]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
-    :class (cond
-             sold-out?   "border-gray       bg-gray       dark-gray light"
-             checked?    "border-gray       bg-teal       white     medium"
-             true        "border-gray       bg-white      dark-gray light")
-    :style {:font-size "14px" :line-height "18px"}}
+    :class     (cond
+                 sold-out? "border-gray bg-gray  dark-gray light"
+                 checked?  "border-gray bg-teal  white     medium"
+                 true      "border-gray bg-white dark-gray light")
+    :style     {:font-size "14px" :line-height "18px"}}
    [:input.hide {:type      "radio"
                  :disabled  sold-out?
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selection step-name
-                                                        :value name})}]
+                                                        :value     name})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
-      {:src image :alt name
-       :width 30 :height 30
+      {:src   image :alt    name
+       :width 30    :height 30
        :class (cond checked? "border" sold-out? "muted")}]
      [:span.block.titleize name])
    [:span.block
     (when sold-out?
       "Sold Out"
-     #_ [:span (when-not checked? {:class "navy"})
+      #_ [:span (when-not checked? {:class "navy"})
        "+" (as-money-without-cents price-delta)])]])
 
 (defn step-html [{:keys [step-name selected-option options]}]
@@ -267,14 +266,15 @@
                        :checked?    (if-not (seq existing)
                                       (seq selected-name)
                                       (= option-name selected-name))
-                       :sold-out?   (and (:sold-out? sku)
-                                         (:sold-out? existing true))}))))]
+                       :sold-out?   (not (or (:in-stock? sku)
+                                             (:in-stock? existing)))}))))]
     {selector (->> skus
                    (reduce sku->option {})
                    vals)}))
 
 (defn component
-  [{:keys [initial-skus selected-skus
+  [{:keys [initial-skus
+           selected-skus
            steps
            skus
            selections
@@ -282,9 +282,13 @@
            selectors
            product
            fetching-sku-set?
-           carousel-images reviews
-           ugc selected-sku
-           sku-quantity bundle-builder]}
+           carousel-images
+           reviews
+           ugc
+           selected-sku
+           sku-quantity
+           facets
+           bundle-builder]}
    owner
    opts]
   (let [review? (:review? reviews)
@@ -344,7 +348,7 @@
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
                                        (sku-sets/id->named-search (:id sku-set)))]
     {:named-search sku-set
-     :album        images})) 
+     :album        images}))
 ;; finding a sku from a product
 
 (defn ->clauses [m] (mapv (fn [[k v]] ['?s k v]) m))
@@ -356,7 +360,8 @@
   (let [sku-code->sku      (get-in data keypaths/skus)
         product            (sku-sets/current-sku-set data)
         skus               (map sku-code->sku
-                                (:skus product)) ; TODO this is a mess. probably unneeded
+                                (:skus product))
+        ;; TODO this is a mess. probably unneeded
         images             (mapcat :images skus)
         reviews            (assoc (review-component/query data)
                                   :review?
@@ -390,8 +395,8 @@
         steps              [:hair/color :hair/length]
         options            (->> steps
                                 (map (partial product->options
-                                              initial-skus
-                                              selections))
+                                        initial-skus
+                                        selections))
                                 (apply merge))]
     {:product           product
      :skus              skus
