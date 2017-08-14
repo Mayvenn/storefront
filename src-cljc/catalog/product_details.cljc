@@ -238,6 +238,28 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
+(defn product->options
+  "Reduces product skus down to options for selection
+   for a certain selector. e.g. options for :hair/color."
+  [skus selections selector]
+  (let [sku->option
+        (fn [options sku]
+          (let [option-name   (selector sku)
+                selected-name (selector selections)]
+            (update options option-name
+                    (fn [existing]
+                      {:name        option-name
+                       :long-name   option-name
+                       :can-supply? 10
+                       :checked?    (if-not (seq existing)
+                                      (seq selected-name)
+                                      (= option-name selected-name))
+                       :sold-out?   (and (:sold-out? sku)
+                                         (:sold-out? existing true))}))))]
+    {selector (->> skus
+                   (reduce sku->option {})
+                   vals)}))
+
 (defn component
   [{:keys [initial-skus selected-skus
            steps
@@ -278,28 +300,28 @@
              [:small
               [:div
                [:div.h4.bold "Skus Initial: " (count initial-skus)]
-               [:code (prn-str (:criteria sku-set))]]
+               [:code (prn-str (:criteria product))]]
               [:div
                [:div.h4.bold "Skus Selected: " (count selected-skus)]
                [:code (prn-str selections)]]]
              [:div
-              (when (get (-> product :criteria :product/department set) "hair")
+              (when (contains? (-> product :criteria :product/department set) "hair")
                 (for [step-name steps]
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
-                              :options         (options step-name)})))]
+                              :options         (step-name options)})))]
              (if selected-sku
                (sku-summary {:sku      selected-sku
                              :quantity 1 #_ quantity})
                [:div "todo"] ;; (no-variant-summary (bundle-builder/next-step bundle-builder))
                )]
-            (when (sku-sets/eligible-for-triple-bundle-discount? sku-set)
+            (when (sku-sets/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
             (when selected-sku
               (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity))
             #_(bagged-variants-and-checkout bagged-variants)
-            (when (sku-sets/stylist-only? sku-set) shipping-and-guarantee)]])
-        (sku-set-description sku-set)
+            (when (sku-sets/stylist-only? product) shipping-and-guarantee)]])
+        (sku-set-description product)
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
@@ -308,30 +330,7 @@
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
                                        (sku-sets/id->named-search (:id sku-set)))]
     {:named-search sku-set
-     :album        images}))
-
-(defn options
-  "Reduces product skus down to options for selection
-   for a certain selector. e.g. options for :hair/color."
-  [skus selections selector]
-  (let [sku->option
-        (fn [options sku]
-          (let [option-name   (selector sku)
-                selected-name (selector selections)]
-            (update options option-name
-                    (fn [existing]
-                      {:name        option-name
-                       :long-name   option-name
-                       :can-supply? 10
-                       :checked?    (if-not (seq existing)
-                                      (seq selected-name)
-                                      (= option-name selected-name))
-                       :sold-out?   (and (:sold-out? sku)
-                                         (:sold-out? existing true))}))))]
-    (->> skus
-         (reduce sku->option {})
-         vals)))
-
+     :album        images})) 
 ;; finding a sku from a product
 
 (defn ->clauses [m] (mapv (fn [[k v]] ['?s k v]) m))
@@ -339,50 +338,47 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn free-options
-  (get (-> product :criteria :product/department set) "hair"))
-
 (defn query [data]
-  (let [sku-code->sku           (get-in data keypaths/skus)
-        product                 (sku-sets/current-sku-set data)
-        skus                    (map sku-code->sku
-                                     (:skus product)) ; TODO this is a mess. probably unneeded
-        images                  (mapcat :images skus)
-        reviews                 (assoc (review-component/query data)
-                                       :review?
-                                       (sku-sets/eligible-for-reviews? product))
-        skus-db                 (-> (d/empty-db)
-                                    (d/db-with (->> skus
-                                                    (map #(merge (:attributes %) %))
-                                                    (mapv #(dissoc % :attributes)))))
-        selections              (get-in data keypaths/bundle-builder-selections)
-        selections-clauses      (->clauses selections)
-        criteria                (-> product :criteria (update-vals first) ->clauses)
-        initial-query           (when (seq criteria)
-                                  (concat [:find '(pull ?s [*])
-                                           :where]
-                                          criteria))
-        selected-query          (when (seq criteria)
-                                  (concat [:find '(pull ?s [*])
-                                           :where]
-                                          criteria
-                                          selections-clauses))
-        initial-skus            (when (seq initial-query)
-                                  (->> skus-db
-                                       (d/q initial-query)
-                                       (map first)
-                                       (sort-by :price)))
-        selected-skus           (when (seq initial-query)
-                                  (->> skus-db
-                                       (d/q selected-query)
-                                       (map first)
-                                       (sort-by :price)))
-        steps                   [:hair/color :hair/length]
-        options                 (->> steps
-                                     (map (partial options
-                                                   initial-skus
-                                                   selections))
-                                     first)]
+  (let [sku-code->sku      (get-in data keypaths/skus)
+        product            (sku-sets/current-sku-set data)
+        skus               (map sku-code->sku
+                                (:skus product)) ; TODO this is a mess. probably unneeded
+        images             (mapcat :images skus)
+        reviews            (assoc (review-component/query data)
+                                  :review?
+                                  (sku-sets/eligible-for-reviews? product))
+        skus-db            (-> (d/empty-db)
+                               (d/db-with (->> skus
+                                               (map #(merge (:attributes %) %))
+                                               (mapv #(dissoc % :attributes)))))
+        selections         (get-in data keypaths/bundle-builder-selections)
+        selections-clauses (->clauses selections)
+        criteria           (-> product :criteria (update-vals first) ->clauses)
+        initial-query      (when (seq criteria)
+                             (concat [:find '(pull ?s [*])
+                                      :where]
+                                     criteria))
+        selected-query     (when (seq criteria)
+                             (concat [:find '(pull ?s [*])
+                                      :where]
+                                     criteria
+                                     selections-clauses))
+        initial-skus       (when (seq initial-query)
+                             (->> skus-db
+                                  (d/q initial-query)
+                                  (map first)
+                                  (sort-by :price)))
+        selected-skus      (when (seq initial-query)
+                             (->> skus-db
+                                  (d/q selected-query)
+                                  (map first)
+                                  (sort-by :price)))
+        steps              [:hair/color :hair/length]
+        options            (->> steps
+                                (map (partial product->options
+                                              initial-skus
+                                              selections))
+                                (apply merge))]
     {:product           product
      :skus              skus
      :selections        selections
@@ -453,6 +449,7 @@
   (update-in app-state
              keypaths/bundle-builder-selections
              (fn [selections]
-               (if (= (get selections selection) value)
+               (if (and (= (get selections selection) value)
+                        (not= 1 (count selections)))
                  (dissoc selections selection)
                  (assoc selections selection value)))))
