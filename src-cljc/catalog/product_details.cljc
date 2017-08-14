@@ -405,22 +405,6 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
-(defn initialize-bundle-builder [app-state]
-  (let [bundle-builder   (bundle-builder/initialize (named-searches/current-named-search app-state)
-                                                    (get-in app-state keypaths/products))
-        saved-selections (get-in app-state keypaths/saved-bundle-builder-options)]
-    (if saved-selections
-      (bundle-builder/reset-selections bundle-builder saved-selections)
-      bundle-builder)))
-
-(defn ensure-bundle-builder [app-state]
-  (if (and (nil? (get-in app-state keypaths/bundle-builder))
-           (named-searches/products-loaded? app-state (named-searches/current-named-search app-state)))
-    (-> app-state
-        (assoc-in keypaths/bundle-builder (initialize-bundle-builder app-state))
-        (update-in keypaths/ui dissoc :saved-bundle-builder-options))
-    app-state))
-
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id slug]} _ app-state]
   (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
@@ -440,9 +424,7 @@
         (assoc-in keypaths/product-details-sku-set-id id)
         (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
         (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (assoc-in keypaths/bundle-builder nil)
-        ensure-bundle-builder)))
+        (assoc-in keypaths/browse-sku-quantity 1))))
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
