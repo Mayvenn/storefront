@@ -245,7 +245,8 @@
            selections
            options
            selectors
-           sku-set fetching-sku-set?
+           product
+           fetching-sku-set?
            carousel-images reviews
            ugc selected-sku
            sku-quantity bundle-builder]}
@@ -258,14 +259,14 @@
      [:div.container.p2
       (page
        [:div
-        (carousel carousel-images sku-set)
+        (carousel carousel-images product)
         [:div.hide-on-mb (component/build ugc/component ugc opts)]]
        [:div
         [:div.center
-         (title (:name sku-set))
+         (title (:name product))
          (when review? (reviews-summary reviews opts))
          [:meta {:item-prop "image" :content (first carousel-images)}]
-         (full-bleed-narrow (carousel carousel-images sku-set))
+         (full-bleed-narrow (carousel carousel-images product))
          #_(when (and (not fetching-sku-set?)
                     needs-selections?)
            (starting-at (:initial-variants bundle-builder)))]
@@ -282,7 +283,7 @@
                [:div.h4.bold "Skus Selected: " (count selected-skus)]
                [:code (prn-str selections)]]]
              [:div
-              (when (get (-> sku-set :criteria :product/department set) "hair")
+              (when (get (-> product :criteria :product/department set) "hair")
                 (for [step-name steps]
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
@@ -331,26 +332,32 @@
          (reduce sku->option {})
          vals)))
 
+;; finding a sku from a product
+
+(defn ->clauses [m] (mapv (fn [[k v]] ['?s k v]) m))
+
+(defn ^:private update-vals [m f & args]
+  (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
+
+(defn free-options
+  (get (-> product :criteria :product/department set) "hair"))
+
 (defn query [data]
   (let [sku-code->sku           (get-in data keypaths/skus)
-        sku-set                 (sku-sets/current-sku-set data)
+        product                 (sku-sets/current-sku-set data)
         skus                    (map sku-code->sku
-                                     (:skus sku-set)) ; TODO this is a mess. probably unneeded
+                                     (:skus product)) ; TODO this is a mess. probably unneeded
         images                  (mapcat :images skus)
         reviews                 (assoc (review-component/query data)
                                        :review?
-                                       (sku-sets/eligible-for-reviews? sku-set))
+                                       (sku-sets/eligible-for-reviews? product))
         skus-db                 (-> (d/empty-db)
                                     (d/db-with (->> skus
                                                     (map #(merge (:attributes %) %))
                                                     (mapv #(dissoc % :attributes)))))
         selections              (get-in data keypaths/bundle-builder-selections)
-        selections-clauses      (mapv
-                                 (fn [[k v]] ['?s k v])
-                                 selections)
-        criteria                (mapv
-                                 (fn [[k v]] ['?s k (first v)])
-                                 (:criteria sku-set))
+        selections-clauses      (->clauses selections)
+        criteria                (-> product :criteria (update-vals first) ->clauses)
         initial-query           (when (seq criteria)
                                   (concat [:find '(pull ?s [*])
                                            :where]
@@ -376,7 +383,7 @@
                                                    initial-skus
                                                    selections))
                                      first)]
-    {:sku-set           sku-set
+    {:product           product
      :skus              skus
      :selections        selections
      :steps             steps
@@ -387,7 +394,7 @@
                                      images))
      :fetching-sku-set? false
      :reviews           reviews
-     :ugc               (ugc-query sku-set data)
+     :ugc               (ugc-query product data)
      :bundle-builder    (get-in data keypaths/bundle-builder)}))
 
 (defn built-component [data opts]
