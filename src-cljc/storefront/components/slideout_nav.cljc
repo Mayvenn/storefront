@@ -1,11 +1,12 @@
 (ns storefront.components.slideout-nav
   (:require [storefront.platform.component-utils :as utils]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            #?(:cljs [storefront.api :as api])
+            #?@(:clj [[storefront.component-shim :as component]]
+                :cljs [[storefront.api :as api]
+                       [storefront.frontend-effects :as frontend-effects]
+                       [storefront.component :as component]])
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
@@ -23,8 +24,10 @@
             [storefront.assets :as assets]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.ui :as ui]
+            [datascript.core :as d]
             [clojure.set :as set]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.utils.maps :as maps]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -276,7 +279,7 @@
               [:span.flex-auto (:label option)] forward-caret)]
             [:li {:key (:slug option)}
              (major-menu-row
-              (utils/fake-href events/navigate-category {:id 1})
+              (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
               [:span.flex-auto (:label option)])]))]]])))
 
 (defn slideout-component
@@ -395,6 +398,26 @@
                                              first
                                              :slug))))))
 
+(defn ->clauses [m] (mapv (fn [[k v]] ['?s k v]) m))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/menu-traverse-out
+     [_ event {:keys [criteria]} _ app-state]
+     (let [sku-sets-db   (-> (d/empty-db)
+                             (d/db-with (->> (get-in app-state keypaths/sku-sets)
+                                             vals
+                                             (map #(merge (maps/map-values first (:criteria %)) %))
+                                             (mapv #(dissoc % :criteria)))))
+
+           initial-query (when (seq criteria)
+                           (concat [:find '(pull ?s [*])
+                                    :where]
+                                   (->clauses (maps/map-values first criteria))))
+
+           sku-set       (when (seq initial-query)
+                           (->> (d/q initial-query sku-sets-db)
+                                ffirst))]
+       (frontend-effects/redirect events/navigate-product-details (select-keys sku-set [:id :slug])))))
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
