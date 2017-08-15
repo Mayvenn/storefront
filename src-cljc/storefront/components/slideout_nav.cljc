@@ -5,8 +5,7 @@
             [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            #?(:clj [storefront.backend-api :as api]
-               :cljs [storefront.api :as api])
+            #?(:cljs [storefront.api :as api])
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
@@ -342,9 +341,9 @@
       (assoc-in  keypaths/category-filters-for-nav {})
       (update-in keypaths/current-traverse-nav dissoc :id)))
 
-(defmethod effects/perform-effects events/menu-traverse-root
-  [_ _ _ _ app-state]
-  (api/fetch-facets (get-in app-state keypaths/api-cache)))
+#?(:cljs (defmethod effects/perform-effects events/menu-traverse-root
+           [_ _ _ _ app-state]
+           (api/fetch-facets (get-in app-state keypaths/api-cache))))
 
 (defn ascend [filters {facet-slug :slug :as up-step}]
   (let [option-slug (-> (:criteria filters) (get facet-slug) :slug)]
@@ -366,15 +365,16 @@
     (update-in app-state keypaths/category-filters-for-nav
                descend current-step selected-option down-step)))
 
-(defmethod effects/perform-effects events/menu-traverse-descend
-  [_ _ {:keys [id slug] :as args} _ app-state]
-  (when id
-    (let [category (categories/current-traverse-nav app-state)]
-      (api/search-sku-sets (:criteria category)
-                           #(messages/handle-message events/api-success-sku-sets-for-nav
-                                                     (assoc %
-                                                            :category-id (:id category)
-                                                            :criteria {}))))))
+#?(:cljs
+   (defmethod effects/perform-effects events/menu-traverse-descend
+     [_ _ {:keys [id slug] :as args} _ app-state]
+     (when id
+       (let [category (categories/current-traverse-nav app-state)]
+         (api/search-sku-sets (:criteria category)
+                              #(messages/handle-message events/api-success-sku-sets-for-nav
+                                                        (assoc %
+                                                               :category-id (:id category)
+                                                               :criteria {})))))))
 
 (defmethod transitions/transition-state events/menu-traverse-ascend
   [_ _ {:keys [up-step criteria]} app-state]

@@ -230,6 +230,23 @@
                                     (assoc-in keypaths/current-category-id (:id category))))
       (util.response/redirect (routes/path-for events/navigate-category (select-keys category [:id :slug]))))))
 
+(defn render-product-details [{:keys [storeback-config] :as render-ctx}
+                              data
+                              req
+                              {:keys [id slug sku-code] :as params}]
+  (let [sku-set   (get-in data (conj keypaths/sku-sets id))
+        sku       (get-in data (conj keypaths/skus sku-code))
+        redirect? (or (not= slug (:slug sku-set))
+                      (and sku-code (not sku)))]
+    (when sku-set
+      (if redirect?
+        (if sku
+          (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:id sku-set)
+                                                                                    :slug     (:slug sku-set)
+                                                                                    :sku-code (:sku sku)}))
+          (util.response/redirect (routes/path-for events/navigate-product-details (select-keys sku-set [:id :slug]))))
+        (html-response render-ctx (-> data (assoc-in keypaths/product-details-sku-set-id (:id sku-set))))))))
+
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
 
@@ -251,23 +268,38 @@
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
                           :client-version   client-version}
-              data       (as-> {} data
-                           (assoc-in data keypaths/welcome-url
-                                     (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-                           (assoc-in data keypaths/store store)
-                           (assoc-in data keypaths/environment environment)
-                           (experiments/determine-features data)
-                           (assoc-in data keypaths/named-searches (api/named-searches storeback-config))
-                           (assoc-in data keypaths/categories categories/initial-categories)
-                           (assoc-in data keypaths/static (static-page nav-event))
-                           (assoc-in data keypaths/navigation-message nav-message))]
+              data       (cond-> {}
+                           true
+                           ((fn [data]
+                              (-> data
+                                  (assoc-in keypaths/welcome-url
+                                            (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+                                  (assoc-in keypaths/store store)
+                                  (assoc-in keypaths/environment environment)
+                                  experiments/determine-features
+                                  (assoc-in keypaths/named-searches (api/named-searches storeback-config))
+                                  (assoc-in keypaths/categories categories/initial-categories)
+                                  (assoc-in keypaths/static (static-page nav-event))
+                                  (assoc-in keypaths/navigation-message nav-message))))
+
+                           (#{events/navigate-product-details
+                              events/navigate-product-details-sku} nav-event)
+                           ((fn [data]
+                              (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:id params))
+                                    {:keys [facets]}        (api/fetch-facets storeback-config)]
+                                (-> data
+                                    (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+                                    (update-in keypaths/sku-sets merge (key-by :id sku-sets))
+                                    (update-in keypaths/skus merge (key-by :sku skus)))))))]
           (condp = nav-event
-            events/navigate-old-product  (redirect-product->canonical-url ctx req params)
-            events/navigate-named-search (if (= "blonde" (:named-search-slug params))
-                                           (util.response/redirect (store-homepage (:store_slug store) environment req)
-                                                                   :moved-permanently)
-                                           (render-named-search render-ctx data req params))
-            events/navigate-category     (render-category render-ctx data req params)
+            events/navigate-old-product         (redirect-product->canonical-url ctx req params)
+            events/navigate-named-search        (if (= "blonde" (:named-search-slug params))
+                                                  (util.response/redirect (store-homepage (:store_slug store) environment req)
+                                                                          :moved-permanently)
+                                                  (render-named-search render-ctx data req params))
+            events/navigate-category            (render-category render-ctx data req params)
+            events/navigate-product-details     (render-product-details render-ctx data req params)
+            events/navigate-product-details-sku (render-product-details render-ctx data req params)
             (html-response render-ctx data)))))))
 
 (def private-disalloweds ["User-agent: *"

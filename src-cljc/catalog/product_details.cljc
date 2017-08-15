@@ -25,12 +25,15 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
-            #?@(:clj [[storefront.backend-api :as api]
-                      [storefront.component-shim :as component]]
+            #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.hooks.pixlee :as pixlee-hooks]
                        [storefront.component :as component]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]])))
+
+(def log
+  #?(:clj prn
+     :cljs (comp js/console.log clj->js)))
 
 (def steps [:hair/color :hair/length])
 
@@ -458,9 +461,9 @@
 
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id]} _ app-state]
-  (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
-  (api/fetch-facets (get-in app-state keypaths/api-cache))
-  #?(:cljs (review-hooks/insert-reviews))
+  #?(:cljs (do (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
+               (api/fetch-facets (get-in app-state keypaths/api-cache))
+               (review-hooks/insert-reviews)))
   (fetch-current-sku-set-album app-state id))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
@@ -478,9 +481,9 @@
       app-state)))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [id slug sku]} app-state]
+  [_ event {:keys [id slug sku-code]} app-state]
   (-> app-state
-      (assoc-in keypaths/product-details-url-sku-code sku)
+      (assoc-in keypaths/product-details-url-sku-code sku-code)
       (assoc-in keypaths/product-details-sku-set-id id)
       (assoc-in keypaths/browse-recently-added-skus [])
       (assoc-in keypaths/browse-sku-quantity 1)))

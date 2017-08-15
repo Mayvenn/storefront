@@ -64,10 +64,26 @@
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
 
-(defn fetch-facets [cache]
-  {})
+(defn fetch-facets [storeback-config]
+  (let [response (storeback-fetch storeback-config "/facets" {})]
+    (when (not-404 response)
+      (:body response))))
 
-(defn search-sku-sets [criteria success-handler]
-  {})
+(defn criteria->query-params [criteria]
+  (->> criteria
+       (map (fn [[k v]]
+              [(if-let [ns (namespace k)]
+                 (str ns "/" (name k))
+                 (name k))
+               v]))
+       (into {})))
 
-(defn get-sku-set [sku-set-id] {})
+(defn fetch-sku-sets [storeback-config criteria-or-id]
+  (let [response (storeback-fetch storeback-config "/sku-sets"
+                                  {:query-params (if (map? criteria-or-id)
+                                                   (criteria->query-params criteria-or-id)
+                                                   {:id criteria-or-id})})]
+    (when (not-404 response)
+      (:body response))))
+
+
