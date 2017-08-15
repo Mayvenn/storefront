@@ -81,6 +81,7 @@
     events/navigate-named-search            old-category/built-component
     events/navigate-category                category/built-component
     events/navigate-product-details         product-details/built-component
+    events/navigate-product-details-sku     product-details/built-component
     events/navigate-shared-cart             shared-cart/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component

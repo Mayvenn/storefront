@@ -32,6 +32,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]])))
 
+(def steps [:hair/color :hair/length])
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2 {:item-scope :itemscope :item-type "http://schema.org/Product"} [:div.col-on-tb-dt.col-7-on-tb-dt.px2 [:div.hide-on-mb wide-left]]
@@ -165,9 +166,9 @@
                     [:hair/color :hair/origin :hair/length :hair/texture]
                     [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
         slugs     ((apply juxt slug-keys) sku)]
-    (->> (map (partial facet->option-name facets) slug-keys slugs)
-         (clojure.string/join " ")
-         string/upper-case)))
+    (some->> (map (partial facet->option-name facets) slug-keys slugs)
+             (clojure.string/join " ")
+             string/upper-case)))
 
 (defn summary-structure [desc quantity-and-price]
   [:div
@@ -180,7 +181,7 @@
 (defn no-sku-summary [facets selections steps]
   (let [next-step (some (fn [step] (when-not (contains? selections step) step)) steps)]
     (summary-structure
-     (str "Select " (-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
+     (str "Select " (some-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
      (quantity-and-price-structure ui/nbsp "$--.--"))))
 
 (defn item-price [price]
@@ -255,28 +256,32 @@
 (defn product->options
   "Reduces product skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [facets skus selections selector]
+  [facets skus selector]
   (let [sku->option
         (fn [options sku]
           (let [option-name   (selector sku)
-                selected-name (selector selections)
                 facet-option  (get-in facets [selector :facet/options option-name])
                 image         (:option/image facet-option)]
             (update options option-name
                     (fn [existing]
-                      {:option/name        (:option/name facet-option)
-                       :option/slug        (:option/slug facet-option)
-                       :can-supply? 10
-                       :image       image
-                       :checked?    (if (seq existing)
-                                      (= option-name selected-name)
-                                      (seq selected-name))
-                       :sold-out?   (not (or (:in-stock? sku)
-                                             (:in-stock? existing)))}))))]
-
+                      {:option/name     (:option/name facet-option)
+                       :option/slug     (:option/slug facet-option)
+                       :value option-name
+                       :can-supply?     10
+                       :image           image
+                       ;;:checked?        (= option-name selected-name)
+                       :sold-out?       (not (or (:in-stock? sku)
+                                                 (:in-stock? existing)))}))))]
     {selector (->> skus
                    (reduce sku->option {})
                    vals)}))
+
+(defn check-options [selections options-for-selector]
+  (into {} (for [[option-selector options] options-for-selector]
+             [option-selector (map (fn [option]
+                                     (assoc option :checked? (= (:value option)
+                                                                (option-selector selections))))
+                                   options)])))
 
 (defn component
   [{:keys [initial-skus
@@ -361,57 +366,74 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
+(defn make-selections [options existing-selections step]
+  (let [existing-selection (step existing-selections)
+        minimal-option     (:option/slug (first (step options)))]
+    (assoc existing-selections step (or existing-selection minimal-option))))
+
 (defn query [data]
-  (let [sku-code->sku      (get-in data keypaths/skus)
-        product            (sku-sets/current-sku-set data)
-        skus               (map sku-code->sku
-                                (:skus product))
+  (let [sku-code->sku (get-in data keypaths/skus)
+        product       (sku-sets/current-sku-set data)
+        skus          (map sku-code->sku
+                           (:skus product))
         ;; TODO this is a mess. probably unneeded
-        images             (mapcat :images skus)
-        reviews            (assoc (review-component/query data)
-                                  :review?
-                                  (sku-sets/eligible-for-reviews? product))
-        skus-db            (-> (d/empty-db)
-                               (d/db-with (->> skus
-                                               (map #(merge (:attributes %) %))
-                                               (mapv #(dissoc % :attributes)))))
-        selections         (get-in data keypaths/bundle-builder-selections)
+        images        (mapcat :images skus)
+
+        facets (->> (get-in data keypaths/facets)
+                    (map #(update % :facet/options (partial maps/key-by :option/slug)))
+                    (maps/key-by :facet/slug))
+
+        reviews (assoc (review-component/query data)
+                       :review?
+                       (sku-sets/eligible-for-reviews? product))
+
+        skus-db (-> (d/empty-db)
+                    (d/db-with (->> skus
+                                    (map #(merge (:attributes %) %))
+                                    (mapv #(dissoc % :attributes)))))
+
+        criteria (-> product :criteria (update-vals first) ->clauses)
+
+        initial-query   (when (seq criteria)
+                          (concat [:find '(pull ?s [*])
+                                   :where]
+                                  criteria))
+        initial-skus    (when (seq initial-query)
+                          (->> skus-db
+                               (d/q initial-query)
+                               (map first)
+                               (sort-by :price)))
+        initial-options (->> steps
+                             (map (partial product->options
+                                     facets
+                                     initial-skus))
+                             (apply merge))
+
+        initial-selections (or (get-in data keypaths/bundle-builder-selections) {})
+
+        selections         (reduce (partial make-selections initial-options)
+                                   initial-selections
+                                   steps)
+
         selections-clauses (->clauses selections)
-        criteria           (-> product :criteria (update-vals first) ->clauses)
-        initial-query      (when (seq criteria)
-                             (concat [:find '(pull ?s [*])
-                                      :where]
-                                     criteria))
-        selected-query     (when (seq criteria)
-                             (concat [:find '(pull ?s [*])
-                                      :where]
-                                     criteria
-                                     selections-clauses))
-        initial-skus       (when (seq initial-query)
-                             (->> skus-db
-                                  (d/q initial-query)
-                                  (map first)
-                                  (sort-by :price)))
-        selected-skus      (when (seq initial-query)
-                             (->> skus-db
-                                  (d/q selected-query)
-                                  (map first)
-                                  (sort-by :price)))
-        steps              [:hair/color :hair/length]
-        facets             (->> (get-in data keypaths/facets)
-                                (map #(update % :facet/options (partial maps/key-by :option/slug)))
-                                (maps/key-by :facet/slug))
-        options            (->> steps
-                                (map (partial product->options
-                                        facets
-                                        initial-skus
-                                        selections))
-                                (apply merge))]
+
+        selected-query (when (seq criteria)
+                         (concat [:find '(pull ?s [*])
+                                  :where]
+                                 criteria
+                                 selections-clauses))
+        selected-skus  (when (seq initial-query)
+                         (->> skus-db
+                              (d/q selected-query)
+                              (map first)
+                              (sort-by :price)))
+
+        checked-options (check-options selections initial-options)]
     {:product           product
      :skus              skus
      :selections        selections
      :steps             steps
-     :options           options
+     :options           checked-options
      :initial-skus      initial-skus
      :selected-skus     selected-skus
      :carousel-images   (set (filter (comp #{"carousel"} :use-case)
@@ -435,7 +457,7 @@
          :clj nil))))
 
 (defmethod effects/perform-effects events/navigate-product-details
-  [_ event {:keys [id slug]} _ app-state]
+  [_ event {:keys [id]} _ app-state]
   (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
   (api/fetch-facets (get-in app-state keypaths/api-cache))
   #?(:cljs (review-hooks/insert-reviews))
@@ -445,23 +467,24 @@
   [_ event {:keys [sku-sets] :as response} _ app-state]
   (fetch-current-sku-set-album app-state (get-in app-state keypaths/product-details-sku-set-id)))
 
+(defmethod transitions/transition-state events/api-success-sku-sets-for-details
+  [_ event {:keys [sku-sets skus] :as response} app-state]
+  (let [sku-code (get-in app-state keypaths/product-details-url-sku-code)
+        sku (get-in app-state (conj keypaths/skus sku-code))]
+    (if sku
+      (->> steps
+           (select-keys (:attributes sku))
+           (assoc-in app-state keypaths/bundle-builder-selections))
+      app-state)))
+
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [id slug]} app-state]
-  (let [bundle-builder-selections (-> (get-in app-state keypaths/bundle-builder)
-                                      bundle-builder/expanded-selections
-                                      (dissoc :length))]
-    (-> app-state
-        (assoc-in keypaths/product-details-sku-set-id id)
-        (assoc-in keypaths/saved-bundle-builder-options bundle-builder-selections)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1))))
+  [_ event {:keys [id slug sku]} app-state]
+  (-> app-state
+      (assoc-in keypaths/product-details-url-sku-code sku)
+      (assoc-in keypaths/product-details-sku-set-id id)
+      (assoc-in keypaths/browse-recently-added-skus [])
+      (assoc-in keypaths/browse-sku-quantity 1)))
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
-  (update-in app-state
-             keypaths/bundle-builder-selections
-             (fn [selections]
-               (if (and (= (get selections selection) value)
-                        (not= 1 (count selections)))
-                 (dissoc selections selection)
-                 (assoc selections selection value)))))
+  (assoc-in app-state (conj keypaths/bundle-builder-selections selection) value))

@@ -21,6 +21,7 @@
 (defpath navigate-ugc-named-search)
 (defpath navigate-old-product)
 (defpath navigate-product-details)
+(defpath navigate-product-details-sku)
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)
 (defpath navigate-sign-up)
