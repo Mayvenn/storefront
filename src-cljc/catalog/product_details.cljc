@@ -102,7 +102,6 @@
     (get mapping n (str "(x " n ")"))))
 
 (defn display-bagged-sku [facets idx {:keys [quantity sku]}]
-  (spy sku)
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key (str "bagged-sku-" idx)
     :data-test "items-added"}
