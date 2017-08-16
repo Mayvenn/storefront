@@ -87,6 +87,7 @@
 
 (defpath navigate-leads)
 (defpath navigate-leads-home)
+(defpath navigate-leads-registration)
 (defpath navigate-leads-resolve)
 
 (defpath menu-traverse-root)
