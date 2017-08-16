@@ -294,6 +294,12 @@
         (is (= 200 (:status resp)))
         (is (some #{"leads.tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
         (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))
+    (testing "the utm_params is passed to cljs application"
+      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome?utm_content=stylistsfb"))
+            cookies (get-in resp [:headers "Set-Cookie"])]
+        (is (= 200 (:status resp)))
+        (is (.contains (:body resp) ":content \\\"stylistsfb\\\"")
+            (pr-str (:body resp)))))
     (testing "migrates utm cookies from old leads site"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
                               (mock/header "Cookie" (string/join "; "

@@ -444,27 +444,29 @@
           (cookies/expire environment "tracking_id")))))
 
 (defn wrap-migrate-lead-utm-params-cookies [h {:keys [environment]}]
-  (fn [req]
-    (let [migrate-utms (fn [{:keys [server-name] :as req}]
-                         (reduce (fn [req-or-resp [old-leads-key new-leads-key]]
-                                   (if-let [utm-value (or (-> req :query-params (get old-leads-key))
-                                                          (cookies/get req new-leads-key)
-                                                          (cookies/get req old-leads-key))]
-                                     (-> req-or-resp
-                                         (cookies/set environment
-                                                      new-leads-key
-                                                      utm-value
-                                                      {:http-only false
-                                                       :max-age   (cookies/days 30)
-                                                       :domain    (cookie-root-domain server-name)})
-                                         (cookies/expire environment old-leads-key))
-                                     req-or-resp))
-                                 req
-                                 [["utm_source" "leads.utm-source"]
-                                  ["utm_medium" "leads.utm-medium"]
-                                  ["utm_campaign" "leads.utm-campaign"]
-                                  ["utm_content" "leads.utm-content"]
-                                  ["utm_term" "leads.utm-term"]]))]
+  (fn [{:keys [server-name] :as req}]
+    (let [leads-utm-params        {"utm_source"   "leads.utm-source"
+                                   "utm_medium"   "leads.utm-medium"
+                                   "utm_campaign" "leads.utm-campaign"
+                                   "utm_content"  "leads.utm-content"
+                                   "utm_term"     "leads.utm-term"}
+          value-from-original-req (fn [old-leads-key new-leads-key]
+                                    (or (-> req :query-params (get old-leads-key))
+                                        (cookies/get req new-leads-key)
+                                        (cookies/get req old-leads-key)))
+          migrate-utm             (fn [req-or-resp [old-leads-key new-leads-key]]
+                                    (let [utm-value (value-from-original-req old-leads-key new-leads-key)]
+                                      (cond-> req-or-resp
+                                        utm-value             (cookies/set environment
+                                                                           new-leads-key
+                                                                           utm-value
+                                                                           {:http-only false
+                                                                            :max-age   (cookies/days 30)
+                                                                            :domain    (cookie-root-domain server-name)})
+                                        utm-value
+                                        (cookies/expire environment old-leads-key))))
+          migrate-utms            (fn [req]
+                                    (reduce migrate-utm req leads-utm-params))]
       (-> req
           migrate-utms
           h
