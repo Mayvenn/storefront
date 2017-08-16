@@ -29,10 +29,6 @@
             [storefront.components.svg :as svg]
             [storefront.utils.maps :as maps]))
 
-(def log
-  #?(:clj prn
-     :cljs (comp js/console.log clj->js)))
-
 (def blog-url "https://blog.mayvenn.com")
 
 (defn promo-bar [promo-data]
@@ -282,19 +278,18 @@
                       (->> (map :sku-set-ids selected-options)
                            (reduce set/intersection (:sku-set-ids option))
                            seq))
-              (do (log selected-options)
-                (if down-step
-                  [:li {:key (:slug option)}
-                   (major-menu-row
-                    (utils/fake-href events/menu-traverse-descend
-                                     {:down-step       down-step
-                                      :current-step    current-step
-                                      :selected-option option})
-                    [:span.flex-auto (:label option)] forward-caret)]
-                  [:li {:key (:slug option)}
-                   (major-menu-row
-                    (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
-                    [:span.flex-auto (:label option)])])))))]]])))
+              (if down-step
+                [:li {:key (:slug option)}
+                 (major-menu-row
+                  (utils/fake-href events/menu-traverse-descend
+                                   {:down-step       down-step
+                                    :current-step    current-step
+                                    :selected-option option})
+                  [:span.flex-auto (:label option)] forward-caret)]
+                [:li {:key (:slug option)}
+                 (major-menu-row
+                  (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
+                  [:span.flex-auto (:label option)])]))))]]])))
 
 (defn slideout-component
   [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
