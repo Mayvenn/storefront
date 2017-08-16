@@ -106,17 +106,17 @@
      (map-indexed display-bagged-sku bagged-skus)
      checkout-button]))
 
-(defn option-html [step-name
-                   {:keys [option/name option/slug image price-delta checked? sold-out? selections]}]
+(defn option-html
+  [step-name {:keys [option/name option/slug image price-delta checked? stocked? selections]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class     (cond
-                 sold-out? "border-gray bg-gray  dark-gray light"
-                 checked?  "border-gray bg-teal  white     medium"
-                 true      "border-gray bg-white dark-gray light")
+                 checked? "border-gray bg-teal  white     medium"
+                 stocked? "border-gray bg-white dark-gray light"
+                 :else    "border-gray bg-gray  dark-gray light")
     :style     {:font-size "14px" :line-height "18px"}}
    [:input.hide {:type      "radio"
-                 :disabled  sold-out?
+                 :disabled  (not stocked?)
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
                                                        {:selection step-name
@@ -125,13 +125,13 @@
      [:img.mbp4.content-box.circle.border-light-gray
       {:src   image :alt    name
        :width 30    :height 30
-       :class (cond checked? "border" sold-out? "muted")}]
+       :class (cond checked? "border" (not stocked?) "muted")}]
      [:span.block.titleize name])
    [:span.block
-    (if sold-out?
-      "Sold Out"
+    (if stocked?
       [:span (when-not checked? {:class "navy"})
-       "+" (as-money-without-cents price-delta)])]])
+       "+" (as-money-without-cents price-delta)]
+      "Sold Out")]])
 
 (defn step-html
   [{:keys [step-name selected-option options]}]
@@ -270,12 +270,10 @@
                     (fn [existing]
                       {:option/name (:option/name facet-option)
                        :option/slug (:option/slug facet-option)
-                       :value       option-name
-                       :can-supply? 10
+                       :stocked?    (or (:in-stock? sku)
+                                        (:in-stock? existing))
                        :image       image
-                       :price       (:price sku)
-                       :sold-out?   (not (or (:in-stock? sku)
-                                             (:in-stock? existing)))}))))]
+                       :price       (:price sku)}))))]
     {selector (->> skus
                    (reduce sku->option {})
                    vals
@@ -286,7 +284,7 @@
              (let [min-price (:price (first options))]
                [option-selector (mapv (fn [option]
                                         (-> option
-                                            (assoc :checked? (= (:value option)
+                                            (assoc :checked? (= (:option/slug option)
                                                                 (option-selector selections)))
                                             (assoc :price-delta (- (:price option) min-price))))
                                       options)]))))
@@ -464,9 +462,13 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
+(defn handle-sku-set-response [response]
+  (messages/handle-message events/api-success-sku-sets-for-details
+                           response))
+
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id]} _ app-state]
-  #?(:cljs (do (api/search-sku-sets id (fn [response] (messages/handle-message events/api-success-sku-sets-for-details response)))
+  #?(:cljs (do (api/search-sku-sets id handle-sku-set-response)
                (api/fetch-facets (get-in app-state keypaths/api-cache))
                (review-hooks/insert-reviews)))
   (fetch-current-sku-set-album app-state id))
