@@ -97,9 +97,6 @@
            :quantity quantity)))
        (mapv ->cart-item)))
 
-(def log
-  (comp js/console.log clj->js))
-
 (defmethod perform-track events/api-success-add-to-bag
   [_ _ {:keys [variant quantity] :as args} app-state]
   (when variant
