@@ -134,15 +134,16 @@
        "+" (as-money-without-cents price-delta)])]])
 
 (defn step-html [{:keys [step-name selected-option options]}]
-  [:div.my2 {:key (str "step-" step-name)}
+  [:div.my2
+   {:key (str "step-" step-name)}
    [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
      (name step-name)
-     (when selected-option [:span.inline-block.mxp2.dark-gray " - "])]
+     (when selected-option
+       [:span.inline-block.mxp2.dark-gray " - "])]
     (when selected-option
       [:span.block.overflow-hidden.dark-gray.h5.regular
-       (or (:long-name selected-option)
-           [:span.titleize (:name selected-option)])])]
+       (:option/name (first (filter :checked? options)))])]
    [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{option-name :name :as option} options]
       [:div.flex.flex-column.justify-center.pp3
