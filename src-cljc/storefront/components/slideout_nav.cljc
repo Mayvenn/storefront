@@ -363,7 +363,9 @@
            (api/fetch-facets (get-in app-state keypaths/api-cache))))
 
 (defn ascend [filters {facet-slug :slug :as up-step}]
-  (let [option-slug (-> (:criteria filters) (get facet-slug))]
+  (let [option-slug (-> (:criteria filters)
+                        (get facet-slug)
+                        first)]
     (-> filters
         (category-filters/deselect-criterion facet-slug option-slug)
         (category-filters/step up-step))))
