@@ -128,12 +128,13 @@
        :class (cond checked? "border" sold-out? "muted")}]
      [:span.block.titleize name])
    [:span.block
-    (when sold-out?
+    (if sold-out?
       "Sold Out"
-      #_ [:span (when-not checked? {:class "navy"})
+      [:span (when-not checked? {:class "navy"})
        "+" (as-money-without-cents price-delta)])]])
 
-(defn step-html [{:keys [step-name selected-option options]}]
+(defn step-html
+  [{:keys [step-name selected-option options]}]
   [:div.my2
    {:key (str "step-" step-name)}
    [:h2.h3.clearfix.h5
@@ -262,29 +263,33 @@
   [facets skus selector]
   (let [sku->option
         (fn [options sku]
-          (let [option-name   (selector sku)
-                facet-option  (get-in facets [selector :facet/options option-name])
-                image         (:option/image facet-option)]
+          (let [option-name  (selector sku)
+                facet-option (get-in facets [selector :facet/options option-name])
+                image        (:option/image facet-option)]
             (update options option-name
                     (fn [existing]
-                      {:option/name     (:option/name facet-option)
-                       :option/slug     (:option/slug facet-option)
-                       :value option-name
-                       :can-supply?     10
-                       :image           image
-                       ;;:checked?        (= option-name selected-name)
-                       :sold-out?       (not (or (:in-stock? sku)
-                                                 (:in-stock? existing)))}))))]
+                      {:option/name (:option/name facet-option)
+                       :option/slug (:option/slug facet-option)
+                       :value       option-name
+                       :can-supply? 10
+                       :image       image
+                       :price       (:price sku)
+                       :sold-out?   (not (or (:in-stock? sku)
+                                             (:in-stock? existing)))}))))]
     {selector (->> skus
                    (reduce sku->option {})
-                   vals)}))
+                   vals
+                   (sort-by :price))}))
 
-(defn check-options [selections options-for-selector]
-  (into {} (for [[option-selector options] options-for-selector]
-             [option-selector (map (fn [option]
-                                     (assoc option :checked? (= (:value option)
-                                                                (option-selector selections))))
-                                   options)])))
+(defn check-options [selections options-by-selector]
+  (into {} (for [[option-selector options] options-by-selector]
+             (let [min-price (:price (first options))]
+               [option-selector (mapv (fn [option]
+                                        (-> option
+                                            (assoc :checked? (= (:value option)
+                                                                (option-selector selections)))
+                                            (assoc :price-delta (- (:price option) min-price))))
+                                      options)]))))
 
 (defn component
   [{:keys [initial-skus
