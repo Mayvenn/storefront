@@ -329,13 +329,6 @@
           [:div
            [:div schema-org-offer-props
             [:div.my2
-             [:small
-              [:div
-               [:div.h4.bold "Skus Initial: " (count initial-skus)]
-               [:code (prn-str (:criteria product))]]
-              [:div
-               [:div.h4.bold "Selections: "]
-               [:code (prn-str selections)]]]
              [:div
               (when (contains? (-> product :criteria :product/department set) "hair")
                 (for [step-name steps]
