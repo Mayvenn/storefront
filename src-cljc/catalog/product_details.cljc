@@ -208,32 +208,21 @@
    [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
-(defn sku-set-description [{{:keys [included-items description]} :copy}]
-  [:div.border.border-dark-gray.mt2.p2.rounded
-   [:h2.h3.medium.navy.shout "Description"]
-   [:div {:item-prop "description"}
-    #_
-    (when (or colors weights materials)
-      (let [attrs (->> [["Color" colors]
-                        ["Weight" weights]
-                        ["Material" materials]]
-                       (filter second))
-            ;;This won't work if we have 5 possible attrs
-            size (str "col-" (/ 12 (count attrs)))]
-        (into [:div.clearfix.mxn1.my2]
-              (for [[title value] attrs]
-                [:dl.col.m0.inline-block {:class size}
-                 [:dt.mx1.dark-gray.shout.h6 title]
-                 [:dd.mx1.ml0.h5.navy.medium value]]))))
-    (when (seq included-items)
-      [:div.my2
-       [:h3.mbp3.h5 "Includes:"]
-       [:ul.list-reset.navy.h5.medium
-        (for [[idx item] (map-indexed vector included-items)]
-          [:li.mbp3 {:key (str "item-" idx)} item])]])
-    [:div.h5.dark-gray
-     (for [[idx item] (map-indexed vector description)]
-       [:p.mt2 {:key (str "sku-set-description-" idx)} item])]]])
+(defn sku-set-description
+  [{{:keys [included-items description]} :copy}]
+  (when (seq description)
+    [:div.border.border-dark-gray.mt2.p2.rounded
+     [:h2.h3.medium.navy.shout "Description"]
+     [:div {:item-prop "description"}
+      (when (seq included-items)
+        [:div.my2
+         [:h3.mbp3.h5 "Includes:"]
+         [:ul.list-reset.navy.h5.medium
+          (for [[idx item] (map-indexed vector included-items)]
+            [:li.mbp3 {:key (str "item-" idx)} item])]])
+      [:div.h5.dark-gray
+       (for [[idx item] (map-indexed vector description)]
+         [:p.mt2 {:key (str "sku-set-description-" idx)} item])]]]))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
