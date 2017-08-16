@@ -104,8 +104,9 @@
                                           :title        name
                                           :options      (->> options
                                                              (sort-by :filter/order)
-                                                             (map (fn [{:keys [:option/name :option/slug]}]
+                                                             (map (fn [{:keys [:option/name :option/slug :option/sku-set-ids]}]
                                                                     {:slug         slug
+                                                                     :sku-set-ids  (set sku-set-ids)
                                                                      :represented? (contains? represented-options slug)
                                                                      :label        name})))}))))}
         clear-criteria

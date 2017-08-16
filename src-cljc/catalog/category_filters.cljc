@@ -100,13 +100,14 @@
                                 (map (fn [tab] (query/get {:facet/slug tab} facets)))
                                 (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
                                        (let [represented-options (get represented-criteria slug)]
-                                         {:slug         slug
-                                          :title        name
-                                          :options      (->> options
-                                                             (sort-by :filter/order)
-                                                             (map (fn [{:keys [:option/name :option/slug]}]
-                                                                    {:slug         slug
-                                                                     :represented? (contains? represented-options slug)
-                                                                     :label        name})))}))))}
+                                         {:slug    slug
+                                          :title   name
+                                          :options (->> options
+                                                        (sort-by :filter/order)
+                                                        (map (fn [{:keys [:option/name :option/slug :option/sku-set-ids]}]
+                                                               {:slug         slug
+                                                                :sku-set-ids  (set sku-set-ids)
+                                                                :represented? (contains? represented-options slug)
+                                                                :label        name})))}))))}
         clear-criteria
         close)))

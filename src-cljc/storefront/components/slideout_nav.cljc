@@ -29,6 +29,10 @@
             [storefront.components.svg :as svg]
             [storefront.utils.maps :as maps]))
 
+(def log
+  #?(:clj prn
+     :cljs (comp js/console.log clj->js)))
+
 (def blog-url "https://blog.mayvenn.com")
 
 (defn promo-bar [promo-data]
@@ -269,18 +273,28 @@
            "Shop " criteria-labels " " root-name]))
        [:ul.list-reset
         (for [option (:options current-step)]
-          (if down-step
-            [:li {:key (:slug option)}
-             (major-menu-row
-              (utils/fake-href events/menu-traverse-descend
-                               {:down-step       down-step
-                                :current-step    current-step
-                                :selected-option option})
-              [:span.flex-auto (:label option)] forward-caret)]
-            [:li {:key (:slug option)}
-             (major-menu-row
-              (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
-              [:span.flex-auto (:label option)])]))]]])))
+          (let [selected-options (->> selected-steps
+                                      (mapcat :options)
+                                      (filterv :selected?))
+                selected-values (->> facets
+                                     (filterv :selected?))]
+            (when (or (empty? selected-options)
+                      (->> (map :sku-set-ids selected-options)
+                           (reduce set/intersection (:sku-set-ids option))
+                           seq))
+              (do (log selected-options)
+                (if down-step
+                  [:li {:key (:slug option)}
+                   (major-menu-row
+                    (utils/fake-href events/menu-traverse-descend
+                                     {:down-step       down-step
+                                      :current-step    current-step
+                                      :selected-option option})
+                    [:span.flex-auto (:label option)] forward-caret)]
+                  [:li {:key (:slug option)}
+                   (major-menu-row
+                    (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
+                    [:span.flex-auto (:label option)])])))))]]])))
 
 (defn slideout-component
   [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
@@ -349,10 +363,9 @@
            (api/fetch-facets (get-in app-state keypaths/api-cache))))
 
 (defn ascend [filters {facet-slug :slug :as up-step}]
-  (let [option-slug (-> (:criteria filters) (get facet-slug) :slug)]
+  (let [option-slug (-> (:criteria filters) (get facet-slug))]
     (-> filters
-        (category-filters/deselect-criterion facet-slug
-                                             option-slug)
+        (category-filters/deselect-criterion facet-slug option-slug)
         (category-filters/step up-step))))
 
 (defn descend [filters current-step selected-option down-step]

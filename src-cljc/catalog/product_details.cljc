@@ -31,10 +31,6 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]])))
 
-(def log
-  #?(:clj prn
-     :cljs (comp js/console.log clj->js)))
-
 (def steps [:hair/color :hair/length])
 
 (defn page [wide-left wide-right-and-narrow]
@@ -306,8 +302,8 @@
    owner
    opts]
   (let [review? (:review? reviews)
-        selected-sku
-        (when (= 1 (count selected-skus)) (first selected-skus))]
+        selected-sku (when (= 1 (count selected-skus))
+                       (first selected-skus))]
     (component/create
      [:div.container.p2
       (page
