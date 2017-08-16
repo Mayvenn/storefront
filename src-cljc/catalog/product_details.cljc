@@ -291,7 +291,6 @@
 
 (defn component
   [{:keys [initial-skus
-           selected-skus
            steps
            skus
            selections
@@ -308,9 +307,7 @@
            bundle-builder]}
    owner
    opts]
-  (let [review? (:review? reviews)
-        selected-sku (when (= 1 (count selected-skus))
-                       (first selected-skus))]
+  (let [review? (:review? reviews)]
     (component/create
      [:div.container.p2
       (page
@@ -336,7 +333,7 @@
                [:div.h4.bold "Skus Initial: " (count initial-skus)]
                [:code (prn-str (:criteria product))]]
               [:div
-               [:div.h4.bold "Skus Selected: " (count selected-skus)]
+               [:div.h4.bold "Selections: "]
                [:code (prn-str selections)]]]
              [:div
               (when (contains? (-> product :criteria :product/department set) "hair")
@@ -344,15 +341,12 @@
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
                               :options         (step-name options)})))]
-             (if selected-sku
-               (sku-summary {:sku      selected-sku
-                             :quantity 1 #_ quantity
-                             :facets   facets})
-               (no-sku-summary facets selections steps))]
+             (sku-summary {:sku      selected-sku
+                           :quantity 1 #_ quantity
+                           :facets   facets})]
             (when (sku-sets/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
-            (when selected-sku
-              (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity))
+            (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity)
             #_(bagged-variants-and-checkout bagged-variants)
             (when (sku-sets/stylist-only? product) shipping-and-guarantee)]])
         (sku-set-description product)
@@ -383,7 +377,6 @@
         skus          (map sku-code->sku
                            (:skus product))
         ;; TODO this is a mess. probably unneeded
-        images        (mapcat :images skus)
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
@@ -400,15 +393,14 @@
 
         criteria (-> product :criteria (update-vals first) ->clauses)
 
-        initial-query   (when (seq criteria)
-                          (concat [:find '(pull ?s [*])
-                                   :where]
-                                  criteria))
-        initial-skus    (when (seq initial-query)
-                          (->> skus-db
-                               (d/q initial-query)
-                               (map first)
-                               (sort-by :price)))
+        initial-query (concat [:find '(pull ?s [*])
+                               :where]
+                              criteria)
+        initial-skus  (->> skus-db
+                           (d/q initial-query)
+                           (map first)
+                           (sort-by :price))
+
         initial-options (->> steps
                              (map (partial product->options
                                      facets
@@ -417,22 +409,24 @@
 
         initial-selections (or (get-in data keypaths/bundle-builder-selections) {})
 
-        selections         (reduce (partial make-selections initial-options)
-                                   initial-selections
-                                   steps)
+        selections (reduce (partial make-selections initial-options)
+                           initial-selections
+                           steps)
 
         selections-clauses (->clauses selections)
 
-        selected-query (when (seq criteria)
-                         (concat [:find '(pull ?s [*])
-                                  :where]
-                                 criteria
-                                 selections-clauses))
-        selected-skus  (when (seq initial-query)
-                         (->> skus-db
-                              (d/q selected-query)
-                              (map first)
-                              (sort-by :price)))
+        selected-query (concat [:find '(pull ?s [*])
+                                :where]
+                               criteria
+                               selections-clauses)
+
+        selected-sku (->> skus-db
+                          (d/q selected-query)
+                          (map first)
+                          (sort-by :price)
+                          first)
+
+        images (:images selected-sku)
 
         checked-options (check-options selections initial-options)]
     {:product           product
@@ -441,7 +435,7 @@
      :steps             steps
      :options           checked-options
      :initial-skus      initial-skus
-     :selected-skus     selected-skus
+     :selected-sku      selected-sku
      :carousel-images   (set (filter (comp #{"carousel"} :use-case)
                                      images))
      :fetching-sku-set? false
