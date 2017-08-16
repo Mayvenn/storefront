@@ -147,10 +147,9 @@
        (:option/name (first (filter :checked? options)))])]
    [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{option-name :name :as option} options]
-      [:div.flex.flex-column.justify-center.pp3
+      [:div.flex.flex-column.justify-center.pp3.col-4
        {:key   (string/replace (str "option-" (hash option)) #"\W+" "-")
-        :style {:height "72px"}
-        :class (if (#{:length :color :style} step-name) "col-4" "col-6")}
+        :style {:height "72px"}}
        (option-html step-name option)])]])
 
 (defn indefinite-articalize [word]
