@@ -791,6 +791,17 @@
                                         :quantity (:quantity params)
                                         :variant (:variant params)})}))
 
+(defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
+  (api-req
+   POST
+   "/v2/add-to-bag"
+   request-keys/add-to-bag
+   {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
+                   {:session-id session-id
+                    :sku (:sku sku)}
+                   (when (and token number) {:token token :number number}))
+    :handler handler}))
+
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code]
   (api-req
    POST

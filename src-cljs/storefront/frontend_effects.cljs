@@ -611,7 +611,8 @@
 (defmethod perform-effects events/control-sign-out [_ event args _ app-state]
   (handle-message events/sign-out))
 
-(defmethod perform-effects events/control-add-to-bag [dispatch event {:keys [variant quantity] :as args} _ app-state]
+(defmethod perform-effects events/control-add-to-bag
+  [dispatch event {:keys [variant quantity] :as args} _ app-state]
   (api/add-to-bag
    (get-in app-state keypaths/session-id)
    {:variant variant

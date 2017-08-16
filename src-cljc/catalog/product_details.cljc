@@ -33,6 +33,22 @@
 
 (def steps [:hair/color :hair/length])
 
+(defn facet->option-name [facets facet-slug option-slug]
+  (-> facets
+      facet-slug
+      :facet/options
+      (get option-slug)
+      :option/name))
+
+(defn sku-name [facets {:keys [hair/family] :as sku}]
+  (let [slug-keys (if (= family "bundles")
+                    [:hair/color :hair/origin :hair/length :hair/texture]
+                    [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
+        slugs     ((apply juxt slug-keys) sku)]
+    (some->> (map (partial facet->option-name facets) slug-keys slugs)
+             (clojure.string/join " ")
+             string/upper-case)))
+
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    {:item-scope :itemscope :item-type "http://schema.org/Product"}
@@ -67,15 +83,16 @@
      (ui/counter quantity
                  false
                  (utils/send-event-callback events/control-counter-dec
-                                            {:path keypaths/browse-variant-quantity})
+                                            {:path keypaths/browse-sku-quantity})
                  (utils/send-event-callback events/control-counter-inc
-                                            {:path keypaths/browse-variant-quantity}))]
+                                            {:path keypaths/browse-sku-quantity}))]
     [:span.h4 "Currently out of stock"]))
 
 (defn add-to-bag-button [adding-to-bag? sku quantity]
   (ui/navy-button {:on-click
-                   (utils/send-event-callback events/control-add-to-bag
-                                              {:sku sku :quantity quantity})
+                   (utils/send-event-callback events/control-add-sku-to-bag
+                                              {:sku sku
+                                               :quantity quantity})
                    :data-test "add-to-bag"
                    :spinning? adding-to-bag?}
                   "Add to bag"))
@@ -84,14 +101,15 @@
   (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
     (get mapping n (str "(x " n ")"))))
 
-(defn display-bagged-sku [idx {:keys [quantity sku]}]
+(defn display-bagged-sku [facets idx {:keys [quantity sku]}]
+  (spy sku)
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key (str "bagged-sku-" idx)
     :data-test "items-added"}
    "Added to bag: "
    (number->words quantity)
    " "
-   (products/product-title sku)])
+   (sku-name facets sku)])
 
 (def checkout-button
   (component/html
@@ -100,10 +118,10 @@
      :data-ref "cart-button"}
     (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
-(defn skus-variants-and-checkout [bagged-skus]
+(defn bagged-skus-and-checkout [facets bagged-skus]
   (when (seq bagged-skus)
     [:div
-     (map-indexed display-bagged-sku bagged-skus)
+     (map-indexed (partial display-bagged-sku facets) bagged-skus)
      checkout-button]))
 
 (defn option-html
@@ -157,22 +175,6 @@
     (str (if (vowel? (first word)) "an " "a ")
          word)))
 
-(defn facet->option-name [facets facet-slug option-slug]
-  (-> facets
-      facet-slug
-      :facet/options
-      (get option-slug)
-      :option/name))
-
-(defn sku-name [facets {:keys [hair/family] :as sku}]
-  (let [slug-keys (if (= family "bundles")
-                    [:hair/color :hair/origin :hair/length :hair/texture]
-                    [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
-        slugs     ((apply juxt slug-keys) sku)]
-    (some->> (map (partial facet->option-name facets) slug-keys slugs)
-             (clojure.string/join " ")
-             string/upper-case)))
-
 (defn summary-structure [desc quantity-and-price]
   [:div
    (when (seq desc)
@@ -190,12 +192,12 @@
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
-(defn sku-summary [{:keys [facets sku quantity]}]
+(defn sku-summary [{:keys [facets sku sku-quantity]}]
   (let [{:keys [in-stock? price]} sku]
     (summary-structure
      (sku-name facets sku)
      (quantity-and-price-structure
-      (counter-or-out-of-stock in-stock? quantity)
+      (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
 
 (def triple-bundle-upsell
@@ -303,7 +305,7 @@
            selected-sku
            sku-quantity
            facets
-           bundle-builder]}
+           bagged-skus]}
    owner
    opts]
   (let [review? (:review? reviews)]
@@ -340,13 +342,16 @@
                   (step-html {:step-name       step-name
                               :selected-option (step-name selections)
                               :options         (step-name options)})))]
-             (sku-summary {:sku      selected-sku
-                           :quantity 1 #_ quantity
-                           :facets   facets})]
+             (sku-summary {:sku          selected-sku
+                           :sku-quantity sku-quantity
+                           :facets       facets})]
             (when (sku-sets/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
-            (add-to-bag-button false #_ adding-to-bag? selected-sku sku-quantity)
-            #_(bagged-variants-and-checkout bagged-variants)
+            (add-to-bag-button false
+                               #_adding-to-bag?
+                               selected-sku
+                               sku-quantity)
+            (bagged-skus-and-checkout facets bagged-skus)
             (when (sku-sets/stylist-only? product) shipping-and-guarantee)]])
         (sku-set-description product)
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
@@ -375,7 +380,6 @@
         product       (sku-sets/current-sku-set data)
         skus          (map sku-code->sku
                            (:skus product))
-        ;; TODO this is a mess. probably unneeded
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
@@ -435,6 +439,8 @@
      :options           checked-options
      :initial-skus      initial-skus
      :selected-sku      selected-sku
+     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+     :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (set (filter (comp #{"carousel"} :use-case)
                                      images))
      :fetching-sku-set? false
@@ -491,3 +497,29 @@
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
   (assoc-in app-state (conj keypaths/bundle-builder-selections selection) value))
+
+(defmethod effects/perform-effects events/control-add-sku-to-bag
+  [dispatch event {:keys [sku quantity] :as args} _ app-state]
+  #?(:cljs (api/add-sku-to-bag
+            (get-in app-state keypaths/session-id)
+            {:sku sku
+             :quantity quantity
+             :stylist-id (get-in app-state keypaths/store-stylist-id)
+             :token (get-in app-state keypaths/order-token)
+             :number (get-in app-state keypaths/order-number)
+             :user-id (get-in app-state keypaths/user-id)
+             :user-token (get-in app-state keypaths/user-token)}
+            #(messages/handle-message events/api-success-add-sku-to-bag
+                                      {:order %
+                                       :quantity quantity
+                                 :sku sku}))))
+
+(defmethod transitions/transition-state events/api-success-add-sku-to-bag
+  [_ event {:keys [order quantity sku]} app-state]
+  (-> app-state
+      (update-in keypaths/browse-recently-added-skus
+                 conj
+                 {:quantity quantity :sku sku})
+      (assoc-in keypaths/browse-sku-quantity 1)
+      (update-in keypaths/order merge order)))
+
