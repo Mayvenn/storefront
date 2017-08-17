@@ -124,7 +124,7 @@
      checkout-button]))
 
 (defn option-html
-  [step-name {:keys [option/name option/slug image price-delta checked? stocked? selections]}]
+  [step-name {:keys [option/name option/slug image price-delta checked? stocked? selected-criteria]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class     (cond
@@ -182,8 +182,8 @@
       [:div.navy desc]])
    quantity-and-price])
 
-(defn no-sku-summary [facets selections steps]
-  (let [next-step (some (fn [step] (when-not (contains? selections step) step)) steps)]
+(defn no-sku-summary [facets selected-criteria steps]
+  (let [next-step (some (fn [step] (when-not (contains? selected-criteria step) step)) steps)]
     (summary-structure
      (str "Select " (some-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
      (quantity-and-price-structure ui/nbsp "$--.--"))))
@@ -268,13 +268,13 @@
                    vals
                    (sort-by :price))}))
 
-(defn check-options [selections options-by-selector]
+(defn check-options [selected-criteria options-by-selector]
   (into {} (for [[option-selector options] options-by-selector]
              (let [min-price (:price (first options))]
                [option-selector (mapv (fn [option]
                                         (-> option
                                             (assoc :checked? (= (:option/slug option)
-                                                                (option-selector selections)))
+                                                                (option-selector selected-criteria)))
                                             (assoc :price-delta (- (:price option) min-price))))
                                       options)]))))
 
@@ -288,7 +288,7 @@
            product
            reviews
            selected-sku
-           selections
+           selected-criteria
            sku-quantity
            steps
            ugc]}
@@ -319,7 +319,7 @@
               (when (contains? (-> product :criteria :product/department set) "hair")
                 (for [step-name steps]
                   (step-html {:step-name       step-name
-                              :selected-option (step-name selections)
+                              :selected-option (step-name selected-criteria)
                               :options         (step-name options)})))]
              (sku-summary {:sku          selected-sku
                            :sku-quantity sku-quantity
@@ -348,17 +348,23 @@
 (defn ^:private update-vals [m f & args]
   (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
 
-(defn make-selections [options existing-selections step]
-  (let [existing-selection (step existing-selections)
+(defn make-selected-criteria [options existing-selected-criteria step]
+  (let [existing-selection (step existing-selected-criteria)
         minimal-option     (:option/slug (first (step options)))]
-    (assoc existing-selections step (or existing-selection minimal-option))))
+    (assoc existing-selected-criteria step (or existing-selection minimal-option))))
+
+(defn query-criteria [db & criteria]
+  (let [query (->> criteria
+                   (reduce merge)
+                   ->clauses
+                   (concat [:find '(pull ?s [*])
+                            :where]))]
+    (->> db
+         (d/q query)
+         (map first))))
 
 (defn query [data]
-  (let [
-        sku-code->sku (get-in data keypaths/skus)
-        product       (sku-sets/current-sku-set data)
-        skus          (map sku-code->sku
-                           (:skus product))
+  (let [product       (sku-sets/current-sku-set data)
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
@@ -369,19 +375,16 @@
                        (sku-sets/eligible-for-reviews? product))
 
         skus-db (-> (d/empty-db)
-                    (d/db-with (->> skus
+                    (d/db-with (->> (:skus product)
+                                    (select-keys (get-in data keypaths/skus))
+                                    vals
                                     (map #(merge (:attributes %) %))
                                     (mapv #(dissoc % :attributes)))))
 
-        criteria (-> product :criteria (update-vals first) ->clauses)
+        base-criteria (-> product :criteria (update-vals first))
 
-        initial-query (concat [:find '(pull ?s [*])
-                               :where]
-                              criteria)
-        initial-skus  (->> skus-db
-                           (d/q initial-query)
-                           (map first)
-                           (sort-by :price))
+        initial-skus (->> (query-criteria skus-db base-criteria)
+                          (sort-by :price))
 
         initial-options (->> steps
                              (map (partial product->options
@@ -389,28 +392,20 @@
                                      initial-skus))
                              (apply merge))
 
-        initial-selections (or (get-in data keypaths/bundle-builder-selections) {})
+        selected-criteria (reduce (partial make-selected-criteria initial-options)
+                                  ;;TODO This needs a new keypath
+                                  (or (get-in data keypaths/bundle-builder-selections) {})
+                                  steps)
 
-        selections (reduce (partial make-selections initial-options)
-                           initial-selections
-                           steps)
-
-        selections-clauses (->clauses selections)
-
-        selected-query (concat [:find '(pull ?s [*])
-                                :where]
-                               criteria
-                               selections-clauses)
-
-        selected-sku (->> skus-db
-                          (d/q selected-query)
-                          (map first)
+        selected-sku (->> (query-criteria skus-db
+                                          base-criteria
+                                          selected-criteria)
                           (sort-by :price)
                           first)
 
         images (:images selected-sku)
 
-        checked-options (check-options selections initial-options)]
+        checked-options (check-options selected-criteria initial-options)]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
@@ -420,7 +415,7 @@
      :product           product
      :reviews           reviews
      :selected-sku      selected-sku
-     :selections        selections
+     :selected-criteria selected-criteria
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :steps             steps
      :ugc               (ugc-query product data)}))
@@ -459,6 +454,7 @@
     (if sku
       (->> steps
            (select-keys (:attributes sku))
+           ;;TODO this needs a new keypath
            (assoc-in app-state keypaths/bundle-builder-selections))
       app-state)))
 
@@ -472,6 +468,7 @@
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
+  ;;TODO this needs a new keypath
   (assoc-in app-state (conj keypaths/bundle-builder-selections selection) value))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
