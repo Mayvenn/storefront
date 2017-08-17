@@ -207,7 +207,7 @@
    [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
     "Free shipping & 30 day guarantee"]))
 
-(defn sku-set-description
+(defn product-description
   [{{:keys [included-items description]} :copy}]
   (when (seq description)
     [:div.border.border-dark-gray.mt2.p2.rounded
@@ -221,7 +221,7 @@
             [:li.mbp3 {:key (str "item-" idx)} item])]])
       [:div.h5.dark-gray
        (for [[idx item] (map-indexed vector description)]
-         [:p.mt2 {:key (str "sku-set-description-" idx)} item])]]]))
+         [:p.mt2 {:key (str "product-description-" idx)} item])]]]))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
@@ -279,21 +279,19 @@
                                       options)]))))
 
 (defn component
-  [{:keys [initial-skus
-           steps
-           skus
-           selections
-           options
-           selectors
-           product
-           fetching-sku-set?
+  [{:keys [adding-to-bag?
+           bagged-skus
            carousel-images
-           reviews
-           ugc
-           selected-sku
-           sku-quantity
            facets
-           bagged-skus]}
+           fetching-product?
+           options
+           product
+           reviews
+           selected-sku
+           selections
+           sku-quantity
+           steps
+           ugc]}
    owner
    opts]
   (let [review? (:review? reviews)]
@@ -312,7 +310,7 @@
          #_(when (and (not fetching-sku-set?)
                     needs-selections?)
            (starting-at (:initial-variants bundle-builder)))]
-        (if fetching-sku-set?
+        (if fetching-product?
           [:div.h2.mb2 ui/spinner]
           [:div
            [:div schema-org-offer-props
@@ -328,21 +326,20 @@
                            :facets       facets})]
             (when (sku-sets/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
-            (add-to-bag-button false
-                               #_adding-to-bag?
+            (add-to-bag-button adding-to-bag?
                                selected-sku
                                sku-quantity)
             (bagged-skus-and-checkout facets bagged-skus)
             (when (sku-sets/stylist-only? product) shipping-and-guarantee)]])
-        (sku-set-description product)
+        (product-description product)
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
 
-(defn ugc-query [sku-set data]
+(defn ugc-query [product data]
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
-                                       (sku-sets/id->named-search (:id sku-set)))]
-    {:named-search sku-set
+                                       (sku-sets/id->named-search (:id product)))]
+    {:named-search product
      :album        images}))
 ;; finding a sku from a product
 
@@ -357,7 +354,8 @@
     (assoc existing-selections step (or existing-selection minimal-option))))
 
 (defn query [data]
-  (let [sku-code->sku (get-in data keypaths/skus)
+  (let [
+        sku-code->sku (get-in data keypaths/skus)
         product       (sku-sets/current-sku-set data)
         skus          (map sku-code->sku
                            (:skus product))
@@ -413,22 +411,19 @@
         images (:images selected-sku)
 
         checked-options (check-options selections initial-options)]
-    {:product           product
-     :skus              skus
-     :selections        selections
-     :steps             steps
-     :options           checked-options
-     :initial-skus      initial-skus
-     :selected-sku      selected-sku
-     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+    {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :carousel-images   (set (filter (comp #{"carousel"} :use-case)
-                                     images))
-     :fetching-sku-set? false
+     :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
+     :facets            facets
+     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:id product)))
+     :options           checked-options
+     :product           product
      :reviews           reviews
-     :ugc               (ugc-query product data)
-     :bundle-builder    (get-in data keypaths/bundle-builder)
-     :facets            facets}))
+     :selected-sku      selected-sku
+     :selections        selections
+     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+     :steps             steps
+     :ugc               (ugc-query product data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
