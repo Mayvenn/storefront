@@ -394,24 +394,23 @@
 
         ;; Applied selections
 
-        selected-criteria (reduce (partial make-selected-criteria initial-options)
+        initial-criteria (reduce (partial make-selected-criteria initial-options)
+                                 ;;TODO This needs a new keypath
+                                 (get-in data keypaths/bundle-builder-selections)
+                                 steps)
+
+        initial-selection-options (check-options initial-criteria initial-skus initial-options)
+
+        selected-criteria (reduce (partial make-selected-criteria initial-selection-options)
                                   ;;TODO This needs a new keypath
-                                  (or (get-in data keypaths/bundle-builder-selections) {})
+                                  (get-in data keypaths/bundle-builder-selections)
                                   steps)
 
-        selection-options (check-options selected-criteria initial-skus initial-options)
-
-        again-criteria (reduce (partial make-selected-criteria selection-options)
-                               ;;TODO This needs a new keypath
-                               (or (get-in data keypaths/bundle-builder-selections) {})
-                               steps)
-
-        again-options (check-options again-criteria initial-skus initial-options)
-
+        selected-options (check-options selected-criteria initial-skus initial-options)
 
         selected-skus (->> (selector/query skus-db
                                            essential-criteria
-                                           again-criteria)
+                                           selected-criteria)
                            (sort-by :price))
 
         selected-sku (first selected-skus)]
@@ -420,7 +419,7 @@
      :carousel-images   (set (filter (comp #{"carousel"} :use-case) (:images selected-sku)))
      :facets            facets
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:id product)))
-     :options           again-options
+     :options           selected-options
      :product           product
      :reviews           reviews
      :selected-sku      selected-sku
