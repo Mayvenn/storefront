@@ -268,15 +268,26 @@
                    vals
                    (sort-by :price))}))
 
-(defn check-options [selected-criteria options-by-selector]
+(defn check-options [selected-criteria initial-skus options-by-selector]
   (into {} (for [[option-selector options] options-by-selector]
-             (let [min-price (:price (first options))]
-               [option-selector (mapv (fn [option]
+             (let [min-price               (:price (first options))
+                   color-matches-selected? #(= (:hair/color selected-criteria)
+                                               (:hair/color %))]
+               [option-selector (->> options
+                                     (mapv
+                                      (fn [{:keys [option/slug price] :as option}]
                                         (-> option
-                                            (assoc :checked? (= (:option/slug option)
-                                                                (option-selector selected-criteria)))
-                                            (assoc :price-delta (- (:price option) min-price))))
-                                      options)]))))
+                                            (assoc :checked? (= slug (option-selector selected-criteria)))
+                                            (assoc :price-delta (- price min-price)))))
+                                     (filterv
+                                      (fn [{:keys [option/slug]}]
+                                        ; Special case hair/length to be removed if they don't
+                                        ; exist for a color. In lieu of a general step/flow concept
+                                        (or (not= option-selector :hair/length)
+                                            ; skus with hair/lengths that exist for hair/color
+                                            (some #(and (color-matches-selected? %)
+                                                        (= slug (get % option-selector)))
+                                                  initial-skus))) ))]))))
 
 (defn component
   [{:keys [adding-to-bag?
@@ -364,7 +375,7 @@
          (map first))))
 
 (defn query [data]
-  (let [product       (sku-sets/current-sku-set data)
+  (let [product (sku-sets/current-sku-set data)
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
@@ -381,37 +392,49 @@
                                     (map #(merge (:attributes %) %))
                                     (mapv #(dissoc % :attributes)))))
 
-        base-criteria (-> product :criteria (update-vals first))
+        ;; Essential
 
-        initial-skus (->> (query-criteria skus-db base-criteria)
+        essential-criteria (-> product :criteria (update-vals first))
+
+        initial-skus (->> (query-criteria skus-db essential-criteria)
                           (sort-by :price))
 
         initial-options (->> steps
                              (map (partial product->options
-                                     facets
-                                     initial-skus))
+                                           facets
+                                           initial-skus))
                              (apply merge))
+
+        ;; Applied selections
 
         selected-criteria (reduce (partial make-selected-criteria initial-options)
                                   ;;TODO This needs a new keypath
                                   (or (get-in data keypaths/bundle-builder-selections) {})
                                   steps)
 
-        selected-sku (->> (query-criteria skus-db
-                                          base-criteria
-                                          selected-criteria)
-                          (sort-by :price)
-                          first)
+        selection-options (check-options selected-criteria initial-skus initial-options)
 
-        images (:images selected-sku)
+        again-criteria (reduce (partial make-selected-criteria selection-options)
+                               ;;TODO This needs a new keypath
+                               (or (get-in data keypaths/bundle-builder-selections) {})
+                               steps)
 
-        checked-options (check-options selected-criteria initial-options)]
+        again-options (check-options again-criteria initial-skus initial-options)
+
+
+        selected-skus (->> (query-criteria skus-db
+                                           essential-criteria
+                                           again-criteria)
+                           (sort-by :price))
+
+
+        selected-sku (first selected-skus)]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :carousel-images   (set (filter (comp #{"carousel"} :use-case) images))
+     :carousel-images   (set (filter (comp #{"carousel"} :use-case) (:images selected-sku)))
      :facets            facets
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:id product)))
-     :options           checked-options
+     :options           again-options
      :product           product
      :reviews           reviews
      :selected-sku      selected-sku
@@ -469,7 +492,10 @@
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
   ;;TODO this needs a new keypath
-  (assoc-in app-state (conj keypaths/bundle-builder-selections selection) value))
+  (cond-> (assoc-in app-state
+                    (conj keypaths/bundle-builder-selections selection) value)
+    (= :hair/color selection)
+    (update-in keypaths/bundle-builder-selections dissoc :hair/length)))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
