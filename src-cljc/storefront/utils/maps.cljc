@@ -6,6 +6,9 @@
   [f m]
   (into {} (map (fn [[k v]] [k (f v)])) m))
 
+(defn update-vals [m f & args]
+  (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
+
 (defn key-by
   "Returns a map containing the elements (e) of coll indexed by the result of (f e)
 
