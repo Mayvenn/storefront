@@ -14,9 +14,9 @@
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
 
 (def ^:private default-tags
-  [[:title {} "Human hair extensions - virgin Brazilian hair & remy hair extensions | Mayvenn"]
+  [[:title {} "Mayvenn - Virgin human hair & extensions"]
    [:meta {:name "description"
-           :content "Quality hair extensions trusted & recommended by 60,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
+           :content "Quality virgin human hair & extensions trusted & recommended by 60,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
    [:meta {:property "og:title"
            :content "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!"}]
    [:meta {:property "og:type"
