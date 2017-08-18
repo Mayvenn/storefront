@@ -2,6 +2,7 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.bundle-builder :as bundle-builder]
+            [catalog.selector :as selector]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
@@ -12,7 +13,6 @@
             [storefront.assets :as assets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
-            [datascript.core :as d]
             [storefront.utils.maps :as maps]
             [storefront.config :as config]
             [storefront.effects :as effects]
@@ -358,25 +358,10 @@
      :album        images}))
 ;; finding a sku from a product
 
-(defn ->clauses [m] (mapv (fn [[k v]] ['?s k v]) m))
-
-(defn ^:private update-vals [m f & args]
-  (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
-
-(defn make-selected-criteria [options existing-selected-criteria step]
-  (let [existing-selection (step existing-selected-criteria)
-        minimal-option     (:option/slug (first (step options)))]
-    (assoc existing-selected-criteria step (or existing-selection minimal-option))))
-
-(defn query-criteria [db & criteria]
-  (let [query (->> criteria
-                   (reduce merge)
-                   ->clauses
-                   (concat [:find '(pull ?s [*])
-                            :where]))]
-    (->> db
-         (d/q query)
-         (map first))))
+(defn make-selected-criteria [options existing-selected-criteria selector]
+  (let [existing-selection (selector existing-selected-criteria)
+        minimal-option     (:option/slug (first (selector options)))]
+    (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
   (let [product (sku-sets/current-sku-set data)
@@ -389,24 +374,22 @@
                        :review?
                        (sku-sets/eligible-for-reviews? product))
 
-        skus-db (-> (d/empty-db)
-                    (d/db-with (->> (:skus product)
-                                    (select-keys (get-in data keypaths/skus))
-                                    vals
-                                    (map #(merge (:attributes %) %))
-                                    (mapv #(dissoc % :attributes)))))
+        skus-db (->> (:skus product)
+                     (select-keys (get-in data keypaths/skus))
+                     vals
+                     (map #(merge (:attributes %) %))
+                     (mapv #(dissoc % :attributes))
+                     selector/skus-db)
 
         ;; Essential
 
-        essential-criteria (-> product :criteria (update-vals first))
+        essential-criteria (-> product :criteria (maps/update-vals first))
 
-        initial-skus (->> (query-criteria skus-db essential-criteria)
+        initial-skus (->> (selector/query skus-db essential-criteria)
                           (sort-by :price))
 
         initial-options (->> steps
-                             (map (partial product->options
-                                           facets
-                                           initial-skus))
+                             (map (partial product->options facets initial-skus))
                              (apply merge))
 
         ;; Applied selections
@@ -426,7 +409,7 @@
         again-options (check-options again-criteria initial-skus initial-options)
 
 
-        selected-skus (->> (query-criteria skus-db
+        selected-skus (->> (selector/query skus-db
                                            essential-criteria
                                            again-criteria)
                            (sort-by :price))
