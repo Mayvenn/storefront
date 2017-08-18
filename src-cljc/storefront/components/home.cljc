@@ -95,26 +95,25 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc
-     (utils/route-to events/navigate-named-search {:named-search-slug "360-frontals"})
+    (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Shop-Now-360-Frontals-Loose-Wave-Homepage"
+    (let [file-name "Shop-Now-SHINE-Bright-Homepage"
           alt       "Shine Bright. All Eyes on You. Let your hair take center stage this summer with beautifully textured bundles. Shop our looks."]
       (case store-slug
-        "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/4e2e71c0-e8b5-4bf1-875f-fd737e5c66fa/"
-                                      :desktop-url "//ucarecdn.com/66c0e720-a573-4c55-812a-07531581b605/"
+        "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/bb925e41-c778-4f6d-ab23-010a37e8c019/"
+                                      :desktop-url "//ucarecdn.com/695d499a-8b02-4350-a625-affdd19c7fbb/"
                                       :file-name   file-name
                                       :alt         alt})
-        "touchedbytokyo" (hero-image {:mobile-url  "//ucarecdn.com/4e2e71c0-e8b5-4bf1-875f-fd737e5c66fa/"
-                                      :desktop-url "//ucarecdn.com/66c0e720-a573-4c55-812a-07531581b605/"
+        "touchedbytokyo" (hero-image {:mobile-url  "//ucarecdn.com/bb925e41-c778-4f6d-ab23-010a37e8c019/"
+                                      :desktop-url "//ucarecdn.com/695d499a-8b02-4350-a625-affdd19c7fbb/"
                                       :file-name   file-name
                                       :alt         alt})
-        "peakmill"       (hero-image {:mobile-url  "//ucarecdn.com/4e2e71c0-e8b5-4bf1-875f-fd737e5c66fa/"
-                                      :desktop-url "//ucarecdn.com/66c0e720-a573-4c55-812a-07531581b605/"
+        "peakmill"       (hero-image {:mobile-url  "//ucarecdn.com/bb925e41-c778-4f6d-ab23-010a37e8c019/"
+                                      :desktop-url "//ucarecdn.com/695d499a-8b02-4350-a625-affdd19c7fbb/"
                                       :file-name   file-name
                                       :alt         alt})
-        (hero-image {:mobile-url  "//ucarecdn.com/4e2e71c0-e8b5-4bf1-875f-fd737e5c66fa/"
-                     :desktop-url "//ucarecdn.com/66c0e720-a573-4c55-812a-07531581b605/"
+        (hero-image {:mobile-url  "//ucarecdn.com/bb925e41-c778-4f6d-ab23-010a37e8c019/"
+                     :desktop-url "//ucarecdn.com/695d499a-8b02-4350-a625-affdd19c7fbb/"
                      :file-name   file-name
                      :alt         alt})))]])
 
