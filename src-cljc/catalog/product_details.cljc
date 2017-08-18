@@ -189,12 +189,6 @@
       [:div.navy desc]])
    quantity-and-price])
 
-(defn no-sku-summary [facets selected-criteria steps]
-  (let [next-step (some (fn [step] (when-not (contains? selected-criteria step) step)) steps)]
-    (summary-structure
-     (str "Select " (some-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
-     (quantity-and-price-structure ui/nbsp "$--.--"))))
-
 (defn sku-summary [{:keys [facets sku sku-quantity]}]
   (let [{:keys [in-stock? price]} sku]
     (summary-structure
