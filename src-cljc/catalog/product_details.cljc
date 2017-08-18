@@ -251,7 +251,7 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn product->options
+(defn skus->options
   "Reduces product skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
   [facets skus selector]
@@ -389,7 +389,7 @@
                           (sort-by :price))
 
         initial-options (->> steps
-                             (map (partial product->options facets initial-skus))
+                             (map (partial skus->options facets initial-skus))
                              (apply merge))
 
         ;; Applied selections
