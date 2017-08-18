@@ -31,7 +31,6 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]])))
 
-(def steps [:hair/color :hair/length])
 
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
@@ -132,7 +131,7 @@
      checkout-button]))
 
 (defn option-html
-  [step-name {:keys [option/name option/slug image price-delta checked? stocked? selected-criteria]}]
+  [selector {:keys [option/name option/slug image price-delta checked? stocked? selected-criteria]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (string/replace name #"\W+" ""))
     :class     (cond
@@ -144,7 +143,7 @@
                  :disabled  (not stocked?)
                  :checked   checked?
                  :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selection step-name
+                                                       {:selection selector
                                                         :value     slug})}]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
@@ -158,13 +157,13 @@
        "+" (as-money-without-cents price-delta)]
       "Sold Out")]])
 
-(defn step-html
-  [{:keys [step-name selected-option options]}]
+(defn selector-html
+  [{:keys [selector selected-option options]}]
   [:div.my2
-   {:key (str "step-" step-name)}
+   {:key (str "selector-" selector)}
    [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
-     (name step-name)
+     (name selector)
      (when selected-option
        [:span.inline-block.mxp2.dark-gray " - "])]
     (when selected-option
@@ -175,7 +174,7 @@
       [:div.flex.flex-column.justify-center.pp3.col-4
        {:key   (string/replace (str "option-" (hash option)) #"\W+" "-")
         :style {:height "72px"}}
-       (option-html step-name option)])]])
+       (option-html selector option)])]])
 
 (defn indefinite-articalize [word]
   (let [vowel? (set "AEIOUaeiou")]
@@ -251,10 +250,10 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn skus->options
+(defn skus->selector-options
   "Reduces product skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [facets skus selector]
+  [facets skus selector-options selector]
   (let [sku->option
         (fn [options sku]
           (let [option-name  (selector sku)
@@ -268,10 +267,11 @@
                                         (:in-stock? existing))
                        :image       image
                        :price       (:price sku)}))))]
-    {selector (->> skus
-                   (reduce sku->option {})
-                   vals
-                   (sort-by :price))}))
+    (merge selector-options
+           {selector (->> skus
+                          (reduce sku->option {})
+                          vals
+                          (sort-by :price))})))
 
 (defn check-options [selected-criteria initial-skus options-by-selector]
   (into {} (for [[option-selector options] options-by-selector]
@@ -306,7 +306,6 @@
            selected-sku
            selected-criteria
            sku-quantity
-           steps
            ugc
            cheapest-price]}
    owner
@@ -332,10 +331,10 @@
             [:div.my2
              [:div
               (when (contains? (-> product :criteria :product/department set) "hair")
-                (for [step-name steps]
-                  (step-html {:step-name       step-name
-                              :selected-option (step-name selected-criteria)
-                              :options         (step-name options)})))]
+                (for [selector (:criteria/selectors product)]
+                  (selector-html {:selector        selector
+                                  :selected-option (selector selected-criteria)
+                                  :options         (selector options)})))]
              (sku-summary {:sku          selected-sku
                            :sku-quantity sku-quantity
                            :facets       facets})]
@@ -364,7 +363,10 @@
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
-  (let [product (sku-sets/current-sku-set data)
+  (let [current-product (sku-sets/current-sku-set data)
+        product         (assoc current-product
+                               :criteria/selectors [:hair/color :hair/length]
+                               :criteria/essential (-> current-product :criteria (maps/update-vals first)))
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
@@ -381,35 +383,32 @@
                      (mapv #(dissoc % :attributes))
                      selector/skus-db)
 
-        ;; Essential
-
-        essential-criteria (-> product :criteria (maps/update-vals first))
-
-        initial-skus (->> (selector/query skus-db essential-criteria)
+        product-skus (->> (selector/query skus-db
+                                          (:criteria/essential product))
                           (sort-by :price))
 
-        initial-options (->> steps
-                             (map (partial skus->options facets initial-skus))
-                             (apply merge))
+        initial-options (reduce (partial skus->selector-options facets product-skus)
+                                {}
+                                (:criteria/selectors product))
 
         ;; Applied selections
 
         initial-criteria (reduce (partial make-selected-criteria initial-options)
                                  ;;TODO This needs a new keypath
                                  (get-in data keypaths/bundle-builder-selections)
-                                 steps)
+                                 (:criteria/selectors product))
 
-        initial-selection-options (check-options initial-criteria initial-skus initial-options)
+        initial-selection-options (check-options initial-criteria product-skus initial-options)
 
         selected-criteria (reduce (partial make-selected-criteria initial-selection-options)
                                   ;;TODO This needs a new keypath
                                   (get-in data keypaths/bundle-builder-selections)
-                                  steps)
+                                  (:criteria/selectors product))
 
-        selected-options (check-options selected-criteria initial-skus initial-options)
+        selected-options (check-options selected-criteria product-skus initial-options)
 
         selected-skus (->> (selector/query skus-db
-                                           essential-criteria
+                                           (:criteria/essential product)
                                            selected-criteria)
                            (sort-by :price))
 
@@ -425,9 +424,8 @@
      :selected-sku      selected-sku
      :selected-criteria selected-criteria
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :steps             steps
      :ugc               (ugc-query product data)
-     :cheapest-price    (-> initial-skus first :price)}))
+     :cheapest-price    (-> product-skus first :price)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -461,7 +459,7 @@
   (let [sku-code (get-in app-state keypaths/product-details-url-sku-code)
         sku (get-in app-state (conj keypaths/skus sku-code))]
     (if sku
-      (->> steps
+      (->> [:hair/color :hair/length]
            (select-keys (:attributes sku))
            ;;TODO this needs a new keypath
            (assoc-in app-state keypaths/bundle-builder-selections))
