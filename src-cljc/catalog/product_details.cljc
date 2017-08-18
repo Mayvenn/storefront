@@ -33,6 +33,14 @@
 
 (def steps [:hair/color :hair/length])
 
+(defn item-price [price]
+  [:span {:item-prop "price"} (as-money-without-cents price)])
+
+(defn starting-at [cheapest-price]
+  [:div.center.dark-gray
+   [:div.h6 "Starting at"]
+   [:div.h2 (item-price cheapest-price)]])
+
 (defn facet->option-name [facets facet-slug option-slug]
   (-> facets
       facet-slug
@@ -188,9 +196,6 @@
      (str "Select " (some-> next-step facets :facet/name string/capitalize indefinite-articalize) "!")
      (quantity-and-price-structure ui/nbsp "$--.--"))))
 
-(defn item-price [price]
-  [:span {:item-prop "price"} (as-money-without-cents price)])
-
 (defn sku-summary [{:keys [facets sku sku-quantity]}]
   (let [{:keys [in-stock? price]} sku]
     (summary-structure
@@ -302,7 +307,8 @@
            selected-criteria
            sku-quantity
            steps
-           ugc]}
+           ugc
+           cheapest-price]}
    owner
    opts]
   (let [review? (:review? reviews)]
@@ -318,9 +324,7 @@
          (when review? (reviews-summary reviews opts))
          [:meta {:item-prop "image" :content (first carousel-images)}]
          (full-bleed-narrow (carousel carousel-images product))
-         #_(when (and (not fetching-sku-set?)
-                    needs-selections?)
-           (starting-at (:initial-variants bundle-builder)))]
+         (starting-at cheapest-price)]
         (if fetching-product?
           [:div.h2.mb2 ui/spinner]
           [:div
@@ -427,7 +431,6 @@
                                            again-criteria)
                            (sort-by :price))
 
-
         selected-sku (first selected-skus)]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
@@ -441,7 +444,8 @@
      :selected-criteria selected-criteria
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :steps             steps
-     :ugc               (ugc-query product data)}))
+     :ugc               (ugc-query product data)
+     :cheapest-price    (-> initial-skus first :price)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -501,17 +505,17 @@
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs (api/add-sku-to-bag
             (get-in app-state keypaths/session-id)
-            {:sku sku
-             :quantity quantity
+            {:sku        sku
+             :quantity   quantity
              :stylist-id (get-in app-state keypaths/store-stylist-id)
-             :token (get-in app-state keypaths/order-token)
-             :number (get-in app-state keypaths/order-number)
-             :user-id (get-in app-state keypaths/user-id)
+             :token      (get-in app-state keypaths/order-token)
+             :number     (get-in app-state keypaths/order-number)
+             :user-id    (get-in app-state keypaths/user-id)
              :user-token (get-in app-state keypaths/user-token)}
             #(messages/handle-message events/api-success-add-sku-to-bag
-                                      {:order %
+                                      {:order    %
                                        :quantity quantity
-                                 :sku sku}))))
+                                       :sku            sku}))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]
