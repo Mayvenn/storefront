@@ -433,13 +433,18 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
-(defn handle-sku-set-response [response]
-  (messages/handle-message events/api-success-sku-sets-for-details
-                           response))
+(defmethod transitions/transition-state events/navigate-product-details
+  [_ event {:keys [id slug sku-code]} app-state]
+  (-> app-state
+      (assoc-in keypaths/product-details-url-sku-code sku-code)
+      (assoc-in keypaths/product-details-sku-set-id id)
+      (assoc-in keypaths/browse-recently-added-skus [])
+      (assoc-in keypaths/browse-sku-quantity 1)))
 
 (defmethod effects/perform-effects events/navigate-product-details
   [_ event {:keys [id]} _ app-state]
-  #?(:cljs (do (api/search-sku-sets id handle-sku-set-response)
+  #?(:cljs (do (api/search-sku-sets id (partial messages/handle-message
+                                                events/api-success-sku-sets-for-details))
                (api/fetch-facets (get-in app-state keypaths/api-cache))
                (review-hooks/insert-reviews)))
   (fetch-current-sku-set-album app-state id))
@@ -449,9 +454,10 @@
   (fetch-current-sku-set-album app-state (get-in app-state keypaths/product-details-sku-set-id)))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
-  [_ event {:keys [sku-sets skus] :as response} app-state]
+  ;; for pre-selecting skus by url
+  [_ event {:keys [skus] :as response} app-state]
   (let [sku-code (get-in app-state keypaths/product-details-url-sku-code)
-        sku (get-in app-state (conj keypaths/skus sku-code))]
+        sku      (get-in app-state (conj keypaths/skus sku-code))]
     (if sku
       (->> [:hair/color :hair/length]
            (select-keys (:attributes sku))
@@ -459,13 +465,6 @@
            (assoc-in app-state keypaths/bundle-builder-selections))
       app-state)))
 
-(defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [id slug sku-code]} app-state]
-  (-> app-state
-      (assoc-in keypaths/product-details-url-sku-code sku-code)
-      (assoc-in keypaths/product-details-sku-set-id id)
-      (assoc-in keypaths/browse-recently-added-skus [])
-      (assoc-in keypaths/browse-sku-quantity 1)))
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]

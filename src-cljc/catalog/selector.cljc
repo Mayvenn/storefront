@@ -4,6 +4,7 @@
 (defn ^:private ->clauses
   [m] (mapv (fn [[k v]] ['?s k v]) m))
 
+;; TODO selector/query should understand sets as values
 (defn query [db & criteria]
   (let [query (->> criteria
                    (reduce merge)
