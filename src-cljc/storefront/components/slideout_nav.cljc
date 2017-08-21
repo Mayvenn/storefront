@@ -268,7 +268,8 @@
           [:div.h2.flex-auto.center
            "Shop " criteria-labels " " root-name]))
        [:ul.list-reset
-        (for [option (:options current-step)]
+        (for [option (:options current-step)
+              :when (:represented? option)]
           (let [selected-options (->> selected-steps
                                       (mapcat :options)
                                       (filterv :selected?))
