@@ -439,6 +439,7 @@
       (assoc-in keypaths/product-details-url-sku-code sku-code)
       (assoc-in keypaths/product-details-sku-set-id id)
       (assoc-in keypaths/browse-recently-added-skus [])
+      (assoc-in keypaths/bundle-builder-selections {})
       (assoc-in keypaths/browse-sku-quantity 1)))
 
 (defmethod effects/perform-effects events/navigate-product-details
