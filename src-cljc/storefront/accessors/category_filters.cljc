@@ -66,6 +66,10 @@
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 
+(defn replace-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
+  (let [new-criteria (assoc criteria facet-slug #{option-slug})]
+    (apply-criteria filters new-criteria)))
+
 (defn clear-criteria [filters]
   (apply-criteria filters {}))
 
@@ -110,4 +114,5 @@
                                                                      :represented? (contains? represented-options slug)
                                                                      :label        name})))}))))}
         clear-criteria
+        (apply-criteria (:criteria category))
         close)))

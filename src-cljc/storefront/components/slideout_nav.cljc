@@ -1,6 +1,5 @@
 (ns storefront.components.slideout-nav
-  (:require [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             #?@(:clj [[storefront.component-shim :as component]]
@@ -268,17 +267,18 @@
           [:div.h2.flex-auto.center
            "Shop " criteria-labels " " root-name]))
        [:ul.list-reset
-        (for [option (:options current-step)
-              :when (:represented? option)]
+        (for [option (:options current-step)]
           (let [selected-options (->> selected-steps
-                                      (mapcat :options)
-                                      (filterv :selected?))
-                selected-values (->> facets
-                                     (filterv :selected?))]
-            (when (or (empty? selected-options)
-                      (->> (map :sku-set-ids selected-options)
-                           (reduce set/intersection (:sku-set-ids option))
-                           seq))
+                                      (map :options)
+                                      (map #(filterv :selected? %))
+                                      (remove empty?))
+                valid-branch? (or (empty? selected-options)
+                                  (->> selected-options
+                                       (map (partial map :sku-set-ids))
+                                       (map (partial reduce set/union))
+                                       (reduce set/intersection (:sku-set-ids option))
+                                       seq))]
+            (when valid-branch?
               (if down-step
                 [:li {:key (:slug option)}
                  (major-menu-row
@@ -368,8 +368,8 @@
 
 (defn descend [filters current-step selected-option down-step]
   (-> filters
-      (category-filters/select-criterion (:slug current-step)
-                                         (:slug selected-option))
+      (category-filters/replace-criterion (:slug current-step)
+                                          (:slug selected-option))
       (category-filters/step down-step)))
 
 (defmethod transitions/transition-state events/menu-traverse-descend
