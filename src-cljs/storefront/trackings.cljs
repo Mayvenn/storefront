@@ -41,10 +41,12 @@
       (google-analytics/track-page path)
       (facebook-analytics/track-page path))))
 
+;; GROT: when old product detail page is removed
 (defmethod perform-track events/navigate-named-search [_ event args app-state]
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
 
+;; GROT: when old product detail page is removed
 (defmethod perform-track events/old-control-bundle-option-select [_ event {:keys [step-name selections]} app-state]
   (stringer/track-event "select_bundle_option" {:option_name  step-name
                                                 :option_value (step-name selections)})
@@ -53,9 +55,23 @@
                                       "/choose_"
                                       (clj->js last-step)))))
 
+;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                :content_ids [(:sku variant)]
+                                               :num_items quantity})
+  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
+
+(defmethod perform-track events/navigate-product-details [_ event args app-state]
+  (facebook-analytics/track-event "ViewContent"))
+
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selector value]} app-state]
+  (stringer/track-event "select_bundle_option" {:option_name  (name selector)
+                                                :option_value value}))
+
+(defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity] :as args} app-state]
+  (facebook-analytics/track-event "AddToCart" {:content_type "product"
+                                               :content_ids [(:sku sku)]
                                                :num_items quantity})
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 
