@@ -286,6 +286,9 @@
                               events/navigate-product-details-sku} nav-event)
                            ((fn [data]
                               (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:id params))
+                                    sku-sets                (map (fn [sku-set]
+                                                                   (update sku-set :criteria/selectors (partial mapv keyword)))
+                                                                 sku-sets)
                                     {:keys [facets]}        (api/fetch-facets storeback-config)]
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))

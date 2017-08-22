@@ -435,8 +435,8 @@
      (let [sku-sets-db   (-> (d/empty-db)
                              (d/db-with (->> (get-in app-state keypaths/sku-sets)
                                              vals
-                                             (map #(merge (maps/map-values first (:criteria %)) %))
-                                             (mapv #(dissoc % :criteria)))))
+                                             (map #(merge (maps/map-values first (:criteria/essential %)) %))
+                                             (mapv #(dissoc % :criteria/essential)))))
 
            initial-query (when (seq criteria)
                            (concat [:find '(pull ?s [*])

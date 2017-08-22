@@ -371,7 +371,10 @@
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
   (-> app-state
-      (update-in keypaths/sku-sets merge (maps/key-by :id sku-sets))
+      (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
+                                                     (update sku-set :criteria/selectors (partial mapv keyword)))
+                                                   sku-sets)
+                                              (maps/key-by :id)))
       (update-in keypaths/skus merge (maps/key-by :sku skus))))
 
 (defmethod transition-state events/api-success-sku-sets-for-browse

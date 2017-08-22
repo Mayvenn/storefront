@@ -88,7 +88,7 @@
    "71" "yaki-straight"})
 
 (defn is-hair? [sku-set]
-  (some-> sku-set :criteria :product/department (contains? "hair")))
-(defn stylist-only? [sku-set] (some-> sku-set :criteria :product/department (contains? "stylist-exclusives")))
+  (some-> sku-set :criteria/essential :product/department (contains? "hair")))
+(defn stylist-only? [sku-set] (some-> sku-set :criteria/essential :product/department (contains? "stylist-exclusives")))
 (def eligible-for-reviews? (complement stylist-only?))
 (def eligible-for-triple-bundle-discount? is-hair?)

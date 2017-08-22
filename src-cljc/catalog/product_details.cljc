@@ -336,7 +336,7 @@
            [:div schema-org-offer-props
             [:div.my2
              [:div
-              (when (contains? (-> product :criteria :product/department set) "hair")
+              (when (= (-> product :criteria/essential :product/department) "hair")
                 (for [selector (:criteria/selectors product)]
                   (selector-html {:selector        selector
                                   :selected-option (selector selected-criteria)
@@ -370,9 +370,7 @@
 
 (defn query [data]
   (let [current-product (sku-sets/current-sku-set data)
-        product         (assoc current-product
-                               :criteria/selectors [:hair/color :hair/length]
-                               :criteria/essential (-> current-product :criteria (maps/update-vals first)))
+        product         (update current-product :criteria/essential maps/update-vals first)
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/key-by :option/slug)))
