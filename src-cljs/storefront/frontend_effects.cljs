@@ -290,8 +290,6 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-
-
 (defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
   (let [category (categories/current-category app-state)]
     (api/fetch-facets (get-in app-state keypaths/api-cache))

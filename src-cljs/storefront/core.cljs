@@ -79,7 +79,7 @@
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
   (history/start-history)
-  (set! (.-root_owner js/window) 
+  (set! (.-root_owner js/window)
         (om/root top-level-component
                  app-state
                  {:target (.getElementById js/document "content")}))
