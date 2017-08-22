@@ -284,22 +284,25 @@
      (when disabled {:class "gray"})
      label]]])
 
-(defn radio-group [group-name selected-id keypath options]
+(defn radio-group [{:keys [group-name keypath checked-id] :as attributes} options]
   [:div
    (for [{:keys [id label] :as option} options]
      [:label
       {:key (str group-name id)}
       [:input.mx2.h2
-       {:type         "radio"
-        :name         group-name
-        :id           (str group-name id)
-        :data-test    group-name
-        :data-test-id id
-        :checked      (= selected-id id)
-        :on-change    #(handle-message events/control-change-state
-                                       {:keypath keypath
-                                        :value   id})}]
-      [:span label]])] )
+       (merge {:type         "radio"
+               :name         group-name
+               :data-test    group-name
+               :data-test-id id
+               :id           (str group-name id)
+               :checked      (= checked-id id)
+               :on-change    #(handle-message events/control-change-state
+                                              {:keypath keypath
+                                               :value   id})}
+              (dissoc attributes
+                      :group-name :keypath :checked-id
+                      :id :checked :data-test-id))]
+      [:span label]])])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div

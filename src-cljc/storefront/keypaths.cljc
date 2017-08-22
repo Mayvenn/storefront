@@ -301,7 +301,7 @@
 (def leads-ui-registration-state (conj leads-ui-registration :state))
 (def leads-ui-registration-zip (conj leads-ui-registration :zip))
 (def leads-ui-registration-birthday (conj leads-ui-registration :birthday))
-(def leads-ui-registration-is-licensed (conj leads-ui-registration :is-licensed))
+(def leads-ui-registration-licensed? (conj leads-ui-registration :licensed?))
 (def leads-ui-registration-payout-method (conj leads-ui-registration :payout-method))
 
 (def leads-ui-registration-venmo-phone (conj leads-ui-registration :venmo-phone))

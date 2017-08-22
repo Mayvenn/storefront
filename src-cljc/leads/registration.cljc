@@ -138,12 +138,10 @@
                      :name      "zip"
                      :required  true
                      :type      "text"
-                     :value     zip})]]
-
-   ])
+                     :value     zip})]]])
 
 (defn ^:private stylist-details-section
-  [{:keys [birthday is-licensed payout-method venmo-phone paypal-email slug]} focused errors]
+  [{:keys [birthday licensed? payout-method venmo-phone paypal-email slug]} focused errors]
   [:div
    [:div.flex.flex-column.items-center.col-12
     (ui/text-field {:data-test "birth-date"
@@ -158,9 +156,9 @@
                     :value     birthday})]
    [:div.pb2.center
     [:div.pb2 "Are you a licensed hair stylist?"]
-    (ui/radio-group "licensed?"
-                    is-licensed
-                    keypaths/leads-ui-registration-is-licensed
+    (ui/radio-group {:group-name "licensed?"
+                     :checked-id licensed?
+                     :keypath    keypaths/leads-ui-registration-licensed?}
                     [{:id "yes" :label "Yes"}
                      {:id "no" :label "No"}])]
    [:div.pb3.center
@@ -168,9 +166,10 @@
      [:div.pb2 "Our stylists get paid every week. "
       [:br]
       "How would you like to receive your commissions?"]
-     (ui/radio-group "payout-method"
-                     payout-method
-                     keypaths/leads-ui-registration-payout-method
+     (ui/radio-group {:group-name "payout-method"
+                      :keypath    keypaths/leads-ui-registration-payout-method
+                      :checked-id payout-method
+                      :required   true}
                      [{:id "venmo" :label "Venmo"}
                       {:id "paypal" :label "Paypal"}
                       {:id "check" :label "Check"}])]
@@ -217,7 +216,7 @@
       ".mayvenn.com"]]]] )
 
 (defn ^:private component
-  [{:keys [error errors focused anti-forgery-token sign-up referral contact stylist-details states]} owner opts]
+  [{:keys [error errors focused sign-up referral contact stylist-details states]} owner opts]
   (component/create
    [:div.bg-teal.white
     [:div.max-580.mx-auto
@@ -240,9 +239,6 @@
        [:br]
        "Let's get started."]
       [:form {:action "" :method "POST" :role "form"}
-       ;; TODO(FIXME)
-       [:input {:type "hidden" :name "__anti-forgery-token" :value anti-forgery-token}]
-
        (sign-up-section sign-up focused errors)
        (referral-section referral focused errors)
        (contact-section contact states focused errors)
@@ -270,7 +266,8 @@
 
 (defn ^:private stylist-details-query [data]
   {:birthday      (get-in data keypaths/leads-ui-registration-birthday)
-   :is-licensed   (get-in data keypaths/leads-ui-registration-is-licensed)
+   :licensed?     (or (get-in data keypaths/leads-ui-registration-licensed?)
+                      "no")
    :payout-method (or (get-in data keypaths/leads-ui-registration-payout-method)
                       "venmo")
    :venmo-phone   (get-in data keypaths/leads-ui-registration-venmo-phone)
@@ -278,16 +275,15 @@
    :slug          (get-in data keypaths/leads-ui-registration-slug)})
 
 (defn ^:private query [data]
-  {:anti-forgery-token (get-in data keypaths/leads-ui-registration-first-name)
-   :focused            (get-in data keypaths/ui-focus)
-   :error              ""
-   :errors             {}
-   :states             (map (juxt :name :abbr) (get-in data keypaths/states))
-   :referral           {:referred        (get-in data keypaths/leads-ui-registration-referred)
-                        :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)}
-   :sign-up            (sign-up-query data)
-   :contact            (contact-query data)
-   :stylist-details    (stylist-details-query data)})
+  {:focused         (get-in data keypaths/ui-focus)
+   :error           ""
+   :errors          {}
+   :states          (map (juxt :name :abbr) (get-in data keypaths/states))
+   :referral        {:referred        (get-in data keypaths/leads-ui-registration-referred)
+                     :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)}
+   :sign-up         (sign-up-query data)
+   :contact         (contact-query data)
+   :stylist-details (stylist-details-query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
