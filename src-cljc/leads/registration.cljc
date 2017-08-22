@@ -250,11 +250,11 @@
        [:a.inherit-color.text-decoration-none {:href "https://shop.mayvenn.com"} "Go back to shop Mayvenn Hair"]]]]]))
 
 (defn ^:private sign-up-query [data]
-  {:first-name            (get-in data keypaths/leads-ui-registration-first-name)
-   :last-name             (get-in data keypaths/leads-ui-registration-last-name)
-   :phone                 (get-in data keypaths/leads-ui-registration-phone)
-   :email                 (get-in data keypaths/leads-ui-registration-email)
-   :password              (get-in data keypaths/leads-ui-registration-password)})
+  {:first-name (get-in data keypaths/leads-ui-registration-first-name)
+   :last-name  (get-in data keypaths/leads-ui-registration-last-name)
+   :phone      (get-in data keypaths/leads-ui-registration-phone)
+   :email      (get-in data keypaths/leads-ui-registration-email)
+   :password   (get-in data keypaths/leads-ui-registration-password)})
 
 (defn ^:private contact-query [data]
   {:address1 (get-in data keypaths/leads-ui-registration-address1)
