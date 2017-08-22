@@ -381,7 +381,7 @@
                         (get facet-slug)
                         first)]
     (-> filters
-        (category-filters/deselect-criterion facet-slug option-slug)
+        (category-filters/undo-criterion)
         (category-filters/step up-step))))
 
 (defn descend [filters current-step selected-option down-step]

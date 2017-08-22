@@ -66,9 +66,17 @@
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 
+(defn undo-criterion [{:keys [criteria previous-criteria] :as filters}]
+  (let [new-criteria      (last previous-criteria)]
+    (-> filters
+        (apply-criteria new-criteria)
+        (update :previous-criteria pop))))
+
 (defn replace-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
   (let [new-criteria (assoc criteria facet-slug #{option-slug})]
-    (apply-criteria filters new-criteria)))
+    (->
+     (apply-criteria filters new-criteria)
+     (update :previous-criteria (fnil conj []) criteria))))
 
 (defn clear-criteria [filters]
   (apply-criteria filters {}))
