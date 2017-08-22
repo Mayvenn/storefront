@@ -276,9 +276,13 @@
        [:span.mr1 back-caret] "Back"]
       [:div.px6
        (major-menu-row
-        (let [criteria-labels (str/join " " (map :label (vals criteria)))]
+        (let [criteria-labels [] #_(str/join " " (->> selected-steps
+                                                      (map :options)
+                                                      (map #(first (filterv :selected? %)))
+                                                      (map :label)))]
           [:div.h2.flex-auto.center
-           "Shop " criteria-labels " " root-name]))
+           ;; TODO: Make this print out the specified text
+           "Shop " #_criteria-labels #_" " root-name]))
        [:ul.list-reset
         (when-let [jump-out (get slug->jump-out (:slug up-step-option))]
           [:li
