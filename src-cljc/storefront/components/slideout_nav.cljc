@@ -205,6 +205,7 @@
                                  :data-test (str "menu-" slug))
                           (when (named-searches/new-named-search? slug) [:span.teal.mr1 "NEW"])
                           (str/capitalize name))])]])])
+
 (defn shopping-area [signed-in]
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
@@ -245,12 +246,24 @@
                      "Sign out")
     [:div])))
 
+(def slug->jump-out
+  {"360-frontals" {:id   "10"
+                   :name "360 Frontals"
+                   :slug "360-frontals"}
+   "closures"     {:id   "0"
+                   :name "Closures"
+                   :slug "closures"}
+   "frontals"     {:id   "1"
+                   :name "Frontals"
+                   :slug "frontals"}})
+
 (defn taxonomy-component
   [{:keys [root-name facets criteria promo-data]} owner opts]
   (let [[selected-steps unselected-steps] (split-with :selected? facets)
         current-step                      (last selected-steps)
         up-step                           (last (drop-last selected-steps))
-        down-step                         (first unselected-steps)]
+        down-step                         (first unselected-steps)
+        up-step-option                    (first (filterv :selected? (:options up-step)))]
     (component/create
      [:div
       [:div.top-0.sticky.z4
@@ -267,17 +280,22 @@
           [:div.h2.flex-auto.center
            "Shop " criteria-labels " " root-name]))
        [:ul.list-reset
+        (when-let [jump-out (get slug->jump-out (:slug up-step-option))]
+          [:li
+           (major-menu-row
+            (utils/fake-href events/navigate-category (select-keys jump-out [:id :slug]))
+            [:span.teal "All " (:name jump-out)])])
         (for [option (:options current-step)]
           (let [selected-options (->> selected-steps
                                       (map :options)
                                       (map #(filterv :selected? %))
                                       (remove empty?))
-                valid-branch? (or (empty? selected-options)
-                                  (->> selected-options
-                                       (map (partial map :sku-set-ids))
-                                       (map (partial reduce set/union))
-                                       (reduce set/intersection (:sku-set-ids option))
-                                       seq))]
+                valid-branch?    (or (empty? selected-options)
+                                     (->> selected-options
+                                          (map (partial map :sku-set-ids))
+                                          (map (partial reduce set/union))
+                                          (reduce set/intersection (:sku-set-ids option))
+                                          seq))]
             (when valid-branch?
               (if down-step
                 [:li {:key (:slug option)}
