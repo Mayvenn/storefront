@@ -131,7 +131,8 @@
          [:div.col.col-6.col-4-on-tb-dt.px1
           {:key slug}
           [:a.inherit-color
-           (utils/route-to events/navigate-product-details product)
+           (utils/route-to events/navigate-product-details {:id   (:sku-set/id product)
+                                                            :slug (:slug product)})
            [:div.mb10.center
             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
             [:img.block.col-12 {:src (str (:url image)

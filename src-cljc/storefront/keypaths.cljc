@@ -103,7 +103,7 @@
 (def old-bundle-builder (conj ui :old-bundle-builder))
 (def product-details (conj ui :product-details))
 (def product-details-url-sku-code (conj product-details :url-sku-code))
-(def product-details-sku-set-id (conj product-details :sku-set-id))
+(def product-details-sku-set-id (conj product-details :sku-set/id))
 
 (def category-filters-for-nav (conj ui :category-filters :nav))
 (def category-filters-for-browse (conj ui :category-filters :browse))

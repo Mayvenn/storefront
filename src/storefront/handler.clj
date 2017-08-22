@@ -34,7 +34,8 @@
             [clojure.string :as str]
             [clojure.xml :as xml]
             [storefront.accessors.categories :as categories]
-            [clj-time.core :as clj-time.core]))
+            [clj-time.core :as clj-time.core]
+            [clojure.set :as set]))
 
 (defn storefront-site-defaults
   [environment]
@@ -241,11 +242,13 @@
     (when sku-set
       (if redirect?
         (if sku
-          (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:id sku-set)
+          (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:sku-set/id sku-set)
                                                                                     :slug     (:slug sku-set)
                                                                                     :sku-code (:sku sku)}))
-          (util.response/redirect (routes/path-for events/navigate-product-details (select-keys sku-set [:id :slug]))))
-        (html-response render-ctx (-> data (assoc-in keypaths/product-details-sku-set-id (:id sku-set))))))))
+          (util.response/redirect (routes/path-for events/navigate-product-details (-> sku-set
+                                                                                       (select-keys [:sku-set/id :slug])
+                                                                                       (set/rename-keys {:sku-set/id :id})))))
+        (html-response render-ctx (-> data (assoc-in keypaths/product-details-sku-set-id (:sku-set/id sku-set))))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
@@ -292,7 +295,7 @@
                                     {:keys [facets]}        (api/fetch-facets storeback-config)]
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                                    (update-in keypaths/sku-sets merge (key-by :id sku-sets))
+                                    (update-in keypaths/sku-sets merge (key-by :sku-set/id sku-sets))
                                     (update-in keypaths/skus merge (key-by :sku skus)))))))]
           (condp = nav-event
             events/navigate-old-product         (redirect-product->canonical-url ctx req params)

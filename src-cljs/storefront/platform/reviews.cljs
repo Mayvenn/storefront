@@ -130,6 +130,6 @@ Lengths: 12\" to 28\""
 
 (defn query [data]
   (let [sku-set (sku-sets/current-sku-set data)]
-    {:named-search-slug (sku-sets/id->named-search (:id sku-set))
+    {:named-search-slug (sku-sets/id->named-search (:sku-set/id sku-set))
      :url               (routes/current-path data)
      :loaded?           (get-in data keypaths/loaded-reviews)}))

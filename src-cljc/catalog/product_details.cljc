@@ -358,7 +358,7 @@
 
 (defn ugc-query [product data]
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
-                                       (sku-sets/id->named-search (:id product)))]
+                                       (sku-sets/id->named-search (:sku-set/id product)))]
     {:named-search product
      :album        images}))
 ;; finding a sku from a product
@@ -421,7 +421,7 @@
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (set (filter (comp #{"carousel"} :use-case) (:images selected-sku)))
      :facets            facets
-     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:id product)))
+     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:sku-set/id product)))
      :options           selected-options
      :product           product
      :reviews           reviews
@@ -437,14 +437,14 @@
 (defn fetch-current-sku-set-album [app-state sku-set-id]
   (when-let [slug (->> sku-set-id
                        (sku-sets/sku-set-by-id app-state)
-                       :id
+                       :sku-set/id
                        sku-sets/id->named-search)]
     (when-let [album-id (get-in config/pixlee [:albums slug])]
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [id slug sku-code]} app-state]
+  [_ event {:keys [id slug sku-code] :as args} app-state]
   (-> app-state
       (assoc-in keypaths/product-details-url-sku-code sku-code)
       (assoc-in keypaths/product-details-sku-set-id id)
