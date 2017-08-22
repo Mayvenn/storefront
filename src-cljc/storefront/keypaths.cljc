@@ -292,7 +292,6 @@
 (def leads-ui-registration-phone (conj leads-ui-registration :phone))
 (def leads-ui-registration-email (conj leads-ui-registration :email))
 (def leads-ui-registration-password (conj leads-ui-registration :password))
-(def leads-ui-registration-password-confirmation (conj leads-ui-registration :password-confirmation))
 (def leads-ui-registration-referred (conj leads-ui-registration :referred))
 (def leads-ui-registration-referrers-phone (conj leads-ui-registration :referrers-phone))
 (def leads-ui-registration-address1 (conj leads-ui-registration :address1))
