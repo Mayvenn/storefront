@@ -413,7 +413,7 @@
                                                                :criteria {})))))))
 
 (defmethod transitions/transition-state events/menu-traverse-ascend
-  [_ _ {:keys [up-step criteria]} app-state]
+  [_ _ {:keys [up-step]} app-state]
   (update-in app-state
              keypaths/category-filters-for-nav
              ascend up-step))
