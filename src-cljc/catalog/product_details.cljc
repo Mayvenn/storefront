@@ -206,7 +206,7 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
-  [{{:keys [description colors weights materials summary]} :copy}]
+  [{{:keys [description colors weights materials summary]} :sku-set/copy}]
   (when (seq description)
     [:div.border.border-dark-gray.mt2.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
