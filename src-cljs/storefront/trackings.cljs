@@ -65,8 +65,8 @@
 (defmethod perform-track events/navigate-product-details [_ event args app-state]
   (facebook-analytics/track-event "ViewContent"))
 
-(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selector value]} app-state]
-  (stringer/track-event "select_bundle_option" {:option_name  (name selector)
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selection value]} app-state]
+  (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
 
 (defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity] :as args} app-state]
