@@ -1085,6 +1085,9 @@
                     :utm-content  (get-in app-state keypaths/leads-utm-content)
                     :utm-term     (get-in app-state keypaths/leads-utm-term)}))
 
+(defmethod perform-effects events/navigate-leads-registration [_ event _ _ app-state]
+  (api/get-states (get-in app-state keypaths/api-cache)))
+
 (defmethod perform-effects events/api-success-lead-created [_ event _ _ app-state]
   (let [{:keys [flow-id] :as lead} (get-in app-state keypaths/leads-lead)]
     (if flow-id

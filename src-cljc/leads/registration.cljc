@@ -11,7 +11,7 @@
 
 (defn ^:private component [{:keys [error
                                    errors
-                                   focused-keypath
+                                   focused
                                    anti-forgery-token
                                    referred
                                    first-name
@@ -65,7 +65,7 @@
          :required true
          :errors   (:first-name errors)
          :keypath  keypaths/leads-ui-registration-first-name
-         :focused  focused-keypath
+         :focused  focused
          :value    first-name}
         {:type     "text"
          :label    "Last Name *"
@@ -74,13 +74,13 @@
          :required true
          :errors   (:last-name errors)
          :keypath  keypaths/leads-ui-registration-last-name
-         :focused  focused-keypath
+         :focused  focused
          :value    last-name})
        (ui/text-field {:data-test "phone"
                        :errors    (:phone errors)
                        :id        "phone"
                        :keypath   keypaths/leads-ui-registration-phone
-                       :focused   focused-keypath
+                       :focused   focused
                        :label     "Mobile Phone Number *"
                        :name      "phone"
                        :required  true
@@ -90,7 +90,7 @@
                        :errors    (:email errors)
                        :id        "email"
                        :keypath   keypaths/leads-ui-registration-email
-                       :focused   focused-keypath
+                       :focused   focused
                        :label     "Email"
                        :name      "email"
                        :required  true
@@ -100,7 +100,7 @@
                        :errors    (:password errors)
                        :id        "password"
                        :keypath   keypaths/leads-ui-registration-password
-                       :focused   focused-keypath
+                       :focused   focused
                        :label     "Password *"
                        :name      "password"
                        :required  true
@@ -110,7 +110,7 @@
                        :errors    (:password-confirmation errors)
                        :id        "password-confirmation"
                        :keypath   keypaths/leads-ui-registration-password-confirmation
-                       :focused   focused-keypath
+                       :focused   focused
                        :label     "Re-type Password *"
                        :name      "password-confirmation"
                        :required  true
@@ -125,7 +125,7 @@
                          :errors    (:referrers-phone errors)
                          :id        "referrers-phone"
                          :keypath   keypaths/leads-ui-registration-referrers-phone
-                         :focused   focused-keypath
+                         :focused   focused
                          :label     "Referrer's Mobile Phone Number *"
                          :name      "referrers-phone"
                          :type      "referrers-phone"
@@ -138,7 +138,7 @@
                         :errors    (:address1 errors)
                         :id        "address1"
                         :keypath   keypaths/leads-ui-registration-address1
-                        :focused   focused-keypath
+                        :focused   focused
                         :label     "Street Address *"
                         :name      "address1"
                         :required  true
@@ -148,7 +148,7 @@
                         :errors    (:address2 errors)
                         :id        "address2"
                         :keypath   keypaths/leads-ui-registration-address2
-                        :focused   focused-keypath
+                        :focused   focused
                         :label     "Apt or Suite #"
                         :name      "address2"
                         :required  true
@@ -158,7 +158,7 @@
                         :errors    (:city errors)
                         :id        "city"
                         :keypath   keypaths/leads-ui-registration-city
-                        :focused   focused-keypath
+                        :focused   focused
                         :label     "City *"
                         :name      "city"
                         :required  true
@@ -170,7 +170,7 @@
                             :errors      (:state errors)
                             :id          :state
                             :keypath     keypaths/leads-ui-registration-state
-                            :focused     focused-keypath
+                            :focused     focused
                             :label       "State *"
                             :options     states
                             :placeholder "State *"
@@ -181,7 +181,7 @@
                           :errors    (:zip errors)
                           :id        "zip"
                           :keypath   keypaths/leads-ui-registration-zip
-                          :focused   focused-keypath
+                          :focused   focused
                           :label     "ZIP code *"
                           :name      "zip"
                           :required  true
@@ -193,7 +193,7 @@
                          :errors    (:birthday errors)
                          :id        "birth-date"
                          :keypath   keypaths/leads-ui-registration-birthday
-                         :focused   focused-keypath
+                         :focused   focused
                          :label     "Birthday"
                          :name      "birth-date"
                          :required  true
@@ -222,7 +222,7 @@
                                    :errors    (:venmo-phone errors)
                                    :id        "venmo-phone"
                                    :keypath   keypaths/leads-ui-registration-venmo-phone
-                                   :focused   focused-keypath
+                                   :focused   focused
                                    :label     "Venmo phone number *"
                                    :name      "venmo-phone"
                                    :required  true
@@ -232,7 +232,7 @@
                                    :errors    (:paypal-email errors)
                                    :id        "paypal-email"
                                    :keypath   keypaths/leads-ui-registration-paypal-email
-                                   :focused   focused-keypath
+                                   :focused   focused
                                    :label     "Paypal email address *"
                                    :name      "paypal-email"
                                    :required  true
@@ -252,7 +252,7 @@
                           :errors        (:slug errors)
                           :id            "slug"
                           :keypath       keypaths/leads-ui-registration-slug
-                          :focused       focused-keypath
+                          :focused       focused
                           :label         (if (empty? slug) "yourstorename" "Store Name")
                           :name          "slug"
                           :required      true
@@ -281,15 +281,17 @@
    :address2              (get-in data keypaths/leads-ui-registration-address2)
    :city                  (get-in data keypaths/leads-ui-registration-city)
    :zip                   (get-in data keypaths/leads-ui-registration-zip)
-   :state                 (get-in data keypaths/leads-ui-registration-state)
-   :states                []
+   :state                 (or (get-in data keypaths/leads-ui-registration-state)
+                              "")
+   :states                (map (juxt :name :abbr) (get-in data keypaths/states))
    :birthday              (get-in data keypaths/leads-ui-registration-birthday)
    :is-licensed           (get-in data keypaths/leads-ui-registration-is-licensed)
    :payout-method         (or (get-in data keypaths/leads-ui-registration-payout-method)
                               "venmo")
    :venmo-phone           (get-in data keypaths/leads-ui-registration-venmo-phone)
    :paypal-email          (get-in data keypaths/leads-ui-registration-paypal-email)
-   :slug                  (get-in data keypaths/leads-ui-registration-slug)})
+   :slug                  (get-in data keypaths/leads-ui-registration-slug)
+   :focused               (get-in data keypaths/ui-focus)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
