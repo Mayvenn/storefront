@@ -92,7 +92,7 @@
 
 (defn init [category sku-sets facets]
   (let [represented-criteria (->> sku-sets
-                                  (mapcat :skus)
+                                  (mapcat :sku-set/full-skus)
                                   (map :attributes)
                                   (maps/into-multimap))]
     (-> {:initial-sku-sets sku-sets

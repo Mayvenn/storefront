@@ -35,10 +35,10 @@
 (defn ^:private apply-criteria
   [{:keys [initial-sku-sets facets] :as filters} new-criteria]
   (let [new-filtered-sku-sets (->> initial-sku-sets
-                                   (keep (fn [{:keys [skus] :as sku-set}]
+                                   (keep (fn [{:keys [sku-set/full-skus] :as sku-set}]
                                            (when-let [matching-skus (seq (matches-any? new-criteria
                                                                                        (comp attributes->criteria :attributes)
-                                                                                       skus))]
+                                                                                       full-skus))]
                                              (assoc sku-set
                                                     :matching-skus matching-skus
                                                     :representative-sku (apply min-key :price matching-skus)))))
@@ -104,7 +104,7 @@
 
 (defn init [category sku-sets facets]
   (let [represented-criteria (->> sku-sets
-                                  (mapcat :skus)
+                                  (mapcat :sku-set/full-skus)
                                   (map :attributes)
                                   (maps/into-multimap))]
     (-> {:initial-sku-sets sku-sets

@@ -31,7 +31,6 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]])))
 
-
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
 
@@ -380,15 +379,14 @@
                        :review?
                        (sku-sets/eligible-for-reviews? product))
 
-        skus-db (->> (:skus product)
+        skus-db (->> (:sku-set/skus product)
                      (select-keys (get-in data keypaths/skus))
                      vals
                      (map #(merge (:attributes %) %))
                      (mapv #(dissoc % :attributes))
                      selector/skus-db)
 
-        product-skus (->> (selector/query skus-db
-                                          (:criteria/essential product))
+        product-skus (->> (selector/query skus-db (:criteria/essential product))
                           (sort-by :price))
 
         initial-options (reduce (partial skus->selector-options facets product-skus)

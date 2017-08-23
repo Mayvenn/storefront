@@ -258,7 +258,7 @@
 (defn- hydrate-sku-set [id->skus sku-set]
   (-> sku-set
       (update :criteria #(maps/map-values set %))
-      (assoc :skus (map #(get id->skus %) (:skus sku-set)))))
+      (assoc :sku-set/full-skus (map #(get id->skus %) (:sku-set/skus sku-set)))))
 
 (defn make-category-filters [app-state {:keys [sku-sets skus category-id]}]
   (category-filters/init

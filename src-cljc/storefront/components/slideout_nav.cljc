@@ -421,7 +421,8 @@
 (defmethod transitions/transition-state events/api-success-sku-sets-for-nav
   [_ event response app-state]
   (let [filters     (categories/make-category-filters app-state response)
-        remove-skus (partial map #(dissoc % :skus))]
+        ;;TODO Figure out why this was done
+        remove-skus (partial map #(dissoc % :sku-set/full-skus :sku-set/skus))]
     (assoc-in app-state keypaths/category-filters-for-nav
               (-> filters
                   (update :initial-sku-sets remove-skus)
