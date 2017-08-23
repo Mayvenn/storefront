@@ -364,7 +364,7 @@
 
 (defn make-selected-criteria [options existing-selected-criteria selector]
   (let [existing-selection (selector existing-selected-criteria)
-        minimal-option     (:option/slug (first (selector options)))]
+        minimal-option     (->> options selector (filter :stocked?) first :option/slug)]
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
