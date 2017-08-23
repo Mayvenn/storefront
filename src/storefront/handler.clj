@@ -237,7 +237,7 @@
                               {:keys [id slug sku-code] :as params}]
   (let [sku-set   (get-in data (conj keypaths/sku-sets id))
         sku       (get-in data (conj keypaths/skus sku-code))
-        redirect? (or (not= slug (:slug sku-set))
+        redirect? (or (not= slug (:sku-set/slug sku-set))
                       (and sku-code (not sku)))]
     (when sku-set
       (if redirect?
