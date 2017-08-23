@@ -141,16 +141,16 @@
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 183960100})
-     (feature-image {:mobile-url  "//ucarecdn.com/6bd0fc46-a156-4047-8257-8dfb470bb8b3/"
-                     :desktop-url "//ucarecdn.com/b0a10722-212a-41ef-949c-dae182d9083b/"
+     (utils/route-to events/navigate-shop-by-look-details {:look-id 186605502})
+     (feature-image {:mobile-url  "//ucarecdn.com/7d82c10a-6842-4a5c-85da-3f48767bc7f6/"
+                     :desktop-url "//ucarecdn.com/9a15f816-5946-44ea-ba27-822c124db114/"
                      :file-name   "Shop-Water-Wave-Hair-3-Bundle-Deal"
                      :alt         "Shop Water Wave Hair 3 Bundle Deal"})]]
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id 182412844})
-     (feature-image {:mobile-url  "//ucarecdn.com/dfb79c42-6983-45a3-8907-439f56cf6320/"
-                     :desktop-url "//ucarecdn.com/656499f9-86e3-4693-8e55-62f778487f39/"
+     (feature-image {:mobile-url  "//ucarecdn.com/26f43d6f-3c93-4888-8e51-bf72baa734f2/"
+                     :desktop-url "//ucarecdn.com/489702c5-e96d-45b1-8f85-2198a1bbef83/"
                      :file-name   "Shop-Yaki-Straight-Hair-3-Bundle-Deal"
                      :alt         "Shop Yaki Straight Hair 3 Bundle Deal"})]]])
 
