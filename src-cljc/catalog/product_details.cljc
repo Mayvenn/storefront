@@ -356,11 +356,11 @@
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
 
-(defn ugc-query [product data]
+(defn ugc-query [sku-set data]
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
-                                       (sku-sets/id->named-search (:sku-set/id product)))]
-    {:named-search product
-     :album        images}))
+                                       (sku-sets/id->named-search (:sku-set/id sku-set)))]
+    {:sku-set sku-set
+     :album   images}))
 ;; finding a sku from a product
 
 (defn make-selected-criteria [options existing-selected-criteria selector]

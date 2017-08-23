@@ -12,7 +12,7 @@
             [storefront.platform.carousel :as carousel]
             [goog.string]))
 
-(defn carousel-slide [slug idx {:keys [imgs content-type]}]
+(defn ^:private carousel-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
    [:a (util/route-to events/navigate-ugc-named-search {:named-search-slug slug :query-params {:offset idx}})
     (ui/aspect-ratio
@@ -23,14 +23,17 @@
        [:div.absolute.overlay.flex.items-center.justify-center
         svg/play-video-muted]))]])
 
-(defn component [{:keys [album named-search]} owner opts]
+;; TODO(jeff): replace named-search & sku-set with slug?
+(defn component [{:keys [album named-search sku-set]} owner opts]
   (om/component
    (html
     (when (seq album)
       [:div.center.mt4
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
-                 {:slides   (map-indexed (partial carousel-slide (:slug named-search)) album)
+                 {:slides   (map-indexed (partial carousel-slide (or (:sku-set/slug sku-set)
+                                                               (:slug named-search)))
+                                         album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
                              ;; the slide width calculation

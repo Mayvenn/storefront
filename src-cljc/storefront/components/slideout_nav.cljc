@@ -451,8 +451,7 @@
                            (->> (d/q initial-query sku-sets-db)
                                 ffirst))]
        (frontend-effects/redirect events/navigate-product-details {:id (:sku-set/id sku-set)
-                                                                   ;;TODO Change to :slug (:sku-set/slug sku-set)
-                                                                   :slug (:slug sku-set)}))))
+                                                                   :slug (:sku-set/slug sku-set)}))))
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
