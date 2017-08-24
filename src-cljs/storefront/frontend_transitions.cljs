@@ -17,7 +17,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.utils.maps :as maps]))
+            [storefront.utils.maps :as maps]
+            [datascript.core :as d]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -371,6 +372,22 @@
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
   (-> app-state
+      (update-in keypaths/db-skus d/db-with (sequence (comp
+                                                       (map #(merge % (:attributes %)))
+                                                       (map #(dissoc % :attributes :images)))
+                                                      skus))
+      (update-in keypaths/db-images d/db-with (sequence (comp
+                                                         (mapcat :sku-set/images)
+                                                         (map #(assoc % :id (str (:use-case %) "-" (:url %))))
+                                                         (map #(assoc % :order (case (:image/of (:criteria/attributes %))
+                                                                                 "model" 1
+                                                                                 "product" 2
+                                                                                 "seo" -1
+                                                                                 "catalog" -2)))
+                                                         (filter (comp pos? :order))
+                                                         (map #(merge % (:criteria/attributes %)))
+                                                         (map #(dissoc % :criteria/attributes :filename)))
+                                                        sku-sets))
       (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
                                                      (update sku-set :criteria/selectors (partial mapv keyword)))
                                                    sku-sets)

@@ -50,6 +50,11 @@
 ;;TODO use this instead of initial-sku-sets
 (def sku-sets [:sku-sets])
 (def skus [:skus])
+
+(def db [:db])
+(def db-skus (conj db :skus))
+(def db-images (conj db :images))
+
 (def categories [:categories])
 (def facets [:facets])
 (def states [:states])

@@ -368,7 +368,9 @@
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
-  (let [current-product (sku-sets/current-sku-set data)
+  (let [skus-db (get-in data keypaths/db-skus)
+        image-db (get-in data keypaths/db-images)
+        current-product (sku-sets/current-sku-set data)
         product         (update current-product :criteria/essential maps/update-vals first)
 
         facets (->> (get-in data keypaths/facets)
@@ -379,25 +381,6 @@
                        :review?
                        (sku-sets/eligible-for-reviews? product))
 
-        skus-db (->> (:sku-set/skus product)
-                     (select-keys (get-in data keypaths/skus))
-                     vals
-                     (mapv (fn [sku]
-                             (-> sku
-                                 (merge (:attributes sku))
-                                 (dissoc :attributes))))
-                     selector/new-db)
-
-        image-db (->> (:sku-set/images product)
-                      (map-indexed (fn [idx image]
-                                     (-> image
-                                         (assoc :id idx)
-                                         (assoc :order (case (:image/of (:criteria/attributes image))
-                                                         "model" 0
-                                                         "product" 1))
-                                         (merge (:criteria/attributes image))
-                                         (dissoc :criteria/attributes :filename))))
-                      selector/new-db)
 
         product-skus (->> (selector/query skus-db (:criteria/essential product))
                           (sort-by :price))
@@ -423,12 +406,15 @@
         selected-options (check-options selected-criteria product-skus initial-options)
 
         selected-sku (->> (selector/query skus-db
-                                           (:criteria/essential product)
-                                           selected-criteria)
-                           (sort-by :price)
-                           first)
+                                          (:criteria/essential product)
+                                          selected-criteria)
+                          (sort-by :price)
+                          first)
 
-        sku-images (->> (selector/query image-db {:hair/color (:hair/color selected-sku)})
+        sku-images (->> (selector/query image-db
+                                        (merge (dissoc (:criteria/essential product)
+                                                       :hair/origin)
+                                               {:hair/color (:hair/color selected-sku)}))
                         (sort-by :order))]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)

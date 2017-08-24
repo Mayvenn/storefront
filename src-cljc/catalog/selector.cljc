@@ -11,9 +11,10 @@
                    ->clauses
                    (concat [:find '(pull ?s [*])
                             :where]))]
-    (->> db
-         (d/q query)
-         (map first))))
+    (some->> db
+             deref
+             (d/q query)
+             (map first))))
 
 (defn new-db [coll]
   (d/db-with (d/empty-db) coll))
