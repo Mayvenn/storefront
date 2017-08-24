@@ -383,7 +383,8 @@
                                                                                  "model" 1
                                                                                  "product" 2
                                                                                  "seo" -1
-                                                                                 "catalog" -2)))
+                                                                                 "catalog" -2
+                                                                                 -3)))
                                                          (filter (comp pos? :order))
                                                          (map #(merge % (:criteria/attributes %)))
                                                          (map #(dissoc % :criteria/attributes :filename)))
