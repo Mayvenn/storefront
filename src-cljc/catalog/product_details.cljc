@@ -382,19 +382,21 @@
         skus-db (->> (:sku-set/skus product)
                      (select-keys (get-in data keypaths/skus))
                      vals
-                     (map #(merge (:attributes %) %))
-                     (mapv #(dissoc % :attributes))
+                     (mapv (fn [sku]
+                             (-> sku
+                                 (merge (:attributes sku))
+                                 (dissoc :attributes))))
                      selector/new-db)
 
         image-db (->> (:sku-set/images product)
                       (map-indexed (fn [idx image]
                                      (-> image
                                          (assoc :id idx)
-                                         (assoc :order (case (:image/of (:attrs image))
+                                         (assoc :order (case (:image/of (:criteria/attributes image))
                                                          "model" 0
                                                          "product" 1))
-                                         (merge (:attrs image))
-                                         (dissoc :attrs :filename))))
+                                         (merge (:criteria/attributes image))
+                                         (dissoc :criteria/attributes :filename))))
                       selector/new-db)
 
         product-skus (->> (selector/query skus-db (:criteria/essential product))
