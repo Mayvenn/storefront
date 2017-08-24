@@ -384,7 +384,18 @@
                      vals
                      (map #(merge (:attributes %) %))
                      (mapv #(dissoc % :attributes))
-                     selector/skus-db)
+                     selector/new-db)
+
+        image-db (->> (:sku-set/images product)
+                      (map-indexed (fn [idx image]
+                                     (-> image
+                                         (assoc :id idx)
+                                         (assoc :order (case (:image/of (:attrs image))
+                                                         "model" 0
+                                                         "product" 1))
+                                         (merge (:attrs image))
+                                         (dissoc :attrs :filename))))
+                      selector/new-db)
 
         product-skus (->> (selector/query skus-db (:criteria/essential product))
                           (sort-by :price))
@@ -409,15 +420,17 @@
 
         selected-options (check-options selected-criteria product-skus initial-options)
 
-        selected-skus (->> (selector/query skus-db
+        selected-sku (->> (selector/query skus-db
                                            (:criteria/essential product)
                                            selected-criteria)
-                           (sort-by :price))
+                           (sort-by :price)
+                           first)
 
-        selected-sku (first selected-skus)]
+        sku-images (->> (selector/query image-db {:hair/color (:hair/color selected-sku)})
+                        (sort-by :order))]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :carousel-images   (set (filter (comp #{"carousel"} :use-case) (:images selected-sku)))
+     :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)
      :facets            facets
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:sku-set/id product)))
      :options           selected-options

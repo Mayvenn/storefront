@@ -15,5 +15,5 @@
          (d/q query)
          (map first))))
 
-(defn skus-db [skus]
-  (d/db-with (d/empty-db) skus))
+(defn new-db [coll]
+  (d/db-with (d/empty-db) coll))
