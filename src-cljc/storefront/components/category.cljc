@@ -126,7 +126,7 @@
       [:p.h4.dark-gray.mb10.pb10
        [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
        " to see more hair."]]
-     (for [{:keys [sku-set/slug matching-skus representative-sku name sold-out?] :as product} sku-sets]
+     (for [{:keys [sku-set/slug matching-skus representative-sku sku-set/name sold-out?] :as product} sku-sets]
        (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
          [:div.col.col-6.col-4-on-tb-dt.px1
           {:key slug}
