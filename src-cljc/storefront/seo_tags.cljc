@@ -3,7 +3,10 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.accessors.categories :as categories]
-            [storefront.accessors.named-searches :as named-searches]))
+            [storefront.accessors.named-searches :as named-searches]
+            [storefront.accessors.sku-sets :as sku-sets]
+            [catalog.selector :as selector]
+            [storefront.utils.maps :as maps]))
 
 (def tag-class "seo-tag")
 
@@ -44,6 +47,18 @@
      [:meta {:property "og:image" :content (str "http:" (or (:extra_large_url image)
                                                             (:large_url image)))}]
      [:meta {:property "og:description" :content og-description}]]))
+
+(defn product-details-tags [data]
+  (let [product (sku-sets/current-sku-set data)
+        image   (first (selector/images-matching-product (get-in data keypaths/db-images)
+                                                         product
+                                                         {:use-case "seo"}))]
+    [[:title {} (-> product :sku-set/seo :seo.meta/title)]
+     [:meta {:name "description" :content (-> product :sku-set/seo :seo.meta/description)}]
+     [:meta {:property "og:title" :content (-> product :sku-set/seo :seo.og/title)}]
+     [:meta {:property "og:type" :content "product"}]
+     [:meta {:property "og:image" :content (str "http:" (:url image))}]
+     [:meta {:property "og:description" :content (-> product :sku-set/seo :seo.og/description)}]]))
 
 (defn tags-for-page [data]
   (->
@@ -108,8 +123,10 @@
                                    [:meta {:property "og:description"
                                            :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
 
-     events/navigate-named-search (named-search-tags data)
-     events/navigate-category     (category-tags data)
+     events/navigate-named-search        (named-search-tags data)
+     events/navigate-category            (category-tags data)
+     events/navigate-product-details     (product-details-tags data)
+     events/navigate-product-details-sku (product-details-tags data)
 
      default-tags)
    (concat constant-tags)

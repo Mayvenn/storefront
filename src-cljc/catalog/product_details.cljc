@@ -368,8 +368,8 @@
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
-  (let [skus-db (get-in data keypaths/db-skus)
-        image-db (get-in data keypaths/db-images)
+  (let [skus-db         @(get-in data keypaths/db-skus)
+        image-db        @(get-in data keypaths/db-images)
         current-product (sku-sets/current-sku-set data)
         product         (update current-product :criteria/essential maps/update-vals first)
 
@@ -411,11 +411,7 @@
                           (sort-by :price)
                           first)
 
-        sku-images (->> (selector/query image-db
-                                        (merge (dissoc (:criteria/essential product)
-                                                       :hair/origin)
-                                               {:hair/color (:hair/color selected-sku)}))
-                        (sort-by :order))]
+        sku-images (selector/images-matching-product image-db current-product {:hair/color (:hair/color selected-sku)})]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)
