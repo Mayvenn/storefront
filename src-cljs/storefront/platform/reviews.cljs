@@ -6,7 +6,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.sku-sets :as sku-sets]))
+            [catalog.products :as products]))
 
 (def product-options-by-named-search
   {:straight       {:data-product-id  80
@@ -129,7 +129,7 @@ Lengths: 12\" to 28\""
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
-  (let [sku-set (sku-sets/current-sku-set data)]
-    {:named-search-slug (sku-sets/id->named-search (:sku-set/id sku-set))
+  (let [sku-set (products/current-sku-set data)]
+    {:named-search-slug (products/id->named-search (:sku-set/id sku-set))
      :url               (routes/current-path data)
      :loaded?           (get-in data keypaths/loaded-reviews)}))

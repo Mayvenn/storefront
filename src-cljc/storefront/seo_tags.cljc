@@ -4,7 +4,7 @@
             [storefront.events :as events]
             [storefront.accessors.categories :as categories]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.sku-sets :as sku-sets]
+            [catalog.products :as products]
             [catalog.selector :as selector]
             [storefront.utils.maps :as maps]))
 
@@ -49,7 +49,7 @@
      [:meta {:property "og:description" :content og-description}]]))
 
 (defn product-details-tags [data]
-  (let [product (sku-sets/current-sku-set data)
+  (let [product (products/current-sku-set data)
         image   (first (selector/images-matching-product (get-in data keypaths/db-images)
                                                          product
                                                          {:use-case "seo"}))]

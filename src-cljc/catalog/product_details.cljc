@@ -2,12 +2,11 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.selector :as selector]
+            [catalog.products :as products]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.accessors.products :as products]
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.sku-sets :as sku-sets]
             [storefront.assets :as assets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
@@ -341,13 +340,13 @@
              (sku-summary {:sku          selected-sku
                            :sku-quantity sku-quantity
                            :facets       facets})]
-            (when (sku-sets/eligible-for-triple-bundle-discount? product)
+            (when (products/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
             (add-to-bag-button adding-to-bag?
                                selected-sku
                                sku-quantity)
             (bagged-skus-and-checkout facets bagged-skus)
-            (when (sku-sets/stylist-only? product) shipping-and-guarantee)]])
+            (when (products/stylist-only? product) shipping-and-guarantee)]])
         (product-description product)
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
       (when review?
@@ -355,7 +354,7 @@
 
 (defn ugc-query [sku-set data]
   (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
-                                       (sku-sets/id->named-search (:sku-set/id sku-set)))]
+                                       (products/id->named-search (:sku-set/id sku-set)))]
     {:sku-set sku-set
      :album   images}))
 ;; finding a sku from a product
@@ -368,7 +367,7 @@
 (defn query [data]
   (let [skus-db         @(get-in data keypaths/db-skus)
         image-db        @(get-in data keypaths/db-images)
-        current-product (sku-sets/current-sku-set data)
+        current-product (products/current-sku-set data)
         product         (update current-product :criteria/essential maps/update-vals first)
 
         facets (->> (get-in data keypaths/facets)
@@ -377,7 +376,7 @@
 
         reviews (assoc (review-component/query data)
                        :review?
-                       (sku-sets/eligible-for-reviews? product))
+                       (products/eligible-for-reviews? product))
 
 
         product-skus (->> (selector/query skus-db (:criteria/essential product))
@@ -429,9 +428,9 @@
 
 (defn fetch-current-sku-set-album [app-state sku-set-id]
   (when-let [slug (->> sku-set-id
-                       (sku-sets/sku-set-by-id app-state)
+                       (products/sku-set-by-id app-state)
                        :sku-set/id
-                       sku-sets/id->named-search)]
+                       products/id->named-search)]
     (when-let [album-id (get-in config/pixlee [:albums slug])]
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))

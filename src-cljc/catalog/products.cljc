@@ -1,4 +1,4 @@
-(ns storefront.accessors.sku-sets
+(ns catalog.products
   (:require [storefront.keypaths :as keypaths]
             [clojure.string :as string]
             [storefront.utils.maps :as maps]
