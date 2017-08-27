@@ -1,10 +1,8 @@
 (ns catalog.product-details
   (:require [clojure.set :as set]
             [clojure.string :as string]
-            [catalog.bundle-builder :as bundle-builder]
             [catalog.selector :as selector]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.products :as products]
