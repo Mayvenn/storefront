@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [storefront.transitions :refer [transition-state]]
             [storefront.accessors.old-bundle-builder :as old-bundle-builder]
-            [storefront.accessors.category-filters :as category-filters]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.categories :as categories]
@@ -167,9 +166,6 @@
         (update-in keypaths/ui dissoc :old-saved-bundle-builder-options))
     app-state))
 
-(defmethod transition-state events/navigate-category [_ event args app-state]
-  (assoc-in app-state keypaths/current-category-id (:id args)))
-
 (defmethod transition-state events/navigate-named-search [_ event {:keys [named-search-slug]} app-state]
   (let [bundle-builder-selections (-> (get-in app-state keypaths/old-bundle-builder)
                                       old-bundle-builder/expanded-selections
@@ -274,26 +270,6 @@
       clear-nav-traversal
       (collapse-menus menus)))
 
-(defmethod transition-state events/control-category-filter-select
-  [_ _ {:keys [selected]} app-state]
-  (update-in app-state keypaths/category-filters-for-browse category-filters/open selected))
-
-(defmethod transition-state events/control-category-filters-close
-  [_ _ _ app-state]
-  (update-in app-state keypaths/category-filters-for-browse category-filters/close))
-
-(defmethod transition-state events/control-category-criterion-selected
-  [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters-for-browse category-filters/select-criterion filter option))
-
-(defmethod transition-state events/control-category-criterion-deselected
-  [_ _ {:keys [filter option]} app-state]
-  (update-in app-state keypaths/category-filters-for-browse category-filters/deselect-criterion filter option))
-
-(defmethod transition-state events/control-category-criteria-cleared
-  [_ _ _ app-state]
-  (update-in app-state keypaths/category-filters-for-browse category-filters/clear-criteria))
-
 (defmethod transition-state events/control-change-state
   [_ event {:keys [keypath value]} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))
@@ -394,12 +370,6 @@
                                                    sku-sets)
                                               (maps/key-by :sku-set/id)))
       (update-in keypaths/skus merge (maps/key-by :sku skus))))
-
-(defmethod transition-state events/api-success-sku-sets-for-browse
-  [_ event {:keys [sku-sets] :as response} app-state]
-  (-> app-state
-      (assoc-in keypaths/category-filters-for-browse
-                (categories/make-category-filters app-state response))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]

@@ -2,10 +2,13 @@
   (:require
    #?(:cljs [storefront.component :as component]
       :clj  [storefront.component-shim :as component])
+   [catalog.category-filters :as category-filters]
    [storefront.accessors.categories :as categories]
    [storefront.components.money-formatters :as mf]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
+   [storefront.transitions :as transitions]
+   [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]))
@@ -181,3 +184,51 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
+(defmethod transitions/transition-state events/navigate-category
+  [_ event args app-state]
+  (assoc-in app-state keypaths/current-category-id (:id args)))
+
+(defmethod effects/perform-effects events/navigate-category
+  [_ event {:keys [id slug]} _ app-state]
+  #?(:cljs
+     (let [category   (categories/current-category app-state)
+           success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
+                                                (assoc % :category-id (:id category)))]
+       (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
+       (storefront.api/search-sku-sets (:criteria category) success-fn))))
+
+(defmethod transitions/transition-state events/api-success-sku-sets-for-browse
+  [_ event {:keys [sku-sets] :as response} app-state]
+  (-> app-state
+      (assoc-in keypaths/category-filters-for-browse
+                (categories/make-category-filters app-state response))))
+
+(defmethod transitions/transition-state events/control-category-filter-select
+  [_ _ {:keys [selected]} app-state]
+  (update-in app-state
+             keypaths/category-filters-for-browse
+             category-filters/open selected))
+
+(defmethod transitions/transition-state events/control-category-filters-close
+  [_ _ _ app-state]
+  (update-in app-state
+             keypaths/category-filters-for-browse
+             category-filters/close))
+
+(defmethod transitions/transition-state events/control-category-criterion-selected
+  [_ _ {:keys [filter option]} app-state]
+  (update-in app-state
+             keypaths/category-filters-for-browse
+             category-filters/select-criterion filter option))
+
+(defmethod transitions/transition-state events/control-category-criterion-deselected
+  [_ _ {:keys [filter option]} app-state]
+  (update-in app-state
+             keypaths/category-filters-for-browse
+             category-filters/deselect-criterion filter option))
+
+(defmethod transitions/transition-state events/control-category-criteria-cleared
+  [_ _ _ app-state]
+  (update-in app-state
+             keypaths/category-filters-for-browse
+             category-filters/clear-criteria))

@@ -290,13 +290,6 @@
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
 
-(defmethod perform-effects events/navigate-category [_ event {:keys [id slug]} _ app-state]
-  (let [category (categories/current-category app-state)]
-    (api/fetch-facets (get-in app-state keypaths/api-cache))
-    (api/search-sku-sets (:criteria category)
-                         #(handle-message events/api-success-sku-sets-for-browse
-                                          (assoc % :category-id (:id category))))))
-
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
   (if (experiments/new-taxon-launch? app-state)
     (redirect-named-search (:named-search-slug args) (get-in app-state keypaths/categories))

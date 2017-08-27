@@ -35,10 +35,10 @@
 (defn ^:private apply-criteria
   [{:keys [initial-sku-sets facets] :as filters} new-criteria]
   (let [new-filtered-sku-sets (->> initial-sku-sets
-                                   (keep (fn [{:keys [skus] :as sku-set}]
+                                   (keep (fn [{:keys [sku-set/full-skus] :as sku-set}]
                                            (when-let [matching-skus (seq (matches-any? new-criteria
                                                                                        (comp attributes->criteria :attributes)
-                                                                                       skus))]
+                                                                                       full-skus))]
                                              (assoc sku-set
                                                     :matching-skus matching-skus
                                                     :representative-sku (apply min-key :price matching-skus)))))
@@ -65,6 +65,18 @@
 (defn select-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
+
+(defn undo-criterion [{:keys [criteria previous-criteria] :as filters}]
+  (let [new-criteria      (last previous-criteria)]
+    (-> filters
+        (apply-criteria new-criteria)
+        (update :previous-criteria pop))))
+
+(defn replace-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
+  (let [new-criteria (assoc criteria facet-slug #{option-slug})]
+    (->
+     (apply-criteria filters new-criteria)
+     (update :previous-criteria (fnil conj []) criteria))))
 
 (defn clear-criteria [filters]
   (apply-criteria filters {}))
@@ -100,14 +112,15 @@
                                 (map (fn [tab] (query/get {:facet/slug tab} facets)))
                                 (map (fn [{:keys [:facet/slug :facet/name :facet/options]}]
                                        (let [represented-options (get represented-criteria slug)]
-                                         {:slug    slug
-                                          :title   name
-                                          :options (->> options
-                                                        (sort-by :filter/order)
-                                                        (map (fn [{:keys [:option/name :option/slug :option/sku-set-ids]}]
-                                                               {:slug         slug
-                                                                :sku-set-ids  (set sku-set-ids)
-                                                                :represented? (contains? represented-options slug)
-                                                                :label        name})))}))))}
+                                         {:slug         slug
+                                          :title        name
+                                          :options      (->> options
+                                                             (sort-by :filter/order)
+                                                             (map (fn [{:keys [:option/name :option/slug :option/sku-set-ids]}]
+                                                                    {:slug         slug
+                                                                     :sku-set-ids  (set sku-set-ids)
+                                                                     :represented? (contains? represented-options slug)
+                                                                     :label        name})))}))))}
         clear-criteria
+        (apply-criteria (:criteria category))
         close)))
