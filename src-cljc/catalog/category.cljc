@@ -1,4 +1,4 @@
-(ns storefront.components.category
+(ns catalog.category
   (:require
    #?(:cljs [storefront.component :as component]
       :clj  [storefront.component-shim :as component])
