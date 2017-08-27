@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [catalog.selector :as selector]
             [catalog.products :as products]
+            [catalog.keypaths :as k]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -438,8 +439,8 @@
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [id slug sku-code] :as args} app-state]
   (-> app-state
-      (assoc-in keypaths/product-details-url-sku-code sku-code)
-      (assoc-in keypaths/product-details-sku-set-id id)
+      (assoc-in k/detailed-product-selected-sku-id sku-code)
+      (assoc-in k/detailed-product-id id)
       (assoc-in keypaths/browse-recently-added-skus [])
       (assoc-in keypaths/bundle-builder-selections {})
       (assoc-in keypaths/browse-sku-quantity 1)))
@@ -454,13 +455,14 @@
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
   [_ event {:keys [sku-sets] :as response} _ app-state]
-  (fetch-current-sku-set-album app-state (get-in app-state keypaths/product-details-sku-set-id)))
+  (fetch-current-sku-set-album app-state
+                               (get-in app-state k/detailed-product-id)))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus] :as response} app-state]
-  (let [sku-code (get-in app-state keypaths/product-details-url-sku-code)
-        sku      (get-in app-state (conj keypaths/skus sku-code))]
+  (let [sku-id (get-in app-state k/detailed-product-selected-sku-id)
+        sku    (get-in app-state (conj keypaths/skus sku-id))]
     (if sku
       (->> [:hair/color :hair/length]
            (select-keys (:attributes sku))

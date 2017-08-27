@@ -1,5 +1,6 @@
 (ns catalog.products
   (:require [storefront.keypaths :as keypaths]
+            [catalog.keypaths :as k]
             [clojure.string :as string]
             [storefront.utils.maps :as maps]
             [storefront.accessors.category-filters :as category-filters]))
@@ -8,7 +9,7 @@
   (get-in app-state (conj keypaths/sku-sets sku-set-id)))
 
 (defn current-sku-set [app-state]
-  (sku-set-by-id app-state (get-in app-state keypaths/product-details-sku-set-id)))
+  (sku-set-by-id app-state (get-in app-state k/detailed-product-id)))
 
 (def id->named-search
   {"74" "360-frontals"

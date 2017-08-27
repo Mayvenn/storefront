@@ -247,7 +247,9 @@
                                                                                     :sku-code (:sku sku)}))
           (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:sku-set/id sku-set)
                                                                                     :slug     (:sku-set/slug sku-set)})))
-        (html-response render-ctx (-> data (assoc-in keypaths/product-details-sku-set-id (:sku-set/id sku-set))))))))
+        (html-response render-ctx (-> data
+                                      (assoc-in catalog.keypaths/detailed-product-id
+                                                (:sku-set/id sku-set))))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
