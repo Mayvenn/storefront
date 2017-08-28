@@ -26,6 +26,12 @@
              (d/q query)
              (map first))))
 
+(defn all [db]
+  (some->> db
+           (d/q '[:find (pull ?s [*])
+                 :where [?s]])
+           (map first)))
+
 (defn new-db [coll]
   (d/db-with (d/empty-db) coll))
 
