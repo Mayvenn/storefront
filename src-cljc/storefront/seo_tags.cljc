@@ -54,12 +54,17 @@
                                                          product
                                                          {:use-case "catalog"}))]
     [[:title {} (-> product :sku-set/seo :seo.meta/title)]
-     [:meta {:name "description" :content (-> product :sku-set/seo :seo.meta/description)}]
-     [:meta {:property "og:title" :content (-> product :sku-set/seo :seo.og/title)}]
+     [:meta {:name "description" :content (-> product
+                                              :sku-set/seo
+                                              :seo.meta/description)}]
+     [:meta {:property "og:title" :content (-> product
+                                               :sku-set/seo
+                                               :seo.og/title)}]
      [:meta {:property "og:type" :content "product"}]
-     (when (:url image)
-       [:meta {:property "og:image" :content (str "http:" (:url image))}])
-     [:meta {:property "og:description" :content (-> product :sku-set/seo :seo.og/description)}]]))
+     [:meta {:property "og:image" :content (str "http:" (:url image))}]
+     [:meta {:property "og:description" :content (-> product
+                                                     :sku-set/seo
+                                                     :seo.og/description)}]]))
 
 (defn tags-for-page [data]
   (->
