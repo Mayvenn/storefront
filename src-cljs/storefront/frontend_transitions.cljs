@@ -357,10 +357,9 @@
                                                          (map #(assoc % :order (case (:image/of (:criteria/attributes %))
                                                                                  "model" 1
                                                                                  "product" 2
-                                                                                 "seo" -1
-                                                                                 "catalog" -2
-                                                                                 -3)))
-                                                         (filter (comp pos? :order))
+                                                                                 "seo" 3
+                                                                                 "catalog" 4
+                                                                                 5)))
                                                          (map #(merge % (:criteria/attributes %)))
                                                          (map #(dissoc % :criteria/attributes :filename)))
                                                         sku-sets))

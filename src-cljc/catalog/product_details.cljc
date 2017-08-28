@@ -409,7 +409,9 @@
                           (sort-by :price)
                           first)
 
-        sku-images (selector/images-matching-product image-db current-product {:hair/color (:hair/color selected-sku)})]
+        sku-images (selector/images-matching-product image-db current-product {:hair/color (:hair/color selected-sku)
+                                                                               :use-case "carousel"
+                                                                               :image/of #{"model" "product"}})]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)
