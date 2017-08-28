@@ -103,7 +103,7 @@
                    :focused   focused
                    :label     "Apt or Suite #"
                    :name      "address2"
-                   :required  true
+                   :required  false
                    :type      "text"
                    :value     address2})
    (ui/text-field {:data-test "city"
