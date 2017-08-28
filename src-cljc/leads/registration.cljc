@@ -127,7 +127,7 @@
                        :options     states
                        :placeholder "State *"
                        :required    true
-                       :value       "State *"})]
+                       :value       state})]
     [:div.col.col-6.pl1
      (ui/text-field {:data-test "zip"
                      :errors    (:zip errors)
