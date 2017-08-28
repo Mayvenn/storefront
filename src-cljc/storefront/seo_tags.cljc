@@ -52,7 +52,7 @@
   (let [product (products/current-sku-set data)
         image   (first (selector/images-matching-product (get-in data keypaths/db-images)
                                                          product
-                                                         {:use-case "seo"}))]
+                                                         {:use-case "catalog"}))]
     [[:title {} (-> product :sku-set/seo :seo.meta/title)]
      [:meta {:name "description" :content (-> product :sku-set/seo :seo.meta/description)}]
      [:meta {:property "og:title" :content (-> product :sku-set/seo :seo.og/title)}]
