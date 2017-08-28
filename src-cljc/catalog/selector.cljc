@@ -37,7 +37,7 @@
 
 (defn images-matching-product [image-db product & criteria]
   (->> (apply query image-db
-              (dissoc (:criteria/essential product)
-                      :hair/origin)
+              (-> (:criteria/essential product)
+                  (dissoc :hair/origin))
               criteria)
        (sort-by :order)))
