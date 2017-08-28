@@ -218,7 +218,7 @@
 (defn ^:private component
   [{:keys [error errors focused sign-up referral contact stylist-details states]} owner opts]
   (component/create
-   [:div.bg-teal.white
+   [:div.bg-teal.white.pb4
     [:div.max-580.mx-auto
      (when error
        [:p.bg-danger.registration-flash error])
