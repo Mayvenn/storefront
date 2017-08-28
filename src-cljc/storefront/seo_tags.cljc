@@ -2,8 +2,8 @@
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.accessors.categories :as categories]
             [storefront.accessors.named-searches :as named-searches]
+            [catalog.categories :as categories]
             [catalog.products :as products]
             [catalog.selector :as selector]
             [storefront.utils.maps :as maps]))

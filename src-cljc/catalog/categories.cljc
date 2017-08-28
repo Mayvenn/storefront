@@ -1,4 +1,4 @@
-(ns storefront.accessors.categories
+(ns catalog.categories
   (:require [storefront.keypaths :as keypaths]
             [clojure.string :as string]
             [storefront.utils.maps :as maps]

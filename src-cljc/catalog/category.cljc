@@ -3,7 +3,7 @@
    #?(:cljs [storefront.component :as component]
       :clj  [storefront.component-shim :as component])
    [catalog.category-filters :as category-filters]
-   [storefront.accessors.categories :as categories]
+   [catalog.categories :as categories]
    [storefront.components.money-formatters :as mf]
    [storefront.components.ui :as ui]
    [storefront.events :as events]

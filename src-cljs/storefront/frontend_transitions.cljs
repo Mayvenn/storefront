@@ -5,7 +5,6 @@
             [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.categories :as categories]
             [storefront.accessors.call-slot :as call-slot]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]

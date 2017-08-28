@@ -33,7 +33,7 @@
             [storefront.utils.maps :refer [key-by]]
             [clojure.string :as str]
             [clojure.xml :as xml]
-            [storefront.accessors.categories :as categories]
+            [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
             [clojure.set :as set]))
 

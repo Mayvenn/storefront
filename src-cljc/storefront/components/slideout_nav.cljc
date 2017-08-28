@@ -13,7 +13,7 @@
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.auth :as auth]
             [storefront.utils.query :as query]
-            [storefront.accessors.categories :as categories]
+            [catalog.categories :as categories]
             [storefront.accessors.category-filters :as category-filters]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.accessors.experiments :as experiments]
