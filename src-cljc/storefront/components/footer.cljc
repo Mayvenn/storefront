@@ -157,13 +157,7 @@
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2 social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
-     (footer-links false)]
-    [:div.p2.center.bg-teal.h6.white
-     "We have updated our "
-     [:a.white.underline (utils/route-to events/navigate-content-privacy) "Privacy Policy"]
-     " and "
-     [:a.white.underline (utils/route-to events/navigate-content-tos) "Terms of Use"]
-     ". By continuing to use our website, you are agreeing to our updated Terms of Use and acknowledging our updated Privacy Policy."]]))
+     (footer-links false)]]))
 
 (defn minimal-component [{:keys [call-number]} owner opts]
   (component/create
