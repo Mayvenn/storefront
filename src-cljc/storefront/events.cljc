@@ -346,4 +346,4 @@
 (defpath sign-out)
 
 (defpath leads-control-sign-up-submit)
-(defpath leads-control-self-registration-resume-submit)
+(defpath leads-control-sign-up-resume-submit)

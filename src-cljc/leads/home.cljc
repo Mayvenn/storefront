@@ -77,7 +77,7 @@
     [:h2 "Become a Mayvenn"]
     [:p.m2 "You are on your way to joining the Mayvenn Movement! Finish your registration today!"]]
    [:form
-    {:on-submit (utils/send-event-callback events/leads-control-self-registration-resume-submit {:lead lead})}
+    {:on-submit (utils/send-event-callback events/leads-control-sign-up-resume-submit {:lead lead})}
     [:button.btn.btn-primary.col-12 {:type "submit" :value "Submit"} "Finish registration"]]])
 
 (defn hero-section [{:keys [current-flow sign-up resume-self-reg] :as attrs}]
