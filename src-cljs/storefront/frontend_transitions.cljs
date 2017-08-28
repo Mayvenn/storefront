@@ -351,18 +351,19 @@
                                                        (map #(merge % (:attributes %)))
                                                        (map #(dissoc % :attributes :images)))
                                                       skus))
-      (update-in keypaths/db-images d/db-with (sequence (comp
-                                                         (mapcat :sku-set/images)
-                                                         (map #(assoc % :id (str (:use-case %) "-" (:url %))))
-                                                         (map #(assoc % :order (case (:image/of (:criteria/attributes %))
-                                                                                 "model" 1
-                                                                                 "product" 2
-                                                                                 "seo" 3
-                                                                                 "catalog" 4
-                                                                                 5)))
-                                                         (map #(merge % (:criteria/attributes %)))
-                                                         (map #(dissoc % :criteria/attributes :filename)))
-                                                        sku-sets))
+      (update-in keypaths/db-images d/db-with
+                 (sequence (comp (mapcat :sku-set/images)
+                                 (map #(assoc % :id (str (:use-case %) "-" (:url %))))
+                                 (map #(assoc % :order (or (:order %)
+                                                           (case (:image/of (:criteria/attributes %))
+                                                             "model" 1
+                                                             "product" 2
+                                                             "seo" 3
+                                                             "catalog" 4
+                                                             5))))
+                                 (map #(merge % (:criteria/attributes %)))
+                                 (map #(dissoc % :criteria/attributes :filename)))
+                           sku-sets))
       (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
                                                      (update sku-set :criteria/selectors (partial mapv keyword)))
                                                    sku-sets)
