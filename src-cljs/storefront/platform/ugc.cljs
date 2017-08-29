@@ -49,10 +49,11 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  (let [{:keys [slug]} (named-searches/current-named-search data)
-        images         (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
-    {:slug  slug
-     :album images}))
+  (let [{:keys [slug long-name]} (named-searches/current-named-search data)
+        images                   (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
+    {:slug      slug
+     :long-name long-name
+     :album     images}))
 
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio
@@ -76,23 +77,23 @@
    [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
     (svg/social-icon social-service)]])
 
-(defn popup-slide [named-search {:keys [links] :as item}]
+(defn popup-slide [long-name {:keys [links] :as item}]
   [:div.m1.rounded-bottom
    (content-view item)
    [:div.bg-white.rounded-bottom.p2
     [:div.h5.px4 (user-attribution item)]
     (when (-> links :view-look boolean)
-      [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase (:long-name named-search)))})])]])
+      [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase long-name))})])]])
 
 (defn popup-component [{:keys [ugc offset back]} owner opts]
   (om/component
    (html
-    (let [close-attrs (util/route-back-or-to back events/navigate-named-search {:named-search-slug (-> ugc :named-search :slug)})]
+    (let [close-attrs (util/route-back-or-to back events/navigate-named-search {:named-search-slug (:slug ugc)})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides   (map (partial popup-slide (:named-search ugc)) (:album ugc))
+                  {:slides   (map (partial popup-slide (:long-name ugc)) (:album ugc))
                    :settings {:slidesToShow 1
                               :initialSlide offset}}
                   {})

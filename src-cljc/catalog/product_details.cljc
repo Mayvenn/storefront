@@ -356,8 +356,9 @@
 (defn ugc-query [sku-set data]
   (let [slug   (products/id->named-search (:sku-set/id sku-set))
         images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
-    {:slug  slug
-     :album images}))
+    {:slug      slug
+     :long-name (:sku-set/name sku-set)
+     :album     images}))
 ;; finding a sku from a product
 
 (defn make-selected-criteria [options existing-selected-criteria selector]
