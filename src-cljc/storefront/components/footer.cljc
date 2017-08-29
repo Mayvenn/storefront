@@ -37,6 +37,7 @@
 
 (defn shop-section [own-store? categories]
   (let [category-links (->> categories
+                            (filter :footer/order)
                             (sort-by :footer/order)
                             (mapv (fn [{:keys [name slug id]}]
                                     {:title       name

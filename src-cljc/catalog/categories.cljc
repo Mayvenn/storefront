@@ -198,7 +198,7 @@
     :images       {:hero {:filename "Curly.jpg",
                           :desktop-url "//ucarecdn.com/e1fc3b5d-7142-49e9-ba85-91776eabd666/",
                           :mobile-url "//ucarecdn.com/eec186f3-5e73-47c8-b53b-98ce87a3540e/",
-                          :alt "Curly"} 
+                          :alt "Curly"}
                    :home {:filename "CurlyExtensionsMayvenn.jpg",
                           :url      "//ucarecdn.com/9a6aee31-4990-4a14-b3ea-54065a0a985a/",
                           :alt      "Curly Hair Extensions Mayvenn"}}
