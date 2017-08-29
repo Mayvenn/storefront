@@ -3,7 +3,7 @@
             [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
-            [storefront.effects :refer [perform-effects]]
+            [storefront.effects :refer [perform-effects redirect]]
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
@@ -96,10 +96,6 @@
 (defn scroll-promo-field-to-top []
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
   (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
-
-(defn redirect
-  ([event] (redirect event nil))
-  ([event args] (handle-message events/redirect {:nav-message [event args]})))
 
 (defn redirect-named-search [named-search-slug categories]
   ;; TODO: ensure we have a redirect for all named-searches. Most should go to
