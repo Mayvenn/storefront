@@ -354,9 +354,10 @@
         (component/build review-component/reviews-component reviews opts))])))
 
 (defn ugc-query [sku-set data]
-  (let [images (pixlee/images-in-album (get-in data keypaths/ugc)
-                                       (products/id->named-search (:sku-set/id sku-set)))]
-    {:sku-set sku-set
+  (let [named-search-slug (products/id->named-search (:sku-set/id sku-set))
+        images            (pixlee/images-in-album (get-in data keypaths/ugc)
+                                                  named-search-slug)]
+    {:sku-set (assoc sku-set :sku-set/slug named-search-slug)
      :album   images}))
 ;; finding a sku from a product
 

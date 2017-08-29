@@ -32,7 +32,7 @@
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
                  {:slides   (map-indexed (partial carousel-slide (or (:sku-set/slug sku-set)
-                                                               (:slug named-search)))
+                                                                     (:slug named-search)))
                                          album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
