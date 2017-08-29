@@ -450,13 +450,15 @@
       (assoc-in keypaths/bundle-builder-selections {})
       (assoc-in keypaths/browse-sku-quantity 1)))
 
-(defmethod effects/perform-effects events/navigate-product-details
-  [_ event {:keys [id]} _ app-state]
-  #?(:cljs (do (api/search-sku-sets id (partial messages/handle-message
-                                                events/api-success-sku-sets-for-details))
-               (api/fetch-facets (get-in app-state keypaths/api-cache))
-               (review-hooks/insert-reviews)))
-  (fetch-current-sku-set-album app-state id))
+#?(:cljs
+   (defmethod effects/perform-effects events/navigate-product-details
+     [_ event {:keys [id]} _ app-state]
+     (if (experiments/new-taxon-launch? app-state)
+       (do (api/search-sku-sets id (partial messages/handle-message events/api-success-sku-sets-for-details))
+           (api/fetch-facets (get-in app-state keypaths/api-cache))
+           (review-hooks/insert-reviews)
+           (fetch-current-sku-set-album app-state id))
+       (effects/redirect events/navigate-home))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
   [_ event {:keys [sku-sets] :as response} _ app-state]
@@ -474,7 +476,6 @@
            ;;TODO this needs a new keypath
            (assoc-in app-state keypaths/bundle-builder-selections))
       app-state)))
-
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]

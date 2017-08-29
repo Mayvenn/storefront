@@ -11,7 +11,8 @@
    [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]))
+   [storefront.platform.messages :as messages]
+   [storefront.accessors.experiments :as experiments]))
 
 (defn slug->facet [facet facets]
   (->> facets
@@ -188,14 +189,16 @@
   [_ event args app-state]
   (assoc-in app-state keypaths/current-category-id (:id args)))
 
-(defmethod effects/perform-effects events/navigate-category
-  [_ event {:keys [id slug]} _ app-state]
-  #?(:cljs
-     (let [category   (categories/current-category app-state)
-           success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
-                                                (assoc % :category-id (:id category)))]
-       (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
-       (storefront.api/search-sku-sets (:criteria category) success-fn))))
+#?(:cljs
+   (defmethod effects/perform-effects events/navigate-category
+     [_ event {:keys [id slug]} _ app-state]
+     (if (experiments/new-taxon-launch? app-state)
+       (let [category   (categories/current-category app-state)
+             success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
+                                                  (assoc % :category-id (:id category)))]
+         (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
+         (storefront.api/search-sku-sets (:criteria category) success-fn))
+       (effects/redirect events/navigate-home))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
   [_ event {:keys [sku-sets] :as response} app-state]
