@@ -24,7 +24,7 @@
                  [cljsjs/react-with-addons "15.3.1-0"]
                  [cljsjs/react-dom "15.3.1-0" :exclusions [cljsjs/react]]
                  [comb "0.1.0"]
-                 [sablono "0.6.3"]
+                 [sablono "0.8.0"]
                  [cljs-ajax "0.3.11"]
                  [bidi "2.0.16"]
                  [com.cemerick/url "0.1.1"]
