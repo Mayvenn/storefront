@@ -52,9 +52,9 @@
     (when (> (count colors) 1)
       [:p.h6.dark-gray "+ more colors available"])))
 
-(defn filter-tabs [{:keys [facets filtered-sku-sets criteria]}]
+(defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
   (let [sku-set-count        (count filtered-sku-sets)
-        applied-filter-count (->> criteria
+        applied-filter-count (->> (apply dissoc criteria (keys category-criteria))
                                   (map (comp count val))
                                   (apply +))]
     [:div.py4
@@ -153,29 +153,30 @@
                [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]])))])
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
-  (component/create
-   [:div
-    (hero-section category)
-    [:div.max-960.col-12.mx-auto.px2-on-mb
-     (copy-section category)
-     [:div.bg-white.sticky
-      ;; The -5px prevents a sliver of the background from being visible above the filters
-      ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-      {:style {:top "-5px"}}
-      (if-let [selected-facet (->> filters
-                                   :facets
-                                   (filter :selected?)
-                                   first)]
-        [:div
-         [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          (filter-tabs filters)
-          (filter-panel selected-facet)]
-         [:div.hide-on-mb
-          (filter-tabs filters)
-          (filter-panel selected-facet)]]
-        [:div
-         (filter-tabs filters)])]
-     (product-cards (:filtered-sku-sets filters) facets)]]))
+  (let [category-criteria (:criteria category)]
+    (component/create
+     [:div
+      (hero-section category)
+      [:div.max-960.col-12.mx-auto.px2-on-mb
+       (copy-section category)
+       [:div.bg-white.sticky
+        ;; The -5px prevents a sliver of the background from being visible above the filters
+        ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
+        {:style {:top "-5px"}}
+        (if-let [selected-facet (->> filters
+                                     :facets
+                                     (filter :selected?)
+                                     first)]
+          [:div
+           [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+            (filter-tabs category-criteria filters)
+            (filter-panel selected-facet)]
+           [:div.hide-on-mb
+            (filter-tabs category-criteria filters)
+            (filter-panel selected-facet)]]
+          [:div
+           (filter-tabs category-criteria filters)])]
+       (product-cards (:filtered-sku-sets filters) facets)]])))
 
 (defn ^:private query [data]
   {:category (categories/current-category data)
