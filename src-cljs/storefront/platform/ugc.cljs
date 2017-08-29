@@ -24,15 +24,14 @@
         svg/play-video-muted]))]])
 
 ;; TODO(jeff): replace named-search & sku-set with slug?
-(defn component [{:keys [album named-search sku-set]} owner opts]
+(defn component [{:keys [album slug]} owner opts]
   (om/component
    (html
     (when (seq album)
       [:div.center.mt4
        [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
        (om/build carousel/component
-                 {:slides   (map-indexed (partial carousel-slide (or (:sku-set/slug sku-set)
-                                                                     (:slug named-search)))
+                 {:slides   (map-indexed (partial carousel-slide slug)
                                          album)
                   :settings {:centerMode    true
                              ;; must be in px, because it gets parseInt'd for
@@ -50,10 +49,10 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  (let [named-search (named-searches/current-named-search data)
-        images       (pixlee/images-in-album (get-in data keypaths/ugc) (:slug named-search))]
-    {:named-search named-search
-     :album        images}))
+  (let [{:keys [slug]} (named-searches/current-named-search data)
+        images         (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
+    {:slug  slug
+     :album images}))
 
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio
