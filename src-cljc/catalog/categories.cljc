@@ -229,7 +229,7 @@
     :name            "Closures & Frontals"
     :slug            "closures-and-frontals"
     :criteria        {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
-    :filter-tabs     [:hair/family :hair/origin :hair/texture :hair/base-material]
+    :filter-tabs     [:hair/family :hair/texture :hair/origin :hair/base-material]
     :copy            {:description (copy "Save your precious strands and top your look"
                                          "off with the ultimate tool in protective weave"
                                          "styling. Our collection of closures and frontals blend"
