@@ -311,7 +311,7 @@
                 [:li {:key (:slug option)}
                  (major-menu-row
                   (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
-                  [:span.flex-auto (:label option)])]))))]]])))
+                  [:span.flex-auto.titleize (:label option)])]))))]]])))
 
 (defn slideout-component
   [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
