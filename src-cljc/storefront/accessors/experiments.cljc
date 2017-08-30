@@ -54,5 +54,8 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
+(defn old-taxon? [data]
+  (display-feature? data "old-taxon"))
+
 (defn new-taxon-launch? [data]
   (display-feature? data "new-taxon-launch"))

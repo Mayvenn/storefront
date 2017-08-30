@@ -43,7 +43,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
-            [storefront.utils.maps :as maps]))
+            [storefront.utils.maps :as maps]
+            [storefront.effects :as effects]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -132,6 +133,12 @@
   (facebook-analytics/remove-tracking))
 
 (defmethod perform-effects events/enable-feature [_ event args _ app-state]
+  (when (and (experiments/old-taxon? app-state)
+             ;;TODO get literal from experiments
+             (= (:feature args) "old-taxon")
+             (#{events/navigate-product-details events/navigate-category}
+              (get-in app-state keypaths/navigation-event)))
+    (effects/redirect events/navigate-home))
   (when (and (experiments/new-taxon-launch? app-state)
              ;;TODO get literal from experiments
              (= (:feature args) "new-taxon-launch")

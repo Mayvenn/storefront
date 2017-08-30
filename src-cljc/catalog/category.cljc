@@ -193,13 +193,11 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
      [_ event {:keys [id slug]} _ app-state]
-     (if (experiments/new-taxon-launch? app-state)
-       (let [category   (categories/current-category app-state)
-             success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
-                                                  (assoc % :category-id (:id category)))]
-         (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
-         (storefront.api/search-sku-sets (:criteria category) success-fn))
-       (effects/redirect events/navigate-home))))
+     (let [category   (categories/current-category app-state)
+           success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
+                                                (assoc % :category-id (:id category)))]
+       (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
+       (storefront.api/search-sku-sets (:criteria category) success-fn))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
   [_ event {:keys [sku-sets] :as response} app-state]
