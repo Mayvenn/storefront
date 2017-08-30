@@ -140,7 +140,7 @@
     :slug         "loose-wave"
     :criteria     {:product/department #{"hair"} :hair/texture #{"loose-wave"}}
     :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-    :copy         {:description (copy "For hair that holds a curl beautifully, a"
+    :copy         {:description (copy "For hair that holds a curl beautifully,"
                                       "our collection of 100% virgin Loose Wave hair"
                                       "is the perfect foundation for all your carefree,"
                                       "flirty, wavy looks.")}
