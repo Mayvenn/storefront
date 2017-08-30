@@ -168,8 +168,9 @@
                v]))
        (into {})))
 
-(defn search-sku-sets [criteria-or-id handler]
-  (api-req
+(defn search-sku-sets [cache criteria-or-id handler]
+  (cache-req
+   cache
    GET
    "/sku-sets"
    (conj request-keys/search-sku-sets criteria-or-id)

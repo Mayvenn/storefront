@@ -453,7 +453,8 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event {:keys [id]} _ app-state]
-     (api/search-sku-sets id (partial messages/handle-message events/api-success-sku-sets-for-details))
+     (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                          id (partial messages/handle-message events/api-success-sku-sets-for-details))
      (api/fetch-facets (get-in app-state keypaths/api-cache))
      (review-hooks/insert-reviews)
      (fetch-current-sku-set-album app-state id)))

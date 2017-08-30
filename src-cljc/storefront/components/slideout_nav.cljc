@@ -405,7 +405,8 @@
      [_ _ {:keys [id slug] :as args} _ app-state]
      (when id
        (let [category (categories/current-traverse-nav app-state)]
-         (api/search-sku-sets (:criteria category)
+         (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                              (:criteria category)
                               #(messages/handle-message events/api-success-sku-sets-for-nav
                                                         (assoc %
                                                                :category-id (:id category)

@@ -197,7 +197,9 @@
            success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
                                                 (assoc % :category-id (:id category)))]
        (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
-       (storefront.api/search-sku-sets (:criteria category) success-fn))))
+       (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
+                                       (:criteria category)
+                                       success-fn))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
   [_ event {:keys [sku-sets] :as response} app-state]
