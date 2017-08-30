@@ -267,7 +267,7 @@
                       {:option/name (:option/name facet-option)
                        :option/slug (:option/slug facet-option)
                        :stocked?    (or (:in-stock? sku)
-                                        (:in-stock? existing))
+                                        (:stocked? existing))
                        :image       image
                        :price       (:price sku)}))))]
     (merge selector-options
