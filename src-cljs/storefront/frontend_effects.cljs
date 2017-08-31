@@ -98,10 +98,10 @@
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
   (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
 
-(defn redirect-named-search [named-search-slug categories]
+(defn redirect-named-search [category]
   ;; TODO: ensure we have a redirect for all named-searches. Most should go to
   ;; a category page. Kits should redirect straight to product page.
-  (when-let [category (categories/named-search->category named-search-slug categories)]
+  (when category
     (redirect events/navigate-category category)))
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
@@ -140,8 +140,9 @@
              (= (:feature args) "new-taxon-launch")
              (= (get-in app-state keypaths/navigation-event)
                 events/navigate-named-search))
-    (redirect-named-search (get-in app-state (conj keypaths/navigation-args :named-search-slug))
-                           (get-in app-state keypaths/categories))))
+    (redirect-named-search (categories/named-search->category
+                            (get-in app-state (conj keypaths/navigation-args :named-search-slug))
+                            (get-in app-state keypaths/categories)))))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -283,8 +284,11 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
-  (if (experiments/new-taxon-launch? app-state)
-    (redirect-named-search (:named-search-slug args) (get-in app-state keypaths/categories))
+  (if-let [category (when (experiments/new-taxon-launch? app-state)
+                      (categories/named-search->category
+                       (get-in app-state (conj keypaths/navigation-args :named-search-slug))
+                       (get-in app-state keypaths/categories)))]
+    (redirect-named-search category)
     (let [named-search (named-searches/current-named-search app-state)]
       (if (hidden-search? app-state named-search)
         (page-not-found)
