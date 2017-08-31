@@ -7,6 +7,8 @@
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [clojure.string :as string]
             [storefront.effects :as effects]))
@@ -158,23 +160,23 @@
                     :value     birthday})]
    [:div.pb2.center
     [:div.pb2 "Are you a licensed hair stylist?"]
-    (ui/radio-group {:group-name "licensed?"
-                     :checked-id licensed?
-                     :keypath    keypaths/leads-ui-registration-licensed?}
-                    [{:id "yes" :label "Yes"}
-                     {:id "no" :label "No"}])]
+    (ui/radio-group {:group-name    "licensed?"
+                     :checked-value licensed?
+                     :keypath       keypaths/leads-ui-registration-licensed?}
+                    [{:id "yes" :label "Yes" :value true}
+                     {:id "no" :label "No" :value false}])]
    [:div.pb3.center
     [:div.pb3
      [:div.pb2 "Our stylists get paid every week. "
       [:br]
       "How would you like to receive your commissions?"]
-     (ui/radio-group {:group-name "payout-method"
-                      :keypath    keypaths/leads-ui-registration-payout-method
-                      :checked-id payout-method
-                      :required   true}
-                     [{:id "venmo" :label "Venmo"}
-                      {:id "paypal" :label "Paypal"}
-                      {:id "check" :label "Check"}])]
+     (ui/radio-group {:group-name    "payout-method"
+                      :keypath       keypaths/leads-ui-registration-payout-method
+                      :checked-value payout-method
+                      :required      true}
+                     [{:id "venmo" :label "Venmo" :value "venmo"}
+                      {:id "paypal" :label "Paypal" :value "paypal"}
+                      {:id "check" :label "Check" :value "check"}])]
     (case payout-method
       "venmo"  (ui/text-field {:data-test "venmo-phone"
                                :errors    (:venmo-phone errors)
@@ -240,7 +242,10 @@
       [:div.center.pb2 "Ready to join the movement?"
        [:br]
        "Let's get started."]
-      [:form {:action "" :method "POST" :role "form"}
+      [:form {:action    ""
+              :method    "POST"
+              :role      "form"
+              :on-submit (utils/send-event-callback events/leads-control-self-registration-submit {})}
        (sign-up-section sign-up focused errors)
        (referral-section referral focused errors)
        (contact-section contact states focused errors)
@@ -269,7 +274,7 @@
 (defn ^:private stylist-details-query [data]
   {:birthday      (get-in data keypaths/leads-ui-registration-birthday)
    :licensed?     (or (get-in data keypaths/leads-ui-registration-licensed?)
-                      "no")
+                      false)
    :payout-method (or (get-in data keypaths/leads-ui-registration-payout-method)
                       "venmo")
    :venmo-phone   (get-in data keypaths/leads-ui-registration-venmo-phone)
@@ -294,3 +299,9 @@
    (defmethod effects/perform-effects events/navigate-leads-registration
      [_ _ _ _ app-state]
      (api/get-states (get-in app-state keypaths/api-cache))))
+
+(defmethod effects/perform-effects events/leads-control-self-registration-submit
+  [dispatch event args _ app-state]
+  #?(:cljs
+     (api/advance-lead-registration (get-in app-state keypaths/leads-ui-registration)
+                                    #(prn %))))

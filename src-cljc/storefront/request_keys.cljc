@@ -66,3 +66,4 @@
 (def login-telligent [:login-telligent])
 
 (def create-lead [:create-lead])
+(def advance-lead [:advance-lead])

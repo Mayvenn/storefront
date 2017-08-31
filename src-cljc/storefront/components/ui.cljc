@@ -284,9 +284,10 @@
      (when disabled {:class "gray"})
      label]]])
 
-(defn radio-group [{:keys [group-name keypath checked-id] :as attributes} options]
+(defn radio-group [{:keys [group-name keypath checked-value] :as attributes} options]
+  (prn checked-value)
   [:div
-   (for [{:keys [id label] :as option} options]
+   (for [{:keys [id label value] :as option} options]
      [:label
       {:key (str group-name id)}
       [:input.mx2.h2
@@ -295,12 +296,12 @@
                :data-test    group-name
                :data-test-id id
                :id           (str group-name id)
-               :checked      (= checked-id id)
+               :checked      (= checked-value value)
                :on-change    #(handle-message events/control-change-state
                                               {:keypath keypath
-                                               :value   id})}
+                                               :value   value})}
               (dissoc attributes
-                      :group-name :keypath :checked-id
+                      :group-name :keypath :checked-value
                       :id :checked :data-test-id))]
       [:span label]])])
 

@@ -35,7 +35,7 @@
       attrs `[~tag ~(normalize-attrs attrs) ~@body]
       :else `[~tag ~@body])))
 
-(defn element? [v]
+(defn ^:private element? [v]
   (and (vector? v) (keyword? (first v))))
 
 (defn normalize-elements [& content]
