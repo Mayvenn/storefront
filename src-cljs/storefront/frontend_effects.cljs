@@ -3,7 +3,7 @@
             [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
-            [storefront.effects :refer [perform-effects redirect]]
+            [storefront.effects :refer [perform-effects redirect page-not-found]]
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
@@ -103,10 +103,6 @@
   ;; a category page. Kits should redirect straight to product page.
   (when-let [category (categories/named-search->category named-search-slug categories)]
     (redirect events/navigate-category category)))
-
-(defn page-not-found []
-  (redirect events/navigate-home)
-  (handle-message events/flash-later-show-failure {:message "Page not found"}))
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
   (svg/insert-sprite)
