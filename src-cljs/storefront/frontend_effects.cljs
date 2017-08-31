@@ -256,9 +256,6 @@
     (redirect events/navigate-leads-home))
   (potentially-show-email-popup app-state))
 
-(defmethod perform-effects events/navigate-leads-home [_ _ _ _ app-state]
-  (tags/insert-tag-with-src "//platform.twitter.com/widgets.js" "twitter-script"))
-
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
                (get-in app-state keypaths/static-id))
@@ -266,10 +263,6 @@
 
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
-
-(defmethod perform-effects events/navigate-leads [_ _ _ _ app-state]
-  (when (not= "welcome" (get-in app-state keypaths/store-slug))
-    (page-not-found)))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
@@ -1063,25 +1056,3 @@
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
   (ensure-products app-state (map :product-id (:line-items cart))))
-
-(defmethod perform-effects events/leads-control-sign-up-submit [_ event args _ app-state]
-  (api/create-lead {:tracking-id  (get-in app-state keypaths/leads-lead-tracking-id)
-                    :first-name   (get-in app-state keypaths/leads-ui-sign-up-first-name)
-                    :last-name    (get-in app-state keypaths/leads-ui-sign-up-last-name)
-                    :phone        (get-in app-state keypaths/leads-ui-sign-up-phone)
-                    :call-slot    (get-in app-state keypaths/leads-ui-sign-up-call-slot)
-                    :email        (get-in app-state keypaths/leads-ui-sign-up-email)
-                    :utm-source   (get-in app-state keypaths/leads-utm-source)
-                    :utm-medium   (get-in app-state keypaths/leads-utm-medium)
-                    :utm-campaign (get-in app-state keypaths/leads-utm-campaign)
-                    :utm-content  (get-in app-state keypaths/leads-utm-content)
-                    :utm-term     (get-in app-state keypaths/leads-utm-term)}))
-
-(defmethod perform-effects events/navigate-leads-registration [_ event _ _ app-state]
-  (api/get-states (get-in app-state keypaths/api-cache)))
-
-(defmethod perform-effects events/api-success-lead-created [_ event _ _ app-state]
-  (let [{:keys [flow-id] :as lead} (get-in app-state keypaths/leads-lead)]
-    (if flow-id
-      (history/enqueue-navigate events/navigate-leads-registration)
-      (history/enqueue-navigate events/navigate-leads-resolve))))

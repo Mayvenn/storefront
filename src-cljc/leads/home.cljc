@@ -1,6 +1,9 @@
 (ns leads.home
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require #?@(:clj [[storefront.component-shim :as component]]
+                :cljs [[storefront.component :as component]
+                       [storefront.api :as api]
+                       [storefront.browser.tags :as tags]
+                       [storefront.history :as history]])
             [leads.header :as header]
             [leads.choose-call-slot :as leads.choose-call-slot]
             [storefront.components.ui :as ui]
@@ -9,7 +12,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.components.footer :as footer]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.effects :as effects]))
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options] :as attrs}]
   [:div.rounded.bg-lighten-4.p3
@@ -361,3 +365,39 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/leads-control-sign-up-submit
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (api/create-lead {:tracking-id  (get-in app-state keypaths/leads-lead-tracking-id)
+                       :first-name   (get-in app-state keypaths/leads-ui-sign-up-first-name)
+                       :last-name    (get-in app-state keypaths/leads-ui-sign-up-last-name)
+                       :phone        (get-in app-state keypaths/leads-ui-sign-up-phone)
+                       :call-slot    (get-in app-state keypaths/leads-ui-sign-up-call-slot)
+                       :email        (get-in app-state keypaths/leads-ui-sign-up-email)
+                       :utm-source   (get-in app-state keypaths/leads-utm-source)
+                       :utm-medium   (get-in app-state keypaths/leads-utm-medium)
+                       :utm-campaign (get-in app-state keypaths/leads-utm-campaign)
+                       :utm-content  (get-in app-state keypaths/leads-utm-content)
+                       :utm-term     (get-in app-state keypaths/leads-utm-term)})))
+
+(defmethod effects/perform-effects events/api-success-lead-created
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (let [{:keys [flow-id]} (get-in app-state keypaths/leads-lead)]
+       (if flow-id
+         (history/enqueue-navigate events/navigate-leads-registration)
+         (history/enqueue-navigate events/navigate-leads-resolve)))))
+
+(defmethod effects/perform-effects events/navigate-leads-home
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (tags/insert-tag-with-src "//platform.twitter.com/widgets.js"
+                               "twitter-script")))
+
+(defmethod effects/perform-effects events/navigate-leads
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (when-not (= "welcome"
+                  (get-in app-state keypaths/store-slug))
+       (effects/page-not-found))))

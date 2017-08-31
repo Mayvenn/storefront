@@ -1,13 +1,15 @@
 (ns leads.registration
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require #?@(:clj [[storefront.component-shim :as component]]
+                :cljs [[storefront.component :as component]
+                       [storefront.api :as api]])
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.effects :as effects]))
 
 (defn ^:private sign-up-section
   [{:keys [first-name last-name phone email password]} focused errors]
@@ -287,3 +289,8 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/navigate-leads-registration
+     [_ _ _ _ app-state]
+     (api/get-states (get-in app-state keypaths/api-cache))))
