@@ -4,7 +4,8 @@
             [storefront.effects :as effects]
             #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.api :as api]
-                       [storefront.component :as component]])
+                       [storefront.component :as component]
+                       [storefront.history :as history]])
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages]
@@ -457,8 +458,8 @@
            sku-set       (when (seq initial-query)
                            (->> (d/q initial-query sku-sets-db)
                                 ffirst))]
-       (effects/redirect events/navigate-product-details {:id (:sku-set/id sku-set)
-                                                          :slug (:sku-set/slug sku-set)}))))
+       (history/enqueue-navigate events/navigate-product-details {:id (:sku-set/id sku-set)
+                                                                  :slug (:sku-set/slug sku-set)}))))
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
