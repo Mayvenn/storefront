@@ -284,7 +284,8 @@
   [_ event {:keys [selections]} app-state]
   (update-in app-state keypaths/old-bundle-builder old-bundle-builder/reset-selections selections))
 
-(defmethod transition-state events/control-checkout-shipping-method-select [_ event shipping-method app-state]
+(defmethod transition-state events/control-checkout-shipping-method-select
+  [_ event shipping-method app-state]
   (assoc-in app-state keypaths/checkout-selected-shipping-method shipping-method))
 
 (defmethod transition-state events/control-checkout-update-addresses-submit [_ event {:keys [become-guest?]} app-state]

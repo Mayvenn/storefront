@@ -9,8 +9,10 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn ^:private select-shipping-method [shipping-method]
-  (utils/send-event-callback events/control-checkout-shipping-method-select shipping-method))
+(defn ^:private select-shipping-method
+  [shipping-method]
+  (utils/send-event-callback events/control-checkout-shipping-method-select
+                             shipping-method))
 
 (defn component [{:keys [shipping-methods selected-sku]} owner]
   (om/component
@@ -22,13 +24,13 @@
         [:label.flex.items-center.col-12.py1
          {:key sku}
          [:input.mx2.h2
-          {:type         "radio"
-           :name         "shipping-method"
-           :id           (str "shipping-method-" sku)
-           :data-test    "shipping-method"
-           :data-test-id sku
-           :checked      (= selected-sku sku)
-           :on-change    (select-shipping-method shipping-method)}]
+          (merge {:type         "radio"
+                  :name         "shipping-method"
+                  :id           (str "shipping-method-" sku)
+                  :data-test    "shipping-method"
+                  :data-test-id sku
+                  :on-click     (select-shipping-method shipping-method)}
+                 (when (= selected-sku sku) {:checked "checked"}))]
          [:.clearfix.col-12
           [:.right.ml1.medium {:class (if (pos? price) "navy" "teal")} (as-money-without-cents-or-free price)]
           [:.overflow-hidden
