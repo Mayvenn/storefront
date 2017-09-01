@@ -74,7 +74,8 @@
                         :required    true
                         :options     call-slot-options
                         :div-attrs   {:class "bg-white border border-gray rounded"}}))
-    (ui/submit-button "Become a Mayvenn Stylist")]])
+    (ui/submit-button "Become a Mayvenn Stylist"
+                      {:data-test "sign-up-submit"})]])
 
 (defn resume-self-reg-panel [{:keys [lead]}]
   [:div.rounded.bg-lighten-4.p3

@@ -121,7 +121,8 @@
        (slideout-nav/built-component data nil)
 
        (routes/sub-page? [nav-event] [events/navigate-leads])
-       ((leads-component nav-event) data nil)
+       [:div {:data-test (keypaths/->component-str nav-event)}
+        ((leads-component nav-event) data nil)]
 
        (= nav-event events/navigate-ugc-named-search)
        [:div.bg-black.absolute.overlay
