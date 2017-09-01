@@ -5,7 +5,7 @@
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
             [leads.header :as header]
-            [leads.choose-call-slot :as leads.choose-call-slot]
+            [leads.call-slot :as call-slot]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
@@ -13,6 +13,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.footer :as footer]
             [clojure.string :as string]
+            [storefront.transitions :as transitions]
             [storefront.effects :as effects]))
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options] :as attrs}]
@@ -401,3 +402,11 @@
      (when-not (= "welcome"
                   (get-in app-state keypaths/store-slug))
        (effects/page-not-found))))
+
+(defmethod transitions/transition-state events/navigate-leads-home
+  [_ _ _ app-state]
+  (let [offset (get-in app-state
+                       keypaths/leads-ui-best-time-to-call-eastern-offset)]
+    (assoc-in app-state
+              keypaths/leads-ui-sign-up-call-slot-options
+              (call-slot/options offset))))

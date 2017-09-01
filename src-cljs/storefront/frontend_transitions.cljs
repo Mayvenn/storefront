@@ -5,7 +5,6 @@
             [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.call-slot :as call-slot]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -227,12 +226,6 @@
 
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id (js/parseInt look-id)))
-
-(defmethod transition-state events/navigate-leads-home [_ event _ app-state]
-  (assoc-in app-state
-            keypaths/leads-ui-sign-up-call-slot-options
-            (call-slot/options (get-in app-state keypaths/leads-ui-best-time-to-call-eastern-offset)
-                               (js/Date.))))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
