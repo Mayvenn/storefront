@@ -139,8 +139,7 @@
                                                             :slug (:sku-set/slug product)})
            [:div.mb10.center
             ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-            [:img.block.col-12 {:src (str (:url image)
-                                          (:filename image))
+            [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                                 :alt (:alt image)}]
             [:h2.h4.mt3.mb1 name]
             (if sold-out?
