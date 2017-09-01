@@ -410,16 +410,22 @@
                           (sort-by :price)
                           first)
 
-        sku-images (filter #(let [image-origin (:hair/origin %)
-                                  selected-sku-origin (:hair/origin selected-sku)]
-                              (or
-                               (nil? image-origin)
-                               (= selected-sku-origin image-origin)))
-                           (->> {:hair/color (:hair/color selected-sku)
-                                 :use-case "carousel"
-                                 :image/of #{"model" "product"}}
-                                (selector/images-matching-product image-db current-product)
-                                (sort-by :order)))]
+        sku-images (filter
+                    #(let [image-origin        (:hair/origin %)
+                           selected-sku-origin (:hair/origin selected-sku)
+                           image-color         (:hair/color %)
+                           selected-sku-color  (:hair/color selected-sku)]
+                       (and
+                        (or
+                         (nil? image-origin)
+                         (= selected-sku-origin image-origin))
+                        (or
+                         (nil? image-color)
+                         (= selected-sku-color image-color))))
+                    (->> {:use-case "carousel"
+                          :image/of #{"model" "product"}}
+                         (selector/images-matching-product image-db current-product)
+                         (sort-by :order)))]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)

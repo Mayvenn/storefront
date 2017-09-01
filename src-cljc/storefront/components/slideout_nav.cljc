@@ -216,7 +216,7 @@
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
    (when (-> signed-in ::auth/as (= :stylist))
-     [:li (major-menu-row (utils/route-to events/navigate-named-search {:named-search-slug "stylist-products"})
+     [:li (major-menu-row (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
 (defn menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
