@@ -219,12 +219,11 @@
      :alt alt}]))
 
 (defn carousel [images {:keys [slug]}]
-  (let [image-body (if (= slug "yaki-straight")
-                     carousel-image
-                     old-carousel-image)
-        items (mapv (fn [image]
+  (let [items (mapv (fn [image]
                       {:id   (subs (:large_url image) (max 0 (- (count image) 50)))
-                       :body (image-body image)})
+                       :body (if (:resizable_url image)
+                               (carousel-image image)
+                               (old-carousel-image image))})
                     images)]
     (component/build carousel/component
                      {:slides (map :body items)
