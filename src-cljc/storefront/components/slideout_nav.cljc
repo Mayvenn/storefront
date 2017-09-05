@@ -210,7 +210,7 @@
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (utils/fake-href events/menu-traverse-descend {:slug "bundles" :id "11"})
-                        [:span.medium.flex-auto "Shop Bundles"]
+                        [:span.medium.flex-auto "Shop Hair"]
                         forward-caret)]
    [:li (major-menu-row (utils/fake-href events/menu-traverse-descend {:slug "closures-and-frontals" :id "12"})
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
