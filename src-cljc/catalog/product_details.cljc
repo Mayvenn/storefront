@@ -136,12 +136,11 @@
                  stocked? "border-gray bg-white dark-gray light"
                  :else    "border-gray bg-gray  dark-gray light")
     :style     {:font-size "14px" :line-height "18px"}}
-   [:input.hide {:type      "radio"
-                 :disabled  (not stocked?)
-                 :checked   checked?
-                 :on-change (utils/send-event-callback events/control-bundle-option-select
-                                                       {:selection selector
-                                                        :value     slug})}]
+   (ui/hidden-field {:type      "radio"
+                     :disabled? (not stocked?)
+                     :checked?  checked?
+                     :selection selector
+                     :value     slug})
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
       {:src   image :alt    name

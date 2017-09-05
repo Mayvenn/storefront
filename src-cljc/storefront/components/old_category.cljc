@@ -102,12 +102,13 @@
              true        "border-gray       bg-white      dark-gray light")
     :style {:font-size "14px" :line-height "18px"}}
    [:input.hide
-    (merge {:type      "radio"
-            :disabled  (or later-step? sold-out?)
-            :on-change (utils/send-event-callback events/old-control-bundle-option-select
-                                                  {:selections selections
-                                                   :step-name step-name})}
-           (when checked? {:checked true}))]
+    (cond->
+        {:type      "radio"
+         :on-change (utils/send-event-callback events/old-control-bundle-option-select
+                                               {:selections selections
+                                                :step-name step-name})}
+      checked? (assoc :checked true)
+      (or later-step? sold-out?) (assoc :disabled true))]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
       {:src image :alt name

@@ -15,9 +15,10 @@
 (defn stop-propagation [e] false)
 
 (defn toggle-checkbox [keypath value]
-  (let [checked-val (when value "checked")]
+  (if-let [checked-val (when value "checked")]
     {:checked checked-val
-     :value checked-val}))
+     :value   checked-val}
+    {}))
 
 (defn expand-menu-callback [keypath]
   noop-callback)

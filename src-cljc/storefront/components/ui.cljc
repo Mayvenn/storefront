@@ -184,6 +184,17 @@
                    (when error? {:class "red"})
                    hint])]]))
 
+(defn hidden-field
+  [{:keys [keypath type value disabled? checked?] :as attributes}]
+  (let [args    (dissoc attributes :keypath)
+        handler (utils/send-event-callback keypath args)])
+  [:input.hide
+   (cond-> {:type type :on-change handler}
+     disabled?
+     (assoc :disabled true)
+     checked?
+     (assoc :checked true))])
+
 (defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
   (let [error (first errors)]
     [:div.col-12.mb2.stacking-context
