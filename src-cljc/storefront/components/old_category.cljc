@@ -101,12 +101,13 @@
              checked?    "border-gray       bg-teal       white     medium"
              true        "border-gray       bg-white      dark-gray light")
     :style {:font-size "14px" :line-height "18px"}}
-   [:input.hide {:type      "radio"
-                 :disabled  (or later-step? sold-out?)
-                 :checked   checked?
-                 :on-change (utils/send-event-callback events/old-control-bundle-option-select
-                                                       {:selections selections
-                                                        :step-name step-name})}]
+   [:input.hide
+    (merge {:type      "radio"
+            :disabled  (or later-step? sold-out?)
+            :on-change (utils/send-event-callback events/old-control-bundle-option-select
+                                                  {:selections selections
+                                                   :step-name step-name})}
+           (when checked? {:checked true}))]
    (if image
      [:img.mbp4.content-box.circle.border-light-gray
       {:src image :alt name
