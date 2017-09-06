@@ -23,7 +23,7 @@
                  [cljsjs/react "15.6.1-2"]
                  [cljsjs/react-dom "15.6.1-2"]
                  [cljsjs/react-dom-server "15.6.1-2"]
-                 [cljsjs/react-transition-group "2.2.0-0"]
+                 [cljsjs/react-transition-group "1.2.0-0"]
                  [org.omcljs/om "1.0.0-alpha41" :exclusions [cljsjs/react]]
                  [comb "0.1.0"]
                  [sablono "0.8.0"]
