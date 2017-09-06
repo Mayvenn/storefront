@@ -238,7 +238,7 @@
                                :data-test "content-help")
                         "Contact us")]])
 
-(def sign-out-area
+(def ^:private sign-out-area
   (component/html
    (marquee-row
     (ui/ghost-button (assoc (utils/fake-href events/control-sign-out)
@@ -246,7 +246,7 @@
                      "Sign out")
     [:div])))
 
-(def slug->jump-out
+(def ^:private slug->jump-out
   {"360-frontals" {:id   "10"
                    :name "360 Frontals"
                    :slug "360-frontals"}
@@ -257,72 +257,78 @@
                    :name "Frontals"
                    :slug "frontals"}})
 
-(defn taxonomy-component
-  [{:keys [root-name facets criteria promo-data]} owner opts]
-  (let [[selected-steps unselected-steps] (split-with :selected? facets)
-        current-step                      (last selected-steps)
-        up-step                           (last (drop-last selected-steps))
-        down-step                         (first unselected-steps)
-        up-step-option                    (first (filterv :selected? (:options up-step)))]
-    (component/create
-     [:div
-      [:div.top-0.sticky.z4
-       (promo-bar promo-data)
-       burger-header]
-      [:a.gray.block.py1.px3.h6
-       (if up-step
-         (utils/fake-href events/menu-traverse-ascend {:up-step up-step})
-         (utils/fake-href events/menu-traverse-root))
-       [:span.mr1 back-caret] "Back"]
-      [:div.px6
-       (major-menu-row
-        (let [criteria-labels [] #_(str/join " " (->> selected-steps
-                                                      (map :options)
-                                                      (map #(first (filterv :selected? %)))
-                                                      (map :label)))]
-          [:div.h2.flex-auto.center
-           ;; TODO: Make this print out the specified text
-           "Shop " #_criteria-labels #_" " root-name]))
-       [:ul.list-reset
-        (when-let [jump-out (get slug->jump-out (:slug up-step-option))]
-          [:li
-           (major-menu-row
-            (utils/fake-href events/navigate-category (select-keys jump-out [:id :slug]))
-            [:span.teal "All " (:name jump-out)])])
-        (for [option (:options current-step)]
-          (let [selected-options (->> selected-steps
-                                      (map :options)
-                                      (map #(filterv :selected? %))
-                                      (remove empty?))
-                valid-branch?    (or (empty? selected-options)
-                                     (->> selected-options
-                                          (map (partial map :sku-set-ids))
-                                          (map (partial reduce set/union))
-                                          (reduce set/intersection (:sku-set-ids option))
-                                          seq))]
-            (when valid-branch?
-              (if down-step
-                [:li {:key (:slug option)}
-                 (major-menu-row
-                  (utils/fake-href events/menu-traverse-descend
-                                   {:down-step       down-step
-                                    :current-step    current-step
-                                    :selected-option option})
-                  [:span.flex-auto (:label option)] forward-caret)]
-                [:li {:key (:slug option)}
-                 (major-menu-row
-                  (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
-                  [:span.flex-auto.titleize (:label option)])]))))]]])))
+(defn down-step-li [option down-step current-step]
+  [:li {:key (:slug option)}
+   (major-menu-row
+    (utils/fake-href events/menu-traverse-descend
+                     {:down-step       down-step
+                      :current-step    current-step
+                      :selected-option option})
+    [:span.flex-auto (:label option)] forward-caret)])
 
-(defn slideout-component
-  [{:keys [user store promo-data shopping signed-in new-taxon-launch?] :as data}
+(defn terminal-li [criteria option current-step]
+  [:li {:key (:slug option)}
+   (major-menu-row
+    (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
+    [:span.flex-auto.titleize (:label option)])])
+
+(defn jump-out-li [jump-out]
+  [:li {:key (:slug jump-out)}
+   (major-menu-row
+    (utils/fake-href events/navigate-category (select-keys jump-out [:id :slug]))
+    [:span.teal "All " (:name jump-out)])])
+
+
+(defn drill-down-query [data]
+  (let [{root-name :name}                     (categories/current-traverse-nav data)
+        {:keys [facets criteria] :as filters} (get-in data keypaths/category-filters-for-nav)
+        [selected-steps unselected-steps]     (split-with :selected? facets)
+        up-step                               (last (drop-last selected-steps))]
+    {:root-name        root-name
+     :criteria         criteria
+     :current-step     (last selected-steps)
+     :up-step          up-step
+     :down-step        (first unselected-steps)
+     :up-step-option   (first (filterv :selected? (:options up-step)))
+     :selected-options (->> selected-steps
+                            (map :options)
+                            (map #(filterv :selected? %))
+                            (remove empty?))}))
+
+(defn ^:private valid-branch? [selected-options option]
+  (or (empty? selected-options)
+      (->> selected-options
+           (map (partial map :sku-set-ids))
+           (map (partial reduce set/union))
+           (reduce set/intersection (:sku-set-ids option))
+           seq)))
+
+(defn drill-down-menu
+  [{:keys [root-name facets criteria promo-data current-step up-step down-step up-step-option selected-options]}
    owner
    opts]
   (component/create
    [:div
-    [:div.top-0.sticky.z4.border-gray
-     (promo-bar promo-data)
-     burger-header]
+    [:a.gray.block.py1.px3.h6
+     (if up-step
+       (utils/fake-href events/menu-traverse-ascend {:up-step up-step})
+       (utils/fake-href events/menu-traverse-root))
+     [:span.mr1 back-caret] "Back"]
+    [:div.px6
+     (major-menu-row
+      [:div.h2.flex-auto.center "Shop " root-name])
+     [:ul.list-reset
+      (when-let [jump-out (get slug->jump-out (:slug up-step-option))]
+        (jump-out-li jump-out))
+      (for [option (:options current-step)
+            :when  (valid-branch? selected-options option)]
+        (if down-step
+          (down-step-li option down-step current-step)
+          (terminal-li criteria option current-step)))]]]))
+
+(defn root-menu [{:keys [signed-in store user new-taxon-launch? shopping]} owner opts]
+  (component/create
+   [:div
     [:div.px6.border-bottom.border-top.border-gray
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
@@ -335,16 +341,17 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [on-taxon? new-taxon-launch? category-menu] :as data} owner opts]
+  [{:keys [user store promo-data shopping signed-in new-taxon-launch? on-taxon? drill-down-data] :as data}
+   owner
+   opts]
   (component/create
    [:div
+    [:div.top-0.sticky.z4.border-gray
+     (promo-bar promo-data)
+     burger-header]
     (if (and on-taxon? new-taxon-launch?)
-      (component/build taxonomy-component
-                       (merge
-                        category-menu
-                        (select-keys data [:promo-data]))
-                       opts)
-      (component/build slideout-component data opts))]))
+      (component/build drill-down-menu drill-down-data nil)
+      (component/build root-menu data nil))]))
 
 (defn basic-query [data]
   {:signed-in         (auth/signed-in data)
@@ -354,18 +361,11 @@
    :store             (marquee/query data)
    :shopping          {:named-searches (named-searches/current-named-searches data)}})
 
-(defn menu-traverse-query [data]
-  (let [{root-name :name}         (categories/current-traverse-nav data)
-        {:keys [facets criteria] :as filters} (get-in data keypaths/category-filters-for-nav)]
-    {:root-name root-name
-     :facets    facets
-     :criteria  criteria}))
-
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
-      (assoc-in [:category-menu] (menu-traverse-query data))))
+      (assoc-in [:drill-down-data] (drill-down-query data))))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

@@ -35,7 +35,7 @@
                                          {:configurator jetty/configurator}))
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
-(defn dependency-map []
+(def dependency-map
   {:app-handler [:logger :exception-handler]
    :embedded-server {:app :app-handler}})
 
@@ -45,4 +45,4 @@
    (let [config (config/system-config config-overrides)]
      (component/system-using
       (system-map config)
-      (dependency-map)))))
+      dependency-map))))
