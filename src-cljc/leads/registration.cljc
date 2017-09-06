@@ -11,7 +11,8 @@
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [clojure.string :as string]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [storefront.platform.messages :as messages]))
 
 (defn ^:private sign-up-section
   [{:keys [first-name last-name phone email password]} focused errors]
@@ -296,12 +297,26 @@
   (component/build component (query data) opts))
 
 #?(:cljs
-   (defmethod effects/perform-effects events/navigate-leads-registration
+   (defmethod effects/perform-effects events/navigate-leads-registration-details
      [_ _ _ _ app-state]
      (api/get-states (get-in app-state keypaths/api-cache))))
 
 (defmethod effects/perform-effects events/leads-control-self-registration-submit
   [dispatch event args _ app-state]
   #?(:cljs
-     (api/advance-lead-registration (get-in app-state keypaths/leads-ui-registration)
-                                    #(prn %))))
+     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/leads-lead)]
+       (api/advance-lead-registration {:lead-id    id
+                                       :step-id    step-id
+                                       :session-id (get-in app-state keypaths/session-id)
+                                       :step-data  {:registration (get-in app-state keypaths/leads-ui-registration)}}
+                                      (fn [registered-lead]
+                                        (js/console.log (clj->js registered-lead))
+                                        (messages/handle-message events/api-success-lead-registered {:registered-lead registered-lead}))))))
+
+(defmethod transitions/transition-state events/api-success-lead-registered
+  [_ event {:keys [registered-lead]} app-state]
+  (assoc-in app-state keypaths/leads-lead registered-lead))
+
+(defmethod effects/perform-effects events/api-success-lead-registered
+  [_ event {:keys [registered-lead]} _ app-state]
+  (messages/handle-message events/navigate-leads-registration-resolve))

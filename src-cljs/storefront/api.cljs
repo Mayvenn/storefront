@@ -900,9 +900,8 @@
     :handler #(messages/handle-message events/api-success-lead-created %)}))
 
 (defn advance-lead-registration [params handler]
-  (js/console.log (clj->js params))
-  #_(api-req POST
-           "/leads/advance"
-           request-keys/advance-lead
-           {:params  params
-            :handler handler}))
+  (api-req POST
+             "/leads/advance-in-flow"
+             request-keys/advance-lead
+             {:params  params
+              :handler handler}))

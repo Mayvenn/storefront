@@ -38,9 +38,10 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def leads-routes
-  {"/stylists/welcome"         (edn->bidi events/navigate-leads-home)
-   "/stylists/flows/2/details" (edn->bidi events/navigate-leads-registration)
-   "/stylists/thank-you"       (edn->bidi events/navigate-leads-resolve)})
+  {"/stylists/welcome"           (edn->bidi events/navigate-leads-home)
+   "/stylists/thank-you"         (edn->bidi events/navigate-leads-resolve)
+   "/stylists/flows/2/details"   (edn->bidi events/navigate-leads-registration-details)
+   "/stylists/flows/2/thank-you" (edn->bidi events/navigate-leads-registration-resolve)})
 
 (def app-routes
   ["" (merge static-page-routes

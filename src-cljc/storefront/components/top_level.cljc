@@ -44,6 +44,7 @@
             ;; leads.components.home
             [leads.home :as leads.home]
             [leads.registration :as leads.registration]
+            [leads.registration-resolve :as leads.registration-resolve]
             [leads.resolve :as leads.resolve]
             [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
@@ -100,9 +101,10 @@
 (defn leads-component [nav-event]
   (condp = nav-event
     #?@(:cljs [])
-    events/navigate-leads-home         leads.home/built-component
-    events/navigate-leads-registration leads.registration/built-component
-    events/navigate-leads-resolve      leads.resolve/built-component
+    events/navigate-leads-home                 leads.home/built-component
+    events/navigate-leads-resolve              leads.resolve/built-component
+    events/navigate-leads-registration-details leads.registration/built-component
+    events/navigate-leads-registration-resolve leads.registration-resolve/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]

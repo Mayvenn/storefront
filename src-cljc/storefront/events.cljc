@@ -88,6 +88,8 @@
 (defpath navigate-leads)
 (defpath navigate-leads-home)
 (defpath navigate-leads-registration)
+(defpath navigate-leads-registration-details)
+(defpath navigate-leads-registration-resolve)
 (defpath navigate-leads-resolve)
 
 (defpath menu-traverse-root)
@@ -272,6 +274,7 @@
 (defpath api-success-telligent-login)
 
 (defpath api-success-lead-created)
+(defpath api-success-lead-registered)
 
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)

@@ -296,7 +296,6 @@
      label]]])
 
 (defn radio-group [{:keys [group-name keypath checked-value] :as attributes} options]
-  (prn checked-value)
   [:div
    (for [{:keys [id label value] :as option} options]
      [:label
@@ -307,10 +306,11 @@
                :data-test    group-name
                :data-test-id id
                :id           (str group-name id)
-               :checked      (= checked-value value)
                :on-change    #(handle-message events/control-change-state
                                               {:keypath keypath
                                                :value   value})}
+              (when (= checked-value value)
+                {:checked (= checked-value value)})
               (dissoc attributes
                       :group-name :keypath :checked-value
                       :id :checked :data-test-id))]

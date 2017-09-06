@@ -388,7 +388,7 @@
   #?(:cljs
      (let [{:keys [flow-id]} (get-in app-state keypaths/leads-lead)]
        (if flow-id
-         (history/enqueue-navigate events/navigate-leads-registration)
+         (history/enqueue-navigate events/navigate-leads-registration-details)
          (history/enqueue-navigate events/navigate-leads-resolve)))))
 
 (defmethod effects/perform-effects events/navigate-leads-home
