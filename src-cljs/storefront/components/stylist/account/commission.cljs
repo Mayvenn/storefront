@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.account.commission
   (:require [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.experiments :as experiments]
+            [react-transition-group]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]

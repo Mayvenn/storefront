@@ -153,7 +153,7 @@
              "..."])]]])
 
 (defn transition-group [options & children]
-  (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
+  (apply js/React.createElement js/ReactTransitionGroup.CSSTransitionGroup (clj->js options) (html children)))
 
 (defn show-commission [{:keys [id number order commissionable-amount] :as commission}
                        expanded?

@@ -1,8 +1,9 @@
 (ns storefront.platform.images
-  (:require [sablono.core :refer-macros [html]]))
+  (:require [sablono.core :refer-macros [html]]
+            [react-transition-group]))
 
 (defn transition-group [options & children]
-  (apply js/React.createElement js/React.addons.CSSTransitionGroup (clj->js options) (html children)))
+  (apply js/React.createElement js/ReactTransitionGroup.CSSTransitionGroup (clj->js options) (html children)))
 
 (defn platform-hq-image [attrs]
   (transition-group {:transitionName {:appear "transparent"
