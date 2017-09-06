@@ -15,14 +15,14 @@
             [storefront.platform.messages :as messages]))
 
 (defn ^:private sign-up-section
-  [{:keys [first-name last-name phone email password]} focused errors]
+  [{:keys [first-name last-name phone email password field-errors]} focused]
   [:div
    (ui/text-field-group {:type     "text"
                          :label    "First Name *"
                          :id       "first_name"
                          :name     "first-name"
                          :required true
-                         :errors   (:first-name errors)
+                         :errors   (get field-errors ["first-name"])
                          :keypath  keypaths/leads-ui-registration-first-name
                          :focused  focused
                          :value    first-name}
@@ -31,12 +31,12 @@
                          :id       "last_name"
                          :name     "last-name"
                          :required true
-                         :errors   (:last-name errors)
+                         :errors   (get field-errors ["last-name"])
                          :keypath  keypaths/leads-ui-registration-last-name
                          :focused  focused
                          :value    last-name})
    (ui/text-field {:data-test "phone"
-                   :errors    (:phone errors)
+                   :errors    (get field-errors ["phone"])
                    :id        "phone"
                    :keypath   keypaths/leads-ui-registration-phone
                    :focused   focused
@@ -46,7 +46,7 @@
                    :type      "tel"
                    :value     phone})
    (ui/text-field {:data-test "email"
-                   :errors    (:email errors)
+                   :errors    (get field-errors ["email"])
                    :id        "email"
                    :keypath   keypaths/leads-ui-registration-email
                    :focused   focused
@@ -56,7 +56,7 @@
                    :type      "email"
                    :value     email})
    (ui/text-field {:data-test "password"
-                   :errors    (:password errors)
+                   :errors    (get field-errors ["password"])
                    :id        "password"
                    :keypath   keypaths/leads-ui-registration-password
                    :focused   focused
@@ -68,7 +68,7 @@
                    :hint      password})])
 
 (defn ^:private referral-section
-  [{:keys [referred referrers-phone]} focused errors]
+  [{:keys [referred referrers-phone field-errors]} focused]
   [:div
    (ui/check-box {:data-test "referred"
                   :keypath   keypaths/leads-ui-registration-referred
@@ -76,7 +76,7 @@
                   :value     referred})
    (when referred
      (ui/text-field {:data-test "referrers-phone"
-                     :errors    (:referrers-phone errors)
+                     :errors    (get field-errors ["referrers-phone"])
                      :id        "referrers-phone"
                      :keypath   keypaths/leads-ui-registration-referrers-phone
                      :focused   focused
@@ -86,13 +86,13 @@
                      :value     referrers-phone}))])
 
 (defn ^:private contact-section
-  [{:keys [address1 address2 city zip state]} states focused errors]
+  [{:keys [address1 address2 city zip state field-errors]} states focused]
   [:div.pb3
    [:div.center.pb3 "Next."
     [:br]
     "We'll need some contact information."]
    (ui/text-field {:data-test "address1"
-                   :errors    (:address1 errors)
+                   :errors    (get field-errors ["address1"])
                    :id        "address1"
                    :keypath   keypaths/leads-ui-registration-address1
                    :focused   focused
@@ -102,7 +102,7 @@
                    :type      "text"
                    :value     address1})
    (ui/text-field {:data-test "address2"
-                   :errors    (:address2 errors)
+                   :errors    (get field-errors ["address2"])
                    :id        "address2"
                    :keypath   keypaths/leads-ui-registration-address2
                    :focused   focused
@@ -112,7 +112,7 @@
                    :type      "text"
                    :value     address2})
    (ui/text-field {:data-test "city"
-                   :errors    (:city errors)
+                   :errors    (get field-errors ["city"])
                    :id        "city"
                    :keypath   keypaths/leads-ui-registration-city
                    :focused   focused
@@ -124,7 +124,7 @@
    [:div
     [:div.col.col-6.pr1
      (ui/select-field {:data-test   "state"
-                       :errors      (:state errors)
+                       :errors      (get field-errors ["state"])
                        :id          :state
                        :keypath     keypaths/leads-ui-registration-state
                        :focused     focused
@@ -135,7 +135,7 @@
                        :value       state})]
     [:div.col.col-6.pl1
      (ui/text-field {:data-test "zip"
-                     :errors    (:zip errors)
+                     :errors    (get field-errors ["zip"])
                      :id        "zip"
                      :keypath   keypaths/leads-ui-registration-zip
                      :focused   focused
@@ -146,11 +146,11 @@
                      :value     zip})]]])
 
 (defn ^:private stylist-details-section
-  [{:keys [birthday licensed? payout-method venmo-phone paypal-email slug]} focused errors]
+  [{:keys [birthday licensed? payout-method venmo-phone paypal-email slug field-errors]} focused]
   [:div
    [:div.flex.flex-column.items-center.col-12
     (ui/text-field {:data-test "birth-date"
-                    :errors    (:birthday errors)
+                    :errors    (get field-errors ["birthday"])
                     :id        "birth-date"
                     :keypath   keypaths/leads-ui-registration-birthday
                     :focused   focused
@@ -180,7 +180,7 @@
                       {:id "check" :label "Check" :value "check"}])]
     (case payout-method
       "venmo"  (ui/text-field {:data-test "venmo-phone"
-                               :errors    (:venmo-phone errors)
+                               :errors    (get field-errors ["venmo-phone"])
                                :id        "venmo-phone"
                                :keypath   keypaths/leads-ui-registration-venmo-phone
                                :focused   focused
@@ -190,7 +190,7 @@
                                :type      "tel"
                                :value     venmo-phone})
       "paypal" (ui/text-field {:data-test "paypal-email"
-                               :errors    (:paypal-email errors)
+                               :errors    (get field-errors ["paypal-email"])
                                :id        "paypal-email"
                                :keypath   keypaths/leads-ui-registration-paypal-email
                                :focused   focused
@@ -208,7 +208,7 @@
      [:div.flex-auto
       (ui/text-field {:data-test     "slug"
                       :wrapper-class "rounded-left"
-                      :errors        (:slug errors)
+                      :errors        (get field-errors ["slug"])
                       :id            "slug"
                       :keypath       keypaths/leads-ui-registration-slug
                       :focused       focused
@@ -221,7 +221,7 @@
       ".mayvenn.com"]]]] )
 
 (defn ^:private component
-  [{:keys [error errors focused sign-up referral contact stylist-details states]} owner opts]
+  [{:keys [error focused sign-up referral contact stylist-details states]} owner opts]
   (component/create
    [:div.bg-teal.white.pb4
     [:div.max-580.mx-auto
@@ -247,10 +247,10 @@
               :method    "POST"
               :role      "form"
               :on-submit (utils/send-event-callback events/leads-control-self-registration-submit {})}
-       (sign-up-section sign-up focused errors)
-       (referral-section referral focused errors)
-       (contact-section contact states focused errors)
-       (stylist-details-section stylist-details focused errors)
+       (sign-up-section sign-up focused)
+       (referral-section referral focused)
+       (contact-section contact states focused)
+       (stylist-details-section stylist-details focused)
 
        [:div.py3.border-top.border-gray
         (ui/submit-button "Submit registration" {:class "h2"})]]
@@ -283,15 +283,19 @@
    :slug          (get-in data keypaths/leads-ui-registration-slug)})
 
 (defn ^:private query [data]
-  {:focused         (get-in data keypaths/ui-focus)
-   :error           ""
-   :errors          {}
-   :states          (map (juxt :name :abbr) (get-in data keypaths/states))
-   :referral        {:referred        (get-in data keypaths/leads-ui-registration-referred)
-                     :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)}
-   :sign-up         (sign-up-query data)
-   :contact         (contact-query data)
-   :stylist-details (stylist-details-query data)})
+  (let [field-errors (get-in data keypaths/field-errors)]
+    {:focused         (get-in data keypaths/ui-focus)
+     :error           ""
+     :states          (map (juxt :name :abbr) (get-in data keypaths/states))
+     :referral        {:referred        (get-in data keypaths/leads-ui-registration-referred)
+                       :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)
+                       :field-errors    field-errors}
+     :sign-up         (merge (sign-up-query data)
+                             {:field-errors field-errors})
+     :contact         (merge (contact-query data)
+                             {:field-errors field-errors})
+     :stylist-details (merge (stylist-details-query data)
+                             {:field-errors field-errors})}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
