@@ -164,7 +164,7 @@
      (floating-label label id status)
      [:label
       [:input.col-12.h4.line-height-1
-       (field-class (merge {:key         label
+       (field-class (merge {:key         id
                             :placeholder label
                             :value       (or value "")
                             :on-focus
