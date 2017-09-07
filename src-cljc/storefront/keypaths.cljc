@@ -292,10 +292,6 @@
 (def leads-ui-sign-up-call-slot-options (conj leads-ui-sign-up :call-slot-options))
 
 (def leads-ui-registration (conj leads-ui :registration))
-(def leads-ui-registration-first-name (conj leads-ui-registration :first-name))
-(def leads-ui-registration-last-name (conj leads-ui-registration :last-name))
-(def leads-ui-registration-phone (conj leads-ui-registration :phone))
-(def leads-ui-registration-email (conj leads-ui-registration :email))
 (def leads-ui-registration-password (conj leads-ui-registration :password))
 (def leads-ui-registration-referred (conj leads-ui-registration :referred))
 (def leads-ui-registration-referrers-phone (conj leads-ui-registration :referrers-phone))

@@ -23,7 +23,7 @@
                          :name     "first-name"
                          :required true
                          :errors   (get field-errors ["first-name"])
-                         :keypath  keypaths/leads-ui-registration-first-name
+                         :keypath  keypaths/leads-ui-sign-up-first-name
                          :focused  focused
                          :value    first-name}
                         {:type     "text"
@@ -32,13 +32,13 @@
                          :name     "last-name"
                          :required true
                          :errors   (get field-errors ["last-name"])
-                         :keypath  keypaths/leads-ui-registration-last-name
+                         :keypath  keypaths/leads-ui-sign-up-last-name
                          :focused  focused
                          :value    last-name})
    (ui/text-field {:data-test "phone"
                    :errors    (get field-errors ["phone"])
                    :id        "phone"
-                   :keypath   keypaths/leads-ui-registration-phone
+                   :keypath   keypaths/leads-ui-sign-up-phone
                    :focused   focused
                    :label     "Mobile Phone Number *"
                    :name      "phone"
@@ -48,7 +48,7 @@
    (ui/text-field {:data-test "email"
                    :errors    (get field-errors ["email"])
                    :id        "email"
-                   :keypath   keypaths/leads-ui-registration-email
+                   :keypath   keypaths/leads-ui-sign-up-email
                    :focused   focused
                    :label     "Email"
                    :name      "email"
@@ -258,10 +258,10 @@
        [:a.inherit-color.text-decoration-none {:href "https://shop.mayvenn.com"} "Go back to shop Mayvenn Hair"]]]]]))
 
 (defn ^:private sign-up-query [data]
-  {:first-name (get-in data keypaths/leads-ui-registration-first-name)
-   :last-name  (get-in data keypaths/leads-ui-registration-last-name)
-   :phone      (get-in data keypaths/leads-ui-registration-phone)
-   :email      (get-in data keypaths/leads-ui-registration-email)
+  {:first-name (get-in data keypaths/leads-ui-sign-up-first-name)
+   :last-name  (get-in data keypaths/leads-ui-sign-up-last-name)
+   :phone      (get-in data keypaths/leads-ui-sign-up-phone)
+   :email      (get-in data keypaths/leads-ui-sign-up-email)
    :password   (get-in data keypaths/leads-ui-registration-password)})
 
 (defn ^:private contact-query [data]
@@ -300,6 +300,13 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
+(defn handle-referral [{:keys [referred] :as registration}]
+  (if referred
+    registration
+    (-> registration
+        (assoc :referred false)
+        (dissoc :reffers-phone))))
+
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-leads-registration-details
      [_ _ _ _ app-state]
@@ -308,11 +315,16 @@
 (defmethod effects/perform-effects events/leads-control-self-registration-submit
   [dispatch event args _ app-state]
   #?(:cljs
-     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/leads-lead)]
+     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/leads-lead)
+           sign-up                       (get-in app-state keypaths/leads-ui-sign-up)
+           registration                  (-> app-state
+                                             (get-in keypaths/leads-ui-registration)
+                                             (merge (select-keys sign-up [:first-name :last-name :email :phone]))
+                                             handle-referral)]
        (api/advance-lead-registration {:lead-id    id
                                        :step-id    step-id
                                        :session-id (get-in app-state keypaths/session-id)
-                                       :step-data  {:registration (get-in app-state keypaths/leads-ui-registration)}}
+                                       :step-data  {:registration registration}}
                                       (fn [registered-lead]
                                         (js/console.log (clj->js registered-lead))
                                         (messages/handle-message events/api-success-lead-registered {:registered-lead registered-lead}))))))
