@@ -58,6 +58,7 @@
     [:div.col.col-6.col-4-on-tb-dt.px1
      {:key slug}
      [:a.inherit-color
+      ;; TODO: use the representative sku to preselect the options on product details
       (utils/route-to events/navigate-product-details {:id   (:sku-set/id product)
                                                        :slug (:sku-set/slug product)})
       [:div.mb10.center
@@ -68,6 +69,6 @@
        (if sold-out?
          [:p.h6.dark-gray "Out of stock"]
          [:div
-          (unconstrained-facet product facets :hair/length)
-          (unconstrained-facet product facets :hair/color)
+          (for [selector (:criteria/selectors product)]
+            (unconstrained-facet product facets (keyword selector)))
           [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]]))
