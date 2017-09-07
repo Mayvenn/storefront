@@ -107,10 +107,10 @@
           (terminal-li criteria option current-step)))]]]))
 
 (defn query [data]
-  (let [{root-name :name}                     (categories/current-traverse-nav data)
-        {:keys [facets criteria] :as filters} (get-in data keypaths/category-filters-for-nav)
-        [selected-steps unselected-steps]     (split-with :selected? facets)
-        up-step                               (last (drop-last selected-steps))]
+  (let [{root-name :name}                 (categories/current-traverse-nav data)
+        {:keys [facets criteria]}         (get-in data keypaths/category-filters-for-nav)
+        [selected-steps unselected-steps] (split-with :selected? facets)
+        up-step                           (last (drop-last selected-steps))]
     {:root-name        root-name
      :criteria         criteria
      :current-step     (last selected-steps)
