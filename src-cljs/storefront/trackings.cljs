@@ -55,6 +55,17 @@
                                       "/choose_"
                                       (clj->js last-step)))))
 
+(defmethod perform-track events/control-category-filter-select
+  [_ event {:keys [selected]} app-state]
+  (stringer/track-event "category_page_filter-select"
+                        {:filter_name (pr-str selected)}))
+
+(defmethod perform-track events/control-category-criterion-selected
+  [_ event {:keys [filter option]} app-state]
+  (stringer/track-event "category_page_filter-select"
+                        {:filter_name     (pr-str filter)
+                         :selected_option option}))
+
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
