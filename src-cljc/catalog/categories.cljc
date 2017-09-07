@@ -235,6 +235,23 @@
                                          "styling. Our collection of closures and frontals blend"
                                          "seamlessly with our bundles and can be customized"
                                          "to fit your unique look.")}
+    :hamburger/order 1}
+   {:id              "13"
+    :name            "Bundles"
+    :slug            "bundles-one-drill-down"
+    :criteria        {:product/department #{"hair"}}
+    :filter-tabs     [:hair/texture]
+    :hamburger/order 0}
+   {:id              "14"
+    :name            "Closures & Frontals"
+    :slug            "closures-and-frontals-one-drill-down"
+    :criteria        {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
+    :filter-tabs     [:hair/family]
+    :copy            {:description (copy "Save your precious strands and top your look"
+                                         "off with the ultimate tool in protective weave"
+                                         "styling. Our collection of closures and frontals blend"
+                                         "seamlessly with our bundles and can be customized"
+                                         "to fit your unique look.")}
     :hamburger/order 1}])
 
 (defn id->category [id categories]

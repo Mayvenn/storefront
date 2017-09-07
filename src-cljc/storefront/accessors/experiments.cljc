@@ -59,3 +59,6 @@
 
 (defn new-taxon-launch? [data]
   (display-feature? data "new-taxon-launch"))
+
+(defn one-drill-down? [data]
+  (display-feature? data "one-drill-down"))

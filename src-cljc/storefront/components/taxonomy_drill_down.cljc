@@ -179,18 +179,31 @@
              keypaths/category-filters-for-nav
              ascend up-step))
 
+(defn first-and-only-category [col]
+  #?(:cljs (when (zero? (count col))
+             (js/console.error "More than possible category found during menu-traverse-out.  Guessing you meant the first one...")))
+  (first col))
+
 (defmethod effects/perform-effects events/menu-traverse-out
   [_ event {:keys [criteria]} _ app-state]
   #?(:cljs
      ;;TODO: create and use a sku-set-db from app-state (like keypaths/db-skus)
-     (let [sku-sets-db (-> (d/empty-db)
-                           (d/db-with (->> (get-in app-state keypaths/sku-sets)
-                                           vals
-                                           (map #(merge (maps/map-values first (:criteria/essential %)) %))
-                                           (mapv #(dissoc % :criteria/essential)))))
-           sku-set     (first (selector/query sku-sets-db criteria))]
-       (history/enqueue-navigate events/navigate-product-details {:id   (:sku-set/id sku-set)
-                                                                  :slug (:sku-set/slug sku-set)}))))
+     (let [sku-sets-db       (-> (d/empty-db)
+                                 (d/db-with (->> (get-in app-state keypaths/sku-sets)
+                                                 vals
+                                                 (map #(merge (maps/map-values first (:criteria/essential %)) %))
+                                                 (mapv #(dissoc % :criteria/essential)))))
+           possible-sku-sets (selector/query sku-sets-db criteria)
+           sku-set           (first possible-sku-sets)]
+       (if (> (count possible-sku-sets) 1)
+         (history/enqueue-navigate events/navigate-category
+                                   (-> (filter (fn [category] (= (:criteria category)
+                                                                 criteria))
+                                               categories/initial-categories)
+                                       first-and-only-category
+                                       (select-keys [:id :slug])))
+         (history/enqueue-navigate events/navigate-product-details {:id   (:sku-set/id sku-set)
+                                                                    :slug (:sku-set/slug sku-set)})))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-nav
   [_ event response app-state]
