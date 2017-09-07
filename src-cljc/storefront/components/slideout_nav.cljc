@@ -29,7 +29,16 @@
             [storefront.components.svg :as svg]
             [storefront.utils.maps :as maps]))
 
-(def ^:private blog-url "https://blog.mayvenn.com")
+(def blog-url "https://blog.mayvenn.com")
+
+(defn logo [data-test-value height]
+  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+   (assoc (utils/route-to events/navigate-home)
+          :style {:height height}
+          :title "Mayvenn"
+          :item-prop "logo"
+          :data-test data-test-value
+          :content (str "https:" (assets/path "/images/header_logo.svg")))])
 
 (defn ^:private promo-bar [promo-data]
   (component/build promotion-banner/component promo-data nil))
@@ -49,15 +58,6 @@
                         :width  "23px"
                         :height "20px"
                         :style  {:transform "rotate(-90deg)"}})))
-
-(defn ^:private logo [data-test-value height]
-  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-   (assoc (utils/route-to events/navigate-home)
-          :style {:height height}
-          :title "Mayvenn"
-          :item-prop "logo"
-          :data-test data-test-value
-          :content (str "https:" (assets/path "/images/header_logo.svg")))])
 
 (def ^:private burger-header
   (component/html
