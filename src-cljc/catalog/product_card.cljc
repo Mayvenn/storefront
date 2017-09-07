@@ -70,5 +70,5 @@
          [:p.h6.dark-gray "Out of stock"]
          [:div
           (for [selector (:criteria/selectors product)]
-            (unconstrained-facet product facets (keyword selector)))
+            [:div {:key selector} (unconstrained-facet product facets (keyword selector))])
           [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]]))
