@@ -62,7 +62,7 @@
 
 (defmethod perform-track events/control-category-criterion-selected
   [_ event {:keys [filter option]} app-state]
-  (stringer/track-event "category_page_criterion-selected"
+  (stringer/track-event "category_page_option-select"
                         {:filter_name     (pr-str filter)
                          :selected_option option}))
 
