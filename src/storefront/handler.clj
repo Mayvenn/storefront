@@ -495,6 +495,10 @@
   (fn [{:keys [uri query-params] :as req}]
     (h (assoc req :nav-message (routes/navigation-message-for uri query-params)))))
 
+(defn redirect-to-home [environment {:keys [subdomains] :as req}]
+  (util.response/redirect (store-homepage (first subdomains) environment req)
+                          :moved-permanently))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
@@ -503,9 +507,10 @@
                (GET "/sitemap.xml" req (-> (sitemap ctx) util.response/response (util.response/content-type "text/xml")))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
-               (GET "/categories" {:keys [subdomains] :as req}
-                 (util.response/redirect (store-homepage (first subdomains) environment req)
-                                         :moved-permanently))
+               (GET "/categories" req (redirect-to-home environment req))
+               (GET "/categories/" req (redirect-to-home environment req))
+               (GET "/products" req (redirect-to-home environment req))
+               (GET "/products/" req (redirect-to-home environment req))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
