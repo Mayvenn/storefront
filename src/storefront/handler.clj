@@ -433,9 +433,9 @@
 
 (defn wrap-migrate-lead-tracking-id-cookie [h {:keys [environment]}]
   (fn [{:keys [server-name] :as req}]
-    (let [tracking-id     (or (cookies/get req "leads.tracking-id")
-                              (cookies/get req "tracking_id") ;; from old leads site
-                              (java.util.UUID/randomUUID))
+    (let [tracking-id     (str (or (cookies/get req "leads.tracking-id")
+                                   (cookies/get req "tracking_id") ;; from old leads site
+                                   (java.util.UUID/randomUUID)))
           set-tracking-id (fn [req-or-resp]
                             (cookies/set req-or-resp
                                          environment
