@@ -75,7 +75,7 @@
                            :src   (assets/path (str "/images/leads" image-url))}]
    content])
 
-(defn share-your-store-section [{:keys [store-link]}]
+(defn share-your-store-section [store-link]
   (let [[slug host]       (parse-store-link store-link)
         share-url         (-> (url/url (str "https://" store-link))
                               (assoc :query {:utm_campaign "resolve"}))
@@ -236,7 +236,7 @@
     [:div
      congratulations-section
      (coupon-section {})
-     (share-your-store-section {})
+     (share-your-store-section store-link)
      (whats-next-section {})
      (stylist-kit-section {})
      first-sale-section
