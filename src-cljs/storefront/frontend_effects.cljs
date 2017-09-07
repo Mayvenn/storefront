@@ -137,7 +137,7 @@
     (effects/redirect events/navigate-home))
   (when (and (experiments/new-taxon-launch? app-state)
              ;;TODO get literal from experiments
-             (= (:feature args) "new-taxon-launch")
+             (= (:feature args) "one-drill-down")
              (= (get-in app-state keypaths/navigation-event)
                 events/navigate-named-search))
     (redirect-named-search (categories/named-search->category

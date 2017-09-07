@@ -200,29 +200,25 @@
                           (when (named-searches/new-named-search? slug) [:span.teal.mr1 "NEW"])
                           (str/capitalize name))])]])])
 
-(defn ^:private shopping-area [signed-in one-drill-down?]
+(defn ^:private shopping-area [signed-in]
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (utils/fake-href events/menu-traverse-descend
-                                         (if one-drill-down?
-                                           {:slug "bundles-one-drill-down" :id "13"}
-                                           {:slug "bundles" :id "11"}))
+                                         {:slug "bundles" :id "11"})
                         [:span.medium.flex-auto "Shop Hair"]
                         forward-caret)]
    [:li (major-menu-row (utils/fake-href events/menu-traverse-descend
-                                         (if one-drill-down?
-                                           {:slug "closures-and-frontals-one-drill-down" :id "14"}
-                                           {:slug "closures-and-frontals" :id "12"}))
+                                         {:slug "closures-and-frontals" :id "12"})
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in new-taxon-launch? one-drill-down? {:keys [named-searches]}]
+(defn ^:private menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
   [:ul.list-reset.mb3
    (if new-taxon-launch?
-     (shopping-area signed-in one-drill-down?)
+     (shopping-area signed-in)
      (old-shopping-area signed-in named-searches))
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
@@ -246,7 +242,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [signed-in store user new-taxon-launch? one-drill-down? shopping]} owner opts]
+(defn ^:private root-menu [{:keys [signed-in store user new-taxon-launch? shopping]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-top.border-gray
@@ -255,7 +251,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in new-taxon-launch? one-drill-down? shopping)]
+     (menu-area signed-in new-taxon-launch? shopping)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -276,7 +272,6 @@
 (defn basic-query [data]
   {:signed-in         (auth/signed-in data)
    :new-taxon-launch? (experiments/new-taxon-launch? data)
-   :one-drill-down?   (experiments/one-drill-down? data)
    :on-taxon?         (get-in data keypaths/current-traverse-nav-id)
    :user              {:email (get-in data keypaths/user-email)}
    :store             (marquee/query data)
