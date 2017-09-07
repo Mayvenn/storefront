@@ -197,7 +197,7 @@
                                :label     "Paypal email address *"
                                :name      "paypal-email"
                                :required  true
-                               :type      "tel"
+                               :type      "email"
                                :value     paypal-email})
       [:span])]
    [:div.pb2.center
@@ -215,7 +215,7 @@
                       :label         (if (empty? slug) "yourstorename" "Store Name")
                       :name          "slug"
                       :required      true
-                      :type          "tel"
+                      :type          "text"
                       :value         slug})]
      [:div.rounded.rounded-right.border.border-gray.bg-light-gray.x-group-item.p2.floating-label-height
       ".mayvenn.com"]]]] )
