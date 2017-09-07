@@ -4,7 +4,7 @@
       :clj  [storefront.component-shim :as component])
    [catalog.category-filters :as category-filters]
    [catalog.categories :as categories]
-   [storefront.components.money-formatters :as mf]
+   [catalog.product-card :as product-card]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
@@ -13,44 +13,6 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.accessors.experiments :as experiments]))
-
-(defn slug->facet [facet facets]
-  (->> facets
-       (filter (fn [{:keys [:facet/slug]}] (= slug facet)))
-       first))
-
-(defn slug->option [option options]
-  (->> options
-       (filter (fn [{:keys [:option/slug]}] (= slug option)))
-       first))
-
-(defmulti unconstrained-facet (fn [skus facets facet] facet))
-(defmethod unconstrained-facet :hair/length [skus facets facet]
-  (let [lengths  (->> skus
-                      (map #(get-in % [:attributes :hair/length]))
-                      sort)
-        shortest (first lengths)
-        longest  (last lengths)]
-    [:p.h6.dark-gray
-     "in "
-     (->> facets
-          (slug->facet :hair/length)
-          :facet/options
-          (slug->option shortest)
-          :option/name)
-     " - "
-     (->> facets
-          (slug->facet :hair/length)
-          :facet/options
-          (slug->option longest)
-          :option/name)]))
-
-(defmethod unconstrained-facet :hair/color [skus facets facet]
-  (let [colors (->> skus
-                    (map #(get-in % [:attributes :hair/color]))
-                    distinct)]
-    (when (> (count colors) 1)
-      [:p.h6.dark-gray "+ more colors available"])))
 
 (defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
   (let [sku-set-count        (count filtered-sku-sets)
@@ -121,35 +83,19 @@
 (defn copy-section [category]
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (-> category :copy :description)]])
 
+(def product-cards-empty-state
+  [:div.col-12.my8.py4.center
+   #_ [:p.h1.py4 "😞"]
+   [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
+   [:p.h4.dark-gray.mb10.pb10
+    [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
+    " to see more hair."]])
+
 (defn product-cards [sku-sets facets]
   [:div.flex.flex-wrap.mxn1
    (if (empty? sku-sets)
-     [:div.col-12.my8.py4.center
-      #_ [:p.h1.py4 "😞"]
-      [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
-      [:p.h4.dark-gray.mb10.pb10
-       [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
-       " to see more hair."]]
-     (for [{:keys [sku-set/slug matching-skus representative-sku sku-set/name sold-out?] :as product} sku-sets]
-       (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
-         [:div.col.col-6.col-4-on-tb-dt.px1
-          {:key slug}
-          [:a.inherit-color
-           (utils/route-to events/navigate-product-details {:id   (:sku-set/id product)
-                                                            :slug (:sku-set/slug product)})
-           [:div.mb10.center
-            ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-            [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
-                                :alt (:alt image)}]
-            [:h2.h4.mt3.mb1 name]
-            (if sold-out?
-              [:p.h6.dark-gray "Out of stock"]
-              [:div
-               ;; This is pretty specific to hair. Might be better to have a
-               ;; sku-set know its "constrained" and "unconstrained" facets.
-               (unconstrained-facet matching-skus facets :hair/length)
-               (unconstrained-facet matching-skus facets :hair/color)
-               [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]])))])
+     product-cards-empty-state
+     (for [product sku-sets] (product-card/component product facets)))])
 
 (defn ^:private component [{:keys [category filters facets]} owner opts]
   (let [category-criteria (:criteria category)]
