@@ -220,8 +220,8 @@
     :footer/order 10
     :seo          (category->seo "360 Frontals" "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}
    {:id              "11"
-    :name            "Bundles"
-    :slug            "bundles"
+    :name            "Hair"
+    :slug            "hair"
     :criteria        {:product/department #{"hair"}}
     :filter-tabs     [:hair/texture]
     :hamburger/order 0}
