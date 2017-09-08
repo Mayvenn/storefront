@@ -132,18 +132,17 @@
   (component/build component (query data) opts))
 
 (defmethod transitions/transition-state events/navigate-category
-  [_ event args app-state]
-  (assoc-in app-state keypaths/current-category-id (:id args)))
+  [_ event {:keys [catalog/category-id]} app-state]
+  (assoc-in app-state keypaths/current-category-id category-id))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
-     [_ event {:keys [id slug]} _ app-state]
-     (let [category   (categories/current-category app-state)
-           success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
-                                                (assoc % :category-id (:id category)))]
+     [_ event {:keys [catalog/category-id criteria/essential]} _ app-state]
+     (let [success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
+                                                (assoc % :category-id category-id))]
        (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
        (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
-                                       (:criteria category)
+                                       essential
                                        success-fn))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
