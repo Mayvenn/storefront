@@ -146,11 +146,12 @@
   [_ _ _ _ app-state]
   #?(:cljs
      (do
+       ;; preload menus
        (api/search-sku-sets (get-in app-state keypaths/api-cache)
                             {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
                             identity)
        (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                            {:product/department #{"hair"} :hair/family #{"bundles"}}
+                            {:product/department #{"hair"}}
                             identity)
        (api/fetch-facets (get-in app-state keypaths/api-cache)))))
 
