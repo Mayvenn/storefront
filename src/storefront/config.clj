@@ -3,6 +3,10 @@
             [clojure.java.io :as io]
             [taoensso.timbre :as timbre]))
 
+;; TODO: These numbers also exist in config.cljs - consider creating cljc
+(def mayvenn-call-number "1-866-424-7201")
+(def mayvenn-sms-number "1-510-447-1504")
+
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}
   (= environment "development"))

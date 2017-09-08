@@ -2,6 +2,7 @@
   (:require [storefront.platform.component-utils :as utils]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
+            [storefront.config :as config]
             [storefront.events :as events]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.experiments :as experiments]
@@ -16,7 +17,7 @@
             [storefront.keypaths :as keypaths]))
 
 (defn phone-uri [tel-num]
-  (apply str "tel://+" (filter numbers/digits tel-num)))
+  (apply str "tel://+" (numbers/digits-only tel-num)))
 
 (defn products-section [named-searches]
   (for [{:keys [name slug]} named-searches]
@@ -66,10 +67,10 @@
    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
    [:div.dark-gray.light
     [:div.py1
-     [:span.hide-on-tb-dt [:a.dark-gray {:href (phone-uri call-number)} call-number]] ;; mobile
+     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} "+" call-number)] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
      " | 9am-5pm PST M-F"]
-    [:a.block.py1.dark-gray {:href (str "mailto:" contact-email)} contact-email]]
+    (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
 
    [:div.py1.hide-on-tb-dt
     (ui/ghost-button {:href (phone-uri call-number)
@@ -163,15 +164,15 @@
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
      (footer-links false)]]))
 
-(defn minimal-component [{:keys [call-number]} owner opts]
+(defn minimal-component [data owner opts]
   (component/create
    [:div.border-top.border-gray.bg-white
     [:div.container
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Need Help?"]
       [:div.dark-gray.light.h5
-       [:span.hide-on-tb-dt [:a.dark-gray {:href (phone-uri call-number)} call-number]]
-       [:span.hide-on-mb call-number]
+       [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} config/mayvenn-call-number)]
+       [:span.hide-on-mb config/mayvenn-call-number]
        " | 9am-5pm PST M-F"]
       [:div.my1.dark-silver.h6
        (footer-links true)]]]]))

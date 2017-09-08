@@ -7,6 +7,7 @@
             [leads.header :as header]
             [leads.call-slot :as call-slot]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -315,9 +316,9 @@
      [:div.mt6
       [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
       [:ul.list-reset
-       [:li "Text us: " [:a.inherit-color {:href (footer/phone-uri text-number)} "+" text-number]]
-       [:li "Call us: " [:a.inherit-color {:href (footer/phone-uri call-number)} "+" call-number]]
-       [:li "Email us: " [:a.inherit-color {:href "mailto:help@mayvenn.com"} "help@mayvenn.com"]]
+       [:li "Text us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-sms-number)]
+       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-call-number)]
+       [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
 (defn ^:private component [data owner opts]

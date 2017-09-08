@@ -5,21 +5,10 @@
             [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.assets :as assets]
-            [storefront.keypaths :as keypaths]))
-
-(def digits (into #{} (map str (range 0 10))))
-
-(defn phone-href [tel-num]
-  (apply str "tel://+" (->> tel-num
-                            (map str)
-                            (filter digits))))
-
-(defn initial-header [mayvenn-phone]
-  [:div.center.px3.py2
-   [:img {:src (assets/path "/images/mayvenn-logo-init.png")
-          :style {:width "114px"}}]
-   [:div.h6 "Have questions? Call us: "
-    [:a.black {:href (phone-href mayvenn-phone)} mayvenn-phone]]])
+            [storefront.components.ui :as ui]
+            [storefront.keypaths :as keypaths]
+            [storefront.config :as config]
+            [storefront.components.footer :as footer]))
 
 (def congratulations-section
   [:section
@@ -208,9 +197,7 @@
 
 (defn faq-section [q-and-as]
   (let [q :h3
-        a :p.h5.mb4
-        mayvenn-phone "1-866-424-7201"
-        mayvenn-text "1-510-447-1504"]
+        a :p.h5.mb4]
     [:div.max-580.mx-auto
      [:h2 "Frequently asked questions"]
      [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
@@ -222,9 +209,9 @@
      [:div.mt6
       [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
       [:ul.list-reset
-       [:li "Text us: " [:a.inherit-color {:href (phone-href mayvenn-text)} "+" mayvenn-text]]
-       [:li "Call us: " [:a.inherit-color {:href (phone-href mayvenn-phone)} "+" mayvenn-phone]]
-       [:li "Email us: " [:a.inherit-color {:href "mailto:help@mayvenn.com"} "help@mayvenn.com"]]
+       [:li "Text us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-sms-number)]
+       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-call-number)]
+       [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
 (defn query [app-state]
@@ -244,7 +231,7 @@
      first-sale-section
      [:section.center.px3.py6.bg-teal.white
       (faq-section q-and-as)]]
-    #_(shared/minimal-footer {})]))
+    (component/build footer/minimal-component {} nil)]))
 
 
 (defn built-component [data opts]

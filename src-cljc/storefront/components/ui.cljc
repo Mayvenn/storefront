@@ -8,6 +8,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.numbers :as numbers]
             [storefront.assets :as assets]
+            [storefront.platform.numbers :as numbers]
             [storefront.components.money-formatters :as mf]
             [clojure.string :as str]
             [storefront.platform.images :as images]))
@@ -473,3 +474,24 @@
          :src   (if expanded?
                   (assets/path "/images/icons/collapse.png")
                   (assets/path "/images/icons/expand.png"))}])
+
+(defn phone-href [tel-num]
+  (str "tel://+" (numbers/digits-only tel-num)))
+
+(defn phone-url [tel-num]
+  (str "tel://+" (numbers/digits-only tel-num)))
+
+(defn email-url [email]
+  (str "mailto:" email))
+
+(defn email-link [tag attrs & body]
+  [tag (assoc attrs :href (email-url (last body))) (apply str body)])
+
+(defn phone-link [tag attrs & body]
+  [tag (assoc attrs :href (phone-url (last body))) (apply str body)])
+
+(defmulti link (fn [link-type & _] link-type))
+(defmethod link :link/email [link-type tag attrs & body]
+  (apply email-link tag attrs body))
+(defmethod link :link/phone [link-type tag attrs & body]
+  (apply phone-link tag attrs body))
