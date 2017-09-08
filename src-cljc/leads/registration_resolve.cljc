@@ -162,11 +162,11 @@
      [:div.max-580.mx-auto
       [:h2 "Your secret weapon"]
       [:p.mb3 "Our stylist kit is full of essential selling tools like business cards, hair samples, and more. "
-       "For just $109, this is the best way to jumpstart your Mayvenn business (a $200 value)."]
-      [:a.h5.block.col-12.col-6-on-tb.col-4-on-dt.mx-auto.regular.btn.btn-primary.white
-       {:href   (str "//" store-link "/categories/hair/stylist-products")
-        :target "_blank"}
-       "Learn more about stylist kits"]]]]])
+       "For just $109, this is the best way to jumpstart your Mayvenn business (a $200 value)."]]
+     [:a.h5.block.col-12.col-6-on-tb.col-4-on-dt.mx-auto.regular.btn.btn-primary.white
+      {:href   (str "//" store-link "/categories/hair/stylist-products")
+       :target "_blank"}
+      "Learn more about stylist kits"]]]])
 
 (def first-sale-section
   [:section.center
