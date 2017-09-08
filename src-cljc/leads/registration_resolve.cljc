@@ -206,9 +206,11 @@
    {:q "How does the 30-day quality guarantee work?"
     :a "A common frustration that many have experienced when purchasing hair extensions is the inability to return the hair when they’re dissatisfied. Our 30-day guarantee is an unprecedented move in the industry, and it shows how confident we are in our product. If you’re having any issues with your bundles, even after you’ve dyed, cut it, or styled it, we’ll exchange it within 30 days. If you haven’t altered the hair or packaging in any way, we’ll give you a full refund within 30 days."}])
 
-(defn faq-section [q-and-as {:keys [mayvenn-phone mayvenn-text]}]
+(defn faq-section [q-and-as]
   (let [q :h3
-        a :p.h5.mb4]
+        a :p.h5.mb4
+        mayvenn-phone "1-866-424-7201"
+        mayvenn-text "1-510-447-1504"]
     [:div.max-580.mx-auto
      [:h2 "Frequently asked questions"]
      [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
@@ -241,7 +243,7 @@
      (stylist-kit-section {})
      first-sale-section
      [:section.center.px3.py6.bg-teal.white
-      (faq-section q-and-as {})]]
+      (faq-section q-and-as)]]
     #_(shared/minimal-footer {})]))
 
 
