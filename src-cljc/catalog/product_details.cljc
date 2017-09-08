@@ -137,6 +137,7 @@
                  :else    "border-gray bg-gray  dark-gray light")
     :style     {:font-size "14px" :line-height "18px"}}
    (ui/hidden-field {:type      "radio"
+                     :keypath   events/control-bundle-option-select
                      :disabled? (not stocked?)
                      :checked?  checked?
                      :selection selector
