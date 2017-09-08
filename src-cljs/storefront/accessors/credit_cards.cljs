@@ -5,7 +5,7 @@
 
 (defn filter-cc-number-format [s]
   (->> s
-       (filter numbers/digits)
+       numbers/digits-only
        (take 16)))
 
 (defn format-cc-number [s]
@@ -17,7 +17,7 @@
 
 (defn parse-expiration [s]
   (->> s
-       (filter numbers/digits)
+       numbers/digits-only
        (split-at 2)
        (map (partial apply str))))
 
