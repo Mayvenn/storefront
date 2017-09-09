@@ -1,7 +1,7 @@
 (ns catalog.category-filters
   (:require [clojure.set :as set]
             [storefront.utils.query :as query]
-            [storefront.utils.maps :as maps]))
+            [spice.maps :as maps]))
 
 (comment
   "schema of category-filters"

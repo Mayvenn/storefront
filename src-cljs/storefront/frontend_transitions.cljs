@@ -14,7 +14,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.utils.maps :as maps]
+            [spice.maps :as maps]
             [datascript.core :as d]))
 
 (defn clear-fields [app-state & fields]
@@ -335,7 +335,7 @@
 
 (defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
   (-> app-state
-    (update-in keypaths/products merge (maps/key-by :id products))
+    (update-in keypaths/products merge (maps/index-by :id products))
     ensure-bundle-builder))
 
 (defmethod transition-state events/api-success-sku-sets
@@ -361,8 +361,8 @@
       (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
                                                      (update sku-set :criteria/selectors (partial mapv keyword)))
                                                    sku-sets)
-                                              (maps/key-by :sku-set/id)))
-      (update-in keypaths/skus merge (maps/key-by :sku skus))))
+                                              (maps/index-by :sku-set/id)))
+      (update-in keypaths/skus merge (maps/index-by :sku skus))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]

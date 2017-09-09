@@ -9,6 +9,7 @@
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.svg :as svg]
+            [spice.maps :as maps]
             [storefront.components.taxonomy-drill-down :as taxonomy-drill-down]
             [storefront.components.ui :as ui]
             [storefront.events :as events]

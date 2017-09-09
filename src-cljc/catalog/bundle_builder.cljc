@@ -1,5 +1,6 @@
 (ns catalog.bundle-builder
   (:require [clojure.set :as set]
+            [spice.maps :as maps]
             [storefront.platform.numbers :as numbers]))
 
 ;; TERMINOLOGY
@@ -17,9 +18,6 @@
   (when (= 1 (count coll))
     (first coll)))
 
-(defn ^:private update-vals [m f & args]
-  (reduce (fn [r [k v]] (assoc r k (apply f v args))) {} m))
-
 (defn selected-variant [bundle-builder]
   (only (:selected-variants bundle-builder)))
 
@@ -30,7 +28,7 @@
   [{:keys [selected-variants]}]
   (->> selected-variants
        (map :variant_attrs)
-       (map #(update-vals % (comp set vector)))
+       (map (partial maps/map-values (comp set vector)))
        (reduce (partial merge-with set/union))
        (map (juxt first (comp only second)))
        (filter second)

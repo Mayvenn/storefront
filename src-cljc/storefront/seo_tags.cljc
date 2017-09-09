@@ -5,8 +5,7 @@
             [storefront.accessors.named-searches :as named-searches]
             [catalog.categories :as categories]
             [catalog.products :as products]
-            [catalog.selector :as selector]
-            [storefront.utils.maps :as maps]))
+            [catalog.selector :as selector]))
 
 (def tag-class "seo-tag")
 

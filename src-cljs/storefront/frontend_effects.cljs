@@ -43,7 +43,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
-            [storefront.utils.maps :as maps]
+            [spice.maps :as maps]
             [storefront.effects :as effects]))
 
 (defn changed? [previous-app-state app-state keypath]

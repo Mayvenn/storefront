@@ -9,7 +9,7 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.utils.maps :refer [filter-nil]]
+            [spice.maps :as maps]
             [clojure.set :as set]))
 
 (defn is-rails-style? [resp]
@@ -113,7 +113,7 @@
 
 (defn api-req
   [method path req-key request-opts]
-  (let [request-opts (update-in request-opts [:params] filter-nil)
+  (let [request-opts (update-in request-opts [:params] maps/filter-nil)
         req-id (str (random-uuid))
         request
         (method (str api-base-url path)

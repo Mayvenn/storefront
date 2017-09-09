@@ -2,7 +2,6 @@
   (:require [storefront.keypaths :as keypaths]
             [catalog.keypaths :as k]
             [clojure.string :as string]
-            [storefront.utils.maps :as maps]
             [storefront.accessors.category-filters :as category-filters]))
 
 (defn sku-set-by-id [app-state sku-set-id]

@@ -2,9 +2,9 @@
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[datascript.core :as d]
                        [storefront.api :as api]
-                       [storefront.utils.maps :as maps]
                        [storefront.component :as component]
                        [storefront.history :as history]])
+            [spice.maps :as maps]
             [catalog.categories :as categories]
             [catalog.selector :as selector]
             [clojure.set :as set]

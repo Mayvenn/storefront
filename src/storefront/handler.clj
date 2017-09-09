@@ -30,7 +30,7 @@
              [experiments :as experiments]
              [named-searches :as named-searches]]
             [comb.template :as template]
-            [storefront.utils.maps :refer [key-by]]
+            [spice.maps :refer [index-by]]
             [clojure.string :as str]
             [clojure.xml :as xml]
             [catalog.categories :as categories]
@@ -213,7 +213,7 @@
             user-token            (cookies/get req "user-token")
             user-id               (cookies/get req "id")]
         (if-let [products (seq (api/products-by-ids storeback-config product-ids user-id user-token))]
-          (let [products-by-id (key-by :id products)]
+          (let [products-by-id (index-by :id products)]
             (html-response render-ctx (-> data
                                           (assoc-in keypaths/browse-variant-quantity 1)
                                           (assoc-in keypaths/products products-by-id)
@@ -296,8 +296,8 @@
                                     {:keys [facets]}        (api/fetch-facets storeback-config)]
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                                    (update-in keypaths/sku-sets merge (key-by :sku-set/id sku-sets))
-                                    (update-in keypaths/skus merge (key-by :sku skus)))))))]
+                                    (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
+                                    (update-in keypaths/skus merge (index-by :sku skus)))))))]
           (condp = nav-event
             events/navigate-old-product         (redirect-product->canonical-url ctx req params)
             events/navigate-named-search        (if (= "blonde" (:named-search-slug params))

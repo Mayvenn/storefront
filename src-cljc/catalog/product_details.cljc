@@ -11,7 +11,7 @@
             [storefront.assets :as assets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
-            [storefront.utils.maps :as maps]
+            [spice.maps :as maps]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -370,11 +370,11 @@
   (let [skus-db         @(get-in data keypaths/db-skus)
         image-db        @(get-in data keypaths/db-images)
         current-product (products/current-sku-set data)
-        product         (update current-product :criteria/essential maps/update-vals first)
+        product         (update current-product :criteria/essential (partial maps/map-values first))
 
         facets (->> (get-in data keypaths/facets)
-                    (map #(update % :facet/options (partial maps/key-by :option/slug)))
-                    (maps/key-by :facet/slug))
+                    (map #(update % :facet/options (partial maps/index-by :option/slug)))
+                    (maps/index-by :facet/slug))
 
         reviews (assoc (review-component/query data)
                        :review?
