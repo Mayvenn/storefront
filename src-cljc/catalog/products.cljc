@@ -101,7 +101,10 @@
   (some-> sku-set :criteria/essential :product/department (contains? "hair")))
 (defn stylist-only? [sku-set] (some-> sku-set :criteria/essential :product/department (contains? "stylist-exclusives")))
 (def eligible-for-reviews? (complement stylist-only?))
-(def eligible-for-triple-bundle-discount? is-hair?)
+
+(defn eligible-for-triple-bundle-discount? [sku-set]
+  (or (:promo.eligible/triple-bundle sku-set)
+      is-hair?))
 
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
