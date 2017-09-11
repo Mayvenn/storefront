@@ -47,12 +47,14 @@
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
       (if new-taxon-launch?
-        (for [{:keys [slug catalog/category-id images name] :as category} categories]
+        (for [{:keys [slug id images name]} (->> categories
+                                                 (filter :home/order)
+                                                 (sort-by :home/order))]
           (grid-block slug
                       [:a.absolute.overlay.overflow-hidden
-                       (merge {:data-test (str "category-" slug)}
-                              (utils/route-to events/navigate-category
-                                              category))
+                       (merge {:data-test (str "named-search-" slug)}
+                              (utils/route-to events/navigate-category {:slug slug
+                                                                        :id   id}))
                        (category-image (:home images))
                        [:h3.h2.white.absolute.col-12.titleize
                         {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
@@ -308,9 +310,7 @@
    :store             (marquee/query data)
    :signed-in         (auth/signed-in data)
    :new-taxon-launch? (experiments/new-taxon-launch? data)
-   :categories        (->> (get-in data keypaths/categories)
-                           (filter :home/order)
-                           (sort-by :home/order))})
+   :categories        (get-in data keypaths/categories)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
