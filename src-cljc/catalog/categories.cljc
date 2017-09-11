@@ -235,7 +235,19 @@
                                          "styling. Our collection of closures and frontals blend"
                                          "seamlessly with our bundles and can be customized"
                                          "to fit your unique look.")}
-    :hamburger/order 1}])
+    :hamburger/order 1}
+   {:id          "13"
+    :name        "Wigs"
+    :slug        "wigs"
+    :copy        {:description (copy "When getting a bundle install isn’t an option, "
+                                     "these units will be your go-to protective style "
+                                     "for achieving a brand new look at home. Our wigs "
+                                     "are made from 100% virgin human hair, and can "
+                                     "be customized to fit your unique look using the "
+                                     "built-in combs and adjustable strap.")}
+    :criteria    {:product/department #{"hair"}
+                  :hair/family        "wigs"}
+    :filter-tabs [:hair/texture :hair/origin :hair/material]}])
 
 (defn id->category [id categories]
   (->> categories
