@@ -47,10 +47,7 @@
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
       (if new-taxon-launch?
-        (for [{:keys [page/slug
-                      catalog/category-id
-                      images
-                      name] :as category} categories]
+        (for [{:keys [slug catalog/category-id images name] :as category} categories]
           (grid-block slug
                       [:a.absolute.overlay.overflow-hidden
                        (merge {:data-test (str "category-" slug)}

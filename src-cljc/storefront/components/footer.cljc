@@ -36,8 +36,7 @@
                                     (and own-store? (named-searches/is-stylist-product? %)))
                                named-searches))]]])
 
-(defn- category->link
-  [{:keys [name page/slug] :as category}]
+(defn- category->link [{:keys [name slug] :as category}]
   {:title       name
    :slug        slug
    :nav-message [events/navigate-category category]})
