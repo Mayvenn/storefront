@@ -22,7 +22,8 @@
    "water-wave"     "7"
    "deep-wave"      "8"
    "curly"          "9"
-   "360-frontals"   "10"})
+   "360-frontals"   "10"
+   "wigs"           "13"})
 
 (defn copy [& sentences]
   (string/join " " sentences))
@@ -237,6 +238,7 @@
                                          "to fit your unique look.")}
     :hamburger/order 1}
    {:id          "13"
+    :footer/order 20
     :name        "Wigs"
     :slug        "wigs"
     :copy        {:description (copy "When getting a bundle install isn’t an option, "
