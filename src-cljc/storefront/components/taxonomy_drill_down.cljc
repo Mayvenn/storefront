@@ -71,16 +71,18 @@
 (defn- down-step-li [option down-step current-step]
   [:li {:key (:slug option)}
    (major-menu-row
-    (utils/fake-href events/menu-traverse-descend
-                     {:down-step       down-step
-                      :current-step    current-step
-                      :selected-option option})
-    [:span.flex-auto (:label option)] forward-caret)])
+    (assoc (utils/fake-href events/menu-traverse-descend
+                            {:down-step       down-step
+                             :current-step    current-step
+                             :selected-option option})
+           :data-test (str "menu-step-" (:slug option)))
+    [:span.flex-auto  (:label option)] forward-caret)])
 
 (defn- terminal-li [criteria option current-step]
   [:li {:key (:slug option)}
    (major-menu-row
-    (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
+    (assoc (utils/fake-href events/menu-traverse-out {:criteria (assoc criteria (:slug current-step) #{(:slug option)})})
+           :data-test (str "menu-step-" (:slug option)))
     [:span.flex-auto.titleize (:label option)])])
 
 (defn component
