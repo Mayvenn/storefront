@@ -85,7 +85,15 @@
    "62" "water-wave"
    "65" "water-wave"
    "68" "yaki-straight"
-   "71" "yaki-straight"})
+   "71" "yaki-straight"
+   "80" "wigs"
+   "81" "wigs"
+   "82" "wigs"
+   "83" "wigs"
+   "84" "wigs"
+   "85" "wigs"
+   "86" "wigs"
+   "87" "wigs"})
 
 (defn is-hair? [sku-set]
   (some-> sku-set :criteria/essential :product/department (contains? "hair")))
