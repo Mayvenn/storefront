@@ -8,7 +8,7 @@
   ;; [<facet-slug> <option-slug>]
   #{[:hair/family "360-frontals"]
     [:hair/family "360-wigs"]
-    [:hair/family "lace-frontal-wigs"]})
+    [:hair/family "lace-front-wigs"]})
 
 (def new-category?
   #{"360-frontals" "wigs"})
@@ -254,7 +254,7 @@
                           :mobile-url  "//ucarecdn.com/79bd3af6-1c95-424c-98c0-2dc71b15b0cc/"
                           :alt         "Wigs"}}
     :criteria     {:product/department #{"hair"}
-                   :hair/family        #{"360-wigs" "lace-frontal-wigs"}}
+                   :hair/family        #{"360-wigs" "lace-front-wigs"}}
     :filter-tabs  [:hair/family :hair/texture :hair/origin :hair/color]}])
 
 (defn id->category [id categories]
