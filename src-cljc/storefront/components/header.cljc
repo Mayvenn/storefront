@@ -1,5 +1,5 @@
 (ns storefront.components.header
-  (:require [storefront.accessors.named-searches :as named-searches]
+  (:require [catalog.categories :as categories]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.nav :as nav]
@@ -160,21 +160,21 @@
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
-   (for [{:keys [slug name]} items]
+   (for [{:keys [id slug name]} items]
      [:li {:key slug}
-      [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-named-search {:named-search-slug slug})
-       (when (named-searches/new-named-search? slug) [:span.teal "NEW "])
+      [:a.inherit-color.block.pyp2 (utils/route-to events/navigate-category {:id id
+                                                                             :slug slug})
+       (when (categories/new-category? slug) [:span.teal "NEW "])
        (str/capitalize name)]])])
 
-(defn shopping-flyout [signed-in {:keys [expanded? named-searches]}]
+(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
-    (let [partition-searches (comp (filter (fn [named-search]
-                                          (or (-> signed-in ::auth/as (= :stylist))
-                                              (not (named-searches/is-stylist-product? named-search)))))
-                                (partition-all 6))
-          columns (concat (->> (filter named-searches/is-extension? named-searches)
+    (let [partition-searches (partition-all 6)
+          columns (concat (->> (remove #(or (-> % :criteria :hair/family)
+                                            (-> % :hamburger/order)) categories)
                                (sequence partition-searches))
-                          (->> (remove named-searches/is-extension? named-searches)
+                          (->> (filter #(and (-> % :criteria :hair/family)
+                                             (not (-> % :hamburger/order))) categories)
                                (sequence partition-searches)))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6

@@ -2,7 +2,6 @@
   (:require [clojure.string :as str]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
             [storefront.components.marquee :as marquee]
@@ -169,27 +168,6 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private old-shopping-area [signed-in named-searches]
-  [[:li {:key "old-shopping-area"}
-    (minor-menu-row (utils/route-to events/navigate-shop-by-look)
-                    "Shop looks")]
-   (for [{:keys [title items]} (cond-> [{:title "Shop hair"
-                                         :items (filter named-searches/is-extension? named-searches)}
-                                        {:title "Shop closures & frontals"
-                                         :items (filter named-searches/is-closure-or-frontal? named-searches)}]
-                                 (-> signed-in ::auth/as (= :stylist))
-                                 (conj {:title "Stylist exclusives"
-                                        :items (filter named-searches/is-stylist-product? named-searches)}))]
-     [:li {:key title}
-      (minor-menu-row title)
-      [:ul.list-reset.ml6
-       (for [{:keys [name slug]} items]
-         [:li {:key slug}
-          (minor-menu-row (assoc (utils/route-to events/navigate-named-search {:named-search-slug slug})
-                                 :data-test (str "menu-" slug))
-                          (when (named-searches/new-named-search? slug) [:span.teal.mr1 "NEW"])
-                          (str/capitalize name))])]])])
-
 (defn ^:private shopping-area [signed-in]
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
@@ -205,11 +183,9 @@
      [:li (major-menu-row (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in new-taxon-launch? {:keys [named-searches]}]
+(defn ^:private menu-area [signed-in]
   [:ul.list-reset.mb3
-   (if new-taxon-launch?
-     (shopping-area signed-in)
-     (old-shopping-area signed-in named-searches))
+   (shopping-area signed-in)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -232,7 +208,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [signed-in store user new-taxon-launch? shopping]} owner opts]
+(defn ^:private root-menu [{:keys [signed-in store user shopping]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-top.border-gray
@@ -241,13 +217,13 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in new-taxon-launch? shopping)]
+     (menu-area signed-in)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
 (defn component
-  [{:keys [user store promo-data shopping signed-in new-taxon-launch? on-taxon? drill-down-data] :as data}
+  [{:keys [user store promo-data shopping signed-in on-taxon? drill-down-data] :as data}
    owner
    opts]
   (component/create
@@ -255,17 +231,16 @@
     [:div.top-0.sticky.z4.border-gray
      (promo-bar promo-data)
      burger-header]
-    (if (and on-taxon? new-taxon-launch?)
+    (if on-taxon?
       (component/build taxonomy-drill-down/component drill-down-data nil)
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
   {:signed-in         (auth/signed-in data)
-   :new-taxon-launch? (experiments/new-taxon-launch? data)
    :on-taxon?         (get-in data keypaths/current-traverse-nav-id)
    :user              {:email (get-in data keypaths/user-email)}
    :store             (marquee/query data)
-   :shopping          {:named-searches (named-searches/current-named-searches data)}})
+   :shopping          {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)

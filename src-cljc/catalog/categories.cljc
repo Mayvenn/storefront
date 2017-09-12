@@ -8,8 +8,11 @@
   "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
   ;; [<facet-slug> <option-slug>]
   #{[:hair/family "360-frontals"]
-    [:hair/texture "yaki-straight"]
-    [:hair/texture "water-wave"]})
+    [:hair/family "360-wigs"]
+    [:hair/family "lace-frontal-wigs"]})
+
+(def new-category?
+  #{"360-frontals" "wigs"})
 
 (def named-search->category-id
   {"closures"       "0"
