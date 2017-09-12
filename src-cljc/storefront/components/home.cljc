@@ -87,20 +87,20 @@
     (let [file-name "Shop-Now-SWITCH-Homepage"
           alt       "The switch up. All wigs are here. Shop our looks."]
       (case store-slug
-        "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/9a7635a9-fac2-4a0d-a79b-ebf663118611/"
-                                      :desktop-url "//ucarecdn.com/c03c8c98-e41b-42cf-bf6d-7da306a0cea2/"
+        “msroshposh”     (hero-image {:mobile-url  “//ucarecdn.com/ae763b87-130a-4d97-b673-a53035d3cd91/”
+                                      :desktop-url “//ucarecdn.com/2c083b9c-9673-4601-bd08-6df3453a1efc/”
                                       :file-name   file-name
                                       :alt         alt})
-        "touchedbytokyo" (hero-image {:mobile-url  "//ucarecdn.com/9a7635a9-fac2-4a0d-a79b-ebf663118611/"
-                                      :desktop-url "//ucarecdn.com/c03c8c98-e41b-42cf-bf6d-7da306a0cea2/"
+        “touchedbytokyo” (hero-image {:mobile-url  “//ucarecdn.com/ae763b87-130a-4d97-b673-a53035d3cd91/”
+                                      :desktop-url “//ucarecdn.com/2c083b9c-9673-4601-bd08-6df3453a1efc/”
                                       :file-name   file-name
                                       :alt         alt})
-        "peakmill"       (hero-image {:mobile-url  "//ucarecdn.com/9a7635a9-fac2-4a0d-a79b-ebf663118611/"
-                                      :desktop-url "//ucarecdn.com/c03c8c98-e41b-42cf-bf6d-7da306a0cea2/"
+        “peakmill”       (hero-image {:mobile-url  “//ucarecdn.com/ae763b87-130a-4d97-b673-a53035d3cd91/”
+                                      :desktop-url “//ucarecdn.com/2c083b9c-9673-4601-bd08-6df3453a1efc/”
                                       :file-name   file-name
                                       :alt         alt})
-        (hero-image {:mobile-url  "//ucarecdn.com/9a7635a9-fac2-4a0d-a79b-ebf663118611/"
-                     :desktop-url "//ucarecdn.com/c03c8c98-e41b-42cf-bf6d-7da306a0cea2/"
+        (hero-image {:mobile-url  “//ucarecdn.com/ae763b87-130a-4d97-b673-a53035d3cd91/”
+                     :desktop-url “//ucarecdn.com/2c083b9c-9673-4601-bd08-6df3453a1efc/”
                      :file-name   file-name
                      :alt         alt})))]])
 
