@@ -128,22 +128,6 @@
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event args _ app-state]
-  (when (and (experiments/old-taxon? app-state)
-             ;;TODO get literal from experiments
-             (= (:feature args) "old-taxon")
-             (#{events/navigate-product-details events/navigate-category}
-              (get-in app-state keypaths/navigation-event)))
-    (effects/redirect events/navigate-home))
-  (when (and (experiments/new-taxon-launch? app-state)
-             ;;TODO get literal from experiments
-             (= (:feature args) "one-drill-down")
-             (= (get-in app-state keypaths/navigation-event)
-                events/navigate-named-search))
-    (redirect-named-search (categories/named-search->category
-                            (get-in app-state (conj keypaths/navigation-args :named-search-slug))
-                            (get-in app-state keypaths/categories)))))
-
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
@@ -284,10 +268,9 @@
        (not (stylists/own-store? app-state))))
 
 (defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
-  (if-let [category (when (experiments/new-taxon-launch? app-state)
-                      (categories/named-search->category
-                       (get-in app-state (conj keypaths/navigation-args :named-search-slug))
-                       (get-in app-state keypaths/categories)))]
+  (if-let [category (categories/named-search->category
+                     (get-in app-state (conj keypaths/navigation-args :named-search-slug))
+                     (get-in app-state keypaths/categories))]
     (redirect-named-search category)
     (let [named-search (named-searches/current-named-search app-state)]
       (if (hidden-search? app-state named-search)

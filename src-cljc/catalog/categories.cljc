@@ -5,7 +5,6 @@
             [storefront.accessors.category-filters :as category-filters]))
 
 (def new-facet?
-  "NB: changes here should be reflected in accessors.named-searches until experiments/new-taxon-launch? is 100%"
   ;; [<facet-slug> <option-slug>]
   #{[:hair/family "360-frontals"]
     [:hair/family "360-wigs"]

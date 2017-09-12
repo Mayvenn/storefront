@@ -11,7 +11,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.videos :as videos]
             [storefront.components.money-formatters :as mf]
             [storefront.utils.query :as query]

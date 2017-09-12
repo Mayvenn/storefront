@@ -5,7 +5,6 @@
             [storefront.platform.date :as date]
             [storefront.platform.images :as images]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.auth :as auth]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
@@ -37,7 +36,7 @@
                                     "50vw")
                       :alt     alt}])
 
-(defn popular-grid [featured-searches new-taxon-launch? categories]
+(defn popular-grid [categories]
   (let [grid-block (fn [key content]
                      [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
                       (ui/aspect-ratio 4 3 content)])]
@@ -46,31 +45,19 @@
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
-      (if new-taxon-launch?
-        (for [{:keys [slug id images name]} (->> categories
-                                                 (filter :home/order)
-                                                 (sort-by :home/order))]
-          (grid-block slug
-                      [:a.absolute.overlay.overflow-hidden
-                       (merge {:data-test (str "named-search-" slug)}
-                              (utils/route-to events/navigate-category {:slug slug
-                                                                        :id   id}))
-                       (category-image (:home images))
-                       [:h3.h2.white.absolute.col-12.titleize
-                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                                 :top         "50%"}}
-                        name]]))
-
-        (for [{:keys [representative-images name slug]} featured-searches]
-          (grid-block slug
-                      [:a.absolute.overlay.overflow-hidden
-                       (merge {:data-test (str "named-search-" slug)}
-                              (utils/route-to events/navigate-named-search {:named-search-slug slug}))
-                       (product-image (:model-grid representative-images))
-                       [:h3.h2.white.absolute.col-12.titleize
-                        {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                                 :top         "50%"}}
-                        name]])))
+      (for [{:keys [slug id images name]} (->> categories
+                                               (filter :home/order)
+                                               (sort-by :home/order))]
+        (grid-block slug
+                    [:a.absolute.overlay.overflow-hidden
+                     (merge {:data-test (str "category-" slug)}
+                            (utils/route-to events/navigate-category {:slug slug
+                                                                      :id   id}))
+                     (category-image (:home images))
+                     [:h3.h2.white.absolute.col-12.titleize
+                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                               :top         "50%"}}
+                      name]]))
       (grid-block "spare-block"
                   [:a.bg-light-teal.white.absolute.overlay
                    (assoc (utils/route-to events/navigate-shop-by-look)
@@ -163,7 +150,7 @@
 
 (defn social-icon [path]
   [:img.ml2 {:style {:height "20px"}
-             :src   path}] )
+             :src   path}])
 
 (def ^:private gallery-link
   (component/html
@@ -207,7 +194,7 @@
          [:div (store-welcome signed-in store true)]
          [:div.bg-white.absolute.left-0.right-0
           (for [row rows]
-            [:div.border-gray.border-bottom row])] )))))
+            [:div.border-gray.border-bottom row])])))))
 
 (def about-mayvenn
   (component/html
@@ -293,24 +280,21 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [featured-searches signed-in store new-taxon-launch? categories]} owner opts]
+(defn component [{:keys [signed-in store categories]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero (:store-slug store))]
     [:section feature-blocks]
     [:section.hide-on-tb-dt (store-info signed-in store)]
-    [:section (popular-grid featured-searches new-taxon-launch? categories)]
+    [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:featured-searches (->> (named-searches/current-named-searches data)
-                           (filter (comp #{"straight" "loose-wave" "body-wave" "deep-wave" "curly"} :slug)))
-   :store             (marquee/query data)
-   :signed-in         (auth/signed-in data)
-   :new-taxon-launch? (experiments/new-taxon-launch? data)
-   :categories        (get-in data keypaths/categories)})
+  {:store      (marquee/query data)
+   :signed-in  (auth/signed-in data)
+   :categories (get-in data keypaths/categories)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

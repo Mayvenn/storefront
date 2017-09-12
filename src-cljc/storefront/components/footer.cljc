@@ -161,10 +161,9 @@
    :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  {:contacts          (contacts-query data)
-   :own-store?        (own-store? data)
-   :categories        (get-in data keypaths/categories)
-   :new-taxon-launch? (experiments/new-taxon-launch? data)})
+  {:contacts   (contacts-query data)
+   :own-store? (own-store? data)
+   :categories (get-in data keypaths/categories)})
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
