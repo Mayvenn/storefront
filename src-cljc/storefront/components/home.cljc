@@ -82,7 +82,7 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-named-search {:named-search-slug "wigs"})
+    (assoc (utils/route-to events/navigate-category {:id "13" :slug "wigs"})
            :data-test "home-banner")
     (let [file-name "Shop-Now-SWITCH-Homepage"
           alt       "The switch up. All wigs are here. Shop our looks."]
