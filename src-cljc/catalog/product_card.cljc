@@ -60,8 +60,10 @@
            {:width  10
             :height 10
             :src    color-url}])]))
-   (let [origin (some-> essential :hair/origin first)]
-     (when (#{"brazilian" "malaysian"} origin)
+   (let [origin (some-> essential :hair/origin first)
+         family (some-> essential :hair/family first)]
+     (when (and (#{"brazilian" "malaysian"} origin)
+                (not (#{"lace-front-wigs" "360-wigs"} family)))
        [:p.h6.teal "Bestseller!"]))])
 
 (defn component
