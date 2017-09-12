@@ -179,6 +179,10 @@
                                          {:slug "closures-and-frontals" :id "12"})
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
+   [:li (major-menu-row (utils/fake-href events/menu-traverse-descend
+                                         {:slug "wigs" :id "13"})
+                        [:span.medium.flex-auto "Shop Wigs"]
+                        forward-caret)]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
