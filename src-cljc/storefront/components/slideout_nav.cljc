@@ -187,7 +187,7 @@
                         [:span.medium.flex-auto "Shop Wigs"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
-                                 :data-test "menu-stylist-wigs")
+                                 :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
 (defn ^:private menu-area [signed-in]
