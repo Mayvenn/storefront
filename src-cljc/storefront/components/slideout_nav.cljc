@@ -181,11 +181,10 @@
                                :data-test "menu-shop-closures")
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
-   [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
+   [:li (major-menu-row (assoc (utils/fake-href events/navigate-category
                                                 {:slug "wigs" :id "13"})
                                :data-test "menu-shop-wigs")
-                        [:span.medium.flex-auto "Shop Wigs"]
-                        forward-caret)]
+                        [:span.medium.flex-auto "Shop Wigs"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
                                  :data-test "menu-stylist-wigs")

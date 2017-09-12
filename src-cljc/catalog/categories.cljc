@@ -239,19 +239,19 @@
                                          "seamlessly with our bundles and can be customized"
                                          "to fit your unique look.")}
     :hamburger/order 1}
-   {:id          "13"
+   {:id           "13"
     :footer/order 20
-    :name        "Wigs"
-    :slug        "wigs"
-    :copy        {:description (copy "When getting a bundle install isn’t an option, "
-                                     "these units will be your go-to protective style "
-                                     "for achieving a brand new look at home. Our wigs "
-                                     "are made from 100% virgin human hair, and can "
-                                     "be customized to fit your unique look using the "
-                                     "built-in combs and adjustable strap.")}
-    :criteria    {:product/department #{"hair"}
-                  :hair/family        #{"360-wigs" "lace-frontal-wigs"}}
-    :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]}])
+    :name         "Wigs"
+    :slug         "wigs"
+    :copy         {:description (copy "When getting a bundle install isn’t an option, "
+                                      "these units will be your go-to protective style "
+                                      "for achieving a brand new look at home. Our wigs "
+                                      "are made from 100% virgin human hair, and can "
+                                      "be customized to fit your unique look using the "
+                                      "built-in combs and adjustable strap.")}
+    :criteria     {:product/department #{"hair"}
+                   :hair/family        #{"360-wigs" "lace-frontal-wigs"}}
+    :filter-tabs  [:hair/family :hair/texture :hair/origin :hair/color]}])
 
 (defn id->category [id categories]
   (->> categories
