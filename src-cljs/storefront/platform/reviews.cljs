@@ -75,7 +75,11 @@ Lengths: 12\" to 28\""
    :360-frontals {:data-product-id  668
                   :data-name        "Brazilian Natural Straight 360 Frontal Lace Closure"
                   :data-description "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal. This one-of-a-kind frontal piece features freestyle parting, baby hairs, and low-density edges for a naturally flawless look. Measuring 4” in both the front and sides, and 2.5” in the back, our 360 Lace Frontal allows plenty of space for all your customization needs. Throw it in a high bun, rock a pair of french braids, or don a ponytail - the 360 Lace Frontal provides the flexibility for all-around hairstyles that look great from all sides."
-                  :data-image-url   "https://ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/-/scale_crop/250x227/Straight-360-Frontal-From-Three-Quarters-Back.jpg"}})
+                  :data-image-url   "https://ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/-/scale_crop/250x227/Straight-360-Frontal-From-Three-Quarters-Back.jpg"}
+   :wigs         {:data-product-id  698
+                  :data-name        "Brazilian Natural Straight 360 Wig"
+                  :data-description "Designed for those who want all-around protection, our 360 Lace Frontal Wig in Straight has you covered from front to back. No more waiting hours to get an install - our 360 Straight unit provides the versatility of style that can be achieved in an instant! Our wigs are made from 100% virgin human hair and can be customized to fit your unique look using the built-in clips and adjustable strap. They feature natural density throughout and can be parted from ear-to-ear or worn up in a ponytail with our 360 lace frontal construction."
+                  :data-image-url   "http://ucarecdn.com/10b9786e-846e-4e74-a6ac-d7b3b89beaed/-/scale_crop/250x227/Straight-360-Wig.jpg"}})
 
 (defn product-options-for [slug]
   (get product-options-by-named-search (keyword slug)))
