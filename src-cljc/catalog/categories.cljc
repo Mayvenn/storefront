@@ -249,6 +249,10 @@
                                       "are made from 100% virgin human hair, and can "
                                       "be customized to fit your unique look using the "
                                       "built-in combs and adjustable strap.")}
+    :images       {:hero {:filename    "Wigs.jpg"
+                          :desktop-url "//ucarecdn.com/45366d8c-4303-430a-ac68-d187dbcfd10a/"
+                          :mobile-url  "//ucarecdn.com/79bd3af6-1c95-424c-98c0-2dc71b15b0cc/"
+                          :alt         "Wigs"}}
     :criteria     {:product/department #{"hair"}
                    :hair/family        #{"360-wigs" "lace-frontal-wigs"}}
     :filter-tabs  [:hair/family :hair/texture :hair/origin :hair/color]}])
