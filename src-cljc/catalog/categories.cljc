@@ -251,8 +251,8 @@
                                      "be customized to fit your unique look using the "
                                      "built-in combs and adjustable strap.")}
     :criteria    {:product/department #{"hair"}
-                  :hair/family        "wigs"}
-    :filter-tabs [:hair/texture :hair/origin :hair/material]}])
+                  :hair/family        #{"360-wigs" "lace-frontal-wigs"}}
+    :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]}])
 
 (defn id->category [id categories]
   (->> categories
