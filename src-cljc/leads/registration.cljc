@@ -222,12 +222,10 @@
       ".mayvenn.com"]]]] )
 
 (defn ^:private component
-  [{:keys [error focused sign-up referral contact stylist-details states]} owner opts]
+  [{:keys [focused sign-up referral contact stylist-details states]} owner opts]
   (component/create
    [:div.bg-teal.white.pb4
     [:div.max-580.mx-auto
-     (when error
-       [:p.bg-danger.registration-flash error])
      [:div.registration-header
       [:div.center.mb3
        [:img.my2 {:src (assets/path "/images/leads/logo-knockout.png")}]
@@ -283,7 +281,6 @@
 (defn ^:private query [data]
   (let [field-errors (get-in data keypaths/field-errors)]
     {:focused         (get-in data keypaths/ui-focus)
-     :error           ""
      :states          (map (juxt :name :abbr) (get-in data keypaths/states))
      :referral        {:referred        (get-in data keypaths/leads-ui-registration-referred)
                        :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)
@@ -303,7 +300,19 @@
     registration
     (-> registration
         (assoc :referred false)
-        (dissoc :reffers-phone))))
+        (dissoc :referrers-phone))))
+
+(defn handle-address-2 [{:keys [address2] :as registration}]
+  (if (empty? address2)
+    (dissoc registration :address2)
+    registration))
+
+(defn handle-payout-method [{:keys [payout-method] :as registration}]
+  (condp = payout-method
+    "venmo"  (dissoc registration :paypal-email)
+    "paypal" (dissoc registration :venmo-phone)
+    "check"  (dissoc registration :paypal-email :venmo-phone)
+    :else    registration))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-leads-registration-details
@@ -318,7 +327,9 @@
            registration                  (-> app-state
                                              (get-in keypaths/leads-ui-registration)
                                              (merge (select-keys sign-up [:first-name :last-name :email :phone]))
-                                             handle-referral)]
+                                             handle-referral
+                                             handle-address-2
+                                             handle-payout-method)]
        (api/advance-lead-registration {:lead-id    id
                                        :step-id    step-id
                                        :session-id (get-in app-state keypaths/session-id)
