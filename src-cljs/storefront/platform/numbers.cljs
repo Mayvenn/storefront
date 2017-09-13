@@ -1,9 +1,10 @@
-(ns storefront.platform.numbers)
+(ns storefront.platform.numbers
+  (:require [clojure.string :as string]))
 
 (def digits (into #{} (map str (range 0 10))))
 
 (defn digits-only [value]
-  (clojure.string/replace value #"[^0-9]" ""))
+  (when value (string/replace value #"[^0-9]" "")))
 
 (defn parse-float [s]
   (js/parseFloat s))

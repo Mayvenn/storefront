@@ -4,9 +4,7 @@
             [goog.string]))
 
 (defn filter-cc-number-format [s]
-  (->> s
-       numbers/digits-only
-       (take 16)))
+  (some->> s numbers/digits-only (take 16)))
 
 (defn format-cc-number [s]
   (->> s
