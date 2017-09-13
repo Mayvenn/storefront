@@ -247,7 +247,7 @@
                                              "these units will be your go-to protective style "
                                              "for achieving a brand new look at home. Made "
                                              "from 100% virgin human hair, and customizable "
-                                             to fit your unique look.")}
+                                             "to fit your unique look.")}
     :images              {:hero {:filename    "Wigs.jpg"
                                  :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
                                  :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
