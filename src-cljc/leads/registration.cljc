@@ -1,7 +1,8 @@
 (ns leads.registration
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.component :as component]
-                       [storefront.api :as api]])
+                       [storefront.api :as api]
+                       [storefront.history :as history]])
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
             [storefront.platform.carousel :as carousel]
@@ -333,6 +334,7 @@
   [_ event {:keys [registered-lead]} app-state]
   (assoc-in app-state keypaths/leads-lead registered-lead))
 
-(defmethod effects/perform-effects events/api-success-lead-registered
-  [_ event {:keys [registered-lead]} _ app-state]
-  (messages/handle-message events/navigate-leads-registration-resolve))
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-lead-registered
+     [_ event {:keys [registered-lead]} _ app-state]
+     (history/enqueue-navigate events/navigate-leads-registration-resolve)))
