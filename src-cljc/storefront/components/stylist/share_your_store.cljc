@@ -43,11 +43,11 @@
               :src   img-url}]
    content])
 
-(defn component [{:keys [host] {:keys [store_slug]} :store}]
+(defn component [{:keys [store-slug host utm-campaign]}]
   (component/create
-   (let [store-link        (str store_slug "." host)
+   (let [store-link        (str store-slug "." host)
          share-url         (-> (url/url (str "https://" store-link))
-                               (assoc :query {:utm_campaign "stylist_dashboard"}))
+                               (assoc :query {:utm_campaign utm-campaign}))
          phone-image-width "336px"]
      [:div.center.px3.py6.container
       (constrain-copy-width
@@ -63,7 +63,7 @@
                   :top         "137px"
                   :left        "28px"
                   :right       "28px"}}
-         [:span.bold store_slug] "." host]])
+         [:span.bold store-slug] "." host]])
       [:h3.h5 "Share your store link"]
       [:div.col-12.col-6-on-tb.col-4-on-dt.mx-auto
        (social-button
@@ -91,11 +91,12 @@
          :on-click utils/select-all-text}]]])))
 
 (defn query [data]
-  {:host  (case (get-in data keypaths/environment)
-            "production" "mayvenn.com"
-            "acceptance" "diva-acceptance.com"
-            "storefront.dev")
-   :store (get-in data keypaths/store)})
+  {:host         (case (get-in data keypaths/environment)
+                   "production" "mayvenn.com"
+                   "acceptance" "diva-acceptance.com"
+                   "storefront.dev")
+   :store-slug   (:store_slug (get-in data keypaths/store))
+   :utm-campaign "stylists_dashboard"})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
