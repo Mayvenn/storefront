@@ -19,7 +19,6 @@
 (defpath navigate-category)
 (defpath navigate-named-search)
 (defpath navigate-ugc-named-search)
-(defpath navigate-old-product)
 (defpath navigate-product-details)
 (defpath navigate-product-details-sku)
 (defpath navigate-sign-in)

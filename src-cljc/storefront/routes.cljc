@@ -45,11 +45,10 @@
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug] (edn->bidi events/navigate-category)
+   ["/categories/hair/" :named-search-slug]                      (edn->bidi events/navigate-category)
    ["/products/" [#"\d+" :id] "-" :slug]                         (edn->bidi events/navigate-product-details)
    ["/products/" [#"\d+" :id] "-" :slug "/" :sku-code]           (edn->bidi events/navigate-product-details-sku)
-   ["/categories/hair/" :named-search-slug]                      (edn->bidi events/navigate-named-search)
-   ["/categories/hair/" :named-search-slug "/social"]            (edn->bidi events/navigate-ugc-named-search)
-   ["/products/" [#"[a-zA-Z]+.*" :product-slug]]                 (edn->bidi events/navigate-old-product)})
+   ["/categories/hair/" :named-search-slug "/social"]            (edn->bidi events/navigate-ugc-named-search)})
 
 (def app-routes
   ["" (merge static-page-routes

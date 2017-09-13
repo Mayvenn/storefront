@@ -221,18 +221,18 @@
           (when-not (seq user-token)
             (util.response/redirect (str "/login?path=" (:uri req)))))))))
 
-(defn render-category [{:keys [storeback-config] :as render-ctx}
-                       data
-                       req
-                       {:keys [catalog/category-id page/slug] :as params}]
-  (when-let [category (categories/id->category category-id (get-in data keypaths/categories))]
-    (if (= slug (:page/slug category))
-      (html-response render-ctx (-> data
-                                    (assoc-in keypaths/current-category-id
-                                              (:catalog/category-id category))))
-      (->> (select-keys category [:catalog/category-id :page/slug])
-           (routes/path-for events/navigate-category)
-           util.response/redirect))))
+(defn render-category
+  [render-ctx data req {:keys [catalog/category-id page/slug named-search-slug]}]
+  (let [categories (get-in data keypaths/categories)]
+    (when-let [category (or (categories/named-search->category named-search-slug categories)
+                            (categories/id->category category-id categories))]
+      (if (or named-search-slug (not= slug (:page/slug category)))
+        (-> (routes/path-for events/navigate-category category)
+            (util.response/redirect :moved-permanently))
+        (->> (assoc-in data
+                       keypaths/current-category-id
+                       (:catalog/category-id category))
+             (html-response render-ctx))))))
 
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
@@ -302,11 +302,6 @@
                                     (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
                                     (update-in keypaths/skus merge (index-by :sku skus)))))))]
           (condp = nav-event
-            events/navigate-old-product         (redirect-product->canonical-url ctx req params)
-            events/navigate-named-search        (if (= "blonde" (:named-search-slug params))
-                                                  (util.response/redirect (store-homepage (:store_slug store) environment req)
-                                                                          :moved-permanently)
-                                                  (render-named-search render-ctx data req params))
             events/navigate-category            (render-category render-ctx data req params)
             events/navigate-product-details     (render-product-details render-ctx data req params)
             events/navigate-product-details-sku (render-product-details render-ctx data req params)
