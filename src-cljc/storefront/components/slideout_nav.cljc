@@ -184,6 +184,7 @@
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"})
                                :data-test "menu-shop-wigs")
+                        [:span.teal.pr1 "NEW"]
                         [:span.medium.flex-auto "Shop Wigs"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details
