@@ -270,15 +270,12 @@
    :address2 (get-in data keypaths/leads-ui-registration-address2)
    :city     (get-in data keypaths/leads-ui-registration-city)
    :zip      (get-in data keypaths/leads-ui-registration-zip)
-   :state    (or (get-in data keypaths/leads-ui-registration-state)
-                 "")})
+   :state    (get-in data keypaths/leads-ui-registration-state)})
 
 (defn ^:private stylist-details-query [data]
   {:birthday      (get-in data keypaths/leads-ui-registration-birthday)
-   :licensed?     (or (get-in data keypaths/leads-ui-registration-licensed?)
-                      false)
-   :payout-method (or (get-in data keypaths/leads-ui-registration-payout-method)
-                      "venmo")
+   :licensed?     (get-in data keypaths/leads-ui-registration-licensed?)
+   :payout-method (get-in data keypaths/leads-ui-registration-payout-method)
    :venmo-phone   (get-in data keypaths/leads-ui-registration-venmo-phone)
    :paypal-email  (get-in data keypaths/leads-ui-registration-paypal-email)
    :slug          (get-in data keypaths/leads-ui-registration-slug)})
