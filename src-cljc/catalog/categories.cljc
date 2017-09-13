@@ -250,8 +250,8 @@
                                       "be customized to fit your unique look using the "
                                       "built-in combs and adjustable strap.")}
     :images       {:hero {:filename    "Wigs.jpg"
-                          :desktop-url "//ucarecdn.com/45366d8c-4303-430a-ac68-d187dbcfd10a/"
-                          :mobile-url  "//ucarecdn.com/79bd3af6-1c95-424c-98c0-2dc71b15b0cc/"
+                          :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
+                          :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
                           :alt         "Wigs"}}
     :criteria     {:product/department #{"hair"}
                    :hair/family        #{"360-wigs" "lace-front-wigs"}}
