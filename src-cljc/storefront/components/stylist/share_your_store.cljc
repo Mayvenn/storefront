@@ -104,7 +104,7 @@
                    "acceptance" "diva-acceptance.com"
                    "storefront.dev")
    :store-slug   (:store_slug (get-in data keypaths/store))
-   :utm-campaign "stylists_dashboard"})
+   :utm-campaign "stylist_dashboard"})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
