@@ -45,7 +45,7 @@
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
-      (for [{:keys [slug images name] :as category} categories]
+      (for [{:keys [page/slug images name] :as category} categories]
         (grid-block slug
                     [:a.absolute.overlay.overflow-hidden
                      (merge {:data-test (str "category-" slug)}
@@ -79,7 +79,7 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-category {:catalog/category-id "13" :slug "wigs"})
+    (assoc (utils/route-to events/navigate-category {:catalog/category-id "13" :page/slug "wigs"})
            :data-test "home-banner")
     (let [file-name "Shop-Now-SWITCH-Homepage"
           alt       "The switch up. All wigs are here. Shop our looks."]

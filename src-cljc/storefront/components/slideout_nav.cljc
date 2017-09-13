@@ -172,21 +172,26 @@
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
-                                                {:slug "bundles" :id "11"})
+                                                {:page/slug           "bundles"
+                                                 :catalog/category-id "11"})
                                :data-test "menu-shop-bundles")
                         [:span.medium.flex-auto "Shop Hair"]
                         forward-caret)]
    [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
-                                                {:slug "closures-and-frontals" :id "12"})
+                                                {:page/slug           "closures-and-frontals"
+                                                 :catalog/category-id "12"})
                                :data-test "menu-shop-closures")
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
    [:li (major-menu-row (assoc (utils/fake-href events/navigate-category
-                                                {:slug "wigs" :id "13"})
+                                                {:page/slug           "wigs"
+                                                 :catalog/category-id "13"})
                                :data-test "menu-shop-wigs")
                         [:span.medium.flex-auto "Shop Wigs"])]
    (when (-> signed-in ::auth/as (= :stylist))
-     [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details {:slug "rings-kit" :id "49"})
+     [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details
+                                                 {:slug "rings-kit"
+                                                  :id   "49"})
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 

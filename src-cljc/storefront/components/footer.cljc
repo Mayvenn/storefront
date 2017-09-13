@@ -18,7 +18,7 @@
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
-(defn- category->link [{:keys [name slug] :as category}]
+(defn- category->link [{:keys [name page/slug] :as category}]
   {:title       name
    :slug        slug
    :nav-message [events/navigate-category category]})
@@ -38,7 +38,7 @@
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
       (for [link-column (partition-all 8 links)]
-        [:div.col.col-6 {:key (str "column-" (-> link-column first :slug))}
+        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
          (for [{:keys [title nav-message slug]} link-column]
            [:a.block.py1.dark-gray.light.titleize
             (merge {:key slug}

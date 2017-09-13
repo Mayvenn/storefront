@@ -224,12 +224,15 @@
 (defn render-category [{:keys [storeback-config] :as render-ctx}
                        data
                        req
-                       {:keys [id slug] :as params}]
-  (when-let [category (categories/id->category id (get-in data keypaths/categories))]
-    (if (= slug (:slug category))
+                       {:keys [catalog/category-id page/slug] :as params}]
+  (when-let [category (categories/id->category category-id (get-in data keypaths/categories))]
+    (if (= slug (:page/slug category))
       (html-response render-ctx (-> data
-                                    (assoc-in keypaths/current-category-id (:id category))))
-      (util.response/redirect (routes/path-for events/navigate-category (select-keys category [:id :slug]))))))
+                                    (assoc-in keypaths/current-category-id
+                                              (:catalog/category-id category))))
+      (->> (select-keys category [:catalog/category-id :page/slug])
+           (routes/path-for events/navigate-category)
+           util.response/redirect))))
 
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data

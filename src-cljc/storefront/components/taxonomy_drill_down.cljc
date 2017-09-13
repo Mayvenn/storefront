@@ -18,15 +18,15 @@
             [storefront.transitions :as transitions]))
 
 (def ^:private slug->jump-out
-  {"360-frontals" {:id   "10"
-                   :name "360 Frontals"
-                   :slug "360-frontals"}
-   "closures"     {:id   "0"
-                   :name "Closures"
-                   :slug "closures"}
-   "frontals"     {:id   "1"
-                   :name "Frontals"
-                   :slug "frontals"}})
+  {"360-frontals" {:catalog/category-id "10"
+                   :name                "360 Frontals"
+                   :page/slug           "360-frontals"}
+   "closures"     {:catalog/category-id "0"
+                   :name                "Closures"
+                   :page/slug           "closures"}
+   "frontals"     {:catalog/category-id "1"
+                   :name                "Frontals"
+                   :page/slug           "frontals"}})
 
 (def ^:private back-caret
   (component/html
@@ -63,9 +63,9 @@
            seq)))
 
 (defn- jump-out-li [jump-out]
-  [:li {:key (:slug jump-out)}
+  [:li {:key (:page/slug jump-out)}
    (major-menu-row
-    (utils/fake-href events/navigate-category (select-keys jump-out [:id :slug]))
+    (utils/fake-href events/navigate-category jump-out)
     [:span.teal "All " (:name jump-out)])])
 
 (defn- down-step-li [option down-step current-step]
@@ -100,7 +100,7 @@
      (major-menu-row
       [:div.h2.flex-auto.center "Shop " root-name])
      [:ul.list-reset
-      (when-let [jump-out (get slug->jump-out (:slug up-step-option))]
+      (when-let [jump-out (get slug->jump-out (:page/slug up-step-option))]
         (jump-out-li jump-out))
       (for [option (:options current-step)
             :when  (valid-branch? selected-options option)]
@@ -158,22 +158,22 @@
        (api/fetch-facets (get-in app-state keypaths/api-cache)))))
 
 (defmethod transitions/transition-state events/menu-traverse-descend
-  [_ _ {:keys [id current-step selected-option down-step]} app-state]
-  (if id
-    (assoc-in app-state keypaths/current-traverse-nav-id id)
+  [_ _ {:keys [catalog/category-id current-step selected-option down-step]} app-state]
+  (if category-id
+    (assoc-in app-state keypaths/current-traverse-nav-id category-id)
     (update-in app-state keypaths/category-filters-for-nav
                descend current-step selected-option down-step)))
 
 (defmethod effects/perform-effects events/menu-traverse-descend
-  [_ _ {:keys [id slug] :as args} _ app-state]
+  [_ _ {:keys [catalog/category-id] :as args} _ app-state]
   #?(:cljs
-     (when id
+     (when category-id
        (let [category (categories/current-traverse-nav app-state)]
          (api/search-sku-sets (get-in app-state keypaths/api-cache)
                               (:criteria category)
                               #(messages/handle-message events/api-success-sku-sets-for-nav
                                                         (assoc %
-                                                               :category-id (:id category)
+                                                               :category-id category-id
                                                                :criteria {})))))))
 
 (defmethod transitions/transition-state events/menu-traverse-ascend
@@ -204,7 +204,7 @@
                                                                  criteria))
                                                categories/initial-categories)
                                        first-and-only-category
-                                       (select-keys [:id :slug])))
+                                       (select-keys [:catalog/category-id :page/slug])))
          (history/enqueue-navigate events/navigate-product-details {:id   (:sku-set/id sku-set)
                                                                     :slug (:sku-set/slug sku-set)})))))
 
