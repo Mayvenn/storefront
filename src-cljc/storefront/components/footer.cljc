@@ -18,30 +18,31 @@
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
+(defn- category->link [{:keys [name slug] :as category}]
+  {:title       name
+   :slug        slug
+   :nav-message [events/navigate-category category]})
+
+(def ^:private stylist-kit
+  {:title       "Stylist Exclusives"
+   :slug        "stylist-products"
+   :nav-message [events/navigate-product-details
+                 {:slug "rings-kit"
+                  :id   49}]})
+
 (defn shop-section [own-store? categories]
-  (let [category-links (->> categories
-                            (filter :footer/order)
-                            (sort-by :footer/order)
-                            (mapv (fn [{:keys [name slug id]}]
-                                    {:title       name
-                                     :slug        slug
-                                     :nav-message [events/navigate-category {:id id :slug slug}]})))
-        links          (if own-store?
-                         (conj category-links
-                               {:title       "Stylist Exclusives"
-                                :slug        "stylist-products"
-                                :nav-message [events/navigate-product-details
-                                              {:slug "rings-kit"
-                                               :id   49}]})
-                         category-links)]
+  (let
+      [links (cond-> (mapv category->link categories)
+               own-store? (conj stylist-kit))]
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
       (for [link-column (partition-all 8 links)]
-        [:div.col.col-6
+        [:div.col.col-6 {:key (str "column-" (-> link-column first :slug))}
          (for [{:keys [title nav-message slug]} link-column]
-           [:a.block.py1.dark-gray.light.titleize (merge {:key slug}
-                                                         (apply utils/route-to nav-message))
+           [:a.block.py1.dark-gray.light.titleize
+            (merge {:key slug}
+                   (apply utils/route-to nav-message))
             title])])]]))
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
@@ -163,7 +164,9 @@
 (defn query [data]
   {:contacts   (contacts-query data)
    :own-store? (own-store? data)
-   :categories (get-in data keypaths/categories)})
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :footer/order)
+                    (sort-by :footer/order))})
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))

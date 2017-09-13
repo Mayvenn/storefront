@@ -45,14 +45,11 @@
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
-      (for [{:keys [slug id images name]} (->> categories
-                                               (filter :home/order)
-                                               (sort-by :home/order))]
+      (for [{:keys [slug images name] :as category} categories]
         (grid-block slug
                     [:a.absolute.overlay.overflow-hidden
                      (merge {:data-test (str "category-" slug)}
-                            (utils/route-to events/navigate-category {:slug slug
-                                                                      :id   id}))
+                            (utils/route-to events/navigate-category category))
                      (category-image (:home images))
                      [:h3.h2.white.absolute.col-12.titleize
                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
@@ -82,7 +79,7 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-category {:id "13" :slug "wigs"})
+    (assoc (utils/route-to events/navigate-category {:catalog/category-id "13" :slug "wigs"})
            :data-test "home-banner")
     (let [file-name "Shop-Now-SWITCH-Homepage"
           alt       "The switch up. All wigs are here. Shop our looks."]
@@ -294,7 +291,9 @@
 (defn query [data]
   {:store      (marquee/query data)
    :signed-in  (auth/signed-in data)
-   :categories (get-in data keypaths/categories)})
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :home/order)
+                    (sort-by :home/order))})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
