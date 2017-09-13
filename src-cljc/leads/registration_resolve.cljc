@@ -8,7 +8,8 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]
-            [storefront.components.footer :as footer]))
+            [storefront.components.footer :as footer]
+            [storefront.components.stylist.share-your-store :as share-your-store]))
 
 (def congratulations-section
   [:section
@@ -21,7 +22,7 @@
 (defn- first-coupon-link [store-link]
   (str "//" store-link "?sha=FIRST"))
 
-(defn coupon-section [{:keys [store-link]}]
+(defn coupon-section [store-link]
   [:section.center.white.bg-cover.bg-center.bg-30-off.center.px3.py6
    [:div.max-580.mx-auto
     [:h2.h1.mt6 "Get 30% Off"]
@@ -31,85 +32,7 @@
       :target "_blank"}
      "Shop now using promo code FIRST"]]])
 
-(defn parse-store-link [store-link]
-  ["" ""]
-  #_(string/split store-link #"\." 2))
-
-(defn facebook-link [share-url]
-  (-> (url/url "https://www.facebook.com/sharer/sharer.php")
-      (assoc :query {:u (assoc-in share-url [:query :utm_medium] "facebook")})
-      str))
-
-(defn twitter-link [share-url]
-  (-> (url/url "https://twitter.com/intent/tweet")
-      (assoc :query {:url      (assoc-in share-url [:query :utm_medium] "twitter")
-                     :text     "My @MayvennHair store is open! Shop 100% virgin human hair with a 30-day quality guarantee:"
-                     :hashtags "mayvennhair"})
-      str))
-
-(defn sms-link [share-url]
-  ;; the ?& is to get this to work on iOS8 and Android at the same time
-  (str "sms:?&body="
-       (url/url-encode (str
-                        "Hey! I’m now selling 100% virgin human hair through my Mayvenn hair store: "
-                        (assoc-in share-url [:query :utm_medium] "sms") " "
-                        "All orders ship out for free and are backed by a 30-day quality guarantee! "
-                        "If you order 3 bundles or more you’ll get 25% off. "
-                        "If you’re in the market for new hair, I hope you’ll consider supporting my business!"))))
-
-(defn- social-button [options image-url content]
-  [:a.h5.block.col-12.regular.btn.btn-primary.white.my4
-   options
-   [:img.align-bottom.mr2 {:style {:height "24px"}
-                           :src   (assets/path (str "/images/leads" image-url))}]
-   content])
-
-(defn share-your-store-section [store-link]
-  (let [[slug host]       (parse-store-link store-link)
-        share-url         (-> (url/url (str "https://" store-link))
-                              (assoc :query {:utm_campaign "resolve"}))
-        phone-image-width "336px"]
-    [:section#share-store-section.center.px3.py6.container
-     [:div.max-580.mx-auto
-      [:h2 "Share your store"]
-      [:p "This unique store name is all yours. Use the buttons below for quick and easy sharing across your networks."]
-      [:div.relative.mx-auto
-       {:style {:width phone-image-width}}
-       [:img.py6.mx-auto.block {:style {:width phone-image-width}
-                                :src   (assets/path "/images/leads/store-name-in-device.jpg")}]
-       [:div.absolute.truncate
-        {:style {:font-size   "14px"
-                 :line-height "16px"
-                 :top         "137px"
-                 :left        "28px"
-                 :right       "28px"}}
-        [:span.bold slug] "." host]]
-      [:h3.h5 "Share your store link"]]
-     [:div.col-12.col-6-on-tb.col-4-on-dt.mx-auto
-      (social-button
-       {:class  "bg-fb-blue"
-        :target "_blank"
-        :href   (facebook-link share-url)}
-       "/sprite-fb-logo.png"
-       "Share on Facebook")
-      (social-button
-       {:class  "bg-twitter-blue"
-        :target "_blank"
-        :href   (twitter-link share-url)}
-       "/sprite-twitter-logo.png"
-       "Tweet your store link")
-      (social-button
-       {:class  "hide-on-dt bg-sms-green"
-        :target "_blank"
-        :href   (sms-link share-url)}
-       "/sprite-sms-icon.png"
-       "Send a text")
-      [:div.h5 "Tap to select, copy and share"]
-      [:input#js-share-url.input.teal.col-12.center.mt4
-       {:type  "text"
-        :value store-link}]]]))
-
-(defn whats-next-section [{:keys [store-link]}]
+(defn whats-next-section [store-link]
   (let [cell :div.my4.col-on-tb-dt.col-4-on-tb-dt.px2-on-tb-dt
         icon (fn [path] [:img.m1 {:src path :height "75px"}])
         hed  :h2.h3
@@ -143,7 +66,7 @@
         [dek "Don’t be shy! You now have access to the highest quality hair products in the industry. Shipping is always free and all Mayvenn products are backed by a 30-day guarantee."]
         [cta {:href "#share-store-section"} "Share your store link"]]]]]))
 
-(defn stylist-kit-section [{:keys [store-link]}]
+(defn stylist-kit-section [store-link]
   [:section.center
    [:div.bg-stylist-kit.bg-center.bg-cover.relative
     {:style {:height "480px"}}
@@ -215,19 +138,27 @@
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
 (defn query [app-state]
-  {:store-link (get-in app-state (conj keypaths/leads-lead :store-url))})
+  (let [host       (case (get-in app-state keypaths/environment)
+                     "production" "mayvenn.com"
+                     "acceptance" "diva-acceptance.com"
+                     "storefront.dev")
+        store-slug (get-in app-state (conj keypaths/leads-lead :store-slug))]
+    {:store-link      (str store-slug "." host)
+     :share-your-store {:host         host
+                        :store-slug   store-slug
+                        :utm-campaign "resolve"}}))
 
 (defn ^:private component
-  [{:keys [store-link]} owner opts]
+  [{:keys [store-link share-your-store]} owner opts]
   (component/create
    [:div
     (header/built-component {} nil)
     [:div
      congratulations-section
-     (coupon-section {})
-     (share-your-store-section store-link)
-     (whats-next-section {})
-     (stylist-kit-section {})
+     (coupon-section store-link)
+     (component/build share-your-store/component share-your-store nil)
+     (whats-next-section store-link)
+     (stylist-kit-section store-link)
      first-sale-section
      [:section.center.px3.py6.bg-teal.white
       (faq-section q-and-as)]]

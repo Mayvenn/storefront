@@ -1,12 +1,20 @@
 (ns storefront.components.stylist.share-your-store
-  (:require [cemerick.url :as url]
-            [clojure.string :as str]
-            [storefront.assets :as assets]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.share-links :as share-links]
-            [storefront.platform.component-utils :as utils]
-            [storefront.keypaths :as keypaths]))
+  #?@(:clj
+      [(:require
+        [cemerick.url :as url]
+        [storefront.assets :as assets]
+        [storefront.component-shim :as component]
+        [storefront.components.share-links :as share-links]
+        [storefront.keypaths :as keypaths]
+        [storefront.platform.component-utils :as utils])]
+      :cljs
+      [(:require
+        [cemerick.url :as url]
+        [storefront.assets :as assets]
+        [storefront.component :as component]
+        [storefront.components.share-links :as share-links]
+        [storefront.keypaths :as keypaths]
+        [storefront.platform.component-utils :as utils])]))
 
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
