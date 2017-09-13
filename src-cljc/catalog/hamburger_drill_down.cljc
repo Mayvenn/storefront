@@ -1,21 +1,22 @@
-(ns storefront.components.taxonomy-drill-down
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[datascript.core :as d]
-                       [storefront.api :as api]
-                       [storefront.component :as component]
-                       [storefront.history :as history]])
-            [spice.maps :as maps]
-            [catalog.categories :as categories]
-            [catalog.selector :as selector]
-            [clojure.set :as set]
-            [storefront.accessors.category-filters :as category-filters]
-            [storefront.components.svg :as svg]
-            [storefront.effects :as effects]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+(ns catalog.hamburger-drill-down
+  (:require
+   #?@(:clj [[storefront.component-shim :as component]]
+       :cljs [[datascript.core :as d]
+              [storefront.api :as api]
+              [storefront.component :as component]
+              [storefront.history :as history]])
+   [catalog.categories :as categories]
+   [catalog.category-filters :as category-filters]
+   [catalog.selector :as selector]
+   [clojure.set :as set]
+   [spice.maps :as maps]
+   [storefront.components.svg :as svg]
+   [storefront.effects :as effects]
+   [storefront.events :as events]
+   [storefront.keypaths :as keypaths]
+   [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
+   [storefront.transitions :as transitions]))
 
 (def ^:private slug->jump-out
   {"360-frontals" {:catalog/category-id "10"

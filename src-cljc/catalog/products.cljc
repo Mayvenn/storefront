@@ -1,8 +1,6 @@
 (ns catalog.products
-  (:require [storefront.keypaths :as keypaths]
-            [catalog.keypaths :as k]
-            [clojure.string :as string]
-            [storefront.accessors.category-filters :as category-filters]))
+  (:require [catalog.keypaths :as k]
+            [storefront.keypaths :as keypaths]))
 
 (defn sku-set-by-id [app-state sku-set-id]
   (get-in app-state (conj keypaths/sku-sets sku-set-id)))

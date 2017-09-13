@@ -1,8 +1,8 @@
 (ns catalog.categories
-  (:require [storefront.keypaths :as keypaths]
+  (:require [catalog.category-filters :as category-filters]
             [clojure.string :as string]
             [spice.maps :as maps]
-            [storefront.accessors.category-filters :as category-filters]))
+            [storefront.keypaths :as keypaths]))
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]

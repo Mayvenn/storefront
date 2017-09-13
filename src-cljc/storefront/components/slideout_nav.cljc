@@ -1,22 +1,19 @@
 (ns storefront.components.slideout-nav
-  (:require [clojure.string :as str]
+  (:require [catalog.hamburger-drill-down :as drill-down]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
+            #?(:clj  [storefront.component-shim :as component]
+               :cljs [storefront.component :as component])
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.svg :as svg]
-            [spice.maps :as maps]
-            [storefront.components.taxonomy-drill-down :as taxonomy-drill-down]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            #?(:clj  [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])))
+            [storefront.platform.messages :as messages]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -244,21 +241,21 @@
      (promo-bar promo-data)
      burger-header]
     (if on-taxon?
-      (component/build taxonomy-drill-down/component drill-down-data nil)
+      (component/build drill-down/component drill-down-data nil)
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in         (auth/signed-in data)
-   :on-taxon?         (get-in data keypaths/current-traverse-nav-id)
-   :user              {:email (get-in data keypaths/user-email)}
-   :store             (marquee/query data)
-   :shopping          {:categories (get-in data keypaths/categories)}})
+  {:signed-in (auth/signed-in data)
+   :on-taxon? (get-in data keypaths/current-traverse-nav-id)
+   :user      {:email (get-in data keypaths/user-email)}
+   :store     (marquee/query data)
+   :shopping  {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
-      (assoc-in [:drill-down-data] (taxonomy-drill-down/query data))))
+      (assoc-in [:drill-down-data] (drill-down/query data))))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
