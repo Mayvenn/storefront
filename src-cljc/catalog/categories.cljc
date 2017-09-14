@@ -55,6 +55,8 @@
                                       :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
                                       :alt         "Closures"}}
     :footer/order             8
+    :header/order             8
+    :header/group             1
     :seo                      (category->seo "Closures" "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
    {:catalog/category-id      "1"
     :name                     "Frontals"
@@ -69,6 +71,8 @@
                                       :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
                                       :alt         "Frontals"}}
     :footer/order             9
+    :header/order             9
+    :header/group             1
     :seo                      (category->seo "Frontals" "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
    {:catalog/category-id      "2"
     :name                     "Straight"
@@ -89,6 +93,8 @@
                                       :alt      "Straight Hair Extensions Mayvenn"}}
     :home/order               0
     :footer/order             0
+    :header/order             0
+    :header/group             0
     :seo                      (category->seo "Natural Straight Bundles" "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
    {:catalog/category-id      "3"
     :name                     "Yaki Straight"
@@ -108,6 +114,8 @@
                                       :mobile-url  "//ucarecdn.com/5ec46b49-0326-483d-9545-4956d3000cc3/",
                                       :alt         "Yaki Straight"}}
     :footer/order             1
+    :header/order             1
+    :header/group             0
     :seo                      (category->seo "Yaki Straight Bundles" "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
    {:catalog/category-id      "4"
     :name                     "Kinky Straight"
@@ -125,6 +133,8 @@
                                       :mobile-url  "//ucarecdn.com/49a684e3-f347-427d-b027-cd65564d386c/",
                                       :alt         "Kinky Straight"}}
     :footer/order             2
+    :header/order             2
+    :header/group             0
     :seo                      (category->seo "Kinky Straight Bundles" "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
    {:catalog/category-id      "5"
     :name                     "Body Wave"
@@ -143,6 +153,8 @@
                                       :alt      "Body Wave Hair Extensions Mayvenn"}}
     :home/order               1
     :footer/order             3
+    :header/order             3
+    :header/group             0
     :seo                      (category->seo "Body Wave Bundles" "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")}
    {:catalog/category-id      "6"
     :name                     "Loose Wave"
@@ -163,6 +175,8 @@
                                       :alt      "Loose Wave Hair Extensions Mayvenn"}}
     :home/order               2
     :footer/order             4
+    :header/order             4
+    :header/group             0
     :seo                      (category->seo "Loose Wave Bundles" "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")}
    {:catalog/category-id      "7"
     :name                     "Water Wave"
@@ -180,6 +194,8 @@
                                       :mobile-url  "//ucarecdn.com/f02150b4-c02b-42a3-b96b-42fea544b0ad/",
                                       :alt         "Water Wave"}}
     :footer/order             5
+    :header/order             5
+    :header/group             0
     :seo                      (category->seo "Water Wave Bundles" "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")}
    {:catalog/category-id      "8"
     :name                     "Deep Wave"
@@ -199,6 +215,8 @@
                                       :alt      "Deep Wave Hair Extensions Mayvenn"}}
     :home/order               3
     :footer/order             6
+    :header/order             6
+    :header/group             0
     :seo                      (category->seo "Deep Wave Bundles" "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")}
    {:catalog/category-id      "9"
     :name                     "Curly"
@@ -217,6 +235,8 @@
                                       :alt      "Curly Hair Extensions Mayvenn"}}
     :home/order               4
     :footer/order             7
+    :header/order             7
+    :header/group             0
     :seo                      (category->seo "Curly Bundles" "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}
    {:catalog/category-id      "10"
     :name                     "360 Frontals"
@@ -232,6 +252,8 @@
                                       :mobile-url  "//ucarecdn.com/65261bbd-672a-4b0f-8172-8fd49b1ad273/"
                                       :alt         "360 Frontals"}}
     :footer/order             10
+    :header/order             10
+    :header/group             1
     :seo                      (category->seo "360 Frontals" "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}
    {:catalog/category-id "11"
     :name                "Hair"
@@ -252,6 +274,8 @@
     :hamburger/order     1}
    {:catalog/category-id "13"
     :footer/order        20
+    :header/order        20
+    :header/group        1
     :name                "Wigs"
     :page/slug           "wigs"
     :copy                {:description (copy "When getting a bundle install isn’t an option,"
@@ -263,7 +287,6 @@
                                  :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
                                  :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
                                  :alt         "Wigs"}}
-
     :criteria    {:product/department #{"hair"}
                   :hair/family        #{"360-wigs" "lace-front-wigs"}}
     :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]

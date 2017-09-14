@@ -169,13 +169,15 @@
 
 (defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
-    (let [partition-searches (partition-all 6)
-          columns (concat (->> (remove #(or (-> % :criteria :hair/family)
-                                            (-> % :hamburger/order)) categories)
-                               (sequence partition-searches))
-                          (->> (filter #(and (-> % :criteria :hair/family)
-                                             (not (-> % :hamburger/order))) categories)
-                               (sequence partition-searches)))]
+    (let [show?   (fn [category]
+                    (or (-> signed-in ::auth/as (= :stylist))
+                        (-> category :criteria :product/department (contains? "stylist-exclusives") not)))
+          columns (->> (filter :header/order categories)
+                       (filter show?)
+                       (sort-by :header/order)
+                       (group-by :header/group)
+                       vals
+                       (mapcat (partial partition-all 6)))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6
         {:style {:width "580px"}}
