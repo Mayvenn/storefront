@@ -172,7 +172,6 @@
 (def server-render-pages
   #{events/navigate-home
     events/navigate-category
-    events/navigate-named-search
     events/navigate-content-help
     events/navigate-content-about-us
     events/navigate-content-privacy
