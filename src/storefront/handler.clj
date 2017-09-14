@@ -220,12 +220,18 @@
           (when-not (seq user-token)
             (util.response/redirect (str "/login?path=" (:uri req)))))))))
 
-(defn render-category
-  [render-ctx data req {:keys [catalog/category-id page/slug named-search-slug]}]
+(defn redirect-named-search
+  [render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
-    (when-let [category (or (categories/named-search->category named-search-slug categories)
-                            (categories/id->category category-id categories))]
-      (if (or named-search-slug (not= slug (:page/slug category)))
+    (when-let [category (categories/named-search->category named-search-slug categories)]
+      (-> (routes/path-for events/navigate-category category)
+          (util.response/redirect :moved-permanently)))))
+
+(defn render-category
+  [render-ctx data req {:keys [catalog/category-id page/slug]}]
+  (let [categories (get-in data keypaths/categories)]
+    (when-let [category (categories/id->category category-id categories)]
+      (if (not= slug (:page/slug category))
         (-> (routes/path-for events/navigate-category category)
             (util.response/redirect :moved-permanently))
         (->> (assoc-in data
@@ -302,6 +308,7 @@
                                     (update-in keypaths/skus merge (index-by :sku skus)))))))]
           (condp = nav-event
             events/navigate-category            (render-category render-ctx data req params)
+            events/navigate-legacy-named-search (redirect-named-search render-ctx data req params)
             events/navigate-product-details     (render-product-details render-ctx data req params)
             events/navigate-product-details-sku (render-product-details render-ctx data req params)
             (html-response render-ctx data)))))))

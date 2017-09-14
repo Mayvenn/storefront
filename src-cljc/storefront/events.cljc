@@ -17,6 +17,7 @@
 (defpath navigate)
 (defpath navigate-home)
 (defpath navigate-category)
+(defpath navigate-legacy-named-search)
 (defpath navigate-named-search)
 (defpath navigate-ugc-named-search)
 (defpath navigate-product-details)
