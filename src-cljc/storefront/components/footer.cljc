@@ -50,7 +50,7 @@
    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
    [:div.dark-gray.light
     [:div.py1
-     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} "+" call-number)] ;; mobile
+     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
      " | 9am-5pm PST M-F"]
     (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
