@@ -1,6 +1,10 @@
 (ns catalog.products
   (:require [catalog.keypaths :as k]
-            [storefront.keypaths :as keypaths]))
+            [datascript.core :as d]
+            [spice.maps :as maps]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.transitions :refer [transition-state]]))
 
 (defn sku-set-by-id [app-state sku-set-id]
   (get-in app-state (conj keypaths/sku-sets sku-set-id)))
@@ -98,3 +102,29 @@
 (defn stylist-only? [sku-set] (some-> sku-set :criteria/essential :product/department (contains? "stylist-exclusives")))
 (def eligible-for-reviews? (complement stylist-only?))
 (def eligible-for-triple-bundle-discount? is-hair?)
+
+(defmethod transition-state events/api-success-sku-sets
+  [_ event {:keys [sku-sets skus] :as response} app-state]
+  (-> app-state
+      (update-in keypaths/db-skus d/db-with (sequence (comp
+                                                       (map #(merge % (:attributes %)))
+                                                       (map #(dissoc % :attributes :images)))
+                                                      skus))
+      (update-in keypaths/db-images d/db-with
+                 (sequence (comp (mapcat :sku-set/images)
+                                 (map #(assoc % :id (str (:use-case %) "-" (:url %))))
+                                 (map #(assoc % :order (or (:order %)
+                                                           (case (:image/of (:criteria/attributes %))
+                                                             "model" 1
+                                                             "product" 2
+                                                             "seo" 3
+                                                             "catalog" 4
+                                                             5))))
+                                 (map #(merge % (:criteria/attributes %)))
+                                 (map #(dissoc % :criteria/attributes :filename)))
+                           sku-sets))
+      (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
+                                                     (update sku-set :criteria/selectors (partial mapv keyword)))
+                                                   sku-sets)
+                                              (maps/index-by :sku-set/id)))
+      (update-in keypaths/skus merge (maps/index-by :sku skus))))

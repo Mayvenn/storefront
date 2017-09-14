@@ -1,11 +1,9 @@
 (ns storefront.frontend-transitions
   (:require [cemerick.url :as url]
             [clojure.string :as string]
-            [storefront.transitions :refer [transition-state]]
-            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
+            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.config :as config]
@@ -14,8 +12,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [spice.maps :as maps]
-            [datascript.core :as d]))
+            [storefront.transitions :refer [transition-state]]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -337,32 +334,6 @@
   (-> app-state
     (update-in keypaths/products merge (maps/index-by :id products))
     ensure-bundle-builder))
-
-(defmethod transition-state events/api-success-sku-sets
-  [_ event {:keys [sku-sets skus] :as response} app-state]
-  (-> app-state
-      (update-in keypaths/db-skus d/db-with (sequence (comp
-                                                       (map #(merge % (:attributes %)))
-                                                       (map #(dissoc % :attributes :images)))
-                                                      skus))
-      (update-in keypaths/db-images d/db-with
-                 (sequence (comp (mapcat :sku-set/images)
-                                 (map #(assoc % :id (str (:use-case %) "-" (:url %))))
-                                 (map #(assoc % :order (or (:order %)
-                                                           (case (:image/of (:criteria/attributes %))
-                                                             "model" 1
-                                                             "product" 2
-                                                             "seo" 3
-                                                             "catalog" 4
-                                                             5))))
-                                 (map #(merge % (:criteria/attributes %)))
-                                 (map #(dissoc % :criteria/attributes :filename)))
-                           sku-sets))
-      (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
-                                                     (update sku-set :criteria/selectors (partial mapv keyword)))
-                                                   sku-sets)
-                                              (maps/index-by :sku-set/id)))
-      (update-in keypaths/skus merge (maps/index-by :sku skus))))
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]
