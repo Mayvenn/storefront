@@ -196,14 +196,6 @@
                     (is (= "https://shop.mayvenn.com/categories/2-straight"
                            (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-blonde-category-to-home
-  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/blonde")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/"
-                           (get-in resp [:headers "Location"]))))))
-
 (deftest redirects-categories-to-home
   (assert-request (mock/request :get "https://shop.mayvenn.com/categories?utm_source=cats")
                   storeback-shop-response
