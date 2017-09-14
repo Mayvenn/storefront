@@ -12,7 +12,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.transitions :refer [transition-state]]))
+            [storefront.transitions :refer [transition-state]]
+            [spice.maps :as maps]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
