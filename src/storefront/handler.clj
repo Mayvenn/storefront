@@ -332,7 +332,7 @@
                                ""]
                               private-disalloweds))))
 
-(defn sitemap [{:keys [storeback-config]}]
+(defn sitemap []
   (letfn [(url [[location priority]]
             {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                   priority (conj {:tag :priority :content [(str priority)]}))})]
@@ -510,7 +510,7 @@
   ([{:keys [logger exception-handler environment] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
-               (GET "/sitemap.xml" req (-> (sitemap ctx) util.response/response (util.response/content-type "text/xml")))
+               (GET "/sitemap.xml" req (-> (sitemap) util.response/response (util.response/content-type "text/xml")))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/categories" req (redirect-to-home environment req))
