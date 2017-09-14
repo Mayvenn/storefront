@@ -252,7 +252,9 @@
        (stylist-details-section stylist-details focused)
 
        [:div.py3.border-top.border-gray
-        (ui/submit-button "Submit registration" {:class "h2"})]]
+        (ui/submit-button "Submit registration"
+                          {:data-test "registration-submit"
+                           :class     "h2"})]]
       [:div.center.h5.bold.dark-gray
        [:a.inherit-color.text-decoration-none {:href "https://shop.mayvenn.com"} "Go back to shop Mayvenn Hair"]]]]]))
 

@@ -96,7 +96,8 @@
        [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12.center
         {:type     "text"
          :value    store-link
-         :on-click utils/select-all-text}]]])))
+         :on-click utils/select-all-text
+         :data-test "store-link"}]]])))
 
 (defn query [data]
   {:host         (case (get-in data keypaths/environment)
