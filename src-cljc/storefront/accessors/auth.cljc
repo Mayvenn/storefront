@@ -14,3 +14,14 @@
      ::to     (if (contains? #{"store" "shop"} store-slug)
                 :dtc
                 :marketplace)}))
+
+(defn stylist? [signed-in]
+  (-> signed-in ::as (= :stylist)))
+
+(defn permitted-category? [data category]
+  ((:auth/requires category #{:guest :user :stylist})
+   (::as (signed-in data))))
+
+(defn permitted-product? [data product]
+  (and (-> product :criteria/essential :product/department set (contains? "stylist-exclusives"))
+       (stylist? (signed-in data))))

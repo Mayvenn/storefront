@@ -12,7 +12,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.accessors.experiments :as experiments]))
+   [storefront.accessors.experiments :as experiments]
+   [storefront.accessors.auth :as auth]))
 
 (defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
   (let [sku-set-count        (count filtered-sku-sets)
@@ -141,10 +142,13 @@
      (let [category   (categories/current-category app-state)
            success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
                                                 (assoc % :category-id category-id))]
-       (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
-       (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
-                                       (:criteria category)
-                                       success-fn))))
+       (if (auth/permitted-category? app-state category)
+         (do
+           (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
+           (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
+                                           (:criteria category)
+                                           success-fn))
+         (effects/redirect events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
   [_ event {:keys [sku-sets] :as response} app-state]

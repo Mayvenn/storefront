@@ -287,21 +287,35 @@
                                  :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
                                  :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
                                  :alt         "Wigs"}}
-    :criteria    {:product/department #{"hair"}
-                  :hair/family        #{"360-wigs" "lace-front-wigs"}}
-    :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]
+    :criteria            {:product/department #{"hair"}
+                          :hair/family        #{"360-wigs" "lace-front-wigs"}}
+    :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
 
-    :seo         {:title          "360 and Lace Front Wigs | Mayvenn"
-                  :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                        "Free 30 day returns. Made with 100% virgin human hair.")
-                  :description    (copy "Our wigs are made from 100% virgin human hair,"
-                                        "and can be customized to fit your unique look using the"
-                                        "built-in combs and adjustable strap. Free shipping."
-                                        "Free 30 day returns. Made with 100% virgin human hair.")
-                  :og-description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                        "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                        "your unique look using the built-in combs and adjustable strap.")
-                  :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
+    :seo {:title          "360 and Lace Front Wigs | Mayvenn"
+          :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                "Free 30 day returns. Made with 100% virgin human hair.")
+          :description    (copy "Our wigs are made from 100% virgin human hair,"
+                                "and can be customized to fit your unique look using the"
+                                "built-in combs and adjustable strap. Free shipping."
+                                "Free 30 day returns. Made with 100% virgin human hair.")
+          :og-description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                "your unique look using the built-in combs and adjustable strap.")
+          :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}
+   {:catalog/category-id "14"
+    :auth/requires       #{:stylist}
+    :footer/order        30
+    :header/order        30
+    :header/group        1
+    :name                "Stylist Exclusives"
+    :page/slug           "stylist-exclusives"
+    :criteria            {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
+    :filter-tabs         []
+    :seo                 {:title          "Stylist Exclusives | Mayvenn"
+                          :og-title       (copy "Stylist Exclusives - Free shipping."
+                                                "Free 30 day returns. Made with 100% virgin human hair.")
+                          :description    (copy "")
+                          :og-description (copy "")}}])
 
 (defn id->category [id categories]
   (->> categories

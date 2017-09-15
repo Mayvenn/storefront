@@ -4,6 +4,7 @@
             [catalog.selector :as selector]
             [catalog.products :as products]
             [catalog.keypaths :as k]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -464,11 +465,15 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event {:keys [id]} _ app-state]
-     (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                          id (partial messages/handle-message events/api-success-sku-sets-for-details))
-     (api/fetch-facets (get-in app-state keypaths/api-cache))
-     (review-hooks/insert-reviews)
-     (fetch-current-sku-set-album app-state id)))
+     (let [sku-set (products/sku-set-by-id app-state id)]
+       (if (auth/permitted-product? app-state sku-set)
+         (do
+           (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                                id (partial messages/handle-message events/api-success-sku-sets-for-details))
+           (api/fetch-facets (get-in app-state keypaths/api-cache))
+           (review-hooks/insert-reviews)
+           (fetch-current-sku-set-album app-state id))
+         (effects/redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
   [_ event {:keys [sku-sets] :as response} _ app-state]

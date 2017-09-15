@@ -170,8 +170,8 @@
 (defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
     (let [show?   (fn [category]
-                    (or (-> signed-in ::auth/as (= :stylist))
-                        (-> category :criteria :product/department (contains? "stylist-exclusives") not)))
+                    (or (auth/stylist? signed-in)
+                        (not (-> category :criteria :product/department (contains? "stylist-exclusives")))))
           columns (->> (filter :header/order categories)
                        (filter show?)
                        (sort-by :header/order)
