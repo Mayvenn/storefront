@@ -16,7 +16,7 @@
   [[:meta {:property "og:site_name" :content "Mayvenn"}]])
 
 (def ^:private default-tags
-  [[:title {} "Mayvenn - Virgin human hair & extensions"]
+  [[:title {} "Mayvenn - Virgin human hair, bundles, extensions and wigs"]
    [:meta {:name "description"
            :content "Quality virgin human hair & extensions trusted & recommended by 60,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
    [:meta {:property "og:title"

@@ -95,7 +95,7 @@
     :footer/order             0
     :header/order             0
     :header/group             0
-    :seo                      (category->seo "Natural Straight Bundles" "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
+    :seo                      (category->seo "Natural Straight Extensions" "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
    {:catalog/category-id      "3"
     :name                     "Yaki Straight"
     :page/slug                "yaki-straight"
@@ -116,7 +116,7 @@
     :footer/order             1
     :header/order             1
     :header/group             0
-    :seo                      (category->seo "Yaki Straight Bundles" "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
+    :seo                      (category->seo "Yaki Straight Extensions" "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
    {:catalog/category-id      "4"
     :name                     "Kinky Straight"
     :page/slug                "kinky-straight"
@@ -135,7 +135,7 @@
     :footer/order             2
     :header/order             2
     :header/group             0
-    :seo                      (category->seo "Kinky Straight Bundles" "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
+    :seo                      (category->seo "Kinky Straight Extensions" "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
    {:catalog/category-id      "5"
     :name                     "Body Wave"
     :page/slug                "body-wave"
@@ -155,7 +155,7 @@
     :footer/order             3
     :header/order             3
     :header/group             0
-    :seo                      (category->seo "Body Wave Bundles" "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")}
+    :seo                      (category->seo "Body Wave Extensions" "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")}
    {:catalog/category-id      "6"
     :name                     "Loose Wave"
     :page/slug                "loose-wave"
@@ -177,7 +177,7 @@
     :footer/order             4
     :header/order             4
     :header/group             0
-    :seo                      (category->seo "Loose Wave Bundles" "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")}
+    :seo                      (category->seo "Loose Wave Extensions" "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")}
    {:catalog/category-id      "7"
     :name                     "Water Wave"
     :page/slug                "water-wave"
@@ -196,7 +196,7 @@
     :footer/order             5
     :header/order             5
     :header/group             0
-    :seo                      (category->seo "Water Wave Bundles" "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")}
+    :seo                      (category->seo "Water Wave Extensions" "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")}
    {:catalog/category-id      "8"
     :name                     "Deep Wave"
     :page/slug                "deep-wave"
@@ -217,7 +217,7 @@
     :footer/order             6
     :header/order             6
     :header/group             0
-    :seo                      (category->seo "Deep Wave Bundles" "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")}
+    :seo                      (category->seo "Deep Wave Extensions" "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")}
    {:catalog/category-id      "9"
     :name                     "Curly"
     :page/slug                "curly"
@@ -237,7 +237,7 @@
     :footer/order             7
     :header/order             7
     :header/group             0
-    :seo                      (category->seo "Curly Bundles" "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}
+    :seo                      (category->seo "Curly Extensions" "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}
    {:catalog/category-id      "10"
     :name                     "360 Frontals"
     :page/slug                "360-frontals"
@@ -291,7 +291,7 @@
                           :hair/family        #{"360-wigs" "lace-front-wigs"}}
     :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
 
-    :seo {:title          "360 and Lace Front Wigs | Mayvenn"
+    :seo {:title          "Human Hair Wigs | Mayvenn"
           :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
                                 "Free 30 day returns. Made with 100% virgin human hair.")
           :description    (copy "Our wigs are made from 100% virgin human hair,"
