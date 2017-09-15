@@ -74,12 +74,13 @@
 
 (defn hero-section [category]
   [:h1
-   (let [{:keys [mobile-url file-name desktop-url alt]} (:hero (:images category))]
-     [:picture
-      [:source {:media   "(min-width: 750px)"
-                :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-      [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                          :alt alt}]])])
+   (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
+     (when (and mobile-url desktop-url)
+       [:picture
+        [:source {:media   "(min-width: 750px)"
+                  :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
+        [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                            :alt alt}]]))])
 
 (defn copy-section [category]
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (-> category :copy :description)]])
