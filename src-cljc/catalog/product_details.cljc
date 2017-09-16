@@ -113,7 +113,8 @@
    "Added to bag: "
    (number->words quantity)
    " "
-   (sku-name facets sku)])
+   (or (:sku/name sku)
+       (sku-name facets sku))])
 
 (def checkout-button
   (component/html
@@ -190,7 +191,8 @@
 (defn sku-summary [{:keys [facets sku sku-quantity]}]
   (let [{:keys [in-stock? price]} sku]
     (summary-structure
-     (sku-name facets sku)
+     (or (some-> sku :sku/name string/upper-case)
+         (sku-name facets sku))
      (quantity-and-price-structure
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
