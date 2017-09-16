@@ -23,7 +23,6 @@
                        [storefront.config :as config]])
 
             [storefront.accessors.experiments :as experiments]
-            [storefront.components.old-category :as old-category]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [storefront.components.content :as content]
@@ -80,7 +79,6 @@
          events/navigate-order-complete                 checkout-complete/built-component])
 
     events/navigate-home                    home/built-component
-    events/navigate-named-search            old-category/built-component
     events/navigate-category                category/built-component
     events/navigate-product-details         product-details/built-component
     events/navigate-product-details-sku     product-details/built-component

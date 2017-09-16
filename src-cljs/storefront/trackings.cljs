@@ -9,7 +9,6 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.sift :as sift]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.old-bundle-builder :as old-bundle-builder]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.videos :as videos]
             [storefront.components.money-formatters :as mf]
@@ -44,15 +43,6 @@
 (defmethod perform-track events/navigate-named-search [_ event args app-state]
   (facebook-analytics/track-event "ViewContent")
   (convert/track-conversion "view-category"))
-
-;; GROT: when old product detail page is removed
-(defmethod perform-track events/old-control-bundle-option-select [_ event {:keys [step-name selections]} app-state]
-  (stringer/track-event "select_bundle_option" {:option_name  step-name
-                                                :option_value (step-name selections)})
-  (when-let [last-step (old-bundle-builder/last-step (get-in app-state keypaths/old-bundle-builder))]
-    (google-analytics/track-page (str (routes/current-path app-state)
-                                      "/choose_"
-                                      (clj->js last-step)))))
 
 (defmethod perform-track events/control-category-filter-select
   [_ event {:keys [selected]} app-state]
