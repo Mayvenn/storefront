@@ -29,7 +29,6 @@
     [:p.mb3 "To welcome you to Mayvenn, here is 30% off your first order. Use the promo code: FIRST"]
     [:a.btn.btn-primary.h5.px4.light
      {:href   (first-coupon-link store-link)
-      :target "_blank"
       :data-test "shop-first-promo"}
      "Shop now using promo code FIRST"]]])
 

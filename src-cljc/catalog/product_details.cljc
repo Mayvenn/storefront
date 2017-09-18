@@ -13,6 +13,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
+            [spice.core :as spice]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -102,16 +103,12 @@
                    :spinning? adding-to-bag?}
                   "Add to bag"))
 
-(defn ^:private number->words [n]
-  (let [mapping ["Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine" "Ten" "Eleven" "Twelve" "Thirteen" "Fourteen" "Fifteen"]]
-    (get mapping n (str "(x " n ")"))))
-
 (defn display-bagged-sku [facets idx {:keys [quantity sku]}]
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key (str "bagged-sku-" idx)
     :data-test "items-added"}
    "Added to bag: "
-   (number->words quantity)
+   (spice/number->word quantity)
    " "
    (or (:sku/name sku)
        (sku-name facets sku))])

@@ -172,14 +172,16 @@ Thanks,
        [:form.clearfix.mxn1
         {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
         [:div.col.col-8.px1
-         (ui/text-field {:keypath keypaths/cart-coupon-code
-                         :focused focused
-                         :label   "Promo code"
-                         :value   coupon-code
-                         :errors  (get field-errors ["promo-code"])
-                         :data-ref "promo-code"})]
+         (ui/text-field {:keypath   keypaths/cart-coupon-code
+                         :data-test "promo-code"
+                         :focused   focused
+                         :label     "Promo code"
+                         :value     coupon-code
+                         :errors    (get field-errors ["promo-code"])
+                         :data-ref  "promo-code"})]
         [:div.col.col-4.px1.mb3.inline-block
-         (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+         (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
+                          :data-test "cart-apply-promo"
                           :disabled? updating?
                           :spinning? applying-coupon?}
                          "Apply")]]
