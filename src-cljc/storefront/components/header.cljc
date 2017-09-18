@@ -163,7 +163,10 @@
    (for [{:keys [page/slug name] :as category} items]
      [:li {:key slug}
       [:a.inherit-color.block.pyp2
-       (utils/route-to events/navigate-category category)
+       (if (:direct-to-details/id category)
+         (utils/route-to events/navigate-product-details {:id   (:direct-to-details/id category)
+                                                          :slug (:direct-to-details/slug category)})
+         (utils/route-to events/navigate-category category))
        (when (categories/new-category? slug) [:span.teal "NEW "])
        (str/capitalize name)]])])
 

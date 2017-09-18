@@ -337,19 +337,22 @@
                                 "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                 "your unique look using the built-in combs and adjustable strap.")
           :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}
-   {:catalog/category-id "14"
-    :auth/requires       #{:stylist}
-    :header/order        30
-    :header/group        1
-    :name                "Stylist Exclusives"
-    :page/slug           "stylist-exclusives"
-    :criteria            {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
-    :filter-tabs         []
-    :seo                 {:title          "Stylist Exclusives | Mayvenn"
-                          :og-title       (copy "Stylist Exclusives - Free shipping."
-                                                "Free 30 day returns. Made with 100% virgin human hair.")
-                          :description    (copy "")
-                          :og-description (copy "")}}])
+   {:catalog/category-id    "14"
+    :auth/requires          #{:stylist}
+    :footer/order           30
+    :header/order           30
+    :header/group           1
+    :name                   "Stylist Exclusives"
+    :page/slug              "stylist-exclusives"
+    :direct-to-details/id   49
+    :direct-to-details/slug "ring-kits"
+    :criteria               {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
+    :filter-tabs            []
+    :seo                    {:title          "Stylist Exclusives | Mayvenn"
+                             :og-title       (copy "Stylist Exclusives - Free shipping."
+                                                   "Free 30 day returns. Made with 100% virgin human hair.")
+                             :description    (copy "")
+                             :og-description (copy "")}}])
 
 (defn id->category [id categories]
   (->> categories

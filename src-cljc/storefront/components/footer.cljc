@@ -18,21 +18,18 @@
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
-(defn- category->link [{:keys [name page/slug] :as category}]
+(defn- category->link [{:keys        [name page/slug] :as category
+                        sku-set-id   :direct-to-details/id
+                        sku-set-slug :direct-to-details/slug}]
   {:title       name
    :slug        slug
-   :nav-message [events/navigate-category category]})
-
-(def ^:private stylist-kit
-  {:title       "Stylist Exclusives"
-   :slug        "stylist-products"
-   :nav-message [events/navigate-product-details
-                 {:slug "rings-kit"
-                  :id   49}]})
+   :nav-message (if sku-set-id
+                  [events/navigate-product-details {:id sku-set-id
+                                                    :slug sku-set-slug}]
+                  [events/navigate-category category])})
 
 (defn shop-section [own-store? categories]
-  (let [links (cond-> (mapv category->link categories)
-                own-store? (conj stylist-kit))]
+  (let [links (mapv category->link categories)]
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
