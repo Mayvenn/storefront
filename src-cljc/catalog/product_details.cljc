@@ -336,11 +336,11 @@
            [:div schema-org-offer-props
             [:div.my2
              [:div
-              (when (= (-> product :criteria/essential :product/department) "hair")
-                (for [selector (:criteria/selectors product)]
-                  (selector-html {:selector        selector
-                                  :selected-option (selector selected-criteria)
-                                  :options         (selector options)})))]
+              (when (= (:product/department product) "hair")
+                (for [facet (:selector/electives product)]
+                  (selector-html {:selector        facet
+                                  :selected-option (get selected-criteria facet)
+                                  :options         (get options facet)})))]
              (sku-summary {:sku          selected-sku
                            :sku-quantity sku-quantity
                            :facets       facets})]
@@ -356,11 +356,11 @@
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
 
-(defn ugc-query [sku-set data]
-  (let [slug   (products/id->named-search (:sku-set/id sku-set))
+(defn ugc-query [{:keys [product-id] long-name :sku-set/name} data]
+  (let [slug   (products/id->named-search product-id)
         images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
     {:slug      slug
-     :long-name (:sku-set/name sku-set)
+     :long-name long-name
      :album     images}))
 ;; finding a sku from a product
 
@@ -369,11 +369,33 @@
         minimal-option     (->> options selector (filter :stocked?) first :option/slug)]
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
+(defn ->skuer-schema
+  "Reshapes product skuer to v1"
+  [product]
+  "keys to dealt with in the future:
+   :sku-set/seo
+   :sku-set/copy
+   :sku-set/images
+   :sku-set/name"
+  (let [essentials (maps/map-values first (:criteria/essential product))]
+    (-> product
+        (dissoc :criteria/essential)
+        (clojure.set/rename-keys
+         {:sku-set/id          :catalog/product-id
+          :sku-set/launched-at :catalog/launched-at
+          :sku-set/skus        :selector/skus
+          :sku-set/slug        :page/slug
+          :criteria/selectors  :selector/electives})
+        (merge essentials)
+        (assoc :selector/essentials (keys essentials)))))
+
 (defn query [data]
-  (let [skus-db         @(get-in data keypaths/db-skus)
-        image-db        @(get-in data keypaths/db-images)
-        current-product (products/current-sku-set data)
-        product         (update current-product :criteria/essential (partial maps/map-values first))
+  (let [skus-db  @(get-in data keypaths/db-skus)
+        image-db @(get-in data keypaths/db-images)
+        product  (->skuer-schema (products/current-sku-set data))
+        selector (selector/map->Selector {:skuer      product
+                                          :identifier :sku-id
+                                          :space      skus-db})
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/index-by :option/slug)))
@@ -383,33 +405,30 @@
                        :review?
                        (products/eligible-for-reviews? product))
 
-
-        product-skus (->> (selector/query skus-db (:criteria/essential product))
+        product-skus (->> (selector/select-all selector)
                           (sort-by :price))
 
         initial-options (reduce (partial skus->selector-options facets product-skus)
                                 {}
-                                (:criteria/selectors product))
+                                (:selector/electives product))
 
         ;; Applied selections
 
         initial-criteria (reduce (partial make-selected-criteria initial-options)
                                  ;;TODO This needs a new keypath
                                  (get-in data keypaths/bundle-builder-selections)
-                                 (:criteria/selectors product))
+                                 (:selector/electives product))
 
         initial-selection-options (check-options initial-criteria product-skus initial-options)
 
         selected-criteria (reduce (partial make-selected-criteria initial-selection-options)
                                   ;;TODO This needs a new keypath
                                   (get-in data keypaths/bundle-builder-selections)
-                                  (:criteria/selectors product))
+                                  (:selector/electives product))
 
         selected-options (check-options selected-criteria product-skus initial-options)
 
-        selected-sku (->> (selector/query skus-db
-                                          (:criteria/essential product)
-                                          selected-criteria)
+        selected-sku (->> (selector/select selector selected-criteria)
                           (sort-by :price)
                           first)
 
@@ -427,13 +446,14 @@
                          (= selected-sku-color image-color))))
                     (->> {:use-case "carousel"
                           :image/of #{"model" "product"}}
-                         (selector/images-matching-product image-db current-product)
+                         (selector/images-matching-product image-db product)
                          (sort-by :order)))]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)
      :facets            facets
-     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets (:sku-set/id product)))
+     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
+                                                      (:catalog/product-id product)))
      :options           selected-options
      :product           product
      :reviews           reviews

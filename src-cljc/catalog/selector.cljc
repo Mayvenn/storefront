@@ -1,5 +1,6 @@
 (ns catalog.selector
-  (:require [datascript.core :as d]))
+  (:require [datascript.core :as d]
+            [spice.maps :as maps]))
 
 (defn ^:private ->clauses
   [m] (mapcat (fn [[k v]]
@@ -41,3 +42,22 @@
                   (dissoc :hair/origin))
               criteria)
        (sort-by :order)))
+
+(defprotocol Selection
+  "Selects sku(er)s from a skuer"
+  (essentials [this])
+  (select-all [this])
+  (select [this user-selections]))
+
+(defrecord Selector [skuer identifier space]
+  Selection
+  (essentials [{:keys [skuer]}]
+    (select-keys skuer
+                 (:selector/essentials skuer)))
+  (select-all [this]
+    (->> (essentials this)
+         (query space)))
+  (select [this user-selections]
+    (query space
+           (merge user-selections
+                  (essentials this)))))
