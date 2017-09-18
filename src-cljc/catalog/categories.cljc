@@ -339,7 +339,6 @@
           :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}
    {:catalog/category-id "14"
     :auth/requires       #{:stylist}
-    :footer/order        30
     :header/order        30
     :header/group        1
     :name                "Stylist Exclusives"

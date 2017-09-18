@@ -31,9 +31,8 @@
                   :id   49}]})
 
 (defn shop-section [own-store? categories]
-  (let
-      [links (cond-> (mapv category->link categories)
-               own-store? (conj stylist-kit))]
+  (let [links (cond-> (mapv category->link categories)
+                own-store? (conj stylist-kit))]
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
