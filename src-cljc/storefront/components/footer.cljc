@@ -13,20 +13,24 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
             [storefront.platform.numbers :as numbers]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.auth :as auth]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
-(defn- category->link [{:keys        [name page/slug] :as category
-                        sku-set-id   :direct-to-details/id
-                        sku-set-slug :direct-to-details/slug}]
-  {:title       name
-   :slug        slug
-   :nav-message (if sku-set-id
-                  [events/navigate-product-details {:id sku-set-id
-                                                    :slug sku-set-slug}]
-                  [events/navigate-category category])})
+(defn ^:private category->link [{:keys        [name page/slug] :as category
+                                 sku-set-id   :direct-to-details/id
+                                 sku-set-slug :direct-to-details/slug}]
+  (let [nav-message (if sku-set-id
+                      [events/navigate-product-details {:id   sku-set-id
+                                                        :slug sku-set-slug}]
+                      [events/navigate-category category])
+        slug        (or sku-set-slug
+                        slug)]
+    {:title       name
+     :slug        slug
+     :nav-message nav-message}))
 
 (defn shop-section [own-store? categories]
   (let [links (mapv category->link categories)]
@@ -162,6 +166,7 @@
    :own-store? (own-store? data)
    :categories (->> (get-in data keypaths/categories)
                     (filter :footer/order)
+                    (filter (partial auth/permitted-category? data))
                     (sort-by :footer/order))})
 
 (defn built-component [data opts]
