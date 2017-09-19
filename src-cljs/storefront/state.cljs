@@ -101,7 +101,7 @@
      :products {}
      :states []
      :shipping-methods []
-     :sms-number "34649"
+     :sms-number "+34649"
      :stylist initial-stylist-state
      :api-cache {}
      :ugc {}
