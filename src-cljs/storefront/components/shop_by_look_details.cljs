@@ -19,11 +19,15 @@
             [clojure.string :as str]
             [storefront.accessors.products :as products]))
 
-(defn add-to-cart-button [creating-order? {:keys [number]}]
-  (ui/teal-button
-   (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
-          :spinning? creating-order?)
-   "Add items to bag"))
+(defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
+  (if sold-out?
+    [:div.btn.col-12.h5.btn-primary.bg-gray.white
+     {:on-click nil}
+     "Sold Out"]
+    (ui/teal-button
+     (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
+            :spinning? creating-order?)
+     "Add items to bag")))
 
 (defn carousel [imgs]
   (om/build carousel/component
@@ -51,7 +55,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? look shared-cart products back]} owner opts]
+(defn component [{:keys [creating-order? sold-out? look shared-cart products back]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -80,14 +84,19 @@
            [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
            (order-summary/display-line-items line-items products)
            [:div.mt3
-            (add-to-cart-button creating-order? shared-cart)]]))]])))
+            (add-to-cart-button sold-out? creating-order? shared-cart)]]))]])))
+
+(defn sold-out? [product]
+  (not-every? :in_stock (:variants product)))
 
 (defn query [data]
-  {:shared-cart      (get-in data keypaths/shared-cart-current)
-   :look             (pixlee/selected-look data)
-   :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
-   :products         (get-in data keypaths/products)
-   :back             (first (get-in data keypaths/navigation-undo-stack))})
+  (let [products (get-in data keypaths/products)]
+    {:shared-cart      (get-in data keypaths/shared-cart-current)
+     :look             (pixlee/selected-look data)
+     :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
+     :products         products
+     :sold-out?        (some sold-out? (vals products))
+     :back             (first (get-in data keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
