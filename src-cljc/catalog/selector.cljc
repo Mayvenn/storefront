@@ -16,22 +16,21 @@
       (= item-value value))))
 
 (defn criteria->xf-query [criteria]
-  (let [xforms (reduce (fn [xfs [key value]]
-                         (conj xfs (filter (partial missing-contains-or-equal key value))))
-                       []
-                       criteria)]
+  (let [xforms (map (fn [[key value]]
+                      (filter (partial missing-contains-or-equal key value)))
+                    criteria)]
     (apply comp xforms)))
 
 (defn all [db]
   db)
 
 (defn query [db & criteria]
-  (time (when db
-          (let [merged-criteria (reduce merge criteria)
-                xf-items db
-                xf-query (criteria->xf-query merged-criteria)
-                xf-result (sequence xf-query xf-items)]
-            xf-result))))
+  (when db
+    (let [merged-criteria (reduce merge criteria)
+          xf-items db
+          xf-query (criteria->xf-query merged-criteria)
+          xf-result (sequence xf-query xf-items)]
+      xf-result)))
 
 (defn new-db [coll]
   coll)
