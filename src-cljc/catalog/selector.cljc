@@ -1,46 +1,43 @@
-(ns catalog.selector
-  (:require [datascript.core :as d]
-            [spice.maps :as maps]))
+(ns catalog.selector)
 
-(defn ^:private ->clauses
-  [m] (mapcat (fn [[k v]]
-                (cond
-                  (and (coll? v) (< 1 (count v)))
-                  (let [v (set v)
-                        sym (gensym "?v")]
-                    [['?s k sym]
-                     [`(~'contains? ~v ~sym)]])
+(defn missing-contains-or-equal [key value item]
+  (let [item-value (key item :query/missing)]
+    (cond
+      (= item-value :query/missing)
+      true
 
-                  (coll? v)
-                  [['?s k (first v)]]
+      (and (coll? value) (< 1 (count value)))
+      ((set value) item-value)
 
-                  :else
-                  [['?s k v]])) m))
+      (coll? value)
+      (= item-value (first value))
 
-(defn query [db & criteria]
-  (let [query (->> criteria
-                   (reduce merge)
-                   ->clauses
-                   (concat [:find '(pull ?s [*])]
-                           (when (seq criteria) [:where])))]
-    (some->> db
-             (d/q query)
-             (map first))))
+      :else
+      (= item-value value))))
+
+(defn criteria->xf-query [criteria]
+  (let [xforms (reduce (fn [xfs [key value]]
+                         (conj xfs (filter (partial missing-contains-or-equal key value))))
+                       []
+                       criteria)]
+    (apply comp xforms)))
 
 (defn all [db]
-  (some->> db
-           (d/q '[:find (pull ?s [*])
-                 :where [?s]])
-           (map first)))
+  db)
+
+(defn query [db & criteria]
+  (time (when db
+          (let [merged-criteria (reduce merge criteria)
+                xf-items db
+                xf-query (criteria->xf-query merged-criteria)
+                xf-result (sequence xf-query xf-items)]
+            xf-result))))
 
 (defn new-db [coll]
-  (d/db-with (d/empty-db) coll))
+  coll)
 
 (defn images-matching-product [image-db product & criteria]
-  (->> (apply query image-db
-              (-> (:criteria/essential product)
-                  (dissoc :hair/origin))
-              criteria)
+  (->> (apply query image-db criteria)
        (sort-by :order)))
 
 (defprotocol Selection
