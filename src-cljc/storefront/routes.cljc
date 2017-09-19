@@ -44,11 +44,18 @@
    "/stylists/flows/2/thank-you" (edn->bidi events/navigate-leads-registration-resolve)})
 
 (def catalog-routes
-  {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug] (edn->bidi events/navigate-category)
-   ["/categories/hair/" :named-search-slug]                      (edn->bidi events/navigate-legacy-named-search)
-   ["/products/" [#"\d+" :id] "-" :slug]                         (edn->bidi events/navigate-product-details)
-   ["/products/" [#"\d+" :id] "-" :slug "/" :sku-code]           (edn->bidi events/navigate-product-details-sku)
-   ["/categories/hair/" :named-search-slug "/social"]            (edn->bidi events/navigate-ugc-named-search)})
+  {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
+   (edn->bidi events/navigate-category)
+
+   ["/categories/hair/" :named-search-slug]
+   (edn->bidi events/navigate-legacy-named-search)
+   ["/categories/hair/" :named-search-slug "/social"]
+   (edn->bidi events/navigate-ugc-named-search)
+
+   ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug]
+   (edn->bidi events/navigate-product-details)
+   ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug "/" :catalog/sku-id]
+   (edn->bidi events/navigate-product-details-sku)})
 
 (def app-routes
   ["" (merge static-page-routes

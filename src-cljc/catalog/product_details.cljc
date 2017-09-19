@@ -366,33 +366,13 @@
         minimal-option     (->> options selector (filter :stocked?) first :option/slug)]
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
-(defn ->skuer-schema
-  "Reshapes product skuer to v1"
-  [product]
-  "keys to dealt with in the future:
-   :sku-set/seo
-   :sku-set/copy
-   :sku-set/images
-   :sku-set/name"
-  (let [essentials (maps/map-values first (:criteria/essential product))]
-    (-> product
-        (dissoc :criteria/essential)
-        (clojure.set/rename-keys
-         {:sku-set/id          :catalog/product-id
-          :sku-set/launched-at :catalog/launched-at
-          :sku-set/skus        :selector/skus
-          :sku-set/slug        :page/slug
-          :criteria/selectors  :selector/electives})
-        (merge essentials)
-        (assoc :selector/essentials (keys essentials)))))
-
 (defn query [data]
-  (let [skus-db  (get-in data keypaths/db-skus)
-        image-db (get-in data keypaths/db-images)
-        product  (->skuer-schema (products/current-sku-set data))
+  (let [
+        pro_ (products/current-sku-set data)
+        product  (products/->skuer-schema pro_)
         selector (selector/map->Selector {:skuer      product
                                           :identifier :sku-id
-                                          :space      skus-db})
+                                          :space      (get-in data keypaths/db-skus)})
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/index-by :option/slug)))
@@ -429,13 +409,18 @@
                           (sort-by :price)
                           first)
 
-        sku-images (->> {:use-case "carousel"
-                         :image/of #{"model" "product"}}
-                        (selector/images-matching-product image-db product)
-                        (sort-by :order))]
+        image-selector  (selector/map->Selector
+                         {:skuer      product
+                          :identifier :image-id
+                          :space      (get-in data keypaths/db-images)})
+        carousel-images (->> selected-criteria
+                             (merge {:use-case "carousel"
+                                     :image/of #{"model" "product"}})
+                             (selector/select image-selector)
+                             (sort-by :order))]
     {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :carousel-images   (filter (comp #{"carousel"} :use-case) sku-images)
+     :carousel-images   carousel-images
      :facets            facets
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
@@ -461,25 +446,27 @@
          :clj nil))))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [id slug sku-code] :as args} app-state]
+  [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
   (-> app-state
-      (assoc-in k/detailed-product-selected-sku-id sku-code)
-      (assoc-in k/detailed-product-id id)
+      (assoc-in k/detailed-product-selected-sku-id sku-id)
+      (assoc-in k/detailed-product-id product-id)
       (assoc-in keypaths/browse-recently-added-skus [])
       (assoc-in keypaths/bundle-builder-selections {})
       (assoc-in keypaths/browse-sku-quantity 1)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ event {:keys [id]} _ app-state]
-     (let [sku-set (products/sku-set-by-id app-state id)]
-       (if (auth/permitted-product? app-state sku-set)
+     [_ event {:keys [catalog/product-id]} _ app-state]
+     (let [product (products/sku-set-by-id app-state product-id)]
+       (if (auth/permitted-product? app-state product)
          (do
            (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                                id (partial messages/handle-message events/api-success-sku-sets-for-details))
+                                product-id
+                                (partial messages/handle-message
+                                         events/api-success-sku-sets-for-details))
            (api/fetch-facets (get-in app-state keypaths/api-cache))
            (review-hooks/insert-reviews)
-           (fetch-current-sku-set-album app-state id))
+           (fetch-current-sku-set-album app-state product-id))
          (effects/redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details

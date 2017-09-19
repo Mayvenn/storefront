@@ -20,14 +20,13 @@
   (apply str "tel://+" (numbers/digits-only tel-num)))
 
 (defn ^:private category->link [{:keys        [name page/slug] :as category
-                                 sku-set-id   :direct-to-details/id
-                                 sku-set-slug :direct-to-details/slug}]
-  (let [nav-message (if sku-set-id
-                      [events/navigate-product-details {:id   sku-set-id
-                                                        :slug sku-set-slug}]
+                                 product-id   :direct-to-details/id
+                                 product-slug :direct-to-details/slug}]
+  (let [nav-message (if product-id
+                      [events/navigate-product-details {:catalog/product-id product-id
+                                                        :page/slug          product-slug}]
                       [events/navigate-category category])
-        slug        (or sku-set-slug
-                        slug)]
+        slug        (or product-slug slug)]
     {:title       name
      :slug        slug
      :nav-message nav-message}))

@@ -135,3 +135,23 @@
                                                    sku-sets)
                                               (maps/index-by :sku-set/id)))
       (update-in keypaths/skus merge (maps/index-by :sku skus))))
+
+(defn ->skuer-schema
+  "Reshapes product skuer to v1"
+  [product]
+  "keys to dealt with in the future:
+   :sku-set/seo
+   :sku-set/copy
+   :sku-set/images
+   :sku-set/name"
+  (let [essentials (maps/map-values first (:criteria/essential product))]
+    (-> product
+        (dissoc :criteria/essential)
+        (clojure.set/rename-keys
+         {:sku-set/id          :catalog/product-id
+          :sku-set/launched-at :catalog/launched-at
+          :sku-set/skus        :selector/skus
+          :sku-set/slug        :page/slug
+          :criteria/selectors  :selector/electives})
+        (merge essentials)
+        (assoc :selector/essentials (keys essentials)))))

@@ -5,6 +5,7 @@
               [storefront.component :as component]
               [storefront.history :as history]])
    [catalog.categories :as categories]
+   [catalog.products :as products]
    [catalog.category-filters :as category-filters]
    [catalog.selector :as selector]
    [clojure.set :as set]
@@ -190,22 +191,20 @@
 (defmethod effects/perform-effects events/menu-traverse-out
   [_ event {:keys [criteria]} _ app-state]
   #?(:cljs
-     ;;TODO: create and use a sku-set-db from app-state (like keypaths/db-skus)
-     (let [sku-sets-db       (->> (get-in app-state keypaths/sku-sets)
+     (let [products-db       (->> (get-in app-state keypaths/sku-sets)
                                   vals
-                                  (map #(merge (maps/map-values first (:criteria/essential %)) %))
-                                  (mapv #(dissoc % :criteria/essential)))
-           possible-sku-sets (selector/query sku-sets-db criteria)
-           sku-set           (first possible-sku-sets)]
-       (if (> (count possible-sku-sets) 1)
+                                  (mapv products/->skuer-schema))
+           selected-products (selector/query products-db criteria)]
+       (if (> (count selected-products) 1)
          (history/enqueue-navigate events/navigate-category
-                                   (-> (filter (fn [category] (= (:criteria category)
-                                                                 criteria))
+                                   (-> (filter #(= criteria (:criteria %))
                                                categories/initial-categories)
                                        first-and-only-category
                                        (select-keys [:catalog/category-id :page/slug])))
-         (history/enqueue-navigate events/navigate-product-details {:id   (:sku-set/id sku-set)
-                                                                    :slug (:sku-set/slug sku-set)})))))
+         (let [{product-id :sku-set/id slug :sku-set/slug} (first selected-products)]
+           (history/enqueue-navigate events/navigate-product-details
+                                     {:catalog/product-id product-id
+                                      :page/slug          slug}))))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-nav
   [_ event response app-state]

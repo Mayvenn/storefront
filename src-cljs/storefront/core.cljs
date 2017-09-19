@@ -105,12 +105,6 @@
 (defn ^:export debug-app-state []
   (clj->js @app-state))
 
-(defn ^:export debug-dbs []
-  (clj->js (reduce (fn [dbs [db-name db]]
-                     (assoc dbs db-name (selector/all db)))
-                   {}
-                   (get @app-state :db))))
-
 (defn on-jsload []
   (handle-message app-state events/app-stop)
   (reload-app app-state))

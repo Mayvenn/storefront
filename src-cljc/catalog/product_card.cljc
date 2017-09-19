@@ -77,8 +77,9 @@
      {:key slug}
      [:a.inherit-color
       ;; TODO: use the representative sku to preselect the options on product details
-      (assoc (utils/route-to events/navigate-product-details {:id   (:sku-set/id product)
-                                                              :slug slug})
+      (assoc (utils/route-to events/navigate-product-details
+                             {:catalog/product-id (:sku-set/id product)
+                              :page/slug          slug})
              :data-test (str "product-" slug))
       [:div.mb10.center
        ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.

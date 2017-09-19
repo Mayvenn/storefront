@@ -15,28 +15,22 @@
       :else
       (= item-value value))))
 
-(defn criteria->xf-query [criteria]
+(defn criteria->query [criteria]
   (let [xforms (map (fn [[key value]]
                       (filter (partial missing-contains-or-equal key value)))
                     criteria)]
     (apply comp xforms)))
 
-(defn all [db]
-  db)
-
 (defn query [db & criteria]
-  (when db
-    (let [merged-criteria (reduce merge criteria)
-          xf-items db
-          xf-query (criteria->xf-query merged-criteria)
-          xf-result (sequence xf-query xf-items)]
-      xf-result)))
-
-(defn new-db [coll]
-  coll)
+  (if-let [merged-criteria (reduce merge criteria)]
+    (sequence (criteria->query merged-criteria) db)
+    db))
 
 (defn images-matching-product [image-db product & criteria]
-  (->> (apply query image-db criteria)
+  (->> (apply query image-db
+              (-> (:criteria/essential product)
+                  (dissoc :hair/origin))
+              criteria)
        (sort-by :order)))
 
 (defprotocol Selection

@@ -241,22 +241,25 @@
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
                               req
-                              {:keys [id slug sku-code] :as params}]
-  (let [sku-set   (get-in data (conj keypaths/sku-sets id))
-        sku       (get-in data (conj keypaths/skus sku-code))
-        redirect? (or (not= slug (:sku-set/slug sku-set))
-                      (and sku-code (not sku)))]
-    (when sku-set
+                              {:keys [catalog/product-id
+                                      page/slug
+                                      catalog/sku-id]}]
+  (let [product   (get-in data (conj keypaths/sku-sets product-id))
+        sku       (get-in data (conj keypaths/skus sku-id))
+        redirect? (or (not= slug (:sku-set/slug product))
+                      (and sku-id (not sku)))]
+    (when-let [{:keys [:sku-set/id :sku-set/slug]} product]
       (if redirect?
-        (if sku
-          (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:sku-set/id sku-set)
-                                                                                    :slug     (:sku-set/slug sku-set)
-                                                                                    :sku-code (:sku sku)}))
-          (util.response/redirect (routes/path-for events/navigate-product-details {:id       (:sku-set/id sku-set)
-                                                                                    :slug     (:sku-set/slug sku-set)})))
-        (html-response render-ctx (-> data
-                                      (assoc-in catalog.keypaths/detailed-product-id
-                                                (:sku-set/id sku-set))))))))
+        (let [path (routes/path-for events/navigate-product-details
+                                    (merge {:catalog/product-id id
+                                            :page/slug slug}
+                                           (when sku
+                                             {:catalog/sku-id (:sku sku)})))]
+          (util.response/redirect path))
+        (html-response render-ctx
+                       (-> data
+                           (assoc-in catalog.keypaths/detailed-product-id
+                                     id)))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
@@ -316,7 +319,7 @@
                            (#{events/navigate-product-details
                               events/navigate-product-details-sku} nav-event)
                            ((fn [data]
-                              (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:id params))
+                              (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
                                     sku-sets                (map (fn [sku-set]
                                                                    (update sku-set :criteria/selectors (partial mapv keyword)))
                                                                  sku-sets)
