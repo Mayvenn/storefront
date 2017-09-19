@@ -306,11 +306,11 @@
            reviews
            selected-sku
            sku-quantity
-           ugc
-           cheapest-price]}
+           ugc]}
    owner
    opts]
-  (let [review? (:review? reviews)]
+  (let [review?        (:review? reviews)
+        cheapest-price (->> options vals flatten (map :price) sort first)]
     (component/create
      [:div.container.p2
       (page
@@ -363,9 +363,7 @@
     (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
 
 (defn query [data]
-  (let [
-        pro_ (products/current-sku-set data)
-        product  (products/->skuer-schema pro_)
+  (let [product  (products/->skuer-schema (products/current-sku-set data))
         selector (selector/map->Selector {:skuer      product
                                           :identifier :sku-id
                                           :space      (get-in data keypaths/db-skus)})
@@ -399,7 +397,7 @@
                                   (get-in data keypaths/bundle-builder-selections)
                                   (:selector/electives product))
 
-        selected-options (check-options selected-criteria product-skus initial-options)
+        options (check-options selected-criteria product-skus initial-options)
 
         selected-sku (->> (selector/select selector selected-criteria)
                           (sort-by :price)
@@ -414,20 +412,20 @@
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
                              (sort-by :order))]
-    {:adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
-     :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :carousel-images   carousel-images
-     :facets            facets
+    {:reviews reviews
+     :ugc     (ugc-query product data)
+
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
-     :options           selected-options
-     :product           product
-     :reviews           reviews
-     :selected-sku      selected-sku
-     :selected-criteria selected-criteria
+     :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
+     :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :ugc               (ugc-query product data)
-     :cheapest-price    (-> product-skus first :price)}))
+
+     :facets          facets
+     :product         product
+     :options         options
+     :selected-sku    selected-sku
+     :carousel-images carousel-images}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
