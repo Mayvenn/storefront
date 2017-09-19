@@ -77,7 +77,7 @@
                              :current-step    current-step
                              :selected-option option})
            :data-test (str "menu-step-" (:slug option)))
-    [:span.flex-auto  (:label option)] forward-caret)])
+    [:span.flex-auto.titleize (:label option)] forward-caret)])
 
 (defn- terminal-li [criteria option current-step]
   [:li {:key (:slug option)}
