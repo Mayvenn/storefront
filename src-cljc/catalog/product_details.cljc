@@ -154,17 +154,15 @@
       "Sold Out")]])
 
 (defn selector-html
-  [{:keys [selector selected-option options]}]
+  [{:keys [selector options]}]
   [:div.my2
    {:key (str "selector-" selector)}
    [:h2.h3.clearfix.h5
     [:span.block.left.navy.medium.shout
      (name selector)
-     (when selected-option
-       [:span.inline-block.mxp2.dark-gray " - "])]
-    (when selected-option
-      [:span.block.overflow-hidden.dark-gray.h5.regular
-       (:option/name (first (filter :checked? options)))])]
+     [:span.inline-block.mxp2.dark-gray " - "]]
+    [:span.block.overflow-hidden.dark-gray.h5.regular
+     (:option/name (first (filter :checked? options)))]]
    [:div.flex.flex-wrap.content-stretch.mxnp3
     (for [{option-name :name :as option} options]
       [:div.flex.flex-column.justify-center.pp3.col-4
@@ -307,7 +305,6 @@
            product
            reviews
            selected-sku
-           selected-criteria
            sku-quantity
            ugc
            cheapest-price]}
@@ -335,9 +332,8 @@
              [:div
               (when (= (:product/department product) "hair")
                 (for [facet (:selector/electives product)]
-                  (selector-html {:selector        facet
-                                  :selected-option (get selected-criteria facet)
-                                  :options         (get options facet)})))]
+                  (selector-html {:selector facet
+                                  :options  (get options facet)})))]
              (sku-summary {:sku          selected-sku
                            :sku-quantity sku-quantity
                            :facets       facets})]
