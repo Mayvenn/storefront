@@ -59,7 +59,7 @@
           [:img.mx1.border-light-gray
            {:width  10
             :height 10
-            :src    color-url}])]))
+            :src    (first color-url)}])]))
    (let [origin (some-> essential :hair/origin first)
          family (some-> essential :hair/family first)]
      (when (and (#{"brazilian" "malaysian"} origin)

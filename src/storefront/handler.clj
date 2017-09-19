@@ -34,7 +34,8 @@
             [clojure.xml :as xml]
             [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [spice.core :as spice]))
 
 (defn storefront-site-defaults
   [environment]
@@ -291,6 +292,26 @@
                                   (assoc-in keypaths/categories categories/initial-categories)
                                   (assoc-in keypaths/static (static-page nav-event))
                                   (assoc-in keypaths/navigation-message nav-message))))
+
+                           (= events/navigate-category nav-event)
+                           ((fn [data]
+                              (let [category         (categories/id->category (:catalog/category-id params)
+                                                                              categories/initial-categories)
+                                    {:keys [skus sku-sets]
+                                     :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
+                                                                                           first
+                                                                                           (:criteria category)))
+                                    sku-sets         (map (fn [sku-set]
+                                                            (update sku-set :criteria/selectors (partial mapv keyword)))
+                                                          sku-sets)
+                                    {:keys [facets]} (api/fetch-facets storeback-config)
+                                    data             (-> data
+                                                         (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+                                                         (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
+                                                         (update-in keypaths/skus merge (index-by :sku skus)))]
+                                (assoc-in data
+                                          keypaths/category-filters-for-browse
+                                          (categories/make-category-filters data response)))))
 
                            (#{events/navigate-product-details
                               events/navigate-product-details-sku} nav-event)
