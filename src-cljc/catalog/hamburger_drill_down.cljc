@@ -1,8 +1,7 @@
 (ns catalog.hamburger-drill-down
   (:require
    #?@(:clj [[storefront.component-shim :as component]]
-       :cljs [[datascript.core :as d]
-              [storefront.api :as api]
+       :cljs [[storefront.api :as api]
               [storefront.component :as component]
               [storefront.history :as history]])
    [catalog.categories :as categories]
@@ -192,11 +191,10 @@
   [_ event {:keys [criteria]} _ app-state]
   #?(:cljs
      ;;TODO: create and use a sku-set-db from app-state (like keypaths/db-skus)
-     (let [sku-sets-db       (-> (d/empty-db)
-                                 (d/db-with (->> (get-in app-state keypaths/sku-sets)
-                                                 vals
-                                                 (map #(merge (maps/map-values first (:criteria/essential %)) %))
-                                                 (mapv #(dissoc % :criteria/essential)))))
+     (let [sku-sets-db       (->> (get-in app-state keypaths/sku-sets)
+                                  vals
+                                  (map #(merge (maps/map-values first (:criteria/essential %)) %))
+                                  (mapv #(dissoc % :criteria/essential)))
            possible-sku-sets (selector/query sku-sets-db criteria)
            sku-set           (first possible-sku-sets)]
        (if (> (count possible-sku-sets) 1)

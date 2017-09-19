@@ -2,7 +2,6 @@
   (:require [storefront.events :as events]
             [storefront.config :as config]
             [clojure.string :as string]
-            [datascript.core :as d]
             [storefront.browser.cookie-jar :as cookie-jar]))
 
 (def initial-checkout-state
@@ -94,8 +93,8 @@
      :completed-order nil
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
-     :db {:skus (d/empty-db {:sku {:db/unique :db.unique/identity}})
-          :images (d/empty-db {:id {:db/unique :db.unique/identity}})}
+     :db {:skus #{}
+          :images #{}}
 
      :store {}
      :named-searches []
