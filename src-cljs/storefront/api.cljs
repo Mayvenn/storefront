@@ -588,19 +588,6 @@
                                               :current-page
                                               :pages]))}))
 
-(defn get-sms-number []
-  (letfn [(normalize-number [x] ;; smooth out send-sonar's two different number formats
-            (apply str (if (= "+" (first x))
-                         (drop 3 x)
-                         x)))
-          (callback [resp] (messages/handle-message events/api-success-sms-number
-                                                    {:number (-> resp :available_number normalize-number)}))]
-    (GET (str send-sonar-base-url "/phone_numbers/available")
-         {:handler callback
-          :headers {"X-Publishable-Key" send-sonar-publishable-key}
-          :format :json
-          :response-format (json-response-format {:keywords? true})})))
-
 (defn place-order [session-id order utm-params]
   (api-req
    POST

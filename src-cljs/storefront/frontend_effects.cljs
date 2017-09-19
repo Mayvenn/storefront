@@ -175,7 +175,6 @@
   (let [args (dissoc args :nav-stack-item)]
     (handle-message events/control-menu-collapse-all)
     (refresh-account app-state)
-    (api/get-sms-number)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
                          (first (get-in app-state keypaths/order-promotion-codes))

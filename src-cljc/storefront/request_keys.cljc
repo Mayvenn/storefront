@@ -36,8 +36,6 @@
 (def get-gallery [:get-gallery])
 (def delete-gallery-image [:delete-gallery-image])
 
-(def get-sms-number [:get-sms-number])
-
 (def get-shipping-methods [:shipping-methods])
 
 (def update-cart [:update-cart])
