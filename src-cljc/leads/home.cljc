@@ -380,7 +380,7 @@
                       "storefront.dev")]
     {:hero   {:current-flow    (get-in data keypaths/leads-lead-current-flow)
               :resume-self-reg {:lead (get-in data keypaths/leads-lead)}
-              :sign-up         {:field-errors      []
+              :sign-up         {:field-errors      (get-in data keypaths/field-errors)
                                 :first-name        (get-in data keypaths/leads-ui-sign-up-first-name)
                                 :last-name         (get-in data keypaths/leads-ui-sign-up-last-name)
                                 :phone             (get-in data keypaths/leads-ui-sign-up-phone)
