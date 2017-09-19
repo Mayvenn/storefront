@@ -321,6 +321,31 @@
        [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
+(defn footer [{:keys [call-number host-name]}]
+  (let [policy-url  (str "//shop." host-name "/policy")
+        privacy-url (str policy-url "/privacy")]
+    [:div.border-top.border-gray.bg-white
+     [:div.container
+      [:div.center.px3.my2
+       [:div.my1.medium.dark-gray "Need Help?"]
+       [:div.dark-gray.light.h5
+        [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)]
+        [:span.hide-on-mb call-number]
+        " | 9am-5pm PST M-F"]
+       [:div.my1.dark-silver.h6
+        [:div.center
+         [:a.inherit-color
+          {:href privacy-url} "Privacy"]
+         " - "
+         [:a.inherit-color
+          {:href (str privacy-url "#ca-privacy-rights")} "CA Privacy Rights"]
+         " - "
+         [:a.inherit-color
+          {:href (str policy-url "/tos")} "Terms"]
+         " - "
+         [:a.inherit-color
+          {:href (str privacy-url "#our-ads")} "Our Ads"]]]]]]))
+
 (defn ^:private component [data owner opts]
   (component/create
    [:div
@@ -336,7 +361,7 @@
     press-section
     [:section.center.px3.py6
      (faq-section q-and-as (:faq data))]
-    (component/build footer/minimal-component (:footer data) nil)]))
+    (footer (:footer data))]))
 
 (defn ->hr [hour]
   (let [tod    (if (< hour 12) "AM" "PM")
@@ -347,8 +372,12 @@
     (str result " " tod)))
 
 (defn ^:private query [data]
-  (let [call-number         "1-866-424-7201"
-        text-number         "1-510-447-1504"]
+  (let [call-number "1-866-424-7201"
+        text-number "1-510-447-1504"
+        host-name   (case (get-in data keypaths/environment)
+                      "production" "mayvenn.com"
+                      "acceptance" "diva-acceptance.com"
+                      "storefront.dev")]
     {:hero   {:current-flow    (get-in data keypaths/leads-lead-current-flow)
               :resume-self-reg {:lead (get-in data keypaths/leads-lead)}
               :sign-up         {:field-errors      []
@@ -358,11 +387,12 @@
                                 :email             (get-in data keypaths/leads-ui-sign-up-email)
                                 :call-slot         (get-in data keypaths/leads-ui-sign-up-call-slot)
                                 :self-reg?         (= "stylistsfb"
-                                                    (string/lower-case
-                                                     (or (get-in data keypaths/leads-utm-content)
-                                                         "")))
+                                                      (string/lower-case
+                                                       (or (get-in data keypaths/leads-utm-content)
+                                                           "")))
                                 :call-slot-options (get-in data keypaths/leads-ui-sign-up-call-slot-options)}}
-     :footer {:call-number call-number}
+     :footer {:call-number call-number
+              :host-name host-name}
      :faq    {:text-number text-number
               :call-number call-number}}))
 
