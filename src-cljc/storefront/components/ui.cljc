@@ -26,6 +26,11 @@
    [:div.img-spinner.bg-no-repeat.bg-center.bg-contain.col-12
     {:style {:height "1.5em"}}]))
 
+(defn large-spinner [attrs]
+  [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
+   (merge {:data-test "spinner"}
+          attrs)])
+
 (defn aspect-ratio
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."
   [x y & content]

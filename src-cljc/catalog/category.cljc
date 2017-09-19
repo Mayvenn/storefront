@@ -13,7 +13,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.accessors.experiments :as experiments]
-   [storefront.accessors.auth :as auth]))
+   [storefront.accessors.auth :as auth]
+   [storefront.request-keys :as request-keys]))
 
 (defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
   (let [sku-set-count        (count filtered-sku-sets)
@@ -85,21 +86,24 @@
 (defn copy-section [category]
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (-> category :copy :description)]])
 
-(def product-cards-empty-state
+(defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
-   #_ [:p.h1.py4 "😞"]
-   [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
-   [:p.h4.dark-gray.mb10.pb10
-    [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
-    " to see more hair."]])
+   (if loading?
+     (ui/large-spinner {:style {:height "4em"}})
+     [:div
+      #_[:p.h1.py4 "😞"]
+      [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
+      [:p.h4.dark-gray.mb10.pb10
+       [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
+       " to see more hair."]])])
 
-(defn product-cards [sku-sets facets]
+(defn product-cards [loading? sku-sets facets]
   [:div.flex.flex-wrap.mxn1
    (if (empty? sku-sets)
-     product-cards-empty-state
+     (product-cards-empty-state loading?)
      (for [product sku-sets] (product-card/component product facets)))])
 
-(defn ^:private component [{:keys [category filters facets]} owner opts]
+(defn ^:private component [{:keys [category filters facets loading-products?]} owner opts]
   (let [category-criteria (:criteria category)]
     (component/create
      [:div
@@ -123,12 +127,15 @@
             (filter-panel selected-facet)]]
           [:div
            (filter-tabs category-criteria filters)])]
-       (product-cards (:filtered-sku-sets filters) facets)]])))
+       (product-cards loading-products? (:filtered-sku-sets filters) facets)]])))
 
 (defn ^:private query [data]
-  {:category (categories/current-category data)
-   :filters  (get-in data keypaths/category-filters-for-browse)
-   :facets   (get-in data keypaths/facets)})
+  (let [category (categories/current-category data)]
+    {:category          category
+     :filters           (get-in data keypaths/category-filters-for-browse)
+     :facets            (get-in data keypaths/facets)
+     :loading-products? (utils/requesting? data (conj request-keys/search-sku-sets
+                                                      (:criteria category)))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

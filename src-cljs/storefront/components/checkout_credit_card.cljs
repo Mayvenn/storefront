@@ -77,9 +77,7 @@
     [:div
      [:div.h3.my2 "Payment Information"]
      (if fetching-saved-cards?
-       [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
-        {:style     {:height "4rem"}
-         :data-test "spinner"}]
+       (ui/large-spinner {:style {:height "4em"}})
        [:div
         (when (seq saved-cards)
           (let [card-options (conj (mapv (juxt cc/display-credit-card :id) saved-cards)

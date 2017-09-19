@@ -19,9 +19,9 @@
           {:data-test "change-photo-link"})
    (when saving?
      [:div.absolute
-      [:div.mx-auto.img-large-spinner.bg-center.bg-contain.bg-no-repeat.relative
-       {:style {:width "130px" :height "130px"
-                :top   "-12px" :left   "-12px"}}]])
+      (ui/large-spinner {:class "relative"
+                         :style {:width "130px" :height "130px"
+                                 :top   "-12px" :left   "-12px"}})])
    [:div.mx-auto.circle.border.mb2.content-box
     {:style {:width "100px" :height "100px" :border-width "3px"}
      :class (if saving? "border-light-gray" "border-teal")}
