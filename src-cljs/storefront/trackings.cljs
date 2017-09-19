@@ -55,6 +55,14 @@
                         {:filter_name     (pr-str filter)
                          :selected_option option}))
 
+(defmethod perform-track events/api-success-lead-created
+  [_ _ {:keys [first-name last-name email phone id]} _]
+  (stringer/track-event "lead_identified" {:lead_id    id
+                                           :email      email
+                                           :phone      phone
+                                           :first_name first-name
+                                           :last_name  last-name}))
+
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
