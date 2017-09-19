@@ -132,8 +132,8 @@
      [:div.mt6
       [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
       [:ul.list-reset
-       [:li "Text us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-sms-number)]
-       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-call-number)]
+       [:li "Text us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-leads-sms-number)]
+       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-leads-call-number)]
        [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 

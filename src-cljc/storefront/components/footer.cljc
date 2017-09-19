@@ -149,8 +149,8 @@
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Need Help?"]
       [:div.dark-gray.light.h5
-       [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} config/mayvenn-call-number)]
-       [:span.hide-on-mb config/mayvenn-call-number]
+       [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} config/mayvenn-leads-call-number)]
+       [:span.hide-on-mb config/mayvenn-leads-call-number]
        " | 9am-5pm PST M-F"]
       [:div.my1.dark-silver.h6
        (footer-links true)]]]]))
