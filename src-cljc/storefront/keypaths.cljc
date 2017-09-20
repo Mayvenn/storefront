@@ -317,3 +317,5 @@
 (def leads-lead-id (conj leads-lead :id))
 (def leads-lead-tracking-id (conj leads-lead :tracking-id))
 (def leads-lead-current-flow (conj leads-lead :current-flow))
+(def leads-lead-store-slug (conj leads-lead :store-slug))
+(def leads-lead-step-id (conj leads-lead :step-id))

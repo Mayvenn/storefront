@@ -142,7 +142,7 @@
                      "production" "mayvenn.com"
                      "acceptance" "diva-acceptance.com"
                      "storefront.dev")
-        store-slug (get-in app-state (conj keypaths/leads-lead :store-slug))]
+        store-slug (get-in app-state keypaths/leads-lead-store-slug)]
     {:store-link      (str store-slug "." host)
      :share-your-store {:host         host
                         :store-slug   store-slug
