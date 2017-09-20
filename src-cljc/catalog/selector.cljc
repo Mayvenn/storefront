@@ -21,10 +21,10 @@
                     criteria)]
     (apply comp xforms)))
 
-(defn query [db & criteria]
+(defn query [coll & criteria]
   (if-let [merged-criteria (reduce merge criteria)]
-    (sequence (criteria->query merged-criteria) db)
-    db))
+    (sequence (criteria->query merged-criteria) coll)
+    coll))
 
 (defn images-matching-product [image-db product & criteria]
   (->> (apply query image-db
