@@ -3,7 +3,7 @@
             [clojure.string :as string]
             [catalog.selector :as selector]
             [catalog.products :as products]
-            [catalog.keypaths :as k]
+            [catalog.keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -29,7 +29,8 @@
                 :cljs [[storefront.hooks.pixlee :as pixlee-hooks]
                        [storefront.component :as component]
                        [storefront.hooks.reviews :as review-hooks]
-                       [storefront.api :as api]])))
+                       [storefront.api :as api]
+                       [storefront.history :as history]])))
 
 (defn item-price [price]
   [:span {:item-prop "price"} (as-money-without-cents price)])
@@ -399,9 +400,7 @@
 
         options (check-options selected-criteria product-skus initial-options)
 
-        selected-sku (->> (selector/select selector selected-criteria)
-                          (sort-by :price)
-                          first)
+        selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
 
         image-selector  (selector/map->Selector
                          {:skuer      product
@@ -441,12 +440,14 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (-> app-state
-      (assoc-in k/detailed-product-selected-sku-id sku-id)
-      (assoc-in k/detailed-product-id product-id)
-      (assoc-in keypaths/browse-recently-added-skus [])
-      (assoc-in keypaths/bundle-builder-selections {})
-      (assoc-in keypaths/browse-sku-quantity 1)))
+  (let [product (products/->skuer-schema (products/current-sku-set app-state))
+        sku     (get-in app-state (conj keypaths/skus sku-id))]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+        (assoc-in catalog.keypaths/detailed-product-id product-id)
+        (assoc-in keypaths/browse-recently-added-skus [])
+        (assoc-in keypaths/bundle-builder-selections (merge product (:attributes sku)))
+        (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
@@ -466,12 +467,12 @@
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
   [_ event {:keys [sku-sets] :as response} _ app-state]
   (fetch-current-sku-set-album app-state
-                               (get-in app-state k/detailed-product-id)))
+                               (get-in app-state catalog.keypaths/detailed-product-id)))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus] :as response} app-state]
-  (let [sku-id (get-in app-state k/detailed-product-selected-sku-id)
+  (let [sku-id (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
         sku    (get-in app-state (conj keypaths/skus sku-id))]
     (if sku
       (->> [:hair/color :hair/length]
@@ -480,13 +481,38 @@
            (assoc-in app-state keypaths/bundle-builder-selections))
       app-state)))
 
+(defn determine-sku-from-selections [app-state]
+  (let [skus       (get-in app-state keypaths/db-skus)
+        selections (get-in app-state keypaths/bundle-builder-selections)
+        selected-sku (selector/query skus selections)]
+    (first selected-sku)))
+
+(defn assoc-sku-from-selections [app-state]
+  (assoc-in app-state catalog.keypaths/detailed-product-selected-sku
+            (determine-sku-from-selections app-state)))
+
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
-  ;;TODO this needs a new keypath
-  (cond-> (assoc-in app-state
-                    (conj keypaths/bundle-builder-selections selection) value)
+  (cond-> app-state
+    true
+    (assoc-in (conj keypaths/bundle-builder-selections selection) value)
+
     (= :hair/color selection)
-    (update-in keypaths/bundle-builder-selections dissoc :hair/length)))
+    ;;TODO Select default length
+    (update-in keypaths/bundle-builder-selections dissoc :hair/length)
+
+    true
+    assoc-sku-from-selections))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-bundle-option-select
+     [_ event {:keys [selection value]} _ app-state]
+     (let [sku-id (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
+           prod (products/current-sku-set app-state)]
+       (history/enqueue-redirect events/navigate-product-details-sku
+                                 {:catalog/product-id (:sku-set/id prod)
+                                  :page/slug (:sku-set/slug prod)
+                                  :catalog/sku-id sku-id}))))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
