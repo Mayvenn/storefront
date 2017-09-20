@@ -60,7 +60,7 @@
                      [:div.flex.items-center.justify-center
                       (svg/phone-ringing {})
                       [:div.ml1.left-align "Call Now"]])
-    (ui/ghost-button {:href (str "sms://" sms-number)
+    (ui/ghost-button {:href (str "sms:" sms-number)
                       :class "my1"}
                      [:div.flex.items-center.justify-center
                       (svg/message-bubble {})
