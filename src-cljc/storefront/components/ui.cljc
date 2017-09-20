@@ -495,8 +495,18 @@
 (defn phone-link [tag attrs & body]
   [tag (assoc attrs :href (phone-url (last body))) (apply str body)])
 
+(defn sms-url [tel-num]
+  ;; Android cannot detect shortcodes properly if you're using sms://+34649 or sms://34649
+  ;; But does work if you only have sms:34649.
+  (str "sms:" (numbers/digits-only tel-num)))
+
+(defn sms-link [tag attrs & body]
+  [tag (assoc attrs :href (sms-url (last body))) (apply str body)])
+
 (defmulti link (fn [link-type & _] link-type))
 (defmethod link :link/email [link-type tag attrs & body]
   (apply email-link tag attrs body))
 (defmethod link :link/phone [link-type tag attrs & body]
   (apply phone-link tag attrs body))
+(defmethod link :link/sms [link-type tag attrs & body]
+  (apply sms-link tag attrs body))

@@ -5,7 +5,7 @@
 
 ;; TODO: These numbers also exist in config.cljs - consider creating cljc
 (def mayvenn-leads-call-number "1-866-424-7201")
-(def mayvenn-leads-sms-number  "1-510-447-1504")
+(def mayvenn-leads-sms-number  "34649")
 
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}

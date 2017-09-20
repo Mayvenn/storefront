@@ -301,7 +301,7 @@
    {:q "How does the 30 days quality guarantee work?"
     :a "A common frustration that many have experienced when purchasing hair extensions is the inability to return the hair when they’re dissatisfied. Our 30-day guarantee is an unprecedented move in the industry, and it shows how confident we are in our product. If you’re having any issues with your bundles, even after you’ve dyed, cut it, or styled it, we’ll exchange it within 30 days. If you haven’t altered the hair or packaging in any way, we’ll give you a full refund within 30 days."}])
 
-(defn faq-section [q-and-as {:keys [text-number call-number]}]
+(defn faq-section [q-and-as {:keys [sms-number call-number]}]
   (let [q :h3
         a :p.h5.mb4]
     [:div.max-580.mx-auto.center
@@ -316,8 +316,8 @@
      [:div.mt6
       [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
       [:ul.list-reset
-       [:li "Text us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-leads-sms-number)]
-       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" config/mayvenn-leads-call-number)]
+       [:li "Text us: " (ui/link :link/sms :a.inherit-color {} sms-number)]
+       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" call-number)]
        [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
@@ -372,9 +372,7 @@
     (str result " " tod)))
 
 (defn ^:private query [data]
-  (let [call-number "1-866-424-7201"
-        text-number "1-510-447-1504"
-        host-name   (case (get-in data keypaths/environment)
+  (let [host-name   (case (get-in data keypaths/environment)
                       "production" "mayvenn.com"
                       "acceptance" "diva-acceptance.com"
                       "storefront.dev")]
@@ -391,10 +389,10 @@
                                                        (or (get-in data keypaths/leads-utm-content)
                                                            "")))
                                 :call-slot-options (get-in data keypaths/leads-ui-sign-up-call-slot-options)}}
-     :footer {:call-number call-number
+     :footer {:call-number config/mayvenn-leads-call-number
               :host-name host-name}
-     :faq    {:text-number text-number
-              :call-number call-number}}))
+     :faq    {:sms-number config/mayvenn-leads-sms-number
+              :call-number config/mayvenn-leads-call-number}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
