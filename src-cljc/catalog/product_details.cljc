@@ -478,30 +478,45 @@
       (->> [:hair/color :hair/length]
            (select-keys (:attributes sku))
            ;;TODO this needs a new keypath
-           (assoc-in app-state keypaths/bundle-builder-selections))
+           (update-in app-state keypaths/bundle-builder-selections merge))
       app-state)))
+
+(defn first-when-only [coll]
+  (when (= 1 (count coll))
+    (first coll)))
 
 (defn determine-sku-from-selections [app-state]
   (let [skus       (get-in app-state keypaths/db-skus)
         selections (get-in app-state keypaths/bundle-builder-selections)
         selected-sku (selector/query skus selections)]
-    (first selected-sku)))
+    (first-when-only selected-sku)))
 
 (defn assoc-sku-from-selections [app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-sku
             (determine-sku-from-selections app-state)))
 
+(defn determine-cheapest-length [skus]
+  (-> :price
+      (sort-by skus)
+      first
+      :hair/length))
+
+(defn determine-selected-length [app-state selected-option]
+  (let [skus            (get-in app-state keypaths/db-skus)
+        selections      (cond-> (get-in app-state keypaths/bundle-builder-selections)
+                          (= selected-option :hair/color)
+                          (dissoc :hair/length))]
+    (determine-cheapest-length (selector/query skus selections))))
+
+(defn assoc-default-length [app-state selected-option]
+  (assoc-in app-state (conj keypaths/bundle-builder-selections :hair/length)
+            (determine-selected-length app-state selected-option)))
+
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
-  (cond-> app-state
-    true
+  (-> app-state
     (assoc-in (conj keypaths/bundle-builder-selections selection) value)
-
-    (= :hair/color selection)
-    ;;TODO Select default length
-    (update-in keypaths/bundle-builder-selections dissoc :hair/length)
-
-    true
+    (assoc-default-length selection)
     assoc-sku-from-selections))
 
 #?(:cljs
