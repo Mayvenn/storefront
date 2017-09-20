@@ -49,6 +49,12 @@
    :optional-keys ["leads.utm-source" "leads.utm-medium" "leads.utm-campaign" "leads.utm-content" "leads.utm-term"]
    :required-keys []})
 
+(def leads-tracking-id
+  {:domain        (root-domain)
+   :max-age       four-weeks
+   :optional-keys []
+   :required-keys ["leads.tracking-id"]})
+
 (def email-capture-session
   {:domain        nil
    :max-age       1800
@@ -97,7 +103,7 @@
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
 (def clear-email-capture-session (partial clear-cookie email-capture-session))
-
+(def clear-leads-tracking-id (partial clear-cookie leads-tracking-id))
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))

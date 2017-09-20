@@ -2,6 +2,7 @@
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.component :as component]
                        [storefront.api :as api]
+                       [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]])
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
@@ -347,4 +348,5 @@
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
      [_ event {:keys [registered-lead]} _ app-state]
+     (cookie-jar/clear-leads-tracking-id (get-in app-state keypaths/cookie))
      (history/enqueue-navigate events/navigate-leads-registration-resolve)))
