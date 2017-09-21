@@ -286,8 +286,17 @@
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
 
+(defn min-of-maps
+  ([k] {})
+  ([k a b]
+   (if (< (get a k) (get b k))
+     a b)))
+
+(defn lowest [k ms]
+  (reduce (partial min-of-maps k) ms))
+
 (defn lowest-sku-price [skus]
-  (reduce min (map :price skus)))
+  (:price (lowest :price skus)))
 
 (defn lowest-sku-price-for-option-kw [skus option-kw]
   (into {}
@@ -394,8 +403,9 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (let [product (products/->skuer-schema (products/current-sku-set app-state))
-        sku     (get-in app-state (conj keypaths/skus sku-id))]
+  (let [product      (products/->skuer-schema (products/current-sku-set app-state))
+        product-skus (vals (select-keys (get-in app-state keypaths/skus) (:selector/skus product)))
+        sku          (get-in app-state (conj keypaths/skus (or sku-id (:sku (lowest :price product-skus)))))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
