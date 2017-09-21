@@ -407,8 +407,17 @@
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/bundle-builder-selections (merge product (:attributes sku)))
+        (assoc-in keypaths/bundle-builder-selections
+                  (-> product
+                      (merge (:attributes sku))
+                      (select-keys [:hair/length
+                                    :hair/texture
+                                    :hair/origin
+                                    :hair/color
+                                    :hair/base-material
+                                    :hair/family
+                                    :product/department])))
+
         (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
