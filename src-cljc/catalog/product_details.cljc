@@ -252,30 +252,48 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn skus->selector-options
-  "Reduces product skus down to options for selection
+(defn lowest-sku-price [skus]
+  (reduce min (map :price skus)))
+
+(defn lowest-sku-price-for-option-kw [skus option-kw]
+  (into {}
+        (map (fn [[option-kw skus]]
+               {option-kw
+                (lowest-sku-price skus)})
+             (group-by option-kw skus))))
+
+(defn skus->options
+  "Reduces this product's skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [facets skus selector-options selector]
-  (let [sku->option
-        (fn [options sku]
-          (let [option-name  (selector sku)
-                facet-option (get-in facets [selector :facet/options option-name])
+  [electives criteria facets skus product-options option-kw]
+  (let [relevant-skus          (selector/query skus
+                                               (apply dissoc criteria
+                                                      (set/difference (set electives)
+                                                                      (set (keys product-options)))))
+        cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
+        cheapest-price         (lowest-sku-price relevant-skus)
+        sku->option
+        (fn [options-for-option-kw sku]
+          (let [option-name  (option-kw sku)
+                facet-option (get-in facets [option-kw :facet/options option-name])
                 image        (:option/image facet-option)]
-            (update options option-name
+            (update options-for-option-kw option-name
                     (fn [existing]
                       {:option/name (:option/name facet-option)
                        :option/slug (:option/slug facet-option)
                        :stocked?    (or (:in-stock? sku)
                                         (:stocked? existing))
                        :image       image
-                       :price       (:price sku)}))))]
-    (merge selector-options
-           {selector (->> skus
-                          (reduce sku->option {})
-                          vals
-                          (sort-by :price))})))
+                       :price       (:price sku)
+                       :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
+                       :checked?    (= (option-kw criteria)
+                                       (option-kw sku))}))))]
+    (merge product-options
+           {option-kw (->> (reduce sku->option {} relevant-skus)
+                           vals
+                           (sort-by :price))})))
 
-(defn check-options [selected-criteria initial-skus options-by-selector]
+#_(defn filter-and-enrich-options [selected-criteria initial-skus options-by-selector]
   (into {} (for [[option-selector options] options-by-selector]
              (let [min-price               (:price (first options))
                    color-matches-selected? #(= (:hair/color selected-criteria)
@@ -358,16 +376,16 @@
      :album     images}))
 ;; finding a sku from a product
 
-(defn make-selected-criteria [options existing-selected-criteria selector]
-  (let [existing-selection (selector existing-selected-criteria)
-        minimal-option     (->> options selector (filter :stocked?) first :option/slug)]
-    (assoc existing-selected-criteria selector (or existing-selection minimal-option))))
+(comment
+  
+  )
 
 (defn query [data]
-  (let [product  (products/->skuer-schema (products/current-sku-set data))
-        selector (selector/map->Selector {:skuer      product
-                                          :identifier :sku-id
-                                          :space      (get-in data keypaths/db-skus)})
+  (let [selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        criteria           (get-in data keypaths/bundle-builder-selections)
+        product            (products/->skuer-schema (products/current-sku-set data))
+        product-skus       (->> (selector/query (get-in data keypaths/db-skus) product)
+                                (sort-by :price))
 
         facets (->> (get-in data keypaths/facets)
                     (map #(update % :facet/options (partial maps/index-by :option/slug)))
@@ -377,40 +395,39 @@
                        :review?
                        (products/eligible-for-reviews? product))
 
-        product-skus (->> (selector/select-all selector)
-                          (sort-by :price))
-
-        initial-options (reduce (partial skus->selector-options facets product-skus)
+        options (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
                                 {}
                                 (:selector/electives product))
-
         ;; Applied selections
+        ;options         (filter-and-enrich-options criteria product-skus initial-options)
 
-        initial-criteria (reduce (partial make-selected-criteria initial-options)
-                                 ;;TODO This needs a new keypath
-                                 (get-in data keypaths/bundle-builder-selections)
-                                 (:selector/electives product))
 
-        initial-selection-options (check-options initial-criteria product-skus initial-options)
-
-        selected-criteria (reduce (partial make-selected-criteria initial-selection-options)
-                                  ;;TODO This needs a new keypath
-                                  (get-in data keypaths/bundle-builder-selections)
-                                  (:selector/electives product))
-
-        options (check-options selected-criteria product-skus initial-options)
-
-        selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
 
         image-selector  (selector/map->Selector
                          {:skuer      product
                           :identifier :image-id
                           :space      (get-in data keypaths/db-images)})
-        carousel-images (->> selected-criteria
+        carousel-images (->> criteria
                              (merge {:use-case "carousel"
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
-                             (sort-by :order))]
+                             (sort-by :order))
+        #_{:hair/color  [{:checked?    false
+                                        :image       nil
+                                        :option/name "Phteven"
+                                        :price       60
+                                        :price-delta 0
+                                        :option/slug "black"
+                                        :stocked?    true}]
+                         :hair/length [{:checked?    true
+                                        :image       nil
+                                        :option/name "14\""
+                                        :price       80
+                                        :price-delta 20
+                                        :option/slug "14"
+                                        :stocked?    true}]}
+        ]
+
     {:reviews reviews
      :ugc     (ugc-query product data)
 
