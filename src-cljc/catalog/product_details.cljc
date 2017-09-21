@@ -40,22 +40,6 @@
    [:div.h6 "Starting at"]
    [:div.h2 (item-price cheapest-price)]])
 
-(defn facet->option-name [facets facet-slug option-slug]
-  (-> facets
-      facet-slug
-      :facet/options
-      (get option-slug)
-      :option/name))
-
-(defn sku-name [facets {:keys [hair/family] :as sku}]
-  (let [slug-keys (if (= family "bundles")
-                    [:hair/color :hair/origin :hair/length :hair/texture]
-                    [:hair/color :hair/texture :hair/base-material :hair/origin :hair/length :hair/family])
-        slugs     ((apply juxt slug-keys) sku)]
-    (some->> (map (partial facet->option-name facets) slug-keys slugs)
-             (clojure.string/join " ")
-             string/upper-case)))
-
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    {:item-scope :itemscope :item-type "http://schema.org/Product"}
@@ -104,15 +88,14 @@
                    :spinning? adding-to-bag?}
                   "Add to bag"))
 
-(defn display-bagged-sku [facets idx {:keys [quantity sku]}]
+(defn display-bagged-sku [idx {:keys [quantity sku]}]
   [:div.h6.my1.p1.py2.caps.dark-gray.bg-light-gray.medium.center
    {:key (str "bagged-sku-" idx)
     :data-test "items-added"}
    "Added to bag: "
    (spice/number->word quantity)
    " "
-   (or (:sku/name sku)
-       (sku-name facets sku))])
+   (:sku/name sku)])
 
 (def checkout-button
   (component/html
@@ -121,10 +104,10 @@
      :data-ref "cart-button"}
     (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
-(defn bagged-skus-and-checkout [facets bagged-skus]
+(defn bagged-skus-and-checkout [bagged-skus]
   (when (seq bagged-skus)
     [:div
-     (map-indexed (partial display-bagged-sku facets) bagged-skus)
+     (map-indexed display-bagged-sku bagged-skus)
      checkout-button]))
 
 (defn option-html
@@ -184,11 +167,10 @@
       [:div.navy desc]])
    quantity-and-price])
 
-(defn sku-summary [{:keys [facets sku sku-quantity]}]
+(defn sku-summary [{:keys [sku sku-quantity]}]
   (let [{:keys [in-stock? price]} sku]
     (summary-structure
-     (or (some-> sku :sku/name string/upper-case)
-         (sku-name facets sku))
+     (some-> sku :sku/name string/upper-case)
      (quantity-and-price-structure
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
@@ -252,52 +234,10 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn lowest-sku-price [skus]
-  (reduce min (map :price skus)))
-
-(defn lowest-sku-price-for-option-kw [skus option-kw]
-  (into {}
-        (map (fn [[option-kw skus]]
-               {option-kw
-                (lowest-sku-price skus)})
-             (group-by option-kw skus))))
-
-(defn skus->options
-  "Reduces this product's skus down to options for selection
-   for a certain selector. e.g. options for :hair/color."
-  [electives criteria facets skus product-options option-kw]
-  (let [relevant-skus          (selector/query skus
-                                               (apply dissoc criteria
-                                                      (set/difference (set electives)
-                                                                      (set (keys product-options)))))
-        cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
-        cheapest-price         (lowest-sku-price relevant-skus)
-        sku->option
-        (fn [options-for-option-kw sku]
-          (let [option-name  (option-kw sku)
-                facet-option (get-in facets [option-kw :facet/options option-name])
-                image        (:option/image facet-option)]
-            (update options-for-option-kw option-name
-                    (fn [existing]
-                      {:option/name (:option/name facet-option)
-                       :option/slug (:option/slug facet-option)
-                       :stocked?    (or (:in-stock? sku)
-                                        (:stocked? existing))
-                       :image       image
-                       :price       (:price sku)
-                       :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
-                       :checked?    (= (option-kw criteria)
-                                       (option-kw sku))}))))]
-    (merge product-options
-           {option-kw (->> (reduce sku->option {} relevant-skus)
-                           vals
-                           (sort-by :price))})))
-
 (defn component
   [{:keys [adding-to-bag?
            bagged-skus
            carousel-images
-           facets
            fetching-product?
            options
            product
@@ -333,19 +273,63 @@
                   (selector-html {:selector facet
                                   :options  (get options facet)})))]
              (sku-summary {:sku          selected-sku
-                           :sku-quantity sku-quantity
-                           :facets       facets})]
+                           :sku-quantity sku-quantity})]
             (when (products/eligible-for-triple-bundle-discount? product)
               triple-bundle-upsell)
             (add-to-bag-button adding-to-bag?
                                selected-sku
                                sku-quantity)
-            (bagged-skus-and-checkout facets bagged-skus)
+            (bagged-skus-and-checkout bagged-skus)
             (when (products/stylist-only? product) shipping-and-guarantee)]])
         (product-description product)
         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
       (when review?
         (component/build review-component/reviews-component reviews opts))])))
+
+(defn lowest-sku-price [skus]
+  (reduce min (map :price skus)))
+
+(defn lowest-sku-price-for-option-kw [skus option-kw]
+  (into {}
+        (map (fn [[option-kw skus]]
+               {option-kw
+                (lowest-sku-price skus)})
+             (group-by option-kw skus))))
+
+(defn ^:private construct-option [option-kw facets criteria cheapest-for-option-kw cheapest-price options-for-option-kw sku]
+  (let [option-name  (option-kw sku)
+        facet-option (get-in facets [option-kw :facet/options option-name])
+        image        (:option/image facet-option)]
+    (update options-for-option-kw option-name
+            (fn [existing]
+              {:option/name (:option/name facet-option)
+               :option/slug (:option/slug facet-option)
+               :stocked?    (or (:in-stock? sku)
+                                (:stocked? existing))
+               :image       image
+               :price       (:price sku)
+               :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
+               :checked?    (= (option-kw criteria)
+                               (option-kw sku))}))))
+(defn determine-relevant-skus
+  [skus criteria electives product-options]
+  (selector/query skus
+                  (apply dissoc criteria
+                         (set/difference (set electives)
+                                         (set (keys product-options))))))
+
+(defn skus->options
+  "Reduces this product's skus down to options for selection
+   for a certain selector. e.g. options for :hair/color."
+  [electives criteria facets skus product-options option-kw]
+  (let [relevant-skus          (determine-relevant-skus skus criteria electives product-options)
+        cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
+        cheapest-price         (lowest-sku-price relevant-skus)
+        sku->option (partial construct-option option-kw facets criteria cheapest-for-option-kw cheapest-price)]
+    (merge product-options
+           {option-kw (->> (reduce sku->option {} relevant-skus)
+                           vals
+                           (sort-by :price))})))
 
 (defn ugc-query [{:keys [product-id] long-name :sku-set/name} data]
   (let [slug   (products/id->named-search product-id)
@@ -355,24 +339,24 @@
      :album     images}))
 ;; finding a sku from a product
 
+(defn generate-options [facets product product-skus criteria]
+  (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
+          {}
+          (:selector/electives product)))
+
+(defn add-review-eligibility [review-data product]
+  (assoc review-data :review? (products/eligible-for-reviews? product)))
+
+
 (defn query [data]
-  (let [selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        criteria           (get-in data keypaths/bundle-builder-selections)
-        product            (products/->skuer-schema (products/current-sku-set data))
-        product-skus       (->> (selector/query (get-in data keypaths/db-skus) product)
-                                (sort-by :price))
-
-        facets (->> (get-in data keypaths/facets)
-                    (map #(update % :facet/options (partial maps/index-by :option/slug)))
-                    (maps/index-by :facet/slug))
-
-        reviews (assoc (review-component/query data)
-                       :review?
-                       (products/eligible-for-reviews? product))
-
-        options (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
-                                {}
-                                (:selector/electives product))
+  (let [selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
+        criteria     (get-in data keypaths/bundle-builder-selections)
+        product      (products/->skuer-schema (products/current-sku-set data))
+        product-skus (->> (selector/query (get-in data keypaths/db-skus) product)
+                          (sort-by :price))
+        facets       (->> (get-in data keypaths/facets)
+                          (map #(update % :facet/options (partial maps/index-by :option/slug)))
+                          (maps/index-by :facet/slug))
 
         image-selector  (selector/map->Selector
                          {:skuer      product
@@ -384,20 +368,17 @@
                              (selector/select image-selector)
                              (sort-by :order))]
 
-    {:reviews reviews
-     :ugc     (ugc-query product data)
-
+    {:reviews           (add-review-eligibility (review-component/query data) product)
+     :ugc               (ugc-query product data)
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-
-     :facets          facets
-     :product         product
-     :options         options
-     :selected-sku    selected-sku
-     :carousel-images carousel-images}))
+     :options           (generate-options facets product product-skus criteria)
+     :product           product
+     :selected-sku      selected-sku
+     :carousel-images   carousel-images}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
