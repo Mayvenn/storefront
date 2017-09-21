@@ -293,27 +293,6 @@
                            vals
                            (sort-by :price))})))
 
-#_(defn filter-and-enrich-options [selected-criteria initial-skus options-by-selector]
-  (into {} (for [[option-selector options] options-by-selector]
-             (let [min-price               (:price (first options))
-                   color-matches-selected? #(= (:hair/color selected-criteria)
-                                               (:hair/color %))]
-               [option-selector (->> options
-                                     (mapv
-                                      (fn [{:keys [option/slug price] :as option}]
-                                        (-> option
-                                            (assoc :checked? (= slug (option-selector selected-criteria)))
-                                            (assoc :price-delta (- price min-price)))))
-                                     (filterv
-                                      (fn [{:keys [option/slug]}]
-                                        ; Special case hair/length to be removed if they don't
-                                        ; exist for a color. In lieu of a general step/flow concept
-                                        (or (not= option-selector :hair/length)
-                                            ; skus with hair/lengths that exist for hair/color
-                                            (some #(and (color-matches-selected? %)
-                                                        (= slug (get % option-selector)))
-                                                  initial-skus))) ))]))))
-
 (defn component
   [{:keys [adding-to-bag?
            bagged-skus
@@ -376,10 +355,6 @@
      :album     images}))
 ;; finding a sku from a product
 
-(comment
-  
-  )
-
 (defn query [data]
   (let [selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
         criteria           (get-in data keypaths/bundle-builder-selections)
@@ -398,10 +373,6 @@
         options (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
                                 {}
                                 (:selector/electives product))
-        ;; Applied selections
-        ;options         (filter-and-enrich-options criteria product-skus initial-options)
-
-
 
         image-selector  (selector/map->Selector
                          {:skuer      product
@@ -411,22 +382,7 @@
                              (merge {:use-case "carousel"
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
-                             (sort-by :order))
-        #_{:hair/color  [{:checked?    false
-                                        :image       nil
-                                        :option/name "Phteven"
-                                        :price       60
-                                        :price-delta 0
-                                        :option/slug "black"
-                                        :stocked?    true}]
-                         :hair/length [{:checked?    true
-                                        :image       nil
-                                        :option/name "14\""
-                                        :price       80
-                                        :price-delta 20
-                                        :option/slug "14"
-                                        :stocked?    true}]}
-        ]
+                             (sort-by :order))]
 
     {:reviews reviews
      :ugc     (ugc-query product data)
