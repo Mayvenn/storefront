@@ -340,7 +340,7 @@
                            vals
                            (sort-by :price))})))
 
-(defn ugc-query [{:keys [product-id] long-name :sku-set/name} data]
+(defn ugc-query [{:keys [catalog/product-id] long-name :sku-set/name} data]
   (let [slug   (products/id->named-search product-id)
         images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
     {:slug      slug
