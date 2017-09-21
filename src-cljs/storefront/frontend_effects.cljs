@@ -170,6 +170,9 @@
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
   (apply history/enqueue-redirect nav-message))
 
+(def non-scroll-nav-events
+  #{events/navigate-product-details-sku})
+
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} _ app-state]
   (let [args (dissoc args :nav-stack-item)]
@@ -188,12 +191,13 @@
                      (not loaded-order?)))
         (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
-    (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
-      (if (zero? restore-scroll-top)
-        ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
-        (scroll/snap-to-top)
-        ;; Otherwise give the screen some time to render before trying to restore scroll
-        (handle-later events/snap {:top restore-scroll-top} 100)))
+    (when-not (non-scroll-nav-events event)
+      (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
+        (if (zero? restore-scroll-top)
+          ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
+          (scroll/snap-to-top)
+          ;; Otherwise give the screen some time to render before trying to restore scroll
+          (handle-later events/snap {:top restore-scroll-top} 100))))
 
     (when-let [pending-promo-code (:sha query-params)]
       (cookie-jar/save-pending-promo-code
