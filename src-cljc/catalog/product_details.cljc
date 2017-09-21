@@ -403,7 +403,7 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (let [product      (products/->skuer-schema (products/current-sku-set app-state))
+  (let [product      (products/->skuer-schema (products/sku-set-by-id app-state product-id))
         product-skus (vals (select-keys (get-in app-state keypaths/skus) (:selector/skus product)))
         sku          (get-in app-state (conj keypaths/skus (or sku-id (:sku (lowest :price product-skus)))))]
     (-> app-state
