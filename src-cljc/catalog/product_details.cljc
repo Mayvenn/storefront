@@ -326,7 +326,6 @@
                   (apply dissoc criteria
                          (set/difference (set electives)
                                          (set (keys product-options))))))
-
 (defn skus->options
   "Reduces this product's skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
@@ -334,7 +333,7 @@
   (let [relevant-skus          (determine-relevant-skus skus criteria electives product-options)
         cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
         cheapest-price         (lowest-sku-price relevant-skus)
-        sku->option (partial construct-option option-kw facets criteria cheapest-for-option-kw cheapest-price)]
+        sku->option            (partial construct-option option-kw facets criteria cheapest-for-option-kw cheapest-price)]
     (merge product-options
            {option-kw (->> (reduce sku->option {} relevant-skus)
                            vals
@@ -376,7 +375,6 @@
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
                              (sort-by :order))]
-
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               (ugc-query product data)
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
