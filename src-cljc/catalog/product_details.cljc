@@ -399,25 +399,44 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
 
+(defn get-valid-product-skus [app-state product]
+  (->> product
+       :selector/skus
+       (select-keys (get-in app-state keypaths/skus))
+       vals
+       (filter :in-stock?)))
+
+(defn determine-sku-id
+  ([app-state product]
+   (determine-sku-id app-state product nil))
+  ([app-state product sku-id]
+   (let [prev-sku-id        (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
+         valid-product-skus (get-valid-product-skus app-state product)
+         valid-sku-ids      (set (map :sku valid-product-skus))]
+     (or (when sku-id (valid-sku-ids sku-id))
+         (valid-sku-ids prev-sku-id)
+         (:sku (lowest :price valid-product-skus))))))
+
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (let [product      (products/->skuer-schema (products/sku-set-by-id app-state product-id))
-        product-skus (vals (select-keys (get-in app-state keypaths/skus) (:selector/skus product)))
-        sku          (get-in app-state (conj keypaths/skus (or sku-id (:sku (lowest :price product-skus)))))]
+  (let [product  (products/->skuer-schema (products/sku-set-by-id app-state product-id))
+        sku-id   (determine-sku-id app-state product sku-id)
+        sku      (get-in app-state (conj keypaths/skus sku-id))
+        criteria (-> product
+                     (merge (:attributes sku))
+                     (select-keys [:hair/length
+                                   :hair/texture
+                                   :hair/origin
+                                   :hair/color
+                                   :hair/base-material
+                                   :hair/family
+                                   :product/department]))
+        ]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/bundle-builder-selections
-                  (-> product
-                      (merge (:attributes sku))
-                      (select-keys [:hair/length
-                                    :hair/texture
-                                    :hair/origin
-                                    :hair/color
-                                    :hair/base-material
-                                    :hair/family
-                                    :product/department])))
-
+        (assoc-in keypaths/bundle-builder-selections criteria)
         (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
@@ -443,14 +462,15 @@
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus] :as response} app-state]
-  (let [sku-id (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-        sku    (get-in app-state (conj keypaths/skus sku-id))]
-    (if sku
-      (->> [:hair/color :hair/length]
-           (select-keys (:attributes sku))
-           ;;TODO this needs a new keypath
-           (update-in app-state keypaths/bundle-builder-selections merge))
-      app-state)))
+  (let [product      (products/->skuer-schema (products/current-sku-set app-state))
+        sku-id       (determine-sku-id app-state product)
+        sku          (spice/spy (first (filter #(= (:sku %) sku-id) skus)))
+        sku-criteria (select-keys (:attributes sku) [:hair/color :hair/length])]
+    (cond-> app-state
+      sku-criteria (update-in keypaths/bundle-builder-selections merge sku-criteria)
+
+      true
+      (assoc-in catalog.keypaths/detailed-product-selected-sku sku))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
