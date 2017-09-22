@@ -236,6 +236,7 @@
 
 (defn component
   [{:keys [adding-to-bag?
+           cheapest-price
            bagged-skus
            carousel-images
            fetching-product?
@@ -247,8 +248,7 @@
            ugc]}
    owner
    opts]
-  (let [review?        (:review? reviews)
-        cheapest-price (->> options vals flatten (map :price) sort first)]
+  (let [review?        (:review? reviews)]
     (component/create
      [:div.container.p2
       (page
@@ -385,6 +385,7 @@
      :options           (generate-options facets product product-skus criteria)
      :product           product
      :selected-sku      selected-sku
+     :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images}))
 
 (defn built-component [data opts]
