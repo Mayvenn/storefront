@@ -114,6 +114,11 @@
                             (map #(dissoc % :attributes :images)))
                            skus)))
 
+(defn index-sku-sets [sku-sets f]
+  "Reshape sku-sets by indexing by :sku-set/id and
+   converting :criteria/selectors (which are strings) to keywords"
+  (maps/index-by :sku-set/id (map f sku-sets)))
+
 (defn normalize-sku-sets [sku-sets]
   "Do all things necessary to transform a coll of sku-sets into the shape most
    desirable to work with."
