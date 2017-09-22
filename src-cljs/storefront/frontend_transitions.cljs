@@ -196,7 +196,7 @@
 
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id] :as args} app-state]
   (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
-        current-shared-cart (spice/spy (get-in app-state keypaths/shared-cart-current))]
+        current-shared-cart (get-in app-state keypaths/shared-cart-current)]
     (cond-> app-state
       true
       (assoc-in keypaths/selected-look-id (js/parseInt look-id))
