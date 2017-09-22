@@ -437,6 +437,7 @@
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/bundle-builder-selections criteria)
+        (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
