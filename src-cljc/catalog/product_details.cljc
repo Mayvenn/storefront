@@ -391,11 +391,8 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn fetch-current-sku-set-album [app-state sku-set-id]
-  (when-let [slug (->> sku-set-id
-                       (products/sku-set-by-id app-state)
-                       :sku-set/id
-                       products/id->named-search)]
+(defn fetch-current-sku-set-album [app-state {:keys [catalog/product-id]}]
+  (when-let [slug (products/id->named-search product-id)]
     (when-let [album-id (get-in config/pixlee [:albums slug])]
       #?(:cljs (pixlee-hooks/fetch-album album-id slug)
          :clj nil))))
@@ -420,7 +417,7 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (let [product  (products/->skuer-schema (products/sku-set-by-id app-state product-id))
+  (let [product  (products/->skuer-schema (products/product-by-id app-state product-id))
         sku-id   (determine-sku-id app-state product sku-id)
         sku      (get-in app-state (conj keypaths/skus sku-id))
         criteria (-> product
@@ -443,8 +440,8 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ event {:keys [catalog/product-id]} _ app-state]
-     (let [product (products/sku-set-by-id app-state product-id)]
+     [_ event _ _ app-state]
+     (when-let [{:keys [catalog/product-id] :as product} (products/current-sku-set app-state)]
        (if (auth/permitted-product? app-state product)
          (do
            (api/search-sku-sets (get-in app-state keypaths/api-cache)
@@ -453,7 +450,7 @@
                                          events/api-success-sku-sets-for-details))
            (api/fetch-facets (get-in app-state keypaths/api-cache))
            (review-hooks/insert-reviews)
-           (fetch-current-sku-set-album app-state product-id))
+           (fetch-current-sku-set-album app-state product))
          (effects/redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details

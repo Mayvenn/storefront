@@ -6,11 +6,11 @@
             [storefront.transitions :refer [transition-state]]
             [clojure.set :as set]))
 
-(defn sku-set-by-id [app-state sku-set-id]
-  (get-in app-state (conj keypaths/sku-sets sku-set-id)))
+(defn product-by-id [app-state product-id]
+  (get-in app-state (conj keypaths/sku-sets product-id)))
 
 (defn current-sku-set [app-state]
-  (sku-set-by-id app-state (get-in app-state k/detailed-product-id)))
+  (product-by-id app-state (get-in app-state k/detailed-product-id)))
 
 (def id->named-search
   {"74" "360-frontals"
