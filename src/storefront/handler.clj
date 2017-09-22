@@ -98,7 +98,7 @@
         {store-slug :store_slug :as store} :store
         :as                                req}]
     (cond
-      (= store :storefront.api/storeback-unavailable)
+      (= store :storefront.backend-api/storeback-unavailable)
       (->html-resp views/error-page)
 
       store-slug
