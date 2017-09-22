@@ -348,5 +348,5 @@
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
      [_ event {:keys [registered-lead]} _ app-state]
-     (cookie-jar/clear-leads-tracking-id (get-in app-state keypaths/cookie))
+     (cookie-jar/clear-lead-id (get-in app-state keypaths/cookie))
      (history/enqueue-navigate events/navigate-leads-registration-resolve)))

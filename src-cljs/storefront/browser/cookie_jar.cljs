@@ -49,11 +49,11 @@
    :optional-keys ["leads.utm-source" "leads.utm-medium" "leads.utm-campaign" "leads.utm-content" "leads.utm-term"]
    :required-keys []})
 
-(def leads-tracking-id
+(def lead-id
   {:domain        (root-domain)
    :max-age       four-weeks
    :optional-keys []
-   :required-keys ["leads.tracking-id"]})
+   :required-keys ["lead-id"]})
 
 (def email-capture-session
   {:domain        nil
@@ -103,7 +103,7 @@
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
 (def clear-email-capture-session (partial clear-cookie email-capture-session))
-(def clear-leads-tracking-id (partial clear-cookie leads-tracking-id))
+(def clear-lead-id (partial clear-cookie lead-id))
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
@@ -144,6 +144,7 @@
 
 (def save-utm-params (partial save-cookie utm-params))
 (def save-leads-utm-params (partial save-cookie leads-utm-params))
+(def save-lead-id (partial save-cookie lead-id))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

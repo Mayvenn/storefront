@@ -2,6 +2,7 @@
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.component :as component]
                        [storefront.api :as api]
+                       [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
             [leads.header :as header]
@@ -419,7 +420,8 @@
 (defmethod effects/perform-effects events/api-success-lead-created
   [_ _ _ _ app-state]
   #?(:cljs
-     (let [{:keys [flow-id]} (get-in app-state keypaths/leads-lead)]
+     (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/leads-lead)]
+       (cookie-jar/save-lead-id (get-in app-state keypaths/cookie) {"lead-id" lead-id})
        (if flow-id
          (history/enqueue-navigate events/navigate-leads-registration-details)
          (history/enqueue-navigate events/navigate-leads-resolve)))))
