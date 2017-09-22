@@ -359,7 +359,7 @@
 (defn query [data]
   (let [selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
         criteria     (get-in data keypaths/bundle-builder-selections)
-        product      (products/->skuer-schema (products/current-sku-set data))
+        product      (products/current-product data)
         product-skus (->> (selector/query (vals (get-in data keypaths/skus)) product)
                           (sort-by :price))
         facets       (->> (get-in data keypaths/facets)
@@ -440,8 +440,8 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ event _ _ app-state]
-     (when-let [{:keys [catalog/product-id] :as product} (products/->skuer-schema (products/current-sku-set app-state))]
+     [_ _ _ _ app-state]
+     (when-let [{:keys [catalog/product-id] :as product} (products/current-product app-state)]
        (if (auth/permitted-product? app-state product)
          (do
            (api/search-sku-sets (get-in app-state keypaths/api-cache)
@@ -461,7 +461,7 @@
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus] :as response} app-state]
-  (let [product      (products/->skuer-schema (products/current-sku-set app-state))
+  (let [product      (products/current-product app-state)
         sku-id       (determine-sku-id app-state product)
         sku          (first (filter #(= (:sku %) sku-id) skus))
         sku-criteria (select-keys (:attributes sku) [:hair/color :hair/length])]
@@ -513,7 +513,7 @@
    (defmethod effects/perform-effects events/control-bundle-option-select
      [_ event {:keys [selection value]} _ app-state]
      (let [sku-id                                 (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-           {:keys [catalog/product-id page/slug]} (products/->skuer-schema (products/current-sku-set app-state))]
+           {:keys [catalog/product-id page/slug]} (products/current-product app-state)]
        (history/enqueue-redirect events/navigate-product-details-sku
                                  {:catalog/product-id product-id
                                   :page/slug          slug
