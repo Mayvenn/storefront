@@ -91,7 +91,7 @@
 (defn sold-out? [variant-ids product]
   (->> product
        :variants
-       (filter variant-ids)
+       (filter (comp variant-ids :id))
        (not-every? :in_stock)))
 
 (defn query [data]
