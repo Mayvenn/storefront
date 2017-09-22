@@ -57,7 +57,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? sold-out? look shared-cart products back]} owner opts]
+(defn component [{:keys [creating-order? sold-out? look shared-cart products back fetching-shared-cart?]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -79,14 +79,16 @@
          [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
          (when-not (str/blank? (:title look))
            [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
-      (when shared-cart
-        (let [line-items (:line-items shared-cart)
-              item-count (->> line-items (map :quantity) (reduce +))]
-          [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-           [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
-           (order-summary/display-line-items line-items products)
-           [:div.mt3
-            (add-to-cart-button sold-out? creating-order? shared-cart)]]))]])))
+      (if fetching-shared-cart?
+        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+        (when shared-cart
+          (let [line-items (:line-items shared-cart)
+                item-count (->> line-items (map :quantity) (reduce +))]
+            [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
+             [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this look")]
+             (order-summary/display-line-items line-items products)
+             [:div.mt3
+              (add-to-cart-button sold-out? creating-order? shared-cart)]])))]])))
 
 (defn sold-out? [variant-ids product]
   (->> product
@@ -95,15 +97,16 @@
        (not-every? :in_stock)))
 
 (defn query [data]
-  (let [shared-cart  (get-in data keypaths/shared-cart-current)
-        variant-ids  (set (map :id (:line-items shared-cart)))
-        products     (get-in data keypaths/products)]
-    {:shared-cart     shared-cart
-     :look            (pixlee/selected-look data)
-     :creating-order? (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :products        products
-     :sold-out?       (some (partial sold-out? variant-ids) (vals products))
-     :back            (first (get-in data keypaths/navigation-undo-stack))}))
+  (let [shared-cart (get-in data keypaths/shared-cart-current)
+        variant-ids (set (map :id (:line-items shared-cart)))
+        products    (get-in data keypaths/products)]
+    {:shared-cart           shared-cart
+     :look                  (pixlee/selected-look data)
+     :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
+     :products              products
+     :sold-out?             (some (partial sold-out? variant-ids) (vals products))
+     :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
+     :back                  (first (get-in data keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
