@@ -17,7 +17,9 @@
             [storefront.components.order-summary :as order-summary]
             [cemerick.url :as url]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]))
+            [storefront.accessors.products :as products]
+            [spice.core :as spice]
+            [spice.maps :as maps]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?
@@ -86,17 +88,22 @@
            [:div.mt3
             (add-to-cart-button sold-out? creating-order? shared-cart)]]))]])))
 
-(defn sold-out? [product]
-  (not-every? :in_stock (:variants product)))
+(defn sold-out? [variant-ids product]
+  (->> product
+       :variants
+       (filter variant-ids)
+       (not-every? :in_stock)))
 
 (defn query [data]
-  (let [products (get-in data keypaths/products)]
-    {:shared-cart      (get-in data keypaths/shared-cart-current)
-     :look             (pixlee/selected-look data)
-     :creating-order?  (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :products         products
-     :sold-out?        (some sold-out? (vals products))
-     :back             (first (get-in data keypaths/navigation-undo-stack))}))
+  (let [shared-cart  (get-in data keypaths/shared-cart-current)
+        variant-ids  (set (map :id (:line-items shared-cart)))
+        products     (get-in data keypaths/products)]
+    {:shared-cart     shared-cart
+     :look            (pixlee/selected-look data)
+     :creating-order? (utils/requesting? data request-keys/create-order-from-shared-cart)
+     :products        products
+     :sold-out?       (some (partial sold-out? variant-ids) (vals products))
+     :back            (first (get-in data keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
