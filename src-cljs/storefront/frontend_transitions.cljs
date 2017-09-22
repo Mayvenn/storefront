@@ -12,7 +12,8 @@
             [storefront.routes :as routes]
             [storefront.state :as state]
             [storefront.transitions :refer [transition-state]]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [spice.core :as spice]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -193,8 +194,15 @@
 (defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
   (assoc-in app-state keypaths/selected-look-id nil))
 
-(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
-  (assoc-in app-state keypaths/selected-look-id (js/parseInt look-id)))
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id] :as args} app-state]
+  (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
+        current-shared-cart (spice/spy (get-in app-state keypaths/shared-cart-current))]
+    (cond-> app-state
+      true
+      (assoc-in keypaths/selected-look-id (js/parseInt look-id))
+
+      (not= shared-cart-id (:number current-shared-cart))
+      (assoc-in keypaths/shared-cart-current nil))))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
