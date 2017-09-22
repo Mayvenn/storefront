@@ -360,7 +360,7 @@
   (let [selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
         criteria     (get-in data keypaths/bundle-builder-selections)
         product      (products/->skuer-schema (products/current-sku-set data))
-        product-skus (->> (selector/query (get-in data keypaths/db-skus) product)
+        product-skus (->> (selector/query (vals (get-in data keypaths/skus)) product)
                           (sort-by :price))
         facets       (->> (get-in data keypaths/facets)
                           (map #(update % :facet/options (partial maps/index-by :option/slug)))
@@ -478,7 +478,7 @@
     (first coll)))
 
 (defn determine-sku-from-selections [app-state]
-  (let [skus       (get-in app-state keypaths/db-skus)
+  (let [skus       (vals (get-in app-state keypaths/skus))
         selections (get-in app-state keypaths/bundle-builder-selections)
         selected-sku (selector/query skus selections)]
     (first-when-only selected-sku)))
@@ -494,7 +494,7 @@
       :hair/length))
 
 (defn determine-selected-length [app-state selected-option]
-  (let [skus            (get-in app-state keypaths/db-skus)
+  (let [skus            (vals (get-in app-state keypaths/skus))
         selections      (cond-> (get-in app-state keypaths/bundle-builder-selections)
                           (= selected-option :hair/color)
                           (dissoc :hair/length))]

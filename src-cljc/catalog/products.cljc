@@ -106,35 +106,45 @@
   (or (:promo.eligible/triple-bundle sku-set)
       is-hair?))
 
+(defn normalize-skus [skus]
+  (maps/index-by :sku
+                 (sequence (comp
+                            (map #(assoc % :id (:slug %)))
+                            (map #(merge % (:attributes %)))
+                            (map #(dissoc % :attributes :images)))
+                           skus)))
+
+(defn normalize-sku-sets [sku-sets]
+  "Do all things necessary to transform a coll of sku-sets into the shape most
+   desirable to work with."
+  (index-sku-sets sku-sets
+                  (fn [sku-set]
+                    (update sku-set :criteria/selectors
+                            (partial mapv keyword)))))
+
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
   (-> app-state
-      ;;TODO prevent duplicates
-      (update-in keypaths/db-skus set/union (set (sequence (comp
-                                                            (map #(assoc % :id (:slug %)))
-                                                            (map #(merge % (:attributes %)))
-                                                            (map #(dissoc % :attributes :images)))
-                                                           skus)))
-
-      ;;TODO prevent duplicates
       (update-in keypaths/db-images set/union
                  (set (sequence (comp (mapcat :sku-set/images)
-                                   (map #(assoc % :id (str (:use-case %) "-" (:url %))))
-                                   (map #(assoc % :order (or (:order %)
-                                                             (case (:image/of (:criteria/attributes %))
-                                                               "model" 1
-                                                               "product" 2
-                                                               "seo" 3
-                                                               "catalog" 4
-                                                               5))))
-                                   (map #(merge % (:criteria/attributes %)))
-                                   (map #(dissoc % :criteria/attributes :filename)))
+                                      (map #(assoc % :id (str (:use-case %) "-" (:url %))))
+                                      (map #(assoc % :order (or (:order %)
+                                                                (case (:image/of (:criteria/attributes %))
+                                                                  "model" 1
+                                                                  "product" 2
+                                                                  "seo" 3
+                                                                  "catalog" 4
+                                                                  5))))
+                                      (map #(merge % (:criteria/attributes %)))
+                                      (map #(dissoc % :criteria/attributes :filename)))
                                 sku-sets)))
-      (update-in keypaths/sku-sets merge (->> (map (fn [sku-set]
-                                                     (update sku-set :criteria/selectors (partial mapv keyword)))
-                                                   sku-sets)
-                                              (maps/index-by :sku-set/id)))
-      (update-in keypaths/skus merge (maps/index-by :sku skus))))
+      (update-in keypaths/sku-sets merge normalize-sku-sets sku-sets)
+      (update-in keypaths/skus merge (normalize-skus skus))))
+
+(defn index-sku-sets [sku-sets f]
+  "Reshape sku-sets by indexing by :sku-set/id and
+   converting :criteria/selectors (which are strings) to keywords"
+  (maps/index-by :sku-set/id (map f sku-sets)))
 
 (defn ->skuer-schema
   "Reshapes product skuer to v1"

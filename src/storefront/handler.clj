@@ -35,7 +35,8 @@
             [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
             [clojure.set :as set]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [catalog.products :as products]))
 
 (defn storefront-site-defaults
   [environment]
@@ -327,7 +328,7 @@
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
                                     (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
-                                    (update-in keypaths/skus merge (index-by :sku skus)))))))]
+                                    (update-in keypaths/skus merge (products/normalize-skus skus)))))))]
           (condp = nav-event
             events/navigate-category            (render-category render-ctx data req params)
             events/navigate-legacy-named-search (redirect-named-search render-ctx data req params)
