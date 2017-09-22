@@ -464,7 +464,7 @@
   [_ event {:keys [skus] :as response} app-state]
   (let [product      (products/->skuer-schema (products/current-sku-set app-state))
         sku-id       (determine-sku-id app-state product)
-        sku          (spice/spy (first (filter #(= (:sku %) sku-id) skus)))
+        sku          (first (filter #(= (:sku %) sku-id) skus))
         sku-criteria (select-keys (:attributes sku) [:hair/color :hair/length])]
     (cond-> app-state
       sku-criteria (update-in keypaths/bundle-builder-selections merge sku-criteria)
