@@ -686,5 +686,4 @@
               {:error-code    code
                :error-message message})))
 
-(defmethod transition-state events/api-success-lead-created [_ event lead app-state]
-  (update-in app-state keypaths/leads-lead merge lead))
+

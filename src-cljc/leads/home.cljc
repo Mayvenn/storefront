@@ -412,6 +412,10 @@
                        :utm-content  (get-in app-state keypaths/leads-utm-content)
                        :utm-term     (get-in app-state keypaths/leads-utm-term)})))
 
+(defmethod transitions/transition-state events/api-success-lead-created [_ _ lead app-state]
+  #?(:cljs (update-in app-state keypaths/leads-lead merge lead)
+     :clj  app-state))
+
 (defmethod effects/perform-effects events/api-success-lead-created
   [_ _ _ _ app-state]
   #?(:cljs
