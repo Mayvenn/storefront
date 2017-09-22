@@ -60,7 +60,7 @@
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
     [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-    [:meta {:name "theme-color" :content "#40cbac"}]
+    [:meta {:name "theme-color" :content "#9fe5d5"}]
     (into '() (seo/tags-for-page data))
 
     [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
