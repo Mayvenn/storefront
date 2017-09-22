@@ -48,7 +48,7 @@
      [:meta {:property "og:description" :content og-description}]]))
 
 (defn product-details-tags [data]
-  (let [product (products/current-sku-set data)
+  (let [product (products/current-product data)
         image   (first (selector/images-matching-product (get-in data keypaths/db-images)
                                                          product
                                                          {:use-case "catalog"}))]

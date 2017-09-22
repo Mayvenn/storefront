@@ -133,7 +133,7 @@ Lengths: 12\" to 28\""
      (om/build reviews-summary-component-inner args opts)])))
 
 (defn query [data]
-  (let [sku-set (products/current-sku-set data)]
-    {:named-search-slug (products/id->named-search (:sku-set/id sku-set))
+  (let [product (products/current-product data)]
+    {:named-search-slug (products/id->named-search (:sku-set/id product))
      :url               (routes/current-path data)
      :loaded?           (get-in data keypaths/loaded-reviews)}))

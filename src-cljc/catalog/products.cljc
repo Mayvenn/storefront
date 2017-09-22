@@ -9,10 +9,6 @@
 (defn product-by-id [app-state product-id]
   (get-in app-state (conj keypaths/sku-sets product-id)))
 
-(defn current-product [app-state]
-  (->> (get-in app-state k/detailed-product-id)
-       (product-by-id app-state)
-       ->skuer-schema))
 (defn current-sku-set [app-state]
   (product-by-id app-state (get-in app-state k/detailed-product-id)))
 
@@ -174,3 +170,9 @@
           :criteria/selectors  :selector/electives})
         (merge essentials)
         (assoc :selector/essentials (keys essentials)))))
+
+;; TODO move to product details
+(defn current-product [app-state]
+  (->> (get-in app-state k/detailed-product-id)
+       (product-by-id app-state)
+       ->skuer-schema))
