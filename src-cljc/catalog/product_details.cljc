@@ -441,7 +441,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event _ _ app-state]
-     (when-let [{:keys [catalog/product-id] :as product} (products/current-sku-set app-state)]
+     (when-let [{:keys [catalog/product-id] :as product} (products/->skuer-schema (products/current-sku-set app-state))]
        (if (auth/permitted-product? app-state product)
          (do
            (api/search-sku-sets (get-in app-state keypaths/api-cache)
@@ -512,12 +512,12 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-bundle-option-select
      [_ event {:keys [selection value]} _ app-state]
-     (let [sku-id (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-           prod (products/current-sku-set app-state)]
+     (let [sku-id                                 (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
+           {:keys [catalog/product-id page/slug]} (products/->skuer-schema (products/current-sku-set app-state))]
        (history/enqueue-redirect events/navigate-product-details-sku
-                                 {:catalog/product-id (:sku-set/id prod)
-                                  :page/slug (:sku-set/slug prod)
-                                  :catalog/sku-id sku-id}))))
+                                 {:catalog/product-id product-id
+                                  :page/slug          slug
+                                  :catalog/sku-id     sku-id}))))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
