@@ -138,7 +138,7 @@
                                       (map #(merge % (:criteria/attributes %)))
                                       (map #(dissoc % :criteria/attributes :filename)))
                                 sku-sets)))
-      (update-in keypaths/sku-sets merge normalize-sku-sets sku-sets)
+      (update-in keypaths/sku-sets merge (normalize-sku-sets sku-sets))
       (update-in keypaths/skus merge (normalize-skus skus))))
 
 (defn index-sku-sets [sku-sets f]
