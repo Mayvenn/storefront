@@ -2,7 +2,6 @@
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.accessors.named-searches :as named-searches]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [catalog.selector :as selector]))
@@ -35,16 +34,6 @@
      [:meta {:property "og:title" :content og-title}]
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" image-url)}]
-     [:meta {:property "og:description" :content og-description}]]))
-
-(defn named-search-tags [data]
-  (let [{:keys [title og-title description og-description image]} (:seo (named-searches/current-named-search data))]
-    [[:title {} title]
-     [:meta {:name "description" :content description}]
-     [:meta {:property "og:title" :content og-title}]
-     [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (or (:extra_large_url image)
-                                                            (:large_url image)))}]
      [:meta {:property "og:description" :content og-description}]]))
 
 (defn product-details-tags [data]
@@ -128,7 +117,6 @@
                                    [:meta {:property "og:description"
                                            :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
 
-     events/navigate-named-search        (named-search-tags data)
      events/navigate-category            (category-tags data)
      events/navigate-product-details     (product-details-tags data)
      events/navigate-product-details-sku (product-details-tags data)
