@@ -355,7 +355,6 @@
 (defn add-review-eligibility [review-data product]
   (assoc review-data :review? (products/eligible-for-reviews? product)))
 
-
 (defn query [data]
   (let [selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
         criteria     (get-in data keypaths/bundle-builder-selections)

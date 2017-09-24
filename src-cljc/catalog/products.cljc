@@ -9,9 +9,6 @@
 (defn product-by-id [app-state product-id]
   (get-in app-state (conj keypaths/sku-sets product-id)))
 
-(defn current-sku-set [app-state]
-  (product-by-id app-state (get-in app-state k/detailed-product-id)))
-
 (def ^:private id->named-search
   {"74" "360-frontals"
    "75" "360-frontals"
@@ -145,11 +142,6 @@
                                 sku-sets)))
       (update-in keypaths/sku-sets merge (normalize-sku-sets sku-sets))
       (update-in keypaths/skus merge (normalize-skus skus))))
-
-(defn index-sku-sets [sku-sets f]
-  "Reshape sku-sets by indexing by :sku-set/id and
-   converting :criteria/selectors (which are strings) to keywords"
-  (maps/index-by :sku-set/id (map f sku-sets)))
 
 (defn ->skuer-schema
   "Reshapes product skuer to v1"
