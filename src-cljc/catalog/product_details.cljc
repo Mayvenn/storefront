@@ -339,13 +339,13 @@
                            vals
                            (sort-by :price))})))
 
-(defn ugc-query [{:keys [catalog/product-id] long-name :sku-set/name} data]
-  (let [slug   (products/id->named-search product-id)
-        images (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
-    {:slug      slug
-     :long-name long-name
-     :album     images}))
-;; finding a sku from a product
+(defn ugc-query [{:keys [legacy/named-search-slug catalog/product-id]
+                  long-name :sku-set/name} data]
+  (when-let [ugc (get-in data keypaths/ugc)]
+    (when-let [images (pixlee/images-in-album ugc named-search-slug)]
+      {:slug      named-search-slug
+       :long-name long-name
+       :album     images})))
 
 (defn generate-options [facets product product-skus criteria]
   (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
@@ -391,10 +391,11 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn fetch-current-sku-set-album [app-state {:keys [catalog/product-id]}]
-  (when-let [slug (products/id->named-search product-id)]
-    (when-let [album-id (get-in config/pixlee [:albums slug])]
-      #?(:cljs (pixlee-hooks/fetch-album album-id slug)
+(defn fetch-current-sku-set-album
+  [app-state {:keys [legacy/named-search-slug catalog/product-id]}]
+  (when named-search-slug
+    (when-let [album-id (get-in config/pixlee [:albums named-search-slug])]
+      #?(:cljs (pixlee-hooks/fetch-album album-id named-search-slug)
          :clj nil))))
 
 (defn get-valid-product-skus [app-state product]

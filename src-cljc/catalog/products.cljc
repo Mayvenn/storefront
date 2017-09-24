@@ -12,7 +12,7 @@
 (defn current-sku-set [app-state]
   (product-by-id app-state (get-in app-state k/detailed-product-id)))
 
-(def id->named-search
+(def ^:private id->named-search
   {"74" "360-frontals"
    "75" "360-frontals"
    "76" "360-frontals"
@@ -169,6 +169,7 @@
           :sku-set/slug        :page/slug
           :criteria/selectors  :selector/electives})
         (merge essentials)
+        (assoc :legacy/named-search-slug (id->named-search (:sku-set/id product)))
         (assoc :selector/essentials (keys essentials)))))
 
 ;; TODO move to product details
