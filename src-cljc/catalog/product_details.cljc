@@ -391,8 +391,8 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn fetch-current-sku-set-album
-  [app-state {:keys [legacy/named-search-slug catalog/product-id]}]
+(defn fetch-product-album
+  [{:keys [legacy/named-search-slug catalog/product-id]}]
   (when named-search-slug
     (when-let [album-id (get-in config/pixlee [:albums named-search-slug])]
       #?(:cljs (pixlee-hooks/fetch-album album-id named-search-slug)
@@ -451,13 +451,12 @@
                                          events/api-success-sku-sets-for-details))
            (api/fetch-facets (get-in app-state keypaths/api-cache))
            (review-hooks/insert-reviews)
-           (fetch-current-sku-set-album app-state product))
+           (fetch-product-album product))
          (effects/redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details
-  [_ event {:keys [sku-sets] :as response} _ app-state]
-  (fetch-current-sku-set-album app-state
-                               (get-in app-state catalog.keypaths/detailed-product-id)))
+  [_ _ _ _ app-state]
+  (fetch-product-album (products/current-product app-state)))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
