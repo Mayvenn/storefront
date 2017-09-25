@@ -239,28 +239,34 @@
                        (:catalog/category-id category))
              (html-response render-ctx))))))
 
+
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
                               req
                               {:keys [catalog/product-id
                                       page/slug
                                       catalog/sku-id]}]
-  (let [product   (get-in data (conj keypaths/sku-sets product-id))
+  (let [product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
         sku       (get-in data (conj keypaths/skus sku-id))
-        redirect? (or (not= slug (:sku-set/slug product))
-                      (and sku-id (not sku)))]
-    (when-let [{:keys [:sku-set/id :sku-set/slug]} product]
+        redirect? (or (not= slug (:page/slug product))
+                      (and sku-id (not sku)))
+        criteria  (select-keys sku
+                               (concat (:selector/electives product)
+                                       (:selector/essentials product)))]
+    (when-let [{:keys [:catalog/product-id :page/slug]} product]
       (if redirect?
         (let [path (routes/path-for events/navigate-product-details
-                                    (merge {:catalog/product-id id
-                                            :page/slug slug}
+                                    (merge {:catalog/product-id product-id
+                                            :page/slug          slug}
                                            (when sku
                                              {:catalog/sku-id (:sku sku)})))]
-          (util.response/redirect path))
-        (html-response render-ctx
+          (util.response/redirect path)) ;; Redirect from bad slug/sku-id
+        (html-response render-ctx ;; render normally
                        (-> data
-                           (assoc-in catalog.keypaths/detailed-product-id
-                                     id)))))))
+                           (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+                           (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+                           (assoc-in catalog.keypaths/detailed-product-id product-id)
+                           (assoc-in keypaths/bundle-builder-selections criteria)))))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))

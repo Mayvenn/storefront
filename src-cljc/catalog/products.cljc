@@ -155,9 +155,9 @@
                                       (map #(assoc % :id (str (:use-case %) "-" (:url %))))
                                       (map #(assoc % :order (or (:order %)
                                                                 (case (:image/of (:criteria/attributes %))
-                                                                  "model" 1
+                                                                  "model"   1
                                                                   "product" 2
-                                                                  "seo" 3
+                                                                  "seo"     3
                                                                   "catalog" 4
                                                                   5))))
                                       (map #(merge % (:criteria/attributes %)))

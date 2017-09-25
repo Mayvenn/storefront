@@ -420,7 +420,7 @@
   (let [product  (products/product-by-id app-state product-id)
         sku-id   (determine-sku-id app-state product sku-id)
         sku      (get-in app-state (conj keypaths/skus sku-id))
-        criteria (-> product
+        criteria (-> product ;; TODO use only criteria from the product (essential and elective)
                      (merge (:attributes sku))
                      (select-keys [:hair/length
                                    :hair/texture
@@ -428,8 +428,7 @@
                                    :hair/color
                                    :hair/base-material
                                    :hair/family
-                                   :product/department]))
-        ]
+                                   :product/department]))]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
