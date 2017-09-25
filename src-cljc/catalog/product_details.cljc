@@ -417,7 +417,7 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
-  (let [product  (products/->skuer-schema (products/product-by-id app-state product-id))
+  (let [product  (products/product-by-id app-state product-id)
         sku-id   (determine-sku-id app-state product sku-id)
         sku      (get-in app-state (conj keypaths/skus sku-id))
         criteria (-> product

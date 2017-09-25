@@ -191,9 +191,7 @@
 (defmethod effects/perform-effects events/menu-traverse-out
   [_ event {:keys [criteria]} _ app-state]
   #?(:cljs
-     (let [products-db       (->> (get-in app-state keypaths/sku-sets)
-                                  vals
-                                  (mapv products/->skuer-schema))
+     (let [products-db       (vals (get-in app-state keypaths/sku-sets))
            selected-products (selector/query products-db criteria)]
        (if (> (count selected-products) 1)
          (history/enqueue-navigate events/navigate-category

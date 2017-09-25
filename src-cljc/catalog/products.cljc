@@ -117,18 +117,35 @@
                             (map #(dissoc % :attributes :images)))
                            skus)))
 
-(defn index-sku-sets [sku-sets f]
-  "Reshape sku-sets by indexing by :sku-set/id and
-   converting :criteria/selectors (which are strings) to keywords"
-  (maps/index-by :sku-set/id (map f sku-sets)))
+(defn ->skuer-schema
+  "Reshapes product skuer to v1"
+  [product]
+  "keys to dealt with in the future:
+   :sku-set/seo
+   :sku-set/copy
+   :sku-set/images
+   :sku-set/name"
+  (let [essentials (maps/map-values first (:criteria/essential product))
+        electives (mapv keyword (:criteria/selectors product))]
+    (-> product
+        (dissoc :criteria/essential)
+        (clojure.set/rename-keys
+         {:sku-set/id          :catalog/product-id
+          :sku-set/launched-at :catalog/launched-at
+          :sku-set/skus        :selector/skus
+          :sku-set/slug        :page/slug})
+        (merge essentials)
+        (assoc :legacy/named-search-slug (id->named-search (:sku-set/id product)))
+        (assoc :selector/electives electives)
+        (assoc :selector/essentials (keys essentials)))))
 
-(defn normalize-sku-sets [sku-sets]
-  "Do all things necessary to transform a coll of sku-sets into the shape most
+(defn current-product [app-state]
+  (product-by-id app-state (get-in app-state k/detailed-product-id)))
+
+(defn normalize-sku-sets [products]
+  "Do all things necessary to transform a coll of products into the shape most
    desirable to work with."
-  (index-sku-sets sku-sets
-                  (fn [sku-set]
-                    (update sku-set :criteria/selectors
-                            (partial mapv keyword)))))
+  (maps/index-by :catalog/product-id (map ->skuer-schema products)))
 
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
@@ -148,30 +165,3 @@
                                 sku-sets)))
       (update-in keypaths/sku-sets merge (normalize-sku-sets sku-sets))
       (update-in keypaths/skus merge (normalize-skus skus))))
-
-(defn ->skuer-schema
-  "Reshapes product skuer to v1"
-  [product]
-  "keys to dealt with in the future:
-   :sku-set/seo
-   :sku-set/copy
-   :sku-set/images
-   :sku-set/name"
-  (let [essentials (maps/map-values first (:criteria/essential product))]
-    (-> product
-        (dissoc :criteria/essential)
-        (clojure.set/rename-keys
-         {:sku-set/id          :catalog/product-id
-          :sku-set/launched-at :catalog/launched-at
-          :sku-set/skus        :selector/skus
-          :sku-set/slug        :page/slug
-          :criteria/selectors  :selector/electives})
-        (merge essentials)
-        (assoc :legacy/named-search-slug (id->named-search (:sku-set/id product)))
-        (assoc :selector/essentials (keys essentials)))))
-
-;; TODO move to product details
-(defn current-product [app-state]
-  (->> (get-in app-state k/detailed-product-id)
-       (product-by-id app-state)
-       ->skuer-schema))
