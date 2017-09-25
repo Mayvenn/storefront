@@ -253,9 +253,9 @@
   (wistia/load))
 
 (defmethod perform-effects events/navigate-shop-bundle-deals [_ event _ _ app-state]
-  (pixlee/fetch-bundle-deals))
-;; if (experiments/bundle-deals? app-state)
-;; (redirect events/navigate-home)
+  (if (experiments/bundle-deals? app-state)
+    (pixlee/fetch-bundle-deals)
+    (redirect events/navigate-home)))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details

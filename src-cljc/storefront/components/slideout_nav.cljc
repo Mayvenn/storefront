@@ -13,7 +13,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.accessors.experiments :as experiments]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -165,8 +166,10 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in]
+(defn ^:private shopping-area [signed-in bundle-deals?]
   [:div
+   (when bundle-deals?
+     [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Shop Bundle Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
                                                 {:page/slug           "bundles"
@@ -193,9 +196,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in]
+(defn ^:private menu-area [signed-in bundle-deals?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in)
+   (shopping-area signed-in bundle-deals?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -218,7 +221,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [signed-in store user shopping]} owner opts]
+(defn ^:private root-menu [{:keys [signed-in store user shopping bundle-deals?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-top.border-gray
@@ -227,7 +230,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in)]
+     (menu-area signed-in bundle-deals?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -246,11 +249,12 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in (auth/signed-in data)
-   :on-taxon? (get-in data keypaths/current-traverse-nav-id)
-   :user      {:email (get-in data keypaths/user-email)}
-   :store     (marquee/query data)
-   :shopping  {:categories (get-in data keypaths/categories)}})
+  {:signed-in     (auth/signed-in data)
+   :on-taxon?     (get-in data keypaths/current-traverse-nav-id)
+   :bundle-deals? (experiments/bundle-deals? data)
+   :user          {:email (get-in data keypaths/user-email)}
+   :store         (marquee/query data)
+   :shopping      {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
