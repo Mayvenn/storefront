@@ -58,7 +58,8 @@
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
         (for [{:keys [name price coupon-code]} adjustments]
-          (when-not (= price 0)
+          (when (or (not (= price 0))
+                    (= coupon-code "amazon"))
             (summary-row
              {:key name}
              [:div {:data-test (text->data-test-name name)}
