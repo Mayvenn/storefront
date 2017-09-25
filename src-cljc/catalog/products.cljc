@@ -94,13 +94,19 @@
    "86" "wigs"
    "87" "wigs"})
 
-(defn is-hair? [sku-set]
-  (some-> sku-set :criteria/essential :product/department (contains? "hair")))
-(defn stylist-only? [sku-set] (some-> sku-set :criteria/essential :product/department (contains? "stylist-exclusives")))
+(defn is-hair?
+  [skuer]
+  (some-> skuer :product/department (contains? "hair")))
+
+(defn stylist-only?
+  [skuer]
+  (some-> skuer :product/department (contains? "stylist-exclusives")))
+
 (def eligible-for-reviews? (complement stylist-only?))
 
-(defn eligible-for-triple-bundle-discount? [sku-set]
-  (or (:promo.eligible/triple-bundle sku-set)
+(defn eligible-for-triple-bundle-discount?
+  [skuer]
+  (or (:promo.eligible/triple-bundle skuer)
       is-hair?))
 
 (defn normalize-skus [skus]
