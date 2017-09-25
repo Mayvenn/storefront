@@ -112,7 +112,8 @@
                             "frontals"       1104033
                             "kinky-straight" 1700440
                             "water-wave"     1814288
-                            "yaki-straight"  1814286}}
+                            "yaki-straight"  1814286
+                            :bundle-deals    2585224}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic          965034
                "straight"       1327330
@@ -124,7 +125,9 @@
                "frontals"       1331957
                "kinky-straight" 1801984
                "water-wave"     1912641
-               "yaki-straight"  1912642}}))
+               "yaki-straight"  1912642
+               :bundle-deals    2584964
+               }}))
 
 (def manual-experiments
   (case js/environment

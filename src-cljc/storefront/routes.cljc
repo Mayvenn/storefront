@@ -72,6 +72,7 @@
               "/account/edit"                  (edn->bidi events/navigate-account-manage)
               "/account/referrals"             (edn->bidi events/navigate-account-referrals)
               "/cart"                          (edn->bidi events/navigate-cart)
+              "/shop/bundle-deals"             (edn->bidi events/navigate-shop-bundle-deals)
               "/shop/look"                     (edn->bidi events/navigate-shop-by-look)
               ["/shop/look/" :look-id]         (edn->bidi events/navigate-shop-by-look-details)
               "/stylist/commissions"           (edn->bidi events/navigate-stylist-dashboard-commissions)

@@ -53,3 +53,6 @@
 
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
+
+(defn bundle-deals? [data]
+  (display-feature? data "bundle-deals"))

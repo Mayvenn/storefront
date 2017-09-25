@@ -8,6 +8,7 @@
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
+                       [storefront.components.shop-bundle-deals :as shop-bundle-deals]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
                        [storefront.components.account :as account]
@@ -55,6 +56,7 @@
   (condp = nav-event
     #?@(:cljs
         [events/navigate-reset-password                 reset-password/built-component
+         events/navigate-shop-bundle-deals              shop-bundle-deals/built-component
          events/navigate-shop-by-look                   shop-by-look/built-component
          events/navigate-shop-by-look-details           shop-by-look-details/built-component
          events/navigate-stylist-dashboard-commissions  stylist.dashboard/built-component

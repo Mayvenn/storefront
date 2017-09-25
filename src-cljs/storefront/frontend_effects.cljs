@@ -252,14 +252,14 @@
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
+(defmethod perform-effects events/navigate-shop-bundle-deals [_ event _ _ app-state]
+  (pixlee/fetch-bundle-deals))
+;; if (experiments/bundle-deals? app-state)
+;; (redirect events/navigate-home)
+
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
     (pixlee/fetch-mosaic)))
-
-(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
-  (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
-    (api/fetch-shared-cart shared-cart-id)
-    (pixlee/fetch-image look-id)))
 
 (defn fetch-current-named-search-album [app-state]
   (when-let [{:keys [slug]} (named-searches/current-named-search app-state)]
