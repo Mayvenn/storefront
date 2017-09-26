@@ -327,13 +327,11 @@
                               events/navigate-product-details-sku} nav-event)
                            ((fn [data]
                               (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
-                                    sku-sets                (map (fn [sku-set]
-                                                                   (update sku-set :criteria/selectors (partial mapv keyword)))
-                                                                 sku-sets)
+                                    sku-sets                (map products/->skuer-schema sku-sets)
                                     {:keys [facets]}        (api/fetch-facets storeback-config)]
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                                    (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
+                                    (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
                                     (update-in keypaths/skus merge (products/normalize-skus skus)))))))]
           (condp = nav-event
             events/navigate-category            (render-category render-ctx data req params)
