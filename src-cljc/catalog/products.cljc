@@ -100,7 +100,7 @@
 
 (defn stylist-only?
   [skuer]
-  (some-> skuer :product/department (contains? "stylist-exclusives")))
+  (some-> skuer :product/department (= "stylist-exclusives")))
 
 (def eligible-for-reviews? (complement stylist-only?))
 

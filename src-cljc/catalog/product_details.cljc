@@ -33,7 +33,8 @@
                        [storefront.history :as history]])))
 
 (defn item-price [price]
-  [:span {:item-prop "price"} (as-money-without-cents price)])
+  (when price
+    [:span {:item-prop "price"} (as-money-without-cents price)]))
 
 (defn starting-at [cheapest-price]
   [:div.center.dark-gray
