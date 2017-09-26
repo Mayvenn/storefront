@@ -109,18 +109,26 @@ Thanks,
   (om/build share-link-component (query-share-link data) opts))
 
 (defn deploy-promotion-banner-component [data owner opts]
-  (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 150 (.-y (goog.dom/getDocumentScroll)))))]
+  (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 150 (.-y (goog.dom/getDocumentScroll)))))
+          (set-height [] (om/set-state! owner :banner-height (some-> owner
+                                                                     (om/get-node "banner")
+                                                                     goog.style/getSize
+                                                                     .-height)))]
     (reify
       om/IInitState
       (init-state [this]
         {:show? false})
       om/IDidMount
       (did-mount [this]
-        (om/set-state! owner :banner-height (.-height (goog.style/getSize (om/get-node owner "banner"))))
+        (om/set-state! owner :description-length (count (:description (:promo data))))
+        (set-height)
         (goog.events/listen js/window EventType/SCROLL handle-scroll))
       om/IWillUnmount
       (will-unmount [this]
         (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+      om/IWillReceiveProps
+      (will-receive-props [this next-props]
+        (set-height))
       om/IRenderState
       (render-state [this {:keys [show? banner-height]}]
         (html
