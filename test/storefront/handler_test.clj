@@ -13,15 +13,12 @@
              [handler :refer :all]
              [system :refer [create-system]]]))
 
-(def leads-port 4335)
-
 (def test-overrides {:environment      "test"
                      :server-opts      {:port 2390}
                      :logging          (constantly nil)
                      :dc-logo-config   {:endpoint "https://logo.server/?m=100"}
                      :storeback-config {:endpoint          "http://localhost:4334/"
-                                        :internal-endpoint "http://localhost:4334/"}
-                     :leads-config     {:endpoint (str "http://localhost:" leads-port "/")}})
+                                        :internal-endpoint "http://localhost:4334/"}})
 
 (def storeback-no-stylist-response
   (-> (response "{}")
