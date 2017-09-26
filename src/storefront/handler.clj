@@ -364,6 +364,7 @@
 (def server-render-pages
   {events/navigate-home                       generic-server-render
    events/navigate-category                   render-category
+   events/navigate-legacy-named-search        redirect-named-search
    events/navigate-product-details            render-product-details
    events/navigate-product-details-sku        render-product-details
    events/navigate-content-help               generic-server-render
