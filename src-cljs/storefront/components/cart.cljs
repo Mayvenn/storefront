@@ -109,7 +109,7 @@ Thanks,
   (om/build share-link-component (query-share-link data) opts))
 
 (defn deploy-promotion-banner-component [data owner opts]
-  (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 150 (.-y (goog.dom/getDocumentScroll)))))
+  (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 75 (.-y (goog.dom/getDocumentScroll)))))
           (set-height [] (om/set-state! owner :banner-height (some-> owner
                                                                      (om/get-node "banner")
                                                                      goog.style/getSize
@@ -136,7 +136,8 @@ Thanks,
           (if show?
             {:style {:margin-top "0"}
              :class "transition-2"}
-            {:style {:margin-top (str "-" banner-height "px")}})
+            {:class "hide"
+             :style {:margin-top (str "-" banner-height "px")}})
           [:div {:ref "banner"}
            (om/build promotion-banner/component data opts)]])))))
 
