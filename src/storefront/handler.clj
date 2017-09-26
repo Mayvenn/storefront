@@ -327,8 +327,9 @@
                                 (-> data
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
                                     (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
-                                    (update-in keypaths/skus merge (products/normalize-skus skus)))))))]
-          ((server-render-pages nav-event) render-ctx data req params))))))
+                                    (update-in keypaths/skus merge (products/normalize-skus skus)))))))
+              render (server-render-pages nav-event generic-server-render)]
+          (render render-ctx data req params))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
