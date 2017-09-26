@@ -439,17 +439,18 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ _ _ app-state]
-     (when-let [{:keys [catalog/product-id] :as product} (products/current-product app-state)]
-       (if (auth/permitted-product? app-state product)
+     [_ _ {:keys [catalog/product-id]} _ app-state]
+     (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                          product-id
+                          (partial messages/handle-message
+                                   events/api-success-sku-sets-for-details))
+     (api/fetch-facets (get-in app-state keypaths/api-cache))
+
+     (if-let [current-product (products/current-product app-state)]
+       (if (auth/permitted-product? app-state current-product)
          (do
-           (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                                product-id
-                                (partial messages/handle-message
-                                         events/api-success-sku-sets-for-details))
-           (api/fetch-facets (get-in app-state keypaths/api-cache))
-           (review-hooks/insert-reviews)
-           (fetch-product-album product))
+           (fetch-product-album current-product)
+           (review-hooks/insert-reviews))
          (effects/redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-success-sku-sets-for-details

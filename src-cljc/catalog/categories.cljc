@@ -344,8 +344,8 @@
     :header/group           1
     :name                   "Stylist Exclusives"
     :page/slug              "stylist-exclusives"
-    :direct-to-details/id   49
-    :direct-to-details/slug "ring-kits"
+    :direct-to-details/id   "49"
+    :direct-to-details/slug "rings-kits"
     :criteria               {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
     :filter-tabs            []
     :seo                    {:title          "Stylist Exclusives | Mayvenn"

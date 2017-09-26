@@ -23,6 +23,6 @@
    (::as (signed-in data))))
 
 (defn permitted-product? [data product]
-  (if (-> product :criteria/essential :product/department set (contains? "stylist-exclusives"))
+  (if (-> product :product/department set (contains? "stylist-exclusives"))
     (stylist? (signed-in data))
     true))
