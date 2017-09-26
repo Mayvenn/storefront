@@ -192,25 +192,6 @@
           :url-path
           (util.response/redirect :moved-permanently)))
 
-(defn render-named-search
-  "Checks that the named-search exists, and that customer has access to its products"
-  [{:keys [storeback-config] :as render-ctx}
-   data
-   req
-   {:keys [named-search-slug]}]
-  (let [data (assoc-in data (conj keypaths/browse-named-search-query :slug) named-search-slug)]
-    (when-let [named-search (named-searches/current-named-search data)]
-      (let [{:keys [product-ids]} named-search
-            user-token            (cookies/get req "user-token")
-            user-id               (cookies/get req "id")]
-        (if-let [products (seq (api/products-by-ids storeback-config product-ids user-id user-token))]
-          (let [products-by-id (index-by :id products)]
-            (html-response render-ctx (-> data
-                                          (assoc-in keypaths/browse-variant-quantity 1)
-                                          (assoc-in keypaths/products products-by-id))))
-          (when-not (seq user-token)
-            (util.response/redirect (str "/login?path=" (:uri req)))))))))
-
 (defn redirect-named-search
   [render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
@@ -229,7 +210,6 @@
                        keypaths/current-category-id
                        (:catalog/category-id category))
              (html-response render-ctx))))))
-
 
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
