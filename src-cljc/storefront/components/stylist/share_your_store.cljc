@@ -51,7 +51,7 @@
               :src   img-url}]
    content])
 
-(defn component [{:keys [store-slug host utm-campaign]}]
+(defn component [{:keys [store-slug host utm-campaign]} _ _]
   (component/create
    (let [store-link        (str store-slug "." host)
          share-url         (-> (url/url (str "https://" store-link))

@@ -170,23 +170,14 @@
       (wrap-resource "public")
       (wrap-content-type)))
 
-(def server-render-pages
-  #{events/navigate-home
-    events/navigate-category
-    events/navigate-content-help
-    events/navigate-content-about-us
-    events/navigate-content-privacy
-    events/navigate-content-tos
-    events/navigate-content-guarantee
-    events/navigate-content-ugc-usage-terms
-    events/navigate-content-program-terms
-    events/navigate-gallery
-    events/navigate-leads-home})
-
+(declare server-render-pages)
 (defn html-response [render-ctx data]
-  (let [prerender? (server-render-pages (get-in data keypaths/navigation-event))]
+  (let [prerender? (contains? server-render-pages (get-in data keypaths/navigation-event))]
     (-> ((if prerender? views/prerendered-page views/index) render-ctx data)
         ->html-resp)))
+
+(defn generic-server-render [render-ctx data req params]
+  (html-response render-ctx data))
 
 (defn redirect-to-cart [query-params]
   (util.response/redirect (str "/cart?" (codec/form-encode query-params))))
@@ -268,6 +259,30 @@
                            (assoc-in catalog.keypaths/detailed-product-id product-id)
                            (assoc-in keypaths/bundle-builder-selections criteria)))))))
 
+(defn- redirect-if-necessary [render-ctx data event]
+  (if (not= (get-in data keypaths/navigation-event) event)
+    (util.response/redirect (routes/path-for event))
+    (html-response render-ctx data)))
+
+(defn render-leads-page [render-ctx data req params]
+  (let [step-id (get-in data keypaths/leads-lead-step-id)]
+    (redirect-if-necessary render-ctx data
+                           (cond
+                             (not (get-in data keypaths/leads-lead-id))
+                             events/navigate-leads-home
+
+                             (not (get-in data keypaths/leads-lead-flow-id))
+                             events/navigate-leads-resolve
+
+                             (= "details" step-id)
+                             events/navigate-leads-registration-details
+
+                             (= "thank-you" step-id)
+                             events/navigate-leads-registration-resolve
+
+                             :else
+                             (throw (ex-info "Unknown step-id" {:step-id step-id}))))))
+
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
 
@@ -333,12 +348,7 @@
                                     (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
                                     (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
                                     (update-in keypaths/skus merge (products/normalize-skus skus)))))))]
-          (condp = nav-event
-            events/navigate-category            (render-category render-ctx data req params)
-            events/navigate-legacy-named-search (redirect-named-search render-ctx data req params)
-            events/navigate-product-details     (render-product-details render-ctx data req params)
-            events/navigate-product-details-sku (render-product-details render-ctx data req params)
-            (html-response render-ctx data)))))))
+          ((server-render-pages nav-event) render-ctx data req params))))))
 
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
@@ -350,6 +360,24 @@
                           "Disallow: /c/"
                           "Disallow: /admin"
                           "Disallow: /content"])
+
+(def server-render-pages
+  {events/navigate-home                       generic-server-render
+   events/navigate-category                   render-category
+   events/navigate-product-details            render-product-details
+   events/navigate-product-details-sku        render-product-details
+   events/navigate-content-help               generic-server-render
+   events/navigate-content-about-us           generic-server-render
+   events/navigate-content-privacy            generic-server-render
+   events/navigate-content-tos                generic-server-render
+   events/navigate-content-guarantee          generic-server-render
+   events/navigate-content-ugc-usage-terms    generic-server-render
+   events/navigate-content-program-terms      generic-server-render
+   events/navigate-gallery                    generic-server-render
+   events/navigate-leads-home                 render-leads-page
+   events/navigate-leads-registration-details render-leads-page
+   events/navigate-leads-registration-resolve render-leads-page
+   events/navigate-leads-resolve              render-leads-page})
 
 (defn robots [{:keys [subdomains]}]
   (if (#{["shop"] ["www"] []} subdomains)
@@ -441,6 +469,7 @@
       (let [render-ctx {:storeback-config storeback-config
                         :environment      environment
                         :client-version   client-version}
+            [nav-event nav-args] nav-message
             data       (-> {}
                            (assoc-in keypaths/leads-lead-tracking-id (cookies/get request "leads.tracking-id"))
                            (assoc-in keypaths/leads-utm-source (cookies/get request "leads.utm-source"))
@@ -453,8 +482,14 @@
                            (assoc-in keypaths/navigation-message nav-message)
                            (assoc-in keypaths/leads-ui-best-time-to-call {:eastern-offset        (eastern-offset)
                                                                           :timezone-abbreviation "EST"})
-                           (assoc-in keypaths/leads-ui-sign-up-call-slot-options [["Best time to call*" ""]]))]
-        (html-response render-ctx data)))))
+                           (assoc-in keypaths/leads-ui-sign-up-call-slot-options [["Best time to call*" ""]])
+                           ((fn [data]
+                              (let [cookies (get request :cookies)
+                                    lead-id (get-in cookies ["lead-id" :value])
+                                    lead    (api/lookup-lead storeback-config lead-id)]
+                                (-> data
+                                    (assoc-in keypaths/leads-lead lead))))))]
+        ((server-render-pages nav-event) render-ctx data request nav-args)))))
 
 (defn wrap-welcome-is-for-leads [h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]

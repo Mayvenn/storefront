@@ -13,12 +13,15 @@
              [handler :refer :all]
              [system :refer [create-system]]]))
 
+(def leads-port 4335)
+
 (def test-overrides {:environment      "test"
                      :server-opts      {:port 2390}
                      :logging          (constantly nil)
                      :dc-logo-config   {:endpoint "https://logo.server/?m=100"}
                      :storeback-config {:endpoint          "http://localhost:4334/"
-                                        :internal-endpoint "http://localhost:4334/"}})
+                                        :internal-endpoint "http://localhost:4334/"}
+                     :leads-config     {:endpoint (str "http://localhost:" leads-port "/")}})
 
 (def storeback-no-stylist-response
   (-> (response "{}")
@@ -296,7 +299,7 @@
   (with-handler handler
     (testing "will not render leads pages on stylist site"
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/stylists/welcome"))]
-       (is (= 404 (:status resp)))))
+        (is (= 404 (:status resp)))))
     (testing "welcome.mayvenn.com/ redirects to welcome.mayvenn.com/stylists/welcome, preserving query params"
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com?a=b"))]
         (is (= 301 (:status resp)))
@@ -341,6 +344,51 @@
         (is (some #{"utm_campaign=;Max-Age=0;Secure;Path=/"} cookies))
         (is (some #{"utm_content=;Max-Age=0;Secure;Path=/"} cookies))
         (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))))
+
+(deftest welcome-subdomain-remembers-leads-last-step
+  (testing "redirect to welcome home if no lead id is provided"
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome"))]
+        (is (= 200 (:status resp))))
+      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/thank-you"))]
+        (is (= 302 (:status resp)))
+        (is (= "https://welcome.mayvenn.com/stylists/welcome" (-> resp :headers (get "Location")))))))
+  (testing "redirect to default resolve if lead id is provided without a flow-id"
+    (let [fake-lead {:id "MOCK-LEAD-ID"}]
+      (with-standalone-server [storeback (standalone-server (constantly {:status 200
+                                                                         :body   (generate-string fake-lead)}))]
+        (with-handler handler
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/thank-you")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 200 (:status resp))))
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 302 (:status resp)))
+            (is (= "https://welcome.mayvenn.com/stylists/thank-you" (-> resp :headers (get "Location")))))))))
+  (testing "redirect to registration details if lead id is provided with a step-id of 'details'"
+    (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "details"}]
+      (with-standalone-server [storeback (standalone-server (constantly {:status 200
+                                                                         :body   (generate-string fake-lead)}))]
+        (with-handler handler
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/details")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 200 (:status resp))))
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 302 (:status resp)))
+            (is (= "https://welcome.mayvenn.com/stylists/flows/2/details" (-> resp :headers (get "Location")))))))))
+  (testing "redirect to registration resolve if lead id is provided with a step-id of 'thank-you'"
+    (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "thank-you"}]
+      (with-standalone-server [storeback (standalone-server (constantly {:status 200
+                                                                         :body   (generate-string fake-lead)}))]
+        (with-handler handler
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/thank-you")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 200 (:status resp))))
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
+                                  (mock/header "Cookie" "lead-id=MOCK-LEAD-ID")))]
+            (is (= 302 (:status resp)))
+            (is (= "https://welcome.mayvenn.com/stylists/flows/2/thank-you" (-> resp :headers (get "Location"))))))))))
 
 (deftest submits-paypal-redirect-to-waiter
   (testing "when waiter returns a 200 response"
