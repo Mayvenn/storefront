@@ -156,7 +156,7 @@
   [:div.mb4
    [:img.mx-auto {:style {:width "225px"}
                   :src   img}]
-   [:div.my4.h5 copy]])
+   [:div.pb4.my4.h5 copy]])
 
 (def slides
   [(slide "/images/leads/how-it-works-01.jpg" "Start by sending your store link to your clients so they can start shopping.")
