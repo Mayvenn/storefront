@@ -315,6 +315,6 @@
 (def leads-lead (conj leads :lead))
 (def leads-lead-id (conj leads-lead :id))
 (def leads-lead-tracking-id (conj leads-lead :tracking-id))
-(def leads-lead-current-flow (conj leads-lead :current-flow))
+(def leads-lead-flow-id (conj leads-lead :flow-id))
 (def leads-lead-store-slug (conj leads-lead :store-slug))
 (def leads-lead-step-id (conj leads-lead :step-id))

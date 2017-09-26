@@ -88,7 +88,7 @@
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-resume-submit {:lead lead})}
     [:button.btn.btn-primary.col-12 {:type "submit" :value "Submit"} "Finish registration"]]])
 
-(defn hero-section [{:keys [current-flow sign-up resume-self-reg] :as attrs}]
+(defn hero-section [{:keys [flow-id sign-up resume-self-reg] :as attrs}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
@@ -98,7 +98,7 @@
         [:span.h0.hide-on-mb "Earn $2,000 a month selling hair with no out of pocket expenses"]
         [:span.hide-on-tb-dt "Earn $2,000 a month selling hair with no out of pocket expenses"]]]]
      [:div.col-5-on-tb-dt.py4
-      (if current-flow
+      (if flow-id
         (resume-self-reg-panel resume-self-reg)
         (sign-up-panel sign-up))]]]])
 
@@ -377,7 +377,7 @@
                       "production" "mayvenn.com"
                       "acceptance" "diva-acceptance.com"
                       "storefront.dev")]
-    {:hero   {:current-flow    (get-in data keypaths/leads-lead-current-flow)
+    {:hero   {:flow-id    (get-in data keypaths/leads-lead-flow-id)
               :resume-self-reg {:lead (get-in data keypaths/leads-lead)}
               :sign-up         {:field-errors      (get-in data keypaths/field-errors)
                                 :first-name        (get-in data keypaths/leads-ui-sign-up-first-name)
