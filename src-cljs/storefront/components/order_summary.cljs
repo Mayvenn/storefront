@@ -15,12 +15,12 @@
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
    [:tr.h5
-    (merge (when (neg? amount)
+    (merge (when-not (pos? amount)
              {:class "teal"})
            row-attrs)
     [:td.pyp3 name]
     [:td.pyp3.right-align.medium
-     {:class (when-not (neg? amount)
+     {:class (when (pos? amount)
                "navy")}
      (as-money-or-free amount)]]))
 
