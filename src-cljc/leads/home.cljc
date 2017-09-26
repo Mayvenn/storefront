@@ -174,7 +174,8 @@
                      {:slides slides
                       :settings {:swipe true
                                  :arrows true
-                                 :dots true}}
+                                 :dots true
+                                 :infinite false}}
                      {})]])
 
 (def guarantee-section
