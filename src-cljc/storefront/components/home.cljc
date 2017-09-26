@@ -83,23 +83,10 @@
            :data-test "home-banner")
     (let [file-name "Shop-Now-SWITCH-Homepage"
           alt       "The switch up. All wigs are here. Shop our looks."]
-      (case store-slug
-        "msroshposh"     (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
-                                      :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
-                                      :file-name   file-name
-                                      :alt         alt})
-        "touchedbytokyo" (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
-                                      :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
-                                      :file-name   file-name
-                                      :alt         alt})
-        "peakmill"       (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
-                                      :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
-                                      :file-name   file-name
-                                      :alt         alt})
-        (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
-                     :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
-                     :file-name   file-name
-                     :alt         alt})))]])
+      (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
+                   :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
+                   :file-name   file-name
+                   :alt         alt}))]])
 
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
