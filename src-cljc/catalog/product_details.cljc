@@ -113,7 +113,7 @@
 (defn option-html
   [selector {:keys [option/name option/slug image price-delta checked? stocked? selected-criteria]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
-   {:data-test (string/replace (str "option-" name) #"\W+" "")
+   {:data-test (str "option-" slug)
     :class     (cond
                  checked? "border-gray bg-teal  white     medium"
                  stocked? "border-gray bg-white dark-gray light"
