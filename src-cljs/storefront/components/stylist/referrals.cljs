@@ -82,8 +82,6 @@
       [:div.center message]]]))
 
 (defn refer-button [link-attrs]
-  [:div]
-  #_
   [:a.col-12.btn.btn-primary
    (merge (utils/fake-href events/control-popup-show-refer-stylists)
           link-attrs)
