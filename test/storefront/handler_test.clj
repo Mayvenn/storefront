@@ -134,12 +134,13 @@
       (asserter (handler (merge default-req-params req))))))
 
 (deftest redirects-to-https-preserving-query-params
-  (testing "mayvenn.com"
-    (with-handler handler
-      (let [resp (handler (mock/request :get "http://mayvenn.com"))]
-        (is (= 302 (:status resp)))
-        (is (= "https://shop.mayvenn.com/"
-               (get-in resp [:headers "Location"]))))))
+  (testing "bob.mayvenn.com"
+    (assert-request (mock/request :get "http://bob.mayvenn.com")
+                    storeback-stylist-response
+                    (fn [resp]
+                      (is (= 301 (:status resp)) (pr-str resp))
+                      (is (= "https://bob.mayvenn.com/"
+                             (get-in resp [:headers "Location"]))))))
 
   (testing "no www-prefix stylist"
     (with-handler handler
@@ -177,14 +178,14 @@
 (deftest redirects-www-to-shop-preserving-query-params
   (with-handler handler
     (let [resp (handler (mock/request :get "https://www.mayvenn.com/?world=true"))]
-      (is (= 302 (:status resp)))
+      (is (= 301 (:status resp)))
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-no-subdomain-to-shop-preserving-query-params
   (with-handler handler
     (let [resp (handler (mock/request :get "https://mayvenn.com/?world=true"))]
-      (is (= 302 (:status resp)))
+      (is (= 301 (:status resp)))
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 

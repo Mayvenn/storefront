@@ -122,7 +122,7 @@
       (util.response/redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
       (#{[] ["www"] ["internal"]} subdomains)
-      (util.response/redirect (store-homepage "shop" environment req))
+      (util.response/redirect (store-homepage "shop" environment req) 301)
 
       :else
       (h req))))
