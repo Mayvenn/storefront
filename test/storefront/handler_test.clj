@@ -274,6 +274,20 @@
         (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
                (get-in resp [:headers "Location"])))))))
 
+(deftest redirects-the-literal-stylist-subdomain-to-community
+  (with-handler handler
+    (testing "http"
+      (let [resp (handler (mock/request :get "http://stylist.mayvenn.com"))]
+        (is (= 301 (:status resp)))
+        (is (= "https://community.mayvenn.com"
+               (get-in resp [:headers "Location"])))))
+
+    (testing "https"
+      (let [resp (handler (mock/request :get "https://stylist.mayvenn.com"))]
+        (is (= 301 (:status resp)))
+        (is (= "https://community.mayvenn.com"
+               (get-in resp [:headers "Location"])))))))
+
 (deftest redirects-to-logo-server
   (with-handler handler
     (testing "http"

@@ -121,6 +121,10 @@
       (= "vistaprint" (first subdomains))
       (util.response/redirect "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262")
 
+      ;; Old stylist resource page has moved into the community, Aug-2017
+      (= "stylist" (first subdomains))
+      (util.response/redirect "https://community.mayvenn.com" 301)
+
       (#{[] ["www"] ["internal"]} subdomains)
       (util.response/redirect (store-homepage "shop" environment req) 301)
 
