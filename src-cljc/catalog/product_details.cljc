@@ -514,10 +514,10 @@
      [_ event {:keys [selection value]} _ app-state]
      (let [sku-id                                 (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
            {:keys [catalog/product-id page/slug]} (products/current-product app-state)]
-       (history/enqueue-redirect events/navigate-product-details-sku
+       (history/enqueue-redirect events/navigate-product-details
                                  {:catalog/product-id product-id
                                   :page/slug          slug
-                                  :catalog/sku-id     sku-id}))))
+                                  :query-params       {:SKU sku-id}}))))
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]

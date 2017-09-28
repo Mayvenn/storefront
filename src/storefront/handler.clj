@@ -217,11 +217,11 @@
 
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
-                              req
+                              {:keys [params] :as req}
                               {:keys [catalog/product-id
-                                      page/slug
-                                      catalog/sku-id]}]
-  (let [product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
+                                      page/slug]}]
+  (let [sku-id    (:SKU params)
+        product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
         sku       (get-in data (conj keypaths/skus sku-id))
         redirect? (or (not= slug (:page/slug product))
                       (and sku-id (not sku)))
@@ -234,9 +234,9 @@
                                     (merge {:catalog/product-id product-id
                                             :page/slug          slug}
                                            (when sku
-                                             {:catalog/sku-id (:sku sku)})))]
-          (util.response/redirect path)) ;; Redirect from bad slug/sku-id
-        (html-response render-ctx ;; render normally
+                                             {:query-params {:SKU (:sku sku)}})))]
+          (util.response/redirect path))
+        (html-response render-ctx
                        (-> data
                            (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
@@ -322,8 +322,7 @@
                                           keypaths/category-filters-for-browse
                                           (categories/make-category-filters data response)))))
 
-                           (#{events/navigate-product-details
-                              events/navigate-product-details-sku} nav-event)
+                           (= events/navigate-product-details nav-event)
                            ((fn [data]
                               (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
                                     sku-sets                (map products/->skuer-schema sku-sets)
@@ -351,7 +350,6 @@
    events/navigate-category                   render-category
    events/navigate-legacy-named-search        redirect-named-search
    events/navigate-product-details            render-product-details
-   events/navigate-product-details-sku        render-product-details
    events/navigate-content-help               generic-server-render
    events/navigate-content-about-us           generic-server-render
    events/navigate-content-privacy            generic-server-render

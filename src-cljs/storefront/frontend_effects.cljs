@@ -170,9 +170,6 @@
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
   (apply history/enqueue-redirect nav-message))
 
-(def non-scroll-nav-events
-  #{events/navigate-product-details-sku})
-
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} _ app-state]
   (let [args (dissoc args :nav-stack-item)]
@@ -191,7 +188,8 @@
                      (not loaded-order?)))
         (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
-    (when-not (non-scroll-nav-events event)
+    (when-not (and (= event events/navigate-product-details)
+                   (:SKU query-params))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)

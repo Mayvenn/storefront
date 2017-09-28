@@ -122,7 +122,6 @@
 
      events/navigate-category            (category-tags data)
      events/navigate-product-details     (product-details-tags data)
-     events/navigate-product-details-sku (product-details-tags data)
 
      default-tags)
    (concat constant-tags)
