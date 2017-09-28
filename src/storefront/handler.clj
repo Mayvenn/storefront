@@ -559,6 +559,10 @@
   (util.response/redirect (store-homepage (first subdomains) environment req)
                           :moved-permanently))
 
+(defn redirect-to-product-details [environment {:keys [subdomains params] :as req}]
+  (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
+                          :moved-permanently))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
@@ -571,6 +575,7 @@
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
+               (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)

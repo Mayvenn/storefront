@@ -460,3 +460,10 @@
    (fn [resp]
      (is (= 200 (:status resp)))
      (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
+
+(deftest redirects-product-details-sku-to-sku-in-query-params
+  (with-handler handler
+    (let [resp (handler (mock/request :get "http://bob.storefront.dev/products/12-indian-straight-bundles/INSDB14"))]
+      (is (= 301 (:status resp)))
+      (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
+             (get-in resp [:headers "Location"]))))))
