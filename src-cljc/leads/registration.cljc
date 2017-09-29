@@ -149,7 +149,7 @@
                      :value     zip})]]])
 
 (defn ^:private stylist-details-section
-  [{:keys [birthday licensed? payout-method venmo-phone paypal-email slug field-errors]} focused]
+  [{:keys [birthday licensed payout-method venmo-phone paypal-email slug field-errors]} focused]
   [:div
    [:div.flex.flex-column.items-center.col-12
     (ui/text-field {:data-test "birth-date"
@@ -164,9 +164,9 @@
                     :value     birthday})]
    [:div.pb2.center
     [:div.pb2 "Are you a licensed hair stylist?"]
-    (ui/radio-group {:group-name    "licensed?"
-                     :checked-value licensed?
-                     :keypath       keypaths/stylist-licensed?}
+    (ui/radio-group {:group-name    "licensed"
+                     :checked-value licensed
+                     :keypath       keypaths/stylist-licensed}
                     [{:id "yes" :label "Yes" :value true}
                      {:id "no" :label "No" :value false}])]
    [:div.pb3.center
@@ -276,7 +276,7 @@
 
 (defn ^:private stylist-details-query [data]
   {:birthday      (get-in data keypaths/stylist-birthday)
-   :licensed?     (get-in data keypaths/stylist-licensed?)
+   :licensed     (get-in data keypaths/stylist-licensed)
    :payout-method (get-in data keypaths/stylist-payout-method)
    :venmo-phone   (get-in data keypaths/stylist-venmo-phone)
    :paypal-email  (get-in data keypaths/stylist-paypal-email)

@@ -40,7 +40,7 @@
 (def stylist-state           (conj stylist :state))
 (def stylist-zip             (conj stylist :zip))
 (def stylist-birthday        (conj stylist :birthday))
-(def stylist-licensed?       (conj stylist :licensed?))
+(def stylist-licensed        (conj stylist :licensed))
 (def stylist-payout-method   (conj stylist :payout-method))
 (def stylist-venmo-phone     (conj stylist :venmo-phone))
 (def stylist-paypal-email    (conj stylist :paypal-email))

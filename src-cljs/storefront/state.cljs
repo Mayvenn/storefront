@@ -140,7 +140,7 @@
                        :city ""
                        :zip ""
                        :state ""
-                       :licensed? false
+                       :licensed false
                        :payout-method "venmo"
                        :venmo-phone ""
                        :paypal-email ""
