@@ -88,7 +88,8 @@
     [:h2 "Become a Mayvenn"]
     [:p.m2 "You are on your way to joining the Mayvenn Movement! Finish your registration today!"]]
    (ui/teal-button
-    (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead})
+    (merge {:data-test "resume-registration"}
+     (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
     "Finish registration")])
 
 (defn hero-section [{:keys [flow-id sign-up resume-self-reg] :as attrs}]
