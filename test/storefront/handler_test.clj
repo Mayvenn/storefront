@@ -334,7 +334,7 @@
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome?utm_content=stylistsfb"))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (.contains (:body resp) ":content \\\"stylistsfb\\\"")
+        (is (.contains (:body resp) ":utm-content \\\"stylistsfb\\\"")
             (pr-str (:body resp)))))
     (testing "migrates utm cookies from old leads site"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
