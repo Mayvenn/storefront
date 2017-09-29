@@ -14,7 +14,7 @@
       [:h1.h2.navy "shop bundle deals"]
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
-      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Get inspired by #MayvennMade community. Find your favorite bundle-deal and click it to easily add it to your bag!"]]
+      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Save more when you bundle up! We wrapped our most popular textures into packaged bundle deals so you can shop with ease."]]
      [:div.container.clearfix.mtn2
       (for [{:keys [id imgs] :as bundle-deal} bundle-deals]
         [:div
