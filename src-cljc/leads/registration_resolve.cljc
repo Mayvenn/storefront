@@ -6,7 +6,8 @@
             [clojure.string :as string]
             [storefront.assets :as assets]
             [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
+            [storefront.keypaths]
+            [leads.keypaths]
             [storefront.config :as config]
             [storefront.components.footer :as footer]
             [storefront.components.stylist.share-your-store :as share-your-store]))
@@ -138,11 +139,11 @@
        [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
 
 (defn query [app-state]
-  (let [host       (case (get-in app-state keypaths/environment)
+  (let [host       (case (get-in app-state storefront.keypaths/environment)
                      "production" "mayvenn.com"
                      "acceptance" "diva-acceptance.com"
                      "storefront.dev")
-        store-slug (get-in app-state keypaths/leads-lead-store-slug)]
+        store-slug (get-in app-state leads.keypaths/stylist-slug)]
     {:store-link      (str store-slug "." host)
      :share-your-store {:host         host
                         :store-slug   store-slug

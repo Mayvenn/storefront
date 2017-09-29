@@ -11,12 +11,14 @@
             [storefront.config :as config]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
+            [storefront.keypaths]
+            [leads.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.components.footer :as footer]
             [clojure.string :as string]
             [storefront.transitions :as transitions]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [spice.core :as spice]))
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options] :as attrs}]
   [:div.rounded.bg-lighten-4.p3
@@ -30,16 +32,17 @@
     (ui/text-field {:data-test "sign-up-first-name"
                     :errors    (get field-errors ["first-name"])
                     :id        "sign-up-first-name"
-                    :keypath   keypaths/leads-ui-sign-up-first-name
+                    :keypath   keypaths/lead-first-name
                     :focused   focused
                     :label     "First name*"
                     :name      "first-name"
                     :required  true
                     :value     first-name})
+
     (ui/text-field {:data-test "sign-up-last-name"
                     :errors    (get field-errors ["last-name"])
                     :id        "sign-up-last-name"
-                    :keypath   keypaths/leads-ui-sign-up-last-name
+                    :keypath   keypaths/lead-last-name
                     :focused   focused
                     :label     "Last name*"
                     :name      "last-name"
@@ -48,7 +51,7 @@
     (ui/text-field {:data-test "sign-up-phone"
                     :errors    (get field-errors ["phone"])
                     :id        "sign-up-phone"
-                    :keypath   keypaths/leads-ui-sign-up-phone
+                    :keypath   keypaths/lead-phone
                     :focused   focused
                     :label     "Mobile phone*"
                     :name      "phone"
@@ -58,7 +61,7 @@
     (ui/text-field {:data-test "sign-up-email"
                     :errors    (get field-errors ["email"])
                     :id        "sign-up-email"
-                    :keypath   keypaths/leads-ui-sign-up-email
+                    :keypath   keypaths/lead-email
                     :focused   focused
                     :label     "Email*"
                     :name      "email"
@@ -70,7 +73,7 @@
                         :errors      (get field-errors ["call-slot"])
                         :id          "sign-up-call-slot"
                         :label       "Best time to call*"
-                        :keypath     keypaths/leads-ui-sign-up-call-slot
+                        :keypath     keypaths/lead-call-slot
                         :placeholder "Best time to call*"
                         :value       call-slot
                         :required    true
@@ -374,76 +377,77 @@
     (str result " " tod)))
 
 (defn ^:private query [data]
-  (let [host-name   (case (get-in data keypaths/environment)
-                      "production" "mayvenn.com"
-                      "acceptance" "diva-acceptance.com"
-                      "storefront.dev")]
-    {:hero   {:flow-id    (get-in data keypaths/leads-lead-flow-id)
-              :resume-self-reg {:lead (get-in data keypaths/leads-lead)}
-              :sign-up         {:field-errors      (get-in data keypaths/field-errors)
-                                :first-name        (get-in data keypaths/leads-ui-sign-up-first-name)
-                                :last-name         (get-in data keypaths/leads-ui-sign-up-last-name)
-                                :phone             (get-in data keypaths/leads-ui-sign-up-phone)
-                                :email             (get-in data keypaths/leads-ui-sign-up-email)
-                                :call-slot         (get-in data keypaths/leads-ui-sign-up-call-slot)
-                                :self-reg?         (= "stylistsfb"
-                                                      (string/lower-case
-                                                       (or (get-in data keypaths/leads-utm-content)
-                                                           "")))
-                                :call-slot-options (get-in data keypaths/leads-ui-sign-up-call-slot-options)}}
+  (let [host-name (case (get-in data storefront.keypaths/environment)
+                    "production" "mayvenn.com"
+                    "acceptance" "diva-acceptance.com"
+                    "storefront.dev")
+
+        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
+        self-reg?                         (= "stylistsfb"
+                                             (string/lower-case (or (get-in data keypaths/lead-utm-content) "")))]
+    {:hero   {:flow-id         flow-id
+              :resume-self-reg {:lead remote-lead}
+              :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
+                                :first-name        (get-in data keypaths/lead-first-name)
+                                :last-name         (get-in data keypaths/lead-last-name)
+                                :phone             (get-in data keypaths/lead-phone)
+                                :email             (get-in data keypaths/lead-email)
+                                :call-slot         (get-in data keypaths/lead-call-slot)
+                                :self-reg?         self-reg?
+                                :call-slot-options (get-in data keypaths/call-slot-options)}}
      :footer {:call-number config/mayvenn-leads-call-number
-              :host-name host-name}
-     :faq    {:sms-number config/mayvenn-leads-sms-number
+              :host-name   host-name}
+     :faq    {:sms-number  config/mayvenn-leads-sms-number
               :call-number config/mayvenn-leads-call-number}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
+(def ^:private required-keys
+  #{:tracking-id
+    :first-name :last-name
+    :phone :email
+    :call-slot
+    :utm-source :utm-medium :utm-campaign :utm-content :utm-term})
+
 (defmethod effects/perform-effects events/leads-control-sign-up-submit
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/create-lead {:tracking-id  (get-in app-state keypaths/leads-lead-tracking-id)
-                       :first-name   (get-in app-state keypaths/leads-ui-sign-up-first-name)
-                       :last-name    (get-in app-state keypaths/leads-ui-sign-up-last-name)
-                       :phone        (get-in app-state keypaths/leads-ui-sign-up-phone)
-                       :call-slot    (get-in app-state keypaths/leads-ui-sign-up-call-slot)
-                       :email        (get-in app-state keypaths/leads-ui-sign-up-email)
-                       :utm-source   (get-in app-state keypaths/leads-utm-source)
-                       :utm-medium   (get-in app-state keypaths/leads-utm-medium)
-                       :utm-campaign (get-in app-state keypaths/leads-utm-campaign)
-                       :utm-content  (get-in app-state keypaths/leads-utm-content)
-                       :utm-term     (get-in app-state keypaths/leads-utm-term)})))
+     (-> (get-in app-state keypaths/lead)
+         (select-keys required-keys)
+         api/create-lead)))
 
-(defmethod transitions/transition-state events/api-success-lead-created [_ _ lead app-state]
-  #?(:cljs (update-in app-state keypaths/leads-lead merge lead)
+(defmethod transitions/transition-state events/api-success-lead-created
+  [_ _ remote-lead app-state]
+  #?(:cljs (-> app-state
+               (assoc-in keypaths/lead {})
+               (update-in keypaths/remote-lead merge remote-lead))
      :clj  app-state))
 
 (defmethod effects/perform-effects events/api-success-lead-created
+  [_ _ _ previous-app-state app-state]
+  #?(:cljs
+     (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/remote-lead)
+           lead                          (get-in previous-app-state keypaths/lead)]
+       (cookie-jar/save-lead-id (get-in app-state storefront.keypaths/cookie) {"lead-id" lead-id})
+       (if flow-id  ;; Truthy flow-id indicates self-reg
+         (history/enqueue-navigate events/navigate-leads-registration-details {:submitted-lead lead})
+         (history/enqueue-navigate events/navigate-leads-resolve)))))
+
+(defmethod effects/perform-effects events/navigate-leads
   [_ _ _ _ app-state]
   #?(:cljs
-     (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/leads-lead)]
-       (cookie-jar/save-lead-id (get-in app-state keypaths/cookie) {"lead-id" lead-id})
-       (if flow-id
-         (history/enqueue-navigate events/navigate-leads-registration-details)
-         (history/enqueue-navigate events/navigate-leads-resolve)))))
+     (when-not (= "welcome"
+                  (get-in app-state storefront.keypaths/store-slug))
+       (effects/page-not-found))))
+
+(defmethod transitions/transition-state events/navigate-leads-home
+  [_ _ _ app-state]
+  (let [call-slots (call-slot/options (get-in app-state keypaths/eastern-offset))]
+    (assoc-in app-state keypaths/call-slot-options call-slots)))
 
 (defmethod effects/perform-effects events/navigate-leads-home
   [_ _ _ _ app-state]
   #?(:cljs
      (tags/insert-tag-with-src "//platform.twitter.com/widgets.js"
                                "twitter-script")))
-
-(defmethod effects/perform-effects events/navigate-leads
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (when-not (= "welcome"
-                  (get-in app-state keypaths/store-slug))
-       (effects/page-not-found))))
-
-(defmethod transitions/transition-state events/navigate-leads-home
-  [_ _ _ app-state]
-  (let [offset (get-in app-state
-                       keypaths/leads-ui-best-time-to-call-eastern-offset)]
-    (assoc-in app-state
-              keypaths/leads-ui-sign-up-call-slot-options
-              (call-slot/options offset))))

@@ -25,6 +25,7 @@
              [keypaths :as keypaths]
              [assets :as assets]
              [views :as views]]
+            [leads.keypaths]
             [storefront.accessors
              [experiments :as experiments]
              [named-searches :as named-searches]]
@@ -249,13 +250,13 @@
     (html-response render-ctx data)))
 
 (defn render-leads-page [render-ctx data req params]
-  (let [step-id (get-in data keypaths/leads-lead-step-id)]
+  (let [step-id (get-in data leads.keypaths/lead-step-id)]
     (redirect-if-necessary render-ctx data
                            (cond
-                             (not (get-in data keypaths/leads-lead-id))
+                             (not (get-in data leads.keypaths/lead-id))
                              events/navigate-leads-home
 
-                             (not (get-in data keypaths/leads-lead-flow-id))
+                             (not (get-in data leads.keypaths/lead-flow-id))
                              events/navigate-leads-resolve
 
                              (= "details" step-id)
@@ -450,29 +451,30 @@
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
-      (let [render-ctx {:storeback-config storeback-config
-                        :environment      environment
-                        :client-version   client-version}
+      (let [render-ctx           {:storeback-config storeback-config
+                                  :environment      environment
+                                  :client-version   client-version}
             [nav-event nav-args] nav-message
-            data       (-> {}
-                           (assoc-in keypaths/leads-lead-tracking-id (cookies/get request "leads.tracking-id"))
-                           (assoc-in keypaths/leads-utm-source (cookies/get request "leads.utm-source"))
-                           (assoc-in keypaths/leads-utm-content (cookies/get request "leads.utm-content"))
-                           (assoc-in keypaths/leads-utm-campaign (cookies/get request "leads.utm-campaign"))
-                           (assoc-in keypaths/leads-utm-medium (cookies/get request "leads.utm-medium"))
-                           (assoc-in keypaths/leads-utm-term (cookies/get request "leads.utm-term"))
-                           (assoc-in keypaths/store-slug "welcome")
-                           (assoc-in keypaths/environment environment)
-                           (assoc-in keypaths/navigation-message nav-message)
-                           (assoc-in keypaths/leads-ui-best-time-to-call {:eastern-offset        (eastern-offset)
-                                                                          :timezone-abbreviation "EST"})
-                           (assoc-in keypaths/leads-ui-sign-up-call-slot-options [["Best time to call*" ""]])
-                           ((fn [data]
-                              (let [cookies (get request :cookies)
-                                    lead-id (get-in cookies ["lead-id" :value])
-                                    lead    (api/lookup-lead storeback-config lead-id)]
-                                (-> data
-                                    (assoc-in keypaths/leads-lead lead))))))]
+            data                 (-> {}
+                                     (assoc-in leads.keypaths/lead-tracking-id (cookies/get request "leads.tracking-id"))
+                                     (assoc-in leads.keypaths/lead-utm-source (cookies/get request "leads.utm-source"))
+                                     (assoc-in leads.keypaths/lead-utm-content (cookies/get request "leads.utm-content"))
+                                     (assoc-in leads.keypaths/lead-utm-campaign (cookies/get request "leads.utm-campaign"))
+                                     (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
+                                     (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
+                                     (assoc-in keypaths/store-slug "welcome")
+                                     (assoc-in keypaths/environment environment)
+                                     (assoc-in keypaths/navigation-message nav-message)
+                                     (assoc-in leads.keypaths/eastern-offset (eastern-offset))
+                                     (assoc-in leads.keypaths/tz-abbreviation "EST")
+                                     (assoc-in leads.keypaths/call-slot-options [["Best time to call*" ""]])
+                                     ((fn [data]
+                                        (let [cookies     (get request :cookies)
+                                              lead-id     (get-in cookies ["lead-id" :value])
+                                              remote-lead (api/lookup-lead storeback-config lead-id)]
+                                          (-> data
+                                              (assoc-in leads.keypaths/remote-lead remote-lead)
+                                              (update-in leads.keypaths/lead merge remote-lead))))))]
         ((server-render-pages nav-event) render-ctx data request nav-args)))))
 
 (defn wrap-welcome-is-for-leads [h]

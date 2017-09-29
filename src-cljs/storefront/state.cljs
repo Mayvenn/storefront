@@ -132,22 +132,20 @@
      :experiments {:bucketed #{}
                    :manual config/manual-experiments}
 
-     :leads {:ui {:sign-up {:first-name ""
-                            :last-name ""
-                            :email ""}
-                  :registration {:password ""
-                                 :referred false
-                                 :referrers-phone ""
-                                 :address1 ""
-                                 :address2 ""
-                                 :city ""
-                                 :zip ""
-                                 :state ""
-                                 :licensed? false
-                                 :payout-method "venmo"
-                                 :venmo-phone ""
-                                 :paypal-email ""
-                                 :slug ""}}}
+     :leads {:stylist {:password ""
+                       :referred false
+                       :referrers-phone ""
+                       :address1 ""
+                       :address2 ""
+                       :city ""
+                       :zip ""
+                       :state ""
+                       :licensed? false
+                       :payout-method "venmo"
+                       :venmo-phone ""
+                       :paypal-email ""
+                       :slug ""}}
+
      :ui {:api-requests []
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]

@@ -8,7 +8,8 @@
             [storefront.assets :as assets]
             [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
+            [leads.keypaths :as keypaths]
+            [storefront.keypaths]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
@@ -25,7 +26,7 @@
                          :name     "first-name"
                          :required true
                          :errors   (get field-errors ["first-name"])
-                         :keypath  keypaths/leads-ui-sign-up-first-name
+                         :keypath  keypaths/lead-first-name
                          :focused  focused
                          :value    first-name}
                         {:type     "text"
@@ -34,13 +35,13 @@
                          :name     "last-name"
                          :required true
                          :errors   (get field-errors ["last-name"])
-                         :keypath  keypaths/leads-ui-sign-up-last-name
+                         :keypath  keypaths/lead-last-name
                          :focused  focused
                          :value    last-name})
    (ui/text-field {:data-test "phone"
                    :errors    (get field-errors ["phone"])
                    :id        "phone"
-                   :keypath   keypaths/leads-ui-sign-up-phone
+                   :keypath   keypaths/lead-phone
                    :focused   focused
                    :label     "Mobile Phone Number *"
                    :name      "phone"
@@ -50,7 +51,7 @@
    (ui/text-field {:data-test "email"
                    :errors    (get field-errors ["email"])
                    :id        "email"
-                   :keypath   keypaths/leads-ui-sign-up-email
+                   :keypath   keypaths/lead-email
                    :focused   focused
                    :label     "Email"
                    :name      "email"
@@ -60,7 +61,7 @@
    (ui/text-field {:data-test "password"
                    :errors    (get field-errors ["password"])
                    :id        "password"
-                   :keypath   keypaths/leads-ui-registration-password
+                   :keypath   keypaths/stylist-password
                    :focused   focused
                    :label     "Password *"
                    :name      "password"
@@ -73,14 +74,14 @@
   [{:keys [referred referrers-phone field-errors]} focused]
   [:div
    (ui/check-box {:data-test "referred"
-                  :keypath   keypaths/leads-ui-registration-referred
+                  :keypath   keypaths/stylist-referred
                   :label     "Yes, somebody referred me to Mayvenn"
                   :value     referred})
    (when referred
      (ui/text-field {:data-test "referrers-phone"
                      :errors    (get field-errors ["referrers-phone"])
                      :id        "referrers-phone"
-                     :keypath   keypaths/leads-ui-registration-referrers-phone
+                     :keypath   keypaths/stylist-referrers-phone
                      :focused   focused
                      :label     "Referrer's Mobile Phone Number *"
                      :name      "referrers-phone"
@@ -96,7 +97,7 @@
    (ui/text-field {:data-test "address1"
                    :errors    (get field-errors ["address1"])
                    :id        "address1"
-                   :keypath   keypaths/leads-ui-registration-address1
+                   :keypath   keypaths/stylist-address1
                    :focused   focused
                    :label     "Street Address *"
                    :name      "address1"
@@ -106,7 +107,7 @@
    (ui/text-field {:data-test "address2"
                    :errors    (get field-errors ["address2"])
                    :id        "address2"
-                   :keypath   keypaths/leads-ui-registration-address2
+                   :keypath   keypaths/stylist-address2
                    :focused   focused
                    :label     "Apt or Suite #"
                    :name      "address2"
@@ -116,7 +117,7 @@
    (ui/text-field {:data-test "city"
                    :errors    (get field-errors ["city"])
                    :id        "city"
-                   :keypath   keypaths/leads-ui-registration-city
+                   :keypath   keypaths/stylist-city
                    :focused   focused
                    :label     "City *"
                    :name      "city"
@@ -128,7 +129,7 @@
      (ui/select-field {:data-test   "state"
                        :errors      (get field-errors ["state"])
                        :id          :state
-                       :keypath     keypaths/leads-ui-registration-state
+                       :keypath     keypaths/stylist-state
                        :focused     focused
                        :label       "State *"
                        :options     states
@@ -139,7 +140,7 @@
      (ui/text-field {:data-test "zip"
                      :errors    (get field-errors ["zip"])
                      :id        "zip"
-                     :keypath   keypaths/leads-ui-registration-zip
+                     :keypath   keypaths/stylist-zip
                      :focused   focused
                      :label     "ZIP code *"
                      :name      "zip"
@@ -154,7 +155,7 @@
     (ui/text-field {:data-test "birth-date"
                     :errors    (get field-errors ["birthday"])
                     :id        "birth-date"
-                    :keypath   keypaths/leads-ui-registration-birthday
+                    :keypath   keypaths/stylist-birthday
                     :focused   focused
                     :label     "Birthday"
                     :name      "birth-date"
@@ -165,7 +166,7 @@
     [:div.pb2 "Are you a licensed hair stylist?"]
     (ui/radio-group {:group-name    "licensed?"
                      :checked-value licensed?
-                     :keypath       keypaths/leads-ui-registration-licensed?}
+                     :keypath       keypaths/stylist-licensed?}
                     [{:id "yes" :label "Yes" :value true}
                      {:id "no" :label "No" :value false}])]
    [:div.pb3.center
@@ -174,7 +175,7 @@
       [:br]
       "How would you like to receive your commissions?"]
      (ui/radio-group {:group-name    "payout-method"
-                      :keypath       keypaths/leads-ui-registration-payout-method
+                      :keypath       keypaths/stylist-payout-method
                       :checked-value payout-method
                       :required      true}
                      [{:id "venmo" :label "Venmo" :value "venmo"}
@@ -184,7 +185,7 @@
       "venmo"  (ui/text-field {:data-test "venmo-phone"
                                :errors    (get field-errors ["venmo-phone"])
                                :id        "venmo-phone"
-                               :keypath   keypaths/leads-ui-registration-venmo-phone
+                               :keypath   keypaths/stylist-venmo-phone
                                :focused   focused
                                :label     "Venmo phone number *"
                                :name      "venmo-phone"
@@ -194,7 +195,7 @@
       "paypal" (ui/text-field {:data-test "paypal-email"
                                :errors    (get field-errors ["paypal-email"])
                                :id        "paypal-email"
-                               :keypath   keypaths/leads-ui-registration-paypal-email
+                               :keypath   keypaths/stylist-paypal-email
                                :focused   focused
                                :label     "Paypal email address *"
                                :name      "paypal-email"
@@ -212,7 +213,7 @@
                       :wrapper-class "rounded-left"
                       :errors        (get field-errors ["slug"])
                       :id            "slug"
-                      :keypath       keypaths/leads-ui-registration-slug
+                      :keypath       keypaths/stylist-slug
                       :focused       focused
                       :label         (if (empty? slug) "yourstorename" "Store Name")
                       :name          "slug"
@@ -220,7 +221,7 @@
                       :type          "text"
                       :value         slug})]
      [:div.rounded.rounded-right.border.border-gray.bg-light-gray.x-group-item.p2.floating-label-height
-      ".mayvenn.com"]]]] )
+      ".mayvenn.com"]]]])
 
 (defn ^:private component
   [{:keys [focused sign-up referral contact stylist-details states]} owner opts]
@@ -260,33 +261,33 @@
        [:a.inherit-color.text-decoration-none {:href "https://shop.mayvenn.com"} "Go back to shop Mayvenn Hair"]]]]]))
 
 (defn ^:private sign-up-query [data]
-  {:first-name (get-in data keypaths/leads-ui-sign-up-first-name)
-   :last-name  (get-in data keypaths/leads-ui-sign-up-last-name)
-   :phone      (get-in data keypaths/leads-ui-sign-up-phone)
-   :email      (get-in data keypaths/leads-ui-sign-up-email)
-   :password   (get-in data keypaths/leads-ui-registration-password)})
+  {:first-name (get-in data keypaths/stylist-first-name)
+   :last-name  (get-in data keypaths/stylist-last-name)
+   :phone      (get-in data keypaths/stylist-phone)
+   :email      (get-in data keypaths/stylist-email)
+   :password   (get-in data keypaths/stylist-password)})
 
 (defn ^:private contact-query [data]
-  {:address1 (get-in data keypaths/leads-ui-registration-address1)
-   :address2 (get-in data keypaths/leads-ui-registration-address2)
-   :city     (get-in data keypaths/leads-ui-registration-city)
-   :zip      (get-in data keypaths/leads-ui-registration-zip)
-   :state    (get-in data keypaths/leads-ui-registration-state)})
+  {:address1 (get-in data keypaths/stylist-address1)
+   :address2 (get-in data keypaths/stylist-address2)
+   :city     (get-in data keypaths/stylist-city)
+   :zip      (get-in data keypaths/stylist-zip)
+   :state    (get-in data keypaths/stylist-state)})
 
 (defn ^:private stylist-details-query [data]
-  {:birthday      (get-in data keypaths/leads-ui-registration-birthday)
-   :licensed?     (get-in data keypaths/leads-ui-registration-licensed?)
-   :payout-method (get-in data keypaths/leads-ui-registration-payout-method)
-   :venmo-phone   (get-in data keypaths/leads-ui-registration-venmo-phone)
-   :paypal-email  (get-in data keypaths/leads-ui-registration-paypal-email)
-   :slug          (get-in data keypaths/leads-ui-registration-slug)})
+  {:birthday      (get-in data keypaths/stylist-birthday)
+   :licensed?     (get-in data keypaths/stylist-licensed?)
+   :payout-method (get-in data keypaths/stylist-payout-method)
+   :venmo-phone   (get-in data keypaths/stylist-venmo-phone)
+   :paypal-email  (get-in data keypaths/stylist-paypal-email)
+   :slug          (get-in data keypaths/stylist-slug)})
 
 (defn ^:private query [data]
-  (let [field-errors (get-in data keypaths/field-errors)]
-    {:focused         (get-in data keypaths/ui-focus)
-     :states          (map (juxt :name :abbr) (get-in data keypaths/states))
-     :referral        {:referred        (get-in data keypaths/leads-ui-registration-referred)
-                       :referrers-phone (get-in data keypaths/leads-ui-registration-referrers-phone)
+  (let [field-errors (get-in data storefront.keypaths/field-errors)]
+    {:focused         (get-in data storefront.keypaths/ui-focus)
+     :states          (map (juxt :name :abbr) (get-in data storefront.keypaths/states))
+     :referral        {:referred        (get-in data keypaths/stylist-referred)
+                       :referrers-phone (get-in data keypaths/stylist-referrers-phone)
                        :field-errors    field-errors}
      :sign-up         (merge (sign-up-query data)
                              {:field-errors field-errors})
@@ -315,27 +316,34 @@
     "venmo"  (dissoc registration :paypal-email)
     "paypal" (dissoc registration :venmo-phone)
     "check"  (dissoc registration :paypal-email :venmo-phone)
-    :else    registration))
+    registration))
+
+#?(:cljs
+   (defmethod transitions/transition-state events/navigate-leads-registration-details
+     [_ _ {:keys [submitted-lead]} app-state]
+     (-> app-state
+         (update-in keypaths/stylist merge (get-in app-state keypaths/remote-lead))
+         (update-in keypaths/stylist merge submitted-lead))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-leads-registration-details
      [_ _ _ _ app-state]
-     (api/get-states (get-in app-state keypaths/api-cache))))
+     (api/get-states (get-in app-state storefront.keypaths/api-cache))))
 
 (defmethod effects/perform-effects events/leads-control-self-registration-submit
   [dispatch event args _ app-state]
   #?(:cljs
-     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/leads-lead)
-           sign-up                       (get-in app-state keypaths/leads-ui-sign-up)
-           registration                  (-> app-state
-                                             (get-in keypaths/leads-ui-registration)
-                                             (merge (select-keys sign-up [:first-name :last-name :email :phone]))
+     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/remote-lead)
+           sign-up                       (select-keys (get-in app-state keypaths/lead)
+                                                      [:first-name :last-name :email :phone])
+           stylist-info                  (get-in app-state keypaths/stylist)
+           registration                  (-> (merge sign-up stylist-info)
                                              handle-referral
                                              handle-address-2
                                              handle-payout-method)]
        (api/advance-lead-registration {:lead-id    id
                                        :step-id    step-id
-                                       :session-id (get-in app-state keypaths/session-id)
+                                       :session-id (get-in app-state storefront.keypaths/session-id)
                                        :step-data  {:registration registration}}
                                       (fn [registered-lead]
                                         (js/console.log (clj->js registered-lead))
@@ -343,10 +351,10 @@
 
 (defmethod transitions/transition-state events/api-success-lead-registered
   [_ event {:keys [registered-lead]} app-state]
-  (assoc-in app-state keypaths/leads-lead registered-lead))
+  (assoc-in app-state keypaths/remote-lead registered-lead))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
      [_ event {:keys [registered-lead]} _ app-state]
-     (cookie-jar/clear-lead-id (get-in app-state keypaths/cookie))
+     (cookie-jar/clear-lead-id (get-in app-state storefront.keypaths/cookie))
      (history/enqueue-navigate events/navigate-leads-registration-resolve)))
