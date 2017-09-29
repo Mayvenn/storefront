@@ -82,14 +82,14 @@
     (ui/submit-button "Become a Mayvenn Stylist"
                       {:data-test "sign-up-submit"})]])
 
-(defn resume-self-reg-panel [{:keys [lead]}]
+(defn resume-self-reg-panel [{:keys [remote-lead]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Become a Mayvenn"]
     [:p.m2 "You are on your way to joining the Mayvenn Movement! Finish your registration today!"]]
-   [:form
-    {:on-submit (utils/send-event-callback events/leads-control-sign-up-resume-submit {:lead lead})}
-    [:button.btn.btn-primary.col-12 {:type "submit" :value "Submit"} "Finish registration"]]])
+   (ui/teal-button
+    (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead})
+    "Finish registration")])
 
 (defn hero-section [{:keys [flow-id sign-up resume-self-reg] :as attrs}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
@@ -386,7 +386,7 @@
         self-reg?                         (= "stylistsfb"
                                              (string/lower-case (or (get-in data keypaths/lead-utm-content) "")))]
     {:hero   {:flow-id         flow-id
-              :resume-self-reg {:lead remote-lead}
+              :resume-self-reg {:remote-lead remote-lead}
               :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
                                 :first-name        (get-in data keypaths/lead-first-name)
                                 :last-name         (get-in data keypaths/lead-last-name)

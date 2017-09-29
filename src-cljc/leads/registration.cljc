@@ -346,7 +346,6 @@
                                        :session-id (get-in app-state storefront.keypaths/session-id)
                                        :step-data  {:registration registration}}
                                       (fn [registered-lead]
-                                        (js/console.log (clj->js registered-lead))
                                         (messages/handle-message events/api-success-lead-registered {:registered-lead registered-lead}))))))
 
 (defmethod transitions/transition-state events/api-success-lead-registered
