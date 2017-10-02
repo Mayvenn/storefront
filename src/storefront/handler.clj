@@ -37,7 +37,8 @@
             [clj-time.core :as clj-time.core]
             [clojure.set :as set]
             [spice.core :as spice]
-            [catalog.products :as products]))
+            [catalog.products :as products]
+            [sablono.util :as util]))
 
 (defn storefront-site-defaults
   [environment]
@@ -372,40 +373,47 @@
                                ""]
                               private-disalloweds))))
 
-(defn sitemap [{:keys [storeback-config]}]
-  (let [{:keys [sku-sets]} (api/fetch-sku-sets storeback-config {})]
-    (if sku-sets
-      (letfn [(url [[location priority]]
-                {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
-                                      priority (conj {:tag :priority :content [(str priority)]}))})]
-        (util.response/response
-         (with-out-str (xml/emit {:tag     :urlset
-                                  :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
-                                  :content (->> (into [["https://mayvenn.com"]
-                                                       ["https://welcome.mayvenn.com"                                  "0.60"]
-                                                       ["https://shop.mayvenn.com"                                     "1.00"]
-                                                       ["https://shop.mayvenn.com/guarantee"                           "0.60"]
-                                                       ["https://shop.mayvenn.com/help"                                "0.60"]
-                                                       ["https://shop.mayvenn.com/about-us"                            "0.60"]
-                                                       ["https://shop.mayvenn.com/categories/0-closures"               "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/1-frontals"               "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/2-straight"               "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/3-yaki-straight"          "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/4-kinky-straight"         "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/5-body-wave"              "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/6-loose-wave"             "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/7-water-wave"             "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/8-deep-wave"              "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/9-curly"                  "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/10-360-frontals"          "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
-                                                       ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
-                                                       ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
-                                                      (for [{:keys [sku-set/id sku-set/slug]} sku-sets]
-                                                        [(str "https://shop.mayvenn.com/products/" id "-" slug) "0.80"]))
-                                                (mapv url))}))))
-      (-> (util.response/response "<error />")
-          (util.response/status 502)))))
+(defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
+  (if (seq subdomains)
+    (let [{:keys [sku-sets]} (api/fetch-sku-sets storeback-config {})]
+      (if sku-sets
+        (letfn [(url [[location priority]]
+                  {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
+                                        priority (conj {:tag :priority :content [(str priority)]}))})]
+
+          (-> (xml/emit {:tag     :urlset
+                         :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
+                         :content (->> (into [["https://mayvenn.com"]
+                                              ["https://welcome.mayvenn.com"                                  "0.60"]
+                                              ["https://shop.mayvenn.com"                                     "1.00"]
+                                              ["https://shop.mayvenn.com/guarantee"                           "0.60"]
+                                              ["https://shop.mayvenn.com/help"                                "0.60"]
+                                              ["https://shop.mayvenn.com/about-us"                            "0.60"]
+                                              ["https://shop.mayvenn.com/categories/0-closures"               "0.80"]
+                                              ["https://shop.mayvenn.com/categories/1-frontals"               "0.80"]
+                                              ["https://shop.mayvenn.com/categories/2-straight"               "0.80"]
+                                              ["https://shop.mayvenn.com/categories/3-yaki-straight"          "0.80"]
+                                              ["https://shop.mayvenn.com/categories/4-kinky-straight"         "0.80"]
+                                              ["https://shop.mayvenn.com/categories/5-body-wave"              "0.80"]
+                                              ["https://shop.mayvenn.com/categories/6-loose-wave"             "0.80"]
+                                              ["https://shop.mayvenn.com/categories/7-water-wave"             "0.80"]
+                                              ["https://shop.mayvenn.com/categories/8-deep-wave"              "0.80"]
+                                              ["https://shop.mayvenn.com/categories/9-curly"                  "0.80"]
+                                              ["https://shop.mayvenn.com/categories/10-360-frontals"          "0.80"]
+                                              ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
+                                              ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
+                                              ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
+                                             (for [{:keys [sku-set/id sku-set/slug]} sku-sets]
+                                               [(str "https://shop.mayvenn.com/products/" id "-" slug) "0.80"]))
+                                       (mapv url))})
+              with-out-str
+              util.response/response
+              (util.response/content-type "text/xml")))
+        (-> (util.response/response "<error />")
+            (util.response/content-type "text/xml")
+            (util.response/status 502))))
+    (-> (util.response/response "")
+        (util.response/status 404))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
@@ -570,7 +578,7 @@
   ([{:keys [logger exception-handler environment] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
-               (GET "/sitemap.xml" req (-> (sitemap ctx) (util.response/content-type "text/xml")))
+               (GET "/sitemap.xml" req (-> (sitemap ctx req)))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/categories" req (redirect-to-home environment req))
