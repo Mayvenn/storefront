@@ -125,10 +125,6 @@
        [:div {:data-test (keypaths/->component-str nav-event)}
         ((leads-component nav-event) data nil)]
 
-       (= nav-event events/navigate-ugc-named-search)
-       [:div.bg-black.absolute.overlay
-        (ugc/built-popup-component data nil)]
-
        :else
        [:div.flex.flex-column {:style {:min-height "100vh"}}
         (stylist-banner/built-component data nil)

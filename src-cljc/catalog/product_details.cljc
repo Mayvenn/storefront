@@ -246,46 +246,51 @@
            reviews
            selected-sku
            sku-quantity
-           ugc]}
+           ugc
+           show-ugc
+           popup-ugc]}
    owner
    opts]
   (let [review?        (:review? reviews)]
     (component/create
-     [:div.container.p2
-      (page
-       [:div
-        (carousel carousel-images product)
-        [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-       [:div
-        [:div.center
-         (title (:sku-set/name product))
-         (when review? (reviews-summary reviews opts))
-         [:meta {:item-prop "image" :content (first carousel-images)}]
-         (full-bleed-narrow (carousel carousel-images product))
-         (starting-at cheapest-price)]
-        (if fetching-product?
-          [:div.h2.mb2 ui/spinner]
-          [:div
-           [:div schema-org-offer-props
-            [:div.my2
-             [:div
-              (when (= (:product/department product) "hair")
-                (for [facet (:selector/electives product)]
-                  (selector-html {:selector facet
-                                  :options  (get options facet)})))]
-             (sku-summary {:sku          selected-sku
-                           :sku-quantity sku-quantity})]
-            (when (products/eligible-for-triple-bundle-discount? product)
-              triple-bundle-upsell)
-            (add-to-bag-button adding-to-bag?
-                               selected-sku
-                               sku-quantity)
-            (bagged-skus-and-checkout bagged-skus)
-            (when (products/stylist-only? product) shipping-and-guarantee)]])
-        (product-description product)
-        [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-      (when review?
-        (component/build review-component/reviews-component reviews opts))])))
+     (if show-ugc
+       [:div.bg-black.absolute.overlay.z4
+        (component/build ugc/popup-component popup-ugc opts)]
+       [:div.container.p2
+        (page
+         [:div
+          (carousel carousel-images product)
+          [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+         [:div
+          [:div.center
+           (title (:sku-set/name product))
+           (when review? (reviews-summary reviews opts))
+           [:meta {:item-prop "image" :content (first carousel-images)}]
+           (full-bleed-narrow (carousel carousel-images product))
+           (starting-at cheapest-price)]
+          (if fetching-product?
+            [:div.h2.mb2 ui/spinner]
+            [:div
+             [:div schema-org-offer-props
+              [:div.my2
+               [:div
+                (when (= (:product/department product) "hair")
+                  (for [facet (:selector/electives product)]
+                    (selector-html {:selector facet
+                                    :options  (get options facet)})))]
+               (sku-summary {:sku          selected-sku
+                             :sku-quantity sku-quantity})]
+              (when (products/eligible-for-triple-bundle-discount? product)
+                triple-bundle-upsell)
+              (add-to-bag-button adding-to-bag?
+                                 selected-sku
+                                 sku-quantity)
+              (bagged-skus-and-checkout bagged-skus)
+              (when (products/stylist-only? product) shipping-and-guarantee)]])
+          (product-description product)
+          [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+        (when review?
+          (component/build review-component/reviews-component reviews opts))]))))
 
 (defn min-of-maps
   ([k] {})
@@ -340,13 +345,13 @@
                            vals
                            (sort-by :price))})))
 
-(defn ugc-query [{:keys [legacy/named-search-slug catalog/product-id]
-                  long-name :sku-set/name} data]
-  (when-let [ugc (get-in data keypaths/ugc)]
-    (when-let [images (pixlee/images-in-album ugc named-search-slug)]
-      {:slug      named-search-slug
-       :long-name long-name
-       :album     images})))
+(defn ugc-query [product sku ugc]
+  (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
+    {:product-id   (:catalog/product-id product)
+     :product-name (:sku-set/name product)
+     :page-slug    (:page/slug product)
+     :sku-id       (:sku sku)
+     :album        images}))
 
 (defn generate-options [facets product product-skus criteria]
   (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
@@ -374,9 +379,12 @@
                              (merge {:use-case "carousel"
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
-                             (sort-by :order))]
+                             (sort-by :order))
+        ugc             (ugc-query product selected-sku (get-in data keypaths/ugc))]
     {:reviews           (add-review-eligibility (review-component/query data) product)
-     :ugc               (ugc-query product data)
+     :ugc               ugc
+     :show-ugc          (get-in data keypaths/ui-ugc-category-popup-offset)
+     :popup-ugc         (ugc/popup-query data ugc)
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
@@ -417,9 +425,9 @@
          (:sku (lowest :price valid-product-skus))))))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [catalog/product-id page/slug catalog/sku-id]} app-state]
+  [_ event {:keys [catalog/product-id page/slug query-params] :as b} app-state]
   (let [product  (products/product-by-id app-state product-id)
-        sku-id   (determine-sku-id app-state product sku-id)
+        sku-id   (determine-sku-id app-state product)
         sku      (get-in app-state (conj keypaths/skus sku-id))
         criteria (-> product ;; TODO use only criteria from the product (essential and elective)
                      (merge (:attributes sku))
@@ -431,6 +439,7 @@
                                    :hair/family
                                    :product/department]))]
     (-> app-state
+        (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-id product-id)

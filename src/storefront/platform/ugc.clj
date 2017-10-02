@@ -2,6 +2,6 @@
 
 (defn component [data owner opts] [:div])
 
-(defn query [data] {})
+(defn popup-query [data ugc] {})
 
-(defn built-popup-component [data opts] [:div])
+(defn popup-component [data opts] [:div])
