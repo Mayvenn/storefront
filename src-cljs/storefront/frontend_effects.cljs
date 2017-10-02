@@ -188,8 +188,8 @@
                      (not loaded-order?)))
         (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
-    (when-not (and (= event events/navigate-product-details)
-                   (:SKU query-params))
+    (when (or (not= event events/navigate-product-details)
+              (not (:SKU query-params)))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
