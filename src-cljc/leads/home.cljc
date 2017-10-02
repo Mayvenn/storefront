@@ -1,12 +1,18 @@
 (ns leads.home
   (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.component :as component]
+                :cljs [[om.core :as om]
+                       [goog.events]
+                       [goog.dom]
+                       [goog.style]
+                       [goog.events.EventType :as EventType]
+                       [storefront.component :as component]
                        [storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
             [leads.header :as header]
             [leads.call-slot :as call-slot]
+            [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
             [storefront.platform.carousel :as carousel]
@@ -352,10 +358,44 @@
          [:a.inherit-color
           {:href (str privacy-url "#our-ads")} "Our Ads"]]]]]]))
 
+(defn follow-header [{:keys [call-number]} owner opts]
+  #?(:cljs
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 750 (.-y (goog.dom/getDocumentScroll)))))]
+       (reify
+         om/IInitState
+         (init-state [this]
+           {:show? false})
+         om/IDidMount
+         (did-mount [this]
+           (goog.events/listen js/window EventType/SCROLL handle-scroll))
+         om/IWillUnmount
+         (will-unmount [this]
+           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+         om/IWillReceiveProps
+         (will-receive-props [this next-props])
+         om/IRenderState
+         (render-state [this {:keys [show?]}]
+           (component/html
+            [:div.fixed.top-0.left-0.right-0.z4.bg-white
+             (if show?
+               {:style {:margin-top "0"}
+                :class "transition-2"}
+               {:style {:margin-top "-100px"}})
+             [:div.border-bottom.border-gray.mx-auto
+              {:style {:max-width "1440px"}}
+              [:div.container.flex.items-center.justify-between.px3.py2
+               [:div
+                [:img {:src (assets/path "/images/header_logo.svg")
+                       :style {:width "88px"}}]
+                [:div.h6 "Questions? Call us: " call-number]]
+               [:a.btn.btn-outline.teal {:href "#signup-form"} "Sign up"]]]]))))
+     :clj [:span]))
+
 (defn ^:private component [data owner opts]
   (component/create
    [:div
     (header/built-component data nil)
+    (component/build follow-header (:header data) nil)
     (hero-section (:hero data))
     success-stories-section
     about-section
@@ -396,6 +436,7 @@
                                 :call-slot         (get-in data keypaths/lead-call-slot)
                                 :self-reg?         self-reg?
                                 :call-slot-options (get-in data keypaths/call-slot-options)}}
+     :header {:call-number config/mayvenn-leads-call-number}
      :footer {:call-number config/mayvenn-leads-call-number
               :host-name   host-name}
      :faq    {:sms-number  config/mayvenn-leads-sms-number
