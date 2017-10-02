@@ -58,7 +58,7 @@
     (when (-> links :view-look boolean)
       [:div.mt2 (view-look-button item {:back-copy (str "back to " (goog.string/toTitleCase long-name))})])]])
 
-(defn component [{:keys [album product-id page-slug sku-id] :as data} owner opts]
+(defn component [{{:keys [album product-id page-slug sku-id]} :carousel-data} owner opts]
   (om/component
    (html
     (when (seq album)
@@ -82,19 +82,19 @@
         "Want to show up on our homepage? "
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
-(defn popup-component [{:keys [ugc offset back] :as data} owner opts]
+(defn popup-component [{:keys [carousel-data offset back] :as data} owner opts]
   (om/component
    (html
     (let [close-attrs (util/route-to events/navigate-product-details
-                                     {:catalog/product-id (:product-id ugc)
-                                      :page/slug          (:page-slug ugc)
-                                      :query-params       {:SKU (:sku-id ugc)}})]
+                                     {:catalog/product-id (:product-id carousel-data)
+                                      :page/slug          (:page-slug carousel-data)
+                                      :query-params       {:SKU (:sku-id carousel-data)}})]
       (ui/modal
        {:close-attrs close-attrs}
        [:div.relative
         (om/build carousel/component
-                  {:slides   (map (partial popup-slide (:product-name ugc))
-                                  (:album ugc))
+                  {:slides   (map (partial popup-slide (:product-name carousel-data))
+                                  (:album carousel-data))
                    :settings {:slidesToShow 1
                               :initialSlide (js/parseInt offset 10)}}
                   {})
@@ -102,8 +102,3 @@
          {:style {:top "1.5rem" :right "1.5rem"}}
          (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                           :close-attrs close-attrs})]])))))
-
-(defn popup-query [data ugc]
-  {:ugc    ugc
-   :offset (get-in data keypaths/ui-ugc-category-popup-offset)
-   :back   (first (get-in data keypaths/navigation-undo-stack))})

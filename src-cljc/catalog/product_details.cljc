@@ -247,15 +247,14 @@
            selected-sku
            sku-quantity
            ugc
-           show-ugc
-           popup-ugc]}
+           show-ugc]}
    owner
    opts]
   (let [review?        (:review? reviews)]
     (component/create
      (if show-ugc
        [:div.bg-black.absolute.overlay.z4
-        (component/build ugc/popup-component popup-ugc opts)]
+        (component/build ugc/popup-component ugc opts)]
        [:div.container.p2
         (page
          [:div
@@ -345,13 +344,16 @@
                            vals
                            (sort-by :price))})))
 
-(defn ugc-query [product sku ugc]
-  (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
-    {:product-id   (:catalog/product-id product)
-     :product-name (:sku-set/name product)
-     :page-slug    (:page/slug product)
-     :sku-id       (:sku sku)
-     :album        images}))
+(defn ugc-query [product sku data]
+  (when-let [ugc (get-in data keypaths/ugc)]
+    (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
+      {:carousel-data {:product-id   (:catalog/product-id product)
+                       :product-name (:sku-set/name product)
+                       :page-slug    (:page/slug product)
+                       :sku-id       (:sku sku)
+                       :album        images}
+       :offset (get-in data keypaths/ui-ugc-category-popup-offset)
+       :back   (first (get-in data keypaths/navigation-undo-stack))})))
 
 (defn generate-options [facets product product-skus criteria]
   (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
@@ -380,11 +382,10 @@
                                      :image/of #{"model" "product"}})
                              (selector/select image-selector)
                              (sort-by :order))
-        ugc             (ugc-query product selected-sku (get-in data keypaths/ugc))]
+        ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
      :show-ugc          (get-in data keypaths/ui-ugc-category-popup-offset)
-     :popup-ugc         (ugc/popup-query data ugc)
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
