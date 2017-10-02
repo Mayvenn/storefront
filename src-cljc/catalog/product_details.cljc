@@ -246,13 +246,12 @@
            reviews
            selected-sku
            sku-quantity
-           ugc
-           show-ugc]}
+           ugc]}
    owner
    opts]
   (let [review?        (:review? reviews)]
     (component/create
-     (if show-ugc
+     (if (:offset ugc)
        [:div.bg-black.absolute.overlay.z4
         (component/build ugc/popup-component ugc opts)]
        [:div.container.p2
@@ -385,7 +384,6 @@
         ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
-     :show-ugc          (get-in data keypaths/ui-ugc-category-popup-offset)
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
