@@ -374,7 +374,8 @@
                               private-disalloweds))))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
-  (if (seq subdomains)
+  (if (and (seq subdomains)
+           (not= "welcome" (first subdomains)))
     (let [{:keys [sku-sets]} (api/fetch-sku-sets storeback-config {})]
       (if sku-sets
         (letfn [(url [[location priority]]

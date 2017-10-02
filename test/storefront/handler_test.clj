@@ -487,3 +487,11 @@
         (let [resp (handler (mock/request :get "https://mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
 
+(deftest sitemap-does-not-exist-on-welcome-subdomain
+  (let [[requests handler] (with-requests-chan (constantly {:status 200
+                                                            :body   (generate-string {:skus []
+                                                                                      :sku-sets []})}))]
+    (with-standalone-server [storeback (standalone-server handler)]
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/sitemap.xml"))]
+          (is (= 404 (:status resp))))))))
