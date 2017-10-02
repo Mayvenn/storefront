@@ -251,44 +251,45 @@
    opts]
   (let [review?        (:review? reviews)]
     (component/create
-     (if (:offset ugc)
-       [:div.bg-black.absolute.overlay.z4
-        (component/build ugc/popup-component ugc opts)]
-       [:div.container.p2
-        (page
-         [:div
-          (carousel carousel-images product)
-          [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-         [:div
-          [:div.center
-           (title (:sku-set/name product))
-           (when review? (reviews-summary reviews opts))
-           [:meta {:item-prop "image" :content (first carousel-images)}]
-           (full-bleed-narrow (carousel carousel-images product))
-           (starting-at cheapest-price)]
-          (if fetching-product?
-            [:div.h2.mb2 ui/spinner]
-            [:div
-             [:div schema-org-offer-props
-              [:div.my2
-               [:div
-                (when (= (:product/department product) "hair")
-                  (for [facet (:selector/electives product)]
-                    (selector-html {:selector facet
-                                    :options  (get options facet)})))]
-               (sku-summary {:sku          selected-sku
-                             :sku-quantity sku-quantity})]
-              (when (products/eligible-for-triple-bundle-discount? product)
-                triple-bundle-upsell)
-              (add-to-bag-button adding-to-bag?
-                                 selected-sku
-                                 sku-quantity)
-              (bagged-skus-and-checkout bagged-skus)
-              (when (products/stylist-only? product) shipping-and-guarantee)]])
-          (product-description product)
-          [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-        (when review?
-          (component/build review-component/reviews-component reviews opts))]))))
+     [:div
+      (when (:offset ugc)
+        [:div.absolute.overlay.z4.overflow-auto
+         (component/build ugc/popup-component ugc opts)])
+      [:div.container.p2
+       (page
+        [:div
+         (carousel carousel-images product)
+         [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+        [:div
+         [:div.center
+          (title (:sku-set/name product))
+          (when review? (reviews-summary reviews opts))
+          [:meta {:item-prop "image" :content (first carousel-images)}]
+          (full-bleed-narrow (carousel carousel-images product))
+          (starting-at cheapest-price)]
+         (if fetching-product?
+           [:div.h2.mb2 ui/spinner]
+           [:div
+            [:div schema-org-offer-props
+             [:div.my2
+              [:div
+               (when (= (:product/department product) "hair")
+                 (for [facet (:selector/electives product)]
+                   (selector-html {:selector facet
+                                   :options  (get options facet)})))]
+              (sku-summary {:sku          selected-sku
+                            :sku-quantity sku-quantity})]
+             (when (products/eligible-for-triple-bundle-discount? product)
+               triple-bundle-upsell)
+             (add-to-bag-button adding-to-bag?
+                                selected-sku
+                                sku-quantity)
+             (bagged-skus-and-checkout bagged-skus)
+             (when (products/stylist-only? product) shipping-and-guarantee)]])
+         (product-description product)
+         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+       (when review?
+         (component/build review-component/reviews-component reviews opts))]])))
 
 (defn min-of-maps
   ([k] {})
