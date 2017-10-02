@@ -10,7 +10,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
-            [goog.string]))
+            [goog.string]
+            [catalog.products :as products]))
 
 (defn ^:private carousel-slide [slug idx {:keys [imgs content-type]}]
   [:div.p1
@@ -49,8 +50,10 @@
         "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))))
 
 (defn query [data]
-  (let [{:keys [slug long-name]} (named-searches/current-named-search data)
-        images                   (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
+  (let [product   (products/current-product data)
+        slug      (:legacy/named-search-slug product)
+        long-name (:sku-set/name product)
+        images    (pixlee/images-in-album (get-in data keypaths/ugc) slug)]
     {:slug      slug
      :long-name long-name
      :album     images}))
