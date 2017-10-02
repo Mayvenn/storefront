@@ -336,6 +336,10 @@
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 
+(def leads-disalloweds ["User-agent: *"
+                        "Disallow: /stylists/thank-you"
+                        "Disallow: /stylists/flows/"])
+
 (def private-disalloweds ["User-agent: *"
                           "Disallow: /account"
                           "Disallow: /checkout"
@@ -346,7 +350,6 @@
                           "Disallow: /c/"
                           "Disallow: /admin"
                           "Disallow: /content"])
-
 (def server-render-pages
   {events/navigate-home                       generic-server-render
    events/navigate-category                   render-category
@@ -366,12 +369,13 @@
    events/navigate-leads-resolve              render-leads-page})
 
 (defn robots [{:keys [subdomains]}]
-  (if (#{["shop"] ["www"] []} subdomains)
-    (string/join "\n" private-disalloweds)
-    (string/join "\n" (concat ["User-agent: googlebot"
-                               "Disallow: /"
-                               ""]
-                              private-disalloweds))))
+  (cond
+    (= ["welcome"] subdomains) (string/join "\n" leads-disalloweds)
+    (#{["shop"] ["www"] []} subdomains) (string/join "\n" private-disalloweds)
+    :else (string/join "\n" (concat ["User-agent: googlebot"
+                                     "Disallow: /"
+                                     ""]
+                                    private-disalloweds))))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)

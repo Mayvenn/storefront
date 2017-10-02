@@ -495,3 +495,31 @@
       (with-handler handler
         (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
+
+(deftest robots-disllows-content-storefront-pages-on-shop
+  (with-handler handler
+    (let [{:keys [status body]} (handler (mock/request :get "https://shop.mayvenn.com/robots.txt"))]
+      (is (= 200 status))
+      (are [line] (.contains body line)
+        "Disallow: /account"
+        "Disallow: /checkout"
+        "Disallow: /orders"
+        "Disallow: /stylist"
+        "Disallow: /cart"
+        "Disallow: /m/"
+        "Disallow: /c/"
+        "Disallow: /admin"
+        "Disallow: /content"))))
+
+(deftest robots-disallows-all-pages-on-stylist-stores
+  (with-handler handler
+    (let [{:keys [status body]} (handler (mock/request :get "https://bob.mayvenn.com/robots.txt"))]
+      (is (= 200 status))
+      (is (some #{"Disallow: /"} (seq (.split body "\n")))))))
+
+(deftest robots-disallows-leads-pages-on-welcome-subdomain
+  (with-handler handler
+    (let [{:keys [status body]} (handler (mock/request :get "https://welcome.mayvenn.com/robots.txt"))]
+      (is (= 200 status))
+      (is (.contains body "Disallow: /stylists/thank-you") body)
+      (is (.contains body "Disallow: /stylists/flows/") body))))
