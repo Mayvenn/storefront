@@ -210,14 +210,14 @@
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
 
-(defn prefill-email-address [app-state]
+(defn prefill-guest-email-address [app-state]
   (update-in app-state keypaths/checkout-guest-email
              #(or (not-empty %1) %2 %3)
              (get-in app-state keypaths/order-user-email)
              (get-in app-state keypaths/captured-email)))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
-  (prefill-email-address app-state))
+  (prefill-guest-email-address app-state))
 
 (defmethod transition-state events/navigate-checkout-confirmation [_ event args app-state]
   (-> app-state
@@ -504,7 +504,8 @@
         (assoc-in keypaths/order order)
         (assoc-in keypaths/checkout-selected-shipping-method
                   (merge (first (get-in app-state keypaths/shipping-methods))
-                         (orders/shipping-item order))))
+                         (orders/shipping-item order)))
+        prefill-guest-email-address)
     (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
