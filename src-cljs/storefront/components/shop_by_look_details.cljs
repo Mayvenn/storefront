@@ -3,7 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.ugc :as ugc]
+            [catalog.product-details-ugc :as ugc]
             [storefront.assets :as assets]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
