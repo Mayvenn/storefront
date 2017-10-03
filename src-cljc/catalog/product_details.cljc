@@ -21,7 +21,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
-            [storefront.platform.ugc :as ugc]
+            [catalog.product-details-ugc :as ugc]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
