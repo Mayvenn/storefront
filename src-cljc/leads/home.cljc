@@ -12,6 +12,7 @@
                        [storefront.history :as history]])
             [leads.header :as header]
             [leads.call-slot :as call-slot]
+            [leads.accessors :as accessors]
             [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
@@ -472,7 +473,7 @@
      (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/remote-lead)
            lead                          (get-in previous-app-state keypaths/lead)]
        (cookie-jar/save-lead-id (get-in app-state storefront.keypaths/cookie) {"lead-id" lead-id})
-       (if flow-id  ;; Truthy flow-id indicates self-reg
+       (if (accessors/self-reg? flow-id)
          (history/enqueue-navigate events/navigate-leads-registration-details {:submitted-lead lead})
          (history/enqueue-navigate events/navigate-leads-resolve)))))
 
