@@ -46,7 +46,6 @@
             [leads.registration :as leads.registration]
             [leads.registration-resolve :as leads.registration-resolve]
             [leads.resolve :as leads.resolve]
-            [storefront.platform.ugc :as ugc]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
