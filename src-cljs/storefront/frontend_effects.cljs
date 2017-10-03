@@ -471,6 +471,8 @@
   (fetch-saved-cards app-state))
 
 (defmethod perform-effects events/navigate-checkout-payment [dispatch event args _ app-state]
+  (when (empty? (get-in app-state keypaths/order-shipping-address))
+    (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
   (stripe/insert))
 

@@ -27,6 +27,7 @@
 (def order-cart-payments-paypal (conj order-cart-payments :paypal))
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
+(def order-shipping-address (conj order :shipping-address))
 
 (def stripe-card-element [:stripe :card-element])
 
