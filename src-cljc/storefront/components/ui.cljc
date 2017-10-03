@@ -303,14 +303,14 @@
 
 (defn radio-section [radio-attrs & content]
   (let [k (:key radio-attrs)
-        radio-attrs (dissoc radio-attrs :key)])
-  [:label.flex.items-center.col-12.py1
-   (when k {:key k})
-   [:input.mx2.h2
-    (merge {:type "radio"}
-           radio-attrs)]
-   (into [:div.clearfix.col-12]
-         content)])
+        radio-attrs (dissoc radio-attrs :key)]
+    [:label.flex.items-center.col-12.py1
+     (when k {:key k})
+     [:input.mx2.h2
+      (merge {:type "radio"}
+             radio-attrs)]
+     (into [:div.clearfix.col-12]
+           content)]))
 
 (defn radio-group [{:keys [group-name keypath checked-value] :as attributes} options]
   [:div
