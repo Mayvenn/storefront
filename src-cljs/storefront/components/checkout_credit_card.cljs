@@ -69,7 +69,8 @@
   [{{:keys [focused
             selected-saved-card-id
             saved-cards
-            fetching-saved-cards?] :as credit-card} :credit-card
+            fetching-saved-cards?
+            loaded-stripe?] :as credit-card} :credit-card
     :as data}
    owner opts]
   (om/component
@@ -91,8 +92,9 @@
                               :required  true
                               :value     selected-saved-card-id})))
 
-        (when (or (empty? saved-cards)
-                  (= selected-saved-card-id "add-new-card"))
+        (when (and loaded-stripe?
+                   (or (empty? saved-cards)
+                       (= selected-saved-card-id "add-new-card")))
           (om/build new-card-component data opts))])])))
 
 (defn query [data]
@@ -104,7 +106,9 @@
                    :saved-cards            saved-cards
                    :fetching-saved-cards?  (and (utils/requesting? data request-keys/get-saved-cards)
                                                 (empty? saved-cards))
-                   :focused                (get-in data keypaths/ui-focus)}}))
+                   :focused                (get-in data keypaths/ui-focus)
+                   :loaded-stripe?           (and (get-in data keypaths/loaded-stripe-v2)
+                                                  (get-in data keypaths/loaded-stripe-v3))}}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
