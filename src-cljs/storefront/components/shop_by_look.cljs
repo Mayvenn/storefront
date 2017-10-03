@@ -15,19 +15,9 @@
       [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Get inspiration for your next hairstyle and shop your favorite looks from the #MayvennMade community."]]
-     [:div.container.clearfix.mtn2
-      (for [{:keys [id imgs] :as look} looks]
-        [:div
-         {:key id}
-         [:div.py2.col-12.col.hide-on-tb-dt {:key (str "small-" id)}
-          (ugc/image-thumbnail (:medium imgs))
-          (ugc/image-attribution look)]
-         [:div.p2.col.col-4.hide-on-mb {:key (str "large-" id)}
-          (ui/aspect-ratio
-           1 1
-           {:class "hoverable"}
-           (ugc/image-thumbnail (:medium imgs))
-           [:div.absolute.bottom-0.col-12.show-on-hover (ugc/image-attribution look)])]])]])))
+     (om/build ugc/component {:looks looks} {:opts {:copy {:short-name  "look"
+                                                           :button-copy "View this look"
+                                                           :back-copy   "back to shop by look"}}})])))
 
 (defn query [data]
   (let [looks (->> (pixlee/images-in-album (get-in data keypaths/ugc) :mosaic)
