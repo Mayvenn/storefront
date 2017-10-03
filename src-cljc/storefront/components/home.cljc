@@ -79,12 +79,12 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-category {:catalog/category-id "13" :page/slug "wigs"})
+    (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Shop-Now-SWITCH-Homepage"
-          alt       "The switch up. All wigs are here. Shop our looks."]
-      (hero-image {:mobile-url  "//ucarecdn.com/9234a801-6568-4a17-ae44-0eaa115ce4ab/"
-                   :desktop-url "//ucarecdn.com/80a162d6-848f-44e2-8cd0-4884ec92d581/"
+    (let [file-name "Shop-Now-SOUL-Homepage.png"
+          alt       "Fall in love with you! Shop our looks."]
+      (hero-image {:mobile-url  "//ucarecdn.com/d62c9741-aea0-4c5c-aa77-32369992adcb/"
+                   :desktop-url "//ucarecdn.com/2437a2cb-5549-4e37-adb9-7c9b7f7f5010/"
                    :file-name   file-name
                    :alt         alt}))]])
 
