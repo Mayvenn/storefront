@@ -67,6 +67,10 @@
     (facebook-analytics/track-custom-event "Lead_Self_Reg")
     (facebook-analytics/track-event "Lead")))
 
+(defmethod perform-track events/api-success-lead-registered
+  [_ _ _ _]
+  (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
+
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
