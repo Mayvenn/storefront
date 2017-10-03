@@ -76,7 +76,8 @@
    (ui/check-box {:data-test "referred"
                   :keypath   keypaths/stylist-referred
                   :label     "Yes, somebody referred me to Mayvenn"
-                  :value     referred})
+                  :value     referred
+                  :label-classes "h5"})
    (when referred
      (ui/text-field {:data-test "referrers-phone"
                      :errors    (get field-errors ["referrers-phone"])
