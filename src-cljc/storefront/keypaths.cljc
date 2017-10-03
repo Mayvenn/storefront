@@ -28,12 +28,13 @@
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
 (def order-shipping-address (conj order :shipping-address))
-
-(def stripe-card-element [:stripe :card-element])
-
 (def order-token (conj order :token))
 (def order-number (conj order :number))
 (def order-user (conj order :user))
+(def order-user-id (conj order-user :id))
+(def order-user-email (conj order-user :email))
+
+(def stripe-card-element [:stripe :card-element])
 
 (def completed-order [:completed-order])
 (def completed-order-number (conj completed-order :number))
