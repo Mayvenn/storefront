@@ -453,7 +453,7 @@
             authenticating? (nav/checkout-auth-events event)
             first-checkout-step? (= event events/navigate-checkout-address)]
         (when (or authenticated?
-                  authenticated?
+                  authenticating?
                   (and first-checkout-step? (not registered-user?)))
            (redirect events/navigate-checkout-returning-or-guest))))))
 
