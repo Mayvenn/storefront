@@ -11,6 +11,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.accessors.videos :as videos]
+            [leads.accessors :as leads.accessors]
             [storefront.components.money-formatters :as mf]
             [storefront.utils.query :as query]
             [clojure.string :as str]
@@ -56,13 +57,15 @@
                          :selected_option option}))
 
 (defmethod perform-track events/api-success-lead-created
-  [_ _ {:keys [first-name last-name email phone id]} _]
+  [_ _ {:keys [first-name last-name email phone id flow-id]} _]
   (stringer/track-event "lead_identified" {:lead_id    id
                                            :email      email
                                            :phone      phone
                                            :first_name first-name
                                            :last_name  last-name})
-  (facebook-analytics/track-event "Lead"))
+  (if (leads.accessors/self-reg? flow-id)
+    (facebook-analytics/track-custom-event "Lead_Self_Reg")
+    (facebook-analytics/track-event "Lead")))
 
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
