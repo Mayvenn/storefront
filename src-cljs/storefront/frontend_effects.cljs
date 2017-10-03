@@ -445,13 +445,8 @@
 
 (defmethod perform-effects events/navigate-checkout [_ event args _ app-state]
   (let [have-cart? (get-in app-state keypaths/order-number)]
-    (if-not have-cart?
-      (redirect events/navigate-cart)
-      (let [authenticated?  (or (get-in app-state keypaths/user-id)
-                                (get-in app-state keypaths/checkout-as-guest))
-            authenticating? (nav/checkout-auth-events event)]
-        (when-not (or authenticated? authenticating?)
-          (redirect events/navigate-checkout-returning-or-guest))))))
+    (when-not have-cart?
+      (redirect events/navigate-cart))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]
   (facebook/insert))
@@ -466,6 +461,8 @@
     (api/get-saved-cards user-id (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/navigate-checkout-address [_ event args _ app-state]
+  (when-not (get-in app-state keypaths/user-id)
+    (redirect events/navigate-checkout-returning-or-guest))
   (places-autocomplete/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
