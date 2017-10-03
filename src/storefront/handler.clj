@@ -288,7 +288,9 @@
 
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
-    (let [[nav-event params] nav-message]
+    (let [[nav-event params] nav-message
+          order-number (get-in req [:cookies "number" :value])
+          order-token (get-in req [:cookies "token" :value])]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
@@ -303,6 +305,7 @@
                                   (assoc-in keypaths/environment environment)
                                   experiments/determine-features
                                   (assoc-in keypaths/named-searches (api/named-searches storeback-config))
+                                  (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
                                   (assoc-in keypaths/categories categories/initial-categories)
                                   (assoc-in keypaths/static (static-page nav-event))
                                   (assoc-in keypaths/navigation-message nav-message))))
