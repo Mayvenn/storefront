@@ -147,21 +147,23 @@
    desirable to work with."
   (maps/index-by :catalog/product-id (map ->skuer-schema products)))
 
+(def normalize-sku-set-images-xf
+  (comp (mapcat :sku-set/images)
+        (map #(assoc % :id (str (:use-case %) "-" (:url %))))
+        (map #(assoc % :order (or (:order %)
+                                  (case (:image/of (:criteria/attributes %))
+                                    "model"   1
+                                    "product" 2
+                                    "seo"     3
+                                    "catalog" 4
+                                    5))))
+        (map #(merge % (:criteria/attributes %)))
+        (map #(dissoc % :criteria/attributes :filename))))
+
 (defmethod transition-state events/api-success-sku-sets
   [_ event {:keys [sku-sets skus] :as response} app-state]
   (-> app-state
       (update-in keypaths/db-images set/union
-                 (set (sequence (comp (mapcat :sku-set/images)
-                                      (map #(assoc % :id (str (:use-case %) "-" (:url %))))
-                                      (map #(assoc % :order (or (:order %)
-                                                                (case (:image/of (:criteria/attributes %))
-                                                                  "model"   1
-                                                                  "product" 2
-                                                                  "seo"     3
-                                                                  "catalog" 4
-                                                                  5))))
-                                      (map #(merge % (:criteria/attributes %)))
-                                      (map #(dissoc % :criteria/attributes :filename)))
-                                sku-sets)))
+                 (set (sequence normalize-sku-set-images-xf sku-sets)))
       (update-in keypaths/sku-sets merge (normalize-sku-sets sku-sets))
       (update-in keypaths/skus merge (normalize-skus skus))))

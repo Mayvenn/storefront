@@ -29,6 +29,7 @@
             [storefront.accessors
              [experiments :as experiments]
              [named-searches :as named-searches]]
+            [catalog.product-details :as product-details]
             [comb.template :as template]
             [spice.maps :refer [index-by]]
             [clojure.string :as str]
@@ -217,7 +218,6 @@
                        (:catalog/category-id category))
              (html-response render-ctx))))))
 
-;; images    (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
 
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
@@ -226,6 +226,7 @@
                                       page/slug]}]
   (let [product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
         sku-id    (product-details/determine-sku-id data product (:SKU params))
+        images    (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
         sku       (get-in data (conj keypaths/skus sku-id))
         redirect? (or (not= slug (:page/slug product))
                       (and sku-id (not sku)))
@@ -242,6 +243,7 @@
           (util.response/redirect path))
         (html-response render-ctx
                        (-> data
+                           (assoc-in keypaths/db-images images)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
                            (assoc-in catalog.keypaths/detailed-product-id product-id)
