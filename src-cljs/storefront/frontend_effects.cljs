@@ -447,11 +447,15 @@
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (if-not have-cart?
       (redirect events/navigate-cart)
-      (let [authenticated?  (or (get-in app-state keypaths/user-id)
-                                (get-in app-state keypaths/checkout-as-guest))
-            authenticating? (nav/checkout-auth-events event)]
-        (when-not (or authenticated? authenticating?)
-          (redirect events/navigate-checkout-returning-or-guest))))))
+      (let [registered-user? (get-in app-state keypaths/user-id)
+            authenticated?  (or registered-user?
+                                (get-in app-state keypaths/order-user-email))
+            authenticating? (nav/checkout-auth-events event)
+            first-checkout-step? (= event events/navigate-checkout-address)]
+        (when (or authenticated?
+                  authenticated?
+                  (and first-checkout-step? (not registered-user?)))
+           (redirect events/navigate-checkout-returning-or-guest))))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]
   (facebook/insert))
