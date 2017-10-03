@@ -251,25 +251,26 @@
    opts]
   (let [review?        (:review? reviews)]
     (component/create
-     [:div
-      (when (:offset ugc)
-        [:div.absolute.overlay.z4.overflow-auto
-         (component/build ugc/popup-component ugc opts)])
-      [:div.container.p2
-       (page
-        [:div
-         (carousel carousel-images product)
-         [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-        [:div
-         [:div.center
-          (title (:sku-set/name product))
-          (when review? (reviews-summary reviews opts))
-          [:meta {:item-prop "image" :content (first carousel-images)}]
-          (full-bleed-narrow (carousel carousel-images product))
-          (starting-at cheapest-price)]
-         (if (and fetching-product?
-                  (not product))
-           [:div.h2.mb2 ui/spinner]
+     (if-not product
+       [:div.flex.h2.p1.m1.items-center.justify-center
+        {:style {:height "25em"}}
+        (ui/large-spinner {:style {:height "4em"}})]
+       [:div
+        (when (:offset ugc)
+          [:div.absolute.overlay.z4.overflow-auto
+           (component/build ugc/popup-component ugc opts)])
+        [:div.container.p2
+         (page
+          [:div
+           (carousel carousel-images product)
+           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+          [:div
+           [:div.center
+            (title (:sku-set/name product))
+            (when review? (reviews-summary reviews opts))
+            [:meta {:item-prop "image" :content (first carousel-images)}]
+            (full-bleed-narrow (carousel carousel-images product))
+            (starting-at cheapest-price)]
            [:div
             [:div schema-org-offer-props
              [:div.my2
@@ -286,11 +287,11 @@
                                 selected-sku
                                 sku-quantity)
              (bagged-skus-and-checkout bagged-skus)
-             (when (products/stylist-only? product) shipping-and-guarantee)]])
-         (product-description product)
-         [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-       (when review?
-         (component/build review-component/reviews-component reviews opts))]])))
+             (when (products/stylist-only? product) shipping-and-guarantee)]]
+           (product-description product)
+           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+         (when review?
+           (component/build review-component/reviews-component reviews opts))]]))))
 
 (defn min-of-maps
   ([k] {})
@@ -365,24 +366,22 @@
   (assoc review-data :review? (products/eligible-for-reviews? product)))
 
 (defn query [data]
-  (let [selected-sku (get-in data catalog.keypaths/detailed-product-selected-sku)
-        criteria     (get-in data keypaths/bundle-builder-selections)
-        product      (products/current-product data)
-        product-skus (->> (selector/query (vals (get-in data keypaths/skus)) product)
-                          (sort-by :price))
-        facets       (->> (get-in data keypaths/facets)
-                          (map #(update % :facet/options (partial maps/index-by :option/slug)))
-                          (maps/index-by :facet/slug))
-
-        image-selector  (selector/map->Selector
-                         {:skuer      product
-                          :identifier :image-id
-                          :space      (get-in data keypaths/db-images)})
-        carousel-images (->> criteria
-                             (merge {:use-case "carousel"
-                                     :image/of #{"model" "product"}})
-                             (selector/select image-selector)
-                             (sort-by :order))
+  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
+        criteria        (get-in data keypaths/bundle-builder-selections)
+        product         (products/current-product data)
+        product-skus    (->> (selector/select (vals (get-in data keypaths/skus)) product)
+                             (sort-by :price))
+        facets          (->> (get-in data keypaths/facets)
+                             (map #(update % :facet/options (partial maps/index-by :option/slug)))
+                             (maps/index-by :facet/slug))
+        image-keys      (concat (:selector/electives product)
+                                (:selector/essentials product))
+        carousel-images (when selected-sku
+                          (->> (select-keys selected-sku image-keys)
+                               (merge {:use-case "carousel"
+                                       :image/of #{"model" "product"}})
+                               (selector/query (get-in data keypaths/db-images))
+                               (sort-by :order)))
         ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
@@ -472,9 +471,10 @@
   ;; for pre-selecting skus by url
   [_ event {:keys [skus] :as response} app-state]
   (let [product      (products/current-product app-state)
+        skus         (products/normalize-skus skus)
         sku-id       (determine-sku-id app-state product)
-        sku          (first (filter #(= (:sku %) sku-id) skus))
-        sku-criteria (select-keys (:attributes sku) [:hair/color :hair/length])]
+        sku          (get skus sku-id)
+        sku-criteria (select-keys sku [:hair/color :hair/length])]
     (cond-> app-state
       sku-criteria (update-in keypaths/bundle-builder-selections merge sku-criteria)
 

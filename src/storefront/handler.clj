@@ -316,14 +316,12 @@
                                      :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                                            first
                                                                                            (:criteria category)))
-                                    sku-sets         (map (fn [sku-set]
-                                                            (update sku-set :criteria/selectors (partial mapv keyword)))
-                                                          sku-sets)
+                                    sku-sets         (map products/->skuer-schema sku-sets)
                                     {:keys [facets]} (api/fetch-facets storeback-config)
                                     data             (-> data
                                                          (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
                                                          (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
-                                                         (update-in keypaths/skus merge (index-by :sku skus)))]
+                                                         (update-in keypaths/skus merge (products/normalize-skus skus)))]
                                 (assoc-in data
                                           keypaths/category-filters-for-browse
                                           (categories/make-category-filters data response)))))

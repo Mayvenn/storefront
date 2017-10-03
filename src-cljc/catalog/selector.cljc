@@ -26,28 +26,12 @@
     (sequence (criteria->query merged-criteria) coll)
     coll))
 
+(defn select [coll skuer & criteria]
+  (apply query coll (select-keys skuer (:selector/essentials skuer)) criteria))
+
 (defn images-matching-product [image-db product & criteria]
   (->> (apply query image-db
               (-> (:criteria/essential product)
                   (dissoc :hair/origin))
               criteria)
        (sort-by :order)))
-
-(defprotocol Selection
-  "Selects sku(er)s from a skuer"
-  (essentials [this])
-  (select-all [this])
-  (select [this user-selections]))
-
-(defrecord Selector [skuer identifier space]
-  Selection
-  (essentials [{:keys [skuer]}]
-    (select-keys skuer
-                 (:selector/essentials skuer)))
-  (select-all [this]
-    (->> (essentials this)
-         (query space)))
-  (select [this user-selections]
-    (query space
-           (merge user-selections
-                  (essentials this)))))
