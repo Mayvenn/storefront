@@ -217,13 +217,15 @@
                        (:catalog/category-id category))
              (html-response render-ctx))))))
 
+;; images    (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
+
 (defn render-product-details [{:keys [storeback-config] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [sku-id    (:SKU params)
-        product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
+  (let [product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
+        sku-id    (product-details/determine-sku-id data product (:SKU params))
         sku       (get-in data (conj keypaths/skus sku-id))
         redirect? (or (not= slug (:page/slug product))
                       (and sku-id (not sku)))
