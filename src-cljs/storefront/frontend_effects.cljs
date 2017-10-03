@@ -846,13 +846,9 @@
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
 (defmethod perform-effects events/api-success-auth [_ _ _ _ app-state]
-  (letfn [(fetch-most-recent-order [app-state]
-            (when-not (get-in app-state keypaths/order-number)
-              (refresh-current-order app-state)))]
-    (doto app-state
-      save-cookie
-      fetch-most-recent-order
-      redirect-to-return-navigation)))
+  (doto app-state
+    save-cookie
+    redirect-to-return-navigation))
 
 (defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _ app-state]
   (if (get-in app-state keypaths/telligent-community-url)
