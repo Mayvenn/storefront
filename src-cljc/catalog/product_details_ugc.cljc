@@ -42,13 +42,13 @@
      [:div.container-size.bg-cover.bg-no-repeat.bg-center
       {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
 
-(defn ^:private view-look-button [{{:keys [view-look view-other]} :links} nav-stack-item]
+(defn view-look-button [{{:keys [view-look view-other]} :links} nav-stack-item]
   (let [[nav-event nav-args] (or view-look view-other)]
     (ui/teal-button
      (util/route-to nav-event nav-args nav-stack-item)
      "View this look")))
 
-(defn ^:private user-attribution [{:keys [user-handle social-service]}]
+(defn user-attribution [{:keys [user-handle social-service]}]
   [:div.flex.items-center
    [:div.flex-auto.dark-gray.medium {:style {:word-break "break-all"}} "@" user-handle]
    [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
