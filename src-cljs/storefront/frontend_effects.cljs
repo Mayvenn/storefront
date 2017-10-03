@@ -180,13 +180,6 @@
                          (first (get-in app-state keypaths/order-promotion-codes))
                          (get-in app-state keypaths/pending-promo-code)))
 
-    (let [order-number   (get-in app-state keypaths/order-number)
-          loaded-order?  (boolean (get-in app-state (conj keypaths/order :total)))
-          checkout-page? (routes/sub-page? [event args] [events/navigate-checkout])]
-      (when (and order-number
-                 (or (not checkout-page?)
-                     (not loaded-order?)))
-        (api/get-order order-number (get-in app-state keypaths/order-token))))
     (seo/set-tags app-state)
     (when (or (not= event events/navigate-product-details)
               (not (:SKU query-params)))
