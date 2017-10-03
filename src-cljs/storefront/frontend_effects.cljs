@@ -475,6 +475,9 @@
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
+  ;; TODO: get the credit card component to function correctly on direct page load
+  (when (empty? (get-in app-state keypaths/order-cart-payments))
+    (redirect events/navigate-checkout-payment))
   (stripe/insert)
   (api/get-shipping-methods))
 
