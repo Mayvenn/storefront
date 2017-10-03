@@ -5,6 +5,7 @@
             [storefront.components.money-formatters
              :refer
              [as-money-without-cents-or-free]]
+            [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -21,21 +22,19 @@
      [:.h3 "Shipping Method"]
      [:.py1
       (for [{:keys [sku name price] :as shipping-method} shipping-methods]
-        [:label.flex.items-center.col-12.py1
-         {:key sku}
-         [:input.mx2.h2
-          (merge {:type         "radio"
-                  :name         "shipping-method"
-                  :id           (str "shipping-method-" sku)
-                  :data-test    "shipping-method"
-                  :data-test-id sku
-                  :on-click     (select-shipping-method shipping-method)}
-                 (when (= selected-sku sku) {:checked "checked"}))]
-         [:.clearfix.col-12
-          [:.right.ml1.medium {:class (if (pos? price) "navy" "teal")} (as-money-without-cents-or-free price)]
-          [:.overflow-hidden
-           [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-           [:.h6 (shipping/timeframe sku)]]]])]])))
+
+        (ui/radio-section
+         (merge {:key          sku
+                 :name         "shipping-method"
+                 :id           (str "shipping-method-" sku)
+                 :data-test    "shipping-method"
+                 :data-test-id sku
+                 :on-click     (select-shipping-method shipping-method)}
+                (when (= selected-sku sku) {:checked "checked"}))
+         [:.right.ml1.medium {:class (if (pos? price) "navy" "teal")} (as-money-without-cents-or-free price)] 
+         [:.overflow-hidden
+          [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
+          [:.h6 (shipping/timeframe sku)]]))]])))
 
 (defn query [data]
   {:shipping-methods (get-in data keypaths/shipping-methods)
