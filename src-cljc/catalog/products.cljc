@@ -113,6 +113,7 @@
   (maps/index-by :sku
                  (sequence (comp
                             (map #(assoc % :id (:slug %)))
+                            (map #(assoc % :selector/essentials (keys (:attributes %))))
                             (map #(merge % (:attributes %)))
                             (map #(dissoc % :attributes :images)))
                            skus)))

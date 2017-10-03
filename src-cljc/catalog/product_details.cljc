@@ -312,7 +312,7 @@
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
 
-(defn ^:private construct-option [option-kw facets criteria cheapest-for-option-kw cheapest-price options-for-option-kw sku]
+(defn ^:private construct-option [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
   (let [option-name  (option-kw sku)
         facet-option (get-in facets [option-kw :facet/options option-name])
         image        (:option/image facet-option)]
@@ -325,22 +325,22 @@
                :image       image
                :price       (:price sku)
                :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
-               :checked?    (= (option-kw criteria)
+               :checked?    (= (option-kw sku-skuer)
                                (option-kw sku))}))))
 (defn determine-relevant-skus
-  [skus criteria electives product-options]
+  [skus sku-skuer electives product-options]
   (selector/query skus
-                  (apply dissoc criteria
+                  (apply dissoc (select-keys sku-skuer (:selector/essentials sku-skuer))
                          (set/difference (set electives)
                                          (set (keys product-options))))))
 (defn skus->options
   "Reduces this product's skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [electives criteria facets skus product-options option-kw]
-  (let [relevant-skus          (determine-relevant-skus skus criteria electives product-options)
+  [electives sku-skuer facets skus product-options option-kw]
+  (let [relevant-skus          (determine-relevant-skus skus sku-skuer electives product-options)
         cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
         cheapest-price         (lowest-sku-price relevant-skus)
-        sku->option            (partial construct-option option-kw facets criteria cheapest-for-option-kw cheapest-price)]
+        sku->option            (partial construct-option option-kw facets sku-skuer cheapest-for-option-kw cheapest-price)]
     (merge product-options
            {option-kw (->> (reduce sku->option {} relevant-skus)
                            vals
@@ -357,8 +357,8 @@
        :offset (get-in data keypaths/ui-ugc-category-popup-offset)
        :back   (first (get-in data keypaths/navigation-undo-stack))})))
 
-(defn generate-options [facets product product-skus criteria]
-  (reduce (partial skus->options (:selector/electives product) criteria facets product-skus)
+(defn generate-options [facets product product-skus sku-skuer]
+  (reduce (partial skus->options (:selector/electives product) sku-skuer facets product-skus)
           {}
           (:selector/electives product)))
 
@@ -367,20 +367,16 @@
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        criteria        (get-in data keypaths/bundle-builder-selections)
         product         (products/current-product data)
         product-skus    (->> (selector/select (vals (get-in data keypaths/skus)) product)
                              (sort-by :price))
         facets          (->> (get-in data keypaths/facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
-        image-keys      (concat (:selector/electives product)
-                                (:selector/essentials product))
         carousel-images (when selected-sku
-                          (->> (select-keys selected-sku image-keys)
-                               (merge {:use-case "carousel"
-                                       :image/of #{"model" "product"}})
-                               (selector/query (get-in data keypaths/db-images))
+                          (->> {:use-case "carousel"
+                                :image/of #{"model" "product"}}
+                               (selector/select (get-in data keypaths/db-images) selected-sku)
                                (sort-by :order)))
         ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
@@ -390,7 +386,7 @@
      :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           (generate-options facets product product-skus criteria)
+     :options           (generate-options facets product product-skus selected-sku)
      :product           product
      :selected-sku      selected-sku
      :cheapest-price    (lowest-sku-price product-skus)
@@ -428,22 +424,12 @@
   [_ event {:keys [catalog/product-id page/slug query-params] :as b} app-state]
   (let [product  (products/product-by-id app-state product-id)
         sku-id   (determine-sku-id app-state product)
-        sku      (get-in app-state (conj keypaths/skus sku-id))
-        criteria (-> product ;; TODO use only criteria from the product (essential and elective)
-                     (merge (:attributes sku))
-                     (select-keys [:hair/length
-                                   :hair/texture
-                                   :hair/origin
-                                   :hair/color
-                                   :hair/base-material
-                                   :hair/family
-                                   :product/department]))]
+        sku      (get-in app-state (conj keypaths/skus sku-id))]
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/bundle-builder-selections criteria)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
 
@@ -475,20 +461,16 @@
         sku-id       (determine-sku-id app-state product)
         sku          (get skus sku-id)
         sku-criteria (select-keys sku [:hair/color :hair/length])]
-    (cond-> app-state
-      sku-criteria (update-in keypaths/bundle-builder-selections merge sku-criteria)
-
-      true
-      (assoc-in catalog.keypaths/detailed-product-selected-sku sku))))
+    (assoc-in app-state catalog.keypaths/detailed-product-selected-sku sku)))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
     (first coll)))
 
 (defn determine-sku-from-selections [app-state]
-  (let [skus       (vals (get-in app-state keypaths/skus))
-        selections (get-in app-state keypaths/bundle-builder-selections)
-        selected-sku (selector/query skus selections)]
+  (let [skus         (vals (get-in app-state keypaths/skus))
+        selections   (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        selected-sku (selector/select skus selections)]
     (first-when-only selected-sku)))
 
 (defn assoc-sku-from-selections [app-state]
@@ -502,22 +484,22 @@
       :hair/length))
 
 (defn determine-selected-length [app-state selected-option]
-  (let [skus            (vals (get-in app-state keypaths/skus))
-        selections      (cond-> (get-in app-state keypaths/bundle-builder-selections)
-                          (= selected-option :hair/color)
-                          (dissoc :hair/length))]
-    (determine-cheapest-length (selector/query skus selections))))
+  (let [skus       (vals (get-in app-state keypaths/skus))
+        selections (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+                     (= selected-option :hair/color)
+                     (dissoc :hair/length))]
+    (determine-cheapest-length (selector/select skus selections))))
 
 (defn assoc-default-length [app-state selected-option]
-  (assoc-in app-state (conj keypaths/bundle-builder-selections :hair/length)
+  (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)
             (determine-selected-length app-state selected-option)))
 
 (defmethod transitions/transition-state events/control-bundle-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
-    (assoc-in (conj keypaths/bundle-builder-selections selection) value)
-    (assoc-default-length selection)
-    assoc-sku-from-selections))
+      (assoc-in (conj catalog.keypaths/detailed-product-selected-sku selection) value)
+      (assoc-default-length selection)
+      assoc-sku-from-selections))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-bundle-option-select

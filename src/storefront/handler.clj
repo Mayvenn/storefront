@@ -246,8 +246,7 @@
                            (assoc-in keypaths/db-images images)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
-                           (assoc-in catalog.keypaths/detailed-product-id product-id)
-                           (assoc-in keypaths/bundle-builder-selections criteria)))))))
+                           (assoc-in catalog.keypaths/detailed-product-id product-id)))))))
 
 (defn- redirect-if-necessary [render-ctx data event]
   (if (not= (get-in data keypaths/navigation-event) event)

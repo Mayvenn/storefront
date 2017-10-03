@@ -106,8 +106,6 @@
      :api-cache {}
      :ugc {}
 
-     :bundle-builder-selections {}
-
      :category-filters {}
 
      :billing-address {:firstname ""
