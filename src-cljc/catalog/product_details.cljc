@@ -267,7 +267,8 @@
           [:meta {:item-prop "image" :content (first carousel-images)}]
           (full-bleed-narrow (carousel carousel-images product))
           (starting-at cheapest-price)]
-         (if fetching-product?
+         (if (and fetching-product?
+                  (not product))
            [:div.h2.mb2 ui/spinner]
            [:div
             [:div schema-org-offer-props
