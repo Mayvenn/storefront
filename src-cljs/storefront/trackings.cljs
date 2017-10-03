@@ -61,7 +61,8 @@
                                            :email      email
                                            :phone      phone
                                            :first_name first-name
-                                           :last_name  last-name}))
+                                           :last_name  last-name})
+  (facebook-analytics/track-event "Lead"))
 
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
