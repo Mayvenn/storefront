@@ -8,7 +8,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.auth :as auth]))
 
 (defn component [{:keys [facebook-loaded? address]} owner]
   (om/component
@@ -44,9 +45,8 @@
 (defn built-component [data opts]
   (om/build component (query data) opts))
 
-(defn requires-sign-in-or-guest [authorized-component data opts]
-  (if (or (get-in data keypaths/user-id)
-          (get-in data keypaths/checkout-as-guest))
+(defn requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
+  (if (auth/signed-in-or-initiated-guest-checkout? data)
     (authorized-component data nil)
     ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
     [:div.h1.my4 ui/spinner]))

@@ -8,6 +8,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [catalog.categories :as categories]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
@@ -458,7 +459,11 @@
 (defmethod perform-effects events/navigate-checkout [_ event args _ app-state]
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (when-not have-cart?
-      (redirect events/navigate-cart))))
+      (redirect events/navigate-cart))
+    (when (and have-cart?
+               (not (auth/signed-in-or-initiated-guest-checkout? app-state))
+               (not= event events/navigate-checkout-address))
+      (redirect events/navigate-checkout-address))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]
   (facebook/insert))

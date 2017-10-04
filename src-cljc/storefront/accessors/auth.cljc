@@ -26,3 +26,7 @@
   (if (-> product :product/department set (contains? "stylist-exclusives"))
     (stylist? (signed-in data))
     true))
+
+(defn signed-in-or-initiated-guest-checkout? [data]
+  (or (get-in data keypaths/user-id)
+      (get-in data keypaths/order-user-email)))
