@@ -89,48 +89,60 @@
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)
          :data-test "payment-form"}
-        (ui/radio-section
-         (merge {:name         "payment-method"
-                 :id           "payment-method-credit-card"
-                 :data-test    "payment-method"
-                 :data-test-id "credit-card"
-                 :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
-                (when (set/subset? selected-payment-methods #{:stripe :store-credit}) {:checked "checked"}))
-         [:div.overflow-hidden
-          [:div "Pay with Credit/Debit Card"]
-          [:p.h6 "All transactions are secure and encrypted."]])
 
-        (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
-          [:div.p2
-           (when (pos? credit-available)
-             (ui/note-box
-              {:color     "teal"
-               :data-test "store-credit-note"}
-              [:.p2.navy
-               [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-               (when-not fully-covered?
-                 [:.h6.mt1
-                  "Please enter an additional payment method below for the remaining total on your order."])]))
+        (let [{:keys [credit-applicable fully-covered?]} store-credit
+              selected-stripe-or-store-credit? (and (seq selected-payment-methods)
+                                                    (set/subset? selected-payment-methods #{:stripe :store-credit}))
+              selected-affirm? (contains? selected-payment-methods :affirm)]
+          (if fully-covered?
+            (ui/note-box
+             {:color     "teal"
+              :data-test "store-credit-note"}
+             [:.p2.navy
+              [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
 
-           (when-not fully-covered?
-             [:div
-              (om/build cc/component
-                        {:credit-card  credit-card
-                         :field-errors field-errors})
-              [:div.h5
-               "You can review your order on the next page before we charge your card."]])])
-        (ui/radio-section
-         (merge {:name         "payment-method"
-                 :id           "payment-method-affirm"
-                 :data-test    "payment-method"
-                 :data-test-id "affirm"
-                 :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :affirm})}
-                (when (contains? selected-payment-methods :affirm) {:checked "checked"}))
-         [:div.overflow-hidden
-          [:div "Pay with " [:img {:alt "Affirm"}]]
-          [:p.h6 "Make easy monthly payments over 3, 6, or 12 months. "
-           [:a {:href "https://google.com"} "Learn more."]]
-          [:p.h6.dark-gray "*Promotion codes excluded with Affirm."]])
+            [:div
+             (ui/radio-section
+              (merge {:name         "payment-method"
+                      :id           "payment-method-credit-card"
+                      :data-test    "payment-method"
+                      :data-test-id "credit-card"
+                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
+                     (when selected-stripe-or-store-credit? {:checked "checked"}))
+              [:div.overflow-hidden
+               [:div "Pay with Credit/Debit Card"]
+               [:p.h6 "All transactions are secure and encrypted."]])
+
+             (when selected-stripe-or-store-credit?
+               (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
+                 [:div.p2
+                  (when (pos? credit-available)
+                    (ui/note-box
+                     {:color     "teal"
+                      :data-test "store-credit-note"}
+                     [:.p2.navy
+                      [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                      [:.h6.mt1
+                       "Please enter an additional payment method below for the remaining total on your order."]]))
+
+                  [:div
+                   (om/build cc/component
+                             {:credit-card  credit-card
+                              :field-errors field-errors})
+                   [:div.h5
+                    "You can review your order on the next page before we charge your card."]]]))
+             (ui/radio-section
+              (merge {:name         "payment-method"
+                      :id           "payment-method-affirm"
+                      :data-test    "payment-method"
+                      :data-test-id "affirm"
+                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :affirm})}
+                     (when selected-affirm? {:checked "checked"}))
+              [:div.overflow-hidden
+               [:div "Pay with " [:img {:alt "Affirm"}]]
+               [:p.h6 "Make easy monthly payments over 3, 6, or 12 months. "
+                [:a {:href "https://google.com"} "Learn more."]]
+               [:p.h6.dark-gray "*Promotion codes excluded with Affirm."]])]))
 
         (when loaded-stripe?
           [:div.my2.col-6-on-tb-dt.mx-auto
