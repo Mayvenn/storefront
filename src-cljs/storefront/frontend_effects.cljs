@@ -170,6 +170,16 @@
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
   (apply history/enqueue-redirect nav-message))
 
+(defn save-cookie [app-state]
+  (cookie-jar/save-order (get-in app-state keypaths/cookie)
+                         (get-in app-state keypaths/order))
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user)))
+
+(defn add-pending-promo-code [app-state {:keys [number token] :as order}]
+  (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
+    (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
+
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} _ app-state]
   (let [args (dissoc args :nav-stack-item)]
@@ -195,6 +205,15 @@
        (get-in app-state keypaths/cookie)
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
+
+    (let [order (get-in app-state keypaths/order)]
+      (ensure-products app-state (map :product-id (orders/product-items order)))
+      (if (orders/incomplete? order)
+        (do
+          (save-cookie app-state)
+          (add-pending-promo-code app-state order))
+        (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
+
 
     (if (routes/sub-page? [event args] [events/navigate-leads])
       (let [utm-params (some-> query-params
@@ -616,12 +635,6 @@
                                (get-in app-state keypaths/order-number)
                                (get-in app-state keypaths/order-token)))
 
-(defn save-cookie [app-state]
-    (cookie-jar/save-order (get-in app-state keypaths/cookie)
-                           (get-in app-state keypaths/order))
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user)))
-
 (defmethod perform-effects events/control-account-profile-submit [_ event args _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (api/update-account (get-in app-state keypaths/session-id)
@@ -907,20 +920,6 @@
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args _ app-state]
   (handle-later events/control-popup-hide {} 2000))
-
-(defn add-pending-promo-code [app-state {:keys [number token] :as order}]
-  (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
-    (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
-
-(defmethod perform-effects events/api-success-get-order [_ event order _ app-state]
-  (ensure-products app-state (map :product-id (orders/product-items order)))
-  (if (and (orders/incomplete? order)
-           (= (:number order)
-              (get-in app-state keypaths/order-number)))
-    (do
-      (save-cookie app-state)
-      (add-pending-promo-code app-state order))
-    (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   (handle-message events/order-completed order))

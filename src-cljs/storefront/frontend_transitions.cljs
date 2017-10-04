@@ -102,6 +102,25 @@
     (nav/auth-events (get-in app-state keypaths/navigation-event))
     (assoc-in keypaths/completed-order nil)))
 
+(defn prefill-guest-email-address [app-state]
+  (update-in app-state keypaths/checkout-guest-email
+             #(or (not-empty %1) %2 %3)
+             (get-in app-state keypaths/order-user-email)
+             (get-in app-state keypaths/captured-email)))
+
+(defn update-state-from-order [app-state]
+  (let [order (get-in app-state keypaths/order)]
+    (if (orders/incomplete? order)
+      (-> app-state
+          (update-in keypaths/checkout-billing-address merge (:billing-address order))
+          (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
+          (assoc-in keypaths/order order)
+          (assoc-in keypaths/checkout-selected-shipping-method
+                    (merge (first (get-in app-state keypaths/shipping-methods))
+                           (orders/shipping-item order)))
+          prefill-guest-email-address)
+      (assoc-in app-state keypaths/order nil))))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)]
     (-> app-state
@@ -116,6 +135,7 @@
         (assoc-in keypaths/flash-later-failure nil)
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
         ;; order is important from here on
+        update-state-from-order
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
 
@@ -209,12 +229,6 @@
       (assoc-in keypaths/checkout-selected-shipping-method
                 (merge (first (get-in app-state keypaths/shipping-methods))
                        (orders/shipping-item (:order app-state))))))
-
-(defn prefill-guest-email-address [app-state]
-  (update-in app-state keypaths/checkout-guest-email
-             #(or (not-empty %1) %2 %3)
-             (get-in app-state keypaths/order-user-email)
-             (get-in app-state keypaths/captured-email)))
 
 (defmethod transition-state events/navigate-checkout-address [_ event args app-state]
   (prefill-guest-email-address app-state))
@@ -496,17 +510,7 @@
       clear-flash
       (assoc-in keypaths/popup nil)))
 
-(defmethod transition-state events/api-success-get-order [_ event order app-state]
-  (if (orders/incomplete? order)
-    (-> app-state
-        (update-in keypaths/checkout-billing-address merge (:billing-address order))
-        (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-        (assoc-in keypaths/order order)
-        (assoc-in keypaths/checkout-selected-shipping-method
-                  (merge (first (get-in app-state keypaths/shipping-methods))
-                         (orders/shipping-item order)))
-        prefill-guest-email-address)
-    (assoc-in app-state keypaths/order nil)))
+
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
