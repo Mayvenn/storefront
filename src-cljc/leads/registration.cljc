@@ -229,18 +229,18 @@
   (component/create
    [:div.bg-teal.white.pb4
     [:div.max-580.mx-auto
-     [:div.registration-header
-      [:div.center.mb3
+     [:div.px4.registration-header.medium
+      [:div.h5.center.mb3
        [:img.my2 {:src (assets/path "/images/leads/logo-knockout.png")}]
-       [:h1.mb3 "Join The Mayvenn Movement"]
+       [:h1.h2.mb3 "Join The Mayvenn Movement"]
        "Mayvenn empowers hairstylists to sell directly to their"
        " clients, build their brands, and grow their income. Apply"
        " today! We'll set you up with a FREE online store, plus:"]
-      [:ul.ml1
-       [:li "15% commission earned from each sale you make through your Mayvenn store"]
-       [:li "Access to Mayvenn's exclusive community for hairstylists and beauty professionals"]
-       [:li "Personalized marketing content provided every month to help you promote your business"]
-       [:li "A personal sales rep for you, plus the industry’s best customer support for your clients"]]]
+      [:ul.h5.pl4
+       [:li.my2 "15% commission earned from each sale you make through your Mayvenn store"]
+       [:li.my2 "Access to Mayvenn's exclusive community for hairstylists and beauty professionals"]
+       [:li.my2 "Personalized marketing content provided every month to help you promote your business"]
+       [:li.my2 "A personal sales rep for you, plus the industry’s best customer support for your clients"]]]
      [:div.bg-white.black.p4.my4
       [:div.center.pb2 "Ready to join the movement?"
        [:br]
