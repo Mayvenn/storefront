@@ -253,25 +253,6 @@
     (util.response/redirect (routes/path-for event))
     (html-response render-ctx data)))
 
-(defn render-leads-page [render-ctx data req params]
-  (let [step-id (get-in data leads.keypaths/lead-step-id)]
-    (redirect-if-necessary render-ctx data
-                           (cond
-                             (not (get-in data leads.keypaths/lead-id))
-                             events/navigate-leads-home
-
-                             (not (get-in data leads.keypaths/lead-flow-id))
-                             events/navigate-leads-resolve
-
-                             (= "details" step-id)
-                             events/navigate-leads-registration-details
-
-                             (= "thank-you" step-id)
-                             events/navigate-leads-registration-resolve
-
-                             :else
-                             (throw (ex-info "Unknown step-id" {:step-id step-id}))))))
-
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
 
@@ -355,22 +336,20 @@
                           "Disallow: /admin"
                           "Disallow: /content"])
 (def server-render-pages
-  {events/navigate-home                       generic-server-render
-   events/navigate-category                   render-category
-   events/navigate-legacy-named-search        redirect-named-search
-   events/navigate-product-details            render-product-details
-   events/navigate-content-help               generic-server-render
-   events/navigate-content-about-us           generic-server-render
-   events/navigate-content-privacy            generic-server-render
-   events/navigate-content-tos                generic-server-render
-   events/navigate-content-guarantee          generic-server-render
-   events/navigate-content-ugc-usage-terms    generic-server-render
-   events/navigate-content-program-terms      generic-server-render
-   events/navigate-gallery                    generic-server-render
-   events/navigate-leads-home                 render-leads-page
-   events/navigate-leads-registration-details render-leads-page
-   events/navigate-leads-registration-resolve render-leads-page
-   events/navigate-leads-resolve              render-leads-page})
+  {events/navigate-home                    generic-server-render
+   events/navigate-category                render-category
+   events/navigate-legacy-named-search     redirect-named-search
+   events/navigate-product-details         render-product-details
+   events/navigate-content-help            generic-server-render
+   events/navigate-content-about-us        generic-server-render
+   events/navigate-content-privacy         generic-server-render
+   events/navigate-content-tos             generic-server-render
+   events/navigate-content-guarantee       generic-server-render
+   events/navigate-content-ugc-usage-terms generic-server-render
+   events/navigate-content-program-terms   generic-server-render
+   events/navigate-gallery                 generic-server-render
+   events/navigate-leads-home              generic-server-render
+   events/navigate-leads-resolve           generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
   (cond
@@ -489,10 +468,12 @@
                                         (let [cookies     (get request :cookies)
                                               lead-id     (get-in cookies ["lead-id" :value])
                                               remote-lead (api/lookup-lead storeback-config lead-id)]
-                                          (-> data
-                                              (assoc-in leads.keypaths/remote-lead remote-lead)
-                                              (update-in leads.keypaths/lead merge remote-lead))))))]
-        ((server-render-pages nav-event) render-ctx data request nav-args)))))
+                                          (if (:flow-id remote-lead) ;; if in self-reg
+                                            (-> data
+                                                (assoc-in leads.keypaths/remote-lead remote-lead)
+                                                (update-in leads.keypaths/lead merge remote-lead))
+                                            data)))))]
+        ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
 
 (defn wrap-welcome-is-for-leads [h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
