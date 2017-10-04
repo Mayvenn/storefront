@@ -276,12 +276,13 @@
      custom-select-dropdown]))
 
 (defn select-field [{:keys [label keypath value options errors data-test div-attrs] :as select-attributes}]
-  (let [error (first errors)]
-    [:div.col-12.mb2.stacking-context
-     div-attrs
-     (plain-select-field label keypath value options (not (nil? error))
-                         (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
-     (field-error-message error data-test)]))
+  (when (seq options) ;; Hacky fix to get around React not invalidating the element if only options change
+    (let [error (first errors)]
+      [:div.col-12.mb2.stacking-context
+       div-attrs
+       (plain-select-field label keypath value options (not (nil? error))
+                           (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
+       (field-error-message error data-test)])))
 
 (defn check-box [{:keys [label keypath value label-classes disabled] :as attributes}]
   [:div.col-12.mb2
