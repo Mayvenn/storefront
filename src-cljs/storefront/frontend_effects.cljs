@@ -215,7 +215,6 @@
           (add-pending-promo-code app-state order))
         (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
-
     (if (routes/sub-page? [event args] [events/navigate-leads])
       (let [utm-params (some-> query-params
                                (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
