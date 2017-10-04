@@ -475,7 +475,6 @@
     (with-standalone-server [storeback (standalone-server handler)]
       (with-handler handler
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/sitemap.xml"))]
-          #_(prn "DATA" (txfm-requests requests identity))
           (is (= 200 (:status resp))))))))
 
 (deftest sitemap-does-not-exist-on-root-domain
