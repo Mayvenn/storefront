@@ -463,7 +463,7 @@
 
 (deftest redirects-product-details-sku-to-sku-in-query-params
   (with-handler handler
-    (let [resp (handler (mock/request :get "http://bob.storefront.dev/products/12-indian-straight-bundles/INSDB14"))]
+    (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/12-indian-straight-bundles/INSDB14"))]
       (is (= 301 (:status resp)))
       (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
              (get-in resp [:headers "Location"]))))))
