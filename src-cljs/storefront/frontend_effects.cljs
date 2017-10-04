@@ -207,7 +207,7 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
-    (let [order (get-in app-state keypaths/order)]
+    (when-let [order (get-in app-state keypaths/order)]
       (ensure-products app-state (map :product-id (orders/product-items order)))
       (if (orders/incomplete? order)
         (do
@@ -461,7 +461,7 @@
       (redirect events/navigate-cart))
     (when (and have-cart?
                (not (auth/signed-in-or-initiated-guest-checkout? app-state))
-               (not= event events/navigate-checkout-address))
+               (not (#{events/navigate-checkout-address events/navigate-checkout-returning-or-guest events/navigate-checkout-sign-in} event)))
       (redirect events/navigate-checkout-address))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]
