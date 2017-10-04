@@ -976,6 +976,11 @@
   (add-pending-promo-code app-state (get-in app-state keypaths/order))
   (handle-later events/added-to-bag))
 
+(defmethod perform-effects events/api-success-add-sku-to-bag [dispatch event args _ app-state]
+  (save-cookie app-state)
+  (add-pending-promo-code app-state (get-in app-state keypaths/order))
+  (handle-later events/added-to-bag))
+
 (defmethod perform-effects events/added-to-bag [_ _ _ _ app-state]
   (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
     (scroll/scroll-to-elem el)))
