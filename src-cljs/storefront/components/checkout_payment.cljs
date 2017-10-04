@@ -55,7 +55,7 @@
 
           (when-not fully-covered?
             [:div
-             [:div.h3 "Payment Information"]
+             [:div.h3.mt1 "Payment Information"]
              (om/build cc/component
                        {:credit-card  credit-card
                         :field-errors field-errors})
@@ -85,8 +85,8 @@
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container
-      [:div.py1
-       [:h3 "Payment Information"]
+      [:div.m2
+       [:h3.my2 "Payment Information"]
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-payment-method-submit)
          :data-test "payment-form"}
@@ -142,14 +142,17 @@
               [:div.overflow-hidden
                [:div "Pay with " [:img {:alt "Affirm"}]]
                [:p.h6 "Make easy monthly payments over 3, 6, or 12 months. "
-                [:a {:href "https://google.com"} "Learn more."]]
-               [:p.h6.dark-gray "*Promotion codes excluded with Affirm."]])]))
+                [:a {:href "https://google.com"} "Learn more."]]])
+
+             (when selected-affirm?
+               [:div.h6.px2.ml4.dark-gray
+                "Before completing your purchase, you will be redirected to Affirm to securely set up your payment plan."])]))
 
         (when loaded-stripe?
-          [:div.my2.col-6-on-tb-dt.mx-auto
-           (ui/submit-button "Go to Review Order" {:spinning? saving?
-                                                   :disabled? disabled?
-                                                   :data-test "payment-form-submit"})])]])])))
+          [:div.my4.col-6-on-tb-dt.mx-auto
+           (ui/submit-button "Review Order" {:spinning? saving?
+                                             :disabled? disabled?
+                                             :data-test "payment-form-submit"})])]])])))
 
 (defn query [data]
   (let [available-store-credit (get-in data keypaths/user-total-available-store-credit)
