@@ -175,6 +175,7 @@
 (defpath control-checkout-update-addresses-submit)
 (defpath control-checkout-shipping-method-select)
 (defpath control-checkout-payment-method-submit)
+(defpath control-checkout-choose-payment-method-submit)
 (defpath control-checkout-payment-select)
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)

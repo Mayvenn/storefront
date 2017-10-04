@@ -817,6 +817,7 @@
                        (get-in app-state (conj keypaths/order :billing-address))
                        args))
 
+;; TODO: GROT when affirm? experiment succeeds
 (defmethod perform-effects events/control-checkout-payment-method-submit [_ event args _ app-state]
   (handle-message events/flash-dismiss)
   (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))

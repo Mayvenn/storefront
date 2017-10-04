@@ -245,6 +245,7 @@
 (defmethod transition-state events/navigate-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))
 
+;; TODO: GROT when affirm? experiment succeeds
 (defmethod transition-state events/control-checkout-payment-method-submit [_ _ _ app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
             (orders/form-payment-methods (get-in app-state keypaths/order-total)
