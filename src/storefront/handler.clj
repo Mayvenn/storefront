@@ -253,6 +253,41 @@
     (util.response/redirect (routes/path-for event))
     (html-response render-ctx data)))
 
+(defn render-leads-page
+  "
+   Redirect Rules:
+     -> details       => redir to home             if no lead-id
+     -> details       => redir to home             if step-id != 'details'
+     -> reg-thank-you => redir to home             if step-id != 'thank-you'
+     -> thank-you     => allow                     if no step-id
+     -> thank-you     => redir to home             if step-id != step-id-for-reg-thank-you
+     -> thank-you     => redir to reg-thank-you    if step-id  = step-id-for-reg-thank-you
+  "
+  [render-ctx data req params]
+  (let [lead-id       (get-in data leads.keypaths/lead-id)
+        step-id       (get-in data leads.keypaths/lead-step-id)
+        step-id-for-reg-thank-you "thank-you"
+        nav-event     (get-in data keypaths/navigation-event)
+        home          events/navigate-leads-home
+        details       events/navigate-leads-registration-details
+        thank-you     events/navigate-leads-resolve
+        reg-thank-you events/navigate-leads-registration-resolve]
+    (redirect-if-necessary render-ctx data
+                           (cond
+                             (and (= nav-event details)
+                                  (empty? lead-id))                         home
+                             (and (= nav-event details)
+                                  (not= step-id "details"))                 home
+                             (and (= nav-event reg-thank-you)
+                                  (not= step-id "thank-you"))               home
+                             (and (= nav-event thank-you)
+                                  (empty? step-id))                         nav-event
+                             (and (= nav-event thank-you)
+                                  (not= step-id step-id-for-reg-thank-you)) home
+                             (and (= nav-event step-id-for-reg-thank-you)
+                                  (= step-id "thank-you"))                  reg-thank-you
+                             :else                                          nav-event))))
+
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
 
@@ -337,20 +372,22 @@
                           "Disallow: /admin"
                           "Disallow: /content"])
 (def server-render-pages
-  {events/navigate-home                    generic-server-render
-   events/navigate-category                render-category
-   events/navigate-legacy-named-search     redirect-named-search
-   events/navigate-product-details         render-product-details
-   events/navigate-content-help            generic-server-render
-   events/navigate-content-about-us        generic-server-render
-   events/navigate-content-privacy         generic-server-render
-   events/navigate-content-tos             generic-server-render
-   events/navigate-content-guarantee       generic-server-render
-   events/navigate-content-ugc-usage-terms generic-server-render
-   events/navigate-content-program-terms   generic-server-render
-   events/navigate-gallery                 generic-server-render
-   events/navigate-leads-home              generic-server-render
-   events/navigate-leads-resolve           generic-server-render})
+  {events/navigate-home                       generic-server-render
+   events/navigate-category                   render-category
+   events/navigate-legacy-named-search        redirect-named-search
+   events/navigate-product-details            render-product-details
+   events/navigate-content-help               generic-server-render
+   events/navigate-content-about-us           generic-server-render
+   events/navigate-content-privacy            generic-server-render
+   events/navigate-content-tos                generic-server-render
+   events/navigate-content-guarantee          generic-server-render
+   events/navigate-content-ugc-usage-terms    generic-server-render
+   events/navigate-content-program-terms      generic-server-render
+   events/navigate-gallery                    generic-server-render
+   events/navigate-leads-home                 render-leads-page
+   events/navigate-leads-registration-details render-leads-page
+   events/navigate-leads-registration-resolve render-leads-page
+   events/navigate-leads-resolve              render-leads-page})
 
 (defn robots [{:keys [subdomains]}]
   (cond
@@ -468,7 +505,8 @@
                                      ((fn [data]
                                         (let [cookies     (get request :cookies)
                                               lead-id     (get-in cookies ["lead-id" :value])
-                                              remote-lead (api/lookup-lead storeback-config lead-id)]
+                                              remote-lead (when (seq lead-id)
+                                                            (api/lookup-lead storeback-config lead-id))]
                                           (if (:flow-id remote-lead) ;; if in self-reg
                                             (-> data
                                                 (assoc-in leads.keypaths/remote-lead remote-lead)
