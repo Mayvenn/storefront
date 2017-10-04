@@ -271,7 +271,8 @@
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
           order-number (get-in req [:cookies "number" :value])
-          order-token (get-in req [:cookies "token" :value])]
+          order-token (some-> (get-in req [:cookies "token" :value])
+                              (string/replace #" " "+"))]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment

@@ -3,6 +3,7 @@
             [clojure
              [string :as string]
              [test :refer :all]]
+            [compojure.core :refer :all]
             [com.stuartsierra.component :as component]
             [ring.mock.request :as mock]
             [ring.util
@@ -19,6 +20,9 @@
                      :dc-logo-config   {:endpoint "https://logo.server/?m=100"}
                      :storeback-config {:endpoint          "http://localhost:4334/"
                                         :internal-endpoint "http://localhost:4334/"}})
+
+(defn set-cookies [req cookies]
+  (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
 
 (def storeback-no-stylist-response
   (-> (response "{}")
@@ -410,9 +414,7 @@
                                                           :body    "{}"}))]
       (with-standalone-server [waiter (standalone-server waiter-handler)]
         (with-handler handler
-          (let [set-cookies (fn [req cookies]
-                              (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
-                resp        (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
+          (let [resp        (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
                                 (set-cookies {":storefront/utm-source"   "source"
                                               ":storefront/utm-campaign" "campaign"
                                               ":storefront/utm-term"     "term"
@@ -467,6 +469,31 @@
       (is (= 301 (:status resp)))
       (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
              (get-in resp [:headers "Location"]))))))
+
+(deftest server-side-fetching-of-orders
+  (testing "storefront retrieves an order from storeback"
+    (let [number "W123456"
+          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
+          [storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                      (GET "/v2/orders/:number" req {:status 200
+                                                                                                     ;; TODO: fixme
+                                                                                                     :body "{\"number\": \"W123456\"}"})
+                                                                      (GET "/named-searches" req {:status 200
+                                                                                                  :body "{}"})
+                                                                      (GET "/store" req storeback-stylist-response)))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)]
+        (with-handler handler
+          (let [resp (handler (-> (mock/request :get "https://bob.mayvenn.com/")
+                                  (set-cookies {":number" number
+                                                ":token"  token})))]
+            (is (= 200 (:status resp)))
+            (is (.contains (:body resp) "W123456") (pr-str resp))
+
+            (testing "storefront properly reads order tokens with pluses in them"
+              (let [requests (txfm-requests storeback-requests identity)
+                    waiter-request (nth requests 2)]
+                (is (= "/v2/orders/W123456" (:uri waiter-request)))
+                (is (= {"token" token} (:query-params waiter-request)))))))))))
 
 (deftest sitemap-on-a-valid-store-domain
   (let [[requests handler] (with-requests-chan (constantly {:status 200
