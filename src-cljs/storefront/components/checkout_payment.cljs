@@ -55,6 +55,7 @@
 
           (when-not fully-covered?
             [:div
+             [:div.h3 "Payment Information"]
              (om/build cc/component
                        {:credit-card  credit-card
                         :field-errors field-errors})

@@ -76,10 +76,9 @@
   (om/component
    (html
     [:div
-     [:div.h3.my2 "Payment Information"]
      (if fetching-saved-cards?
        (ui/large-spinner {:style {:height "4em"}})
-       [:div
+       [:div.my2
         (when (seq saved-cards)
           (let [card-options (conj (mapv (juxt cc/display-credit-card :id) saved-cards)
                                    ["Add a new payment card" "add-new-card"])]
