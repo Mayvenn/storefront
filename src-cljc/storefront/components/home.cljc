@@ -12,7 +12,8 @@
             [storefront.components.svg :as svg]
             [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
-            [storefront.platform.messages :refer [handle-message]]))
+            [storefront.platform.messages :refer [handle-message]]
+            [storefront.config :as config]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -112,14 +113,14 @@
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 186605502})
+     (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
      (feature-image {:mobile-url  "//ucarecdn.com/7d82c10a-6842-4a5c-85da-3f48767bc7f6/"
                      :desktop-url "//ucarecdn.com/9a15f816-5946-44ea-ba27-822c124db114/"
                      :file-name   "Shop-Water-Wave-Hair-14-inch-3-Bundle-Deal.png"
                      :alt         "Shop Water Wave Hair 14 inch 3 Bundle Deal"})]]
    [:div.col.col-6.border.border-white
     [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id 191946859})
+     (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})
      (feature-image {:mobile-url  "//ucarecdn.com/26f43d6f-3c93-4888-8e51-bf72baa734f2/"
                      :desktop-url "//ucarecdn.com/489702c5-e96d-45b1-8f85-2198a1bbef83/"
                      :file-name   "Shop-Yaki-Straight-Hair-10-inch-3-Bundle-Deal.png"

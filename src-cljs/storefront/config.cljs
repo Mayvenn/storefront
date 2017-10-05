@@ -2,6 +2,14 @@
 
 (def environment js/environment)
 
+(def feature-block-look-ids
+  ;;NOTE @Ryan, please only change the top map
+  (if (= environment "production")
+    {:left  186605502
+     :right 191946859}
+    {:left  144863121
+     :right 144863121}))
+
 (def report-errors?
   (not= "development" js/environment))
 
