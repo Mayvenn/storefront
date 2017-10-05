@@ -253,40 +253,40 @@
     (util.response/redirect (routes/path-for event))
     (html-response render-ctx data)))
 
+(defmacro redir-table
+  "`body` is rows of 3. (1) desired-dest (2) redirect-dest (3) truthy expression.
+   The final condition is :else `nav-event``"
+  [nav-event & body]
+  `(cond
+     ~@(mapcat
+        (fn [entry]
+          (let [page (first entry)
+                dest (second entry)
+                ok?  (nth entry 2)]
+            (list `(and (= ~nav-event ~page) ~ok?)
+                  dest)))
+        (partition 3 body))
+     :else ~nav-event))
+
 (defn render-leads-page
-  "
-   Redirect Rules:
-     -> details       => redir to home             if no lead-id
-     -> details       => redir to home             if step-id != 'details'
-     -> reg-thank-you => redir to home             if step-id != 'thank-you'
-     -> thank-you     => allow                     if no step-id
-     -> thank-you     => redir to home             if step-id != step-id-for-reg-thank-you
-     -> thank-you     => redir to reg-thank-you    if step-id  = step-id-for-reg-thank-you
-  "
   [render-ctx data req params]
   (let [lead-id                   (get-in data leads.keypaths/lead-id)
         step-id                   (get-in data leads.keypaths/lead-step-id)
-        step-id-for-reg-thank-you "thank-you"
+        step-id-reg-thanks        "thank-you"
         nav-event                 (get-in data keypaths/navigation-event)
         home                      events/navigate-leads-home
         details                   events/navigate-leads-registration-details
         thank-you                 events/navigate-leads-resolve
         reg-thank-you             events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
-                           (cond
-                             (and (= nav-event details)
-                                  (empty? lead-id))                         home
-                             (and (= nav-event details)
-                                  (not= step-id "details"))                 home
-                             (and (= nav-event reg-thank-you)
-                                  (not= step-id "thank-you"))               home
-                             (and (= nav-event thank-you)
-                                  (empty? step-id))                         nav-event
-                             (and (= nav-event thank-you)
-                                  (not= step-id step-id-for-reg-thank-you)) home
-                             (and (= nav-event thank-you)
-                                  (= step-id step-id-for-reg-thank-you))    reg-thank-you
-                             :else                                          nav-event))))
+                           (redir-table nav-event
+                                        details             home            (empty? lead-id)
+                                        details             home            (not=   step-id "details")
+                                        reg-thank-you       home            (not=   step-id "thank-you")
+                                        thank-you           nav-event       (empty? step-id)
+                                        thank-you           home            (not=   step-id step-id-reg-thanks)
+                                        step-id-reg-thanks  reg-thank-you   (=      step-id "thank-you")))))
+
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
