@@ -15,7 +15,8 @@
             [storefront.components.money-formatters :as mf]
             [storefront.utils.query :as query]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]))
+            [storefront.accessors.products :as products]
+            [spice.maps :as maps]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -118,6 +119,24 @@
                            (:material attrs))
      :variant_image    (products/product-img-with-size variant :product)}))
 
+(defn- sku->cart-item
+  "Makes a flattened key version of variants"
+  [variants sku quantity]
+  (let [sku-id (:sku sku)
+        variant (variants sku-id)]
+    (js/console.log (clj->js sku))
+    {:variant_sku      sku-id
+     :variant_price    (:price sku)
+     :variant_quantity quantity
+     :variant_name     (:sku/name sku)
+     :variant_origin   (:hair/origin sku)
+     :variant_style    (:hair/texture sku)
+     :variant_color    (:hair/color sku)
+     :variant_length   (:hair/length sku)
+     :variant_material (:hair/base-material sku)
+     :variant_image    (products/product-img-with-size variant :product)
+     :variant_id       (:id variant)}))
+
 (defn- ->cart-items
   [products-db product-items]
   (->> product-items
@@ -144,13 +163,17 @@
                                                   :context        {:cart-items cart-items}})))))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
-  [_ _ {:keys [variant quantity] :as args} app-state]
-  (when variant
+  [_ _ {:keys [quantity sku] :as args} app-state]
+  (when sku
     (let [order         (get-in app-state keypaths/order)
           product-items (orders/product-items order)
           products-db   (get-in app-state keypaths/products)
-          cart-items    (->cart-items products-db product-items)]
-      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
+          cart-items    (->cart-items products-db product-items)
+          variants (->> (get-in app-state keypaths/products)
+                        (map val)
+                        (mapcat :variants)
+                        (maps/index-by :sku))]
+      (stringer/track-event "add_to_cart" (merge (sku->cart-item variants sku quantity)
                                                  {:order_number   (get-in app-state keypaths/order-number)
                                                   :order_total    (get-in app-state keypaths/order-total)
                                                   :order_quantity (orders/product-quantity order)
