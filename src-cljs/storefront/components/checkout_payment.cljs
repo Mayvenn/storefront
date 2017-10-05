@@ -37,6 +37,7 @@
                                           (not (contains? selected-payment-methods :affirm)))
                                  (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token? (and (contains? #{"add-new-card" nil} selected-saved-card-id)
+                                 (not (contains? selected-payment-methods :store-credit))
                                  (not (contains? selected-payment-methods :affirm)))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
@@ -195,10 +196,11 @@
                                  :fully-covered?    fully-covered?}
       :saving?                  (cc/saving-card? data)
       :disabled?                (if (experiments/affirm? data)
-                                  (or (and (utils/requesting? data request-keys/get-saved-cards)
+                                  (or (and (utils/requesting? data request-keys/get-saved-cards) ;; Requesting cards, no existing cards, or not fully covered
                                            (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                                            (not fully-covered?))
                                       (empty? selected-payment-methods))
+
                                   (and (utils/requesting? data request-keys/get-saved-cards)
                                        (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                                        (not fully-covered?)))

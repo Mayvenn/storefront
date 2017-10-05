@@ -180,6 +180,8 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 
+(defpath control-checkout-affirm-confirmation-submit)
+
 (defpath control-stylist-referral-submit)
 (defpath control-stylist-referral-remove)
 (defpath control-stylist-referral-add-another)

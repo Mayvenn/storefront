@@ -13,7 +13,8 @@
             [storefront.state :as state]
             [storefront.transitions :refer [transition-state]]
             [spice.maps :as maps]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
@@ -199,7 +200,12 @@
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address))))
+  (cond-> (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address)))
+    (and (experiments/affirm? app-state)
+         (orders/fully-covered-by-store-credit?
+          (get-in app-state keypaths/order)
+          (get-in app-state keypaths/user)))
+    (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {})))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-name]} app-state]
   (let [images (pixlee/parse-ugc-album album-data)]
