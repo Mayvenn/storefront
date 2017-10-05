@@ -143,6 +143,20 @@
                                                   :quantity       quantity
                                                   :context        {:cart-items cart-items}})))))
 
+(defmethod perform-track events/api-success-add-sku-to-bag
+  [_ _ {:keys [variant quantity] :as args} app-state]
+  (when variant
+    (let [order         (get-in app-state keypaths/order)
+          product-items (orders/product-items order)
+          products-db   (get-in app-state keypaths/products)
+          cart-items    (->cart-items products-db product-items)]
+      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
+                                                 {:order_number   (get-in app-state keypaths/order-number)
+                                                  :order_total    (get-in app-state keypaths/order-total)
+                                                  :order_quantity (orders/product-quantity order)
+                                                  :quantity       quantity
+                                                  :context        {:cart-items cart-items}})))))
+
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [{:keys [stylist-id number line-items]} cart
         line-items    (map (fn [[k v]]
