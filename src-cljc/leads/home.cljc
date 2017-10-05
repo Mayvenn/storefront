@@ -148,16 +148,16 @@
       [:h2.mb4 "How can Mayvenn benefit you?"]
       [:div.clearfix.mxn3-on-tb-dt
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "/images/leads/icon-make-more.png")
+        (icon "//ucarecdn.com/ab25b35e-0fac-4539-bc2e-23490631dc35/-/format/auto/iconmakemore.png")
         [:h3 "Earn more money"]
         [:p.h5.mb4 "Once your clients make a purchase from your Mayvenn store, you’ll make a 15% commission and be paid out every week. It’s that simple. "]]
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "/images/leads/icon-movement.png")
+        (icon "//ucarecdn.com/7d1797f4-9677-4a4c-861d-fdc21b47d81b/-/format/auto/iconmovement.png")
         [:h3 "Be a part of a movement"]
         [:p.h5.mb4 "Mayvenn’s community is working together to change the hair industry to benefit stylists and clients. "
          "Once you sign up, we’ll provide you with marketing materials, education, and customer support – completely free of charge. "]]
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "/images/leads/icon-30-day.png")
+        (icon "//ucarecdn.com/2068e6cf-32f6-4c70-baaa-b7b9f17c586c/-/format/auto/icon30day.png")
         [:h3 "Backed by our 30-day guarantee"]
         [:p.h5 "All of our products are quality assured thanks to our 30-day guarantee. "
          "If your clients don’t like the hair for any reason, they can exchange it. "
@@ -170,9 +170,9 @@
    [:div.pb4.my4.h5 copy]])
 
 (def slides
-  [(slide "/images/leads/how-it-works-01.jpg" "Start by sending your store link to your clients so they can start shopping.")
-   (slide "/images/leads/how-it-works-02.jpg" "They’ll receive free shipping and 25% off their order with Mayvenn’s bundle discount and monthly promo code.")
-   (slide "/images/leads/how-it-works-03.jpg" "Cha-ching! Once they complete their purchase on your site, we’ll deposit your commission via your chosen payment method.")])
+  [(slide "//ucarecdn.com/0bd754f8-ac24-4d89-b588-b98051a765d5/-/format/auto/howitworks01.jpg" "Start by sending your store link to your clients so they can start shopping.")
+   (slide "//ucarecdn.com/f6a6a617-2200-4e7d-9769-c79f037944f2/-/format/auto/howitworks02.jpg" "They’ll receive free shipping and 25% off their order with Mayvenn’s bundle discount and monthly promo code.")
+   (slide "//ucarecdn.com/464c7eb4-4c0d-4365-9f1a-e775863d5cf7/-/format/auto/howitworks03.jpg" "Cha-ching! Once they complete their purchase on your site, we’ll deposit your commission via your chosen payment method.")])
 
 
 (def how-it-works-section
@@ -244,9 +244,9 @@
         "As a Mayvenn stylist, you can forget worrying about tracking inventory, customer service, or website maintenance."]]]
      [:div.col-4-on-dt
       [:picture
-       [:source {:media "(max-width: 999px)" :src-set "/images/leads/your-beauty-store.jpg 2x"}]
-       [:source {:src-set "/images/leads/your-beauty-store-dsk.jpg"}]
-       [:img.block.mx-auto {:src "/images/leads/your-beauty-store.jpg"}]]]]]])
+       [:source {:media "(max-width: 999px)" :src-set "//ucarecdn.com/5ff05d23-6ef0-445d-9e76-f7e5ff5e3cf6/-/format/auto/yourbeautystore.jpg 2x"}]
+       [:source {:src-set "//ucarecdn.com/fd060b43-50c8-4e34-8c3e-7ba0605c8def/-/format/auto/yourbeautystoredsk.jpg"}]
+       [:img.block.mx-auto {:src "//ucarecdn.com/5ff05d23-6ef0-445d-9e76-f7e5ff5e3cf6/-/format/auto/yourbeautystore.jpg"}]]]]]])
 
 (def numbers-section
   (let [rule [:div.hide-on-tb-dt.border-white.border-bottom]]
@@ -282,20 +282,20 @@
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
         [:div.py6
          [:blockquote.m0.mb2.h6 "\"Mayvenn, the genius site that allows stylists to sell product directly to clients without having to worry about hidden costs and inventory.\""]
-         [:img {:src "/images/leads/press-logo-essence.png" :style {:width "201px"}}]
+         [:img {:src "//ucarecdn.com/22ee98ef-927b-47be-a197-6adc0930f389/-/format/auto/presslogoessence.png" :style {:width "201px"}}]
          [:p.h6 "November 24, 2016"]]
         rule]
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
         [:div.py6
          [:blockquote.m0.mb2.h6 "\"They offer 100% quality virgin hair in various lengths and textures to over 50,000 women. "
           "They empower hairstylists to be their own retailers and provide an additional revenue stream.\""]
-         [:img {:src "/images/leads/press-logo-hello-beautiful.png" :style {:width "201px"}}]
+         [:img {:src "//ucarecdn.com/eaa78d5e-f5fd-4fa7-8896-658a80787cc5/-/format/auto/presslogohellobeautiful.png" :style {:width "201px"}}]
          [:p.h6 "September 8, 2016"]]
         rule]
        [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
         [:div.py6
          [:blockquote.m0.mb2.h6 "\"Mayvenn sources, purchases, warehouses, and distributes inventory on behalf of its users. It also handles customer service issues for them.\""]
-         [:img {:src "/images/leads/press-logo-wsj.png" :style {:width "201px"}}]
+         [:img {:src "//ucarecdn.com/09a568b1-6365-4620-8699-230b2eef8be0/-/format/auto/presslogowsj.png" :style {:width "201px"}}]
          [:p.h6 "June 19, 2015"]]]]]]))
 
 (def q-and-as
