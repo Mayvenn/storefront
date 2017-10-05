@@ -3,6 +3,7 @@
 (def environment js/environment)
 
 (def feature-block-look-ids
+  ;;NOTE edit the clj config too!
   ;;NOTE @Ryan, please only change the top map
   (if (= environment "production")
     {:left  186605502

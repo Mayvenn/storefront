@@ -11,6 +11,15 @@
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}
   (= environment "development"))
 
+(def feature-block-look-ids
+  ;;NOTE edit the cljs config too!
+  ;;NOTE @Ryan, please only change the top map
+  (if (= (env :environment) "production")
+    {:left  186605502
+     :right 191946859}
+    {:left  144863121
+     :right 144863121}))
+
 (def client-version
   (try
     (slurp (io/resource "client_version.txt"))
