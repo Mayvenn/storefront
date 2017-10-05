@@ -83,8 +83,8 @@
            :data-test "home-banner")
     (let [file-name "Shop-Now-SOUL-Homepage.png"
           alt       "Fall in love with you! Shop our looks."]
-      (hero-image {:mobile-url  "//ucarecdn.com/d62c9741-aea0-4c5c-aa77-32369992adcb/"
-                   :desktop-url "//ucarecdn.com/2437a2cb-5549-4e37-adb9-7c9b7f7f5010/"
+      (hero-image {:mobile-url  "//ucarecdn.com/831fa1c3-b45d-49ec-8920-873f1fc2ed12/"
+                   :desktop-url "//ucarecdn.com/b6b2ba96-0ac5-4e2e-9e2e-669659f21eb1/"
                    :file-name   file-name
                    :alt         alt}))]])
 
