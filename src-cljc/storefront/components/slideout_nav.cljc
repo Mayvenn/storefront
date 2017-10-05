@@ -183,7 +183,7 @@
                                :data-test "menu-shop-closures")
                         [:span.medium.flex-auto "Shop Closures & Frontals"]
                         forward-caret)]
-   [:li (major-menu-row (assoc (utils/fake-href events/navigate-category
+   [:li (major-menu-row (assoc (utils/route-to events/navigate-category
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"})
                                :data-test "menu-shop-wigs")
