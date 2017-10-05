@@ -57,7 +57,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? sold-out? look shared-cart products back fetching-shared-cart?]} owner opts]
+(defn component [{:keys [creating-order? sold-out? look shared-cart products back fetching-shared-cart? discount-warning?]} owner opts]
   (om/component
    (html
     (let [shared-cart-type-copy (or (:short-name back) "look")]
@@ -88,7 +88,8 @@
               [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
                [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
                (order-summary/display-line-items line-items products)
-               [:div.mt3
+               (when discount-warning? [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
+               [:div.mt2
                 (add-to-cart-button sold-out? creating-order? shared-cart)]])))]]))))
 
 (defn sold-out? [variant-ids product]
@@ -107,7 +108,8 @@
      :products              products
      :sold-out?             (some (partial sold-out? variant-ids) (vals products))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
-     :back                  (first (get-in data keypaths/navigation-undo-stack))}))
+     :back                  (first (get-in data keypaths/navigation-undo-stack))
+     :discount-warning?     (experiments/bundle-deals-2? data)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

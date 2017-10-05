@@ -59,3 +59,6 @@
 
 (defn affirm? [data]
   (display-feature? data "affirm"))
+
+(defn bundle-deals-2? [data]
+  (display-feature? data "bundle-deals-2"))
