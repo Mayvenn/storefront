@@ -14,19 +14,28 @@
             [storefront.request-keys :as request-keys]))
 
 (defn requires-additional-payment? [data]
-  (and (nil? (get-in data keypaths/order-cart-payments-stripe))
-       (> (get-in data keypaths/order-total)
-          (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0))))
+  (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
+        no-affirm-payment?  (nil? (get-in data keypaths/order-cart-payments-affirm))
+        store-credit-amount (or (get-in data keypaths/order-cart-payments-store-credit-amount) 0)
+        order-total         (get-in data keypaths/order-total)]
+    (and
+     ;; stripe can charge any amount
+     no-stripe-payment?
+     ;; affirm will be setup after this screen and will try to cover any amount
+     no-affirm-payment?
+     ;; is total covered by remaining store-credit?
+     (> order-total store-credit-amount))))
 
 (defn component
-  [{:keys [checkout-steps
-           updating-shipping?
-           saving-card?
-           placing-order?
-           requires-additional-payment?
+  [{:keys [affirm-payment?
+           available-store-credit
+           checkout-steps
            payment delivery order
+           placing-order?
            products
-           available-store-credit]}
+           requires-additional-payment?
+           saving-card?
+           updating-shipping?]}
    owner]
   (om/component
    (html
@@ -44,12 +53,15 @@
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
        [:form
-        {:on-submit (utils/send-event-callback events/control-checkout-confirmation-submit
-                                               {:place-order? requires-additional-payment?})}
+        {:on-submit
+         (if affirm-payment?
+           (utils/noop-callback nil)
+           (utils/send-event-callback events/control-checkout-confirmation-submit
+                                      {:place-order? requires-additional-payment?}))}
         (when requires-additional-payment?
           [:div
            (ui/note-box
-            {:color "teal"
+            {:color     "teal"
              :data-test "additional-payment-required-note"}
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
@@ -59,15 +71,20 @@
                                         :use-store-credit?      true
                                         :available-store-credit available-store-credit})
         [:div.col-12.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                          :disabled? updating-shipping?
-                                          :data-test "confirm-form-submit"})]]]]])))
+         (if affirm-payment?
+           (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
+                                                     :disabled? updating-shipping?
+                                                     :data-test "confirm-affirm-form-submit"})
+           (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                            :disabled? updating-shipping?
+                                            :data-test "confirm-form-submit"}))]]]]])))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
    :saving-card?                 (checkout-credit-card/saving-card? data)
    :placing-order?               (utils/requesting? data request-keys/place-order)
    :requires-additional-payment? (requires-additional-payment? data)
+   :affirm-payment?              (get-in data keypaths/order-cart-payments-affirm)
    :checkout-steps               (checkout-steps/query data)
    :products                     (get-in data keypaths/products)
    :order                        (get-in data keypaths/order)
