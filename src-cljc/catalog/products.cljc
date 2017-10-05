@@ -106,8 +106,8 @@
 
 (defn eligible-for-triple-bundle-discount?
   [skuer]
-  (or (:promo.eligible/triple-bundle skuer)
-      is-hair?))
+  (or (:promo.triple-bundle/eligible skuer)
+      (is-hair? skuer)))
 
 (defn normalize-skus [skus]
   (maps/index-by :sku
