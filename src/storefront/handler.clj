@@ -264,14 +264,14 @@
      -> thank-you     => redir to reg-thank-you    if step-id  = step-id-for-reg-thank-you
   "
   [render-ctx data req params]
-  (let [lead-id       (get-in data leads.keypaths/lead-id)
-        step-id       (get-in data leads.keypaths/lead-step-id)
+  (let [lead-id                   (get-in data leads.keypaths/lead-id)
+        step-id                   (get-in data leads.keypaths/lead-step-id)
         step-id-for-reg-thank-you "thank-you"
-        nav-event     (get-in data keypaths/navigation-event)
-        home          events/navigate-leads-home
-        details       events/navigate-leads-registration-details
-        thank-you     events/navigate-leads-resolve
-        reg-thank-you events/navigate-leads-registration-resolve]
+        nav-event                 (get-in data keypaths/navigation-event)
+        home                      events/navigate-leads-home
+        details                   events/navigate-leads-registration-details
+        thank-you                 events/navigate-leads-resolve
+        reg-thank-you             events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (cond
                              (and (= nav-event details)
@@ -284,8 +284,8 @@
                                   (empty? step-id))                         nav-event
                              (and (= nav-event thank-you)
                                   (not= step-id step-id-for-reg-thank-you)) home
-                             (and (= nav-event step-id-for-reg-thank-you)
-                                  (= step-id "thank-you"))                  reg-thank-you
+                             (and (= nav-event thank-you)
+                                  (= step-id step-id-for-reg-thank-you))    reg-thank-you
                              :else                                          nav-event))))
 
 (defn render-static-page [template]
