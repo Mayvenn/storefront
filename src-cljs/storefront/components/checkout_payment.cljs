@@ -32,9 +32,12 @@
         covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
                                  (get-in app-state keypaths/user))
-        selected-saved-card-id (when-not covered-by-store-credit
+        selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
+        selected-saved-card-id (when (and (not covered-by-store-credit)
+                                          (not (contains? selected-payment-methods :affirm)))
                                  (get-in app-state keypaths/checkout-credit-card-selected-id))
-        needs-stripe-token? (contains? #{"add-new-card" nil} selected-saved-card-id)]
+        needs-stripe-token? (and (contains? #{"add-new-card" nil} selected-saved-card-id)
+                                 (not (contains? selected-payment-methods :affirm)))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments
@@ -42,7 +45,7 @@
        {:order (cond-> app-state
                  :always (get-in keypaths/order)
                  :always (select-keys [:token :number])
-                 :always (merge {:cart-payments (get-in app-state keypaths/checkout-selected-payment-methods)})
+                 :always (merge {:cart-payments selected-payment-methods})
 
                  selected-saved-card-id (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
         :navigate events/navigate-checkout-confirmation}))))
