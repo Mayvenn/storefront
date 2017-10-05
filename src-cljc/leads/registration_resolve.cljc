@@ -1,6 +1,7 @@
 (ns leads.registration-resolve
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.component :as component]])
+            [storefront.platform.component-utils :as utils]
             [leads.header :as header]
             [cemerick.url :as url]
             [clojure.string :as string]
@@ -65,7 +66,7 @@
         (icon "/images/leads/icon-promote.png")
         [hed "Promote Your Store"]
         [dek "Don’t be shy! You now have access to the highest quality hair products in the industry. Shipping is always free and all Mayvenn products are backed by a 30-day guarantee."]
-        [cta {:href "#share-store-section"} "Share your store link"]]]]]))
+        [cta (utils/scroll-href "share-store-section") "Share your store link"]]]]]))
 
 (defn stylist-kit-section [store-link]
   [:section.center

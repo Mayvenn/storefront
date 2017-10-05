@@ -4,7 +4,8 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.history :as history]
             [storefront.routes :as routes]
-            [storefront.utils.query :as query]))
+            [storefront.utils.query :as query]
+            [storefront.browser.scroll :as scroll]))
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
@@ -67,6 +68,12 @@
   ([event args]
    {:href "#"
     :on-click (send-event-callback event args)}))
+
+(defn scroll-href [anchor-id]
+  {:href (str "#" anchor-id)
+   :on-click (fn [e]
+               (.preventDefault e)
+               (scroll/scroll-selector-to-top (str "a[name='" anchor-id "']")))})
 
 (defn toggle-checkbox [keypath value]
   (let [checked-val (if value "checked" "")]

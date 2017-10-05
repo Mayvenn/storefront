@@ -59,7 +59,7 @@
          phone-image-width "336px"]
      [:div.center.px3.py6.container
       (constrain-copy-width
-       [:h2 "Share your store"]
+       [:h2 {:data-ref "share-store-section"} [:a {:name "share-store-section"} "Share your store"]]
        [:p "This unique store name is all yours. Use the buttons below for quick and easy sharing across your networks."]
        [:div.relative.mx-auto
         {:style {:width phone-image-width}}

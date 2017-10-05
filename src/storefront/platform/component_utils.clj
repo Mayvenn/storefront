@@ -32,3 +32,6 @@
 
 (defn select-all-text [e]
   nil)
+
+(defn scroll-href [anchor-id]
+  {:href (str "#" anchor-id)})
