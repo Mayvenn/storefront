@@ -26,7 +26,7 @@
                          :name     "first-name"
                          :required true
                          :errors   (get field-errors ["first-name"])
-                         :keypath  keypaths/lead-first-name
+                         :keypath  keypaths/stylist-first-name
                          :focused  focused
                          :value    first-name}
                         {:type     "text"
@@ -35,13 +35,13 @@
                          :name     "last-name"
                          :required true
                          :errors   (get field-errors ["last-name"])
-                         :keypath  keypaths/lead-last-name
+                         :keypath  keypaths/stylist-last-name
                          :focused  focused
                          :value    last-name})
    (ui/text-field {:data-test "phone"
                    :errors    (get field-errors ["phone"])
                    :id        "phone"
-                   :keypath   keypaths/lead-phone
+                   :keypath   keypaths/stylist-phone
                    :focused   focused
                    :label     "Mobile Phone Number *"
                    :name      "phone"
@@ -51,7 +51,7 @@
    (ui/text-field {:data-test "email"
                    :errors    (get field-errors ["email"])
                    :id        "email"
-                   :keypath   keypaths/lead-email
+                   :keypath   keypaths/stylist-email
                    :focused   focused
                    :label     "Email"
                    :name      "email"
@@ -335,10 +335,7 @@
   [dispatch event args _ app-state]
   #?(:cljs
      (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/remote-lead)
-           sign-up                       (select-keys (get-in app-state keypaths/lead)
-                                                      [:first-name :last-name :email :phone])
-           stylist-info                  (get-in app-state keypaths/stylist)
-           registration                  (-> (merge sign-up stylist-info)
+           registration                  (-> (get-in app-state keypaths/stylist)
                                              handle-referral
                                              handle-address-2
                                              handle-payout-method)]
