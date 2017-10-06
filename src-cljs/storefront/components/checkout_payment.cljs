@@ -16,7 +16,8 @@
             [storefront.api :as api]
             [storefront.frontend-effects :refer [create-stripe-token]]
             [storefront.request-keys :as request-keys]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.components.svg :as svg]))
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
   [_ _ {:keys [payment-method]} app-state]
@@ -169,7 +170,7 @@
                       :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :affirm})}
                      (when selected-affirm? {:checked "checked"}))
               [:div.overflow-hidden
-               [:div "Pay with " [:img {:alt "Affirm"}]]
+               [:div "Pay with " (svg/affirm {:alt "Affirm"})]
                [:p.h6 "Make easy monthly payments over 3, 6, or 12 months. "
                 [:a {:href "https://google.com"} "Learn more."]]])
 

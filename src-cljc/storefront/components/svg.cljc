@@ -59,6 +59,13 @@
    [:svg {:style {:width "44px" :height "44px"}}
     (svg-xlink "large-mail")]))
 
+;; Vendor Logos
+
+(defn affirm [opts]
+  (component/html
+   [:svg (merge {:style {:width "51.8px" :height "15px"}} opts)
+    (svg-xlink "affirm")]))
+
 ;; Help
 
 (defn phone-ringing [opts]
