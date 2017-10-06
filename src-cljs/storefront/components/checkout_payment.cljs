@@ -37,7 +37,7 @@
                                           (not (contains? selected-payment-methods :affirm)))
                                  (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token? (and (contains? #{"add-new-card" nil} selected-saved-card-id)
-                                 (not (contains? selected-payment-methods :store-credit))
+                                 (not covered-by-store-credit)
                                  (not (contains? selected-payment-methods :affirm)))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
