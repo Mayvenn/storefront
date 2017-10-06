@@ -26,6 +26,52 @@
      ;; is total covered by remaining store-credit?
      (> order-total store-credit-amount))))
 
+(defn old-component
+  [{:keys [available-store-credit
+           checkout-steps
+           payment delivery order
+           placing-order?
+           products
+           requires-additional-payment?
+           saving-card?
+           updating-shipping?]}
+   owner]
+  (om/component
+   (html
+    [:div.container.p2
+     (om/build checkout-steps/component checkout-steps)
+
+     [:.clearfix.mxn3
+      [:.col-on-tb-dt.col-6-on-tb-dt.px3
+       [:.h3.left-align "Order Summary"]
+
+       [:div.my2
+        {:data-test "confirmation-line-items"}
+        (summary/display-line-items (orders/product-items order) products)]]
+
+      [:.col-on-tb-dt.col-6-on-tb-dt.px3
+       (om/build checkout-delivery/component delivery)
+       [:form
+        {:on-submit
+         (utils/send-event-callback events/control-checkout-confirmation-submit
+                                    {:place-order? requires-additional-payment?})}
+        (when requires-additional-payment?
+          [:div
+           (ui/note-box
+            {:color     "teal"
+             :data-test "additional-payment-required-note"}
+            [:.p2.navy
+             "Please enter an additional payment method below for the remaining total on your order."])
+           (om/build checkout-credit-card/component payment)])
+        (summary/display-order-summary order
+                                       {:read-only?             true
+                                        :use-store-credit?      true
+                                        :available-store-credit available-store-credit})
+        [:div.col-12.col-6-on-tb-dt.mx-auto
+         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                          :disabled? updating-shipping?
+                                          :data-test "confirm-form-submit"})]]]]])))
+
 (defn component
   [{:keys [affirm-payment?
            available-store-credit
@@ -54,10 +100,8 @@
        (om/build checkout-delivery/component delivery)
        [:form
         {:on-submit
-         (if affirm-payment?
-           (utils/noop-callback nil)
-           (utils/send-event-callback events/control-checkout-confirmation-submit
-                                      {:place-order? requires-additional-payment?}))}
+         (utils/send-event-callback events/control-checkout-confirmation-submit
+                                    {:place-order? requires-additional-payment?})}
         (when requires-additional-payment?
           [:div
            (ui/note-box
@@ -68,16 +112,12 @@
            (om/build checkout-credit-card/component payment)])
         (summary/display-order-summary order
                                        {:read-only?             true
-                                        :use-store-credit?      true
+                                        :use-store-credit?      false
                                         :available-store-credit available-store-credit})
         [:div.col-12.col-6-on-tb-dt.mx-auto
-         (if affirm-payment?
-           (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
-                                                     :disabled? updating-shipping?
-                                                     :data-test "confirm-affirm-form-submit"})
-           (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                            :disabled? updating-shipping?
-                                            :data-test "confirm-form-submit"}))]]]]])))
+         (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
+                                                   :disabled? updating-shipping?
+                                                   :data-test "confirm-affirm-form-submit"})]]]]])))
 
 (defn query [data]
   {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
@@ -93,4 +133,8 @@
    :available-store-credit       (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (om/build (if (experiments/affirm? data)
+              component
+              old-component)
+            (query data)
+            opts))
