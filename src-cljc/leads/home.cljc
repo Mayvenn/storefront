@@ -115,7 +115,7 @@
 
 (def success-stories-section
   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/2029303b76647441fe1cd35778556282f8c40e68/file.mp4"
-        image-src  "https://ucarecdn.com/b2083468-3738-410f-944b-ad9ffdad0997/stylistsuccessposterplaybutton.jpg"
+        image-src  "https://ucarecdn.com/b2083468-3738-410f-944b-ad9ffdad0997/-/format/auto/stylistsuccessposterplaybutton.jpg"
         ;; TODO Figure out why playing after figwheel reloads breaks chrome (aw, snap!)
         video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
                         image-src

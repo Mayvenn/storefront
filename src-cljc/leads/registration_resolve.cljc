@@ -16,9 +16,9 @@
 (def congratulations-section
   [:section
    [:picture
-    [:source {:media "(max-width: 749px)" :srcSet (str (assets/path "/images/leads/hero-congrats.jpg") " 2x")}]
-    [:source {:srcSet (assets/path "/images/leads/hero-congrats-dsk.jpg")}]
-    [:img.block.col-12 {:src (assets/path "/images/leads/hero-congrats.jpg")
+    [:source {:media "(max-width: 749px)" :srcSet "//ucarecdn.com/f06961aa-d039-4ff3-a8ec-05e9d5e1024d/-/format/auto/herocongrats.jpg 2x"}]
+    [:source {:srcSet "//ucarecdn.com/cc2d502b-3402-439d-8ff7-63c2b77b7751/-/format/auto/herocongratsdsk.jpg"}]
+    [:img.block.col-12 {:src "//ucarecdn.com/f06961aa-d039-4ff3-a8ec-05e9d5e1024d/-/format/auto/herocongrats.jpg"
                         :alt "Congrats. Welcome to the Mayvenn community! Your website is ready to go. You can share your store link, shop, and start selling now."}]]])
 
 (defn- first-coupon-link [store-link]
@@ -47,7 +47,7 @@
      [:div.mx-auto {:style {:max-width "960px"}}
       [:div.clearfix.mxn2-on-tb-dt
        [cell
-        (icon "/images/leads/icon-try-mayvenn.png")
+        (icon "//ucarecdn.com/7f4e00a1-cac3-4c79-b233-176c8809be03/-/format/auto/icontrymayvenn.png")
         [hed "Try Mayvenn Hair"]
         [dek "Becoming an expert in our products is the first step to becoming a successful seller. Use the promo code 'FIRST' to get 30% off your first order."]
         [cta {:href   (first-coupon-link store-link)
@@ -55,7 +55,7 @@
          "Shop Mayvenn hair"]]
 
        [cell
-        (icon "/images/leads/icon-meet-stylists.png")
+        (icon "//ucarecdn.com/66a2b9d9-371e-4e3d-a9af-49386e16cda8/-/format/auto/iconmeetstylists.png")
         [hed "Meet Fellow Stylists"]
         [dek "We have a vibrant community of over 60,000 stylists constantly sharing and learning from each other. Join the conversation by introducing yourself!"]
         [cta {:href   "https://community.mayvenn.com/mayvenn-general/f/all-about-you/1724/introduce-yourself-and-your-specialty"
@@ -63,7 +63,7 @@
          "Go to the Mayvenn stylist community"]]
 
        [cell
-        (icon "/images/leads/icon-promote.png")
+        (icon "//ucarecdn.com/024b5a65-c6e0-43f6-972b-0dd684d28e19/-/format/auto/iconpromote.png")
         [hed "Promote Your Store"]
         [dek "Don’t be shy! You now have access to the highest quality hair products in the industry. Shipping is always free and all Mayvenn products are backed by a 30-day guarantee."]
         [cta (utils/scroll-href "share-store-section") "Share your store link"]]]]]))

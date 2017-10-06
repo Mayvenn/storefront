@@ -25,10 +25,10 @@
       [:div.h4.py1
        [:p.my2 "We'd love to connect on social media:"]
        [:div
-        (social-link "https://www.facebook.com/MayvennHair" "/images/leads/facebook-icon.png")
-        (social-link "http://instagram.com/mayvennhair" "/images/leads/instagram-icon-white.png")
-        (social-link "http://www.pinterest.com/mayvennhair/" "/images/leads/pinterest-icon.png")
-        (social-link "https://twitter.com/mayvennhair" "/images/leads/twitter-icon.png")]]
+        (social-link "https://www.facebook.com/MayvennHair" "//ucarecdn.com/353e1ab6-6f85-49de-a500-1a62d64cf19e/-/format/auto/facebookicon.png")
+        (social-link "http://instagram.com/mayvennhair" "//ucarecdn.com/05a11abb-b2e3-4b89-a43a-68d40f71242d/-/format/auto/instagramiconwhite.png")
+        (social-link "http://www.pinterest.com/mayvennhair/" "//ucarecdn.com/dc77e98c-1fda-4267-aba2-dce4b1dd0ecc/-/format/auto/pinteresticon.png")
+        (social-link "https://twitter.com/mayvennhair" "//ucarecdn.com/41683ed1-1494-4c44-a3b0-41a25eab744e/-/format/auto/twittericon.png")]]
       [:div.col-10.mx-auto.py8
        [:div.col-12.relative
         {:style {:height "0"
@@ -49,3 +49,4 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
