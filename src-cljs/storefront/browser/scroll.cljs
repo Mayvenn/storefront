@@ -13,17 +13,14 @@
     (start-fn)
     (.addEventListener el end-event listener)))
 
-(defn set-scroll-top
-  [elem y] (set! (.. elem -scrollTop) y))
-
 (defn scroll-to-y
-  [elem y] (set-scroll-top elem y))
+  [elem y] (set! (.. elem -scrollTop) y))
 
 (defn snap-to [y]
   ;; NodeList is not seqable
   (let [elements (js/document.querySelectorAll "[data-snap-to=top]")]
     (dotimes [i (.-length elements)]
-      (set-scroll-top (aget elements i) y))))
+      (scroll-to-y (aget elements i) y))))
 
 (defn snap-to-top []
   (snap-to 0))
@@ -31,7 +28,6 @@
 (defn scroll-to [dest]
   (let [current-y (.. scroll-target -scrollTop)
         dy (- dest current-y)]
-    (prn "y" current-y "dest" dest)
     (animate
      scroll-target
      "transitionend"
@@ -39,8 +35,7 @@
         (set! (.. scroll-target -style -marginTop) (str dy "px"))
         (scroll-to-y scroll-target dest)
         (set! (.. scroll-target -style -transition) "margin-top 1s ease")
-        (set! (.. scroll-target -style -marginTop) 0)
-        )
+        (set! (.. scroll-target -style -marginTop) 0))
      #(when (= (.-target %) (.-currentTarget %))
         (set! (.. scroll-target -style -transition) "none")))))
 
