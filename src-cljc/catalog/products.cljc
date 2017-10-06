@@ -100,7 +100,7 @@
 
 (defn stylist-only?
   [skuer]
-  (some-> skuer :product/department (= "stylist-exclusives")))
+  (some-> skuer :product/department (contains? "stylist-exclusives")))
 
 (def eligible-for-reviews? (complement stylist-only?))
 
@@ -126,7 +126,7 @@
    :sku-set/copy
    :sku-set/images
    :sku-set/name"
-  (let [essentials (maps/map-values first (:criteria/essential product))
+  (let [essentials (maps/map-values set (:criteria/essential product))
         electives (mapv keyword (:criteria/selectors product))]
     (-> product
         (dissoc :criteria/essential)

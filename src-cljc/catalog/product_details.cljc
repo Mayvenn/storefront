@@ -275,7 +275,7 @@
             [:div schema-org-offer-props
              [:div.my2
               [:div
-               (when (= (:product/department product) "hair")
+               (when (contains? (:product/department product) "hair")
                  (for [facet (:selector/electives product)]
                    (selector-html {:selector facet
                                    :options  (get options facet)})))]

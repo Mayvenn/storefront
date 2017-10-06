@@ -1,10 +1,14 @@
-(ns catalog.selector)
+(ns catalog.selector
+  (:require [clojure.set :as set]))
 
 (defn missing-contains-or-equal [key value item]
   (let [item-value (key item :query/missing)]
     (cond
       (= item-value :query/missing)
       true
+
+      (and (coll? item-value) (coll? value))
+      (set/superset? (set value) (set item-value))
 
       (and (coll? value) (< 1 (count value)))
       ((set value) item-value)
