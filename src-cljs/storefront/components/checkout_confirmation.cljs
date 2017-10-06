@@ -133,7 +133,8 @@
    :available-store-credit       (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data opts]
-  (om/build (if (experiments/affirm? data)
+  (om/build (if (and (experiments/affirm? data)
+                     (get-in data keypaths/order-cart-payments-affirm))
               component
               old-component)
             (query data)
