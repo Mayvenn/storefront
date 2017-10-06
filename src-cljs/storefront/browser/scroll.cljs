@@ -2,7 +2,7 @@
   (:require [goog.object :as object]
             [goog.dom.classlist :as classlist]))
 
-(def scroll-target (.. js/document -body -parentElement))
+(def scroll-target (.. js/document -scrollingElement))
 
 (defn animate [el end-event start-fn end-fn]
   (letfn [(listener [e]
