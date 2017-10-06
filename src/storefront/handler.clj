@@ -280,6 +280,7 @@
         reg-thank-you             events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
+                                        ;; nav-event        ;; redir to     ;; condition
                                         details             home            (empty? lead-id)
                                         details             home            (not=   step-id "details")
                                         reg-thank-you       home            (not=   step-id "thank-you")
