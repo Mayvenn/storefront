@@ -124,7 +124,6 @@
   [variants sku quantity]
   (let [sku-id (:sku sku)
         variant (variants sku-id)]
-    (js/console.log (clj->js sku))
     {:variant_sku      sku-id
      :variant_price    (:price sku)
      :variant_quantity quantity
