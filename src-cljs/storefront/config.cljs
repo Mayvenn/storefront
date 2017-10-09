@@ -87,6 +87,14 @@
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
                               "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))
 
+;; TODO: add affirm public keys
+(def affirm-public-api-key (case js/environment
+                             "production" "BBIXI0YNZMRCG3CX"
+                             "5LLKDFV3DLO0FUGE"))
+(def affirm-script-uri (case js/environment
+                         "production" "https://cdn1.affirm.com/js/v2/affirm.js"
+                         "https://cdn1-sandbox.affirm.com/js/v2/affirm.js"))
+
 (def uploadcare-public-key
   (case js/environment
     "production" "6a68fb24fd9c50c7ed8b"

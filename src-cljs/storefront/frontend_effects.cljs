@@ -41,6 +41,7 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.uploadcare :as uploadcare]
             [storefront.hooks.wistia :as wistia]
+            [storefront.hooks.affirm :as affirm]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
@@ -109,6 +110,7 @@
   (svg/insert-sprite)
   (stringer/insert-tracking)
   (google-analytics/insert-tracking)
+  (affirm/insert)
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (sift/insert-tracking)
