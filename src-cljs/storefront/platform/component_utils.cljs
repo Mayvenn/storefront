@@ -72,8 +72,8 @@
 (defn scroll-href [anchor-id]
   {:href (str "#" anchor-id)
    :on-click (fn [e]
-               (.preventDefault e)
-               (scroll/scroll-selector-to-top (str "a[name='" anchor-id "']")))})
+               (scroll/scroll-selector-to-top (str "a[name='" anchor-id "']"))
+               (.preventDefault e))})
 
 (defn toggle-checkbox [keypath value]
   (let [checked-val (if value "checked" "")]
