@@ -11,7 +11,12 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.effects :as effects]
+            [storefront.routes :as routes]
+            [storefront.accessors.products :refer [medium-img]]
+            [catalog.products :as products]
+            [storefront.hooks.affirm :as affirm]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -100,8 +105,7 @@
        (om/build checkout-delivery/component delivery)
        [:form
         {:on-submit
-         (utils/send-event-callback events/control-checkout-confirmation-submit
-                                    {:place-order? requires-additional-payment?})}
+         (utils/send-event-callback events/control-checkout-affirm-confirmation-submit)}
         (when requires-additional-payment?
           [:div
            (ui/note-box
@@ -119,18 +123,84 @@
                                                    :disabled? updating-shipping?
                                                    :data-test "confirm-affirm-form-submit"})]]]]])))
 
+(defn ->affirm-address [{:keys [address1 address2 city state zipcode]}]
+  {:line1   address1
+   :line2   address2
+   :city    city
+   :state   state
+   :zipcode zipcode
+   :country "USA"})
+
+(defn ->affirm-line-item [products {:keys [product-id product-name sku unit-price quantity]}]
+  (let [{:keys [images slug]} (get products product-id)]
+    {:display_name   product-name
+     :sku            sku
+     :unit_price     (* 100 unit-price)
+     :qty            quantity
+     ;; TODO - get image urls
+     :item_image_url "https://placekitten.com/200/201" #_(:src (medium-img products product-id))
+     :item_url       (products/path-for-sku product-id slug sku)}))
+
+(defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
+  (when (seq promo)
+    {(:name promotion) {:discount_amount       (Math/abs amount)
+                        :discount_display_name (:name promotion)}}))
+
+(defn order->affirm [products order]
+  (let [email         (-> order :user :email)
+        product-items (orders/product-items order)
+        line-items    (mapv (partial ->affirm-line-item products) product-items)
+        promotions    (distinct (mapcat :applied-promotions product-items))]
+    {:merchant {:user_confirmation_url        "https://merchantsite.com/confirm"
+                :user_cancel_url              "https://merchantsite.com/cancel"
+                :user_confirmation_url_action "POST"
+                :name                         "Your Customer-Facing Merchant Name"}
+
+     ;; You can include the full name instead
+     ;; "full"  "John Doe"
+
+     :shipping {:name         {:first (-> order :shipping-address :first-name)
+                               :last  (-> order :shipping-address :last-name)}
+                :address      (->affirm-address (:shipping-address order))
+                :phone_number (-> order :shipping-address :phone)
+                :email        email}
+
+     :billing {:name         {:first (-> order :billing-address :first-name)
+                              :last  (-> order :billing-address :last-name)}
+               :address      (->affirm-address (:billing-address order))
+               :phone_number (-> order :billing-address :phone)
+               :email        email}
+
+     :items line-items
+
+     :discounts (reduce (comp merge promotion->affirm-discount) {} promotions)
+
+     ;;user defined key/value pairs
+     :metadata {}
+
+     :order_id        (:number order)
+     :shipping_amount (-> order orders/shipping-item :unit-price (* 100) int)
+     :tax_amount      (-> order :tax-total (* 100) int)
+     :total           (-> order :total (* 100) int)}))
+
+(defmethod effects/perform-effects events/control-checkout-affirm-confirmation-submit
+  [_ _ _ _ app-state]
+  (affirm/checkout (order->affirm (get-in app-state keypaths/products)
+                                  (get-in app-state keypaths/order))))
+
 (defn query [data]
-  {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
-   :saving-card?                 (checkout-credit-card/saving-card? data)
-   :placing-order?               (utils/requesting? data request-keys/place-order)
-   :requires-additional-payment? (requires-additional-payment? data)
-   :affirm-payment?              (get-in data keypaths/order-cart-payments-affirm)
-   :checkout-steps               (checkout-steps/query data)
-   :products                     (get-in data keypaths/products)
-   :order                        (get-in data keypaths/order)
-   :payment                      (checkout-credit-card/query data)
-   :delivery                     (checkout-delivery/query data)
-   :available-store-credit       (get-in data keypaths/user-total-available-store-credit)})
+  (let [order (get-in data keypaths/order)]
+    {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
+     :saving-card?                 (checkout-credit-card/saving-card? data)
+     :placing-order?               (utils/requesting? data request-keys/place-order)
+     :requires-additional-payment? (requires-additional-payment? data)
+     :affirm-payment?              (get-in data keypaths/order-cart-payments-affirm)
+     :checkout-steps               (checkout-steps/query data)
+     :products                     (get-in data keypaths/products)
+     :order                        order
+     :payment                      (checkout-credit-card/query data)
+     :delivery                     (checkout-delivery/query data)
+     :available-store-credit       (get-in data keypaths/user-total-available-store-credit)}))
 
 (defn built-component [data opts]
   (om/build (if (and (experiments/affirm? data)

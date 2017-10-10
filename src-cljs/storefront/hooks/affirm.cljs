@@ -13,3 +13,8 @@
         assignment-var (str "_affirm_config = " config)]
     (when-not (.hasOwnProperty js/window "affirm")
       (tags/insert-tag-with-text (str assignment-var "; " affirm-anon-fn) "affirm"))))
+
+
+(defn checkout [affirm-order]
+  (js/affirm.checkout (clj->js affirm-order))
+  (js/affirm.checkout.open))

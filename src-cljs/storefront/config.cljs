@@ -87,7 +87,6 @@
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
                               "pk_test_cc749q2i3rIK5Kvhbtesy1Iu"))
 
-;; TODO: add affirm public keys
 (def affirm-public-api-key (case js/environment
                              "production" "BBIXI0YNZMRCG3CX"
                              "5LLKDFV3DLO0FUGE"))
