@@ -102,7 +102,7 @@
     (if (#{"development" "test"} environment)
       (page/include-css (assets/path "/css/app.css"))
       [:style (raw (css-styles))])]
-   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation" :data-snap-to "top"}
+   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
     [:div#content initial-content]
     ;; in development, figwheel uses document.write which can't be done asynchronously
     ;; additionally, we want developers to see the server side render, so we don't want

@@ -17,10 +17,7 @@
   [elem y] (set! (.. elem -scrollTop) y))
 
 (defn snap-to [y]
-  ;; NodeList is not seqable
-  (let [elements (js/document.querySelectorAll "[data-snap-to=top]")]
-    (dotimes [i (.-length elements)]
-      (scroll-to-y (aget elements i) y))))
+  (scroll-to-y scroll-target y))
 
 (defn snap-to-top []
   (snap-to 0))
