@@ -78,11 +78,15 @@
     {:source-paths ["src-cljc" "src-cljs"]
     :warning-handlers [(fn [warning-type env extra]
                          (let [{:keys [file]} (cljs.analyzer/source-info env)]
-                           (when (and file (not (first (filter (partial clojure.string/includes? file)
-                                                               ["cljs/core.cljs"
-                                                                "clojure/string.cljs"
-                                                                "storefront/src-cljc/storefront/macros.cljc"
-                                                                "bidi/bidi.cljc"]))))
+                           (when (and file
+                                      (-> (filter (partial clojure.string/includes? file)
+                                                  ["cljs/core.cljs"
+                                                   "clojure/string.cljs"
+                                                   ;; See https://dev.clojure.org/jira/browse/CLJS-1970?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel#issue-tabs
+                                                   "storefront/src-cljc/storefront/macros.cljc"
+                                                   "bidi/bidi.cljc"])
+                                          first
+                                          not))
                              (when-let [s (cljs.analyzer/error-message warning-type extra)]
                                (binding [*out* *err*]
                                  (println (format "[FILE: %s] %s" file (cljs.analyzer/message env s)))
