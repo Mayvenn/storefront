@@ -81,7 +81,7 @@
                           (when (warning-type cljs.analyzer/*cljs-warnings*)
                             (when-let [s (cljs.analyzer/error-message warning-type extra)]
                               (binding [*out* *err*]
-                                (println (format "[FILE: %s] %s (%s)" file (cljs.analyzer/message env s) (pr-str {:type warning-type :extra extra})))
+                                (println (cljs.analyzer/message env s))
                                 (System/exit 1)))))]
      :compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
