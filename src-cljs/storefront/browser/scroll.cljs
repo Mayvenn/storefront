@@ -4,7 +4,9 @@
 
 (defn scroll-target []
   (or (.-scrollingElement js/document)
-      (.-body js/document)))
+      (if (string/starts-with? (str (.-compatMode js/document)) "CSS1")
+        (.-documentElement js/document)
+        (.-body js/document))))
 
 (defn animate [el end-event start-fn end-fn]
   (letfn [(listener [e]
