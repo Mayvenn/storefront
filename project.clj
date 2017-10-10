@@ -78,7 +78,8 @@
     {:source-paths ["src-cljc" "src-cljs"]
     :warning-handlers [(fn [warning-type env extra]
                          (let [{:keys [file]} (cljs.analyzer/source-info env)]
-                           (when-not (clojure.string/includes? file "cljs/core.cljs")
+                           (when-not (or (clojure.string/includes? file "cljs/core.cljs")
+                                         (clojure.string/includes? file "clojure/string.cljs"))
                              (when-let [s (cljs.analyzer/error-message warning-type extra)]
                                (binding [*out* *err*]
                                  (println (format "[FILE: %s] %s" file (cljs.analyzer/message env s)))
