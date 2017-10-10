@@ -1,6 +1,7 @@
 (ns storefront.browser.scroll
   (:require [goog.object :as object]
-            [goog.dom.classlist :as classlist]))
+            [goog.dom.classlist :as classlist]
+            [clojure.string :as string]))
 
 (defn scroll-target []
   (or (.-scrollingElement js/document)
