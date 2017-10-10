@@ -76,21 +76,13 @@
                           "externs/yotpo.js"]}}
     :release
     {:source-paths ["src-cljc" "src-cljs"]
-    :warning-handlers [(fn [warning-type env extra]
-                         (let [{:keys [file]} (cljs.analyzer/source-info env)]
-                           (when (and file
-                                      (-> (filter (partial clojure.string/includes? file)
-                                                  ["cljs/core.cljs"
-                                                   "clojure/string.cljs"
-                                                   ;; See https://dev.clojure.org/jira/browse/CLJS-1970?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel#issue-tabs
-                                                   "storefront/src-cljc/storefront/macros.cljc"
-                                                   "bidi/bidi.cljc"])
-                                          first
-                                          not))
-                             (when-let [s (cljs.analyzer/error-message warning-type extra)]
-                               (binding [*out* *err*]
-                                 (println (format "[FILE: %s] %s" file (cljs.analyzer/message env s)))
-                                 (System/exit 1))))))]
+     :warning-handlers [cljs.analyzer/default-warning-handler
+                        (fn [warning-type env extra]
+                          (when (warning-type cljs.analyzer/*cljs-warnings*)
+                            (when-let [s (cljs.analyzer/error-message warning-type extra)]
+                              (binding [*out* *err*]
+                                (println (format "[FILE: %s] %s (%s)" file (cljs.analyzer/message env s) (pr-str {:type warning-type :extra extra})))
+                                (System/exit 1)))))]
      :compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
                 :output-dir "target/release/js/out"

@@ -124,11 +124,12 @@
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))
 
-(defn selected-value [evt]
-  (let [elem (.-target evt)]
-    (.-value
-     (aget (.-options elem)
-           (.-selectedIndex elem)))))
+#?(:cljs
+   (defn selected-value [^js/Event evt]
+     (let [elem (.-target evt)
+           ^js/HTMLElement subelem (aget ^js/NodeList (.-options elem)
+                                         (.-selectedIndex elem))]
+       (.-value subelem))))
 
 (defn ^:private field-error-message [error data-test]
   (when error
@@ -172,18 +173,19 @@
       [:input.col-12.h4.line-height-1
        (field-class (merge {:key         id
                             :placeholder label
-                            :value       (or value "")
-                            :on-focus
-                            (fn [e]
-                              (handle-message events/control-focus {:keypath keypath}))
-                            :on-blur
-                            (fn [e]
-                              (handle-message events/control-blur {:keypath keypath}))
-                            :on-change
-                            (fn [e]
-                              (handle-message events/control-change-state
-                                              {:keypath keypath
-                                               :value   (.. e -target -value)}))}
+                            :value       (or value "")}
+                           #?(:cljs
+                              {:on-focus
+                               (fn [^js/Event e]
+                                 (handle-message events/control-focus {:keypath keypath}))
+                               :on-blur
+                               (fn [^js/Event e]
+                                 (handle-message events/control-blur {:keypath keypath}))
+                               :on-change
+                               (fn [^js/Event e]
+                                 (handle-message events/control-change-state
+                                                 {:keypath keypath
+                                                  :value   (.. e -target -value)}))})
                            input-attributes)
                     status)]
       (when hint? [:div.py1.px2
@@ -259,10 +261,11 @@
      (floating-label label id status)
      [:select.col-12.bg-clear
       (field-class (merge {:key         label
-                           :value       (or value "")
-                           :on-change   #(handle-message events/control-change-state
-                                                         {:keypath keypath
-                                                          :value   (selected-value %)})}
+                           :value       (or value "")}
+                          #?(:clj nil
+                             :cljs {:on-change #(handle-message events/control-change-state
+                                                                {:keypath keypath
+                                                                 :value   (selected-value %)})})
                           (dissoc select-attributes :focused)
                           (when-not (seq selected-text) {:style {:opacity 0.5}}))
                    status)
