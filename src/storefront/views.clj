@@ -55,7 +55,7 @@
 (def css-styles (memoize read-css))
 
 (defn layout [{:keys [leads-config storeback-config environment client-version]} data initial-content]
-  (html5
+  (html5 {:lang "en"}
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
@@ -119,7 +119,7 @@
                               first)))
 
 (def not-found
-  (html5
+  (html5 {:lang "en"}
    [:head
     [:title "Not Found | Mayvenn"]
     [:meta {:name "fragment" :content "!"}]
@@ -140,7 +140,7 @@
        [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
 
 (def error-page
-  (html5
+  (html5 {:lang "en"}
    [:head
     [:meta {:name "fragment" :content "!"}]
     [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
