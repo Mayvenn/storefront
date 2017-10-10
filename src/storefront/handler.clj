@@ -303,58 +303,62 @@
                    slurp
                    render-static-page)}))
 
+(defn- assoc-category-route-data [data storeback-config params]
+  (let [category         (categories/id->category (:catalog/category-id params)
+                                                  categories/initial-categories)
+        {:keys [skus sku-sets]
+         :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
+                                                               first
+                                                               (:criteria category)))
+        sku-sets         (map products/->skuer-schema sku-sets)
+        {:keys [facets]} (api/fetch-facets storeback-config)
+        data             (-> data
+                             (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+                             (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
+                             (update-in keypaths/skus merge (products/normalize-skus skus)))]
+    (assoc-in data
+              keypaths/category-filters-for-browse
+              (categories/make-category-filters data response))))
+
+(defn- assoc-product-details-route-data [data storeback-config params]
+  (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
+        sku-sets                (map products/->skuer-schema sku-sets)
+        {:keys [facets]}        (api/fetch-facets storeback-config)]
+    (-> data
+        (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+        (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
+
+(defn required-data [environment leads-config storeback-config nav-event nav-message store order-number order-token]
+  (-> {}
+      (assoc-in keypaths/welcome-url
+                (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+      (assoc-in keypaths/store store)
+      (assoc-in keypaths/environment environment)
+      experiments/determine-features
+      (assoc-in keypaths/named-searches (api/named-searches storeback-config))
+      (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
+      (assoc-in keypaths/categories categories/initial-categories)
+      (assoc-in keypaths/static (static-page nav-event))
+      (assoc-in keypaths/navigation-message nav-message)))
+
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
-          order-number (get-in req [:cookies "number" :value])
-          order-token (some-> (get-in req [:cookies "token" :value])
-                              (string/replace #" " "+"))]
+          order-number       (get-in req [:cookies "number" :value])
+          order-token        (some-> (get-in req [:cookies "token" :value])
+                                     (string/replace #" " "+"))]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
                           :client-version   client-version}
-              data       (cond-> {}
-                           true
-                           ((fn [data]
-                              (-> data
-                                  (assoc-in keypaths/welcome-url
-                                            (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-                                  (assoc-in keypaths/store store)
-                                  (assoc-in keypaths/environment environment)
-                                  experiments/determine-features
-                                  (assoc-in keypaths/named-searches (api/named-searches storeback-config))
-                                  (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
-                                  (assoc-in keypaths/categories categories/initial-categories)
-                                  (assoc-in keypaths/static (static-page nav-event))
-                                  (assoc-in keypaths/navigation-message nav-message))))
-
+              data       (required-data environment leads-config storeback-config nav-event nav-message store order-number order-token)
+              data       (cond-> data
                            (= events/navigate-category nav-event)
-                           ((fn [data]
-                              (let [category         (categories/id->category (:catalog/category-id params)
-                                                                              categories/initial-categories)
-                                    {:keys [skus sku-sets]
-                                     :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
-                                                                                           first
-                                                                                           (:criteria category)))
-                                    sku-sets         (map products/->skuer-schema sku-sets)
-                                    {:keys [facets]} (api/fetch-facets storeback-config)
-                                    data             (-> data
-                                                         (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                                                         (update-in keypaths/sku-sets merge (index-by :sku-set/id sku-sets))
-                                                         (update-in keypaths/skus merge (products/normalize-skus skus)))]
-                                (assoc-in data
-                                          keypaths/category-filters-for-browse
-                                          (categories/make-category-filters data response)))))
+                           (assoc-category-route-data storeback-config params)
 
                            (= events/navigate-product-details nav-event)
-                           ((fn [data]
-                              (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
-                                    sku-sets                (map products/->skuer-schema sku-sets)
-                                    {:keys [facets]}        (api/fetch-facets storeback-config)]
-                                (-> data
-                                    (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                                    (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
-                                    (update-in keypaths/skus merge (products/normalize-skus skus)))))))
+                           (assoc-product-details-route-data storeback-config params))
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 
