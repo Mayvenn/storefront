@@ -78,10 +78,10 @@
     {:source-paths ["src-cljc" "src-cljs"]
     :warning-handlers [(fn [warning-type env extra]
                          (let [{:keys [file]} (cljs.analyzer/source-info env)]
-                           (when-not (clojure.string/includes? file "/org/clojure/clojurescript/")
+                           (when-not (clojure.string/includes? file "cljs/core.cljs")
                              (when-let [s (cljs.analyzer/error-message warning-type extra)]
                                (binding [*out* *err*]
-                                 (println "[FILE: " file "]" (cljs.analyzer/message env s))
+                                 (println (format "[FILE: %s] %s" file (cljs.analyzer/message env s)))
                                  (System/exit 1))))))]
      :compiler {:main "storefront.core"
                 :output-to "target/release/js/out/main.js"
