@@ -21,7 +21,7 @@
        [:p.m2 "You've just taken the first step towards becoming a Mayvenn!"]
        [:p.p3 "We'll be giving you a call very soon."
         [:br.hide-on-mb]
-        " Watch for our Caller ID: 1-510-250-2320"]]
+        " Watch for our Caller ID: 510-694-0253"]]
       [:div.h4.py1
        [:p.my2 "We'd love to connect on social media:"]
        [:div
