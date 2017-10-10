@@ -2,14 +2,16 @@
   (:require [goog.object :as object]
             [goog.dom.classlist :as classlist]))
 
-(def scroll-target (.. js/document -scrollingElement))
+(defn scroll-target []
+  (or (.-scrollingElement js/document)
+      (.-body js/document)))
 
 (defn animate [el end-event start-fn end-fn]
   (letfn [(listener [e]
             (end-fn e)
-            (classlist/remove scroll-target "animating")
+            (classlist/remove (scroll-target) "animating")
             (.removeEventListener el end-event listener))]
-    (classlist/add scroll-target "animating")
+    (classlist/add (scroll-target) "animating")
     (start-fn)
     (.addEventListener el end-event listener)))
 
@@ -17,29 +19,29 @@
   [elem y] (set! (.. elem -scrollTop) y))
 
 (defn snap-to [y]
-  (scroll-to-y scroll-target y))
+  (scroll-to-y (scroll-target) y))
 
 (defn snap-to-top []
   (snap-to 0))
 
 (defn scroll-to [dest]
-  (let [current-y (.. scroll-target -scrollTop)
+  (let [current-y (.. (scroll-target) -scrollTop)
         dy (- dest current-y)]
     (animate
-     scroll-target
+     (scroll-target)
      "transitionend"
      #(do
-        (set! (.. scroll-target -style -marginTop) (str dy "px"))
-        (scroll-to-y scroll-target dest)
-        (set! (.. scroll-target -style -transition) "margin-top 1s ease")
-        (set! (.. scroll-target -style -marginTop) 0))
+        (set! (.. (scroll-target) -style -marginTop) (str dy "px"))
+        (scroll-to-y (scroll-target) dest)
+        (set! (.. (scroll-target) -style -transition) "margin-top 1s ease")
+        (set! (.. (scroll-target) -style -marginTop) 0))
      #(when (= (.-target %) (.-currentTarget %))
-        (set! (.. scroll-target -style -transition) "none")))))
+        (set! (.. (scroll-target) -style -transition) "none")))))
 
 (def scroll-padding 35.0)
 ;; TODO: rename
 (defn scroll-to-elem [el]
-  (let [scroll-top (.. scroll-target -scrollTop)
+  (let [scroll-top (.. (scroll-target) -scrollTop)
         el-bottom (object/get (.getBoundingClientRect el) "bottom")
         window-height js/window.innerHeight]
     (when (> el-bottom window-height)
@@ -48,7 +50,7 @@
 
 (defn scroll-elem-to-top [el]
   (let [el-top (object/get (.getBoundingClientRect el) "top")
-        scroll-top     (.. scroll-target -scrollTop)]
+        scroll-top     (.. (scroll-target) -scrollTop)]
     (scroll-to (+ scroll-top el-top (- scroll-padding)))))
 
 (defn scroll-selector-to-top [selector]
