@@ -38,15 +38,15 @@
          (= (:product-id nav-args) (:product-id prev-nav-args)))))
 
 (defmethod perform-track events/navigate [_ event args app-state]
-  (when (and (not (get-in app-state keypaths/redirecting?))
-             (not (nav-was-selecting-bundle-option? app-state)))
+  (when (not (get-in app-state keypaths/redirecting?))
     (let [path (routes/current-path app-state)]
-      (sift/track-page (get-in app-state keypaths/user-id)
-                       (get-in app-state keypaths/session-id))
-      (riskified/track-page path)
-      (stringer/track-page)
       (google-analytics/track-page path)
-      (facebook-analytics/track-page path))))
+      (when (not (nav-was-selecting-bundle-option? app-state))
+        (sift/track-page (get-in app-state keypaths/user-id)
+                         (get-in app-state keypaths/session-id))
+        (riskified/track-page path)
+        (stringer/track-page)
+        (facebook-analytics/track-page path)))))
 
 ;; GROT: when old product detail page is removed
 (defmethod perform-track events/navigate-named-search [_ event args app-state]
