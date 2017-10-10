@@ -235,11 +235,7 @@
                                        (:selector/essentials product)))]
     (when-let [{:keys [:catalog/product-id :page/slug]} product]
       (if redirect?
-        (let [path (routes/path-for events/navigate-product-details
-                                    (merge {:catalog/product-id product-id
-                                            :page/slug          slug}
-                                           (when sku
-                                             {:query-params {:SKU (:sku sku)}})))]
+        (let [path (products/path-for-sku product-id slug sku)]
           (util.response/redirect path))
         (html-response render-ctx
                        (-> data

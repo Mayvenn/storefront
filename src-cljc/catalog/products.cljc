@@ -4,7 +4,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :refer [transition-state]]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.routes :as routes]))
 
 (defn product-by-id [app-state product-id]
   (get-in app-state (conj keypaths/sku-sets product-id)))
@@ -168,3 +169,10 @@
                  (set (sequence normalize-sku-set-images-xf sku-sets)))
       (update-in keypaths/sku-sets merge (normalize-sku-sets sku-sets))
       (update-in keypaths/skus merge (normalize-skus skus))))
+
+(defn path-for-sku [product-id slug sku]
+  (routes/path-for events/navigate-product-details
+                   (merge {:catalog/product-id product-id
+                           :page/slug          slug}
+                          (when sku
+                            {:query-params {:SKU sku}}))))
