@@ -32,10 +32,11 @@
     (stringer/identify (get-in app-state keypaths/user))))
 
 (defn- nav-was-selecting-bundle-option? [app-state]
-  (let [[nav-msg nav-args] (get-in app-state keypaths/navigation-message)
-        [prev-nav-msg prev-nav-args] (first (get-in app-state keypaths/navigation-undo-stack))]
-    (and (= nav-msg prev-nav-args events/navigate-product-details)
-         (= (:product-id nav-args) (:product-id prev-nav-args)))))
+  (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
+    (let [[nav-event nav-args]           (get-in app-state keypaths/navigation-message)
+          [prev-nav-event prev-nav-args] prev-nav-message]
+      (and (= nav-event prev-nav-event events/navigate-product-details)
+           (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
 (defmethod perform-track events/navigate [_ event args app-state]
   (when (not (get-in app-state keypaths/redirecting?))
