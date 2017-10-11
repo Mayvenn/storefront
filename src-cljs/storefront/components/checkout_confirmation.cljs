@@ -176,7 +176,9 @@
 
      :items line-items
 
-     :discounts (reduce (comp merge promotion->affirm-discount) {} promotions)
+     :discounts (->> promotions
+                     (map promotion->affirm-discount)
+                     (into {}))
 
      ;;user defined key/value pairs
      :metadata {}
