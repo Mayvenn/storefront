@@ -171,7 +171,8 @@
                      (when selected-affirm? {:checked "checked"}))
               [:div.overflow-hidden
                [:div "Pay with " (svg/affirm {:alt "Affirm"})]
-               [:p.h6 "Make easy monthly payments over 3, 6, or 12 months. "
+               [:p.h6 (str "Make easy monthly payments over 3, 6, or 12 months. "
+                           "Promo codes are excluded when you pay with Affirm. ")
                 [:a {:href "https://google.com"} "Learn more."]]])
 
              (when selected-affirm?
