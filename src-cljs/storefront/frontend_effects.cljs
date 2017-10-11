@@ -491,6 +491,9 @@
   (fetch-saved-cards app-state)
   (stripe/insert))
 
+(defmethod perform-effects events/affirm-modal-refresh [_ _ _ _ _]
+  (affirm/refresh))
+
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))

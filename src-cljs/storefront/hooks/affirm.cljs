@@ -14,6 +14,10 @@
     (when-not (.hasOwnProperty js/window "affirm")
       (tags/insert-tag-with-text (str assignment-var "; " affirm-anon-fn) "affirm"))))
 
+(defn refresh []
+  (when (.hasOwnProperty js/window "affirm")
+    (js/affirm.ui.refresh)))
+
 
 (defn checkout [affirm-order]
   (js/affirm.checkout (clj->js affirm-order))

@@ -181,6 +181,7 @@
 (defpath control-checkout-confirmation-submit)
 
 (defpath control-checkout-affirm-confirmation-submit)
+(defpath affirm-modal-refresh)
 
 (defpath control-stylist-referral-submit)
 (defpath control-stylist-referral-remove)

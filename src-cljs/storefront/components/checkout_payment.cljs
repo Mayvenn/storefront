@@ -12,7 +12,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.api :as api]
             [storefront.frontend-effects :refer [create-stripe-token]]
             [storefront.request-keys :as request-keys]
@@ -51,6 +51,18 @@
 
                  selected-saved-card-id (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
         :navigate events/navigate-checkout-confirmation}))))
+
+(defn ^:private affirm-modal-component [data owner]
+  (reify
+    om/IDidMount
+    (did-mount [this]
+      (handle-message events/affirm-modal-refresh {}))
+    om/IRender
+    (render [_]
+      (html
+       [:a.inline-block.affirm-site-modal.navy.underline
+        {:data-promo-id "promo_set_default"}
+        "Learn more."]))))
 
 (defn old-component
   [{:keys [step-bar
@@ -174,7 +186,7 @@
                [:div "Pay with " (svg/affirm {:alt "Affirm"})]
                [:p.h6 (str "Make easy monthly payments over 3, 6, or 12 months. "
                            "Promo codes are excluded when you pay with Affirm. ")
-                [:a.inline-block {:href "https://google.com"} "Learn more."]
+                (om/build affirm-modal-component {})
                 (when promo-code
                   [:p.h6.ml2.dark-gray "* " [:span.shout promo-code] " promo code excluded with Affirm"])]])
 
