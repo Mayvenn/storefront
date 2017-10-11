@@ -107,6 +107,7 @@
            store-credit
            field-errors
            credit-card
+           promo-code
            selected-payment-methods]}
    owner]
   (om/component
@@ -173,7 +174,9 @@
                [:div "Pay with " (svg/affirm {:alt "Affirm"})]
                [:p.h6 (str "Make easy monthly payments over 3, 6, or 12 months. "
                            "Promo codes are excluded when you pay with Affirm. ")
-                [:a {:href "https://google.com"} "Learn more."]]])
+                [:a.inline-block {:href "https://google.com"} "Learn more."]
+                (when promo-code
+                  [:p.h6.ml2.dark-gray "* " [:span.shout promo-code] " promo code excluded with Affirm"])]])
 
              (when selected-affirm?
                [:div.h6.px2.ml4.dark-gray
@@ -196,6 +199,7 @@
      {:store-credit             {:credit-available  available-store-credit
                                  :credit-applicable credit-to-use
                                  :fully-covered?    fully-covered?}
+      :promo-code               (first (get-in data keypaths/order-promotion-codes))
       :saving?                  (cc/saving-card? data)
       :disabled?                (if (experiments/affirm? data)
                                   (or (and (utils/requesting? data request-keys/get-saved-cards) ;; Requesting cards, no existing cards, or not fully covered
