@@ -137,9 +137,8 @@
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     ;; TODO - get image urls
-     :item_image_url "https://placekitten.com/200/201" #_(:src (medium-img products product-id))
-     :item_url       (products/path-for-sku product-id slug sku)}))
+     :item_image_url (str "https:" (:src (medium-img products product-id)))
+     :item_url       (str (.-protocol js/location) "//" (.-host js/location) (products/path-for-sku product-id slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
@@ -150,11 +149,12 @@
   (let [email         (-> order :user :email)
         product-items (orders/product-items order)
         line-items    (mapv (partial ->affirm-line-item products) product-items)
-        promotions    (distinct (mapcat :applied-promotions product-items))]
-    {:merchant {:user_confirmation_url        "https://merchantsite.com/confirm"
-                :user_cancel_url              "https://merchantsite.com/cancel"
+        promotions    (distinct (mapcat :applied-promotions product-items))
+        domain        (str (.-protocol js/location) "//" (.-host js/location))]
+    {:merchant {:user_confirmation_url        (str domain "/orders/" (:number order) "/affirm/:order-token")
+                :user_cancel_url              (str domain "/checkout/payments?error=affirm")
                 :user_confirmation_url_action "POST"
-                :name                         "Your Customer-Facing Merchant Name"}
+                :name                         "Mayvenn"}
 
      ;; You can include the full name instead
      ;; "full"  "John Doe"
