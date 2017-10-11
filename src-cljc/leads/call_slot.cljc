@@ -16,12 +16,13 @@
    "EDT"  "EST"})
 
 (defn- parse-timezone [date-string]
-  (-> (re-find #"\(\w+\)" date-string)
-      (string/replace #"[\(\)]" "")))
+  (some-> (re-find #"\(\w+\)" date-string)
+          (string/replace #"[\(\)]" "")))
 
 (defn- timezone [js-date]
   #?(:cljs
-     (tz->simple-tz (parse-timezone (.toString js-date)))
+     (tz->simple-tz (or (parse-timezone (.toString js-date))
+                        "EST"))
      :clj
      "EST"))
 
