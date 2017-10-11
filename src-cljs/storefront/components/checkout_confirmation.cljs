@@ -1,5 +1,6 @@
 (ns storefront.components.checkout-confirmation
   (:require [om.core :as om]
+            [cemerick.url :refer [url-encode]]
             [sablono.core :refer-macros [html]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
