@@ -266,23 +266,23 @@
 
 (defn render-leads-page
   [render-ctx data req params]
-  (let [lead-id                   (get-in data leads.keypaths/lead-id)
-        step-id                   (get-in data leads.keypaths/lead-step-id)
-        step-id-reg-thanks        "thank-you"
-        nav-event                 (get-in data keypaths/navigation-event)
-        home                      events/navigate-leads-home
-        details                   events/navigate-leads-registration-details
-        thank-you                 events/navigate-leads-resolve
-        reg-thank-you             events/navigate-leads-registration-resolve]
+  (let [onboarding-status     (get-in data leads.keypaths/onboarding-status)
+        lead-id       (get-in data leads.keypaths/lead-id)
+        nav-event     (get-in data keypaths/navigation-event)
+        home          events/navigate-leads-home
+        details       events/navigate-leads-registration-details
+        thank-you     events/navigate-leads-resolve
+        reg-thank-you events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
                                         ;; nav-event        ;; redir to     ;; condition
-                                        details             home            (empty? lead-id)
-                                        details             home            (not=   step-id "details")
-                                        reg-thank-you       home            (not=   step-id "thank-you")
-                                        thank-you           nav-event       (empty? step-id)
-                                        thank-you           home            (not=   step-id step-id-reg-thanks)
-                                        step-id-reg-thanks  reg-thank-you   (=      step-id "thank-you")))))
+                                        details             home            true
+                                        thank-you           home            (or (empty? lead-id)
+                                                                                (not=   onboarding-status
+                                                                                        "awaiting-call"))
+                                        reg-thank-you       home            (or (empty? lead-id)
+                                                                                (not=   onboarding-status
+                                                                                        "stylist-created"))))))
 
 
 (defn render-static-page [template]
@@ -504,6 +504,7 @@
                                      (assoc-in leads.keypaths/lead-utm-campaign (cookies/get request "leads.utm-campaign"))
                                      (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
                                      (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
+                                     (assoc-in leads.keypaths/onboarding-status (cookies/get request "onboarding-status"))
                                      (assoc-in keypaths/store-slug "welcome")
                                      (assoc-in keypaths/environment environment)
                                      (assoc-in keypaths/navigation-message nav-message)
@@ -511,15 +512,13 @@
                                      (assoc-in leads.keypaths/tz-abbreviation "EST")
                                      (assoc-in leads.keypaths/call-slot-options [["Best time to call*" ""]])
                                      ((fn [data]
-                                        (let [cookies     (get request :cookies)
-                                              lead-id     (get-in cookies ["lead-id" :value])
+                                        (let [lead-id     (cookies/get request "lead-id")
+                                              _ (clojure.pprint/pprint request)
                                               remote-lead (when (seq lead-id)
                                                             (api/lookup-lead storeback-config lead-id))]
-                                          (if (:flow-id remote-lead) ;; if in self-reg
-                                            (-> data
-                                                (assoc-in leads.keypaths/remote-lead remote-lead)
-                                                (update-in leads.keypaths/lead merge remote-lead))
-                                            data)))))]
+                                          (-> data
+                                              (assoc-in leads.keypaths/remote-lead remote-lead)
+                                              (update-in leads.keypaths/lead merge remote-lead))))))]
         ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
 
 (defn wrap-welcome-is-for-leads [h]

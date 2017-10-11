@@ -472,7 +472,9 @@
   #?(:cljs
      (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/remote-lead)
            lead                          (get-in previous-app-state keypaths/lead)]
-       (cookie-jar/save-lead-id (get-in app-state storefront.keypaths/cookie) {"lead-id" lead-id})
+       (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
+                             {"lead-id"             lead-id
+                              "onboarding-status" "lead-created"})
        (if (accessors/self-reg? flow-id)
          (history/enqueue-navigate events/navigate-leads-registration-details {:submitted-lead lead})
          (history/enqueue-navigate events/navigate-leads-resolve)))))
@@ -484,13 +486,30 @@
                   (get-in app-state storefront.keypaths/store-slug))
        (effects/page-not-found))))
 
+(defn clear-lead [app-state]
+  (-> app-state
+      (assoc-in keypaths/lead {})
+      (assoc-in keypaths/remote-lead {})))
+
+(def terminal-onboarding-statuses #{"awaiting-call"
+                                    "stylist-created"})
+
 (defmethod transitions/transition-state events/navigate-leads-home
   [_ _ _ app-state]
-  (let [call-slots (call-slot/options (get-in app-state keypaths/eastern-offset))]
-    (assoc-in app-state keypaths/call-slot-options call-slots)))
+  #?(:cljs
+     (let [call-slots          (call-slot/options (get-in app-state keypaths/eastern-offset))
+           lead-cookie         (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
+           onboarding-status (get lead-cookie "onboarding-status")]
+       (cond-> (assoc-in app-state keypaths/call-slot-options call-slots)
+         (contains? terminal-onboarding-statuses onboarding-status)
+         clear-lead))))
 
 (defmethod effects/perform-effects events/navigate-leads-home
   [_ _ _ _ app-state]
   #?(:cljs
-     (tags/insert-tag-with-src "//platform.twitter.com/widgets.js"
-                               "twitter-script")))
+     (let [onboarding-status (-> (get-in app-state storefront.keypaths/cookie)
+                                 cookie-jar/retrieve-lead
+                                 (get "onboarding-status"))]
+       (when (contains? terminal-onboarding-statuses
+                        onboarding-status)
+         (cookie-jar/clear-lead (get-in app-state storefront.keypaths/cookie))))))

@@ -344,7 +344,8 @@
                                        :session-id (get-in app-state storefront.keypaths/session-id)
                                        :step-data  {:registration registration}}
                                       (fn [registered-lead]
-                                        (messages/handle-message events/api-success-lead-registered {:registered-lead registered-lead}))))))
+                                        (messages/handle-message events/api-success-lead-registered
+                                                                 {:registered-lead registered-lead}))))))
 
 (defmethod transitions/transition-state events/api-success-lead-registered
   [_ event {:keys [registered-lead]} app-state]
@@ -353,5 +354,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
      [_ event {:keys [registered-lead]} _ app-state]
-     (cookie-jar/clear-lead-id (get-in app-state storefront.keypaths/cookie))
+     (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
+                           {"lead-id" (:id registered-lead)
+                            "onboarding-status" "stylist-created"})
      (history/enqueue-navigate events/navigate-leads-registration-resolve)))

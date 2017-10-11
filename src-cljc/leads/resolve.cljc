@@ -1,10 +1,15 @@
 (ns leads.resolve
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require #?@(:clj [[storefront.component-shim :as component]]
+                :cljs [[storefront.browser.cookie-jar :as cookie-jar]
+                       [storefront.component :as component]])
             [leads.header :as header]
             [storefront.components.footer :as footer]
             [storefront.assets :as assets]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.keypaths]
+            [leads.keypaths :as keypaths]))
 
 (defn social-link [url image-path]
   [:a {:item-prop "sameAs"
@@ -49,4 +54,11 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-leads-resolve
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
+                           {"lead-id" (get-in app-state keypaths/remote-lead-id)
+                            "onboarding-status" "awaiting-call"})))
 
