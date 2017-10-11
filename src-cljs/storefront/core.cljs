@@ -17,6 +17,8 @@
             [clojure.data :refer [diff]]
             [catalog.selector :as selector]))
 
+(set! *warn-on-infer* true)
+
 (when config/enable-console-print?
   (enable-console-print!))
 
