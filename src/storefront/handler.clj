@@ -325,7 +325,7 @@
         (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
         (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
-(defn required-data [environment leads-config storeback-config nav-event nav-message store order-number order-token]
+(defn required-data [{:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
   (-> {}
       (assoc-in keypaths/welcome-url
                 (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
@@ -338,6 +338,13 @@
       (assoc-in keypaths/static (static-page nav-event))
       (assoc-in keypaths/navigation-message nav-message)))
 
+(defmacro auto-map
+  "Name keys from symbols passed in."
+  [& args]
+  `(apply hash-map
+          (interleave (list ~@(map (comp keyword str) args))
+                      (list ~@args))))
+
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
@@ -348,7 +355,7 @@
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
                           :client-version   client-version}
-              data       (required-data environment leads-config storeback-config nav-event nav-message store order-number order-token)
+              data       (required-data (auto-map environment leads-config storeback-config nav-event nav-message store order-number order-token))
               data       (cond-> data
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
