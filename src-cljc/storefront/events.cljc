@@ -182,6 +182,8 @@
 
 (defpath control-checkout-affirm-confirmation-submit)
 (defpath affirm-modal-refresh)
+(defpath affirm-product-card-refresh)
+(defpath affirm-product-card-mounted)
 
 (defpath control-stylist-referral-submit)
 (defpath control-stylist-referral-remove)

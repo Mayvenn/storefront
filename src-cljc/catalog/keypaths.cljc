@@ -8,5 +8,7 @@
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :sku))
 
+(def affirm-product-card-refresh-timeout (concat ui [:affirm :product-card :refresh :timeout] ))
+
 (def initial (-> {}
                  (assoc-in detailed-product {})))

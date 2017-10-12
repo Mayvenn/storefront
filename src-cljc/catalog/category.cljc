@@ -97,13 +97,13 @@
        [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
        " to see more hair."]])])
 
-(defn product-cards [loading? sku-sets facets]
+(defn product-cards [loading? sku-sets facets affirm?]
   [:div.flex.flex-wrap.mxn1
    (if (empty? sku-sets)
      (product-cards-empty-state loading?)
-     (for [product sku-sets] (product-card/component product facets)))])
+     (for [product sku-sets] (product-card/component product facets affirm?)))])
 
-(defn ^:private component [{:keys [category filters facets loading-products?]} owner opts]
+(defn ^:private component [{:keys [category filters facets loading-products? affirm?]} owner opts]
   (let [category-criteria (:criteria category)]
     (component/create
      [:div
@@ -127,13 +127,14 @@
             (filter-panel selected-facet)]]
           [:div
            (filter-tabs category-criteria filters)])]
-       (product-cards loading-products? (:filtered-sku-sets filters) facets)]])))
+       (product-cards loading-products? (:filtered-sku-sets filters) facets affirm?)]])))
 
 (defn ^:private query [data]
   (let [category (categories/current-category data)]
     {:category          category
      :filters           (get-in data keypaths/category-filters-for-browse)
      :facets            (get-in data keypaths/facets)
+     :affirm?           (experiments/affirm? data)
      :loading-products? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:criteria category)))}))
 

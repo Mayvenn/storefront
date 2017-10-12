@@ -14,12 +14,14 @@
         format (if (< amount 0) "-$%s" "$%s")]
     (str/format format (number-with-commas (num/abs amount)))))
 
+(defn as-cents [amount]
+  (-> (num/parse-float amount)
+      num/abs
+      (* 100)
+      num/round))
+
 (defn as-money-cents-only [amount]
-  (let [amount (-> (num/parse-float amount)
-                   num/abs
-                   (* 100)
-                   num/round
-                   (rem 100))]
+  (let [amount (-> amount as-cents (rem 100))]
     (str/format "%02i" amount)))
 
 (defn as-money [amount]

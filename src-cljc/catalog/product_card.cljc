@@ -1,8 +1,16 @@
 (ns catalog.product-card
   (:require
+   #?@(:cljs [[storefront.component :as component]
+              [om.core :as om]
+              [storefront.hooks.affirm :as affirm]]
+       :clj  [[storefront.component-shim :as component]])
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as m]
    [storefront.components.money-formatters :as mf]
-   [storefront.events :as events]))
+   [storefront.events :as events]
+   [catalog.keypaths :as keypaths]
+   [storefront.transitions :as transitions]
+   [storefront.effects :as effects]))
 
 (defn slug->facet [facet facets]
   (->> facets
@@ -66,12 +74,32 @@
                 (not (#{"lace-front-wigs" "360-wigs"} family)))
        [:p.h6.teal "Bestseller!"]))])
 
+(defn affirm-product-card [data]
+  (component/html
+   [:a.dark-gray.h7.affirm-as-low-as.mx2
+    {:data-promo-id "promo_set_default"
+     :data-amount (mf/as-cents (:amount data))
+     :on-click (fn [event]
+                 (.preventDefault event))}
+    "Learn more"]))
+
+(defn affirm-product-card-component [data owner]
+  #?(:cljs (reify
+             om/IDidMount
+             (did-mount [this]
+               (m/handle-message events/affirm-product-card-mounted))
+             om/IRender
+             (render [_]
+               (affirm-product-card data)))
+     :clj (affirm-product-card data)))
+
 (defn component
   [{:keys [sku-set/slug
            representative-sku
            sku-set/name
            sold-out?] :as product}
-   facets]
+   facets
+   affirm?]
   (let [image (->> representative-sku :images (filter (comp #{"catalog"} :use-case)) first)]
     [:div.col.col-6.col-4-on-tb-dt.px1
      {:key slug}
@@ -81,7 +109,7 @@
                              {:catalog/product-id (:sku-set/id product)
                               :page/slug          slug})
              :data-test (str "product-" slug))
-      [:div.mb10.center
+      [:div.center
        ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
        [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                            :alt (:alt image)}]
@@ -94,4 +122,21 @@
              (unconstrained-facet product
                                   facets
                                   (keyword selector))])
-          [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]]))
+          [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]
+     [:p.mb10.center
+      (when affirm?
+        (component/build affirm-product-card-component {:amount (:price representative-sku)} {}))]]))
+
+(defn reset-refresh-timeout [timeout f]
+  #?(:cljs
+     (do (js/clearTimeout timeout)
+         (js/setTimeout f 50))))
+
+(defmethod transitions/transition-state events/affirm-product-card-mounted [_ _ _ app-state]
+  #?(:cljs (update-in app-state
+                      keypaths/affirm-product-card-refresh-timeout
+                      reset-refresh-timeout
+                      #(m/handle-message events/affirm-product-card-refresh))))
+
+(defmethod effects/perform-effects events/affirm-product-card-refresh [_ _ _ _ _]
+  #?(:cljs (affirm/refresh)))
