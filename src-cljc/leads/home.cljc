@@ -464,7 +464,7 @@
 (defmethod transitions/transition-state events/api-success-lead-created
   [_ _ remote-lead app-state]
   #?(:cljs (-> app-state
-               (assoc-in keypaths/lead {})
+               (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
                (update-in keypaths/remote-lead merge remote-lead))
      :clj  app-state))
 
@@ -490,6 +490,7 @@
 (defn clear-lead [app-state]
   (-> app-state
       (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
+      (assoc-in keypaths/stylist {})
       (assoc-in keypaths/remote-lead {})))
 
 (def terminal-onboarding-statuses #{"awaiting-call"

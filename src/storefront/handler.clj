@@ -536,7 +536,6 @@
                                      (assoc-in leads.keypaths/call-slot-options [["Best time to call*" ""]])
                                      ((fn [data]
                                         (let [lead-id     (cookies/get request "lead-id")
-                                              _ (clojure.pprint/pprint request)
                                               remote-lead (when (seq lead-id)
                                                             (api/lookup-lead storeback-config lead-id))]
                                           (-> data
@@ -555,7 +554,8 @@
       (if on-welcome-subdomain?
         (cond
           on-leads-page? (h req)
-          on-home-page?  (util.response/redirect (routes/path-for events/navigate-leads-home {:query-params query-params})
+          on-home-page?  (util.response/redirect (routes/path-for events/navigate-leads-home
+                                                                  {:query-params query-params})
                                                  :moved-permanently)
           :else          (not-found))
         (when on-leads-page? (not-found))))))
