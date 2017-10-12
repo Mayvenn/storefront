@@ -276,7 +276,9 @@
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
                                         ;; nav-event        ;; redir to     ;; condition
-                                        details             home            true
+                                        details             home            (or (empty? lead-id)
+                                                                                (not=   onboarding-status
+                                                                                        "lead-created"))
                                         thank-you           home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "awaiting-call"))
