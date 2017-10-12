@@ -94,13 +94,10 @@
    [:div.center
     [:h2 "Become a Mayvenn"]
     [:p.m2 "You are on your way to joining the Mayvenn Movement! Finish your registration today!"]]
-   #?(:cljs (ui/teal-button
-             (merge {:data-test "resume-registration"}
-                    (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
-             "Finish registration")
-      :clj (ui/dark-gray-button
-            {}
-            ui/spinner))])
+   (ui/teal-button
+    (merge {:data-test "resume-registration"}
+           (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
+    "Finish registration")])
 
 (defn hero-section [{:keys [flow-id sign-up resume-self-reg] :as attrs}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
