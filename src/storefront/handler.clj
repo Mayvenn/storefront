@@ -473,6 +473,27 @@
                                     (codec/form-encode {:paypal      true
                                                         :order-token order-token})))))))
 
+(defn affirm-routes [{:keys [storeback-config]}]
+  (wrap-cookies
+   (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
+         (let [checkout-token (-> request :params :checkout_token)]
+           (if-let [error-code (api/verify-affirm-payment storeback-config number order-token checkout-token
+                                                          (let [headers (:headers request)]
+                                                            (or (headers "x-forwarded-for")
+                                                                (headers "remote-addr")
+                                                                "localhost"))
+                                                          (assoc (:query-params request)
+                                                                 "utm-params"
+                                                                 {"utm-source"   (cookies/get request "utm-source")
+                                                                  "utm-campaign" (cookies/get request "utm-campaign")
+                                                                  "utm-term"     (cookies/get request "utm-term")
+                                                                  "utm-content"  (cookies/get request "utm-content")
+                                                                  "utm-medium"   (cookies/get request "utm-medium")}))]
+             (util.response/redirect (str "/checkout/payment?error=" error-code))
+             (util.response/redirect (str "/orders/" number "/complete?"
+                                          (codec/form-encode {:affirm      true
+                                                              :order-token order-token}))))))))
+
 (defn logo-routes [{:keys [dc-logo-config]}]
   (wrap-cookies
    (GET "/logo.:ext{htm|gif}" req
@@ -627,6 +648,7 @@
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
+               (affirm-routes ctx)
                (wrap-leads-routes (leads-routes ctx) ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))

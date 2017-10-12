@@ -64,6 +64,17 @@
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
 
+(defn verify-affirm-payment [storeback-config number order-token checkout-token ip-addr {:strs [sid utm-params]}]
+  (let [{:keys [status body]} (storeback-post storeback-config "/v2/place-order"
+                                              {:form-params {:number         number
+                                                             :token          order-token
+                                                             :checkout-token checkout-token
+                                                             :session-id     sid
+                                                             :utm-params     utm-params}
+                                               :headers     {"X-Forwarded-For" ip-addr}})]
+    (when-not (<= 200 status 299)
+      (-> body :error-code (or "affirm-incomplete")))))
+
 (defn fetch-facets [storeback-config]
   (let [response (storeback-fetch storeback-config "/facets" {})]
     (when (not-404 response)

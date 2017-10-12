@@ -442,6 +442,9 @@
   {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
 
+(def payment-error-codes
+  {"affirm-incomplete" " There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
@@ -489,7 +492,9 @@
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
-  (stripe/insert))
+  (stripe/insert)
+  (when-let [error-msg (-> args :query-params :error payment-error-codes)]
+    (handle-message events/flash-show-failure {:message error-msg})))
 
 (defmethod perform-effects events/affirm-modal-refresh [_ _ _ _ _]
   (affirm/refresh))
@@ -501,12 +506,12 @@
   (stripe/insert)
   (api/get-shipping-methods))
 
-(defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} _ app-state]
+(defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal affirm order-token]} :query-params number :number} _ app-state]
   (when (not (get-in app-state keypaths/user-id))
     (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
-  (when paypal
+  (when (or paypal affirm)
     (redirect events/navigate-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
