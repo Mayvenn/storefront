@@ -426,7 +426,8 @@
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
         self-reg?                         (= "stylistsfb"
-                                             (string/lower-case (or (get-in data keypaths/lead-utm-content) "")))]
+                                             (string/lower-case (or (get-in data keypaths/lead-utm-content)
+                                                                    "")))]
     {:hero   {:flow-id         flow-id
               :resume-self-reg {:remote-lead remote-lead}
               :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
@@ -497,10 +498,17 @@
 (defmethod transitions/transition-state events/navigate-leads-home
   [_ _ _ app-state]
   #?(:cljs
-     (let [call-slots          (call-slot/options (get-in app-state keypaths/eastern-offset))
-           lead-cookie         (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
-           onboarding-status (get lead-cookie "onboarding-status")]
-       (cond-> (assoc-in app-state keypaths/call-slot-options call-slots)
+     (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
+           lead-cookie       (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
+           utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))
+           onboarding-status (get lead-cookie "onboarding-status")
+           app-state         (-> app-state
+                                 (assoc-in keypaths/call-slot-options call-slots)
+                                 (update-in keypaths/lead-utm-content
+                                            (fn [existing-param]
+                                              (or existing-param
+                                                  (get utm-cookies "leads.utm-content")))))]
+       (cond-> app-state
          (contains? terminal-onboarding-statuses onboarding-status)
          clear-lead))))
 

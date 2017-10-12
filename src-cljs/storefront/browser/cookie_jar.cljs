@@ -108,6 +108,7 @@
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
+(def retrieve-leads-utm-params (partial retrieve leads-utm-params))
 (def retrieve-lead (partial retrieve lead))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
