@@ -16,7 +16,7 @@
 
 (defn ^:private as-low-as-html [data]
   (component/html
-   [:a.dark-gray.h7.affirm-as-low-as.mx2
+   [:a.affirm-as-low-as.mx2
     {:data-promo-id "promo_set_default"
      :data-amount (mf/as-cents (:amount data))
      :on-click (fn [event]

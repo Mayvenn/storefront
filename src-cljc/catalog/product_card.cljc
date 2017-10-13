@@ -101,4 +101,5 @@
           [:p.h6 "Starting at " (mf/as-money-without-cents (:price representative-sku))]])]]
      [:p.mb10.center
       (when affirm?
-        (component/build affirm/as-low-as-component {:amount (:price representative-sku)} {}))]]))
+        [:div.h6.dark-gray
+         (component/build affirm/as-low-as-component {:amount (:price representative-sku)} {})])]]))

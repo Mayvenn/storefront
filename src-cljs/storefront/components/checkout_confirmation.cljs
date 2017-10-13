@@ -17,7 +17,9 @@
             [storefront.routes :as routes]
             [storefront.accessors.products :refer [medium-img]]
             [catalog.products :as products]
-            [storefront.hooks.affirm :as affirm]))
+            [storefront.hooks.affirm :as affirm]
+            [storefront.components.affirm :as affirm-components]
+            [storefront.component :as component]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -31,6 +33,13 @@
      no-affirm-payment?
      ;; is total covered by remaining store-credit?
      (> order-total store-credit-amount))))
+
+(defn as-low-as-section [total]
+  [:div.py3
+   [:div.center.border.rounded.border-aqua.col-12.py1.col-6-on-tb-dt.mx-auto
+    [:div.col-10.mx-auto.dark-gray.h6.py1
+     (om/build affirm-components/as-low-as-component {:amount total})
+     #_[:span "Continue with Affirm below."]]]])
 
 (defn old-component
   [{:keys [available-store-credit
@@ -119,6 +128,7 @@
                                        {:read-only?             true
                                         :use-store-credit?      false
                                         :available-store-credit available-store-credit})
+        (as-low-as-section (:total order))
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
                                                    :disabled? updating-shipping?
