@@ -19,7 +19,8 @@
             [goog.events.EventType :as EventType]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.components.affirm :as affirm]))
 
 (defn- pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
@@ -155,7 +156,8 @@ Thanks,
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
-                              field-errors]} owner]
+                              field-errors
+                              affirm?]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -201,6 +203,8 @@ Thanks,
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
+        (when affirm?
+          (affirm/as-low-as-box {:amount (:total order)}))
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
@@ -290,7 +294,8 @@ Thanks,
      :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
-     :focused                   (get-in data keypaths/ui-focus)}))
+     :focused                   (get-in data keypaths/ui-focus)
+     :affirm?                   (experiments/affirm? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

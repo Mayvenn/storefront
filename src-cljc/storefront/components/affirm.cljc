@@ -31,6 +31,9 @@
 
 (defn as-low-as-component [data owner]
   #?(:cljs (reify
+             om/IDidUpdate
+             (did-update [this _ _]
+               (m/handle-message events/affirm-request-refresh))
              om/IDidMount
              (did-mount [this]
                (m/handle-message events/affirm-request-refresh))
@@ -41,6 +44,9 @@
 
 (defn modal-component [data owner]
   #?(:cljs (reify
+             om/IDidUpdate
+             (did-update [this _ _]
+               (m/handle-message events/affirm-request-refresh))
              om/IDidMount
              (did-mount [this]
                (m/handle-message events/affirm-request-refresh {}))
