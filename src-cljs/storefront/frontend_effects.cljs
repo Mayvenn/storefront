@@ -496,9 +496,6 @@
   (when-let [error-msg (-> args :query-params :error payment-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
-(defmethod perform-effects events/affirm-modal-refresh [_ _ _ _ _]
-  (affirm/refresh))
-
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
