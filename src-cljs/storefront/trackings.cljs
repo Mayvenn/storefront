@@ -19,7 +19,8 @@
             [spice.maps :as maps]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.accessors.nav :as nav]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.hooks.pintrest :as pintrest]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -59,6 +60,7 @@
     (let [path (routes/current-path app-state)]
       (google-analytics/track-page path)
       (when (not (nav-was-selecting-bundle-option? app-state))
+        (pintrest/track-page)
         (sift/track-page (get-in app-state keypaths/user-id)
                          (get-in app-state keypaths/session-id))
         (riskified/track-page path)

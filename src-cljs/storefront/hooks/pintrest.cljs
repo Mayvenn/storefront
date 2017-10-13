@@ -16,3 +16,9 @@
 
 (defn remove-tracking []
   (remove-tags-by-class "pintrest-pixel"))
+
+(defn track-page
+  ([]
+   (js/pintrk "track" "pagevisit"))
+  ([data]
+   (js/pintrk "track" "pagevisit" data)))
