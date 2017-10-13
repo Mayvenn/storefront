@@ -48,6 +48,13 @@
              (render [_] modal-html))
      :clj modal-html))
 
+(defn as-low-as-box [data]
+  [:div.py3
+   [:div.center.border.rounded.border-aqua.col-12.py1.col-6-on-tb-dt.mx-auto
+    [:div.col-10.mx-auto.dark-gray.h6.py1
+     (component/build as-low-as-component data {})
+     #_[:span "Continue with Affirm below."]]]])
+
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs
      (do (js/clearTimeout timeout)
