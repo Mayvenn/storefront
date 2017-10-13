@@ -249,6 +249,8 @@
 
 (def review-components-count (conj ui :review-components-count))
 
+(def affirm-refresh-timeout (concat ui [:affirm :refresh :timeout] ))
+
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
 (def loaded-facebook (conj loaded :facebook))
