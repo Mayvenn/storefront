@@ -121,7 +121,8 @@
                                        {:read-only?             true
                                         :use-store-credit?      false
                                         :available-store-credit available-store-credit})
-        (affirm-components/as-low-as-box {:amount (:total order)})
+        [:div.col-12.col-6-on-tb-dt.mx-auto
+         (affirm-components/as-low-as-box {:amount (:total order)})]
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
                                                    :disabled? updating-shipping?

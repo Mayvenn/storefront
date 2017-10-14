@@ -30,7 +30,8 @@
                        [storefront.component :as component]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
-                       [storefront.history :as history]])))
+                       [storefront.history :as history]])
+            [storefront.components.affirm :as affirm]))
 
 (defn item-price [price]
   (when price
@@ -246,7 +247,8 @@
            reviews
            selected-sku
            sku-quantity
-           ugc]}
+           ugc
+           affirm?]}
    owner
    opts]
   (let [review?        (:review? reviews)]
@@ -283,6 +285,8 @@
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
                triple-bundle-upsell)
+             (when affirm?
+               (affirm/as-low-as-box {:amount (:price selected-sku)}))
              (add-to-bag-button adding-to-bag?
                                 selected-sku
                                 sku-quantity)
@@ -390,7 +394,8 @@
      :product           product
      :selected-sku      selected-sku
      :cheapest-price    (lowest-sku-price product-skus)
-     :carousel-images   carousel-images}))
+     :carousel-images   carousel-images
+     :affirm?           (experiments/affirm? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
