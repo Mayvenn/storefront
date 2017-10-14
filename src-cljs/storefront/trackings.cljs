@@ -42,18 +42,7 @@
       (and (= nav-event prev-nav-event events/navigate-product-details)
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
-(defn get-utms [app-state]
-  (let [cookie                (get-in app-state keypaths/cookie)
-        nav-event             (get-in app-state keypaths/navigation-event)
-        storefront-utm-params (cookie-jar/retrieve-utm-params cookie)
-        leads-utm-params      (cookie-jar/retrieve-leads-utm-params cookie)]
-    (if (nav/lead-page? nav-event)
-      (set/rename-keys leads-utm-params {"leads.utm-source"   :utm-source
-                                         "leads.utm-content"  :utm-content
-                                         "leads.utm-medium"   :utm-medium
-                                         "leads.utm-campaign" :utm-campaign
-                                         "leads.utm-term"     :utm-term})
-      (maps/map-keys name storefront-utm-params))))
+
 
 (defmethod perform-track events/navigate [_ event args app-state]
   (when (not (get-in app-state keypaths/redirecting?))
@@ -64,7 +53,7 @@
         (sift/track-page (get-in app-state keypaths/user-id)
                          (get-in app-state keypaths/session-id))
         (riskified/track-page path)
-        (stringer/track-page (get-utms app-state))
+        (stringer/track-page)
         (facebook-analytics/track-page path)))))
 
 ;; GROT: when old product detail page is removed
