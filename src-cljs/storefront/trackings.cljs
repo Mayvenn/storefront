@@ -54,11 +54,6 @@
         (stringer/track-page)
         (facebook-analytics/track-page path)))))
 
-;; GROT: when old product detail page is removed
-(defmethod perform-track events/navigate-named-search [_ event args app-state]
-  (facebook-analytics/track-event "ViewContent")
-  (convert/track-conversion "view-category"))
-
 (defmethod perform-track events/control-category-filter-select
   [_ event {:keys [selected]} app-state]
   (stringer/track-event "category_page_filter-select"
@@ -84,13 +79,6 @@
 (defmethod perform-track events/api-success-lead-registered
   [_ _ _ _]
   (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
-
-;; GROT: when old product detail page is removed
-(defmethod perform-track events/control-add-to-bag [_ event {:keys [variant quantity] :as args} app-state]
-  (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                               :content_ids [(:sku variant)]
-                                               :num_items quantity})
-  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 
 (defmethod perform-track events/navigate-product-details [_ event args app-state]
   (facebook-analytics/track-event "ViewContent"))
