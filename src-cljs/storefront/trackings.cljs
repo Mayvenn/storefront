@@ -20,7 +20,7 @@
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.accessors.nav :as nav]
             [clojure.set :as set]
-            [storefront.hooks.pintrest :as pintrest]))
+            [storefront.hooks.pinterest :as pinterest]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -42,14 +42,12 @@
       (and (= nav-event prev-nav-event events/navigate-product-details)
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
-
-
 (defmethod perform-track events/navigate [_ event args app-state]
   (when (not (get-in app-state keypaths/redirecting?))
     (let [path (routes/current-path app-state)]
       (google-analytics/track-page path)
       (when (not (nav-was-selecting-bundle-option? app-state))
-        (pintrest/track-page)
+        (pinterest/track-page)
         (sift/track-page (get-in app-state keypaths/user-id)
                          (get-in app-state keypaths/session-id))
         (riskified/track-page path)

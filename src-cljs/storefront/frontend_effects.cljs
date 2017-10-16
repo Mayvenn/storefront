@@ -46,7 +46,7 @@
             [storefront.platform.messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
             [spice.maps :as maps]
-            [storefront.hooks.pintrest :as pintrest]
+            [storefront.hooks.pinterest :as pinterest]
             [storefront.effects :as effects]))
 
 (defn changed? [previous-app-state app-state keypath]
@@ -116,7 +116,7 @@
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (sift/insert-tracking)
   (facebook-analytics/insert-tracking)
-  (pintrest/insert-tracking)
+  (pinterest/insert-tracking)
   (talkable/insert)
   (places-autocomplete/insert)
   (refresh-account app-state)
