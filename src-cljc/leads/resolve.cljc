@@ -42,7 +42,7 @@
          {:style {:height   "100%"}
           :src   "https://www.youtube.com/embed/MjhjIB2s1Uk"
           :frameBorder 0
-          :allowFullscreen true}]]]]]
+          :allowFullScreen true}]]]]]
     (component/build footer/minimal-component (:footer data) nil)]))
 
 (defn ^:private query [data]
