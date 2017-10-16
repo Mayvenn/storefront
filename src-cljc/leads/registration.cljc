@@ -343,18 +343,20 @@
                                        :step-id    step-id
                                        :session-id (get-in app-state storefront.keypaths/session-id)
                                        :step-data  {:registration registration}}
-                                      (fn [registered-lead]
+                                      (fn [response-body]
                                         (messages/handle-message events/api-success-lead-registered
-                                                                 {:registered-lead registered-lead}))))))
+                                                                 response-body))))))
 
 (defmethod transitions/transition-state events/api-success-lead-registered
-  [_ event {:keys [registered-lead]} app-state]
-  (assoc-in app-state keypaths/remote-lead registered-lead))
+  [_ event {:keys [lead] :as old-lead} app-state]
+  (let [lead (or lead old-lead)]
+    (assoc-in app-state keypaths/remote-lead lead)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
-     [_ event {:keys [registered-lead]} _ app-state]
-     (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                           {"lead-id" (:id registered-lead)
-                            "onboarding-status" "stylist-created"})
-     (history/enqueue-navigate events/navigate-leads-registration-resolve)))
+     [_ event {:keys [lead] :as old-lead} _ app-state]
+     (let [lead (or lead old-lead)]
+       (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
+                             {"lead-id" (:id lead)
+                              "onboarding-status" "stylist-created"})
+       (history/enqueue-navigate events/navigate-leads-registration-resolve))))

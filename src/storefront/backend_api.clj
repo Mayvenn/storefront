@@ -101,7 +101,8 @@
   (when lead-id
     (let [response (storeback-fetch storeback-config (str "/leads/" lead-id) {})]
       (when (not-404 response)
-        (:body response)))))
+        (:lead (:body response) ;;GROT default value after deploying storefornt
+               (:body response))))))
 
 (defn get-order [storeback-config order-number order-token]
   (when (and order-number order-token)
