@@ -82,6 +82,7 @@
 
 (defmethod perform-track events/api-success-lead-registered
   [_ _ _ _]
+  (pinterest/track-event "signup")
   (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
 
 (defmethod perform-track events/navigate-product-details [_ event args app-state]
