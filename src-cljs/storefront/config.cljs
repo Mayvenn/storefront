@@ -94,6 +94,11 @@
                          "production" "https://cdn1.affirm.com/js/v2/affirm.js"
                          "https://cdn1-sandbox.affirm.com/js/v2/affirm.js"))
 
+(def pinterest-tag-id
+  (if (not= "production" js/environment)
+    2612961581995
+    2617847432239))
+
 (def uploadcare-public-key
   (case js/environment
     "production" "6a68fb24fd9c50c7ed8b"
