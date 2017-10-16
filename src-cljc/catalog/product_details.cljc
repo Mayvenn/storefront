@@ -288,7 +288,7 @@
              (when affirm?
                (affirm/as-low-as-box {:amount (:price selected-sku)}))
              (when (#{"lace-front-wigs" "360-wigs"} (:hair/family selected-sku))
-               [:p.center.h5.p2.medium.bcp-pink "$5 of each wig purchase will support breast cancer prevention (10/16-11/10)"])
+               [:p.center.h5.p2.medium.bcp-pink "$5 of each wig purchase will be donated to support breast cancer prevention (10/16-11/10)"])
              (add-to-bag-button adding-to-bag?
                                 selected-sku
                                 sku-quantity)
