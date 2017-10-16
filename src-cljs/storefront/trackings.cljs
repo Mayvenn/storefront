@@ -216,6 +216,9 @@
   [_ _ {:keys [order shared-cart-id]} app-state]
   (let [product-items (orders/product-items order)
         cart-items    (mapv ->cart-item product-items)]
+    (facebook-analytics/track-event "AddToCart" {:content_type "product"
+                                                 :content_ids  (map :sku product-items)
+                                                 :num_items    (->> product-items (map :quantity) (apply +))})
     (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
                                               :order_number   (:number order)
                                               :order_total    (get-in app-state keypaths/order-total)
