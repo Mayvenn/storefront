@@ -131,7 +131,8 @@
   (sift/remove-tracking)
   (stringer/remove-tracking)
   (google-analytics/remove-tracking)
-  (facebook-analytics/remove-tracking))
+  (facebook-analytics/remove-tracking)
+  (pinterest/remove-tracking))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))

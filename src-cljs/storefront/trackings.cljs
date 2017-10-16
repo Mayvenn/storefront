@@ -73,8 +73,12 @@
                                            :first_name first-name
                                            :last_name  last-name})
   (if (leads.accessors/self-reg? flow-id)
-    (facebook-analytics/track-custom-event "Lead_Self_Reg")
-    (facebook-analytics/track-event "Lead")))
+    (do
+      (pinterest/track-event "lead" {:lead_type "self_reg"})
+      (facebook-analytics/track-custom-event "Lead_Self_Reg"))
+    (do
+      (pinterest/track-event "lead" {:lead_type "sales_rep"})
+      (facebook-analytics/track-event "Lead"))))
 
 (defmethod perform-track events/api-success-lead-registered
   [_ _ _ _]

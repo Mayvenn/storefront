@@ -13,6 +13,16 @@
 
 (defn track-page
   ([]
-   (js/pintrk "track" "pagevisit"))
+   (when (.hasOwnProperty js/window "pintrk")
+     (js/pintrk "track" "pagevisit")))
   ([data]
-   (js/pintrk "track" "pagevisit" data)))
+   (when (.hasOwnProperty js/window "pintrk")
+     (js/pintrk "track" "pagevisit" data))))
+
+(defn track-event
+  ([action]
+   (when (.hasOwnProperty js/window "pintrk")
+     (js/pintrk "track" action)))
+  ([action args]
+   (when (.hasOwnProperty js/window "pintrk")
+     (js/pintrk "track" action (clj->js args)))))
