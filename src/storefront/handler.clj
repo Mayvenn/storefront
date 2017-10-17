@@ -31,7 +31,7 @@
              [named-searches :as named-searches]]
             [catalog.product-details :as product-details]
             [comb.template :as template]
-            [spice.maps :refer [index-by]]
+            [spice.maps :refer [index-by auto-map]]
             [clojure.string :as str]
             [clojure.xml :as xml]
             [catalog.categories :as categories]
@@ -339,13 +339,6 @@
       (assoc-in keypaths/categories categories/initial-categories)
       (assoc-in keypaths/static (static-page nav-event))
       (assoc-in keypaths/navigation-message nav-message)))
-
-(defmacro auto-map
-  "Name keys from symbols passed in."
-  [& args]
-  `(apply hash-map
-          (interleave (list ~@(map (comp keyword str) args))
-                      (list ~@args))))
 
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
