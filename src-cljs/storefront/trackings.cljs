@@ -261,7 +261,7 @@
                            (:quantity variant))
      :product_name     (or (:variant_name variant)
                            (:variant-name variant))
-     :product_category (or (:category variant)
+     :category         (or (:category variant)
                            (:category attrs))
      :origin           (or (:variant_origin variant)
                            (:origin attrs))
