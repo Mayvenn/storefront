@@ -348,9 +348,12 @@
                                                                  response-body))))))
 
 (defmethod transitions/transition-state events/api-success-lead-registered
-  [_ event {:keys [lead] :as old-lead} app-state]
-  (let [lead (or lead old-lead)]
-    (assoc-in app-state keypaths/remote-lead lead)))
+  [_ event {:keys [lead user-id token] :as old-lead} app-state]
+  (let [lead (or lead old-lead)] ;; GROT old-lead once leads is deployed
+    (-> app-state
+        (assoc-in keypaths/remote-lead lead)
+        (assoc-in keypaths/remote-user-token token)
+        (assoc-in keypaths/remote-user-id user-id))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered

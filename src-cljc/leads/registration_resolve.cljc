@@ -21,20 +21,20 @@
     [:img.block.col-12 {:src "//ucarecdn.com/f06961aa-d039-4ff3-a8ec-05e9d5e1024d/-/format/auto/herocongrats.jpg"
                         :alt "Congrats. Welcome to the Mayvenn community! Your website is ready to go. You can share your store link, shop, and start selling now."}]]])
 
-(defn- first-coupon-link [store-link]
-  (str "//" store-link "?sha=FIRST"))
+(defn- first-coupon-link [store-link token user-id]
+  (str "//" store-link "?sha=FIRST&one-time-auth=" token "&user-id=" user-id))
 
-(defn coupon-section [store-link]
+(defn coupon-section [store-link token user-id]
   [:section.center.white.bg-cover.bg-center.bg-30-off.center.px3.py6
    [:div.max-580.mx-auto
     [:h2.h1.mt6 "Get 30% Off"]
     [:p.mb3 "To welcome you to Mayvenn, here is 30% off your first order. Use the promo code: FIRST"]
     [:a.btn.btn-primary.h5.px4.light
-     {:href   (first-coupon-link store-link)
+     {:href   (first-coupon-link store-link token user-id)
       :data-test "shop-first-promo"}
      "Shop now using promo code FIRST"]]])
 
-(defn whats-next-section [store-link]
+(defn whats-next-section [store-link token user-id]
   (let [cell :div.my4.col-on-tb-dt.col-4-on-tb-dt.px2-on-tb-dt
         icon (fn [path] [:img.m1 {:src path :height "75px"}])
         hed  :h2.h3
@@ -50,7 +50,7 @@
         (icon "//ucarecdn.com/7f4e00a1-cac3-4c79-b233-176c8809be03/-/format/auto/icontrymayvenn.png")
         [hed "Try Mayvenn Hair"]
         [dek "Becoming an expert in our products is the first step to becoming a successful seller. Use the promo code 'FIRST' to get 30% off your first order."]
-        [cta {:href   (first-coupon-link store-link)
+        [cta {:href   (first-coupon-link store-link token user-id)
               :target "_blank"}
          "Shop Mayvenn hair"]]
 
@@ -68,7 +68,7 @@
         [dek "Don’t be shy! You now have access to the highest quality hair products in the industry. Shipping is always free and all Mayvenn products are backed by a 30-day guarantee."]
         [cta (utils/scroll-href "share-store-section") "Share your store link"]]]]]))
 
-(defn stylist-kit-section [store-link]
+(defn stylist-kit-section [store-link token user-id]
   [:section.center
    [:div.bg-stylist-kit.bg-center.bg-cover.relative
     {:style {:height "480px"}}
@@ -78,7 +78,7 @@
       [:p.mb3 "Our stylist kit is full of essential selling tools like business cards, hair samples, and more. "
        "For just $109, this is the best way to jumpstart your Mayvenn business (a $200 value)."]]
      [:a.h5.block.col-12.col-6-on-tb.col-4-on-dt.mx-auto.regular.btn.btn-primary.white
-      {:href   (str "//" store-link "/products/49-rings-kits")
+      {:href   (str "//" store-link "/products/49-rings-kits?one-time-auth=" token "&user-id=" user-id)
        :target "_blank"}
       "Learn more about stylist kits"]]]])
 
@@ -145,24 +145,26 @@
                      "acceptance" "diva-acceptance.com"
                      "storefront.dev")
         store-slug (get-in app-state leads.keypaths/stylist-slug)]
-    {:store-link      (str store-slug "." host)
+    {:store-link       (str store-slug "." host)
+     :token            (get-in app-state leads.keypaths/remote-user-token)
+     :user-id          (get-in app-state leads.keypaths/remote-user-id)
      :share-your-store {:host         host
                         :store-slug   store-slug
                         :utm-campaign "resolve"}
-     :faq    {:sms-number config/mayvenn-leads-sms-number
-              :call-number config/mayvenn-leads-call-number}}))
+     :faq              {:sms-number  config/mayvenn-leads-sms-number
+                        :call-number config/mayvenn-leads-call-number}}))
 
 (defn ^:private component
-  [{:keys [store-link share-your-store faq]} owner opts]
+  [{:keys [store-link token user-id share-your-store faq]} owner opts]
   (component/create
    [:div
     (header/built-component {} nil)
     [:div
      congratulations-section
-     (coupon-section store-link)
+     (coupon-section store-link token user-id)
      (component/build share-your-store/component share-your-store nil)
-     (whats-next-section store-link)
-     (stylist-kit-section store-link)
+     (whats-next-section store-link token user-id)
+     (stylist-kit-section store-link token user-id)
      first-sale-section
      [:section.center.px3.py6.bg-teal.white
       (faq-section q-and-as faq)]]

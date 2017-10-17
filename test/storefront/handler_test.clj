@@ -47,56 +47,6 @@
       (status 200)
       (content-type "application/json")))
 
-(def omakase-create-order-response
-  (-> (generate-string {:updated-at 1469492961613
-                        :tax-total 0.0
-                        :number "W231894629"
-                        :stylist-ids [3]
-                        :state "cart"
-                        :rma-total 0.0
-                        :payments-total 0.0
-                        :shipments [{:number "S1"
-                                     :state "pending"
-                                     :line-items [{:source "waiter"
-                                                   :product-name "Shipping"
-                                                   :unit-price 0.0
-                                                   :sku "WAITER-SHIPPING-1"
-                                                   :unit-taxable-amount 0.0
-                                                   :id -1
-                                                   :quantity 1
-                                                   :product-id 0}
-                                                  {:applied-promotions []
-                                                   :source "spree"
-                                                   :product-name "Brazilian Natural Straight Hair"
-                                                   :unit-price 55.0
-                                                   :sku "BNS10"
-                                                   :unit-taxable-amount 55.0
-                                                   :variant-attrs {:category "hair"
-                                                                   :color "dark-gray"
-                                                                   :grade "6a premier collection"
-                                                                   :origin "brazilian"
-                                                                   :style "straight"
-                                                                   :length "10\""}
-                                                   :id 479
-                                                   :quantity 1
-                                                   :product-id 13}]
-                                     :created-at 1469492961611
-                                     :updated-at 1469492961613}]
-                        :adjustments []
-                        :token "DMmy3ey8sfO07myJt833hfVhJPe1LD6o591K+cdbCyU="
-                        :total 55.0
-                        :total-debited-amount 0.0
-                        :total-store-credit-used 0.0
-                        :payment-state "balance-due"
-                        :line-items-total 55.0
-                        :returnable-line-items []
-                        :promotion-discount 0.0
-                        :created-at 1469492961599
-                        :returns []})
-      (response)
-      (status 200)
-      (content-type "application/json")))
-
 (defn parsed-url [url]
   (let [[base query] (.split (str url) "\\?")]
     [base (codec/form-decode query)]))
