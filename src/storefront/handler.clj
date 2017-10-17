@@ -476,13 +476,14 @@
 (defn affirm-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
-         (let [checkout-token (-> request :params :checkout_token)]
+         (let [checkout-token (-> request :params (get "checkout_token"))]
            (if-let [error-code (api/verify-affirm-payment storeback-config number order-token checkout-token
                                                           (let [headers (:headers request)]
                                                             (or (headers "x-forwarded-for")
                                                                 (headers "remote-addr")
                                                                 "localhost"))
                                                           (assoc (:query-params request)
+                                                                 "session-id"    (cookies/get request "session-id")
                                                                  "utm-params"
                                                                  {"utm-source"   (cookies/get request "utm-source")
                                                                   "utm-campaign" (cookies/get request "utm-campaign")
