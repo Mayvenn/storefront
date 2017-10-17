@@ -98,6 +98,16 @@
                                                :num_items quantity})
   (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
 
+(defn order-product-items->enriched-products
+  [products-db product-items]
+  (mapv
+   (fn [{:keys [id product-id quantity]}]
+     (assoc
+      (query/get {:id id}
+                 (:variants (get products-db product-id)))
+      :quantity quantity))
+   product-items))
+
 (defn- ->cart-item
   "Makes a flattened key version of variants"
   [variant]
@@ -144,13 +154,7 @@
 
 (defn- ->cart-items
   [products-db product-items]
-  (->> product-items
-       (mapv
-        (fn [{:keys [id product-id quantity]}]
-          (assoc
-           (query/get {:id id}
-                      (:variants (get products-db product-id)))
-           :quantity quantity)))
+  (->> (order-product-items->enriched-products products-db product-items)
        (mapv ->cart-item)))
 
 (defmethod perform-track events/api-success-add-to-bag
@@ -242,31 +246,76 @@
      :promo_codes             (->> promotion-codes (str/join ","))
      :total_quantity          (orders/product-quantity order)}))
 
-(defmethod perform-track events/order-completed [_ event {:keys [total] :as order} app-state]
+(defn- enriched-product->pinterest-line-item
+  "Makes a flattened key version of variants"
+  [variant]
+  (let [attrs (or (:variant-attrs variant)
+                  (:variant_attrs variant))]
+    {:product_id       (or (:variant_id variant)
+                           (:id variant))
+     :sku              (or (:variant_sku variant)
+                           (:sku variant))
+     :product_price    (or (:unit-price variant)
+                           (:price variant))
+     :product_quantity (or (:variant_quantity variant)
+                           (:quantity variant))
+     :product_name     (or (:variant_name variant)
+                           (:variant-name variant))
+     :product_category (or (:category variant)
+                           (:category attrs))
+     :origin           (or (:variant_origin variant)
+                           (:origin attrs))
+     :style            (or (:variant_style variant)
+                           (:style attrs))
+     :color            (or (:variant_color variant)
+                           (:color attrs))
+     :length           (or (:variant_length variant)
+                           (:length attrs))
+     :material         (or (:variant_material variant)
+                           (:material attrs))}))
+
+(defmethod perform-track events/order-completed [_ event order app-state]
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
-  (let [store-slug (get-in app-state keypaths/store-slug)
-        shipping (orders/shipping-item order)
-        user (get-in app-state keypaths/user)]
-    (facebook-analytics/track-event "Purchase" {:value (str total)
-                                                :currency "USD"
-                                                :content_ids (map :sku (orders/product-items order))
-                                                :content_type "product"
-                                                :num_items (count (orders/product-items order))
-                                                :store_slug store-slug
-                                                :is_stylist_store (boolean (#{"shop" "store"} store-slug))
-                                                :used_promotion_codes (map :code (:promotions order))
-                                                :shipping_method_sku (:sku shipping)
-                                                :shipping_method_name (:name shipping)
-                                                :shipping_method_price (:unit-price shipping)
-                                                :discount_total (:promotion-discount order)
-                                                :buyer_type (cond
-                                                              (:store-slug user) "stylist"
-                                                              (:id user) "registered_user"
-                                                              :else "guest_user")}))
-  (convert/track-conversion "place-order")
-  (convert/track-revenue (convert-revenue order))
-  (google-analytics/track-event "orders" "placed_total" nil (int total))
-  (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order))))
+  (let [order-total (:total order)
+
+        product-items     (orders/product-items order)
+        enriched-products (order-product-items->enriched-products
+                           (get-in app-state keypaths/products)
+                           product-items)
+
+        store-slug (get-in app-state keypaths/store-slug)
+        shipping   (orders/shipping-item order)
+        user       (get-in app-state keypaths/user)
+
+        shared-fields {:buyer_type            (cond
+                                                (:store-slug user) "stylist"
+                                                (:id user)         "registered_user"
+                                                :else              "guest_user")
+                       :currency              "USD"
+                       :discount_total        (:promotion-discount order)
+                       :is_stylist_store      (boolean (not (#{"shop" "store"} store-slug)))
+                       :shipping_method_name  (:product-name shipping)
+                       :shipping_method_price (:unit-price shipping)
+                       :shipping_method_sku   (:sku shipping)
+                       :store_slug            store-slug
+                       :used_promotion_codes  (->> order :promotions (map :code))}]
+    (facebook-analytics/track-event "Purchase" (merge shared-fields
+                                                      {:value        (str order-total) ;; Facebook wants a string
+                                                       :content_ids  (map :sku product-items)
+                                                       :content_type "product"
+                                                       :num_items    (count product-items)}))
+
+    (pinterest/track-event "checkout" (merge shared-fields
+                                             {:value          order-total ;; Pinterest wants a number
+                                              :order_id       (:number order)
+                                              :order_quantity (->> product-items (map :quantity) (apply +))
+                                              :line_items     (mapv enriched-product->pinterest-line-item
+                                                                    enriched-products)}))
+
+    (convert/track-conversion "place-order")
+    (convert/track-revenue (convert-revenue order))
+    (google-analytics/track-event "orders" "placed_total" nil (int order-total))
+    (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)))
@@ -367,4 +416,3 @@
 (defmethod perform-track events/sign-out [_ _ _ _]
   (stringer/track-event "sign_out")
   (stringer/track-clear))
-
