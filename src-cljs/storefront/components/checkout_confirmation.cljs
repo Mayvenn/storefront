@@ -159,7 +159,7 @@
         line-items    (mapv (partial ->affirm-line-item products) product-items)
         promotions    (distinct (mapcat :applied-promotions product-items))]
     {:merchant {:user_confirmation_url        (absolute-url "/orders/" (:number order) "/affirm/" (url-encode (:token order)))
-                :user_cancel_url              (absolute-url "/checkout/payments?error=affirm")
+                :user_cancel_url              (absolute-url "/checkout/payment?error=affirm-incomplete")
                 :user_confirmation_url_action "POST"
                 :name                         "Mayvenn"}
 
