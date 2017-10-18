@@ -111,15 +111,16 @@
                           "externs/yotpo.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
-  :profiles
-  {:uberjar {:aot :all}
-   :dev {:source-paths ["dev/clj"]
-         :dependencies [[pjstadig/humane-test-output "0.8.1"]
-                        [standalone-test-server "0.7.2"]
-                        [ring/ring-mock "0.3.0"]
-                        [org.clojure/tools.namespace "0.2.11"]
-                        [figwheel-sidecar "0.5.11"]]
-         :injections [(require 'pjstadig.humane-test-output)
-                      (pjstadig.humane-test-output/activate!)]
-         :cljsbuild
-         {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
+  :profiles {:uberjar {:aot :all}
+             :dev {:source-paths ["dev/clj"]
+                   :dependencies [[com.cemerick/piggieback "0.2.2"]
+                                  [pjstadig/humane-test-output "0.8.1"]
+                                  [standalone-test-server "0.7.2"]
+                                  [ring/ring-mock "0.3.0"]
+                                  [org.clojure/tools.namespace "0.2.11"]
+                                  [figwheel-sidecar "0.5.11"]]
+                   :injections [(require 'pjstadig.humane-test-output)
+                                (pjstadig.humane-test-output/activate!)]
+                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                   :cljsbuild
+                   {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
