@@ -31,7 +31,7 @@
              [named-searches :as named-searches]]
             [catalog.product-details :as product-details]
             [comb.template :as template]
-            [spice.maps :refer [index-by auto-map]]
+            [spice.maps :refer [index-by]]
             [clojure.string :as str]
             [clojure.xml :as xml]
             [catalog.categories :as categories]
@@ -350,7 +350,14 @@
         (let [render-ctx {:storeback-config storeback-config
                           :environment      environment
                           :client-version   client-version}
-              data       (required-data (auto-map environment leads-config storeback-config nav-event nav-message store order-number order-token))
+              data       (required-data {:environment environment
+                                         :leads-config leads-config
+                                         :storeback-config storeback-config
+                                         :nav-event nav-event
+                                         :nav-message nav-message
+                                         :store store
+                                         :order-number order-number
+                                         :order-token order-token})
               data       (cond-> data
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
