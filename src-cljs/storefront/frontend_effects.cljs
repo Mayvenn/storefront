@@ -228,7 +228,7 @@
                                                  :utm_campaign "leads.utm-campaign"
                                                  :utm_content  "leads.utm-content"
                                                  :utm_term     "leads.utm-term"})
-                               (maps/filter-nil))]
+                               (maps/remove-nils))]
         (when (seq utm-params)
           (cookie-jar/save-leads-utm-params
            (get-in app-state keypaths/cookie)
@@ -241,7 +241,7 @@
                                                  :utm_campaign :storefront/utm-campaign
                                                  :utm_content  :storefront/utm-content
                                                  :utm_term     :storefront/utm-term})
-                               (maps/filter-nil))]
+                               (maps/remove-nils))]
         (when (seq utm-params)
           (cookie-jar/save-utm-params
            (get-in app-state keypaths/cookie)

@@ -113,7 +113,7 @@
 
 (defn api-req
   [method path req-key request-opts]
-  (let [request-opts (update-in request-opts [:params] maps/filter-nil)
+  (let [request-opts (update-in request-opts [:params] maps/remove-nils)
         req-id (str (random-uuid))
         request
         (method (str api-base-url path)
