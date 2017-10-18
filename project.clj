@@ -45,7 +45,7 @@
                                     "resources/public/js/out/"
                                     "resources/public/css/"
                                     "resources/public/cdn"]
-  :source-paths ["src" "src-cljc"]
+  :source-paths ["src" "src-cljc" "src-cljs"]
   :resource-paths ["resources"]
   :cljsbuild
   {:builds
