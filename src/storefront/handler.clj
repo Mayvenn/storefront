@@ -31,13 +31,13 @@
              [named-searches :as named-searches]]
             [catalog.product-details :as product-details]
             [comb.template :as template]
-            [spice.maps :refer [index-by]]
+            [spice.core :as spice]
+            [spice.maps :refer [index-by auto-map]]
             [clojure.string :as str]
             [clojure.xml :as xml]
             [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
             [clojure.set :as set]
-            [spice.core :as spice]
             [catalog.products :as products]
             [sablono.util :as util]))
 
@@ -347,17 +347,15 @@
           order-token        (some-> (get-in req [:cookies "token" :value])
                                      (string/replace #" " "+"))]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx {:storeback-config storeback-config
-                          :environment      environment
-                          :client-version   client-version}
-              data       (required-data {:environment environment
-                                         :leads-config leads-config
-                                         :storeback-config storeback-config
-                                         :nav-event nav-event
-                                         :nav-message nav-message
-                                         :store store
-                                         :order-number order-number
-                                         :order-token order-token})
+        (let [render-ctx (auto-map storeback-config environment client-version)
+              data       (required-data (auto-map environment
+                                                  leads-config
+                                                  storeback-config
+                                                  nav-event
+                                                  nav-message
+                                                  store
+                                                  order-number
+                                                  order-token))
               data       (cond-> data
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
@@ -517,9 +515,7 @@
 (defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
-      (let [render-ctx           {:storeback-config storeback-config
-                                  :environment      environment
-                                  :client-version   client-version}
+      (let [render-ctx           (auto-map storeback-config environment client-version)
             [nav-event nav-args] nav-message
             data                 (-> {}
                                      (assoc-in leads.keypaths/lead-tracking-id (cookies/get request "leads.tracking-id"))
