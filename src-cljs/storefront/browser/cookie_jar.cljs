@@ -1,7 +1,8 @@
 (ns storefront.browser.cookie-jar
   (:require [storefront.config :as config]
             [clojure.string :as string]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [spice.core :as spice])
   (:import [goog.net Cookies]))
 
 (defn ^:private root-domain []
@@ -75,25 +76,29 @@
 
 (defn clear-cookie [spec cookie]
   (doseq [key (all-keys spec)]
-    (.remove cookie key "/" (:domain spec))))
+    (.remove cookie key "/" (:domain spec))
+    (.remove cookie (kw-name key) "/" (:domain spec))))
 
 (defn has-required-attrs? [m req-attrs]
   (every? seq (vals (select-keys m req-attrs))))
 
 (defn retrieve [spec cookie]
   (let [attr-keys (all-keys spec)
-        req-attr-keys (:required-keys spec)
-        attrs (zipmap attr-keys
-                      (map #(.get cookie %) attr-keys))]
-    (if (has-required-attrs? attrs req-attr-keys)
-      attrs
+        m (zipmap attr-keys
+                  (map #(or
+                         (.get cookie %)
+                         (.get cookie (spice/kw-name %)))
+                       attr-keys))]
+    (if (has-required-attrs? m (:required-keys spec))
+      m
       (clear-cookie spec cookie))))
 
 (defn save-cookie [{:keys [max-age domain] :as spec} cookie attrs]
   (doseq [attr (all-keys spec)]
     (if-let [val (get attrs attr)]
-      (.set    cookie attr val max-age "/" domain (get spec :secure config/secure?))
-      (.remove cookie attr             "/" domain))))
+      (.set        cookie (kw-name attr) val max-age "/" domain (get spec :secure config/secure?))
+      (do (.remove cookie attr                       "/" domain)
+          (.remove cookie (kw-name attr)             "/" domain)))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))
