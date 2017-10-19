@@ -205,7 +205,7 @@ Thanks,
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
         (when affirm?
           (affirm/as-low-as-box {:amount (:total order)
-                                 :middle-copy "Just select Affirm at check out."}))
+                                 :middle-copy "Just 'Check Out' below."}))
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
