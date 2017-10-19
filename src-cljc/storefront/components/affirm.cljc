@@ -14,10 +14,14 @@
    [storefront.keypaths :as keypaths]
    [storefront.effects :as effects]))
 
+
+(defn ^:private type->promo-id [t]
+  (get {:text-only "promo_set_default1"} t "promo_set_default"))
+
 (defn ^:private as-low-as-html [data]
   (component/html
    [:a.affirm-as-low-as.mx2.dark-gray
-    {:data-promo-id       "promo_set_default"
+    {:data-promo-id       (type->promo-id (:type data))
      :data-amount         (mf/as-cents (:amount data))
      :data-learnmore-show (or (:show-learnmore data) false)
      :on-click            (fn [event]

@@ -102,4 +102,5 @@
      [:p.mb10.center
       (when affirm?
         [:div.h6.dark-gray
-         (component/build affirm/as-low-as-component {:amount (:price representative-sku)} {})])]]))
+         (component/build affirm/as-low-as-component {:amount (:price representative-sku)
+                                                      :type   :text-only} {})])]]))
