@@ -15,8 +15,8 @@
   ;;NOTE edit the cljs config too!
   ;;NOTE @Ryan, please only change the top map
   (if (= (env :environment) "production")
-    {:left  186605502
-     :right 191946859}
+    {:left  191567494
+     :right 191567299}
     {:left  144863121
      :right 144863121}))
 
