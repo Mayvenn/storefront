@@ -77,7 +77,7 @@
 (defn clear-cookie [spec cookie]
   (doseq [key (all-keys spec)]
     (.remove cookie key "/" (:domain spec))
-    (.remove cookie (kw-name key) "/" (:domain spec))))
+    (.remove cookie (spice/kw-name key) "/" (:domain spec))))
 
 (defn has-required-attrs? [m req-attrs]
   (every? seq (vals (select-keys m req-attrs))))
@@ -96,9 +96,9 @@
 (defn save-cookie [{:keys [max-age domain] :as spec} cookie attrs]
   (doseq [attr (all-keys spec)]
     (if-let [val (get attrs attr)]
-      (.set        cookie (kw-name attr) val max-age "/" domain (get spec :secure config/secure?))
+      (.set        cookie (spice/kw-name attr) val max-age "/" domain (get spec :secure config/secure?))
       (do (.remove cookie attr                       "/" domain)
-          (.remove cookie (kw-name attr)             "/" domain)))))
+          (.remove cookie (spice/kw-name attr)             "/" domain)))))
 
 (def clear-order (partial clear-cookie order))
 (def clear-pending-promo-code (partial clear-cookie pending-promo))

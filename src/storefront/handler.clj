@@ -59,10 +59,11 @@
 (defn cookie-root-domain [server-name]
   (str "." (parse-root-domain server-name)))
 
-(defn query-string [req]
-  (let [query-str (:query-string req)]
-    (when (seq query-str)
-      (str "?" query-str))))
+(defn query-string [{:keys [query-params query-string]}]
+  (cond
+    (seq query-params) (str "?" (codec/form-encode query-params))
+    (seq query-string) (str "?" query-string)
+    :else nil))
 
 (defn parse-subdomains [server-name]
   (->> (string/split server-name #"\.")
