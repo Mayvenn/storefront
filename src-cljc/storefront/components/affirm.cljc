@@ -16,12 +16,12 @@
 
 (defn ^:private as-low-as-html [data]
   (component/html
-   [:a.affirm-as-low-as.mx2
-    {:data-promo-id "promo_set_default"
-     :data-amount (mf/as-cents (:amount data))
-     :on-click (fn [event]
-                 (.preventDefault event))}
-    "Learn more"]))
+   [:a.affirm-as-low-as.mx2.dark-gray
+    {:data-promo-id       "promo_set_default"
+     :data-amount         (mf/as-cents (:amount data))
+     :data-learnmore-show (or (:show-learnmore data) false)
+     :on-click            (fn [event]
+                            (.preventDefault event))}]))
 
 (def ^:private modal-html
   (component/html
@@ -57,9 +57,16 @@
 (defn as-low-as-box [data]
   [:div.py3
    [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
-    [:div.col-10.mx-auto.dark-gray.h6.py1
-     (component/build as-low-as-component data {})
-     #_[:span "Continue with Affirm below."]]]])
+    [:div.mx1.dark-gray.h6.py1
+     [:p.h6 (component/build as-low-as-component data {})]
+     [:p.h6 "Continue with affirm below. " (component/build modal-component data {})]]]])
+
+(defn checkout-as-low-as-box [data]
+  [:div.py3
+   [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
+    [:div.mx1.dark-gray.h6.py1
+     [:p.h6 (component/build as-low-as-component data {})]
+     [:p.h6 "Continue with affirm below. " (component/build modal-component data {})]]]])
 
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs

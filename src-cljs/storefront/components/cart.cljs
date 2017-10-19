@@ -204,7 +204,7 @@ Thanks,
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
         (when affirm?
-          (affirm/as-low-as-box {:amount (:total order)}))
+          (affirm/checkout-as-low-as-box {:amount (:total order)}))
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
