@@ -94,9 +94,31 @@
 
 (defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity] :as args} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                               :content_ids [(:sku sku)]
-                                               :num_items quantity})
-  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag")))
+                                               :content_ids  [(:sku sku)]
+                                               :num_items    quantity})
+  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
+  (let [order      (get-in app-state keypaths/order)
+        store-slug (get-in app-state keypaths/store-slug)]
+    (pinterest/track-event "AddToCart" (merge (when (:legacy/variant-id sku)
+                                                {:product_id (:legacy/variant-id sku)})
+                                              {:sku              (:sku sku)
+                                               :value            (:price sku)
+                                               :order_quantity   (->> (:shipments order)
+                                                                      (mapcat :line-items)
+                                                                      orders/line-item-quantity)
+                                               :currency         "USD"
+                                               :department       (:product/department sku)
+                                               :product_name     (:sku/name sku)
+                                               :quantity         quantity
+                                               :category         (:hair/family sku)
+                                               :origin           (:hair/origin sku)
+                                               :style            (:hair/texture sku)
+                                               :color            (:hair/color sku)
+                                               :material         (:hair/material sku)
+                                               :grade            (:hair/grade sku)
+                                               :length           (:hair/length sku)
+                                               :store_slug       store-slug
+                                               :is_stylist_store (not (#{"store" "shop" "internal"} store-slug))}))))
 
 (defn order-product-items->enriched-products
   [products-db product-items]
