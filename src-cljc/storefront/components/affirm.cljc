@@ -59,14 +59,7 @@
    [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
     [:div.mx1.dark-gray.h6.py1
      [:p.h6 (component/build as-low-as-component data {})]
-     [:p.h6 "Continue with affirm below. " (component/build modal-component data {})]]]])
-
-(defn checkout-as-low-as-box [data]
-  [:div.py3
-   [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
-    [:div.mx1.dark-gray.h6.py1
-     [:p.h6 (component/build as-low-as-component data {})]
-     [:p.h6 "Continue with affirm below. " (component/build modal-component data {})]]]])
+     [:p.h6 (:middle-copy data) " " (component/build modal-component data {})]]]])
 
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs
