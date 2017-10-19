@@ -228,6 +228,7 @@
 (defpath api-success-sku-sets-for-details)
 (defpath api-success-facets)
 
+(defpath api-success-one-time-auth)
 (defpath api-success-auth)
 (defpath api-success-auth-sign-in)
 (defpath api-success-auth-sign-up)

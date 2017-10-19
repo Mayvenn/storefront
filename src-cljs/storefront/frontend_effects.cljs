@@ -544,6 +544,7 @@
 (defmethod perform-effects events/navigate-sign-in [_ event args _ app-state]
   (facebook/insert)
   (redirect-when-signed-in app-state))
+
 (defmethod perform-effects events/navigate-sign-out [_ _ {{:keys [telligent-url]} :query-params} _ app-state]
   (if telligent-url
     (do

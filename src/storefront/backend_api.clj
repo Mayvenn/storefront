@@ -112,3 +112,22 @@
                                     {:query-params {:token order-token}})]
       (when (not-404 response)
         (:body response)))))
+
+
+;; todo clean up
+(defn select-user-keys [user]
+  (select-keys user [:email :token :store_slug :id :is_new_user]))
+
+(defn select-auth-keys [args]
+  (-> args
+      (update :user select-user-keys)))
+
+(defn one-time-login-in [storeback-config user-id token]
+  (when (and user-id token)
+    (let [{:keys [body status] :as response} (storeback-post storeback-config "/v2/one-time-login"
+                                                             {:form-params {:user-id    user-id
+                                                                            :user-token token}})]
+      (when (<= 200 status 299)
+        (-> body
+            select-auth-keys
+            (assoc :flow "one-time-login"))))))

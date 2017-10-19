@@ -629,6 +629,23 @@
   (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
                           :moved-permanently))
 
+(defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
+                          {:keys [subdomains query-params server-name] :as req}]
+  (let [{:strs [token user-id]}     query-params
+        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token)
+        cookie-options              {:secure false
+                                     :max-age   (cookies/days 30)
+                                     :domain    (str (first subdomains) (cookie-root-domain server-name))}]
+    (if user
+      (->  (util.response/redirect (store-homepage (first subdomains) environment (-> req
+                                                                                      (update :query-params dissoc "token")
+                                                                                      (update :query-params dissoc "user-id"))))
+           (cookies/set environment :email (:email user) cookie-options)
+           (cookies/set environment :id (:id user) cookie-options)
+           (cookies/set environment :user-token (:token user) cookie-options))
+      (util.response/redirect (store-homepage (first subdomains) environment req)))))
+
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment] :as ctx}]
@@ -642,6 +659,7 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
+               (wrap-cookies (GET "/one-time-login" req (login-and-redirect ctx req)))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)

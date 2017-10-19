@@ -30,7 +30,7 @@
 (defn set
   ([req-or-resp environment name value] (set req-or-resp environment name value {}))
   ([req-or-resp environment name value overrides]
-   (assoc-in req-or-resp [:cookies name] (merge {:value   value
+   (assoc-in req-or-resp [:cookies name] (merge {:value   (str value)
                                                  :max-age (days 28)
                                                  :secure  (not (config/development? environment))
                                                  :path    "/"}

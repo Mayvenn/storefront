@@ -47,6 +47,17 @@
       (status 200)
       (content-type "application/json")))
 
+
+(def storeback-one-time-login-response
+  (-> (generate-string {:user  {:email      "acceptance+bob@mayvenn.com"
+                                :id         3
+                                :token "USERTOKEN"}
+                        :order {:number "W123456"
+                                :token  "ORDERTOKEN"}})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
 (defn parsed-url [url]
   (let [[base query] (.split (str url) "\\?")]
     [base (codec/form-decode query)]))
@@ -324,6 +335,14 @@
 (def stylist-created-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=stylist-created")
 (def self-reg-in-progress-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=lead-created")
 
+(deftest one-time-login-sets-cookies
+  (assert-request (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST")
+                  storeback-one-time-login-response
+                  (fn [resp]
+                    (let [cookies (get-in resp [:headers "Set-Cookie"])
+                          location (get-in resp [:headers "Location"])]
+                      (is (= 302 (:status resp)))
+                      (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Path=/;Domain=bob.mayvenn.com"} cookies))))))
 
 (deftest welcome-subdomain-remembers-leads-last-step
   (with-handler handler

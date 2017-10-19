@@ -22,7 +22,7 @@
                         :alt "Congrats. Welcome to the Mayvenn community! Your website is ready to go. You can share your store link, shop, and start selling now."}]]])
 
 (defn- first-coupon-link [store-link token user-id]
-  (str "//" store-link "?sha=FIRST&one-time-auth=" token "&user-id=" user-id))
+  (str "//" store-link "/one-time-login?sha=FIRST&token=" token "&user-id=" user-id))
 
 (defn coupon-section [store-link token user-id]
   [:section.center.white.bg-cover.bg-center.bg-30-off.center.px3.py6

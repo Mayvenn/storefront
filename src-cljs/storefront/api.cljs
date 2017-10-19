@@ -235,13 +235,13 @@
    "/v2/login"
    request-keys/sign-in
    {:params
-    {:session-id session-id
-     :browser-id browser-id
-     :email (.toLowerCase (str email))
-     :password password
-     :stylist-id stylist-id
+    {:session-id   session-id
+     :browser-id   browser-id
+     :email        (.toLowerCase (str email))
+     :password     password
+     :stylist-id   stylist-id
      :order-number order-number
-     :order-token order-token}
+     :order-token  order-token}
     :handler
     #(messages/handle-message events/api-success-auth-sign-in
                               (-> %
