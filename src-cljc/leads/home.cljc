@@ -25,9 +25,10 @@
             [clojure.string :as string]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [storefront.request-keys :as request-keys]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options] :as attrs}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options spinning?] :as attrs}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 60,000 stylists"]
@@ -87,7 +88,8 @@
                         :options     call-slot-options
                         :div-attrs   {:class "bg-white border border-gray rounded"}}))
     (ui/submit-button "Become a Mayvenn Stylist"
-                      {:data-test "sign-up-submit"})]])
+                      {:data-test "sign-up-submit"
+                       :spinning? spinning?})]])
 
 (defn resume-self-reg-panel [{:keys [remote-lead]}]
   [:div.rounded.bg-lighten-4.p3
@@ -437,7 +439,8 @@
                                 :email             (get-in data keypaths/lead-email)
                                 :call-slot         (get-in data keypaths/lead-call-slot)
                                 :self-reg?         self-reg?
-                                :call-slot-options (get-in data keypaths/call-slot-options)}}
+                                :call-slot-options (get-in data keypaths/call-slot-options)
+                                :spinning?         (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
      :footer {:call-number config/mayvenn-leads-call-number
               :host-name   host-name}
