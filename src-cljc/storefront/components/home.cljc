@@ -80,12 +80,12 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
            :data-test "home-banner")
-    (let [file-name "Shop-Now-SOUL-Homepage.png"
+    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
           alt       "Fall in love with you! Shop our looks."]
-      (hero-image {:mobile-url  "//ucarecdn.com/831fa1c3-b45d-49ec-8920-873f1fc2ed12/"
-                   :desktop-url "//ucarecdn.com/b6b2ba96-0ac5-4e2e-9e2e-669659f21eb1/"
+      (hero-image {:mobile-url  "//ucarecdn.com/d651221c-581b-4916-9001-6af866a26f68/"
+                   :desktop-url "//ucarecdn.com/b1922d1a-a0a5-4973-89c5-a3740bd8914d/"
                    :file-name   file-name
                    :alt         alt}))]])
 
@@ -114,7 +114,7 @@
    [:div.col.col-6.border.border-white
     [:a
      (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
-     (feature-image {:mobile-url  "//ucarecdn.com/426db3ce-81ab-48b2-8255-a28e3e4392f8/"
+     (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
                      :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
                      :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
                      :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})]]
