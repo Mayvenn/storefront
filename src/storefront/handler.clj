@@ -39,7 +39,8 @@
             [clj-time.core :as clj-time.core]
             [clojure.set :as set]
             [catalog.products :as products]
-            [sablono.util :as util]))
+            [sablono.util :as util]
+            [storefront.accessors.auth :as auth]))
 
 (defn storefront-site-defaults
   [environment]
@@ -89,6 +90,14 @@
 
 (defn store-homepage [store-slug environment req]
   (store-url store-slug environment (assoc req :uri "/")))
+
+(defn redirect-to-home [environment {:keys [subdomains] :as req}]
+  (util.response/redirect (store-homepage (first subdomains) environment req)
+                          :moved-permanently))
+
+(defn redirect-to-product-details [environment {:keys [subdomains params] :as req}]
+  (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
+                          :moved-permanently))
 
 (defn wrap-add-domains [h]
   (fn [req]
@@ -224,24 +233,31 @@
              (html-response render-ctx))))))
 
 
-(defn render-product-details [{:keys [storeback-config] :as render-ctx}
+(defn render-product-details [{:keys [environment storeback-config] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [product   (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
-        sku-id    (product-details/determine-sku-id data product (:SKU params))
-        images    (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
-        sku       (get-in data (conj keypaths/skus sku-id))
-        redirect? (or (not= slug (:page/slug product))
-                      (and sku-id (not sku)))
-        criteria  (select-keys sku
-                               (concat (:selector/electives product)
-                                       (:selector/essentials product)))]
+  (let [product    (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
+        sku-id     (product-details/determine-sku-id data product (:SKU params))
+        images     (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
+        sku        (get-in data (conj keypaths/skus sku-id))
+        redirect?  (or (not= slug (:page/slug product))
+                       (and sku-id (not sku)))
+        criteria   (select-keys sku
+                                (concat (:selector/electives product)
+                                        (:selector/essentials product)))
+        permitted? (auth/permitted-product? data product)]
     (when-let [{:keys [:catalog/product-id :page/slug]} product]
-      (if redirect?
+      (cond
+        (not permitted?)
+        (redirect-to-home environment req)
+
+        redirect?
         (let [path (products/path-for-sku product-id slug sku-id)]
           (util.response/redirect path))
+
+        :else
         (html-response render-ctx
                        (-> data
                            (assoc-in keypaths/db-images images)
@@ -345,6 +361,13 @@
       (assoc-in keypaths/static (static-page nav-event))
       (assoc-in keypaths/navigation-message nav-message)))
 
+(defn assoc-user-info [data req]
+  (-> data
+      (assoc-in keypaths/user-id (cookies/get req "id"))
+      (assoc-in keypaths/user-token (cookies/get req "user-token"))
+      (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
+      (assoc-in keypaths/user-email (cookies/get req "email"))))
+
 (defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
@@ -362,6 +385,9 @@
                                                   order-number
                                                   order-token))
               data       (cond-> data
+                           true
+                           (assoc-user-info req)
+
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
 
@@ -625,14 +651,6 @@
 (defn wrap-add-nav-message [h]
   (fn [{:keys [uri query-params] :as req}]
     (h (assoc req :nav-message (routes/navigation-message-for uri query-params)))))
-
-(defn redirect-to-home [environment {:keys [subdomains] :as req}]
-  (util.response/redirect (store-homepage (first subdomains) environment req)
-                          :moved-permanently))
-
-(defn redirect-to-product-details [environment {:keys [subdomains params] :as req}]
-  (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
-                          :moved-permanently))
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
                           {:keys [subdomains query-params server-name] :as req}]
