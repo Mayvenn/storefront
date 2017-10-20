@@ -268,7 +268,7 @@
   (wistia/load))
 
 (defmethod perform-effects events/navigate-shop-bundle-deals [_ event _ _ app-state]
-  (if (experiments/bundle-deals? app-state)
+  (if (experiments/bundle-deals-2? app-state)
     (pixlee/fetch-bundle-deals)
     (redirect events/navigate-home)))
 

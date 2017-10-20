@@ -54,11 +54,10 @@
 (defn green-dot? [data]
   (display-feature? data "green-dot"))
 
-(defn bundle-deals? [data]
-  (display-feature? data "bundle-deals"))
+(defn bundle-deals-2? [data]
+  (display-feature? data "bundle-deals-2"))
 
 (defn affirm? [data]
   (display-feature? data "affirm"))
 
-(defn bundle-deals-2? [data]
-  (display-feature? data "bundle-deals-2"))
+
