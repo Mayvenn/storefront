@@ -216,7 +216,6 @@
                                      (get-in data keypaths/loaded-stripe-v3))
       :step-bar                 (checkout-steps/query data)
       :field-errors             (:field-errors (get-in data keypaths/errors))
-      ;; affirm keys
       :selected-payment-methods selected-payment-methods}
      (cc/query data))))
 

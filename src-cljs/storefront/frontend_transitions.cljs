@@ -625,10 +625,18 @@
   (clear-flash app-state))
 
 (defmethod transition-state events/bucketed-for [_ event {:keys [experiment]} app-state]
-  (update-in app-state keypaths/experiments-bucketed conj experiment))
+   (update-in app-state keypaths/experiments-bucketed conj experiment))
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
-  (update-in app-state keypaths/features conj feature))
+  (let [fully-covered? (orders/fully-covered-by-store-credit?
+                        (get-in app-state keypaths/order)
+                        (get-in app-state keypaths/user))]
+    (cond-> (update-in app-state keypaths/features conj feature)
+
+      (and (= feature "affirm") fully-covered?) ;; GROT this when affirm experiment finishes
+      (assoc-in keypaths/checkout-selected-payment-methods
+                (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                             (get-in app-state keypaths/user-total-available-store-credit))))))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))
