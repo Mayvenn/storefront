@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [cemerick.url :refer [url-encode]]
             [sablono.core :refer-macros [html]]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -195,6 +196,9 @@
 
 (defmethod effects/perform-effects events/control-checkout-affirm-confirmation-submit
   [_ _ _ _ app-state]
+  (handle-message events/api-start {:xhr nil
+                                    :request-key request-keys/affirm-place-order
+                                    :request-id (str (random-uuid))})
   (affirm/checkout (order->affirm (get-in app-state keypaths/products)
                                   (get-in app-state keypaths/order))))
 
@@ -202,7 +206,8 @@
   (let [order (get-in data keypaths/order)]
     {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
      :saving-card?                 (checkout-credit-card/saving-card? data)
-     :placing-order?               (utils/requesting? data request-keys/place-order)
+     :placing-order?               (or (utils/requesting? data request-keys/place-order)
+                                       (utils/requesting? data request-keys/affirm-place-order))
      :requires-additional-payment? (requires-additional-payment? data)
      :affirm-payment?              (get-in data keypaths/order-cart-payments-affirm)
      :checkout-steps               (checkout-steps/query data)
