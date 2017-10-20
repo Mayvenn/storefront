@@ -155,7 +155,12 @@
 
 (def ordinal ["first" "second" "third" "fourth" "fifth"])
 
-(defn refer-component [{:keys                             [focused bonus-amount earning-amount referrals flash-failure]
+(defn refer-component [{:keys [focused
+                               bonus-amount
+                               earning-amount
+                               referrals
+                               flash-failure
+                               add-referral-spinning?]
                         {:keys [field-errors] :as errors} :errors}
                        owner
                        {:keys [close-attrs]}]
@@ -228,15 +233,17 @@
                       [:div.mr1.flex.items-center svg/counter-inc]
                       [:div "Add Another Referral"]])]])
                 [:div.col-12.col-6-on-tb-dt.mx-auto
-                 (ui/submit-button "Send" {:data-test "submit-referral"})]]]))))
+                 (ui/submit-button "Send" {:data-test "submit-referral"
+                                           :spinning? add-referral-spinning?})]]]))))
 
 (defn query-refer [data]
-  {:earning-amount (get-in data keypaths/stylist-referral-program-earning-amount)
-   :bonus-amount   (get-in data keypaths/stylist-referral-program-bonus-amount)
-   :errors         (get-in data keypaths/errors)
-   :flash-failure  (get-in data keypaths/flash-now-failure-message)
-   :referrals      (get-in data keypaths/stylist-referrals)
-   :focused        (get-in data keypaths/ui-focus)})
+  {:earning-amount         (get-in data keypaths/stylist-referral-program-earning-amount)
+   :bonus-amount           (get-in data keypaths/stylist-referral-program-bonus-amount)
+   :errors                 (get-in data keypaths/errors)
+   :flash-failure          (get-in data keypaths/flash-now-failure-message)
+   :referrals              (get-in data keypaths/stylist-referrals)
+   :focused                (get-in data keypaths/ui-focus)
+   :add-referral-spinning? (utils/requesting? data request-keys/send-referrals)})
 
 (defn built-refer-component [data opts]
   (om/build refer-component (query-refer data) opts))
