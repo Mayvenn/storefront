@@ -21,8 +21,8 @@
     [:img.block.col-12 {:src "//ucarecdn.com/f06961aa-d039-4ff3-a8ec-05e9d5e1024d/-/format/auto/herocongrats.jpg"
                         :alt "Congrats. Welcome to the Mayvenn community! Your website is ready to go. You can share your store link, shop, and start selling now."}]]])
 
-(defn- first-coupon-link [store-link token user-id]
-  (str "//" store-link "/one-time-login?sha=FIRST&token=" token "&user-id=" user-id))
+(defn- first-coupon-link [store-link token user-id target]
+  (str "//" store-link "/one-time-login?sha=FIRST&token=" token "&user-id=" user-id "&target=" (url/url-encode target)))
 
 (defn coupon-section [store-link token user-id]
   [:section.center.white.bg-cover.bg-center.bg-30-off.center.px3.py6
@@ -30,7 +30,8 @@
     [:h2.h1.mt6 "Get 30% Off"]
     [:p.mb3 "To welcome you to Mayvenn, here is 30% off your first order. Use the promo code: FIRST"]
     [:a.btn.btn-primary.h5.px4.light
-     {:href   (first-coupon-link store-link token user-id)
+     {:href   (first-coupon-link store-link token user-id "/")
+      :target "_blank"
       :data-test "shop-first-promo"}
      "Shop now using promo code FIRST"]]])
 
@@ -50,7 +51,7 @@
         (icon "//ucarecdn.com/7f4e00a1-cac3-4c79-b233-176c8809be03/-/format/auto/icontrymayvenn.png")
         [hed "Try Mayvenn Hair"]
         [dek "Becoming an expert in our products is the first step to becoming a successful seller. Use the promo code 'FIRST' to get 30% off your first order."]
-        [cta {:href   (first-coupon-link store-link token user-id)
+        [cta {:href   (first-coupon-link store-link token user-id "/")
               :target "_blank"}
          "Shop Mayvenn hair"]]
 
@@ -78,8 +79,9 @@
       [:p.mb3 "Our stylist kit is full of essential selling tools like business cards, hair samples, and more. "
        "For just $109, this is the best way to jumpstart your Mayvenn business (a $200 value)."]]
      [:a.h5.block.col-12.col-6-on-tb.col-4-on-dt.mx-auto.regular.btn.btn-primary.white
-      {:href   (str "//" store-link "/products/49-rings-kits?one-time-auth=" token "&user-id=" user-id)
-       :target "_blank"}
+      {:href (first-coupon-link store-link token user-id "/products/49-rings-kits")
+       :target "_blank"
+       :data-test "shop-sample-kits"}
       "Learn more about stylist kits"]]]])
 
 (def first-sale-section

@@ -59,10 +59,14 @@
 (defn cookie-root-domain [server-name]
   (str "." (parse-root-domain server-name)))
 
-(defn query-string [{:keys [query-params query-string]}]
+(defn query-string [{:keys [query-params query-string] :as req}]
   (cond
-    (seq query-params) (str "?" (codec/form-encode query-params))
-    (seq query-string) (str "?" query-string)
+    (contains? req :query-params)
+    (str "?" (codec/form-encode query-params))
+
+    (seq query-string)
+    (str "?" query-string)
+
     :else nil))
 
 (defn parse-subdomains [server-name]
@@ -632,19 +636,22 @@
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
                           {:keys [subdomains query-params server-name] :as req}]
-  (let [{:strs [token user-id]}     query-params
+  (let [{:strs [token user-id target]}     query-params
         {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token)
         cookie-options              {:secure false
                                      :max-age   (cookies/days 30)
-                                     :domain    (str (first subdomains) (cookie-root-domain server-name))}]
+                                     :domain    (str (first subdomains) (cookie-root-domain server-name))}
+        whitelisted-redirect-paths #{"/" "/products/49-rings-kits"}
+        dest-req (-> req
+                     (assoc :uri (or (whitelisted-redirect-paths target) "/"))
+                     (update :query-params dissoc "token" "user-id" "target"))]
     (if user
-      (->  (util.response/redirect (store-homepage (first subdomains) environment (-> req
-                                                                                      (update :query-params dissoc "token")
-                                                                                      (update :query-params dissoc "user-id"))))
+      (->  (util.response/redirect (store-url (first subdomains) environment dest-req))
            (cookies/set environment :email (:email user) cookie-options)
            (cookies/set environment :id (:id user) cookie-options)
+           (cookies/set environment :store-slug (:store_slug user) cookie-options)
            (cookies/set environment :user-token (:token user) cookie-options))
-      (util.response/redirect (store-homepage (first subdomains) environment req)))))
+      (util.response/redirect (store-homepage (first subdomains) environment dest-req)))))
 
 
 (defn create-handler
