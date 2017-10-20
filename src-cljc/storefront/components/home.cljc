@@ -80,7 +80,7 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-named-search {:named-search-slug "wigs"})
+    (assoc (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
            :data-test "home-banner")
     (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
           alt       "Fall in love with you! Shop our looks."]
