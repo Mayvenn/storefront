@@ -475,12 +475,13 @@
 (defmethod effects/perform-effects events/api-success-lead-created
   [_ _ _ previous-app-state app-state]
   #?(:cljs
-     (let [{:keys [flow-id] lead-id :id} (get-in app-state keypaths/remote-lead)
+     (let [{:keys [flow-id state] lead-id :id} (get-in app-state keypaths/remote-lead)
            lead                          (get-in previous-app-state keypaths/lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
                              {"lead-id"             lead-id
                               "onboarding-status" "lead-created"})
-       (if (accessors/self-reg? flow-id)
+       (if (and (accessors/self-reg? flow-id)
+                (not (= state "duplicate")))
          (history/enqueue-navigate events/navigate-leads-registration-details {:submitted-lead lead})
          (history/enqueue-navigate events/navigate-leads-resolve)))))
 
