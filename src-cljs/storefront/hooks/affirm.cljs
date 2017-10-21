@@ -1,7 +1,5 @@
 (ns storefront.hooks.affirm
   (:require [storefront.config :as config]
-            [storefront.platform.messages :as messages]
-            [storefront.events :as events]
             [storefront.browser.tags :as tags]))
 
 (defn insert []

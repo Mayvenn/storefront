@@ -1,7 +1,6 @@
 (ns storefront.components.stylist.bonus-credit
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
@@ -10,7 +9,8 @@
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            [goog.string]))
 
 (def check-svg
   (svg/circled-check {:class "stroke-teal"

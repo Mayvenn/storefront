@@ -4,9 +4,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
-            [storefront.config :as config]
-            [clojure.string :as string]
-            [clojure.set :refer [rename-keys]]))
+            [storefront.config :as config]))
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "Stripe")

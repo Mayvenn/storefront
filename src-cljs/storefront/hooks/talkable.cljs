@@ -3,7 +3,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.orders :refer [add-rounded-floats]]
-            [clojure.set :as set]
             [storefront.platform.messages :as m]
             [storefront.config :as config]))
 

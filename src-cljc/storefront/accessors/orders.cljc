@@ -1,5 +1,4 @@
-(ns storefront.accessors.orders
-  (:require [storefront.accessors.products :as products]))
+(ns storefront.accessors.orders)
 
 (defn incomplete? [order]
   (and (-> order :state #{"cart"} boolean)

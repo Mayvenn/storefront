@@ -3,23 +3,20 @@
             [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
             [goog.labs.userAgent.device :as device]
-            [storefront.effects :refer [perform-effects redirect page-not-found]]
+            [storefront.effects :refer [perform-effects redirect page-not-found] :as effects]
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.named-searches :as named-searches]
             [catalog.categories :as categories]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.accessors.stylists :as stylists]
-            [storefront.request-keys :as request-keys]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
-            [storefront.browser.tags :as tags]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.history :as history]
@@ -47,7 +44,7 @@
             [storefront.routes :as routes]
             [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
-            [storefront.effects :as effects]))
+            [clojure.string :as string]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -574,7 +571,7 @@
                (get-in app-state keypaths/order-number)
                (get-in app-state keypaths/order-token)))
 
-(defmethod perform-effects events/control-sign-up-submit [_ event {:keys [order]} _ app-state]
+(defmethod perform-effects events/control-sign-up-submit [_ event _ _ app-state]
   (let [{:keys [number token]} (or (get-in app-state keypaths/order)
                                    (get-in app-state keypaths/completed-order))]
     (api/sign-up (get-in app-state keypaths/session-id)
@@ -749,7 +746,7 @@
           (dissoc :expiration_date)
           (assoc :expiration_month month)
           (assoc :expiration_year year)
-          (update :card_number (comp clojure.string/join filter-cc-number-format str))))))
+          (update :card_number (comp string/join filter-cc-number-format str))))))
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)

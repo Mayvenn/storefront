@@ -41,7 +41,7 @@
   (adjustment->apple-line-item (orders/tax-adjustment order)))
 
 (defn ^:private waiter->apple-shipping-methods [shipping-methods]
-  (for [{:keys [name quantity price sku]} shipping-methods]
+  (for [{:keys [name price sku]} shipping-methods]
     {:label name
      :detail (as-money price)
      :amount price
@@ -78,7 +78,7 @@
    :zipcode postalCode})
 
 (defn ^:private card->waiter-address [card shipping-contact state-name->abbr]
-  (let [{:keys [address_city address_country address_line1 address_line2 address_state address_zip]} (js->clj card :keywordize-keys true)
+  (let [{:keys [address_city address_line1 address_line2 address_state address_zip]} (js->clj card :keywordize-keys true)
         {:keys [givenName familyName phoneNumber]} shipping-contact]
     {:address1 address_line1
      :address2 address_line2

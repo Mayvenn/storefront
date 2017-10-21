@@ -1,6 +1,5 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET json-response-format POST PUT raw-response-format]]
-            [clojure.set :refer [rename-keys]]
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
@@ -342,15 +341,15 @@
 (defn diva->mayvenn-address [address]
   (-> address
       (dissoc :country_id)
-      (rename-keys {:firstname :first-name
-                    :lastname :last-name})
+      (set/rename-keys {:firstname :first-name
+                        :lastname :last-name})
       (update-in [:state] :abbr)
       (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])))
 
 (defn diva->mayvenn-addresses [contains-addresses]
   (-> contains-addresses
-      (rename-keys {:bill_address :billing-address
-                    :ship_address :shipping-address})
+      (set/rename-keys {:bill_address :billing-address
+                        :ship_address :shipping-address})
       (update-in [:billing-address] diva->mayvenn-address)
       (update-in [:shipping-address] diva->mayvenn-address)))
 
@@ -695,7 +694,7 @@
     :handler #(messages/handle-message events/api-success-update-order-update-shipping-method
                                        {:order %})}))
 
-(defn update-cart-payments [session-id {:keys [order place-order?] :as args}]
+(defn update-cart-payments [session-id {:keys [order] :as args}]
   (api-req
    POST
    "/v2/update-cart-payments"
@@ -849,7 +848,7 @@
     :handler #(messages/handle-message events/api-success-send-stylist-referrals
                                       {:referrals %})}))
 
-(defn- static-content-req [method path req-key {:keys [handler params] :as request-opts}]
+(defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
         content-opts {:format          :raw
                       :handler         (wrap-api-end req-key req-id handler)

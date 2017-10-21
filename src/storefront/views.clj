@@ -6,12 +6,10 @@
             [storefront.seo-tags :as seo]
             [storefront.keypaths :as keypaths]
             [storefront.config :as config]
-            [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
             [cheshire.core :refer [generate-string]]
             [storefront.safe-hiccup :refer [html5 raw]]
             [hiccup.page :as page]
-            [hiccup.element :as element]
             [clojure.java.io :as io])
   (:import [java.util.zip GZIPInputStream]))
 
@@ -54,7 +52,7 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
-(defn layout [{:keys [leads-config storeback-config environment client-version]} data initial-content]
+(defn layout [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
    [:head
     [:meta {:name "fragment" :content "!"}]

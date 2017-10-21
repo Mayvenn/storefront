@@ -12,7 +12,7 @@
     attrs))
 
 (defn remove-handlers [m]
-  (into {} (remove (fn [[k v]] (.startsWith (name k) "on-")) m)))
+  (into {} (remove (fn [[k _]] (.startsWith (name k) "on-")) m)))
 
 (defn normalize-attrs [attrs]
   (-> attrs

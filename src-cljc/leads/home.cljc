@@ -21,14 +21,12 @@
             [storefront.keypaths]
             [leads.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.footer :as footer]
             [clojure.string :as string]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            [spice.core :as spice]
             [storefront.request-keys :as request-keys]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options spinning?] :as attrs}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 60,000 stylists"]
@@ -101,7 +99,7 @@
            (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
     "Finish registration")])
 
-(defn hero-section [{:keys [flow-id sign-up resume-self-reg] :as attrs}]
+(defn hero-section [{:keys [flow-id sign-up resume-self-reg]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
@@ -317,24 +315,22 @@
     :a "A common frustration that many have experienced when purchasing hair extensions is the inability to return the hair when they’re dissatisfied. Our 30-day guarantee is an unprecedented move in the industry, and it shows how confident we are in our product. If you’re having any issues with your bundles, even after you’ve dyed, cut it, or styled it, we’ll exchange it within 30 days. If you haven’t altered the hair or packaging in any way, we’ll give you a full refund within 30 days."}])
 
 (defn faq-section [q-and-as {:keys [sms-number call-number]}]
-  (let [q :h3
-        a :p.h5.mb4]
-    [:div.max-580.mx-auto.center
-     [:h2 "Frequently asked questions"]
-     [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
-     (map-indexed (fn [idx {:keys [q a]}]
-                    [:div.mb4
-                     {:key (str "q-" idx "-a")}
-                     [:h3 "Q: " q]
-                     [:p.h5 "A: " a]])
-                  q-and-as)
-     [:div.mt6
-      [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
-      [:ul.list-reset
-       [:li "Text us: " (ui/link :link/sms :a.inherit-color {} sms-number)]
-       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" call-number)]
-       [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
-       [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
+  [:div.max-580.mx-auto.center
+   [:h2 "Frequently asked questions"]
+   [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
+   (map-indexed (fn [idx {:keys [q a]}]
+                  [:div.mb4
+                   {:key (str "q-" idx "-a")}
+                   [:h3 "Q: " q]
+                   [:p.h5 "A: " a]])
+                q-and-as)
+   [:div.mt6
+    [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
+    [:ul.list-reset
+     [:li "Text us: " (ui/link :link/sms :a.inherit-color {} sms-number)]
+     [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" call-number)]
+     [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
+     [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]])
 
 (defn footer [{:keys [call-number host-name]}]
   (let [policy-url  (str "//shop." host-name "/policy")

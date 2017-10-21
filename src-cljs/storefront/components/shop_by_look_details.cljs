@@ -7,19 +7,13 @@
             [storefront.assets :as assets]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
             [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]
             [storefront.request-keys :as request-keys]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.order-summary :as order-summary]
-            [cemerick.url :as url]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]
-            [spice.core :as spice]
-            [spice.maps :as maps]))
+            [storefront.accessors.products :as products]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?

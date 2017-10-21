@@ -1,7 +1,6 @@
 (ns storefront.browser.cookie-jar
   (:require [storefront.config :as config]
             [clojure.string :as string]
-            [clojure.string :as str]
             [spice.core :as spice])
   (:import [goog.net Cookies]))
 

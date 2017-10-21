@@ -1,7 +1,6 @@
 (ns storefront.components.facebook
   (:require [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]))
 
 (defn narrow-sign-in-button [loaded?]

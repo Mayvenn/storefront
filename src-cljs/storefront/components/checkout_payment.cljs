@@ -30,8 +30,7 @@
 
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
-  (let [use-store-credit (pos? (get-in app-state keypaths/user-total-available-store-credit))
-        covered-by-store-credit (orders/fully-covered-by-store-credit?
+  (let [covered-by-store-credit (orders/fully-covered-by-store-credit?
                                  (get-in app-state keypaths/order)
                                  (get-in app-state keypaths/user))
         selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
@@ -147,7 +146,7 @@
                [:p.h6 "All transactions are secure and encrypted."]])
 
              (when selected-stripe-or-store-credit?
-               (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
+               (let [{:keys [credit-available credit-applicable]} store-credit]
                  [:div.p2
                   (when (pos? credit-available)
                     (ui/note-box

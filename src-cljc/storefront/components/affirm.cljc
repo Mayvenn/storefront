@@ -4,10 +4,7 @@
               [om.core :as om]
               [storefront.hooks.affirm :as affirm]]
        :clj  [[storefront.component-shim :as component]])
-   [storefront.platform.component-utils :as utils]
    [storefront.events :as events]
-   [storefront.keypaths :as keypaths]
-   [storefront.components.ui :as ui]
    [storefront.platform.messages :as m]
    [storefront.transitions :as transitions]
    [storefront.components.money-formatters :as mf]

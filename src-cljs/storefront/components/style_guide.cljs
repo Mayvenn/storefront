@@ -193,8 +193,7 @@
        (for [direction ["" "t" "b" "l" "r"]]
          [:div.clearfix
           (for [increment (range 1 7)
-                :let [class (str "m" direction "p" increment)
-                      text (str "." class)]]
+                :let [class (str "m" direction "p" increment)]]
             [:div.col.col-2
              (box class (str increment "px"))])])])
 

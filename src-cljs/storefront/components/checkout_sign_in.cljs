@@ -3,9 +3,7 @@
             [sablono.core :refer-macros [html]]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
-            [storefront.components.facebook :as facebook]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.components.facebook :as facebook]))
 
 (defn component [{:keys [facebook-loaded?] :as sign-in-form-data} owner]
   (om/component

@@ -23,7 +23,6 @@
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
 
-            [storefront.accessors.experiments :as experiments]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [storefront.components.content :as content]
@@ -39,14 +38,12 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
-            [storefront.components.ui :as ui]
             ;; TODO Maybe we should change leads namespaces to be somehting like
             ;; leads.components.home
             [leads.home :as leads.home]
             [leads.registration :as leads.registration]
             [leads.registration-resolve :as leads.registration-resolve]
             [leads.resolve :as leads.resolve]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))

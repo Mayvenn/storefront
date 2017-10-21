@@ -1,12 +1,10 @@
 (ns storefront.components.ui
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.numbers :as numbers]
             [storefront.assets :as assets]
             [storefront.platform.numbers :as numbers]
             [storefront.components.money-formatters :as mf]
@@ -137,7 +135,7 @@
      {:data-test (str data-test "-error")}
      (or (:long-message error) nbsp)]))
 
-(defn ^:private floating-label [label id {:keys [error? value?]}]
+(defn ^:private floating-label [label id {:keys [value?]}]
   [:div.absolute
    [:label.floating-label--label.col-12.h7.relative.gray.medium
     (cond-> {:for id}
@@ -193,7 +191,7 @@
                    hint])]]))
 
 (defn hidden-field
-  [{:keys [keypath type value disabled? checked?] :as attributes}]
+  [{:keys [keypath type disabled? checked?] :as attributes}]
   (let [args    (dissoc attributes :keypath)
         handler (utils/send-event-callback keypath args)]
     [:input.hide

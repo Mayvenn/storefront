@@ -5,11 +5,9 @@
               [storefront.component :as component]
               [storefront.history :as history]])
    [catalog.categories :as categories]
-   [catalog.products :as products]
    [catalog.category-filters :as category-filters]
    [catalog.selector :as selector]
    [clojure.set :as set]
-   [spice.maps :as maps]
    [storefront.components.svg :as svg]
    [storefront.effects :as effects]
    [storefront.events :as events]
@@ -43,12 +41,6 @@
                         :width  "23px"
                         :height "20px"
                         :style  {:transform "rotate(-90deg)"}})))
-
-;;NOTE Used by slideout-nav (but not here)
-(defn- minor-menu-row [& content]
-  [:div.border-bottom.border-gray
-   {:style {:padding "3px 0 2px"}}
-   (into [:a.block.py1.h5.inherit-color.flex.items-center] content)])
 
 ;;NOTE Used by slideout-nav
 (defn- major-menu-row [& content]
@@ -87,7 +79,7 @@
     [:span.flex-auto.titleize (:label option)])])
 
 (defn component
-  [{:keys [root-name facets criteria promo-data current-step up-step down-step up-step-option selected-options]}
+  [{:keys [root-name criteria current-step up-step down-step up-step-option selected-options]}
    owner
    opts]
   (component/create
@@ -125,13 +117,10 @@
                             (map #(filterv :selected? %))
                             (remove empty?))}))
 
-(defn ^:private ascend [filters {facet-slug :slug :as up-step}]
-  (let [option-slug (-> (:criteria filters)
-                        (get facet-slug)
-                        first)]
-    (-> filters
-        (category-filters/undo-criterion)
-        (category-filters/step up-step))))
+(defn ^:private ascend [filters up-step]
+  (-> filters
+      (category-filters/undo-criterion)
+      (category-filters/step up-step)))
 
 (defn ^:private descend [filters current-step selected-option down-step]
   (-> filters
@@ -140,7 +129,7 @@
       (category-filters/step down-step)))
 
 (defmethod transitions/transition-state events/menu-traverse-root
-  [_ _ {:keys [id]} app-state]
+  [_ _ _ app-state]
   (-> app-state
       (assoc-in  keypaths/category-filters-for-nav {})
       (update-in keypaths/current-traverse-nav dissoc :id)))

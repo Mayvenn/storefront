@@ -14,7 +14,8 @@
             [storefront.events :as events]
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]))
+            [storefront.utils.query :as query]
+            [goog.string]))
 
 (defn status-look [status]
   (case status
@@ -22,7 +23,7 @@
     "paid"      "navy"
     "processing" "teal"))
 
-(defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as item}]
+(defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as line-item}]
   (let [variant (query/get {:id id}
                            (:variants (get products product-id)))]
     [:div.py2.clearfix {:key id}

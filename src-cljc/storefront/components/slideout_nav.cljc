@@ -223,7 +223,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [signed-in store user shopping bundle-deals-2?]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-top.border-gray
@@ -238,7 +238,7 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [user store promo-data shopping signed-in on-taxon? drill-down-data] :as data}
+  [{:keys [promo-data on-taxon? drill-down-data] :as data}
    owner
    opts]
   (component/create

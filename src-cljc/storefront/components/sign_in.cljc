@@ -3,7 +3,6 @@
                :cljs [storefront.component :as component])
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
-            [storefront.components.flash :as flash]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))

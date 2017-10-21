@@ -2,7 +2,6 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.components.ui :as ui]
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]))
 

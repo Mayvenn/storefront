@@ -15,12 +15,10 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
-            [storefront.routes :as routes]
             [storefront.accessors.products :refer [medium-img]]
             [catalog.products :as products]
             [storefront.hooks.affirm :as affirm]
-            [storefront.components.affirm :as affirm-components]
-            [storefront.component :as component]))
+            [storefront.components.affirm :as affirm-components]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -82,8 +80,7 @@
                                           :data-test "confirm-form-submit"})]]]]])))
 
 (defn component
-  [{:keys [affirm-payment?
-           available-store-credit
+  [{:keys [available-store-credit
            checkout-steps
            payment delivery order
            placing-order?
@@ -142,7 +139,7 @@
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
 (defn ->affirm-line-item [products {:keys [product-id product-name sku unit-price quantity]}]
-  (let [{:keys [images slug]} (get products product-id)]
+  (let [{:keys [slug]} (get products product-id)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
@@ -209,7 +206,6 @@
      :placing-order?               (or (utils/requesting? data request-keys/place-order)
                                        (utils/requesting? data request-keys/affirm-place-order))
      :requires-additional-payment? (requires-additional-payment? data)
-     :affirm-payment?              (get-in data keypaths/order-cart-payments-affirm)
      :checkout-steps               (checkout-steps/query data)
      :products                     (get-in data keypaths/products)
      :order                        order

@@ -3,7 +3,6 @@
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
             [storefront.accessors.promos :as promos]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.events :as events]

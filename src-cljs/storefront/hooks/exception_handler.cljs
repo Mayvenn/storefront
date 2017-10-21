@@ -1,6 +1,5 @@
 (ns storefront.hooks.exception-handler
-  (:require [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
-            [storefront.config :as config]
+  (:require [storefront.config :as config]
             [bugsnag]))
 
 (defn- log [msg error custom-context]

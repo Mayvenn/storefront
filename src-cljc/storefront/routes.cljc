@@ -4,7 +4,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.uri :as uri]
-            [storefront.config :as config]
             #?(:cljs [cljs.reader :refer [read-string]])))
 
 (defn edn->bidi [value]

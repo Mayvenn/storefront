@@ -6,12 +6,10 @@
             [storefront.components.stylist.account.social :as account.social]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
-            [storefront.hooks.uploadcare :as uploadcare]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.request-keys :as request-keys]))
 
 (defn uploadcare-photo [{:keys [status] :as portrait} saving?]
   [:a.navy

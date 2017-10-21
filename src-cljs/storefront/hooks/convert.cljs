@@ -1,7 +1,5 @@
 (ns storefront.hooks.convert
   (:require [storefront.browser.tags :as tags]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.platform.messages :as m]
             [storefront.config :as config]))

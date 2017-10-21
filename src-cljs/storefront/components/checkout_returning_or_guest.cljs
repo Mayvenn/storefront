@@ -1,10 +1,8 @@
 (ns storefront.components.checkout-returning-or-guest
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
-            [storefront.components.checkout-sign-in :as checkout-sign-in]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]

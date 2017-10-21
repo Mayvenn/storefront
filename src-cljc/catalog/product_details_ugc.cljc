@@ -3,16 +3,11 @@
                 :cljs [[storefront.component :as component]
                        [goog.string]])
             [storefront.components.ugc :as ugc]
-            [storefront.accessors.named-searches :as named-searches]
-            [storefront.accessors.pixlee :as pixlee]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as util]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
-            [catalog.products :as products]
-            [spice.core :as spice]
             [clojure.string :as str]))
 
 (defn ^:private carousel-slide [product-id page-slug sku-id idx {:keys [imgs content-type]}]
@@ -69,7 +64,7 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [carousel-data offset back] :as data} owner opts]
+(defn popup-component [{:keys [carousel-data offset]} owner opts]
   (component/create
    (let [close-attrs (util/route-to events/navigate-product-details
                                     {:catalog/product-id (:product-id carousel-data)

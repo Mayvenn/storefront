@@ -5,7 +5,6 @@
             [leads.header :as header]
             [cemerick.url :as url]
             [clojure.string :as string]
-            [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.keypaths]
             [leads.keypaths]
@@ -123,23 +122,21 @@
     :a "A common frustration that many have experienced when purchasing hair extensions is the inability to return the hair when they’re dissatisfied. Our 30-day guarantee is an unprecedented move in the industry, and it shows how confident we are in our product. If you’re having any issues with your bundles, even after you’ve dyed, cut it, or styled it, we’ll exchange it within 30 days. If you haven’t altered the hair or packaging in any way, we’ll give you a full refund within 30 days."}])
 
 (defn faq-section [q-and-as {:keys [sms-number call-number]}]
-  (let [q :h3
-        a :p.h5.mb4]
-    [:div.max-580.mx-auto
-     [:h2 "Frequently asked questions"]
-     [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
-     (for [{:keys [q a]} q-and-as]
-       [:div.mb4
-        {:key (str (hash q))}
-        [:h3 "Q: " q]
-        [:p.h5 "A: " a]])
-     [:div.mt6
-      [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
-      [:ul.list-reset
-       [:li "Text us: " (ui/link :link/sms :a.inherit-color {} sms-number)]
-       [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" call-number)]
-       [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
-       [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]]))
+  [:div.max-580.mx-auto
+   [:h2 "Frequently asked questions"]
+   [:p.mb6 "We’re always here to help! Answers to our most frequently asked questions can be found below."]
+   (for [{:keys [q a]} q-and-as]
+     [:div.mb4
+      {:key (str (hash q))}
+      [:h3 "Q: " q]
+      [:p.h5 "A: " a]])
+   [:div.mt6
+    [:p.mb4 "If you still have questions about becoming a Mayvenn stylist, feel free to contact us! Our customer service representatives are ready to answer all of your questions. There are a few ways you can reach us:"]
+    [:ul.list-reset
+     [:li "Text us: " (ui/link :link/sms :a.inherit-color {} sms-number)]
+     [:li "Call us: " (ui/link :link/phone :a.inherit-color {} "+" call-number)]
+     [:li "Email us: " (ui/link :link/email :a.inherit-color {} "help@mayvenn.com")]
+     [:li "Tweet us or DM us: " [:a.inherit-color {:href "https://twitter.com/MayvennHair" :target "_blank"} "@mayvennhair"]]]]])
 
 (defn query [app-state]
   (let [host       (case (get-in app-state storefront.keypaths/environment)

@@ -1,10 +1,8 @@
 (ns storefront.hooks.pixlee
   (:require [ajax.core :refer [GET json-response-format]]
-            [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [storefront.config :as config]
-            [storefront.platform.messages :as m]
-            [clojure.string :as str]))
+            [storefront.platform.messages :as m]))
 
 (def default-error-handler (partial m/handle-message events/api-failure-bad-server-response))
 

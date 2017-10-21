@@ -31,15 +31,11 @@
              [named-searches :as named-searches]]
             [catalog.product-details :as product-details]
             [comb.template :as template]
-            [spice.core :as spice]
             [spice.maps :refer [index-by auto-map]]
-            [clojure.string :as str]
             [clojure.xml :as xml]
             [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
-            [clojure.set :as set]
             [catalog.products :as products]
-            [sablono.util :as util]
             [storefront.accessors.auth :as auth]))
 
 (defn storefront-site-defaults
@@ -130,7 +126,7 @@
                            :domain    (cookie-root-domain server-name)})))))
 
 (defn wrap-known-subdomains-redirect [h environment]
-  (fn [{:keys [subdomains server-name server-port] :as req}]
+  (fn [{:keys [subdomains] :as req}]
     (cond
       (= "classes" (first subdomains))
       (util.response/redirect "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform")
@@ -233,7 +229,7 @@
              (html-response render-ctx))))))
 
 
-(defn render-product-details [{:keys [environment storeback-config] :as render-ctx}
+(defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
@@ -244,9 +240,6 @@
         sku        (get-in data (conj keypaths/skus sku-id))
         redirect?  (or (not= slug (:page/slug product))
                        (and sku-id (not sku)))
-        criteria   (select-keys sku
-                                (concat (:selector/electives product)
-                                        (:selector/essentials product)))
         permitted? (auth/permitted-product? data product)]
     (when-let [{:keys [:catalog/product-id :page/slug]} product]
       (cond
@@ -316,7 +309,7 @@
     {:id      static-content-id
      :content (->> static-content-id
                    (map name)
-                   (str/join "-")
+                   (string/join "-")
                    (format "public/content/%s.html")
                    io/resource
                    slurp
@@ -543,7 +536,7 @@
          (.getOffset (clj-time.core/now))
          (/ 3600000))))
 
-(defn leads-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
+(defn leads-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
       (let [render-ctx           (auto-map storeback-config environment client-version)
@@ -677,7 +670,7 @@
   ([{:keys [logger exception-handler environment] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
-               (GET "/sitemap.xml" req (-> (sitemap ctx req)))
+               (GET "/sitemap.xml" req (sitemap ctx req))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/categories" req (redirect-to-home environment req))

@@ -14,8 +14,7 @@
             [storefront.trackings :refer [perform-track]]
             [cljs.reader :refer [read-string]]
             [om.core :as om]
-            [clojure.data :refer [diff]]
-            [catalog.selector :as selector]))
+            [clojure.data :refer [diff]]))
 
 (set! *warn-on-infer* true)
 

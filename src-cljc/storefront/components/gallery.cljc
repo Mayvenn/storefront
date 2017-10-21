@@ -57,7 +57,7 @@
                                [:img.col-12 {:src resizable_url}]
                                pending-approval))]])))
 
-(defn component [{:keys [store editing? own-store? adding-photo?] :as data} owner opts]
+(defn component [{:keys [store editing? own-store? adding-photo?]} owner opts]
   (component/create
    [:div.container
     (title own-store? store)

@@ -2,7 +2,6 @@
   #?@(:clj
       [(:require
         [cemerick.url :as url]
-        [storefront.assets :as assets]
         [storefront.component-shim :as component]
         [storefront.components.share-links :as share-links]
         [storefront.keypaths :as keypaths]
@@ -10,7 +9,6 @@
       :cljs
       [(:require
         [cemerick.url :as url]
-        [storefront.assets :as assets]
         [storefront.component :as component]
         [storefront.components.share-links :as share-links]
         [storefront.keypaths :as keypaths]

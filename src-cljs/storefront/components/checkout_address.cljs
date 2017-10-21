@@ -6,7 +6,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.experiments :as experiments]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 

@@ -4,8 +4,7 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.keypaths :as keypaths]))
 
 (def close-button
   (component/html

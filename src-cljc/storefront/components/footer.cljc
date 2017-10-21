@@ -4,13 +4,11 @@
                :cljs [storefront.component :as component])
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.routes :as routes]
             [storefront.accessors.stylists :refer [own-store?]]
-            [storefront.platform.component-utils :as utils]
             [storefront.platform.date :as date]
             [storefront.platform.numbers :as numbers]
             [storefront.keypaths :as keypaths]

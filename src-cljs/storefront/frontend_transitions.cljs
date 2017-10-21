@@ -1,7 +1,6 @@
 (ns storefront.frontend-transitions
   (:require [cemerick.url :as url]
             [clojure.string :as string]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -13,7 +12,6 @@
             [storefront.state :as state]
             [storefront.transitions :refer [transition-state]]
             [spice.maps :as maps]
-            [spice.core :as spice]
             [storefront.accessors.experiments :as experiments]))
 
 (defn clear-fields [app-state & fields]
@@ -95,7 +93,7 @@
         (assoc-in keypaths/navigation-undo-stack nav-undo-stack)
         (update-in keypaths/navigation-redo-stack rest))))
 
-(defmethod transition-state events/redirect [_ event {:keys [nav-message]} app-state]
+(defmethod transition-state events/redirect [_ event _ app-state]
   (assoc-in app-state keypaths/redirecting? true))
 
 (defn clear-completed-order [app-state]
@@ -220,7 +218,7 @@
 (defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
   (assoc-in app-state keypaths/selected-look-id nil))
 
-(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id] :as args} app-state]
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
   (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
         current-shared-cart (get-in app-state keypaths/shared-cart-current)]
     (cond-> app-state
@@ -278,7 +276,7 @@
   (assoc-in app-state keypaths/ui-focus keypath))
 
 (defmethod transition-state events/control-blur
-  [_ event {:keys [keypath]} app-state]
+  [_ event _ app-state]
   (assoc-in app-state keypaths/ui-focus nil))
 
 (defmethod transition-state events/control-counter-inc [_ event args app-state]
@@ -398,17 +396,17 @@
       (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
 
 (defmethod transition-state events/api-partial-success-send-stylist-referrals
-  [_ event {:keys [results] :as x} app-state]
+  [_ event {:keys [results]} app-state]
   (update-in app-state keypaths/stylist-referrals
              (fn [old-referrals]
                (->> (map (fn [n o] [n o]) results old-referrals)
-                    (filter (fn [[nr or]]
+                    (filter (fn [[nr _]]
                               (seq (:error nr))))
                     (map last)
                     vec))))
 
 (defmethod transition-state events/api-success-send-stylist-referrals
-  [_ event {:keys [results] :as x} app-state]
+  [_ event _ app-state]
   (-> app-state
       clear-field-errors
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
@@ -532,7 +530,7 @@
                 (merge (first shipping-methods)
                        (orders/shipping-item (:order app-state))))))
 
-(defn update-account-address [app-state {:keys [billing-address shipping-address] :as args}]
+(defn update-account-address [app-state {:keys [billing-address shipping-address]}]
   (-> app-state
       (merge {:billing-address billing-address
               :shipping-address shipping-address})
@@ -548,7 +546,7 @@
     (vals-empty? (get-in app-state keypaths/checkout-shipping-address))
     (assoc-in keypaths/checkout-shipping-address shipping-address)))
 
-(defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath] :as args} app-state]
+(defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath]} app-state]
   (update-in app-state address-keypath merge address))
 
 (defmethod transition-state events/api-success-account [_ event {:keys [billing-address shipping-address] :as args} app-state]
@@ -668,7 +666,7 @@
 (defmethod transition-state events/stripe-component-mounted [_ event {:keys [card-element]} app-state]
   (assoc-in app-state keypaths/stripe-card-element card-element))
 
-(defmethod transition-state events/stripe-component-will-unmount [_ event {:keys [card-element]} app-state]
+(defmethod transition-state events/stripe-component-will-unmount [_ event _ app-state]
   (update-in app-state keypaths/stripe-card-element dissoc))
 
 (defmethod transition-state events/facebook-success-sign-in [_ event args app-state]
@@ -718,7 +716,7 @@
       (assoc-in keypaths/email-capture-session "dismissed"))))
 
 (defmethod transition-state events/stripe-failure-create-token [_ event stripe-response app-state]
-  (let [{:keys [code message param]} (:error stripe-response)]
+  (let [{:keys [code message]} (:error stripe-response)]
     (assoc-in app-state keypaths/errors
               {:error-code    code
                :error-message message})))

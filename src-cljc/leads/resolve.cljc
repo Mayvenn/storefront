@@ -5,7 +5,6 @@
             [leads.header :as header]
             [storefront.components.footer :as footer]
             [storefront.assets :as assets]
-            [storefront.components.svg :as svg]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths]

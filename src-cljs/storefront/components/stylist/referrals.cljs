@@ -9,9 +9,9 @@
             [storefront.components.ui :as ui]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [goog.string]))
 
 (defn circular-progress [{:keys [radius stroke-width fraction-filled]}]
   (let [inner-radius    (- radius stroke-width)

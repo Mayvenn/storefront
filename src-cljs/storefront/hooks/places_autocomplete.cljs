@@ -1,7 +1,6 @@
 (ns storefront.hooks.places-autocomplete
   (:require [storefront.browser.tags :as tags]
             [storefront.events :as events]
-            [clojure.set :as set]
             [storefront.platform.messages :as m]
             [storefront.config :as config]))
 

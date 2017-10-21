@@ -3,7 +3,6 @@
             [sablono.core :refer-macros [html]]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.ugc :as ugc]
-            [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]))
 
 (defn component [{:keys [bundle-deals]} owner opts]

@@ -9,7 +9,8 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.utils.query :as query]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [clojure.string :as string]))
 
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
@@ -42,16 +43,15 @@
 
 (defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]}]
   (let [adjustments              (orders/all-order-adjustments order)
-        quantity                 (orders/product-quantity order)
         shipping-item            (orders/shipping-item order)
         store-credit             (min (:total order) (or available-store-credit
                                                          (-> order :cart-payments :store-credit :amount)
                                                          0.0))
         text->data-test-name (fn [name]
                                (-> name
-                                   (clojure.string/replace #"[0-9]" (comp spice/number->word int))
-                                   clojure.string/lower-case
-                                   (clojure.string/replace #"[^a-z]+" "-")))]
+                                   (string/replace #"[0-9]" (comp spice/number->word int))
+                                   string/lower-case
+                                   (string/replace #"[^a-z]+" "-")))]
     [:div
      [:.py2.border-top.border-bottom.border-gray
       [:table.col-12

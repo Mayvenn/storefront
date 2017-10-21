@@ -3,8 +3,7 @@
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.assets :as assets]
-            [storefront.platform.messages :refer [handle-message]]
-            [goog.object :as object]))
+            [storefront.platform.messages :refer [handle-message]]))
 
 (defn ^:private loaded? [] (.hasOwnProperty js/window "uploadcare"))
 

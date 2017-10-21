@@ -2,17 +2,12 @@
   (:require [storefront.platform.component-utils :as utils]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            [storefront.platform.date :as date]
-            [storefront.platform.images :as images]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.auth :as auth]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
             [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
-            [storefront.platform.messages :refer [handle-message]]
             [storefront.config :as config]))
 
 (defn product-image

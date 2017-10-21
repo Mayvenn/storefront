@@ -6,8 +6,6 @@
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.referrals :as referrals]
             [storefront.components.tabs :as tabs]
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 

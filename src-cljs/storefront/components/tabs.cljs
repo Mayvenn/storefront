@@ -1,13 +1,7 @@
 (ns storefront.components.tabs
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
-            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
-            [storefront.components.stylist.commissions :as commissions]
-            [storefront.components.stylist.bonus-credit :as bonuses]
-            [storefront.components.stylist.referrals :as referrals]
-            [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.platform.component-utils :as utils]))
 
 
 (defn tab-link [event ref label]

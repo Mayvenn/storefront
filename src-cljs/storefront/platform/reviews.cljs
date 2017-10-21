@@ -1,7 +1,6 @@
 (ns storefront.platform.reviews
   (:require [sablono.core :refer-macros [html]]
             [om.core :as om]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.routes :as routes]

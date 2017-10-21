@@ -1,5 +1,4 @@
-(ns storefront.platform.messages
-  (:require [storefront.keypaths :as keypaths]))
+(ns storefront.platform.messages)
 
 (def handle-message) ;; Dependency Injection, populated by storefront.core/main
 

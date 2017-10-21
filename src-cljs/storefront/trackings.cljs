@@ -9,17 +9,12 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.sift :as sift]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :as stylists]
             [storefront.accessors.videos :as videos]
             [leads.accessors :as leads.accessors]
-            [storefront.components.money-formatters :as mf]
             [storefront.utils.query :as query]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [storefront.accessors.products :as products]
             [spice.maps :as maps]
-            [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.accessors.nav :as nav]
-            [clojure.set :as set]
             [storefront.hooks.pinterest :as pinterest]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
@@ -226,9 +221,9 @@
                            line-items)]
     (stringer/track-event "shared_cart_created" {:shared_cart_id number
                                                  :stylist_id     stylist-id
-                                                 :skus           (->> cart-variants (map :sku) (str/join ","))
-                                                 :variant_ids    (->> line-items (map :id) (str/join ","))
-                                                 :quantities     (->> line-items (map :quantity) (str/join ","))
+                                                 :skus           (->> cart-variants (map :sku) (string/join ","))
+                                                 :variant_ids    (->> line-items (map :id) (string/join ","))
+                                                 :quantities     (->> line-items (map :quantity) (string/join ","))
                                                  :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
 
 (defmethod perform-track events/api-success-update-order-from-shared-cart
@@ -242,8 +237,8 @@
                                               :order_number   (:number order)
                                               :order_total    (get-in app-state keypaths/order-total)
                                               :order_quantity (orders/product-quantity order)
-                                              :skus           (->> product-items (map :sku) (str/join ","))
-                                              :variant_ids    (->> product-items (map :id) (str/join ","))
+                                              :skus           (->> product-items (map :sku) (string/join ","))
+                                              :variant_ids    (->> product-items (map :id) (string/join ","))
                                               :context        {:cart-items cart-items}})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
@@ -263,9 +258,9 @@
      :order_total             total
      :non_store_credit_amount (orders/non-store-credit-payment-amount order)
      :shipping_method         (:product-name (orders/shipping-item order))
-     :skus                    (->> items (map :sku) (str/join ","))
-     :variant_ids             (->> items (map :id) (str/join ","))
-     :promo_codes             (->> promotion-codes (str/join ","))
+     :skus                    (->> items (map :sku) (string/join ","))
+     :variant_ids             (->> items (map :id) (string/join ","))
+     :promo_codes             (->> promotion-codes (string/join ","))
      :total_quantity          (orders/product-quantity order)}))
 
 (defn- enriched-product->pinterest-line-item

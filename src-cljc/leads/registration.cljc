@@ -6,11 +6,9 @@
                        [storefront.history :as history]])
             [storefront.components.ui :as ui]
             [storefront.assets :as assets]
-            [storefront.platform.carousel :as carousel]
             [storefront.events :as events]
             [leads.keypaths :as keypaths]
             [storefront.keypaths]
-            [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [clojure.string :as string]
@@ -347,14 +345,6 @@
                                         (messages/handle-message events/api-success-lead-registered
                                                                  response-body))))))
 
-(defmethod transitions/transition-state events/api-success-lead-registered
-  [_ event {:keys [lead user-id token] :as old-lead} app-state]
-  (let [lead (or lead old-lead)] ;; GROT old-lead once leads is deployed
-    (-> app-state
-        (assoc-in keypaths/remote-lead lead)
-        (assoc-in keypaths/remote-user-token token)
-        (assoc-in keypaths/remote-user-id user-id))))
-
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-lead-registered
      [_ event {:keys [lead] :as old-lead} _ app-state]
@@ -363,3 +353,11 @@
                              {"lead-id" (:id lead)
                               "onboarding-status" "stylist-created"})
        (history/enqueue-navigate events/navigate-leads-registration-resolve))))
+
+(defmethod transitions/transition-state events/api-success-lead-registered
+  [_ event {:keys [lead user-id token] :as old-lead} app-state]
+  (let [lead (or lead old-lead)] ;; GROT old-lead once leads is deployed
+    (-> app-state
+        (assoc-in keypaths/remote-lead lead)
+        (assoc-in keypaths/remote-user-token token)
+        (assoc-in keypaths/remote-user-id user-id))))

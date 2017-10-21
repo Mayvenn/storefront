@@ -5,8 +5,6 @@
             [storefront.components.formatters :as f]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.platform.messages :as messages]
             [storefront.platform.carousel :as carousel]))
 
 (def ordered-stats [:previous-payout :next-payout :lifetime-payouts])
@@ -69,7 +67,7 @@
 (defn stylist-dashboard-stats-component [{:keys [stats]} owner]
   (om/component
    (html
-    (let [items (vec (for [[idx stat] (map-indexed vector ordered-stats)]
+    (let [items (vec (for [[_ stat] (map-indexed vector ordered-stats)] ;;NOTE Unsure of why we did this...
                        [:.my4.clearfix
                         (render-stat stat (get stats stat))]))]
       [:div.bg-teal.white.center

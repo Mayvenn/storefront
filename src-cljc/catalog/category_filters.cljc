@@ -1,6 +1,5 @@
 (ns catalog.category-filters
-  (:require [clojure.set :as set]
-            [storefront.utils.query :as query]
+  (:require [storefront.utils.query :as query]
             [spice.maps :as maps]))
 
 (comment
@@ -66,7 +65,7 @@
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 
-(defn undo-criterion [{:keys [criteria previous-criteria] :as filters}]
+(defn undo-criterion [{:keys [previous-criteria] :as filters}]
   (let [new-criteria      (last previous-criteria)]
     (-> filters
         (apply-criteria new-criteria)

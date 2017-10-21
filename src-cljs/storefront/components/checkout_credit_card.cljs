@@ -7,7 +7,6 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.hooks.stripe :as stripe]
-            [storefront.component :as component]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]))
 
@@ -20,8 +19,7 @@
             guest?
             name
             save-credit-card?
-            saved-cards
-            fetching-saved-cards?]} :credit-card
+            saved-cards]} :credit-card
     :keys [field-errors]}
    owner opts]
   (reify

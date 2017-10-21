@@ -1,7 +1,6 @@
 (ns storefront.hooks.reviews
   (:require [storefront.browser.tags :refer [src-tag insert-tag-with-callback]]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.keypaths :as keypaths]
             [storefront.config :as config]
             [storefront.events :as events]))
 

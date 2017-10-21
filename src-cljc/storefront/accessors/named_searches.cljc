@@ -1,8 +1,6 @@
 (ns storefront.accessors.named-searches
   (:require [storefront.utils.query :as query]
             [storefront.accessors.products :as products]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
 (defn current-named-search [app-state]

@@ -6,10 +6,8 @@
             [catalog.keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.promos :as promos]
-            [storefront.assets :as assets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
@@ -113,7 +111,7 @@
      checkout-button]))
 
 (defn option-html
-  [selector {:keys [option/name option/slug image price-delta checked? stocked? selected-criteria]}]
+  [selector {:keys [option/name option/slug image price-delta checked? stocked?]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" slug)
     :class     (cond
@@ -150,7 +148,7 @@
     [:span.block.overflow-hidden.dark-gray.h5.regular
      (:option/name (first (filter :checked? options)))]]
    [:div.flex.flex-wrap.content-stretch.mxnp3
-    (for [{option-name :name :as option} options]
+    (for [option options]
       [:div.flex.flex-column.justify-center.pp3.col-4
        {:key   (string/replace (str "option-" (hash option)) #"\W+" "-")
         :style {:height "72px"}}
@@ -241,7 +239,6 @@
            cheapest-price
            bagged-skus
            carousel-images
-           fetching-product?
            options
            product
            reviews
@@ -404,7 +401,7 @@
   (component/build component (query data) opts))
 
 (defn fetch-product-album
-  [{:keys [legacy/named-search-slug catalog/product-id]}]
+  [{:keys [legacy/named-search-slug]}]
   (when named-search-slug
     (when-let [album-id (get-in config/pixlee [:albums named-search-slug])]
       #?(:cljs (pixlee-hooks/fetch-album album-id named-search-slug)
@@ -429,7 +426,7 @@
          (:sku (lowest :price valid-product-skus))))))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [catalog/product-id page/slug query-params] :as b} app-state]
+  [_ event {:keys [catalog/product-id query-params]} app-state]
   (let [product  (products/product-by-id app-state product-id)
         sku-id   (determine-sku-id app-state product)
         sku      (get-in app-state (conj keypaths/skus sku-id))]
@@ -463,12 +460,11 @@
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
-  [_ event {:keys [skus] :as response} app-state]
+  [_ event {:keys [skus]} app-state]
   (let [product      (products/current-product app-state)
         skus         (products/normalize-skus skus)
         sku-id       (determine-sku-id app-state product)
-        sku          (get skus sku-id)
-        sku-criteria (select-keys sku [:hair/color :hair/length])]
+        sku          (get skus sku-id)]
     (assoc-in app-state catalog.keypaths/detailed-product-selected-sku sku)))
 
 (defn first-when-only [coll]
