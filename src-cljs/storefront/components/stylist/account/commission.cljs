@@ -143,12 +143,11 @@
                                      :required  true
                                      :type      "email"
                                      :value     paypal-email})
-         "green_dot" (when green-dot
-                       (component/build green-dot-component
-                                        {:green-dot    green-dot
-                                         :focused      focused
-                                         :field-errors field-errors}
-                                        opts))
+         "green_dot" (component/build green-dot-component
+                                      {:green-dot    green-dot
+                                       :focused      focused
+                                       :field-errors field-errors}
+                                      opts)
 
          "mayvenn_debit" [:p.ml1.mb3.h6 "A prepaid Visa debit card will be mailed to the address entered here"]
          "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
@@ -236,22 +235,18 @@
       (ui/submit-button "Update" {:spinning? saving?
                                   :data-test "account-form-submit"})]]]))
 
-(defn payout-methods [original-payout-method green-dot?]
+(defn payout-methods [original-payout-method]
   (cond-> [["Venmo" "venmo"]
            ["PayPal" "paypal"]
-           ["Check" "check"]]
-
-    (or green-dot? (= original-payout-method "green_dot"))
-    (conj ["Mayvenn InstaPay" "green_dot"])
-
+           ["Check" "check"]
+           ["Mayvenn InstaPay" "green_dot"] ]
     (= original-payout-method "mayvenn_debit")
     (conj ["Mayvenn Debit" "mayvenn_debit"])))
 
 (defn query [data]
   {:saving?        (utils/requesting? data request-keys/update-stylist-account-commission)
    :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
-   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
-                                   (experiments/green-dot? data))
+   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method)))
    :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
    :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone))
    :green-dot      (green-dot-query data)
