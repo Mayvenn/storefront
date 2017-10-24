@@ -248,7 +248,7 @@
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
 (defn payment-flow [{:keys [payments]}]
-  (or (some #{"apple-pay" "paypal"} (map :payment-type payments))
+  (or (some #{"apple-pay" "paypal" "affirm"} (map :payment-type payments))
       "mayvenn"))
 
 (defn stringer-order-completed [{:keys [number total promotion-codes] :as order}]
