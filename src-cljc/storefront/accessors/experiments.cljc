@@ -54,6 +54,9 @@
 (defn bundle-deals-2? [data]
   (display-feature? data "bundle-deals-2"))
 
+(defn dyed-hair? [data]
+  (display-feature? data "dyed-hair"))
+
 (defn affirm? [data]
   (display-feature? data "affirm"))
 

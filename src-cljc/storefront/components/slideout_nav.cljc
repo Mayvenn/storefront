@@ -168,17 +168,31 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in bundle-deals-2?]
+(defn ^:private shopping-area [signed-in bundle-deals-2? dyed-hair-experiment?]
   [:div
    (when bundle-deals-2?
      [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Shop Bundle Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
-   [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
-                                                {:page/slug           "bundles"
-                                                 :catalog/category-id "11"})
-                               :data-test "menu-shop-bundles")
-                        [:span.medium.flex-auto "Shop Hair"]
-                        forward-caret)]
+   (if dyed-hair-experiment?
+     [:div
+      [:li (major-menu-row (assoc (utils/route-to events/navigate-category
+                                                  {:page/slug           "virgin-hair"
+                                                   :catalog/category-id "15"})
+                                  :data-test "menu-shop-virgin-hair")
+                           [:span.teal.pr1 "NEW"]
+                           [:span.medium.flex-auto "Shop Virgin Hair"])]
+      [:li (major-menu-row (assoc (utils/route-to events/navigate-category
+                                                  {:page/slug           "dyed-virgin-hair"
+                                                   :catalog/category-id "16"})
+                                  :data-test "menu-shop-dyed-virgin-hair")
+                           [:span.teal.pr1 "NEW"]
+                           [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]]
+     [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
+                                                  {:page/slug           "bundles"
+                                                   :catalog/category-id "11"})
+                                 :data-test "menu-shop-bundles")
+                          [:span.medium.flex-auto "Shop Hair"]
+                          forward-caret)])
    [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
                                                 {:page/slug           "closures-and-frontals"
                                                  :catalog/category-id "12"})
@@ -198,9 +212,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in bundle-deals-2?]
+(defn ^:private menu-area [signed-in bundle-deals-2? dyed-hair-experiment?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in bundle-deals-2?)
+   (shopping-area signed-in bundle-deals-2? dyed-hair-experiment?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -223,7 +237,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2?]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2? dyed-hair-experiment?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-top.border-gray
@@ -232,7 +246,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in bundle-deals-2?)]
+     (menu-area signed-in bundle-deals-2? dyed-hair-experiment?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -251,12 +265,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in     (auth/signed-in data)
-   :on-taxon?     (get-in data keypaths/current-traverse-nav-id)
-   :bundle-deals-2? (experiments/bundle-deals-2? data)
-   :user          {:email (get-in data keypaths/user-email)}
-   :store         (marquee/query data)
-   :shopping      {:categories (get-in data keypaths/categories)}})
+  {:signed-in             (auth/signed-in data)
+   :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
+   :bundle-deals-2?       (experiments/bundle-deals-2? data)
+   :dyed-hair-experiment? (experiments/dyed-hair? data)
+   :user                  {:email (get-in data keypaths/user-email)}
+   :store                 (marquee/query data)
+   :shopping              {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)

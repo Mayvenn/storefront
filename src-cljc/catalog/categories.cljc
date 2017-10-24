@@ -352,7 +352,13 @@
                              :og-title       (copy "Stylist Exclusives - Free shipping."
                                                    "Free 30 day returns. Made with 100% virgin human hair.")
                              :description    (copy "")
-                             :og-description (copy "")}}])
+                             :og-description (copy "")}}
+   {:catalog/category-id    "15"
+    :name                   "Virgin Hair"
+    :page/slug              "virgin-hair"}
+   {:catalog/category-id    "16"
+    :name                   "Dyed Virgin Hair"
+    :page/slug              "dyed-virgin-hair"}])
 
 (defn id->category [id categories]
   (->> categories
