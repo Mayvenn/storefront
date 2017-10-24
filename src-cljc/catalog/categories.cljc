@@ -355,10 +355,20 @@
                              :og-description (copy "")}}
    {:catalog/category-id    "15"
     :name                   "Virgin Hair"
-    :page/slug              "virgin-hair"}
+    :page/slug              "virgin-hair"
+    :seo                    {:title          ""
+                             :og-title       (copy ""
+                                                   "")
+                             :description    (copy "")
+                             :og-description (copy "")}}
    {:catalog/category-id    "16"
     :name                   "Dyed Virgin Hair"
-    :page/slug              "dyed-virgin-hair"}])
+    :page/slug              "dyed-virgin-hair"
+    :seo                    {:title          ""
+                             :og-title       (copy ""
+                                                   "")
+                             :description    (copy "")
+                             :og-description (copy "")}}])
 
 (defn id->category [id categories]
   (->> categories
