@@ -13,7 +13,7 @@
 
 
 (defn ^:private type->promo-id [t]
-  (get {:text-only "promo_set_default1"} t "promo_set_default"))
+  (get {:text-only "promo_set_category"} t "promo_set_pdp"))
 
 (defn ^:private as-low-as-html [data]
   (component/html
@@ -27,7 +27,7 @@
 (def ^:private modal-html
   (component/html
    [:a.inline-block.affirm-site-modal.navy.underline
-    {:data-promo-id "promo_set_default"}
+    {:data-promo-id "promo_set_pdp"}
     "Learn more."]))
 
 (defn as-low-as-component [data owner]
