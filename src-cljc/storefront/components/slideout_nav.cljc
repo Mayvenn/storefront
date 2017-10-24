@@ -179,7 +179,6 @@
                                                   {:page/slug           "virgin-hair"
                                                    :catalog/category-id "15"})
                                   :data-test "menu-shop-virgin-hair")
-                           [:span.teal.pr1 "NEW"]
                            [:span.medium.flex-auto "Shop Virgin Hair"])]
       [:li (major-menu-row (assoc (utils/route-to events/navigate-category
                                                   {:page/slug           "dyed-virgin-hair"
