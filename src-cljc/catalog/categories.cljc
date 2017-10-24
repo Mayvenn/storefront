@@ -353,22 +353,35 @@
                                                    "Free 30 day returns. Made with 100% virgin human hair.")
                              :description    (copy "")
                              :og-description (copy "")}}
-   {:catalog/category-id    "15"
-    :name                   "Virgin Hair"
-    :page/slug              "virgin-hair"
-    :seo                    {:title          ""
-                             :og-title       (copy ""
-                                                   "")
-                             :description    (copy "")
-                             :og-description (copy "")}}
-   {:catalog/category-id    "16"
-    :name                   "Dyed Virgin Hair"
-    :page/slug              "dyed-virgin-hair"
-    :seo                    {:title          ""
-                             :og-title       (copy ""
-                                                   "")
-                             :description    (copy "")
-                             :og-description (copy "")}}])
+   {:catalog/category-id "15"
+    :name                "Virgin Hair"
+    :page/slug           "virgin-hair"
+    :seo                 {:title          ""
+                          :og-title       (copy ""
+                                                "")
+                          :description    (copy "")
+                          :og-description (copy "")}}
+
+   {:catalog/category-id "16"
+    :name                "Dyed Virgin Hair"
+    :page/slug           "dyed-virgin-hair"
+    :images              {:hero {:filename    "DyedVirginHair.jpg"
+                                 :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
+                                 :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
+                                 :alt         "Dyed Virgin Hair"}}
+    :copy                {:description (copy "When natural brown isn’t cutting it,"
+                                             "find your true color match with our Dyed Virgin Hair."
+                                             "Save time and skip the hassle of fussing with toner and"
+                                             "bleach for the convenience of pre-dyed hair extensions.")}
+    :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
+    :criteria            {:product/department #{"hair"}
+                          :hair/family        #{"bundles" "closures" "frontals"}
+                          :hair/color         #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots"}}
+    :seo                 {:title          ""
+                          :og-title       (copy ""
+                                                "")
+                          :description    (copy "")
+                          :og-description (copy "")}}])
 
 (defn id->category [id categories]
   (->> categories
