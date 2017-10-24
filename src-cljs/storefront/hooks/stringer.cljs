@@ -1,6 +1,7 @@
 (ns storefront.hooks.stringer
   (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
-            [storefront.config :as config]))
+            [storefront.config :as config]
+            [storefront.platform.messages :refer [handle-message]]))
 
 (def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-eca56d9.js")
 
@@ -14,10 +15,13 @@
   (remove-tag-by-src stringer-src))
 
 (defn track-event
-  ([event-name] (track-event event-name {}))
-  ([event-name payload]
+  ([event-name] (track-event event-name {} nil))
+  ([event-name payload] (track-event event-name payload nil))
+  ([event-name payload callback-event]
    (when (.hasOwnProperty js/window "stringer")
-     (.track js/stringer event-name (clj->js payload)))))
+     (.track js/stringer event-name (clj->js payload)
+             (when callback-event
+               (fn [] (handle-message callback-event {:tracking-event event-name :payload payload})))))))
 
 (defn track-page []
   (track-event "pageview"))

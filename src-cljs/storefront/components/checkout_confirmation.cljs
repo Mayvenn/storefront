@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [cemerick.url :refer [url-encode]]
             [sablono.core :refer-macros [html]]
+            [storefront.hooks.stringer :as stringer]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -15,6 +16,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
+            [storefront.trackings :as trackings]
             [storefront.accessors.products :refer [medium-img]]
             [catalog.products :as products]
             [storefront.hooks.affirm :as affirm]
@@ -195,7 +197,13 @@
   [_ _ _ _ app-state]
   (handle-message events/api-start {:xhr nil
                                     :request-key request-keys/affirm-place-order
-                                    :request-id (str (random-uuid))})
+                                    :request-id (str (random-uuid))}))
+
+(defmethod trackings/perform-track events/control-checkout-affirm-confirmation-submit
+  [_ event args app-state]
+  (stringer/track-event "customer-sent-to-affirm" {} events/stringer-tracked-sent-to-affirm))
+
+(defmethod effects/perform-effects events/stringer-tracked-sent-to-affirm [_ _ _ _ app-state]
   (affirm/checkout (order->affirm (get-in app-state keypaths/products)
                                   (get-in app-state keypaths/order))))
 
