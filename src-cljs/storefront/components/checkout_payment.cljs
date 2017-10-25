@@ -172,10 +172,11 @@
                      (when selected-affirm? {:checked "checked"}))
               [:div.overflow-hidden
                [:div "Pay with " (svg/affirm {:alt "Affirm"})]
+               ;; NOTE(jeff): We will add promo messaging in the future.
                [:p.h6 (str "Make easy monthly payments over 3, 6, or 12 months. "
-                           "Promo codes are excluded when you pay with Affirm. ")
+                           #_"Promo codes are excluded when you pay with Affirm. ")
                 (om/build affirm/modal-component {})
-                (when promo-code
+                #_(when promo-code
                   [:p.h6.ml2.dark-gray "* " [:span.shout promo-code] " promo code excluded with Affirm"])]])
 
              (when selected-affirm?
