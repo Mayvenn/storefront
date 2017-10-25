@@ -3,7 +3,7 @@
             [cemerick.url :refer [url-encode]]
             [sablono.core :refer-macros [html]]
             [storefront.hooks.stringer :as stringer]
-            [storefront.platform.messages :refer [handle-message]]
+            [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -20,7 +20,9 @@
             [storefront.accessors.products :refer [medium-img]]
             [catalog.products :as products]
             [storefront.hooks.affirm :as affirm]
-            [storefront.components.affirm :as affirm-components]))
+            [storefront.components.affirm :as affirm-components]
+            [storefront.transitions :as transitions]
+            [storefront.api :as api]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -197,7 +199,7 @@
   [_ _ _ _ app-state]
   (handle-message events/api-start {:xhr nil
                                     :request-key request-keys/affirm-place-order
-                                    :request-id (str (random-uuid))}))
+                                    :request-id "affirm-checkout-request-id"}))
 
 (defmethod trackings/perform-track events/control-checkout-affirm-confirmation-submit
   [_ event args app-state]
@@ -206,6 +208,68 @@
 (defmethod effects/perform-effects events/stringer-tracked-sent-to-affirm [_ _ _ _ app-state]
   (affirm/checkout (order->affirm (get-in app-state keypaths/products)
                                   (get-in app-state keypaths/order))))
+
+(def ^:private affirm->error-path
+  {"billing.address"                    ["billing-address" "address1"]
+   "billing.phone_number.phone_number"  ["billing-address" "phone"]
+   "billing.phone_number"               ["billing-address" "phone"]
+   "billing.name.first"                 ["billing-address" "first-name"]
+   "billing.name.last"                  ["billing-address" "last-name"]
+   "billing.email.email"                ["billing-address" "email"]
+   "billing.email"                      ["billing-address" "email"]
+   "shipping.address"                   ["shipping-address" "address1"]
+   "shipping.phone_number.phone_number" ["shipping-address" "phone"]
+   "shipping.phone_number"              ["shipping-address" "phone"]
+   "shipping.name.first"                ["shipping-address" "first-name"]
+   "shipping.name.last"                 ["shipping-address" "last-name"]
+   "shipping.email.email"               ["shipping-address" "email"]
+   "shipping.email"                     ["shipping-address" "email"]})
+
+(defn- affirm-field-error->std-error [{:keys [field message]} billing-is-shipping?]
+  (let [path (affirm->error-path field)
+        billing-error? (= "billing-address" (first path))
+        billing->shipping-path #(assoc % 0 "shipping-address")]
+    {:error-code    "affirm-input-error"
+     :field-errors  (remove nil?
+                            [(when (and billing-is-shipping? billing-error?)
+                               {:path         (billing->shipping-path path)
+                                :long-message message})
+                             {:path         path
+                              :long-message message}])
+     :error-message "Affirm reported an error with your address, please correct them below"}))
+
+(def non-input-affirm-std-error
+  {:error-code "affirm-open-failure"
+   :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+
+(def affirm-ui-error-std-error
+  {:error-code "affirm-ui-error"
+   :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+
+(defmethod effects/perform-effects events/affirm-checkout-error
+  [_ _ {:keys [code] :as affirm-error} _ app-state]
+  (handle-message events/api-end {:xhr nil
+                                  :request-key request-keys/affirm-place-order
+                                  :request-id "affirm-checkout-request-id"})
+  (let [field-errors? (= "invalid_field" code)]
+    (effects/redirect (if field-errors?
+                        events/navigate-checkout-address
+                        events/navigate-checkout-payment))
+    (handle-later events/api-failure-errors
+                  (if field-errors?
+                    (affirm-field-error->std-error
+                     affirm-error
+                     (get-in app-state keypaths/checkout-bill-to-shipping-address))
+                    non-input-affirm-std-error)
+                  0)))
+
+(defmethod effects/perform-effects events/affirm-ui-error-closed
+  [_ _ affirm-error _ app-state]
+  (handle-message events/api-end {:xhr nil
+                                  :request-key request-keys/affirm-place-order
+                                  :request-id "affirm-checkout-request-id"})
+  (effects/redirect events/navigate-checkout-address)
+  (handle-message events/api-failure-errors affirm-ui-std-error))
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]

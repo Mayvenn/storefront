@@ -359,3 +359,6 @@
 (defpath leads-control-self-registration-submit)
 
 (defpath stringer-tracked-sent-to-affirm)
+
+(defpath affirm-checkout-error)
+(defpath affirm-ui-error-closed)
