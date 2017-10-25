@@ -242,7 +242,7 @@
   {:error-code "affirm-open-failure"
    :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
 
-(def affirm-ui-error-std-error
+(def affirm-ui-std-error
   {:error-code "affirm-ui-error"
    :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
 
