@@ -203,7 +203,10 @@
 
 (defmethod trackings/perform-track events/control-checkout-affirm-confirmation-submit
   [_ event args app-state]
-  (stringer/track-event "customer-sent-to-affirm" {} events/stringer-tracked-sent-to-affirm))
+  (let [order (get-in app-state keypaths/order)]
+    (stringer/track-event "customer-sent-to-affirm" {:order_number (:number order)
+                                                     :order_total (:total order)}
+                          events/stringer-tracked-sent-to-affirm)))
 
 (defmethod effects/perform-effects events/stringer-tracked-sent-to-affirm [_ _ _ _ app-state]
   (affirm/checkout (order->affirm (get-in app-state keypaths/products)
