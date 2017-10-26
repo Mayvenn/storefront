@@ -24,10 +24,12 @@
      :on-click            (fn [event]
                             (.preventDefault event))}]))
 
-(def ^:private modal-html
+(defn ^:private modal-html [data]
   (component/html
-   [:a.inline-block.affirm-site-modal.navy.underline
-    {:data-promo-id "promo_set_pdp"}
+   [:a.inline-block.affirm-product-modal.navy.underline
+    {:data-promo-id "promo_set_pdp"
+     :data-amount (mf/as-cents (:amount data))
+     :data-learnmore-show (or (:show-learnmore data) false)}
     "Learn more."]))
 
 (defn as-low-as-component [data owner]
@@ -52,8 +54,8 @@
              (did-mount [this]
                (m/handle-message events/affirm-request-refresh {}))
              om/IRender
-             (render [_] modal-html))
-     :clj modal-html))
+             (render [_] (modal-html data)))
+     :clj (modal-html data)))
 
 (defn as-low-as-box [data]
   [:div.py3
