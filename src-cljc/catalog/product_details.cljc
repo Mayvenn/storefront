@@ -332,19 +332,19 @@
                :checked?    (= (option-kw sku-skuer)
                                (option-kw sku))}))))
 (defn determine-relevant-skus
-  [skus sku-skuer electives product-options]
+  [skus selected-sku product product-options]
   (selector/query skus
-                  (apply dissoc (select-keys sku-skuer (:selector/essentials sku-skuer))
-                         (set/difference (set electives)
+                  (apply dissoc (select-keys selected-sku (:selector/essentials selected-sku))
+                         (set/difference (set (:selector/electives product))
                                          (set (keys product-options))))))
 (defn skus->options
   "Reduces this product's skus down to options for selection
    for a certain selector. e.g. options for :hair/color."
-  [electives sku-skuer facets skus product-options option-kw]
-  (let [relevant-skus          (determine-relevant-skus skus sku-skuer electives product-options)
+  [product selected-sku facets skus product-options option-kw]
+  (let [relevant-skus          (determine-relevant-skus skus selected-sku product product-options)
         cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
         cheapest-price         (lowest-sku-price relevant-skus)
-        sku->option            (partial construct-option option-kw facets sku-skuer cheapest-for-option-kw cheapest-price)]
+        sku->option            (partial construct-option option-kw facets selected-sku cheapest-for-option-kw cheapest-price)]
     (merge product-options
            {option-kw (->> (reduce sku->option {} relevant-skus)
                            vals
@@ -361,8 +361,8 @@
        :offset (get-in data keypaths/ui-ugc-category-popup-offset)
        :back   (first (get-in data keypaths/navigation-undo-stack))})))
 
-(defn generate-options [facets product product-skus sku-skuer]
-  (reduce (partial skus->options (:selector/electives product) sku-skuer facets product-skus)
+(defn generate-options [facets product product-skus selected-sku]
+  (reduce (partial skus->options product selected-sku facets product-skus)
           {}
           (:selector/electives product)))
 
