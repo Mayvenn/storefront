@@ -251,13 +251,23 @@
   (or (some #{"apple-pay" "paypal" "affirm"} (map :payment-type payments))
       "mayvenn"))
 
-(defn stringer-order-completed [{:keys [number total promotion-codes] :as order}]
-  (let [items           (orders/product-items order)]
+(defn tracked-payment-method [payments]
+  (let [interesting-payment-methods #{"apple-pay" "affirm" "paypal"}
+        first-payment-method (->> payments (map :payment-type) first)]
+    ;; we can just use the first payment method because the specified options are
+    ;; apple-pay, paypal, affirm or other.  Store credit and stripe
+    ;; are the only ones we allow to coexist.  Must be changed if that changes.
+    (or (interesting-payment-methods first-payment-method)
+        "other")))
+
+(defn stringer-order-completed [{:keys [number total promotion-codes payments] :as order}]
+  (let [items (orders/product-items order)]
     {:flow                    (payment-flow order)
      :order_number            number
      :order_total             total
      :non_store_credit_amount (orders/non-store-credit-payment-amount order)
      :shipping_method         (:product-name (orders/shipping-item order))
+     :payment_method          (tracked-payment-method payments)
      :skus                    (->> items (map :sku) (string/join ","))
      :variant_ids             (->> items (map :id) (string/join ","))
      :promo_codes             (->> promotion-codes (string/join ","))
