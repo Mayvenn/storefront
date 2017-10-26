@@ -356,6 +356,9 @@
    {:catalog/category-id "15"
     :name                "Virgin Hair"
     :page/slug           "virgin-hair"
+    :criteria            {:product/department #{"hair"}
+                          :hair/family        #{"bundles"}
+                          :hair/color.process #{"natural"}}
     :seo                 {:title          ""
                           :og-title       (copy ""
                                                 "")
@@ -375,8 +378,8 @@
                                              "bleach for the convenience of pre-dyed hair extensions.")}
     :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
     :criteria            {:product/department #{"hair"}
-                          :hair/family        #{"bundles" "closures" "frontals"}
-                          :hair/color         #{"blonde" "blonde-dark-roots" "dark-blonde" "dark-blonde-dark-roots"}}
+                          :hair/family        #{"bundles"}
+                          :hair/color.process #{"dyed"}}
     :seo                 {:title          ""
                           :og-title       (copy ""
                                                 "")
