@@ -10,10 +10,12 @@
                      :as             :json}
                     params)))
 
+(def place-order-timeout 50000)
+
 (defn storeback-post [storeback-config path params]
   (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
                    :post path
-                   (merge {:socket-timeout 30000
+                   (merge {:socket-timeout 30000 ;; Note that some apis trigger multiple requests
                            :conn-timeout   30000
                            :content-type   :json
                            :as             :json
@@ -60,20 +62,22 @@
                                                              :token order-token
                                                              :session-id sid
                                                              :utm-params utm-params}
+                                               :socket-timeout place-order-timeout
+                                               :conn-timeout   place-order-timeout
                                                :headers {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
 
 (defn verify-affirm-payment [storeback-config number order-token checkout-token ip-addr {:strs [session-id utm-params]}]
   (let [{:keys [status body] :as r} (storeback-post storeback-config "/v2/affirm/place-order"
-                                              {:form-params {:number         number
-                                                             :token          order-token
-                                                             :checkout-token checkout-token
-                                                             :session-id     session-id
-                                                             :utm-params     utm-params}
-                                               :headers     {"X-Forwarded-For" ip-addr}})]
-    (prn "Storeback RESPONSE"
-         r)
+                                                    {:form-params    {:number         number
+                                                                      :token          order-token
+                                                                      :checkout-token checkout-token
+                                                                      :session-id     session-id
+                                                                      :utm-params     utm-params}
+                                                     :socket-timeout place-order-timeout
+                                                     :conn-timeout   place-order-timeout
+                                                     :headers        {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
       (-> body :error-code (or "affirm-incomplete")))))
 
