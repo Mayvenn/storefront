@@ -3,7 +3,7 @@
             [storefront.config :as config]
             [storefront.platform.messages :refer [handle-message]]))
 
-(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-eca56d9.js")
+(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-8c70fb0.js")
 
 (defn insert-tracking []
   (insert-tag-with-text
