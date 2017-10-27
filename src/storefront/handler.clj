@@ -58,10 +58,10 @@
 
 (defn query-string [{:keys [query-params query-string] :as req}]
   (cond
-    (and (contains? req :query-params) (:query-params req))
+    (and (contains? req :query-params) (seq (:query-params req)))
     (str "?" (codec/form-encode query-params))
 
-    (and (contains? req :query-params) (nil? (:query-params req)))
+    (and (contains? req :query-params) (empty? (:query-params req)))
     ""
 
     (seq query-string)
