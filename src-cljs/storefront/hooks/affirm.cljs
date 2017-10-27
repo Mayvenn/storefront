@@ -26,9 +26,10 @@
               (handle-message events/affirm-ui-error-closed)))))))))
 
 (defn refresh []
-  (when (.hasOwnProperty js/window "affirm")
-    (js/affirm.ui.refresh)))
+  (js/affirm.ui.ready #(js/affirm.ui.refresh)))
 
 (defn checkout [affirm-order]
-  (js/affirm.checkout (clj->js affirm-order))
-  (js/affirm.checkout.open))
+  (js/affirm.ui.ready
+   (fn []
+     (js/affirm.checkout (clj->js affirm-order))
+     (js/affirm.checkout.open))))
