@@ -97,6 +97,9 @@
 (defpath menu-traverse-descend)
 (defpath menu-traverse-out)
 
+(defpath menu-home)
+(defpath menu-list)
+
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)
