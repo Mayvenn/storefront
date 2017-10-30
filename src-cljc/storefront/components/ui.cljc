@@ -18,6 +18,13 @@
    [:div.m-auto.col-8-on-tb.col-6-on-dt
     content]])
 
+(def forward-caret
+  (component/html
+   (svg/dropdown-arrow {:class  "stroke-black"
+                        :width  "23px"
+                        :height "20px"
+                        :style  {:transform "rotate(-90deg)"}})))
+
 (def spinner
   "Spinner that fills line, assuming line-height is 1.5em"
   (component/html

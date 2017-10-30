@@ -40,13 +40,6 @@
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
-(def ^:private forward-caret
-  (component/html
-   (svg/dropdown-arrow {:class  "stroke-black"
-                        :width  "23px"
-                        :height "20px"
-                        :style  {:transform "rotate(-90deg)"}})))
-
 (def ^:private burger-header
   (component/html
    [:div.bg-white
@@ -192,7 +185,7 @@
                                                    :catalog/category-id "11"})
                                  :data-test "menu-shop-bundles")
                           [:span.medium.flex-auto "Shop Hair"]
-                          forward-caret)])
+                          ui/forward-caret)])
    (if dyed-hair-experiment?
      [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                   {:page/slug           "closures-and-frontals"
@@ -200,13 +193,13 @@
                                                    :catalog/category-id "17"})
                                  :data-test "menu-shop-closures")
                           [:span.medium.flex-auto "Shop Closures & Frontals"]
-                          forward-caret)]
+                          ui/forward-caret)]
      [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
                                                   {:page/slug           "closures-and-frontals"
                                                    :catalog/category-id "12"})
                                  :data-test "menu-shop-closures")
                           [:span.medium.flex-auto "Shop Closures & Frontals"]
-                          forward-caret)])
+                          ui/forward-caret)])
    [:li (major-menu-row (assoc (utils/route-to events/navigate-category
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"})

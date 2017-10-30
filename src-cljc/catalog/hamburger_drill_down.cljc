@@ -8,6 +8,7 @@
    [catalog.category-filters :as category-filters]
    [catalog.selector :as selector]
    [clojure.set :as set]
+   [storefront.components.ui :as ui]
    [storefront.components.svg :as svg]
    [storefront.effects :as effects]
    [storefront.events :as events]
@@ -33,14 +34,6 @@
                         :width  "12px"
                         :height "10px"
                         :style  {:transform "rotate(90deg)"}})))
-
-;;NOTE Used by slideout-nav
-(def ^:private forward-caret
-  (component/html
-   (svg/dropdown-arrow {:class  "stroke-black"
-                        :width  "23px"
-                        :height "20px"
-                        :style  {:transform "rotate(-90deg)"}})))
 
 ;;NOTE Used by slideout-nav
 (defn- major-menu-row [& content]
@@ -69,7 +62,7 @@
                              :current-step    current-step
                              :selected-option option})
            :data-test (str "menu-step-" (:slug option)))
-    [:span.flex-auto.titleize (:label option)] forward-caret)])
+    [:span.flex-auto.titleize (:label option)] ui/forward-caret)])
 
 (defn- terminal-li [criteria option current-step]
   [:li {:key (:slug option)}
