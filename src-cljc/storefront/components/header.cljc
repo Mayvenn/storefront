@@ -164,7 +164,7 @@
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
-   (for [{:keys [page/slug name] :as category} items]
+   (for [{:keys [page/slug name category/new?] :as category} items]
      [:li {:key slug}
       [:a.inherit-color.block.pyp2
        (if (:direct-to-details/id category)
@@ -172,7 +172,7 @@
                          {:catalog/product-id (:direct-to-details/id category)
                           :page/slug          (:direct-to-details/slug category)})
          (utils/route-to events/navigate-category category))
-       (when (categories/new-category? slug) [:span.teal "NEW "])
+       (when new? [:span.teal "NEW "])
        (str/capitalize name)]])])
 
 (defn shopping-flyout [signed-in {:keys [expanded? categories]}]

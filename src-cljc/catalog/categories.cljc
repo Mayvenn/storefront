@@ -84,6 +84,9 @@
                 :name                     "360 Frontals"
                 :page/slug                "360-frontals"
                 :legacy/named-search-slug "360-frontals"
+
+                :category/new?             true
+
                 :criteria                 {:product/department #{"hair"} :hair/family #{"360-frontals"}}
                 :filter-tabs              [:hair/origin :hair/texture :hair/base-material :hair/color]
                 :copy                     {:description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
@@ -102,10 +105,169 @@
                                                                "as Body, Straight and Loose Wave.")
                                                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}])
 
+(def experimental-closures [{:catalog/category-id      "18"
+                             :name                     "Virgin Closures"
+                             :page/slug                "virgin-closures"
+                             :legacy/named-search-slug "closures"
+
+                             :criteria {:product/department #{"hair"}
+                                        :hair/family        #{"closures"}
+                                        :hair/color.process #{"natural"}}
+
+                             :product/department #{"hair"}
+                             :hair/family        #{"closures"}
+                             :hair/color.process #{"natural"}
+
+                             :selector/essentials [:product/department :hair/family :hair/color.process]
+                             :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
+
+
+                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
+                                                               "and can be customized to fit your unique look.")}
+                             :images       {:hero {:filename    "Closures.jpg",
+                                                   :desktop-url "//ucarecdn.com/8d0f63d5-495f-4fa5-a1d0-eb8f95e59235/",
+                                                   :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
+                                                   :alt         "Closures"}}
+                             :footer/order 8
+                             :header/order 8
+                             :header/group 1
+                             :seo          (category->seo "Closures"
+                                                          (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
+                                                                "Peruvian Straight, Peruvian Body Wave,"
+                                                                "Peruvian Yaki Straight, Indian Straight Lace and more.")
+                                                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
+                            {:catalog/category-id      "19"
+                             :name                     "Dyed Virgin Closures"
+                             :page/slug                "dyed-virgin-closures"
+                             :legacy/named-search-slug "closures"
+
+                             :category/new? true
+                             :criteria     {:product/department #{"hair"}
+                                            :hair/family        #{"closures"}
+                                            :hair/color.process #{"dyed"}}
+
+                             :product/department #{"hair"}
+                             :hair/family        #{"closures"}
+                             :hair/color.process #{"dyed"}
+
+                             :selector/essentials [:product/department :hair/family :hair/color.process]
+                             :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
+
+                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
+                                                               "and can be customized to fit your unique look.")}
+                             :images       {:hero {:filename    "Closures.jpg",
+                                                   :desktop-url "//ucarecdn.com/8d0f63d5-495f-4fa5-a1d0-eb8f95e59235/",
+                                                   :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
+                                                   :alt         "Closures"}}
+                             :footer/order 8
+                             :header/order 8
+                             :header/group 1
+                             :seo          (category->seo "Closures"
+                                                          (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
+                                                                "Peruvian Straight, Peruvian Body Wave,"
+                                                                "Peruvian Yaki Straight, Indian Straight Lace and more.")
+                                                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
+                            {:catalog/category-id      "20"
+                             :name                     "Virgin Frontals"
+                             :page/slug                "virgin-frontals"
+                             :legacy/named-search-slug "frontals"
+
+                             :criteria {:product/department #{"hair"}
+                                        :hair/family        #{"frontals"}
+                                        :hair/color.process #{"natural"}}
+
+                             :product/department #{"hair"}
+                             :hair/family        #{"frontals"}
+                             :hair/color.process #{"natural"}
+
+                             :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                               "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images       {:hero {:filename    "Frontals.jpg",
+                                                   :desktop-url "//ucarecdn.com/20a24c49-9216-4445-8a49-47ea53f88d32/",
+                                                   :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
+                                                   :alt         "Frontals"}}
+                             :footer/order 9
+                             :header/order 9
+                             :header/group 1
+                             :seo          (category->seo "Frontals"
+                                                          (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
+                                                                "Choose from popular textures such as Deep Wave,"
+                                                                "Yaki Straight, Water Wave, Straight and more.")
+                                                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+                            {:catalog/category-id      "21"
+                             :name                     "Dyed Virgin Frontals"
+                             :page/slug                "dyed-virgin-frontals"
+                             :legacy/named-search-slug "frontals"
+
+                             :category/new? true
+                             :criteria     {:product/department #{"hair"}
+                                            :hair/family        #{"frontals"}
+                                            :hair/color.process #{"dyed"}}
+
+                             :product/department #{"hair"}
+                             :hair/family        #{"frontals"}
+                             :hair/color.process #{"dyed"}
+
+                             :selectors/essentials [:product/department :hair/family]
+                             :selectors/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
+
+                             :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                               "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images       {:hero {:filename    "Frontals.jpg",
+                                                   :desktop-url "//ucarecdn.com/20a24c49-9216-4445-8a49-47ea53f88d32/",
+                                                   :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
+                                                   :alt         "Frontals"}}
+                             :footer/order 9
+                             :header/order 9
+                             :header/group 1
+                             :seo          (category->seo "Frontals"
+                                                          (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
+                                                                "Choose from popular textures such as Deep Wave,"
+                                                                "Yaki Straight, Water Wave, Straight and more.")
+                                                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+
+                            {:catalog/category-id      "22"
+                             :name                     "Virgin 360 Frontals"
+                             :page/slug                "virgin-360-frontals"
+                             :legacy/named-search-slug "360-frontals"
+
+                             :criteria           {:product/department #{"hair"} :hair/family #{"360-frontals"}}
+                             :product/department #{"hair"}
+                             :hair/family        #{"360-frontals"}
+                             :hair/color.process #{"natural"}
+
+                             :selectors/essentials [:product/department :hair/family]
+                             :selectors/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
+
+                             :filter-tabs [:hair/origin :hair/texture :hair/base-material :hair/color]
+
+                             :copy         {:description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
+                                                               "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
+                                                               "and low-density edges for a naturally flawless look.")}
+                             :images       {:hero {:filename    "360Frontals.jpg"
+                                                   :desktop-url "//ucarecdn.com/b3df4ee4-2a8e-4226-b5ab-2e5158835b0d/"
+                                                   :mobile-url  "//ucarecdn.com/65261bbd-672a-4b0f-8172-8fd49b1ad273/"
+                                                   :alt         "360 Frontals"}}
+                             :footer/order 10
+                             :header/order 10
+                             :header/group 1
+                             :seo          (category->seo "360 Frontals"
+                                                          (copy "Mayvenn’s bundles and extensions with a naturally flawless look."
+                                                                "These are our 360 Lace Frontals - Brazilian, Peruvian and Malaysian,"
+                                                                "as Body, Straight and Loose Wave.")
+                                                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}])
+
 (def wigs [{:catalog/category-id "13"
             :footer/order        20
             :header/order        20
             :header/group        1
+
+            :category/new?        true
+
             :name                "Wigs"
             :page/slug           "wigs"
             :copy                {:description (copy "When getting a bundle install isn’t an option,"
@@ -365,81 +527,96 @@
                          :hamburger/order 1}])
 
 (def dyed-hair-nav-roots [{:catalog/category-id "15"
-                            :name                "Virgin Hair"
-                            :page/slug           "virgin-hair"
+                           :name                "Virgin Hair"
+                           :page/slug           "virgin-hair"
 
-                            :criteria {:product/department #{"hair"}
-                                       :hair/family        #{"bundles"}
-                                       :hair/color.process #{"natural"}}
-                            :seo      {:title          ""
-                                       :og-title       (copy ""
-                                                             "")
-                                       :description    (copy "")
-                                       :og-description (copy "")}}
-                           {:catalog/category-id "16"
-                            :catalog/nav-root-id "0"
+                           :criteria {:product/department #{"hair"}
+                                      :hair/family        #{"bundles"}
+                                      :hair/color.process #{"natural"}}
+                           :seo      {:title          ""
+                                      :og-title       (copy ""
+                                                            "")
+                                      :description    (copy "")
+                                      :og-description (copy "")}}
+                          {:catalog/category-id "16"
+                           :catalog/nav-root-id "0"
 
-                            :name      "Dyed Virgin Hair"
-                            :page/slug "dyed-virgin-hair"
+                           :name      "Dyed Virgin Hair"
+                           :page/slug "dyed-virgin-hair"
 
-                            :product/department #{"hair"}
-                            :hair/family        #{"bundles"}
-                            :hair/color.process #{"dyed"}
+                           :product/department #{"hair"}
+                           :hair/family        #{"bundles"}
+                           :hair/color.process #{"dyed"}
 
-                            :hamburger/order 1
+                           :hamburger/order 1
 
-                            :selector/essentials [:product/department]
-                            :selector/electives  [:experiment/dyed-hair]
+                           :selector/essentials [:product/department]
+                           :selector/electives  [:experiment/dyed-hair]
 
-                            :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]
-                            :criteria    {:product/department #{"hair"}
-                                          :hair/family        #{"bundles"}
-                                          :hair/color.process #{"dyed"}}
+                           :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]
+                           :criteria    {:product/department #{"hair"}
+                                         :hair/family        #{"bundles"}
+                                         :hair/color.process #{"dyed"}}
 
-                            :images {:hero {:filename    "DyedVirginHair.jpg"
-                                            :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
-                                            :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
-                                            :alt         "Dyed Virgin Hair"}}
-                            :copy   {:description (copy "When natural brown isn’t cutting it,"
-                                                        "find your true color match with our Dyed Virgin Hair."
-                                                        "Save time and skip the hassle of fussing with toner and"
-                                                        "bleach for the convenience of pre-dyed hair extensions.")}
-                            :seo    {:title          ""
-                                     :og-title       (copy ""
-                                                           "")
-                                     :description    (copy "")
-                                     :og-description (copy "")}}
+                           :images {:hero {:filename    "DyedVirginHair.jpg"
+                                           :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
+                                           :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
+                                           :alt         "Dyed Virgin Hair"}}
+                           :copy   {:description (copy "When natural brown isn’t cutting it,"
+                                                       "find your true color match with our Dyed Virgin Hair."
+                                                       "Save time and skip the hassle of fussing with toner and"
+                                                       "bleach for the convenience of pre-dyed hair extensions.")}
+                           :seo    {:title          ""
+                                    :og-title       (copy ""
+                                                          "")
+                                    :description    (copy "")
+                                    :og-description (copy "")}}
 
-                           {:catalog/category-id "17"
-                            :catalog/nav-root-id "1"
+                          {:catalog/category-id "17"
+                           :catalog/nav-root-id "1"
 
-                            :name      "Closures & Frontals"
-                            :page/slug "closures-and-frontals"
+                           :name      "Closures & Frontals"
+                           :page/slug "closures-and-frontals"
 
-                            :product/department #{"hair"}
-                            :hair/family        #{"closures" "frontals" "360-frontals"}
-                            :hamburger/order    1
+                           :product/department #{"hair"}
+                           :hair/family        #{"closures" "frontals" "360-frontals"}
+                           :hair/color.process #{"dyed" "natural"}
+                           :hamburger/order    1
 
-                            :selector/essentials [:product/department :experiment/dyed-hair]
-                            :selector/electives  [:experiment/dyed-hair]
+                           :criteria {:product/department #{"hair"}
+                                      :hair/family        #{"closures" "frontals" "360-frontals"}
+                                      :hair/color.process #{"dyed" "natural"}}
 
-                            ;; in some process of deprecation
-                            :criteria    {}
-                            :filter-tabs [:experiment/dyed-hair]
+                           :selector/essentials [:product/department :hair/family]
+                           :selector/electives  []
 
-                            :copy {:description (copy "Save your precious strands and top your look"
-                                                      "off with the ultimate tool in protective weave"
-                                                      "styling. Our collection of closures and frontals blend"
-                                                      "seamlessly with our bundles and can be customized"
-                                                      "to fit your unique look.")}}])
+                           ;; in some process of deprecation
+                           :filter-tabs [:experiment/dyed-hair]
 
-(def initial-categories
+                           :copy {:description (copy "Save your precious strands and top your look"
+                                                     "off with the ultimate tool in protective weave"
+                                                     "styling. Our collection of closures and frontals blend"
+                                                     "seamlessly with our bundles and can be customized"
+                                                     "to fit your unique look.")}}])
+
+(def dyed-hair-experiment-categories
+  (concat experimental-closures))
+
+(def old-initial-categories
   (concat closures
           wigs
           textures
           stylist-exclusives
-          control-nav-roots
-          dyed-hair-nav-roots))
+          control-nav-roots))
+
+(def initial-categories
+  (concat wigs
+          textures
+          stylist-exclusives
+          dyed-hair-nav-roots
+          dyed-hair-experiment-categories))
+
+
 
 (defn id->category [id categories]
   (->> categories

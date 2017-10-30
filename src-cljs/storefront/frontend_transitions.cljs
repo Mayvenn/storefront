@@ -1,6 +1,7 @@
 (ns storefront.frontend-transitions
   (:require [cemerick.url :as url]
             [clojure.string :as string]
+            [catalog.categories :as categories]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -630,6 +631,9 @@
                         (get-in app-state keypaths/order)
                         (get-in app-state keypaths/user))]
     (cond-> (update-in app-state keypaths/features conj feature)
+
+      (= feature "dyed-hair")
+      (assoc-in keypaths/categories categories/initial-categories)
 
       (and (= feature "affirm") fully-covered?) ;; GROT this when affirm experiment finishes
       (assoc-in keypaths/checkout-selected-payment-methods

@@ -14,7 +14,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [storefront.accessors.experiments :as experiments]))
 
 (def back-caret
   (component/html
@@ -42,22 +43,23 @@
        (major-menu-row
         [:div.h2.flex-auto.center "Shop " (:name nav-root)])
        [:ul.list-reset
-        (for [{:keys [page/slug] :as category} options]
+        (for [{:keys [page/slug category/new?] :as category} options]
           [:li {:key slug}
            (major-menu-row
-            (assoc (utils/fake-href events/navigate-category category)
+            (assoc (utils/route-to events/navigate-category category)
                    :data-test (str "menu-step-" slug))
-            [:span.flex-auto.titleize (or (get category (first electives))
-                                          (:name category))])])]]])))
+            [:span.flex-auto.titleize
+             (when new? [:span.teal "NEW "])
+             (or (get category (first electives))
+                 (:name category))])])]]])))
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)
-        {:keys [facets]}                            (get-in data keypaths/category-filters-for-nav)
-        query-test                                  (selector/query categories/initial-categories
-                                                                    (select-keys nav-root essentials))]
+        {:keys [facets]}                            (get-in data keypaths/category-filters-for-nav)]
     {:nav-root nav-root
      :facets   facets
-     :options  query-test}))
+     :options  (selector/query categories/dyed-hair-experiment-categories
+                               (select-keys nav-root essentials))}))
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
