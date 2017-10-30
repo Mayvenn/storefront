@@ -1,23 +1,25 @@
 (ns catalog.selector
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [clojure.test :refer [deftest testing is]]))
 
-(defn missing-contains-or-equal [key value item]
+(defn missing-contains-or-equal [key search-value item]
   (let [item-value (key item :query/missing)]
     (cond
+      ;; matches items that don't have the property (key) at all
       (= item-value :query/missing)
       true
 
-      (and (coll? item-value) (coll? value))
-      (set/superset? (set value) (set item-value))
+      (and (coll? item-value) (coll? search-value))
+      (set/subset? (set item-value) (set search-value))
 
-      (and (coll? value) (< 1 (count value)))
-      ((set value) item-value)
+      (and (coll? search-value) (> (count search-value) 1))
+      ((set search-value) item-value)
 
-      (coll? value)
-      (= item-value (first value))
+      (coll? search-value) ;; Singleton set
+      (= item-value (first search-value))
 
       :else
-      (= item-value value))))
+      (= item-value search-value))))
 
 (defn criteria->query [criteria]
   (let [xforms (map (fn [[key value]]
@@ -26,7 +28,7 @@
     (apply comp xforms)))
 
 (defn query [coll & criteria]
-  (if-let [merged-criteria (reduce merge criteria)]
+  (if-let [merged-criteria (reduce merge {} criteria)]
     (sequence (criteria->query merged-criteria) coll)
     coll))
 
@@ -39,3 +41,43 @@
                   (dissoc :hair/origin))
               criteria)
        (sort-by :order)))
+
+
+;; Using a set finds equality or a subset
+(deftest selector
+  (testing "querying with set"
+    (is (= '({:a #{"3"}})
+           (query [{:a #{"1"}} {:a #{"2"}} {:a #{"3"}} {:a #{"2" "3"}}]
+                  {:a #{"3"}})))
+
+    (is (= '({:a "3"})
+           (query [{:a "1"} {:a "2"} {:a "3"}]
+                  {:a #{"3"}})))
+
+    (testing "finds only a match or subset"
+      (is (= '({:a #{"2"}} {:a #{"3" "2"}})
+             (query [{:a #{"1"}} {:a #{"2"}} {:a #{"3" "2"}}]
+                    {:a #{"3" "2"}})))))
+
+  (testing "matching with a value"
+    (testing "values don't match against a set"
+      (is (empty?
+           (query [{:a #{"1"}} {:a #{"2"}} {:a #{"3" "2"}}]
+                  {:a "3"})))
+
+      (is (empty?
+           (query [{:a #{"1"}} {:a #{"2"}} {:a #{"3" "2"}}]
+                  {:a "3"})))
+      (is (empty?
+           (query [{:a #{"1"}} {:a #{"2"}} {:a #{"3"}}]
+                  {:a "3"}))))
+
+    (testing "matches on equality"
+      (is (= '({:a "3"})
+             (query [{:a "1"} {:a "2"} {:a "3"}]
+                    {:a "3"}))))
+
+    (testing "includes matches that have data that wasn't searched for"
+      (is (= '({:a "1" :b "hey"})
+             (query [{:a "1" :b "hey"} {:a "2"} {:a "3"}]
+                    {:a "1"}))))))
