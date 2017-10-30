@@ -15,7 +15,8 @@
             [clojure.string :as string]
             [storefront.accessors.products :as products]
             [spice.maps :as maps]
-            [storefront.hooks.pinterest :as pinterest]))
+            [storefront.hooks.pinterest :as pinterest]
+            [spice.core :as spice]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -404,7 +405,8 @@
   (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
 
 (defmethod perform-track events/api-success-update-order-update-cart-payments [_ events args app-state]
-  (stringer/track-event "checkout-payment_enter" {:order_number (get-in app-state keypaths/order-number)}))
+  (stringer/track-event "checkout-payment_enter" {:order_number (get-in app-state keypaths/order-number)
+                                                  :method (if (maps/contains-in? app-state keypaths/order-cart-payments-affirm) "affirm" "other")}))
 
 (defmethod perform-track events/api-success-update-order-update-shipping-method [_ events args app-state]
   (stringer/track-event "checkout-shipping_method_change"

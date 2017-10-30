@@ -12,6 +12,8 @@ pom.xml.asc
 .repl
 .cljs_rhino_repl
 .DS_Store
+checkouts
+_checkouts
 
 *.log
 resources/public/js/out
