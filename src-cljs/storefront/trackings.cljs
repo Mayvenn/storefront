@@ -303,6 +303,8 @@
                            (:material attrs))}))
 
 (defmethod perform-track events/order-completed [_ event order app-state]
+  (stringer/identify {:id (-> order :user :id)
+                      :email (-> order :user :email)})
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (let [order-total (:total order)
 
