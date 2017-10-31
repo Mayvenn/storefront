@@ -36,7 +36,9 @@
             [catalog.categories :as categories]
             [clj-time.core :as clj-time.core]
             [catalog.products :as products]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            [clojure.set :as set]
+            [spice.core :as spice]))
 
 (defn storefront-site-defaults
   [environment]
@@ -90,9 +92,12 @@
 (defn store-homepage [store-slug environment req]
   (store-url store-slug environment (assoc req :uri "/")))
 
-(defn redirect-to-home [environment {:keys [subdomains] :as req}]
-  (util.response/redirect (store-homepage (first subdomains) environment req)
-                          :moved-permanently))
+(defn redirect-to-home
+  ([environment req]
+   (redirect-to-home environment req :moved-permanently))
+  ([environment {:keys [subdomains] :as req} redirect-type]
+   (util.response/redirect (store-homepage (first subdomains) environment req)
+                           redirect-type)))
 
 (defn redirect-to-product-details [environment {:keys [subdomains params] :as req}]
   (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
@@ -221,15 +226,20 @@
 
 (defn render-category
   [render-ctx data req {:keys [catalog/category-id page/slug]}]
-  (let [categories (get-in data keypaths/categories)]
-    (when-let [category (categories/id->category category-id categories)]
-      (if (not= slug (:page/slug category))
-        (-> (routes/path-for events/navigate-category category)
-            (util.response/redirect :moved-permanently))
-        (->> (assoc-in data
-                       keypaths/current-category-id
-                       (:catalog/category-id category))
-             (html-response render-ctx))))))
+  (let [categories                    (get-in data keypaths/categories)
+        experimental-category-ids     (->> categories/initial-categories (map :catalog/category-id) set)
+        active-category-ids           (->> categories (map :catalog/category-id) set)
+        not-in-current-experiment-ids (set/difference experimental-category-ids active-category-ids)]
+    (if (not-in-current-experiment-ids category-id)
+      (redirect-to-home (:environment render-ctx) req :found)
+      (when-let [category (categories/id->category category-id categories)]
+        (if (not= slug (:page/slug category))
+          (-> (routes/path-for events/navigate-category category)
+              (util.response/redirect :moved-permanently))
+          (->> (assoc-in data
+                         keypaths/current-category-id
+                         (:catalog/category-id category))
+               (html-response render-ctx)))))))
 
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
@@ -320,7 +330,7 @@
 
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category         (categories/id->category (:catalog/category-id params)
-                                                  categories/old-initial-categories)
+                                                  (get-in data keypaths/categories))
         {:keys [skus sku-sets]
          :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                first
@@ -344,16 +354,18 @@
         (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
         (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
-(defn required-data [{:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
+(defn required-data [dyed-hair-experiment? {:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
   (-> {}
       (assoc-in keypaths/welcome-url
                 (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
       (assoc-in keypaths/store store)
       (assoc-in keypaths/environment environment)
-      experiments/determine-features
+      (experiments/determine-features dyed-hair-experiment?)
       (assoc-in keypaths/named-searches (api/named-searches storeback-config))
       (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
-      (assoc-in keypaths/categories categories/old-initial-categories)
+      (assoc-in keypaths/categories (if dyed-hair-experiment?
+                                      categories/initial-categories
+                                      categories/old-initial-categories))
       (assoc-in keypaths/static (static-page nav-event))
       (assoc-in keypaths/navigation-message nav-message)))
 
@@ -371,24 +383,26 @@
           order-token        (some-> (get-in req [:cookies "token" :value])
                                      (string/replace #" " "+"))]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx (auto-map storeback-config environment client-version)
-              data       (required-data (auto-map environment
-                                                  leads-config
-                                                  storeback-config
-                                                  nav-event
-                                                  nav-message
-                                                  store
-                                                  order-number
-                                                  order-token))
-              data       (cond-> data
-                           true
-                           (assoc-user-info req)
+        (let [render-ctx            (auto-map storeback-config environment client-version)
+              dyed-hair-experiment? (= (cookies/get req "experiments.dyed-hair") "true")
+              data                  (required-data dyed-hair-experiment?
+                                                   (auto-map environment
+                                                             leads-config
+                                                             storeback-config
+                                                             nav-event
+                                                             nav-message
+                                                             store
+                                                             order-number
+                                                             order-token))
+              data                  (cond-> data
+                                      true
+                                      (assoc-user-info req)
 
-                           (= events/navigate-category nav-event)
-                           (assoc-category-route-data storeback-config params)
+                                      (= events/navigate-category nav-event)
+                                      (assoc-category-route-data storeback-config params)
 
-                           (= events/navigate-product-details nav-event)
-                           (assoc-product-details-route-data storeback-config params))
+                                      (= events/navigate-product-details nav-event)
+                                      (assoc-product-details-route-data storeback-config params))
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 
