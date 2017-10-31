@@ -1,11 +1,27 @@
 (ns catalog.selector
   (:require [clojure.set :as set]
-            [clojure.test :refer [deftest testing is]]))
+            [clojure.test :refer [deftest testing is]]
+            [spice.maps :as maps]))
+
+(defn contains-or-equal [key search-value item]
+  (let [item-value (get item key :query/missing)]
+    (cond
+      (and (coll? item-value) (coll? search-value))
+      (set/subset? (set item-value) (set search-value))
+
+      (and (coll? search-value) (> (count search-value) 1))
+      ((set search-value) item-value)
+
+      (coll? search-value) ;; Singleton set
+      (= item-value (first search-value))
+
+      :else
+      (= item-value search-value))))
 
 (defn missing-contains-or-equal [key search-value item]
-  (let [item-value (key item :query/missing)]
+  (let [item-value (get item key :query/missing)]
+    ;; matches items that don't have the property (key) at all
     (cond
-      ;; matches items that don't have the property (key) at all
       (= item-value :query/missing)
       true
 
@@ -21,6 +37,12 @@
       :else
       (= item-value search-value))))
 
+(defn criteria->strict-query [criteria]
+  (let [xforms (map (fn [[key value]]
+                      (filter (partial contains-or-equal key value)))
+                    criteria)]
+    (apply comp xforms)))
+
 (defn criteria->query [criteria]
   (let [xforms (map (fn [[key value]]
                       (filter (partial missing-contains-or-equal key value)))
@@ -30,6 +52,11 @@
 (defn query [coll & criteria]
   (if-let [merged-criteria (reduce merge {} criteria)]
     (sequence (criteria->query merged-criteria) coll)
+    coll))
+
+(defn strict-query [coll & criteria]
+  (if-let [merged-criteria (reduce (partial merge-with set/union) {} criteria)]
+    (sequence (criteria->strict-query merged-criteria) coll)
     coll))
 
 (defn select [coll skuer & criteria]

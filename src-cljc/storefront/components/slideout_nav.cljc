@@ -169,11 +169,12 @@
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    (if dyed-hair-experiment?
      [:div
-      [:li (major-menu-row (assoc (utils/route-to events/navigate-category
+      [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                   {:page/slug           "virgin-hair"
                                                    :catalog/category-id "15"})
                                   :data-test "menu-shop-virgin-hair")
-                           [:span.medium.flex-auto "Shop Virgin Hair"])]
+                           [:span.medium.flex-auto "Shop Virgin Hair"]
+                           ui/forward-caret)]
       [:li (major-menu-row (assoc (utils/route-to events/navigate-category
                                                   {:page/slug           "dyed-virgin-hair"
                                                    :catalog/category-id "16"})
@@ -189,7 +190,6 @@
    (if dyed-hair-experiment?
      [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                   {:page/slug           "closures-and-frontals"
-                                                   ; TODO :catalog/menu-root-id "1"
                                                    :catalog/category-id "17"})
                                  :data-test "menu-shop-closures")
                           [:span.medium.flex-auto "Shop Closures & Frontals"]

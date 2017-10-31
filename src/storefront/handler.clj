@@ -320,7 +320,7 @@
 
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category         (categories/id->category (:catalog/category-id params)
-                                                  categories/initial-categories)
+                                                  categories/old-initial-categories)
         {:keys [skus sku-sets]
          :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                first
@@ -353,7 +353,7 @@
       experiments/determine-features
       (assoc-in keypaths/named-searches (api/named-searches storeback-config))
       (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
-      (assoc-in keypaths/categories categories/initial-categories)
+      (assoc-in keypaths/categories categories/old-initial-categories)
       (assoc-in keypaths/static (static-page nav-event))
       (assoc-in keypaths/navigation-message nav-message)))
 

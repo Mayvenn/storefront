@@ -58,8 +58,8 @@
         {:keys [facets]}                            (get-in data keypaths/category-filters-for-nav)]
     {:nav-root nav-root
      :facets   facets
-     :options  (selector/query categories/dyed-hair-experiment-categories
-                               (select-keys nav-root essentials))}))
+     :options  (selector/strict-query categories/dyed-hair-experiment-categories
+                                      (select-keys nav-root essentials))}))
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]

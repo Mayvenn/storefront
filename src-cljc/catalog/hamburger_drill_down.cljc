@@ -178,7 +178,7 @@
        (if (> (count selected-products) 1)
          (history/enqueue-navigate events/navigate-category
                                    (-> (filter #(= criteria (:criteria %))
-                                               categories/initial-categories)
+                                               categories/old-initial-categories)
                                        first-and-only-category
                                        (select-keys [:catalog/category-id :page/slug])))
          (let [{product-id :sku-set/id slug :sku-set/slug} (first selected-products)]
