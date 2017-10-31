@@ -300,7 +300,7 @@
 (defn min-of-maps
   ([k] {})
   ([k a b]
-   (if (< (get a k) (get b k))
+   (if (<= (get a k) (get b k))
      a b)))
 
 (defn lowest [k ms]
