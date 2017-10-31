@@ -663,9 +663,9 @@
     (h (assoc req :nav-message (routes/navigation-message-for uri query-params)))))
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
-                          {:keys [subdomains query-params server-name] :as req}]
+                          {:keys [subdomains query-params server-name store] :as req}]
   (let [{:strs [token user-id target]}     query-params
-        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token)
+        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token (:stylist_id store))
         cookie-options              {:secure    (not (config/development? environment))
                                      :max-age   (cookies/days 30)
                                      :domain    (str (first subdomains) (cookie-root-domain server-name))}
@@ -695,12 +695,12 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (wrap-cookies (GET "/one-time-login" req (login-and-redirect ctx req)))
                (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
                (affirm-routes ctx)
                (wrap-leads-routes (leads-routes ctx) ctx)
+               (wrap-site-routes (GET "/one-time-login" req (login-and-redirect ctx req)))
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
        (wrap-add-nav-message)

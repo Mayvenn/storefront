@@ -126,11 +126,12 @@
   (-> args
       (update :user select-user-keys)))
 
-(defn one-time-login-in [storeback-config user-id token]
+(defn one-time-login-in [storeback-config user-id token stylist-id]
   (when (and user-id token)
     (let [{:keys [body status] :as response} (storeback-post storeback-config "/v2/one-time-login"
                                                              {:form-params {:user-id    user-id
-                                                                            :user-token token}})]
+                                                                            :user-token token
+                                                                            :stylist-id stylist-id}})]
       (when (<= 200 status 299)
         (-> body
             select-auth-keys
