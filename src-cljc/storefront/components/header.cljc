@@ -14,7 +14,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [clojure.string :as str]))
+            [clojure.string :as string]
+            [storefront.accessors.experiments :as experiments]))
 
 (def hamburger
   (component/html
@@ -160,37 +161,43 @@
                 :on-mouse-enter close-shopping}
      "Real Beautiful")]))
 
-(defn shopping-column [items col-count]
+(defn shopping-column [dyed-hair-experiment? items col-count]
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
    (for [{:keys [page/slug name category/new?] :as category} items]
      [:li {:key slug}
       [:a.inherit-color.block.pyp2
-       (if (:direct-to-details/id category)
-         (utils/route-to events/navigate-product-details
-                         {:catalog/product-id (:direct-to-details/id category)
-                          :page/slug          (:direct-to-details/slug category)})
-         (utils/route-to events/navigate-category category))
+       (merge
+        (when dyed-hair-experiment? {:class "titleize"})
+        (if (:direct-to-details/id category)
+          (utils/route-to events/navigate-product-details
+                          {:catalog/product-id (:direct-to-details/id category)
+                           :page/slug          (:direct-to-details/slug category)})
+          (utils/route-to events/navigate-category category)))
        (when new? [:span.teal "NEW "])
-       (str/capitalize name)]])])
+       (string/capitalize name)]])])
 
-(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
+(defn shopping-flyout [signed-in {:keys [dyed-hair-experiment? expanded? categories]}]
   (when expanded?
     (let [show?   (fn [category]
                     (or (auth/stylist? signed-in)
                         (not (-> category :criteria :product/department (contains? "stylist-exclusives")))))
           columns (->> (filter :header/order categories)
                        (filter show?)
-                       (sort-by :header/order)
+                       (sort-by :header/group)
                        (group-by :header/group)
                        vals
-                       (mapcat (partial partition-all 6)))]
+                       (map (partial sort-by :header/order))
+                       (mapcat (partial partition-all (if dyed-hair-experiment? 9 6))))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6
-        {:style {:width "580px"}}
+        (merge (when-not dyed-hair-experiment?
+                 {:style {:width "580px"}})
+               (when dyed-hair-experiment?
+                 {:class "col-10"}))
         (for [items columns]
-          (shopping-column items (count columns)))]])))
+          (shopping-column dyed-hair-experiment? items (count columns)))]])))
 
 (defn component [{:keys [store user cart shopping signed-in bundle-deals-2?]} _ _]
   (component/create
@@ -226,7 +233,8 @@
   (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))
+      (assoc-in [:shopping :dyed-hair-experiment?] (experiments/dyed-hair? data))))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))

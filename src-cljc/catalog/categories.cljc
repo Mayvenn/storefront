@@ -121,6 +121,8 @@
                              :selector/essentials [:product/department :hair/family :hair/color.process]
                              :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
 
+                             :header/order 3
+                             :header/group 1
 
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of closures and frontals blend seamlessly with our bundles"
@@ -130,8 +132,7 @@
                                                    :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
                                                    :alt         "Closures"}}
                              :footer/order 8
-                             :header/order 8
-                             :header/group 1
+
                              :seo          (category->seo "Closures"
                                                           (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
                                                                 "Peruvian Straight, Peruvian Body Wave,"
@@ -154,6 +155,9 @@
                              :selector/essentials [:product/department :hair/family :hair/color.process]
                              :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
 
+                             :header/order 4
+                             :header/group 1
+
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of closures and frontals blend seamlessly with our bundles"
                                                                "and can be customized to fit your unique look.")}
@@ -162,8 +166,7 @@
                                                    :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
                                                    :alt         "Closures"}}
                              :footer/order 8
-                             :header/order 8
-                             :header/group 1
+
                              :seo          (category->seo "Closures"
                                                           (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
                                                                 "Peruvian Straight, Peruvian Body Wave,"
@@ -182,6 +185,9 @@
                              :hair/family        #{"frontals"}
                              :hair/color.process #{"natural"}
 
+                             :header/order 5
+                             :header/group 1
+
                              :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
@@ -190,8 +196,6 @@
                                                    :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
                                                    :alt         "Frontals"}}
                              :footer/order 9
-                             :header/order 9
-                             :header/group 1
                              :seo          (category->seo "Frontals"
                                                           (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
                                                                 "Choose from popular textures such as Deep Wave,"
@@ -211,6 +215,9 @@
                              :hair/family        #{"frontals"}
                              :hair/color.process #{"dyed"}
 
+                             :header/order 6
+                             :header/group 1
+
                              :selectors/essentials [:product/department :hair/family]
                              :selectors/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
 
@@ -222,8 +229,7 @@
                                                    :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
                                                    :alt         "Frontals"}}
                              :footer/order 9
-                             :header/order 9
-                             :header/group 1
+
                              :seo          (category->seo "Frontals"
                                                           (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
                                                                 "Choose from popular textures such as Deep Wave,"
@@ -253,7 +259,7 @@
                                                    :mobile-url  "//ucarecdn.com/65261bbd-672a-4b0f-8172-8fd49b1ad273/"
                                                    :alt         "360 Frontals"}}
                              :footer/order 10
-                             :header/order 10
+                             :header/order 7
                              :header/group 1
                              :seo          (category->seo "360 Frontals"
                                                           (copy "Mayvenn’s bundles and extensions with a naturally flawless look."
@@ -543,6 +549,38 @@
                                                                                "Perfect for creating voluminous coily styles.")
                                                                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}])
 
+(def experimental-wigs [{:catalog/category-id "13"
+                         :footer/order        20
+                         :header/order        0
+                         :header/group        2
+
+                         :category/new?        true
+
+                         :name                "Wigs"
+                         :page/slug           "wigs"
+                         :copy                {:description (copy "When getting a bundle install isn’t an option,"
+                                                                  "these units will be your go-to protective style"
+                                                                  "for achieving a brand new look at home. Made"
+                                                                  "from 100% virgin human hair, and customizable"
+                                                                  "to fit your unique look.")}
+                         :images              {:hero {:filename    "Wigs.jpg"
+                                                      :desktop-url "//ucarecdn.com/5f2f6800-7b35-4471-9653-42455d7cf76d/"
+                                                      :mobile-url  "//ucarecdn.com/dd01c16f-983b-44a1-a1de-101b9430666f/"
+                                                      :alt         "Wigs"}}
+                         :criteria            {:product/department #{"hair"}
+                                               :hair/family        #{"360-wigs" "lace-front-wigs"}}
+                         :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
+
+                         :seo {:title          "Human Hair Wigs | Mayvenn"
+                               :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                                     "Free 30 day returns. Made with 100% virgin human hair.")
+                               :description    (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
+                                                     "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
+                               :og-description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                                     "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                                     "your unique look using the built-in combs and adjustable strap.")
+                               :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
+
 (def wigs [{:catalog/category-id "13"
             :footer/order        20
             :header/order        20
@@ -786,6 +824,23 @@
                                                    :description    (copy "")
                                                    :og-description (copy "")}}])
 
+(def experimental-stylist-exclusives [{:catalog/category-id    "14"
+                                       :auth/requires          #{:stylist}
+                                       :footer/order           30
+                                       :header/order           30
+                                       :header/group           2
+                                       :name                   "Stylist Exclusives"
+                                       :page/slug              "stylist-exclusives"
+                                       :direct-to-details/id   "49"
+                                       :direct-to-details/slug "rings-kits"
+                                       :criteria               {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
+                                       :filter-tabs            []
+                                       :seo                    {:title          "Stylist Exclusives | Mayvenn"
+                                                                :og-title       (copy "Stylist Exclusives - Free shipping."
+                                                                                      "Free 30 day returns. Made with 100% virgin human hair.")
+                                                                :description    (copy "")
+                                                                :og-description (copy "")}}])
+
 (def control-nav-roots [{:catalog/category-id "11"
                          :name                "Hair"
                          :page/slug           "hair"
@@ -814,10 +869,11 @@
 
                            :product/department #{"hair"}
                            :hair/color.process #{"natural"}
-                           :hair/family :query/missing
+                           :hair/family        :query/missing
 
                            :selector/essentials [:product/department :hair/color.process :hair/family]
                            :selector/electives  []
+
 
                            :criteria {:product/department #{"hair"}
                                       :hair/color.process #{"natural"}}
@@ -830,16 +886,19 @@
                           {:catalog/category-id "16"
                            :catalog/nav-root-id "0"
 
-                           :name      "Dyed Virgin Hair"
-                           :page/slug "dyed-virgin-hair"
+                           :name          "Dyed Virgin Hair"
+                           :page/slug     "dyed-virgin-hair"
+                           :category/new? true
 
                            :product/department #{"hair"}
                            :hair/family        #{"bundles"}
                            :hair/color.process #{"dyed"}
 
                            :hamburger/order 1
+                           :header/order    8
+                           :header/group    0
 
-                           :selector/essentials [:product/department]
+                           :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
 
                            :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]
@@ -872,6 +931,9 @@
                            :hair/color.process #{"dyed" "natural"}
                            :hamburger/order    1
 
+                           :header/order 2
+                           :header/group 1
+
                            :criteria {:product/department #{"hair"}
                                       :hair/family        #{"closures" "frontals" "360-frontals"}
                                       :hair/color.process #{"dyed" "natural"}}
@@ -889,9 +951,8 @@
                                                      "to fit your unique look.")}}])
 
 (def dyed-hair-experiment-categories
-  (concat
-   experimental-virgin-hair
-   experimental-closures))
+  (concat experimental-virgin-hair
+          experimental-closures))
 
 (def old-initial-categories
   (concat closures
@@ -901,8 +962,8 @@
           control-nav-roots))
 
 (def initial-categories
-  (concat wigs
-          stylist-exclusives
+  (concat experimental-wigs
+          experimental-stylist-exclusives
           dyed-hair-nav-roots
           dyed-hair-experiment-categories))
 
