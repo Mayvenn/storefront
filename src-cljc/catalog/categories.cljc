@@ -127,10 +127,10 @@
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of closures and frontals blend seamlessly with our bundles"
                                                                "and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "Closures.jpg",
-                                                   :desktop-url "//ucarecdn.com/8d0f63d5-495f-4fa5-a1d0-eb8f95e59235/",
-                                                   :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
-                                                   :alt         "Closures"}}
+                             :images       {:hero {:filename    "VirginClosures.jpg",
+                                                   :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
+                                                   :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
+                                                   :alt         "Virgin Closures"}}
                              :footer/order 8
 
                              :seo          (category->seo "Closures"
@@ -161,10 +161,10 @@
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of closures and frontals blend seamlessly with our bundles"
                                                                "and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "Closures.jpg",
-                                                   :desktop-url "//ucarecdn.com/8d0f63d5-495f-4fa5-a1d0-eb8f95e59235/",
-                                                   :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
-                                                   :alt         "Closures"}}
+                             :images       {:hero {:filename    "DyedVirginClosures.jpg",
+                                                   :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
+                                                   :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
+                                                   :alt         "Dyed Vigin Closures"}}
                              :footer/order 8
 
                              :seo          (category->seo "Closures"
@@ -191,10 +191,10 @@
                              :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "Frontals.jpg",
-                                                   :desktop-url "//ucarecdn.com/20a24c49-9216-4445-8a49-47ea53f88d32/",
-                                                   :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
-                                                   :alt         "Frontals"}}
+                             :images       {:hero {:filename    "VirginFrontals.jpg",
+                                                   :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
+                                                   :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
+                                                   :alt         "Virgin Frontals"}}
                              :footer/order 9
                              :seo          (category->seo "Frontals"
                                                           (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
@@ -224,10 +224,10 @@
                              :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "Frontals.jpg",
-                                                   :desktop-url "//ucarecdn.com/20a24c49-9216-4445-8a49-47ea53f88d32/",
-                                                   :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
-                                                   :alt         "Frontals"}}
+                             :images       {:hero {:filename    "DyedVirginFrontals.jpg",
+                                                   :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
+                                                   :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
+                                                   :alt         "Dyed Virgin Frontals"}}
                              :footer/order 9
 
                              :seo          (category->seo "Frontals"
@@ -288,10 +288,10 @@
                                                                   "straight, our collection of 100% virgin straight hair"
                                                                   "is your go-to for a sleek look with"
                                                                   "minimal effort.")}
-                                :images       {:hero {:filename    "Straight.jpg",
-                                                      :desktop-url "//ucarecdn.com/4170d82e-9fa6-4a4b-bc30-17a578604ca5/",
-                                                      :mobile-url  "//ucarecdn.com/a9128570-7860-45e5-b7b4-85c098245a24/",
-                                                      :alt         "Straight"}
+                                :images       {:hero {:filename    "VirginStraight.jpg",
+                                                      :desktop-url "//ucarecdn.com/5be83577-fc62-42fd-b7aa-cd35c09fa32a/",
+                                                      :mobile-url  "//ucarecdn.com/9ca3c6e7-1414-4702-be7b-6ea3428320de/",
+                                                      :alt         "Virgin Straight"}
                                                :home {:filename "StraightExtensionsMayvenn.jpg",
                                                       :url      "//ucarecdn.com/3a7983df-318e-41d7-a247-bb1d12c623d2/",
                                                       :alt      "Straight Hair Extensions Mayvenn"}}
@@ -327,10 +327,10 @@
                                                                   "your natural hair that's been pressed straight or"
                                                                   "freshly relaxed. Your flat iron has been officially"
                                                                   "cancelled.")}
-                                :images       {:hero {:filename    "YakiStraight.jpg",
-                                                      :desktop-url "//ucarecdn.com/ccac8a7f-2443-4ba0-a33a-03bb87fc73fb/",
-                                                      :mobile-url  "//ucarecdn.com/5ec46b49-0326-483d-9545-4956d3000cc3/",
-                                                      :alt         "Yaki Straight"}}
+                                :images       {:hero {:filename    "VirginYakiStraight.jpg",
+                                                      :desktop-url "//ucarecdn.com/a49ac151-ff04-4bf5-895a-0636dc2dacd8/",
+                                                      :mobile-url  "//ucarecdn.com/249749df-11d7-4e1b-8ca7-f877af3b9c11/",
+                                                      :alt         "Virgin Yaki Straight"}}
                                 :footer/order 1
                                 :header/order 1
                                 :header/group 0
@@ -360,10 +360,10 @@
                                                                   "Kinky Straight hair texture moves freely and gives"
                                                                   "a naturally flawless look that mimics your own"
                                                                   "locks.")}
-                                :images       {:hero {:filename    "KinkyStraight.jpg",
-                                                      :desktop-url "//ucarecdn.com/71a77939-739a-4959-9d38-7efe472c4e9e/",
-                                                      :mobile-url  "//ucarecdn.com/49a684e3-f347-427d-b027-cd65564d386c/",
-                                                      :alt         "Kinky Straight"}}
+                                :images       {:hero {:filename    "VirginKinkyStraight.jpg",
+                                                      :desktop-url "//ucarecdn.com/09d70755-37d5-401c-b483-c7a3dd1ef588/",
+                                                      :mobile-url  "//ucarecdn.com/297659dd-3b82-4f47-89ea-cdaf6045d923/",
+                                                      :alt         "Virgin Kinky Straight"}}
                                 :footer/order 2
                                 :header/order 2
                                 :header/group 0
@@ -371,8 +371,6 @@
                                                              (copy "100% human hair bundles and extensions from Mayvenn."
                                                                    "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
                                                              "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
-
-
                                {:catalog/category-id      "5"
                                 :name                     "Virgin Body Wave"
                                 :page/slug                "virgin-body-wave"
@@ -392,10 +390,10 @@
                                 :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
                                 :copy                     {:description (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                                                               "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")}
-                                :images                   {:hero {:filename    "BodyWave.jpg",
-                                                                  :desktop-url "//ucarecdn.com/7ee66aa8-7025-404a-8556-fbffc89f419d/",
-                                                                  :mobile-url  "//ucarecdn.com/98042345-510e-4fe5-9ca3-002f0f02a085/",
-                                                                  :alt         "Body Wave"}
+                                :images                   {:hero {:filename    "VirginBodyWave.jpg",
+                                                                  :desktop-url "//ucarecdn.com/5e0d4953-67af-4f53-a705-f3af1ed8704c/",
+                                                                  :mobile-url  "//ucarecdn.com/e96d0e62-02ab-4834-a032-4a7cdb3a77b2/",
+                                                                  :alt         "Virgin Body Wave"}
                                                            :home {:filename "BodyWaveExtensionsMayvenn.jpg",
                                                                   :url      "//ucarecdn.com/7affd325-8cc8-4d25-be50-78ad6fcf8598/",
                                                                   :alt      "Body Wave Hair Extensions Mayvenn"}}
@@ -428,10 +426,10 @@
                                                                               "our collection of 100% virgin Loose Wave hair"
                                                                               "is the perfect foundation for all your carefree,"
                                                                               "flirty, wavy looks.")}
-                                :images                   {:hero {:filename    "LooseWave.jpg",
-                                                                  :desktop-url "//ucarecdn.com/616f7dbc-ca08-444f-9b44-87f154a97676/",
-                                                                  :mobile-url  "//ucarecdn.com/deaea3de-9c38-4dc1-804f-e6619e7b7820/",
-                                                                  :alt         "Loose Wave"}
+                                :images                   {:hero {:filename    "VirginLooseWave.jpg",
+                                                                  :desktop-url "//ucarecdn.com/5cb19377-2ad1-4015-90fd-0152ce8b9f16/",
+                                                                  :mobile-url  "//ucarecdn.com/70979840-a033-48c4-881b-7505c2bf5109/",
+                                                                  :alt         "Virgin Loose Wave"}
                                                            :home {:filename "LooseWaveExtensionsMayvenn.jpg",
                                                                   :url      "//ucarecdn.com/6dd2b51a-3af5-4925-a8de-010a6cf53717/",
                                                                   :alt      "Loose Wave Hair Extensions Mayvenn"}}
@@ -443,7 +441,6 @@
                                                                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
                                                                                "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
                                                                          "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")}
-
                                {:catalog/category-id      "7"
                                 :name                     "Virgin Water Wave"
                                 :page/slug                "Virgin-water-wave"
@@ -466,10 +463,10 @@
                                                                               "collection. For curls you can rock everywhere from"
                                                                               "the office to your tropical vacation, make a"
                                                                               "statement with Water Wave hair.")}
-                                :images                   {:hero {:filename    "WaterWave.jpg",
-                                                                  :desktop-url "//ucarecdn.com/98dc7761-157b-4c44-96f6-38289cb3fe24/",
-                                                                  :mobile-url  "//ucarecdn.com/f02150b4-c02b-42a3-b96b-42fea544b0ad/",
-                                                                  :alt         "Water Wave"}}
+                                :images                   {:hero {:filename    "VirginWaterWave.jpg",
+                                                                  :desktop-url "//ucarecdn.com/004230c4-f532-499c-a643-06481f2b5997/",
+                                                                  :mobile-url  "//ucarecdn.com/d46cc08c-e17f-4529-b0c6-aeed97bf31ed/",
+                                                                  :alt         "Virgin Water Wave"}}
                                 :footer/order             5
                                 :header/order             5
                                 :header/group             0
@@ -499,9 +496,9 @@
                                                                               "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                                               "for those who want big waves that make an even bigger splash.")}
                                 :images                   {:hero {:filename    "DeepWave.jpg",
-                                                                  :desktop-url "//ucarecdn.com/9042d464-d164-4241-8c6e-ba5350ac6b08/",
-                                                                  :mobile-url  "//ucarecdn.com/f56c21d3-86dc-49d0-a9da-6f6e84618a70/",
-                                                                  :alt         "Deep Wave"}
+                                                                  :desktop-url "//ucarecdn.com/c7dd690e-f3ae-4b6b-9411-d9e7027b15c5/",
+                                                                  :mobile-url  "//ucarecdn.com/b07b0298-902e-4dc2-bdf4-f8e179f06020/",
+                                                                  :alt         "Virgin Deep Wave"}
                                                            :home {:filename "DeepWaveExtensionsMayvenn.jpg",
                                                                   :url      "//ucarecdn.com/1fda417f-4714-4c04-965a-9a136014343a/",
                                                                   :alt      "Deep Wave Hair Extensions Mayvenn"}}
@@ -532,10 +529,10 @@
                                 :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
                                 :copy                     {:description (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                                                               "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")}
-                                :images                   {:hero {:filename    "Curly.jpg",
-                                                                  :desktop-url "//ucarecdn.com/e1fc3b5d-7142-49e9-ba85-91776eabd666/",
-                                                                  :mobile-url  "//ucarecdn.com/eec186f3-5e73-47c8-b53b-98ce87a3540e/",
-                                                                  :alt         "Curly"}
+                                :images                   {:hero {:filename    "VirginCurly.jpg",
+                                                                  :desktop-url "//ucarecdn.com/29534c6f-54d0-4969-a1b1-b92b1dcde326/",
+                                                                  :mobile-url  "//ucarecdn.com/7c77bfb9-53c3-4eb3-a4f9-6c9a456d93b4/",
+                                                                  :alt         "Virgin Curly"}
                                                            :home {:filename "CurlyExtensionsMayvenn.jpg",
                                                                   :url      "//ucarecdn.com/9a6aee31-4990-4a14-b3ea-54065a0a985a/",
                                                                   :alt      "Curly Hair Extensions Mayvenn"}}
@@ -580,7 +577,6 @@
                                                      "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                                      "your unique look using the built-in combs and adjustable strap.")
                                :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
-
 (def wigs [{:catalog/category-id "13"
             :footer/order        20
             :header/order        20
@@ -612,7 +608,6 @@
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")
                   :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
-
 (def textures [{:catalog/category-id      "2"
                 :name                     "Straight"
                 :page/slug                "straight"
@@ -803,10 +798,7 @@
                                                          (copy "Shop our Brazilian curly bundle, Peruvian Curly Bundle,"
                                                                "Peruvian Curly Lace closures and Curly Lace frontals."
                                                                "Perfect for creating voluminous coily styles.")
-                                                         "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}
-
-               ])
-
+                                                         "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}])
 (def stylist-exclusives [{:catalog/category-id    "14"
                           :auth/requires          #{:stylist}
                           :footer/order           30
@@ -928,9 +920,6 @@
                            :hair/family        #{"closures" "frontals" "360-frontals"}
                            :hair/color.process #{"dyed" "natural"}
                            :hamburger/order    1
-
-                           :header/order 2
-                           :header/group 1
 
                            :criteria {:product/department #{"hair"}
                                       :hair/family        #{"closures" "frontals" "360-frontals"}
