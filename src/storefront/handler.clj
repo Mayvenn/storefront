@@ -700,7 +700,7 @@
                (paypal-routes ctx)
                (affirm-routes ctx)
                (wrap-leads-routes (leads-routes ctx) ctx)
-               (wrap-site-routes (GET "/one-time-login" req (login-and-redirect ctx req)))
+               (wrap-site-routes (GET "/one-time-login" req (login-and-redirect ctx req)) ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
        (wrap-add-nav-message)
