@@ -666,7 +666,7 @@
                           {:keys [subdomains query-params server-name] :as req}]
   (let [{:strs [token user-id target]}     query-params
         {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token)
-        cookie-options              {:secure false
+        cookie-options              {:secure    (not (config/development? environment))
                                      :max-age   (cookies/days 30)
                                      :domain    (str (first subdomains) (cookie-root-domain server-name))}
         whitelisted-redirect-paths #{"/" "/products/49-rings-kits"}
