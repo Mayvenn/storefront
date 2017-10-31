@@ -1,5 +1,5 @@
 (ns storefront.platform.reviews
-  (:require [sablono.core :refer-macros [html]]
+  (:require [sablono.core :refer [html]]
             [om.core :as om]
             [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]

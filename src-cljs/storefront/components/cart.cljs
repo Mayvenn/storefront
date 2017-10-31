@@ -1,6 +1,6 @@
 (ns storefront.components.cart
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [cemerick.url :as url]
             [storefront.assets :as assets]
             [storefront.accessors.experiments :as experiments]

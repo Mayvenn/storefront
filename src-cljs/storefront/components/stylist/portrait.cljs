@@ -1,6 +1,6 @@
 (ns storefront.components.stylist.portrait
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.component :as component]
             [storefront.components.image-picker :as image-picker]
             [storefront.events :as events]

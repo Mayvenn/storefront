@@ -1,6 +1,6 @@
 (ns storefront.components.checkout-returning-or-guest
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]

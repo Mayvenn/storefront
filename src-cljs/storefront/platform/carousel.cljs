@@ -1,5 +1,5 @@
 (ns storefront.platform.carousel
-  (:require [sablono.core :refer-macros [html]]
+  (:require [sablono.core :refer [html]]
             react-slick
             [om.core :as om]))
 

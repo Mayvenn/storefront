@@ -1,6 +1,6 @@
 (ns storefront.components.friend-referrals
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]))
+            [sablono.core :refer [html]]))
 
 (defn component [data owner]
   (om/component

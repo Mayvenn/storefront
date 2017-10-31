@@ -1,6 +1,6 @@
 (ns storefront.components.tabs
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.platform.component-utils :as utils]))
 
 

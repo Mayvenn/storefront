@@ -1,6 +1,6 @@
 (ns storefront.components.stylist.bonus-credit
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]

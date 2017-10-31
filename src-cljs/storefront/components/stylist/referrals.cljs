@@ -1,6 +1,6 @@
 (ns storefront.components.stylist.referrals
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
             [storefront.components.flash :as flash]

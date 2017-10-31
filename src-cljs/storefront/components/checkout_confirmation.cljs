@@ -1,7 +1,7 @@
 (ns storefront.components.checkout-confirmation
   (:require [om.core :as om]
             [cemerick.url :refer [url-encode]]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.hooks.stringer :as stringer]
             [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.accessors.experiments :as experiments]

@@ -1,6 +1,6 @@
 (ns storefront.components.stylist.dashboard
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component]]
             [storefront.components.stylist.commissions :as commissions]
             [storefront.components.stylist.bonus-credit :as bonuses]

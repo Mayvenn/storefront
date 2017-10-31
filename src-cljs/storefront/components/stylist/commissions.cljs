@@ -1,7 +1,7 @@
 (ns storefront.components.stylist.commissions
   (:require [clojure.string :as str]
             [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylist-urls :as stylist-urls]

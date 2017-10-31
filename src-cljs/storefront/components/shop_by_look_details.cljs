@@ -1,6 +1,6 @@
 (ns storefront.components.shop-by-look-details
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             [storefront.components.ugc :as ugc]

@@ -1,5 +1,5 @@
 (ns storefront.components.email-capture
-  (:require [sablono.core :refer-macros [html]]
+  (:require [sablono.core :refer [html]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

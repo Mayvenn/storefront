@@ -1,6 +1,6 @@
 (ns storefront.components.reset-password
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]

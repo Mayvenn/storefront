@@ -1,6 +1,6 @@
 (ns storefront.components.image-picker
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.assets :as assets]

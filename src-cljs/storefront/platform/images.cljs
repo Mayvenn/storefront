@@ -1,5 +1,5 @@
 (ns storefront.platform.images
-  (:require [sablono.core :refer-macros [html]]
+  (:require [sablono.core :refer [html]]
             [react-transition-group]))
 
 (defn transition-group [options & children]

@@ -1,6 +1,6 @@
 (ns storefront.components.checkout-address
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]

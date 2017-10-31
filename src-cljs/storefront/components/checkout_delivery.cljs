@@ -1,6 +1,6 @@
 (ns storefront.components.checkout-delivery
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.accessors.shipping :as shipping]
             [storefront.components.money-formatters
              :refer

@@ -1,6 +1,6 @@
 (ns storefront.components.essence
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.components.ui :as ui]))
 
 (defn component [_ owner {:keys [close-attrs]}]

@@ -1,6 +1,6 @@
 (ns storefront.components.shop-by-look
   (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
+            [sablono.core :refer [html]]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]))
