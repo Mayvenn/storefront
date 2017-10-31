@@ -190,7 +190,7 @@
    (if dyed-hair-experiment?
      [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                   {:page/slug           "closures-and-frontals"
-                                                   :catalog/category-id "17"})
+                                                   :catalog/category-id "12"})
                                  :data-test "menu-shop-closures")
                           [:span.medium.flex-auto "Shop Closures & Frontals"]
                           ui/forward-caret)]

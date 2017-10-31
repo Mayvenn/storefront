@@ -105,7 +105,7 @@
                                                                "as Body, Straight and Loose Wave.")
                                                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}])
 
-(def experimental-closures [{:catalog/category-id      "18"
+(def experimental-closures [{:catalog/category-id      "0"
                              :name                     "Virgin Closures"
                              :page/slug                "virgin-closures"
                              :legacy/named-search-slug "closures"
@@ -138,7 +138,7 @@
                                                                 "Peruvian Straight, Peruvian Body Wave,"
                                                                 "Peruvian Yaki Straight, Indian Straight Lace and more.")
                                                           "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
-                            {:catalog/category-id      "19"
+                            {:catalog/category-id      "17"
                              :name                     "Dyed Virgin Closures"
                              :page/slug                "dyed-virgin-closures"
                              :legacy/named-search-slug "closures"
@@ -172,7 +172,7 @@
                                                                 "Peruvian Straight, Peruvian Body Wave,"
                                                                 "Peruvian Yaki Straight, Indian Straight Lace and more.")
                                                           "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
-                            {:catalog/category-id      "20"
+                            {:catalog/category-id      "1"
                              :name                     "Virgin Frontals"
                              :page/slug                "virgin-frontals"
                              :legacy/named-search-slug "frontals"
@@ -201,7 +201,7 @@
                                                                 "Choose from popular textures such as Deep Wave,"
                                                                 "Yaki Straight, Water Wave, Straight and more.")
                                                           "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
-                            {:catalog/category-id      "21"
+                            {:catalog/category-id      "18"
                              :name                     "Dyed Virgin Frontals"
                              :page/slug                "dyed-virgin-frontals"
                              :legacy/named-search-slug "frontals"
@@ -236,7 +236,7 @@
                                                                 "Yaki Straight, Water Wave, Straight and more.")
                                                           "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
 
-                            {:catalog/category-id      "22"
+                            {:catalog/category-id      "10"
                              :name                     "Virgin 360 Frontals"
                              :page/slug                "virgin-360-frontals"
                              :legacy/named-search-slug "360-frontals"
@@ -268,7 +268,7 @@
                                                           "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}])
 
 
-(def experimental-virgin-hair [{:catalog/category-id      "23"
+(def experimental-virgin-hair [{:catalog/category-id      "2"
                                 :name                     "Virgin Straight"
                                 :page/slug                "virgin-straight"
                                 :legacy/named-search-slug "straight"
@@ -303,7 +303,7 @@
                                                              (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
                                                                    "Our straight bundles are sleek from root to tip.")
                                                              "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
-                               {:catalog/category-id      "24"
+                               {:catalog/category-id      "3"
                                 :name                     "Virgin Yaki Straight"
                                 :page/slug                "virgin-yaki-straight"
                                 :legacy/named-search-slug "yaki-straight"
@@ -338,7 +338,7 @@
                                                              (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
                                                                    "With Lace Closure or Lace Frontals in different lengths.")
                                                              "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
-                               {:catalog/category-id      "25"
+                               {:catalog/category-id      "4"
                                 :name                     "Virgin Kinky Straight"
                                 :page/slug                "virgin-kinky-straight"
                                 :legacy/named-search-slug "kinky-straight"
@@ -373,7 +373,7 @@
                                                              "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
 
 
-                               {:catalog/category-id      "26"
+                               {:catalog/category-id      "5"
                                 :name                     "Virgin Body Wave"
                                 :page/slug                "virgin-body-wave"
                                 :legacy/named-search-slug "body-wave"
@@ -407,7 +407,7 @@
                                                                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
                                                                                "Unbelievably soft and goes from straight to wavy and back again.")
                                                                          "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")}
-                               {:catalog/category-id      "27"
+                               {:catalog/category-id      "6"
                                 :name                     "Virgin Loose Wave"
                                 :page/slug                "virgin-loose-wave"
                                 :legacy/named-search-slug "loose-wave"
@@ -444,7 +444,7 @@
                                                                                "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
                                                                          "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")}
 
-                               {:catalog/category-id      "28"
+                               {:catalog/category-id      "7"
                                 :name                     "Virgin Water Wave"
                                 :page/slug                "Virgin-water-wave"
                                 :legacy/named-search-slug "water-wave"
@@ -478,7 +478,7 @@
                                                                                "Peruvian and Brazilian bundles."
                                                                                "Mayvenn has hair extensions, bundles, closures, and frontals.")
                                                                          "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")}
-                               {:catalog/category-id      "29"
+                               {:catalog/category-id      "8"
                                 :name                     "Virgin Deep Wave"
                                 :page/slug                "virgin-deep-wave"
                                 :legacy/named-search-slug "deep-wave"
@@ -513,7 +513,7 @@
                                                                          (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
                                                                                "Soft, spiral wave full of body and bounce.")
                                                                          "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")}
-                               {:catalog/category-id      "30"
+                               {:catalog/category-id      "9"
                                 :name                     "Virgin Curly"
                                 :page/slug                "virgin-curly"
                                 :legacy/named-search-slug "curly"
@@ -884,7 +884,6 @@
                                  :description    (copy "")
                                  :og-description (copy "")}}
                           {:catalog/category-id "16"
-                           :catalog/nav-root-id "0"
 
                            :name          "Dyed Virgin Hair"
                            :page/slug     "dyed-virgin-hair"
@@ -920,8 +919,7 @@
                                     :description    (copy "")
                                     :og-description (copy "")}}
 
-                          {:catalog/category-id "17"
-                           :catalog/nav-root-id "1"
+                          {:catalog/category-id "12"
 
                            :name      "Closures & Frontals"
                            :page/slug "closures-and-frontals"
@@ -938,7 +936,7 @@
                                       :hair/family        #{"closures" "frontals" "360-frontals"}
                                       :hair/color.process #{"dyed" "natural"}}
 
-                           :selector/essentials [:product/department :hair/family]
+                           :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
 
                            ;; in some process of deprecation
