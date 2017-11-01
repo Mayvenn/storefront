@@ -333,14 +333,19 @@
                                (option-kw sku))}))))
 
 (defn skuer->selectors [{:keys [selector/essentials selector/electives]}]
-  (set/union essentials electives))
+  (set/union (set essentials) (set electives)))
+
+(defn sku-electives [product sku]
+  (select-keys sku (:selector/electives product)))
 
 (defn determine-relevant-skus
   [skus selected-sku product product-options]
-  (let [selections     (select-keys selected-sku (skuer->selectors product))
+  (let [electives      (sku-electives product selected-sku)
         step-choosable (set/difference (set (:selector/electives product))
                                        (set (keys product-options)))]
-    (selector/query skus (apply dissoc selections step-choosable))))
+    (selector/query skus (apply dissoc
+                                electives
+                                step-choosable))))
 
 (defn skus->options
   "Reduces this product's skus down to options for selection
@@ -377,8 +382,7 @@
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         product         (products/current-product data)
-        product-skus    (->> (selector/select (vals (get-in data keypaths/skus)) product)
-                             (sort-by :price))
+        product-skus    (get-in data catalog.keypaths/detailed-product-product-skus)
         facets          (->> (get-in data keypaths/facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
@@ -432,13 +436,16 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [product  (products/product-by-id app-state product-id)
-        sku-id   (determine-sku-id app-state product (:SKU query-params))
-        sku      (get-in app-state (conj keypaths/skus sku-id))]
+  (let [product      (products/product-by-id app-state product-id)
+        sku-id       (determine-sku-id app-state product (:SKU query-params))
+        sku          (get-in app-state (conj keypaths/skus sku-id))
+        product-skus (->> (selector/select (vals (get-in app-state keypaths/skus)) product)
+                          (sort-by :price))]
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
@@ -477,11 +484,9 @@
     (first coll)))
 
 (defn determine-sku-from-selections [app-state]
-  (let [skus         (vals (get-in app-state keypaths/skus))
-        product      (products/current-product app-state)
-        selections   (select-keys
-                      (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                      (skuer->selectors product))
+  (let [product      (products/current-product app-state)
+        skus         (get-in app-state catalog.keypaths/detailed-product-product-skus)
+        selections   (sku-electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku))
         selected-sku (selector/query skus selections)]
     (first-when-only selected-sku)))
 
@@ -496,14 +501,13 @@
       :hair/length))
 
 (defn determine-selected-length [app-state selected-option]
-  (let [skus       (vals (get-in app-state keypaths/skus))
-        product    (products/current-product app-state)
-        selections (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                     (= selected-option :hair/color)
-                     (dissoc :hair/length))]
-    (determine-cheapest-length (selector/query skus
-                                               (select-keys selections
-                                                            (skuer->selectors product))))))
+  (let [product    (products/current-product app-state)
+        skus       (get-in app-state catalog.keypaths/detailed-product-product-skus)
+        selections (sku-electives product
+                                  (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+                                    (= selected-option :hair/color)
+                                    (dissoc :hair/length)))]
+    (determine-cheapest-length (selector/query skus selections))))
 
 (defn assoc-default-length [app-state selected-option]
   (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)
