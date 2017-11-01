@@ -114,7 +114,7 @@
     (marquee-row
      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
                              :data-test "account-settings")
-                      "Manage account")
+                      "Account settings")
      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
                              :data-test "share-your-store")
                       "Share your store"))
@@ -130,7 +130,7 @@
    (marquee-row
     (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
                             :data-test "account-settings")
-                     "Manage account")
+                     "Account settings")
     (ui/ghost-button (utils/route-to events/navigate-account-referrals)
                      "Refer a friend"))))
 
