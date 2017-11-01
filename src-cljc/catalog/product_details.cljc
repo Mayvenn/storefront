@@ -433,7 +433,7 @@
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
   (let [product  (products/product-by-id app-state product-id)
-        sku-id   (determine-sku-id app-state product)
+        sku-id   (determine-sku-id app-state product (:SKU query-params))
         sku      (get-in app-state (conj keypaths/skus sku-id))]
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))

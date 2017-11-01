@@ -83,7 +83,8 @@
       ;; TODO: use the representative sku to preselect the options on product details
       (assoc (utils/route-to events/navigate-product-details
                              {:catalog/product-id (:sku-set/id product)
-                              :page/slug          slug})
+                              :page/slug          slug
+                              :query-params       {:SKU (:sku representative-sku)}})
              :data-test (str "product-" slug))
       [:div.center
        ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
