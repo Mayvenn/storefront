@@ -15,6 +15,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]))
 
 (def blog-url "https://blog.mayvenn.com")
@@ -33,18 +34,21 @@
 
 (def ^:private menu-x
   (component/html
-   [:div.absolute {:style {:width "70px"}}
+   [:div {:style {:width "70px"}}
     [:div.relative.rotate-45.p2 {:style     {:height "70px"}
                                  :data-test "close-slideout"
                                  :on-click  #(messages/handle-message events/control-menu-collapse-all)}
      [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
      [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
-(def ^:private burger-header
+(defn burger-header [cart]
   (component/html
-   [:div.bg-white
+   [:div.bg-white.flex.items-center
     menu-x
-    [:div.center.col-12.p3 (logo "header-logo" "40px")]]))
+    [:div.flex-auto.py3 (logo "header-logo" "40px")]
+    (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                      :data-test "mobile-cart"}
+                     cart)]))
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto
@@ -253,14 +257,14 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data dyed-hair-experiment? on-taxon? menu-data drill-down-data] :as data}
+  [{:keys [promo-data cart dyed-hair-experiment? on-taxon? menu-data drill-down-data] :as data}
    owner
    opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4.border-gray
      (promo-bar promo-data)
-     burger-header]
+     (burger-header cart)]
     (if on-taxon?
       (if dyed-hair-experiment?
         (component/build menu/component menu-data nil)
@@ -281,6 +285,7 @@
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
       (assoc-in [:drill-down-data] (drill-down/query data))
+      (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
       (assoc-in [:menu-data] (menu/query data))))
 
 (defn built-component [data opts]

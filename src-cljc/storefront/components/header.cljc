@@ -26,15 +26,6 @@
     [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
     [:div.border-bottom.border-dark-gray {:style {:height "15px"}}]]))
 
-(defn shopping-bag [opts {:keys [quantity]}]
-  [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                    opts)
-   (svg/bag {:class (str "absolute overlay m-auto "
-                         (if (pos? quantity) "fill-navy" "fill-black"))})
-   (when (pos? quantity)
-     [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])])
-
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
          (-> opts
@@ -210,7 +201,7 @@
        [:div.right
         [:div.h6.my2.flex.items-center
          (account-info signed-in user)
-         [:div.pl2 (shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
+         [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
@@ -220,9 +211,9 @@
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]
-     (shopping-bag {:style     {:height "70px" :width "70px"}
-                    :data-test "mobile-cart"}
-                   cart)]]))
+     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                       :data-test "mobile-cart"}
+                      cart)]]))
 
 (def minimal-component
   (component/html

@@ -452,6 +452,15 @@
         {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
         bar-width])]))
 
+(defn shopping-bag [opts {:keys [quantity]}]
+  [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
+                                    opts)
+   (svg/bag {:class (str "absolute overlay m-auto "
+                         (if (pos? quantity) "fill-navy" "fill-black"))})
+   (when (pos? quantity)
+     [:div.absolute.overlay.m-auto {:style {:height "9px"}}
+      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])])
+
 (defn lqip
   "Generates a Low Quality Image Placeholder.
   http://www.guypo.com/introducing-lqip-low-quality-image-placeholders/
