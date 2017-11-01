@@ -43,7 +43,7 @@
 
 (defn burger-header [cart]
   (component/html
-   [:div.bg-white.flex.items-center
+   [:div.bg-white.flex.items-center.border-bottom.border-gray
     menu-x
     [:div.flex-auto.py3 (logo "header-logo" "40px")]
     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
@@ -245,7 +245,7 @@
 (defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2? dyed-hair-experiment?]} owner opts]
   (component/create
    [:div
-    [:div.px6.border-bottom.border-top.border-gray
+    [:div.px6.border-bottom.border-gray
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
@@ -262,7 +262,7 @@
    opts]
   (component/create
    [:div
-    [:div.top-0.sticky.z4.border-gray
+    [:div.top-0.sticky.z4
      (promo-bar promo-data)
      (burger-header cart)]
     (if on-taxon?
