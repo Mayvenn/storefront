@@ -336,13 +336,18 @@
 (def self-reg-in-progress-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=lead-created")
 
 (deftest one-time-login-sets-cookies
-  (assert-request (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST")
-                  storeback-one-time-login-response
-                  (fn [resp]
-                    (let [cookies (get-in resp [:headers "Set-Cookie"])
-                          location (get-in resp [:headers "Location"])]
-                      (is (= 302 (:status resp)))
-                      (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Path=/;Domain=bob.mayvenn.com"} cookies))))))
+  (with-standalone-server [storeback (standalone-server (routes
+                                                         (GET "/store" _ storeback-stylist-response)
+                                                         (POST "/v2/one-time-login" _ storeback-one-time-login-response)))]
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
+            cookies (get-in resp [:headers "Set-Cookie"])
+            location (get-in resp [:headers "Location"])]
+        (is (= 302 (:status resp)))
+        (testing "It removes one-time-login params, but keeps other query params in the url it redirects to"
+          (is (= location "https://bob.mayvenn.com/?sha=FIRST")))
+        (testing "It assigns cookies to the client to automatically log them into storefront frontend"
+          (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"} cookies)))))))
 
 (deftest welcome-subdomain-remembers-leads-last-step
   (with-handler handler

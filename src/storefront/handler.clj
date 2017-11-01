@@ -376,7 +376,7 @@
       (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
       (assoc-in keypaths/user-email (cookies/get req "email"))))
 
-(defn site-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
+(defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
           order-number       (get-in req [:cookies "number" :value])
@@ -666,8 +666,7 @@
                           {:keys [subdomains query-params server-name store] :as req}]
   (let [{:strs [token user-id target]}     query-params
         {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token (:stylist_id store))
-        cookie-options              {:secure    (not (config/development? environment))
-                                     :max-age   (cookies/days 30)
+        cookie-options              {:max-age   (cookies/days 30)
                                      :domain    (str (first subdomains) (cookie-root-domain server-name))}
         whitelisted-redirect-paths #{"/" "/products/49-rings-kits"}
         dest-req (-> req
@@ -681,6 +680,10 @@
            (cookies/set environment :user-token (:token user) cookie-options))
       (util.response/redirect (store-homepage (first subdomains) environment dest-req)))))
 
+(defn site-routes [ctx]
+  (routes
+   (GET "/one-time-login" req (login-and-redirect ctx req))
+   (frontend-routes ctx)))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -700,7 +703,6 @@
                (paypal-routes ctx)
                (affirm-routes ctx)
                (wrap-leads-routes (leads-routes ctx) ctx)
-               (wrap-site-routes (GET "/one-time-login" req (login-and-redirect ctx req)) ctx)
                (wrap-site-routes (site-routes ctx) ctx)
                (route/not-found views/not-found))
        (wrap-add-nav-message)
