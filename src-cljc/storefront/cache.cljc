@@ -6,7 +6,7 @@
 ;;  ClojureScript fixes this error.
 (defn unique-serialize
   "Walks a collection and converts every map within into a sorted map, then
-  serializes the entirity of it into a string."
+  serializes the entirety of it into a string."
   [coll]
   (let [sort-if-map
         #(if (map? %) (into (sorted-map) %) %)]
