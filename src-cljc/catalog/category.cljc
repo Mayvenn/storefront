@@ -97,13 +97,17 @@
        [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
        " to see more hair."]])])
 
-(defn product-cards [loading? sku-sets facets affirm?]
+(defn product-cards [loading? sku-sets facets affirm? dyed-hair?]
   [:div.flex.flex-wrap.mxn1
    (if (empty? sku-sets)
      (product-cards-empty-state loading?)
-     (for [product sku-sets] (product-card/component product facets affirm?)))])
+     (for [product sku-sets
+           :let [product-experiment-set (set (:experiment/dyed-hair product))]
+           :when (contains? product-experiment-set
+                            (if dyed-hair? "experiment" "control"))]
+       (product-card/component product facets affirm?)))])
 
-(defn ^:private component [{:keys [category filters facets loading-products? affirm?]} owner opts]
+(defn ^:private component [{:keys [category filters facets loading-products? affirm? dyed-hair?]} owner opts]
   (let [category-criteria (:criteria category)]
     (component/create
      [:div
@@ -127,7 +131,7 @@
             (filter-panel selected-facet)]]
           [:div
            (filter-tabs category-criteria filters)])]
-       (product-cards loading-products? (:filtered-sku-sets filters) facets affirm?)]])))
+       (product-cards loading-products? (:filtered-sku-sets filters) facets affirm? dyed-hair?)]])))
 
 (defn ^:private query [data]
   (let [category (categories/current-category data)]
@@ -135,6 +139,7 @@
      :filters           (get-in data keypaths/category-filters-for-browse)
      :facets            (get-in data keypaths/facets)
      :affirm?           (experiments/affirm? data)
+     :dyed-hair?        (experiments/dyed-hair? data)
      :loading-products? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:criteria category)))}))
 
