@@ -325,7 +325,7 @@
               {:option/name (:option/name facet-option)
                :option/slug (:option/slug facet-option)
                :stocked?    (or (:in-stock? sku)
-                                (:stocked? existing))
+                                (:stocked? existing false))
                :image       image
                :price       (:price sku)
                :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
@@ -507,7 +507,7 @@
                                   (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
                                     (= selected-option :hair/color)
                                     (dissoc :hair/length)))]
-    (determine-cheapest-length (selector/query skus selections))))
+    (determine-cheapest-length (selector/query skus selections {:in-stock? #{true}}))))
 
 (defn assoc-default-length [app-state selected-option]
   (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)
